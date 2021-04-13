@@ -75,17 +75,11 @@ bool IsArchitectureArm() {
 #endif
 }
 
-static const int kExpectedValue = 42;
+static const int kExpectedValue = 1;
 static const int kIgnoreThisTest = 43;
 static const int kExitWithAssertionFailure = 1;
 #if !defined(OS_NACL_NONSFI)
 static const int kExitForTimeout = 2;
-#endif
-
-#if defined(SANDBOX_USES_BASE_TEST_SUITE)
-// This is due to StackDumpSignalHandler() performing _exit(1).
-// TODO(jln): get rid of the collision with kExitWithAssertionFailure.
-const int kExitAfterSIGSEGV = 1;
 #endif
 
 // PNaCl toolchain's signal ABIs are incompatible with Linux's.
@@ -306,14 +300,14 @@ void UnitTests::DeathSEGVMessage(int status,
   std::string details(TestFailedMessage(msg));
   const char* expected_msg = static_cast<const char*>(aux);
 
-#if !defined(SANDBOX_USES_BASE_TEST_SUITE)
+#if defined(OS_CHROMEOS)
+  // This hack is required for ChromeOS since its signal handler does not
+  // return indicating the handled signal, but with a simple _exit(1) only.
+  const bool subprocess_got_sigsegv =
+      WIFEXITED(status) && (WEXITSTATUS(status) == 1);
+#else
   const bool subprocess_got_sigsegv =
       WIFSIGNALED(status) && (SIGSEGV == WTERMSIG(status));
-#else
-  // This hack is required when a signal handler is installed
-  // for SEGV that will _exit(1).
-  const bool subprocess_got_sigsegv =
-      WIFEXITED(status) && (kExitAfterSIGSEGV == WEXITSTATUS(status));
 #endif
 
   ASSERT_TRUE(subprocess_got_sigsegv) << "Exit status: " << status
