@@ -408,6 +408,14 @@ Polymer({
   },
 
   /** @private */
+  getEnabledToggleClassName_() {
+    if (this.getPref('nearby_sharing.enabled').value) {
+      return 'enabled-toggle-on';
+    }
+    return 'enabled-toggle-off';
+  },
+
+  /** @private */
   onOnboardingCancelled_() {
     // Return to main settings page multidevice section
     settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);

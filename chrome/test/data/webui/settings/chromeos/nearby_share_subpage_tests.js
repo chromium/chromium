@@ -97,31 +97,34 @@ suite('NearbyShare', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  // Returns true if the element exists and has not been 'removed' by the
+  // Polymer template system.
+  function doesElementExist(selector) {
+    const el = subpage.$$(selector);
+    return (el !== null) && (el.style.display !== 'none');
+  }
+
   test('feature toggle button controls preference', function() {
     // Ensure that these controls are enabled/disabled when the Nearby is
     // enabled/disabled.
-    const highVizToggle = subpage.$$('#highVisibilityToggle');
-    const editDeviceNameButton = subpage.$$('#editDeviceNameButton');
-    const editVisibilityButton = subpage.$$('#editVisibilityButton');
-    const editDataUsageButton = subpage.$$('#editDataUsageButton');
-
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('On', featureToggleButton.label.trim());
-    assertFalse(highVizToggle.disabled);
-    assertFalse(editDeviceNameButton.disabled);
-    assertFalse(editVisibilityButton.disabled);
-    assertFalse(editDataUsageButton.disabled);
+    assertTrue(doesElementExist('#highVisibilityToggle'));
+    assertTrue(doesElementExist('#editDeviceNameButton'));
+    assertTrue(doesElementExist('#editVisibilityButton'));
+    assertTrue(doesElementExist('#editDataUsageButton'));
 
     featureToggleButton.click();
+    Polymer.dom.flush();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('Off', featureToggleButton.label.trim());
-    assertTrue(highVizToggle.disabled);
-    assertTrue(editDeviceNameButton.disabled);
-    assertTrue(editVisibilityButton.disabled);
-    assertTrue(editDataUsageButton.disabled);
+    assertFalse(doesElementExist('#highVisibilityToggle'));
+    assertFalse(doesElementExist('#editDeviceNameButton'));
+    assertFalse(doesElementExist('#editVisibilityButton'));
+    assertFalse(doesElementExist('#editDataUsageButton'));
   });
 
   test('toggle row controls preference', function() {
@@ -389,4 +392,70 @@ suite('NearbyShare', function() {
     // Ensure contacts download occurs when the subpage is attached.
     assertTrue(fakeContactManager.downloadContactsCalled);
   });
+
+  test('feature toggle UI changes', function() {
+    // Ensure toggle off UI occurs when toggle off.
+    assertEquals(true, featureToggleButton.checked);
+    assertEquals('On', featureToggleButton.label.trim());
+    assertTrue(featureToggleButton.classList.contains('enabled-toggle-on'));
+    assertFalse(featureToggleButton.classList.contains('enabled-toggle-off'));
+
+    featureToggleButton.click();
+
+    assertEquals(false, featureToggleButton.checked);
+    assertEquals('Off', featureToggleButton.label.trim());
+    assertFalse(featureToggleButton.classList.contains('enabled-toggle-on'));
+    assertTrue(featureToggleButton.classList.contains('enabled-toggle-off'));
+  });
+
+  test('subpage hidden when feature toggled off', function() {
+    // Ensure that the subpage content is hidden when the Nearby is off.
+    const subpageContent = subpage.$$('#subpageContent');
+    const highVizToggle = subpage.$$('#highVisibilityToggle');
+    const editDeviceNameButton = subpage.$$('#editDeviceNameButton');
+    const editVisibilityButton = subpage.$$('#editVisibilityButton');
+    const editDataUsageButton = subpage.$$('#editDataUsageButton');
+
+    assertEquals(true, featureToggleButton.checked);
+    assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
+    assertEquals('On', featureToggleButton.label.trim());
+    assertTrue(doesElementExist('#help'));
+
+    editVisibilityButton.click();
+    Polymer.dom.flush();
+    const visibilityDialog =
+        subpage.$$('nearby-share-contact-visibility-dialog');
+    assertTrue(!!visibilityDialog);
+    assertTrue(visibilityDialog.$$('nearby-contact-visibility') !== null);
+
+    editDeviceNameButton.click();
+    Polymer.dom.flush();
+    const deviceNameDialog = subpage.$$('nearby-share-device-name-dialog');
+    assertTrue(!!deviceNameDialog);
+
+    editDataUsageButton.click();
+    Polymer.dom.flush();
+    const dataUsageDialog = subpage.$$('nearby-share-data-usage-dialog');
+    assertTrue(!!dataUsageDialog);
+
+    highVizToggle.click();
+    Polymer.dom.flush();
+    const receiveDialog = subpage.$$('nearby-share-receive-dialog');
+    assertTrue(!!receiveDialog);
+
+    featureToggleButton.click();
+    Polymer.dom.flush();
+
+    assertEquals(false, featureToggleButton.checked);
+    assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
+    assertEquals('Off', featureToggleButton.label.trim());
+    assertEquals('none', subpageContent.style.display);
+    assertEquals('none', subpage.$$('#helpContent').style.display);
+    assertFalse(doesElementExist('#highVisibilityToggle'));
+    assertFalse(doesElementExist('#editDeviceNameButton'));
+    assertFalse(doesElementExist('#editVisibilityButton'));
+    assertFalse(doesElementExist('#editDataUsageButton'));
+    assertFalse(doesElementExist('#help'));
+  });
+
 });
