@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
@@ -336,6 +337,17 @@ void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
   svg_text_.data = std::move(data);
   type_ = kSVGText;
   rect_ = unscaled_rect;
+}
+
+FloatRect NGFragmentItem::FloatRectInContainerFragment() const {
+  if (Type() != kSVGText)
+    return FloatRect(rect_);
+  const float scaling_factor =
+      To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
+  DCHECK_GT(scaling_factor, 0.0f);
+  FloatRect item_rect = SVGFragmentData()->rect;
+  item_rect.Scale(1 / scaling_factor);
+  return item_rect;
 }
 
 bool NGFragmentItem::HasNonVisibleOverflow() const {

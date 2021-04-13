@@ -69,6 +69,8 @@ class LayoutSVGInline : public LayoutInline {
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
+
+  bool IsObjectBoundingBoxValid() const;
 };
 
 template <>

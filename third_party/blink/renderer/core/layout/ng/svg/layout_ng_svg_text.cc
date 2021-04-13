@@ -124,17 +124,11 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
       if (!fragment.Items())
         continue;
       for (const auto& item : fragment.Items()->Items()) {
-        const auto* svg_data = item.SVGFragmentData();
-        if (!svg_data)
+        if (item.Type() != NGFragmentItem::kSVGText)
           continue;
         // Do not use item.RectInContainerFragment() in order to avoid
         // precision loss.
-        const float scaling_factor =
-            To<LayoutSVGInlineText>(item.GetLayoutObject())->ScalingFactor();
-        DCHECK_GT(scaling_factor, 0.0f);
-        FloatRect item_rect = svg_data->rect;
-        item_rect.Scale(1 / scaling_factor);
-        bbox.Unite(item_rect);
+        bbox.Unite(item.FloatRectInContainerFragment());
       }
     }
     bounding_box_ = bbox;
