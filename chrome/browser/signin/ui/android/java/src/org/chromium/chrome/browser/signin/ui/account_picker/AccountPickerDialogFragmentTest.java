@@ -42,7 +42,6 @@ import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
@@ -99,7 +98,7 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
         addAccount(mAccountName2, "");
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction().add(mTargetFragment, "target").commit();
-        mDialog = AccountPickerDialogFragment.create(mAccountName1);
+        mDialog = new AccountPickerDialogFragment();
         mDialog.setTargetFragment(mTargetFragment, 0);
         mDialog.show(fragmentManager, null);
     }
@@ -147,17 +146,6 @@ public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(
                 mDialog.getDialog().getWindow().getDecorView(), "account_picker_dialog_legacy");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    public void testUpdateSelectedAccountChangesSelectionMark() throws IOException {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDialog.updateSelectedAccount(mAccountName2));
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(mDialog.getDialog().getWindow().getDecorView(),
-                "account_picker_dialog_update_selected_account");
     }
 
     @Test

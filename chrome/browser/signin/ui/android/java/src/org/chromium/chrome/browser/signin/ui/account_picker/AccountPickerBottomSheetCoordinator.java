@@ -89,7 +89,7 @@ public class AccountPickerBottomSheetCoordinator {
                 activity, accountPickerDelegate, this::dismissBottomSheet);
         mView = new AccountPickerBottomSheetView(activity, mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
-                mAccountPickerBottomSheetMediator, /* selectedAccountName= */ null,
+                mAccountPickerBottomSheetMediator,
                 /* showIncognitoRow= */ showIncognitoRow);
 
         if (showIncognitoRow) {

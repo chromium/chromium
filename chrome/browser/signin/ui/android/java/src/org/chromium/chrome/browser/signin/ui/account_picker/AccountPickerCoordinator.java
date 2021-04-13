@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -55,11 +54,9 @@ public class AccountPickerCoordinator {
      * @param view The account list recycler view.
      * @param listener Listener to notify when an account is selected or the user wants to add an
      *                 account.
-     * @param selectedAccountName The name of the account that should be marked as selected.
      * @param showIncognitoRow whether to show the incognito row in the account picker.
      */
-    AccountPickerCoordinator(RecyclerView view, Listener listener,
-            @Nullable String selectedAccountName, boolean showIncognitoRow) {
+    AccountPickerCoordinator(RecyclerView view, Listener listener, boolean showIncognitoRow) {
         assert listener != null : "The argument AccountPickerCoordinator.Listener cannot be null!";
 
         MVCListAdapter.ModelList listModel = new MVCListAdapter.ModelList();
@@ -83,8 +80,8 @@ public class AccountPickerCoordinator {
                 new OnClickListenerViewBinder(IncognitoAccountRowProperties.ON_CLICK_LISTENER));
 
         view.setAdapter(adapter);
-        mMediator = new AccountPickerMediator(
-                view.getContext(), listModel, listener, selectedAccountName, showIncognitoRow);
+        mMediator =
+                new AccountPickerMediator(view.getContext(), listModel, listener, showIncognitoRow);
     }
 
     /**
@@ -92,13 +89,5 @@ public class AccountPickerCoordinator {
      */
     void destroy() {
         mMediator.destroy();
-    }
-
-    /**
-     * Sets the selected account name. The UI should be updated in this call.
-     * @param selectedAccountName The name of the account that should be marked as selected.
-     */
-    void setSelectedAccountName(String selectedAccountName) {
-        mMediator.setSelectedAccountName(selectedAccountName);
     }
 }

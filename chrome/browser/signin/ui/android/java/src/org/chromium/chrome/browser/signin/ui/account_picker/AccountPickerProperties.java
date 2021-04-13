@@ -64,22 +64,18 @@ class AccountPickerProperties {
     static class ExistingAccountRowProperties {
         static final PropertyModel.WritableObjectPropertyKey<DisplayableProfileData> PROFILE_DATA =
                 new PropertyModel.WritableObjectPropertyKey<>("profile_data");
-        static final PropertyModel.WritableBooleanPropertyKey IS_SELECTED_ACCOUNT =
-                new PropertyModel.WritableBooleanPropertyKey("is_selected_account");
         static final PropertyModel
                 .ReadableObjectPropertyKey<Callback<DisplayableProfileData>> ON_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS =
-                new PropertyKey[] {PROFILE_DATA, IS_SELECTED_ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PROFILE_DATA, ON_CLICK_LISTENER};
 
         private ExistingAccountRowProperties() {}
 
-        static PropertyModel createModel(DisplayableProfileData profileData,
-                Callback<DisplayableProfileData> listener, boolean isSelectedAccount) {
+        static PropertyModel createModel(
+                DisplayableProfileData profileData, Callback<DisplayableProfileData> listener) {
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(PROFILE_DATA, profileData)
-                    .with(IS_SELECTED_ACCOUNT, isSelectedAccount)
                     .with(ON_CLICK_LISTENER, listener)
                     .build();
         }

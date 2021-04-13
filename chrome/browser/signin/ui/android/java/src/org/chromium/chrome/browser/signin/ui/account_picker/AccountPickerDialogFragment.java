@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -26,21 +25,7 @@ import org.chromium.chrome.browser.signin.ui.R;
  * 2. Implement {@link AccountPickerCoordinator.Listener} interface to get selection result.
  */
 public class AccountPickerDialogFragment extends DialogFragment {
-    private static final String ARGUMENT_SELECTED_ACCOUNT_NAME =
-            "AccountPickerDialogFragment.SelectedAccountName";
     private AccountPickerCoordinator mCoordinator;
-
-    /**
-     * Creates an instance and sets its arguments.
-     * @param selectedAccountName The name of the account that should be marked as selected.
-     */
-    public static AccountPickerDialogFragment create(@Nullable String selectedAccountName) {
-        AccountPickerDialogFragment result = new AccountPickerDialogFragment();
-        Bundle args = new Bundle();
-        args.putString(ARGUMENT_SELECTED_ACCOUNT_NAME, selectedAccountName);
-        result.setArguments(args);
-        return result;
-    }
 
     @Override
     @NonNull
@@ -53,7 +38,6 @@ public class AccountPickerDialogFragment extends DialogFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCoordinator = new AccountPickerCoordinator(recyclerView,
                 (AccountPickerCoordinator.Listener) getTargetFragment(),
-                getArguments().getString(ARGUMENT_SELECTED_ACCOUNT_NAME),
                 /* showIncognitoRow= */ false);
         return builder.setTitle(R.string.signin_account_picker_dialog_title)
                 .setView(recyclerView)
@@ -64,13 +48,5 @@ public class AccountPickerDialogFragment extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         mCoordinator.destroy();
-    }
-
-    /**
-     * Updates the selected account.
-     * @param selectedAccountName The name of the account that should be marked as selected.
-     */
-    public void updateSelectedAccount(String selectedAccountName) {
-        mCoordinator.setSelectedAccountName(selectedAccountName);
     }
 }

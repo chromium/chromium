@@ -458,8 +458,7 @@ public abstract class SyncConsentFragmentBase
         // Account picker is already shown
         if (getAccountPickerDialogFragment() != null) return;
 
-        AccountPickerDialogFragment dialog =
-                AccountPickerDialogFragment.create(mSelectedAccountName);
+        AccountPickerDialogFragment dialog = new AccountPickerDialogFragment();
         dialog.setTargetFragment(this, ACCOUNT_PICKER_DIALOG_REQUEST_CODE);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(dialog, ACCOUNT_PICKER_DIALOG_TAG);
@@ -538,11 +537,6 @@ public abstract class SyncConsentFragmentBase
         mSelectedAccountName = accountName;
         mIsDefaultAccountSelected = isDefaultAccount;
         updateProfileData(mSelectedAccountName);
-
-        AccountPickerDialogFragment accountPickerFragment = getAccountPickerDialogFragment();
-        if (accountPickerFragment != null) {
-            accountPickerFragment.updateSelectedAccount(accountName);
-        }
     }
 
     private void triggerUpdateAccounts() {
