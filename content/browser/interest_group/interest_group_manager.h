@@ -2,34 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
+#ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
+#define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 
-#include "base/files/file_path.h"
-#include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
+#include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/threading/sequence_bound.h"
+#include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "sql/database.h"
-#include "sql/statement.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
-// InterestGroupStorage controls access to the Interest Group Database. All
-// public functions perform operations on the database and may block. This
-// implementation is not thread-safe so all functions should be called from
-// within the same sequence.
-class CONTENT_EXPORT InterestGroupStorage {
+// InterestGroupManager acts as a proxy to access the InterestGroupStorage.
+// Calls to the proxy functions can be called concurrently from multiple
+// sequences as they are executed serially on a separate (blocking) sequence.
+class CONTENT_EXPORT InterestGroupManager {
  public:
-  // Constructs an interest group storage based on a SQLite database in the
-  // `path`/InterestGroups file. If the path passed in is empty, then the
-  // database is instead stored in memory and not persisted to disk.
-  explicit InterestGroupStorage(const base::FilePath& path);
-  InterestGroupStorage(const InterestGroupStorage& other) = delete;
-  InterestGroupStorage& operator=(const InterestGroupStorage& other) = delete;
-  ~InterestGroupStorage();
+  // Creates an interest group manager using the provided directory path for
+  // storage. If in_memory is true the path is ignored and an in-memory
+  // database is used instead.
+  explicit InterestGroupManager(const base::FilePath& path, bool in_memory);
+  ~InterestGroupManager();
+  InterestGroupManager(const InterestGroupManager& other) = delete;
+  InterestGroupManager& operator=(const InterestGroupManager& other) = delete;
+
+  /******** Proxy function calls to InterestGroupsStorageSqlImpl **********/
 
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
@@ -48,33 +46,30 @@ class CONTENT_EXPORT InterestGroupStorage {
                               const std::string& name);
   // Adds an entry to the win history for this interest group. `ad_json` is a
   // piece of opaque data to identify the winning ad.
-  void RecordInterestGroupWin(const url::Origin& owner,
+  void RecordInterestGroupWin(const ::url::Origin& owner,
                               const std::string& name,
                               const std::string& ad_json);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
-  std::vector<::url::Origin> GetAllInterestGroupOwners();
+  void GetAllInterestGroupOwners(
+      base::OnceCallback<void(std::vector<url::Origin>)> callback);
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>
-  GetInterestGroupsForOwner(const url::Origin& owner);
+  void GetInterestGroupsForOwner(
+      const url::Origin& owner,
+      base::OnceCallback<
+          void(std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>)>
+          callback);
 
   // Clear out storage for the specified owning origin. If the origin is opaque
-  // then apply to all origins.
+  // or empty, apply to all origins.
   void DeleteInterestGroupData(const url::Origin& owner);
 
  private:
-  bool EnsureDBInitialized();
-  bool InitializeDB();
-  bool InitializeSchema();
-  void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
-
-  std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const base::FilePath path_to_database_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Remote for accessing the interest group storage from the browser UI thread.
+  base::SequenceBound<InterestGroupStorage> impl_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
