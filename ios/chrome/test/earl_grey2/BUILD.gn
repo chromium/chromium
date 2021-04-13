@@ -168,6 +168,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/side_swipe:eg2_tests",
+    "//ios/chrome/browser/ui/start_surface:eg2_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:eg2_tests",
     "//ios/chrome/browser/ui/tabs:eg2_tests",
     "//ios/chrome/browser/ui/thumb_strip:eg2_tests",
