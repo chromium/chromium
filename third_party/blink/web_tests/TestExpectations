@@ -6086,6 +6086,13 @@ crbug.com/1095733 http/tests/devtools/tabbed-pane-closeable-persistence.js [ Ski
 crbug.com/1144127 http/tests/devtools/modules-load-elements.js [ Pass Failure ]
 crbug.com/1144127 http/tests/devtools/modules-load-network.js [ Pass Failure ]
 crbug.com/1144127 http/tests/devtools/console/console-xpath.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/set-outer-html-2.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/set-outer-html-for-xhtml.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/set-outer-html-whitespace.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/set-outer-html.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/undo-set-outer-html-2.js [ Pass Failure ]
+crbug.com/1158760 http/tests/devtools/elements/edit/undo-set-outer-html.js [ Pass Failure ]
+
 
 # Sheriff 2020-06-17
 crbug.com/1095969 [ Mac ] fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Pass Failure ]
