@@ -431,7 +431,6 @@ bool Performance::PassesTimingAllowCheck(
     if (header == security_origin)
       contains_security_origin = true;
   }
-
   // If the tainted origin flag is set and the header contains the origin, this
   // means that this method currently passes the check but once we implement the
   // tainted origin flag properly then it will fail the check. Record this in a
@@ -511,18 +510,13 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   result->context_type = info.ContextType();
   result->request_destination = info.RequestDestination();
 
-  bool response_tainting_not_basic = false;
-  bool tainted_origin_flag = false;
-  result->allow_timing_details = PassesTimingAllowCheck(
-      final_response, final_response, destination_origin,
-      &context_for_use_counter, &response_tainting_not_basic,
-      &tainted_origin_flag);
+  result->allow_timing_details =
+      AllowsTimingRedirect(info.RedirectChain(), final_response,
+                           destination_origin, &context_for_use_counter);
 
   const Vector<ResourceResponse>& redirect_chain = info.RedirectChain();
   if (!redirect_chain.IsEmpty()) {
-    result->allow_redirect_details =
-        AllowsTimingRedirect(redirect_chain, final_response, destination_origin,
-                             &context_for_use_counter);
+    result->allow_redirect_details = result->allow_timing_details;
 
     // TODO(https://crbug.com/817691): is |last_chained_timing| being null a bug
     // or is this if statement reasonable?

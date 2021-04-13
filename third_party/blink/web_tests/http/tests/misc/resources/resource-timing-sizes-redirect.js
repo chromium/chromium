@@ -2,13 +2,13 @@
 // resource-timing-sizes-redirect-worker.html
 
 if (typeof document === 'undefined') {
-    importScripts('/resources/testharness.js',
-                  '/resources/get-host-info.js?pipe=sub',
-                  '/misc/resources/run-async-tasks-promise.js');
+  importScripts('/resources/testharness.js',
+    '/resources/get-host-info.js?pipe=sub',
+    '/misc/resources/run-async-tasks-promise.js');
 }
 
 const baseUrl =
-    new URL('/security/resources/cors-hello.php', location.href).href;
+  new URL('/security/resources/cors-hello.php', location.href).href;
 const expectedSize = 73;
 
 // Because apache decrements the Keep-Alive max value on each request, the
@@ -23,81 +23,82 @@ var directUrl, sameOriginRedirect, crossOriginRedirect, mixedRedirect;
 var complexRedirect;
 
 function checkBodySizeFields(entry) {
-    assert_equals(entry.decodedBodySize, expectedSize, 'decodedBodySize');
-    assert_equals(entry.encodedBodySize, expectedSize, 'encodedBodySize');
+  assert_equals(entry.decodedBodySize, expectedSize, 'decodedBodySize');
+  assert_equals(entry.encodedBodySize, expectedSize, 'encodedBodySize');
 }
 
 function checkResourceSizes() {
-    var entries = performance.getEntriesByType('resource');
-    var lowerBound, upperBound, withRedirectLowerBound;
-    var seenCount = 0;
-    for (var entry of entries) {
-        switch (entry.name) {
-        case directUrl:
-            checkBodySizeFields(entry);
-            assert_greater_than(entry.transferSize, expectedSize,
-                                'transferSize');
-            lowerBound = entry.transferSize - fuzzFactor;
-            upperBound = entry.transferSize + fuzzFactor;
-            withRedirectLowerBound = entry.transferSize + minHeaderSize;
-            ++seenCount;
-            break;
+  var entries = performance.getEntriesByType('resource');
+  var lowerBound, upperBound, withRedirectLowerBound;
+  var seenCount = 0;
+  for (var entry of entries) {
+    switch (entry.name) {
+      case directUrl:
+        checkBodySizeFields(entry);
+        assert_greater_than(entry.transferSize, expectedSize,
+          'transferSize');
+        lowerBound = entry.transferSize - fuzzFactor;
+        upperBound = entry.transferSize + fuzzFactor;
+        withRedirectLowerBound = entry.transferSize + minHeaderSize;
+        ++seenCount;
+        break;
 
-        case sameOriginRedirect:
-            checkBodySizeFields(entry);
-            assert_greater_than(entry.transferSize, withRedirectLowerBound,
-                                'transferSize');
-            ++seenCount;
-            break;
+      case sameOriginRedirect:
+        checkBodySizeFields(entry);
+        assert_greater_than(entry.transferSize, withRedirectLowerBound,
+          'transferSize');
+        ++seenCount;
+        break;
 
-        case crossOriginRedirect:
-        case mixedRedirect:
-        case complexRedirect:
-            checkBodySizeFields(entry);
-            assert_between_exclusive(entry.transferSize, lowerBound, upperBound,
-                                     'transferSize');
-            ++seenCount;
-            break;
+      case crossOriginRedirect:
+      case mixedRedirect:
+      case complexRedirect:
+        checkBodySizeFields(entry);
+        assert_between_exclusive(entry.transferSize, lowerBound, upperBound,
+          'transferSize');
+        ++seenCount;
+        break;
 
-        default:
-            break;
-        }
+      default:
+        break;
     }
-    assert_equals(seenCount, 5, 'seenCount');
+  }
+  assert_equals(seenCount, 5, 'seenCount');
 }
 
 function redirectUrl(redirectSourceOrigin, allowOrigin, targetUrl) {
-    return redirectSourceOrigin +
-        '/resources/redirect.php?cors_allow_origin=' +
-        encodeURIComponent(allowOrigin) +
-        '&url=' + encodeURIComponent(targetUrl);
+  return redirectSourceOrigin +
+    '/resources/redirect.php?cors_allow_origin=' +
+    encodeURIComponent(allowOrigin) +
+    '&url=' + encodeURIComponent(targetUrl) +
+    '&timing_allow_origin=*';
 }
 
 promise_test(() => {
-    // Use a different URL every time so that the cache behaviour does not
-    // depend on execution order.
-    directUrl = baseUrl + '?unique=' + Math.random().toString().substring(2) +
-        '&cors=*';
-    sameOriginRedirect = redirectUrl(hostInfo.HTTP_ORIGIN, '*', directUrl);
-    crossOriginRedirect = redirectUrl(hostInfo.HTTP_REMOTE_ORIGIN,
-                                      hostInfo.HTTP_ORIGIN, directUrl);
-    mixedRedirect = redirectUrl(hostInfo.HTTP_REMOTE_ORIGIN,
-                                hostInfo.HTTP_ORIGIN, sameOriginRedirect);
-    complexRedirect = redirectUrl(hostInfo.HTTP_ORIGIN,
-                                  hostInfo.HTTP_REMOTE_ORIGIN, mixedRedirect);
-    var eatBody = response => response.arrayBuffer();
-    return fetch(directUrl)
-        .then(eatBody)
-        .then(() => fetch(sameOriginRedirect))
-        .then(eatBody)
-        .then(() => fetch(crossOriginRedirect))
-        .then(eatBody)
-        .then(() => fetch(mixedRedirect))
-        .then(eatBody)
-        .then(() => fetch(complexRedirect))
-        .then(eatBody)
-        .then(runAsyncTasks)
-        .then(checkResourceSizes);
+  // Use a different URL every time so that the cache behaviour does not
+  // depend on execution order.
+  directUrl = baseUrl + '?unique=' + Math.random().toString().substring(2) +
+    '&cors=*';
+  sameOriginRedirect = redirectUrl(hostInfo.HTTP_ORIGIN, '*', directUrl);
+  crossOriginRedirect = redirectUrl(hostInfo.HTTP_REMOTE_ORIGIN,
+    hostInfo.HTTP_ORIGIN, directUrl);
+  mixedRedirect = redirectUrl(hostInfo.HTTP_REMOTE_ORIGIN,
+    hostInfo.HTTP_ORIGIN, sameOriginRedirect);
+  complexRedirect = redirectUrl(hostInfo.HTTP_ORIGIN,
+    hostInfo.HTTP_REMOTE_ORIGIN, mixedRedirect);
+  var eatBody = response => response.arrayBuffer();
+  return fetch(directUrl)
+    .then(eatBody)
+    .then(() => fetch(sameOriginRedirect))
+    .then(eatBody)
+    .then(() => fetch(crossOriginRedirect))
+    .then(eatBody)
+    .then(() => fetch(mixedRedirect))
+    .then(eatBody)
+    .then(() => fetch(complexRedirect))
+    .then(eatBody)
+    .then(runAsyncTasks)
+    .then(checkResourceSizes);
 }, 'PerformanceResourceTiming sizes Fetch with redirect test');
 
 done();
