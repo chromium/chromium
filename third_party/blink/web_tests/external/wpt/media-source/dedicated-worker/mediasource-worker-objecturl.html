@@ -10,7 +10,7 @@ async_test(t => {
   assert_true(MediaSource.hasOwnProperty("canConstructInDedicatedWorker"), "MediaSource hasOwnProperty 'canConstructInDedicatedWorker'");
   assert_true(MediaSource.canConstructInDedicatedWorker, "MediaSource.canConstructInDedicatedWorker");
 
-  let worker = new Worker("mediasource-worker-util.js");
+  let worker = new Worker("mediasource-worker-play.js");
   worker.onmessage = t.step_func(e => {
     if (e.data.substr(0,6) == "Error:") {
       assert_unreached("Worker error: " + e.data);
@@ -18,6 +18,9 @@ async_test(t => {
       const url = e.data;
       assert_true(url.match(/^blob:.+/) != null);
       URL.revokeObjectURL(url);
+      // TODO(crbug.com/1196040): Revoking MediaSource objectURLs on thread
+      // that didn't create them is at best a no-op. This test case is possibly
+      // obsolete.
       t.done();
     }
   });

@@ -22,7 +22,7 @@ function startWorkerAndTerminateWorker(test, when_to_start_timeouts, timeouts_to
   assert_true(MediaSource.hasOwnProperty("canConstructInDedicatedWorker"), "MediaSource hasOwnProperty 'canConstructInDedicatedWorker'");
   assert_true(MediaSource.canConstructInDedicatedWorker, "MediaSource.canConstructInDedicatedWorker");
 
-  const worker = new Worker("mediasource-worker-util.js");
+  const worker = new Worker("mediasource-worker-play-terminate-worker.js");
   worker.onerror = test.unreached_func("worker error");
 
   const video = document.createElement("video");
