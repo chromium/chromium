@@ -1713,7 +1713,7 @@ void ScaleOp::Raster(const ScaleOp* op,
 void SetMatrixOp::Raster(const SetMatrixOp* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
-  canvas->setMatrix(op->matrix * params.original_ctm);
+  canvas->setMatrix(params.original_ctm * op->matrix);
 }
 
 void SetNodeIdOp::Raster(const SetNodeIdOp* op,
