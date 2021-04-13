@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/win/scoped_winrt_initializer.h"
+#include "base/win/core_winrt_util.h"
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -80,15 +80,17 @@ class TestingLocationProviderWinrt : public LocationProviderWinrt {
 };
 
 class LocationProviderWinrtTest : public testing::Test {
+ public:
+  static void SetUpTestSuite() {
+    base::win::RoInitialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED);
+  }
+
  protected:
   LocationProviderWinrtTest()
       : observer_(
             std::make_unique<MockLocationObserver>(run_loop_.QuitClosure())),
         callback_(base::BindRepeating(&MockLocationObserver::OnLocationUpdate,
-                                      base::Unretained(observer_.get()))) {
-    if (!winrt_initializer_.Succeeded())
-      ADD_FAILURE() << "WinRT initialization failed.";
-  }
+                                      base::Unretained(observer_.get()))) {}
 
   void InitializeProvider(
       PositionStatus position_status = PositionStatus::PositionStatus_Ready) {
@@ -108,7 +110,6 @@ class LocationProviderWinrtTest : public testing::Test {
     provider_->SetUpdateCallback(callback_);
   }
 
-  base::win::ScopedWinrtInitializer winrt_initializer_;
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   const std::unique_ptr<MockLocationObserver> observer_;
