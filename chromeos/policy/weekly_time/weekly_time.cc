@@ -21,17 +21,6 @@ constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
 constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
 constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
 
-WeeklyTime GetWeeklyTimeFromExploded(
-    const base::Time::Exploded& exploded,
-    const base::Optional<int> timezone_offset) {
-  int day_of_week = exploded.day_of_week == 0 ? 7 : exploded.day_of_week;
-  int milliseconds = exploded.hour * kHour.InMilliseconds() +
-                     exploded.minute * kMinute.InMilliseconds() +
-                     exploded.second * kSecond.InMilliseconds() +
-                     exploded.millisecond;
-  return WeeklyTime(day_of_week, milliseconds, timezone_offset);
-}
-
 }  // namespace
 
 // static
@@ -111,18 +100,28 @@ WeeklyTime WeeklyTime::ConvertToCustomTimezone(int timezone_offset) const {
 }
 
 // static
-WeeklyTime WeeklyTime::GetCurrentGmtWeeklyTime(base::Clock* clock) {
+WeeklyTime WeeklyTime::GetGmtWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
-  clock->Now().UTCExplode(&exploded);
+  time.UTCExplode(&exploded);
   return GetWeeklyTimeFromExploded(exploded, 0);
 }
 
 // static
-WeeklyTime WeeklyTime::GetCurrentLocalWeeklyTime(base::Clock* clock) {
+WeeklyTime WeeklyTime::GetCurrentGmtWeeklyTime(base::Clock* clock) {
+  return GetGmtWeeklyTime(clock->Now());
+}
+
+// static
+WeeklyTime WeeklyTime::GetLocalWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
-  clock->Now().LocalExplode(&exploded);
+  time.LocalExplode(&exploded);
   WeeklyTime result = GetWeeklyTimeFromExploded(exploded, base::nullopt);
   return result;
+}
+
+// static
+WeeklyTime WeeklyTime::GetCurrentLocalWeeklyTime(base::Clock* clock) {
+  return GetLocalWeeklyTime(clock->Now());
 }
 
 // static
@@ -184,6 +183,17 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromValue(
   }
   return std::make_unique<WeeklyTime>(day_of_week_value, time_of_day.value(),
                                       timezone_offset);
+}
+
+WeeklyTime GetWeeklyTimeFromExploded(
+    const base::Time::Exploded& exploded,
+    const base::Optional<int> timezone_offset) {
+  int day_of_week = exploded.day_of_week == 0 ? 7 : exploded.day_of_week;
+  int milliseconds = exploded.hour * kHour.InMilliseconds() +
+                     exploded.minute * kMinute.InMilliseconds() +
+                     exploded.second * kSecond.InMilliseconds() +
+                     exploded.millisecond;
+  return WeeklyTime(day_of_week, milliseconds, timezone_offset);
 }
 
 }  // namespace policy
