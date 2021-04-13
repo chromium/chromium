@@ -108,4 +108,47 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
                         expected_container);
 }
 
+TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      :root {
+        scroll-snap-type: y mandatory;
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+      div {
+        width: 100%;
+        height: 100vh;
+        scroll-snap-align: start;
+      }
+    </style>
+    <div>A</div><div>B</div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* container = GetDocument().documentElement();
+  auto info = BuildSnapContainerInfo(container);
+  EXPECT_TRUE(info);
+
+  EXPECT_EQ(2u, info->getArray("snapAreas")->size());
+  protocol::ErrorSupport errors;
+  std::string expected_container = R"JSON(
+    {
+      "paddingBox": [ "M", 0, 0, "L", 800, 0, "L", 800, 600, "L", 0, 600, "Z" ],
+      "snapAreas": [ {
+          "alignBlock": "start",
+          "borderBox": [ "M", 8, 0, "L", 792, 0, "L", 792, 600, "L", 8, 600, "Z" ],
+          "path": [ "M", 8, 0, "L", 792, 0, "L", 792, 600, "L", 8, 600, "Z" ]
+      }, {
+          "alignBlock": "start",
+          "borderBox": [ "M", 8, 600, "L", 792, 600, "L", 792, 1200, "L", 8, 1200, "Z" ],
+          "path": [ "M", 8, 600, "L", 792, 600, "L", 792, 1200, "L", 8, 1200, "Z" ]
+      } ],
+      "snapport": [ "M", 0, 0, "L", 800, 0, "L", 800, 600, "L", 0, 600, "Z" ]
+    }
+  )JSON";
+  AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(
+                            info.get(), &errors),
+                        expected_container);
+}
+
 }  // namespace blink

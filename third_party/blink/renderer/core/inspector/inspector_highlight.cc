@@ -2026,13 +2026,13 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
   if (!node)
     return nullptr;
 
-  LayoutBox* layout_box = node->GetLayoutBox();
+  // If scroll snapping is enabled for the document element, we should use
+  // document's layout box for reading snap areas.
+  LayoutBox* layout_box = node == node->GetDocument().documentElement()
+                              ? node->GetDocument().GetLayoutBoxForScrolling()
+                              : node->GetLayoutBox();
 
   if (!layout_box)
-    return nullptr;
-
-  auto* snap_areas = layout_box->SnapAreas();
-  if (!snap_areas)
     return nullptr;
 
   LocalFrameView* containing_view = node->GetDocument().View();
@@ -2049,6 +2049,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
   auto scroll_position = scrollable_area->ScrollPosition();
   auto* container_data = scrollable_area->GetSnapContainerData();
 
+  if (!container_data)
+    return nullptr;
+
   FloatQuad snapport_quad =
       layout_box->LocalToAbsoluteQuad(ToFloatQuad(container_data->rect()));
   scroll_snap_info->setValue("snapport",
@@ -2062,7 +2065,6 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
   auto snap_type = container_data->scroll_snap_type();
   std::unique_ptr<protocol::ListValue> result_areas =
       protocol::ListValue::create();
-  DCHECK_EQ(snap_areas->size(), container_data->size());
   std::vector<cc::SnapAreaData> snap_area_items;
   snap_area_items.reserve(container_data->size());
   for (size_t i = 0; i < container_data->size(); i++) {
