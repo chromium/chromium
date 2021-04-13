@@ -39,6 +39,13 @@ using ui::AtkRoleToString;
 using ui::ATSPIStateToString;
 using ui::FindAccessible;
 
+// Used in dictionary to disambiguate property vs object attribute when they
+// have the same name, e.g. "description".
+// In the final output, they will show up differently:
+// description='xxx' (property)
+// description:xxx (object attribute)
+static constexpr char kObjectAttributePrefix[] = "@";
+
 AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() = default;
 
 AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
@@ -491,7 +498,8 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
   AtkAttributeSet* attributes = atk_object_get_attributes(atk_object);
   for (AtkAttributeSet* attr = attributes; attr; attr = attr->next) {
     AtkAttribute* attribute = static_cast<AtkAttribute*>(attr->data);
-    dict->SetString(attribute->name, attribute->value);
+    dict->SetString(std::string(kObjectAttributePrefix) + attribute->name,
+                    attribute->value);
   }
   atk_attribute_set_free(attributes);
 
@@ -568,6 +576,8 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "container-live",
     "container-relevant",
     "current",
+    "description",
+    "description-from",
     "details-roles",
     "display",
     "dropeffect",
@@ -668,7 +678,10 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
 
   for (const char* attribute_name : ATK_OBJECT_ATTRIBUTES) {
     std::string attribute_value;
-    if (node.GetString(attribute_name, &attribute_value)) {
+    // ATK object attributes are stored with a prefix, in order to disambiguate
+    // from other properties with the same name (e.g. description).
+    if (node.GetString(std::string(kObjectAttributePrefix) + attribute_name,
+                       &attribute_value)) {
       WriteAttribute(
           false,
           base::StringPrintf("%s:%s", attribute_name, attribute_value.c_str()),

@@ -1,12 +1,21 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle collapsed name='details tag'
-++++++++++++listMarker ignored
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer ignored htmlTag='body'
+++++++details htmlTag='details'
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++disclosureTriangle collapsed htmlTag='summary' name='details tag'
+++++++++++++listMarker ignored htmlTag='::marker'
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
-++++++++genericContainer ignored invisible
-++++++++++paragraph ignored invisible
+++++++++genericContainer ignored invisible htmlTag='slot'
+++++++++++paragraph ignored invisible htmlTag='p'
+++++++details htmlTag='details'
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++disclosureTriangle collapsed description='details #2' htmlTag='summary' name='name' descriptionFrom=summary
+++++++++++++listMarker ignored htmlTag='::marker'
+++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++staticText name='details #2'
+++++++++++++++inlineTextBox name='details #2'
+++++++++genericContainer ignored invisible htmlTag='slot'
+++++++++++paragraph ignored invisible htmlTag='p'

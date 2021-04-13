@@ -15,4 +15,4 @@
 ++++[entry] name='Email' single-line labelled-by
 ++++[entry] name='l5' multi-line
 ++++[entry] name='l6' multi-line
-++++[entry] name='Name' description='Description' single-line
+++++[entry] name='Name' description='Description' single-line description-from:tooltip

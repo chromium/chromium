@@ -1,3 +1,5 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
 ++++android.view.View role_description='disclosure triangle' clickable collapsed focusable name='details tag'
+++android.view.View
+++++android.view.View role_description='disclosure triangle' clickable collapsed focusable name='name' hint='details #2'

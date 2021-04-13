@@ -5089,7 +5089,7 @@ String AXNodeObject::Description(
   const AtomicString& aria_desc =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kDescription);
   if (!aria_desc.IsNull()) {
-    description_from = ax::mojom::blink::DescriptionFrom::kAttribute;
+    description_from = ax::mojom::blink::DescriptionFrom::kAriaDescription;
     description = aria_desc;
     if (description_sources) {
       found_description = true;
@@ -5101,10 +5101,10 @@ String AXNodeObject::Description(
 
   const auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
 
-  // value, 5.2.2 from: http://rawgit.com/w3c/aria/master/html-aam/html-aam.html
+  // value, 5.2.2 from: https://www.w3.org/TR/html-aam-1.0/
   if (name_from != ax::mojom::blink::NameFrom::kValue && input_element &&
       input_element->IsTextButton()) {
-    description_from = ax::mojom::blink::DescriptionFrom::kAttribute;
+    description_from = ax::mojom::blink::DescriptionFrom::kButtonLabel;
     if (description_sources) {
       description_sources->push_back(
           DescriptionSource(found_description, kValueAttr));
@@ -5124,7 +5124,7 @@ String AXNodeObject::Description(
   }
 
   if (RoleValue() == ax::mojom::blink::Role::kRuby) {
-    description_from = ax::mojom::blink::DescriptionFrom::kRelatedElement;
+    description_from = ax::mojom::blink::DescriptionFrom::kRubyAnnotation;
     if (description_sources) {
       description_sources->push_back(DescriptionSource(found_description));
       description_sources->back().type = description_from;
@@ -5160,11 +5160,10 @@ String AXNodeObject::Description(
     }
   }
 
-  // table caption, 5.9.2 from:
-  // http://rawgit.com/w3c/aria/master/html-aam/html-aam.html
+  // table caption, 5.9.2 from: https://www.w3.org/TR/html-aam-1.0/
   auto* table_element = DynamicTo<HTMLTableElement>(element);
   if (name_from != ax::mojom::blink::NameFrom::kCaption && table_element) {
-    description_from = ax::mojom::blink::DescriptionFrom::kRelatedElement;
+    description_from = ax::mojom::blink::DescriptionFrom::kTableCaption;
     if (description_sources) {
       description_sources->push_back(DescriptionSource(found_description));
       description_sources->back().type = description_from;
@@ -5196,11 +5195,10 @@ String AXNodeObject::Description(
     }
   }
 
-  // summary, 5.6.2 from:
-  // http://rawgit.com/w3c/aria/master/html-aam/html-aam.html
+  // summary, 5.8.2 from: https://www.w3.org/TR/html-aam-1.0/
   if (name_from != ax::mojom::blink::NameFrom::kContents &&
       IsA<HTMLSummaryElement>(GetNode())) {
-    description_from = ax::mojom::blink::DescriptionFrom::kContents;
+    description_from = ax::mojom::blink::DescriptionFrom::kSummary;
     if (description_sources) {
       description_sources->push_back(DescriptionSource(found_description));
       description_sources->back().type = description_from;
@@ -5219,8 +5217,7 @@ String AXNodeObject::Description(
     }
   }
 
-  // title attribute, from:
-  // http://rawgit.com/w3c/aria/master/html-aam/html-aam.html
+  // title attribute, from: https://www.w3.org/TR/html-aam-1.0/
   if (name_from != ax::mojom::blink::NameFrom::kTitle) {
     description_from = ax::mojom::blink::DescriptionFrom::kTitle;
     if (description_sources) {
@@ -5240,9 +5237,14 @@ String AXNodeObject::Description(
     }
   }
 
-  description_from = ax::mojom::blink::DescriptionFrom::kUninitialized;
+  description_from = ax::mojom::blink::DescriptionFrom::kNone;
 
   if (found_description) {
+    DCHECK(description_sources)
+        << "Should only reach here if description_sources are tracked";
+    // Use the first non-null description.
+    // TODO(accessibility) Why do we need to check superceded if that will
+    // always be the first one?
     for (DescriptionSource& description_source : *description_sources) {
       if (!description_source.text.IsNull() && !description_source.superseded) {
         description_from = description_source.type;
