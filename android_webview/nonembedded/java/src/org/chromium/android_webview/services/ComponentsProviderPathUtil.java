@@ -17,6 +17,7 @@ import java.util.Arrays;
 @JNINamespace("android_webview")
 public class ComponentsProviderPathUtil {
     private static final String COMPONENTS_DIRECTORY_PATH = "components/cps";
+    private static final String COMPONENT_UPDATE_SERVICE_DIRECTORY_PATH = "components/cus";
 
     /**
      * @return The absolute path to the serving directory that {@link ComponentsProviderService}
@@ -25,6 +26,14 @@ public class ComponentsProviderPathUtil {
     @CalledByNative
     public static String getComponentsServingDirectoryPath() {
         return new File(PathUtils.getDataDirectory(), COMPONENTS_DIRECTORY_PATH).getAbsolutePath();
+    }
+
+    /**
+     * @return The absolute path to the directory where the update service stores components.
+     */
+    public static String getComponentUpdateServiceDirectoryPath() {
+        return new File(PathUtils.getDataDirectory(), COMPONENT_UPDATE_SERVICE_DIRECTORY_PATH)
+                .getAbsolutePath();
     }
 
     /**

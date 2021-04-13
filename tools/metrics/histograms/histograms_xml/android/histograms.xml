@@ -2540,6 +2540,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records ClearProxyOverride calls.</summary>
 </histogram>
 
+<histogram name="Android.WebView.ComponentUpdater.CPSDirectorySize" units="KB"
+    expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Size on disk taken by the ComponentsProviderService serving directory. This
+    is logged once per run of the update job in AwComponentUpdateService.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ComponentUpdater.CUSDirectorySize" units="KB"
+    expires_after="2021-10-08">
+  <owner>laisminchillo@chromium.org</owner>
+  <owner>nator@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Size on disk taken by the AwComponentUpdateService directory. This is logged
+    once per update job in AwComponentUpdateService.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ComponentUpdater.GetFilesDuration" units="ms"
     expires_after="2021-10-08">
   <owner>laisminchillo@chromium.org</owner>

@@ -88,6 +88,28 @@ public class FileUtils {
     }
 
     /**
+     * Get file size. If it is a directory, recursively get the size of all files within it.
+     * @param file The file or directory.
+     * @return The size in bytes.
+     */
+    public static long getFileSizeBytes(File file) {
+        if (file == null) return 0L;
+        if (file.isDirectory()) {
+            long size = 0L;
+            final File[] files = file.listFiles();
+            if (files == null) {
+                return size;
+            }
+            for (File f : files) {
+                size += getFileSizeBytes(f);
+            }
+            return size;
+        } else {
+            return file.length();
+        }
+    }
+
+    /**
      * Extracts an asset from the app's APK to a file.
      * @param context
      * @param assetName Name of the asset to extract.

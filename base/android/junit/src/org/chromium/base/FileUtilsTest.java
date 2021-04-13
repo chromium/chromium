@@ -274,6 +274,29 @@ public class FileUtilsTest {
     }
 
     @Test
+    public void testGetFileSize() throws IOException {
+        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+            byte[] fileBytes;
+            long size;
+            try {
+                File tempFile = temporaryFolder.newFile();
+                FileUtils.copyStreamToFile(inputStream, tempFile);
+                size = FileUtils.getFileSizeBytes(tempFile);
+            } catch (IOException e) {
+                return false;
+            }
+            return inputBytes.length == size;
+        };
+
+        assertTrue(runCase.apply(new byte[] {}));
+        assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
+        assertTrue(runCase.apply("To be or not to be".getBytes()));
+        assertTrue(runCase.apply(createBigByteArray(131072))); // 1 << 17.
+        assertTrue(runCase.apply(createBigByteArray(119993))); // Prime.
+    }
+
+    @Test
     public void testExtractAsset() throws IOException {
         AssetManager assetManager = mContext.getAssets();
 
