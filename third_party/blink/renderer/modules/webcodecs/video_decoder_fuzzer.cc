@@ -73,11 +73,17 @@ DEFINE_TEXT_PROTO_FUZZER(
     if (video_decoder) {
       for (auto& invocation : proto.invocations()) {
         switch (invocation.Api_case()) {
-          case wc_fuzzer::VideoDecoderApiInvocation::kConfigure:
-            video_decoder->configure(
-                MakeVideoDecoderConfig(invocation.configure()),
-                IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::VideoDecoderApiInvocation::kConfigure: {
+            VideoDecoderConfig* config =
+                MakeVideoDecoderConfig(invocation.configure());
+
+            // Use the same config to fuzz isConfigSupported().
+            VideoDecoder::isConfigSupported(script_state, config,
+                                            IGNORE_EXCEPTION_FOR_TESTING);
+
+            video_decoder->configure(config, IGNORE_EXCEPTION_FOR_TESTING);
             break;
+          }
           case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
             video_decoder->decode(
                 MakeEncodedVideoChunk(invocation.decode().chunk()),

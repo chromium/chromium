@@ -73,11 +73,17 @@ DEFINE_TEXT_PROTO_FUZZER(
     if (audio_decoder) {
       for (auto& invocation : proto.invocations()) {
         switch (invocation.Api_case()) {
-          case wc_fuzzer::AudioDecoderApiInvocation::kConfigure:
-            audio_decoder->configure(
-                MakeAudioDecoderConfig(invocation.configure()),
-                IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::AudioDecoderApiInvocation::kConfigure: {
+            AudioDecoderConfig* config =
+                MakeAudioDecoderConfig(invocation.configure());
+
+            // Use the same config to fuzz isConfigSupported().
+            AudioDecoder::isConfigSupported(script_state, config,
+                                            IGNORE_EXCEPTION_FOR_TESTING);
+
+            audio_decoder->configure(config, IGNORE_EXCEPTION_FOR_TESTING);
             break;
+          }
           case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
             audio_decoder->decode(
                 MakeEncodedAudioChunk(invocation.decode().chunk()),
