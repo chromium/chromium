@@ -95,7 +95,7 @@ export async function initMetrics() {
   ]);
 
   const GA_LOCAL_STORAGE_KEY = 'google-analytics.analytics.user-id';
-  const gaLocalStorage = await localStorage.get({[GA_LOCAL_STORAGE_KEY]: null});
+  const gaLocalStorage = localStorage.get({[GA_LOCAL_STORAGE_KEY]: null});
   const clientId = gaLocalStorage[GA_LOCAL_STORAGE_KEY];
 
   const setClientId = (id) => {

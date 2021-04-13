@@ -84,14 +84,11 @@ export class ConstraintsPreferrer {
    * @protected
    */
   restoreResolutionPreference_(key) {
-    // TODO(inker): Return promise and await it to assure preferences are loaded
-    // before any access.
-    localStorage.get({[key]: {}}).then((values) => {
-      this.prefResolution_ = new Map();
-      for (const [deviceId, {width, height}] of Object.entries(values[key])) {
-        this.prefResolution_.set(deviceId, new Resolution(width, height));
-      }
-    });
+    const values = localStorage.get({[key]: {}});
+    this.prefResolution_ = new Map();
+    for (const [deviceId, {width, height}] of Object.entries(values[key])) {
+      this.prefResolution_.set(deviceId, new Resolution(width, height));
+    }
   }
 
   /**
@@ -249,8 +246,8 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @private
    */
   restoreFpsPreference_() {
-    localStorage.get({deviceVideoFps: {}})
-        .then((values) => this.prefFpses_ = values['deviceVideoFps']);
+    const values = localStorage.get({deviceVideoFps: {}});
+    this.prefFpses_ = values['deviceVideoFps'];
   }
 
   /**

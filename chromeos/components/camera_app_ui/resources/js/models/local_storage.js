@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 /**
+ * TODO(b/185181901): Simplify the interface.
  * @param {(string|!Array<string>|!Object)} keys
- * @return {!Promise<!Object>}
+ * @return {!Object}
  */
-export async function get(keys) {
+export function get(keys) {
   let result = {};
   let sanitizedKeys = [];
   if (typeof keys === 'string') {
@@ -38,9 +39,8 @@ export async function get(keys) {
 
 /**
  * @param {!Object<string>} items
- * @return {!Promise}
  */
-export async function set(items) {
+export function set(items) {
   for (const [key, val] of Object.entries(items)) {
     window.localStorage.setItem(key, JSON.stringify(val));
   }
@@ -48,9 +48,8 @@ export async function set(items) {
 
 /**
  * @param {(string|!Array<string>)} items
- * @return {!Promise}
  */
-export async function remove(items) {
+export function remove(items) {
   if (typeof items === 'string') {
     items = [items];
   }
@@ -60,8 +59,8 @@ export async function remove(items) {
 }
 
 /**
- * @return {!Promise}
+ * Clears all the items in the local storage.
  */
-export async function clear() {
+export function clear() {
   window.localStorage.clear();
 }
