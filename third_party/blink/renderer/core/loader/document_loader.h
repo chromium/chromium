@@ -608,6 +608,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Whether this load request is cross browsing context group.
   bool is_cross_browsing_context_group_navigation_ = false;
+
+  WebVector<WebHistoryItem> app_history_back_entries_;
+  WebVector<WebHistoryItem> app_history_forward_entries_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

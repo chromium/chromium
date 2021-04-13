@@ -3,13 +3,10 @@ Tests access of cached DOMWindow properties after the associated frame is remove
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS window.cached_appHistory.current is null
 PASS window.cached_appHistory.onnavigate is null
 PASS window.cached_appHistory.onnavigateerror is null
 PASS window.cached_appHistory.onnavigatesuccess is null
-PASS window.cached_appHistory_current.id is ''
-PASS window.cached_appHistory_current.key is ''
-PASS window.cached_appHistory_current.sameDocument is false
-PASS window.cached_appHistory_current.url is ''
 PASS window.cached_cookieStore.onchange is null
 FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).

@@ -29,6 +29,8 @@ class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
   KURL url();
   bool sameDocument() const;
 
+  HistoryItem* GetItem() { return item_; }
+
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
