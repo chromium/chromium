@@ -291,6 +291,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021/04/09. crbug.com/1052935
+  </obsolete>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -303,6 +306,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Characteristic.StartNotifications.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021/04/09. crbug.com/1160798
+  </obsolete>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -315,6 +321,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Web.Characteristic.WriteValue.Outcome"
     enum="WebBluetoothGATTOperationOutcome" expires_after="2021-01-31">
+  <obsolete>
+    Removed 2021/04/09. crbug.com/1052936
+  </obsolete>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
