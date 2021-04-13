@@ -9,10 +9,7 @@ component("types") {
     "drag_drop_types.h",
   ]
   defines = [ "IS_UI_BASE_DRAGDROP_TYPES_IMPL" ]
-  public_deps = [
-    "//base",
-    "//ui/base/dragdrop/mojom:mojom_headers",
-  ]
+  public_deps = [ "//base" ]
   deps = [ "//ui/base/dragdrop/mojom" ]
 
   if (is_mac) {

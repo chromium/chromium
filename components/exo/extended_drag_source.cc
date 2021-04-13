@@ -33,8 +33,6 @@
 
 namespace exo {
 
-using ::ui::mojom::DragOperation;
-
 // static
 ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 
@@ -179,11 +177,11 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
     StartDrag(dragged_window_holder_->toplevel_window(), start_location);
 }
 
-DragOperation ExtendedDragSource::OnToplevelWindowDragDropped() {
+int ExtendedDragSource::OnToplevelWindowDragDropped() {
   DVLOG(1) << "OnDragDropped()";
   Cleanup();
-  return delegate_->ShouldAllowDropAnywhere() ? DragOperation::kMove
-                                              : DragOperation::kNone;
+  return delegate_->ShouldAllowDropAnywhere() ? ui::DragDropTypes::DRAG_MOVE
+                                              : ui::DragDropTypes::DRAG_NONE;
 }
 
 void ExtendedDragSource::OnToplevelWindowDragCancelled() {

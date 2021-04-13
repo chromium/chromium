@@ -76,7 +76,7 @@ class ExtendedDragSource : public DataSourceObserver,
   // ash::ToplevelWindowDragDelegate:
   void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
                                    ui::mojom::DragEventSource source) override;
-  ui::mojom::DragOperation OnToplevelWindowDragDropped() override;
+  int OnToplevelWindowDragDropped() override;
   void OnToplevelWindowDragCancelled() override;
   void OnToplevelWindowDragEvent(ui::LocatedEvent* event) override;
 

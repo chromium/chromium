@@ -2582,7 +2582,6 @@ test("content_unittests") {
       "//ui/aura:test_support",
       "//ui/aura_extra",
       "//ui/base/dragdrop:types",
-      "//ui/base/dragdrop/mojom",
       "//ui/wm",
     ]
   } else {

@@ -30,7 +30,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
@@ -41,10 +40,8 @@
 #endif
 
 namespace content {
+
 namespace {
-
-using ::ui::mojom::DragOperation;
-
 constexpr gfx::Rect kBounds = gfx::Rect(0, 0, 20, 20);
 constexpr gfx::PointF kClientPt = {5, 10};
 
@@ -76,15 +73,15 @@ class RunCallbackOnActivation : public WebContentsDelegate {
 class TestDragDropClient : public aura::client::DragDropClient {
  public:
   // aura::client::DragDropClient:
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 aura::Window* root_window,
-                                 aura::Window* source_window,
-                                 const gfx::Point& screen_location,
-                                 int allowed_operations,
-                                 ui::mojom::DragEventSource source) override {
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override {
     drag_in_progress_ = true;
     drag_drop_data_ = std::move(data);
-    return DragOperation::kCopy;
+    return 1;
   }
   void DragCancel() override { drag_in_progress_ = false; }
   bool IsDragDropInProgress() override { return drag_in_progress_; }

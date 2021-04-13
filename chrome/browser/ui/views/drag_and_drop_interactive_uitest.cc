@@ -54,16 +54,14 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace chrome {
-namespace {
 
-using ::ui::mojom::DragOperation;
+namespace {
 
 // TODO(lukasza): Support testing on non-Aura platforms (i.e. Android + Mac?).
 //
@@ -275,12 +273,12 @@ class DragStartWaiter : public aura::client::DragDropClient {
   }
 
   // aura::client::DragDropClient overrides:
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 aura::Window* root_window,
-                                 aura::Window* source_window,
-                                 const gfx::Point& screen_location,
-                                 int allowed_operations,
-                                 ui::mojom::DragEventSource source) override {
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override {
     DCHECK(!drag_started_);
     if (!drag_started_) {
       drag_started_ = true;
@@ -304,7 +302,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
       location_inside_web_contents_ =
           screen_location - gfx::Vector2d(bounds.x(), bounds.y());
 
-      operation_ = allowed_operations;
+      operation_ = operation;
     }
 
     if (!callback_to_run_inside_drag_and_drop_message_loop_.is_null()) {
@@ -315,12 +313,12 @@ class DragStartWaiter : public aura::client::DragDropClient {
     }
 
     if (suppress_passing_of_start_drag_further_)
-      return DragOperation::kNone;
+      return 0;
 
     // Start a nested drag-and-drop loop (might not return for a long time).
     return old_client_->StartDragAndDrop(std::move(data), root_window,
                                          source_window, screen_location,
-                                         allowed_operations, source);
+                                         operation, source);
   }
 
   void DragCancel() override {

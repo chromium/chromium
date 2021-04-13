@@ -69,9 +69,8 @@
 
 namespace views {
 namespace test {
-namespace {
 
-using ::ui::mojom::DragOperation;
+namespace {
 
 bool ShouldIgnoreScreenBoundsForMenus() {
 #if defined(USE_OZONE)
@@ -206,12 +205,12 @@ class TestDragDropClient : public aura::client::DragDropClient {
   ~TestDragDropClient() override = default;
 
   // aura::client::DragDropClient:
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 aura::Window* root_window,
-                                 aura::Window* source_window,
-                                 const gfx::Point& screen_location,
-                                 int allowed_operations,
-                                 ui::mojom::DragEventSource source) override;
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
 
@@ -226,16 +225,16 @@ class TestDragDropClient : public aura::client::DragDropClient {
   DISALLOW_COPY_AND_ASSIGN(TestDragDropClient);
 };
 
-DragOperation TestDragDropClient::StartDragAndDrop(
+int TestDragDropClient::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int allowed_operations,
+    int operation,
     ui::mojom::DragEventSource source) {
   drag_in_progress_ = true;
   start_drag_and_drop_callback_.Run();
-  return DragOperation::kNone;
+  return 0;
 }
 
 void TestDragDropClient::DragCancel() {

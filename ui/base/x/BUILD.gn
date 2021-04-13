@@ -106,11 +106,7 @@ component("x") {
       "x11_os_exchange_data_provider.cc",
       "x11_os_exchange_data_provider.h",
     ]
-    public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
-    deps += [
-      "//ui/base/dragdrop:types",
-      "//ui/base/dragdrop/mojom",
-    ]
+    public_deps += [ "//ui/base/dragdrop:types" ]
   }
 }
 

@@ -30,10 +30,9 @@
 #include "ui/events/event_handler.h"
 #endif
 
-namespace views {
+using base::ASCIIToUTF16;
 
-using ::base::ASCIIToUTF16;
-using ::ui::mojom::DragOperation;
+namespace views {
 
 class TestMenuButton : public MenuButton {
  public:
@@ -190,12 +189,12 @@ class TestDragDropClient : public aura::client::DragDropClient,
   ~TestDragDropClient() override;
 
   // aura::client::DragDropClient:
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 aura::Window* root_window,
-                                 aura::Window* source_window,
-                                 const gfx::Point& screen_location,
-                                 int allowed_operations,
-                                 ui::mojom::DragEventSource source) override;
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override {}
@@ -217,18 +216,18 @@ TestDragDropClient::TestDragDropClient() = default;
 
 TestDragDropClient::~TestDragDropClient() = default;
 
-DragOperation TestDragDropClient::StartDragAndDrop(
+int TestDragDropClient::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int allowed_operations,
+    int operation,
     ui::mojom::DragEventSource source) {
   if (IsDragDropInProgress())
-    return DragOperation::kNone;
+    return ui::DragDropTypes::DRAG_NONE;
   drag_in_progress_ = true;
   target_ = root_window;
-  return ui::PreferredDragOperation(allowed_operations);
+  return operation;
 }
 
 void TestDragDropClient::DragCancel() {

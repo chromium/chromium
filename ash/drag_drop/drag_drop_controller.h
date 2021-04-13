@@ -60,13 +60,12 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   }
 
   // Overridden from aura::client::DragDropClient:
-  ui::mojom::DragOperation StartDragAndDrop(
-      std::unique_ptr<ui::OSExchangeData> data,
-      aura::Window* root_window,
-      aura::Window* source_window,
-      const gfx::Point& screen_location,
-      int allowed_operations,
-      ui::mojom::DragEventSource source) override;
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
@@ -125,8 +124,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   views::UniqueWidgetPtr drag_image_widget_;
   gfx::Vector2d drag_image_offset_;
   std::unique_ptr<ui::OSExchangeData> drag_data_;
-  int allowed_operations_ = 0;
-  ui::mojom::DragOperation operation_ = ui::mojom::DragOperation::kNone;
+  int drag_operation_ = 0;
   aura::client::DragUpdateInfo current_drag_info_;
 
   // Used when processing a Chrome tab drag from a WebUI tab strip.

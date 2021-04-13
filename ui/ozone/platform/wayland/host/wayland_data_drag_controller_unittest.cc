@@ -16,7 +16,6 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
@@ -41,12 +40,12 @@
 #include "ui/platform_window/wm/wm_drop_handler.h"
 #include "url/gurl.h"
 
-namespace ui {
-namespace {
+using testing::_;
+using testing::Mock;
 
-using mojom::DragOperation;
-using ::testing::_;
-using ::testing::Mock;
+namespace ui {
+
+namespace {
 
 constexpr char kSampleTextForDragAndDrop[] =
     "This is a sample text for drag-and-drop.";
@@ -70,8 +69,9 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
 class MockDragHandlerDelegate : public WmDragHandler::Delegate {
  public:
   MOCK_METHOD1(OnDragLocationChanged, void(const gfx::Point& location));
-  MOCK_METHOD1(OnDragOperationChanged, void(DragOperation operation));
-  MOCK_METHOD1(OnDragFinished, void(DragOperation operation));
+  MOCK_METHOD1(OnDragOperationChanged,
+               void(DragDropTypes::DragOperation operation));
+  MOCK_METHOD1(OnDragFinished, void(int operation));
 };
 
 class MockDropHandler : public WmDropHandler {
@@ -206,9 +206,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
           // If DnD was cancelled, or data was dropped where it was not
           // accepted, the operation result must be None (0).
           // Regression test for https://crbug.com/1136751.
-          EXPECT_CALL(*self->drag_handler(),
-                      OnDragFinished(DragOperation::kNone))
-              .Times(1);
+          EXPECT_CALL(*self->drag_handler(), OnDragFinished(0)).Times(1);
 
           self->Sync();
         },

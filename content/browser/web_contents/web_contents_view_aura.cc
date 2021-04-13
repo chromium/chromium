@@ -102,8 +102,6 @@ WebContentsView* CreateWebContentsView(
 
 namespace {
 
-using ::ui::mojom::DragOperation;
-
 WebContentsViewAura::RenderWidgetHostViewCreateFunction
     g_create_render_widget_host_view = nullptr;
 
@@ -373,6 +371,15 @@ blink::DragOperationsMask ConvertToDragOperationsMask(int drag_op) {
   if (drag_op & ui::DragDropTypes::DRAG_LINK)
     web_drag_op |= blink::kDragOperationLink;
   return static_cast<blink::DragOperationsMask>(web_drag_op);
+}
+
+ui::mojom::DragOperation ConvertToDragOperation(int drag_ops) {
+  int op_mask = ConvertToDragOperationsMask(drag_ops);
+  DCHECK(op_mask == blink::kDragOperationNone ||
+         op_mask == blink::kDragOperationCopy ||
+         op_mask == blink::kDragOperationLink ||
+         op_mask == blink::kDragOperationMove);
+  return static_cast<ui::mojom::DragOperation>(op_mask);
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
@@ -683,7 +690,7 @@ WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
                                          WebContentsViewDelegate* delegate)
     : web_contents_(web_contents),
       delegate_(delegate),
-      current_drag_op_(DragOperation::kNone),
+      current_drag_op_(ui::mojom::DragOperation::kNone),
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
@@ -713,7 +720,7 @@ WebContentsViewAura::~WebContentsViewAura() {
 
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-    DragOperation op) {
+    ui::mojom::DragOperation op) {
   drag_start_process_id_ = ChildProcessHost::kInvalidUniqueID;
   drag_start_view_id_ = GlobalRoutingID(ChildProcessHost::kInvalidUniqueID,
                                         MSG_ROUTING_NONE);
@@ -1049,7 +1056,7 @@ void WebContentsViewAura::StartDragging(
 
   // We need to enable recursive tasks on the message loop so we can get
   // updates while in the system DoDragDrop loop.
-  DragOperation result_op;
+  int result_op = 0;
   {
     gfx::NativeView content_native_view = GetContentNativeView();
     base::CurrentThread::ScopedNestableTaskAllower allow;
@@ -1075,15 +1082,15 @@ void WebContentsViewAura::StartDragging(
   // callback yet. So we have to make sure to delay calling EndDrag until drop
   // is done.
   if (!drag_in_progress_) {
-    EndDrag(std::move(source_rwh_weak_ptr), result_op);
+    EndDrag(std::move(source_rwh_weak_ptr), ConvertToDragOperation(result_op));
   } else {
     end_drag_runner_.ReplaceClosure(base::BindOnce(
         &WebContentsViewAura::EndDrag, weak_ptr_factory_.GetWeakPtr(),
-        std::move(source_rwh_weak_ptr), result_op));
+        std::move(source_rwh_weak_ptr), ConvertToDragOperation(result_op)));
   }
 }
 
-void WebContentsViewAura::UpdateDragCursor(DragOperation operation) {
+void WebContentsViewAura::UpdateDragCursor(ui::mojom::DragOperation operation) {
   current_drag_op_ = operation;
 }
 
@@ -1505,11 +1512,11 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
   current_drop_data_.reset();
 }
 
-DragOperation WebContentsViewAura::OnPerformDrop(
+ui::mojom::DragOperation WebContentsViewAura::OnPerformDrop(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data) {
   if (web_contents_->ShouldIgnoreInputEvents())
-    return DragOperation::kNone;
+    return ui::mojom::DragOperation::kNone;
 
   web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(

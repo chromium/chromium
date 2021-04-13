@@ -43,9 +43,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace views {
-namespace {
 
-using ::ui::mojom::DragOperation;
+namespace {
 
 class TestDragDropClient;
 
@@ -120,12 +119,12 @@ class SimpleTestDragDropClient : public aura::client::DragDropClient,
   bool IsMoveLoopRunning();
 
   // aura::client::DragDropClient:
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 aura::Window* root_window,
-                                 aura::Window* source_window,
-                                 const gfx::Point& screen_location,
-                                 int allowed_operations,
-                                 ui::mojom::DragEventSource source) override;
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                       aura::Window* root_window,
+                       aura::Window* source_window,
+                       const gfx::Point& screen_location,
+                       int operation,
+                       ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
@@ -135,11 +134,12 @@ class SimpleTestDragDropClient : public aura::client::DragDropClient,
   // ui::XDragDropClient::Delegate:
   std::unique_ptr<ui::XTopmostWindowFinder> CreateWindowFinder() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
-  void UpdateCursor(DragOperation negotiated_operation) override;
+  void UpdateCursor(
+      ui::DragDropTypes::DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
   void OnEndForeignDrag() override;
   void OnBeforeDragLeave() override;
-  DragOperation PerformDrop() override;
+  int PerformDrop() override;
   void EndDragLoop() override;
 
   // XDragDropClient:
@@ -306,14 +306,14 @@ std::unique_ptr<ui::X11MoveLoop> SimpleTestDragDropClient::CreateMoveLoop(
   return base::WrapUnique(loop_);
 }
 
-DragOperation SimpleTestDragDropClient::StartDragAndDrop(
+int SimpleTestDragDropClient::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int allowed_operations,
+    int operation,
     ui::mojom::DragEventSource source) {
-  InitDrag(allowed_operations, data.get());
+  InitDrag(operation, data.get());
 
   auto loop = CreateMoveLoop(this);
 
@@ -351,12 +351,12 @@ SimpleTestDragDropClient::CreateWindowFinder() {
   return {};
 }
 void SimpleTestDragDropClient::UpdateCursor(
-    DragOperation negotiated_operation) {}
+    ui::DragDropTypes::DragOperation negotiated_operation) {}
 void SimpleTestDragDropClient::OnBeginForeignDrag(x11::Window window) {}
 void SimpleTestDragDropClient::OnEndForeignDrag() {}
 void SimpleTestDragDropClient::OnBeforeDragLeave() {}
-DragOperation SimpleTestDragDropClient::PerformDrop() {
-  return DragOperation::kNone;
+int SimpleTestDragDropClient::PerformDrop() {
+  return 0;
 }
 void SimpleTestDragDropClient::EndDragLoop() {
   // std::move(quit_closure_).Run();
@@ -462,7 +462,7 @@ class X11DragDropClientTest : public ViewsTestBase {
   X11DragDropClientTest() = default;
   ~X11DragDropClientTest() override = default;
 
-  DragOperation StartDragAndDrop() {
+  int StartDragAndDrop() {
     auto data(std::make_unique<ui::OSExchangeData>());
     data->SetString(u"Test");
     SkBitmap drag_bitmap;
@@ -605,15 +605,15 @@ TEST_F(X11DragDropClientTest, Basic) {
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&BasicStep2, client(), toplevel));
-  DragOperation result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kCopy, result);
+  int result = StartDragAndDrop();
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, result);
 
   // Do another drag and drop to test that the data is properly cleaned up as a
   // result of the XdndFinished message.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&BasicStep3, client(), toplevel));
   result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kCopy, result);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, result);
 }
 
 namespace {
@@ -646,8 +646,8 @@ void TargetDoesNotRespondStep2(TestDragDropClient* client) {
 TEST_F(X11DragDropClientTest, TargetDoesNotRespond) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&TargetDoesNotRespondStep2, client()));
-  DragOperation result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kNone, result);
+  int result = StartDragAndDrop();
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
 }
 
 namespace {
@@ -691,8 +691,8 @@ void QueuePositionStep2(TestDragDropClient* client) {
 TEST_F(X11DragDropClientTest, QueuePosition) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&QueuePositionStep2, client()));
-  DragOperation result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kCopy, result);
+  int result = StartDragAndDrop();
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, result);
 }
 
 namespace {
@@ -743,8 +743,8 @@ void TargetChangesStep2(TestDragDropClient* client) {
 TEST_F(X11DragDropClientTest, TargetChanges) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&TargetChangesStep2, client()));
-  DragOperation result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kCopy, result);
+  int result = StartDragAndDrop();
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, result);
 }
 
 namespace {
@@ -812,14 +812,14 @@ void RejectAfterMouseReleaseStep3(TestDragDropClient* client) {
 TEST_F(X11DragDropClientTest, RejectAfterMouseRelease) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&RejectAfterMouseReleaseStep2, client()));
-  DragOperation result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kNone, result);
+  int result = StartDragAndDrop();
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
 
   // Repeat the test but reject the drop in the XdndFinished message instead.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&RejectAfterMouseReleaseStep3, client()));
   result = StartDragAndDrop();
-  EXPECT_EQ(DragOperation::kNone, result);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
 }
 
 }  // namespace views

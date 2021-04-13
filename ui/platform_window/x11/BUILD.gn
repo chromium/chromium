@@ -20,7 +20,6 @@ component("x11") {
     "//ui/base:hit_test",
     "//ui/base:wm_role_names",
     "//ui/base/dragdrop:types",
-    "//ui/base/dragdrop/mojom",
     "//ui/base/x",
     "//ui/events",
     "//ui/events/devices",
