@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -17,6 +18,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class Profile;
+
+namespace content {
+class RenderProcessHost;
+}
 
 namespace task_manager {
 
@@ -84,7 +89,7 @@ class PerProfileWorkerTaskTracker
   void CreateWorkerTask(
       const WorkerId& worker_id,
       Task::Type task_type,
-      int worker_process_id,
+      content::RenderProcessHost* worker_process_host,
       base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks);
 
   // Deletes an existing WorkerTask from |out_worker_tasks| and notifies
@@ -133,6 +138,11 @@ class PerProfileWorkerTaskTracker
 
   base::flat_map<int64_t /*version_id*/, std::unique_ptr<WorkerTask>>
       service_worker_tasks_;
+
+  // Because service worker notifications are asynchronous, it is possible to
+  // be notified of the creation of a service worker after its render process
+  // was deleted. Those workers are ignored.
+  base::flat_set<int64_t /*version_id*/> ignored_service_worker_;
 };
 
 }  // namespace task_manager
