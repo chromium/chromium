@@ -123,8 +123,8 @@ TEST_F(BufferTest, IsLost) {
   buffer->OnDetach();
 
   std::vector<viz::ReturnedResource> resources2;
-  resources.emplace_back(new_resource.id, gpu::SyncToken(),
-                         /*count=*/0, /*lost=*/false);
+  resources2.emplace_back(new_resource.id, gpu::SyncToken(),
+                          /*count=*/0, /*lost=*/false);
   frame_sink_holder->ReclaimResources(std::move(resources2));
   base::RunLoop().RunUntilIdle();
 }
