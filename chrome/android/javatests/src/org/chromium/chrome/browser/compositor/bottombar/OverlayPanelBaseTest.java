@@ -6,29 +6,20 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Tests logic in the OverlayPanelBase.
@@ -42,22 +33,6 @@ public class OverlayPanelBaseTest {
     private static final float MOCK_EXPANDED_HEIGHT = 400.0f;
     private static final float MOCK_MAXIMIZED_HEIGHT = 600.0f;
 
-    private static final int MOCK_TOOLBAR_HEIGHT = 100;
-
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock
-    private LayoutManagerImpl mLayoutManager;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private ViewGroup mCompositorViewHolder;
-    @Mock
-    private Tab mTab;
-
     MockOverlayPanel mNoExpandPanel;
     MockOverlayPanel mExpandPanel;
 
@@ -65,12 +40,8 @@ public class OverlayPanelBaseTest {
      * Mock OverlayPanel.
      */
     private static class MockOverlayPanel extends OverlayPanel {
-        public MockOverlayPanel(Context context, LayoutManagerImpl layoutManager,
-                OverlayPanelManager manager,
-                BrowserControlsStateProvider browserControlsStateProvider,
-                WindowAndroid windowAndroid, ViewGroup compositorViewHolder, Tab tab) {
-            super(context, layoutManager, manager, browserControlsStateProvider, windowAndroid,
-                    compositorViewHolder, MOCK_TOOLBAR_HEIGHT, () -> tab);
+        public MockOverlayPanel(Context context, OverlayPanelManager manager) {
+            super(context, null, manager);
         }
 
         /**
@@ -104,12 +75,9 @@ public class OverlayPanelBaseTest {
      * A MockOverlayPanel that does not support the EXPANDED panel state.
      */
     private static class NoExpandMockOverlayPanel extends MockOverlayPanel {
-        public NoExpandMockOverlayPanel(Context context, LayoutManagerImpl layoutManager,
-                OverlayPanelManager manager,
-                BrowserControlsStateProvider browserControlsStateProvider,
-                WindowAndroid windowAndroid, ViewGroup compositorViewHolder, Tab tab) {
-            super(context, layoutManager, manager, browserControlsStateProvider, windowAndroid,
-                    compositorViewHolder, tab);
+
+        public NoExpandMockOverlayPanel(Context context, OverlayPanelManager manager) {
+            super(context, manager);
         }
 
         @Override
@@ -127,12 +95,10 @@ public class OverlayPanelBaseTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OverlayPanelManager panelManager = new OverlayPanelManager();
-            mExpandPanel = new MockOverlayPanel(InstrumentationRegistry.getTargetContext(),
-                    mLayoutManager, panelManager, mBrowserControlsStateProvider, mWindowAndroid,
-                    mCompositorViewHolder, mTab);
+            mExpandPanel =
+                    new MockOverlayPanel(InstrumentationRegistry.getTargetContext(), panelManager);
             mNoExpandPanel = new NoExpandMockOverlayPanel(
-                    InstrumentationRegistry.getTargetContext(), mLayoutManager, panelManager,
-                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
+                    InstrumentationRegistry.getTargetContext(), panelManager);
         });
     }
 

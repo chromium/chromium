@@ -1991,13 +1991,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mActivityTabProvider.setLayoutManager(layoutManager);
 
         if (mContextualSearchManager != null) {
-            mContextualSearchManager.initialize(contentContainer, layoutManager,
-                    mRootUiCoordinator.getBottomSheetController(), getCompositorViewHolder(),
-                    getControlContainerHeightResource() == NO_CONTROL_CONTAINER
-                            ? 0
-                            : getResources().getDimensionPixelSize(
-                                    getControlContainerHeightResource()),
-                    getToolbarManager(), getActivityType());
+            mContextualSearchManager.initialize(
+                    contentContainer, layoutManager, mRootUiCoordinator.getBottomSheetController());
         }
     }
 

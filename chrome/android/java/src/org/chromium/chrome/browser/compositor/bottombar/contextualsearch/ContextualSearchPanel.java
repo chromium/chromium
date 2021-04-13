@@ -9,15 +9,11 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
@@ -29,12 +25,9 @@ import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -92,23 +85,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** Used for logging state changes. */
     private final ContextualSearchPanelMetrics mPanelMetrics;
 
-    /**
-     * The {@link CompositorViewHolder}, used as an anchor view. Also injected into other classes.
-     */
-    private final CompositorViewHolder mCompositorViewHolder;
-
-    /** The {@link WindowAndroid} for the current activity.  */
-    private final WindowAndroid mWindowAndroid;
-
-    /** Used to query toolbar state. */
-    private final ToolbarManager mToolbarManager;
-
-    /** The {@link ActivityType} for the current activity. */
-    private final @ActivityType int mActivityType;
-
-    /** Supplies the current {@link Tab} for the activity. */
-    private final Supplier<Tab> mCurrentTabSupplier;
-
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
 
@@ -144,30 +120,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param context The current Android {@link Context}.
      * @param layoutManager A layout manager for observing scene changes.
      * @param panelManager The object managing the how different panels are shown.
-     * @param browserControlsStateProvider Used to measure the browser controls.
-     * @param windowAndroid The {@link WindowAndroid} for the current activity.
-     * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
-     * @param toolbarHeight The height of the toolbar in pixels.
-     * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
-     * @param activityType The {@link ActivityType} for the current activity.
-     * @param currentTabSupplier Supplies the current activity tab.
      */
-    public ContextualSearchPanel(@NonNull Context context, @NonNull LayoutManagerImpl layoutManager,
-            @NonNull OverlayPanelManager panelManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull CompositorViewHolder compositorViewHolder, int toolbarHeight,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
-            @NonNull Supplier<Tab> currentTabSupplier) {
-        super(context, layoutManager, panelManager, browserControlsStateProvider, windowAndroid,
-                compositorViewHolder, toolbarHeight, currentTabSupplier);
+    public ContextualSearchPanel(
+            Context context, LayoutManagerImpl layoutManager, OverlayPanelManager panelManager) {
+        super(context, layoutManager, panelManager);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
-        mCompositorViewHolder = compositorViewHolder;
-        mWindowAndroid = windowAndroid;
-        mToolbarManager = toolbarManager;
-        mActivityType = activityType;
-        mCurrentTabSupplier = currentTabSupplier;
 
         mEndButtonWidthDp = mContext.getResources().getDimensionPixelSize(
                                     R.dimen.contextual_search_padded_button_width)
@@ -175,10 +133,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     @Override
+    protected void initializeUiState() {}
+
+    @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
         return new OverlayPanelContent(mManagementDelegate.getOverlayContentDelegate(),
-                new PanelProgressObserver(), mActivity, /* isIncognito= */ false, getBarHeight(),
-                mCompositorViewHolder, mWindowAndroid, mCurrentTabSupplier);
+                new PanelProgressObserver(), mActivity, /* isIncognito= */ false, getBarHeight());
     }
 
     // ============================================================================================
@@ -215,7 +175,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (mManagementDelegate != delegate) {
             mManagementDelegate = delegate;
             if (delegate != null) {
-                setActivity(mManagementDelegate.getActivity());
+                setChromeActivity(mManagementDelegate.getActivity());
             }
         }
     }
@@ -335,7 +295,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (isPeeking()) {
             if (getSearchBarControl().getQuickActionControl().hasQuickAction()
                     && isCoordinateInsideActionTarget(x)) {
-                getSearchBarControl().getQuickActionControl().sendIntent(mCurrentTabSupplier.get());
+                mPanelMetrics.setWasQuickActionClicked();
+                getSearchBarControl().getQuickActionControl().sendIntent(
+                        mActivity.getActivityTab());
             } else {
                 // super takes care of expanding the Panel when peeking.
                 super.handleBarClick(x, y);
@@ -689,10 +651,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getSearchBarControl().setSearchTerm(searchTerm);
         getSearchBarControl().animateSearchTermResolution();
-        if (mActivity == null || mToolbarManager == null) return;
+        if (mActivity == null || mActivity.getToolbarManager() == null) return;
 
-        getSearchBarControl().setQuickAction(
-                quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
+        getSearchBarControl().setQuickAction(quickActionUri, quickActionCategory,
+                mActivity.getToolbarManager().getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
     }
 
@@ -835,7 +797,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                         new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
                                 .with(ScrimProperties.TOP_MARGIN, 0)
                                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                                .with(ScrimProperties.ANCHOR_VIEW, mCompositorViewHolder)
+                                .with(ScrimProperties.ANCHOR_VIEW,
+                                        mActivity.getCompositorViewHolder())
                                 .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                 .with(ScrimProperties.VISIBILITY_CALLBACK, null)
                                 .with(ScrimProperties.CLICK_DELEGATE, null)
@@ -1187,7 +1150,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @return Whether the panel content can be displayed in a new tab.
      */
     public boolean canPromoteToNewTab() {
-        return mActivityType == ActivityType.TABBED && canDisplayContentInPanel();
+        return mActivity.getActivityType() == ActivityType.TABBED && canDisplayContentInPanel();
     }
 
     // ============================================================================================

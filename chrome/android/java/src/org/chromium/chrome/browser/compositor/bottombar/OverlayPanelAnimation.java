@@ -56,10 +56,9 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /**
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
-     * @param toolbarHeight The height of the toolbar in pixels.
      */
-    public OverlayPanelAnimation(Context context, LayoutUpdateHost updateHost, int toolbarHeight) {
-        super(context, toolbarHeight);
+    public OverlayPanelAnimation(Context context, LayoutUpdateHost updateHost) {
+        super(context);
         mUpdateHost = updateHost;
     }
 
