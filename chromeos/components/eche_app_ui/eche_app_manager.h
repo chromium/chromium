@@ -31,14 +31,17 @@ class SecureChannelClient;
 
 namespace eche_app {
 
+class SystemInfo;
 class EcheSignaler;
+class SystemInfoProvider;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
 // KeyedService instances.
 class EcheAppManager : public KeyedService {
  public:
-  EcheAppManager(phonehub::PhoneHubManager*,
+  EcheAppManager(std::unique_ptr<SystemInfo> system_info,
+                 phonehub::PhoneHubManager*,
                  device_sync::DeviceSyncClient*,
                  multidevice_setup::MultiDeviceSetupClient*,
                  secure_channel::SecureChannelClient*,
@@ -48,8 +51,11 @@ class EcheAppManager : public KeyedService {
   EcheAppManager(const EcheAppManager&) = delete;
   EcheAppManager& operator=(const EcheAppManager&) = delete;
 
-  void BindInterface(
+  void BindSignalingMessageExchangerInterface(
       mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
+
+  void BindSystemInfoProviderInterface(
+      mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
 
   // KeyedService:
   void Shutdown() override;
@@ -61,6 +67,7 @@ class EcheAppManager : public KeyedService {
       eche_notification_click_handler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
+  std::unique_ptr<SystemInfoProvider> system_info_provider_;
 };
 
 }  // namespace eche_app

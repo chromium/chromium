@@ -31,6 +31,10 @@ static_library("eche_app_ui") {
     "feature_status.h",
     "feature_status_provider.cc",
     "feature_status_provider.h",
+    "system_info.cc",
+    "system_info.h",
+    "system_info_provider.cc",
+    "system_info_provider.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -70,6 +74,7 @@ source_set("unit_tests") {
   sources = [
     "eche_feature_status_provider_unittest.cc",
     "eche_notification_click_handler_unittest.cc",
+    "system_info_provider_unittest.cc",
   ]
   deps = [
     ":eche_app_ui",

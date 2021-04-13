@@ -13,6 +13,7 @@ class Profile;
 namespace chromeos {
 namespace eche_app {
 
+class SystemInfo;
 class EcheAppManager;
 
 class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
@@ -32,6 +33,8 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+
+  std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
 };
 
 }  // namespace eche_app

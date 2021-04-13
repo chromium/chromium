@@ -4,8 +4,11 @@
 
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 
+#include "base/system/sys_info.h"
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
+#include "chromeos/components/eche_app_ui/system_info.h"
+#include "chromeos/components/eche_app_ui/system_info_provider.h"
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
@@ -20,6 +23,7 @@ const char kMetricNameLatency[] = "Eche.Connectivity.Latency";
 namespace eche_app {
 
 EcheAppManager::EcheAppManager(
+    std::unique_ptr<SystemInfo> system_info,
     phonehub::PhoneHubManager* phone_hub_manager,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -49,16 +53,24 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheConnector>(feature_status_provider_.get(),
                                           connection_manager_.get())),
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
-                                               connection_manager_.get())) {}
+                                               connection_manager_.get())),
+      system_info_provider_(
+          std::make_unique<SystemInfoProvider>(std::move(system_info))) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
-void EcheAppManager::BindInterface(
+void EcheAppManager::BindSignalingMessageExchangerInterface(
     mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver) {
   signaler_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindSystemInfoProviderInterface(
+    mojo::PendingReceiver<mojom::SystemInfoProvider> receiver) {
+  system_info_provider_->Bind(std::move(receiver));
+}
+
 void EcheAppManager::Shutdown() {
+  system_info_provider_.reset();
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();

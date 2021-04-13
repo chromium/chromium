@@ -382,22 +382,32 @@ NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>(
 }
 
 void BindEcheSignalingMessageExchanger(
-    Profile* profile,
+    chromeos::eche_app::EcheAppManager* manager,
     mojo::PendingReceiver<chromeos::eche_app::mojom::SignalingMessageExchanger>
         receiver) {
-  chromeos::eche_app::EcheAppManager* manager =
-      chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);
   if (manager) {
-    manager->BindInterface(std::move(receiver));
+    manager->BindSignalingMessageExchangerInterface(std::move(receiver));
+  }
+}
+
+void BindSystemInfoProvider(
+    chromeos::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<chromeos::eche_app::mojom::SystemInfoProvider>
+        receiver) {
+  if (manager) {
+    manager->BindSystemInfoProviderInterface(std::move(receiver));
   }
 }
 
 template <>
 WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
                                                          const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  chromeos::eche_app::EcheAppManager* manager =
+      chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);
   return new chromeos::eche_app::EcheAppUI(
-      web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger,
-                                  Profile::FromWebUI(web_ui)));
+      web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
+      base::BindRepeating(&BindSystemInfoProvider, manager));
 }
 
 void BindScanService(

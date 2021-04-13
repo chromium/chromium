@@ -13,6 +13,9 @@ const signalingMessageObserverRouter =
 // Set up a message pipe to talk to the browser process.
 signalMessageExchanger.setSignalingMessageObserver(
     signalingMessageObserverRouter.$.bindNewPipeAndPassRemote());
+// Returns a remote for SystemInfoProvider interface which gets system info
+// from the browser.
+const systemInfo = chromeos.echeApp.mojom.SystemInfoProvider.getRemote();
 
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new class {
@@ -28,6 +31,10 @@ const EcheApiBindingImpl = new class {
   tearDownSignal() {
     signalMessageExchanger.tearDownSignaling();
   }
+
+  getSystemInfo() {
+    return systemInfo.getSystemInfo();
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -39,4 +46,7 @@ echeapi.webrtc.tearDownSignal =
     EcheApiBindingImpl.tearDownSignal.bind(EcheApiBindingImpl);
 echeapi.webrtc.registerSignalReceiver =
     EcheApiBindingImpl.onWebRtcSignalReceived.bind(EcheApiBindingImpl);
+echeapi.system = {};
+echeapi.system.getSystemInfo =
+    EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
