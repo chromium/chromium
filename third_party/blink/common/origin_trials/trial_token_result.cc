@@ -18,6 +18,4 @@ TrialTokenResult::TrialTokenResult(OriginTrialTokenStatus status,
   DCHECK(parsed_token_);
 }
 
-// TrialTokenResult::~TrialTokenResult() = default;
-
 }  // namespace blink

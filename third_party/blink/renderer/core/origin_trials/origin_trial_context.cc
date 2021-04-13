@@ -39,6 +39,8 @@ namespace blink {
 
 namespace {
 
+constexpr char kDefaultTrialName[] = "UNKNOWN";
+
 void RecordTokenValidationResultHistogram(OriginTrialTokenStatus status) {
   UMA_HISTOGRAM_ENUMERATION("OriginTrials.ValidationResult", status);
 }
@@ -130,7 +132,38 @@ std::ostream& operator<<(std::ostream& stream, OriginTrialTokenStatus status) {
 #endif  // ifndef NDEBUG
 }
 
+// Merges `OriginTrialStatus` from different tokens for the same trial.
+// Some combinations of status should never occur, such as
+// s1 == kOSNotSupported && s2 == kEnabled.
+OriginTrialStatus MergeOriginTrialStatus(OriginTrialStatus s1,
+                                         OriginTrialStatus s2) {
+  using Status = OriginTrialStatus;
+  if (s1 == Status::kEnabled || s2 == Status::kEnabled) {
+    return Status::kEnabled;
+  }
+
+  // kOSNotSupported status comes from OS support checks that are generated
+  // at compile time.
+  if (s1 == Status::kOSNotSupported || s2 == Status::kOSNotSupported) {
+    return Status::kOSNotSupported;
+  }
+
+  // kTrialNotAllowed status comes from `CanEnableTrialFromName` check.
+  if (s1 == Status::kTrialNotAllowed || s2 == Status::kTrialNotAllowed) {
+    return Status::kTrialNotAllowed;
+  }
+
+  return Status::kValidTokenNotProvided;
+}
+
 }  // namespace
+
+// TODO(crbug.com/607555): Mark `TrialToken` as copyable.
+DevtoolsOriginTrialTokenResult::DevtoolsOriginTrialTokenResult(
+    const String& raw_token,
+    OriginTrialTokenStatus status,
+    const base::Optional<TrialToken>& parsed_token)
+    : raw_token(raw_token), status(status), parsed_token(parsed_token) {}
 
 OriginTrialContext::OriginTrialContext(ExecutionContext* context)
     : trial_token_validator_(std::make_unique<TrialTokenValidator>()),
@@ -481,7 +514,7 @@ bool OriginTrialContext::EnableTrialFromToken(
     bool is_script_origin_secure,
     const String& token) {
   DCHECK(!token.IsEmpty());
-  OriginTrialStatus feature_status = OriginTrialStatus::kValidTokenNotProvided;
+  OriginTrialStatus trial_status = OriginTrialStatus::kValidTokenNotProvided;
   StringUTF8Adaptor token_string(token);
   url::Origin script_url_origin;
   if (script_origin)
@@ -501,13 +534,42 @@ bool OriginTrialContext::EnableTrialFromToken(
                                    is_script_origin_secure,
                                    parsed_token.is_third_party());
       if (status == OriginTrialTokenStatus::kSuccess) {
-        feature_status =
+        trial_status =
             EnableTrialFromName(trial_name, parsed_token.expiry_time());
       }
     }
   }
   RecordTokenValidationResultHistogram(status);
-  return feature_status == OriginTrialStatus::kEnabled;
+  CacheTokenForDevtools(token, token_result, trial_status);
+  return trial_status == OriginTrialStatus::kEnabled;
+}
+
+void OriginTrialContext::CacheTokenForDevtools(
+    const String& raw_token,
+    const TrialTokenResult& token_result,
+    OriginTrialStatus trial_status) {
+  String trial_name = token_result.ParsedToken()
+                          ? token_result.ParsedToken()->feature_name().c_str()
+                          : kDefaultTrialName;
+
+  // Does nothing if key already exists.
+  auto& trial_result =
+      devtools_trial_results_
+          .insert(trial_name,
+                  DevtoolsOriginTrialResult{
+                      trial_name,
+                      OriginTrialStatus::kValidTokenNotProvided,
+                      /* token_results */ {},
+                  })
+          .stored_value->value;
+
+  trial_result.status =
+      MergeOriginTrialStatus(trial_result.status, trial_status);
+  trial_result.token_results.push_back(DevtoolsOriginTrialTokenResult{
+      raw_token, token_result.Status(),
+      token_result.ParsedToken()
+          ? base::make_optional(*token_result.ParsedToken())
+          : base::nullopt});
 }
 
 void OriginTrialContext::Trace(Visitor* visitor) const {
