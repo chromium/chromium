@@ -6,7 +6,5 @@
 // of the web view as early as possible.
 goog.provide('__crWeb.webViewAllFrames');
 
-goog.require('__crWeb.fill');
-goog.require('__crWeb.form');
 goog.require('__crWeb.formHandlers');
 goog.require('__crWeb.suggestion');

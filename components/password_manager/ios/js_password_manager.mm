@@ -140,13 +140,4 @@ std::unique_ptr<base::Value> SerializeFillData(
       CreateBoolCallback(completionHandler));
 }
 
-- (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID
-                                  inFrame:(web::WebFrame*)frame {
-  std::vector<base::Value> parameters;
-  parameters.emplace_back(static_cast<int>(nextAvailableID));
-  autofill::ExecuteJavaScriptFunction("fill.setUpForUniqueIDs", parameters,
-                                      frame,
-                                      autofill::JavaScriptResultCallback());
-}
-
 @end

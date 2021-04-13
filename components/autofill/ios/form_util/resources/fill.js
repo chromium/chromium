@@ -6,7 +6,7 @@
 
 goog.provide('__crWeb.fill');
 
-goog.require('__crWeb.form');
+// Requires __crWeb.form.
 
 /**
  * @typedef {{

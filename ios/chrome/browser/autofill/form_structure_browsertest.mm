@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
@@ -40,6 +41,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace autofill {
 
@@ -198,9 +202,29 @@ void FormStructureBrowserTest::TearDown() {
 bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
     const std::string& html) {
   bool success = ChromeWebTest::LoadHtmlWithoutSubresources(html);
-  if (success)
-    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
-  return success;
+  if (!success) {
+    return false;
+  }
+
+  __block web::WebFrame* main_frame = nullptr;
+  success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+    return main_frame != nullptr;
+  });
+  if (!success) {
+    return false;
+  }
+  DCHECK(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           int{next_available_id};
+  });
 }
 
 void FormStructureBrowserTest::GenerateResults(const std::string& input,

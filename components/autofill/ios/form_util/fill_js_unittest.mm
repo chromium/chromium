@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/web/public/test/web_js_test.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -18,10 +18,17 @@
 #endif
 
 namespace {
-class FillJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+
+class FillJsTest : public web::WebTestWithWebState {
  public:
-  FillJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(@[ @"form_util_js" ]) {}
+  FillJsTest() : web::WebTestWithWebState() {}
+
+  void SetUp() override {
+    web::WebTestWithWebState::SetUp();
+
+    OverrideJavaScriptFeatures(
+        {autofill::FormUtilJavaScriptFeature::GetInstance()});
+  }
 };
 
 }  // namespace
@@ -57,7 +64,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
                                     "</body></html>",
                                    html_action];
 
-    LoadHtmlAndInject(html);
+    LoadHtml(html);
     id result = ExecuteJavaScript(
         @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])");
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
@@ -72,7 +79,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 
 // Tests the extraction of the aria-label attribute.
 TEST_F(FillJsTest, GetAriaLabel) {
-  LoadHtmlAndInject(@"<input id='input' type='text' aria-label='the label'/>");
+  LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -82,14 +89,13 @@ TEST_F(FillJsTest, GetAriaLabel) {
 
 // Tests that aria-labelledby works. Simple case: only one id referenced.
 TEST_F(FillJsTest, GetAriaLabelledBySingle) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<div id='billing'>Billing</div>"
-       "<div>"
-       "    <div id='name'>Name</div>"
-       "    <input id='input' type='text' aria-labelledby='name'/>"
-       "</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<div id='billing'>Billing</div>"
+            "<div>"
+            "    <div id='name'>Name</div>"
+            "    <input id='input' type='text' aria-labelledby='name'/>"
+            "</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -99,14 +105,13 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
 TEST_F(FillJsTest, GetAriaLabelledByMulti) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<div id='billing'>Billing</div>"
-       "<div>"
-       "    <div id='name'>Name</div>"
-       "    <input id='input' type='text' aria-labelledby='billing name'/>"
-       "</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<div id='billing'>Billing</div>"
+            "<div>"
+            "    <div id='name'>Name</div>"
+            "    <input id='input' type='text' aria-labelledby='billing name'/>"
+            "</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -116,15 +121,14 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
 
 // Tests that aria-labelledby takes precedence over aria-label
 TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<div id='billing'>Billing</div>"
-       "<div>"
-       "    <div id='name'>Name</div>"
-       "    <input id='input' type='text' aria-label='ignored' "
-       "         aria-labelledby='name'/>"
-       "</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<div id='billing'>Billing</div>"
+            "<div>"
+            "    <div id='name'>Name</div>"
+            "    <input id='input' type='text' aria-label='ignored' "
+            "         aria-labelledby='name'/>"
+            "</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -135,14 +139,13 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
 // crashing, for example).
 TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<div id='billing'>Billing</div>"
-       "<div>"
-       "    <div id='name'>Name</div>"
-       "    <input id='input' type='text' aria-labelledby='div1 div2'/>"
-       "</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<div id='billing'>Billing</div>"
+            "<div>"
+            "    <div id='name'>Name</div>"
+            "    <input id='input' type='text' aria-labelledby='div1 div2'/>"
+            "</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -152,15 +155,14 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
 TEST_F(FillJsTest, GetAriaLabelledByFallback) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<div id='billing'>Billing</div>"
-       "<div>"
-       "    <div id='name'>Name</div>"
-       "    <input id='input' type='text' aria-label='valid' "
-       "          aria-labelledby='div1 div2'/>"
-       "</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<div id='billing'>Billing</div>"
+            "<div>"
+            "    <div id='name'>Name</div>"
+            "    <input id='input' type='text' aria-label='valid' "
+            "          aria-labelledby='div1 div2'/>"
+            "</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
@@ -170,11 +172,10 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
 TEST_F(FillJsTest, GetAriaDescriptionSingle) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<input id='input' type='text' aria-describedby='div1'/>"
-       "<div id='div1'>aria description</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<input id='input' type='text' aria-describedby='div1'/>"
+            "<div id='div1'>aria description</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
@@ -184,12 +185,11 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
 TEST_F(FillJsTest, GetAriaDescriptionMulti) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<input id='input' type='text' aria-describedby='div1 div2'/>"
-       "<div id='div2'>description</div>"
-       "<div id='div1'>aria</div>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<input id='input' type='text' aria-describedby='div1 div2'/>"
+            "<div id='div2'>description</div>"
+            "<div id='div1'>aria</div>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
@@ -199,10 +199,9 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
 
 // Tests that invalid aria-describedby returns the empty string.
 TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
-  LoadHtmlAndInject(
-      @"<html><body>"
-       "<input id='input' type='text' aria-describedby='invalid'/>"
-       "</body></html>");
+  LoadHtml(@"<html><body>"
+            "<input id='input' type='text' aria-describedby='invalid'/>"
+            "</body></html>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");

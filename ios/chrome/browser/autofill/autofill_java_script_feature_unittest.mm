@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -67,6 +68,9 @@ NSNumber* GetDefaultMaxLength() {
   return @524288;
 }
 
+using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForJSCompletionTimeout;
+
 // Text fixture to test AutofillJavaScriptFeature.
 class AutofillJavaScriptFeatureTest : public ChromeWebTest {
  protected:
@@ -76,7 +80,23 @@ class AutofillJavaScriptFeatureTest : public ChromeWebTest {
   // Loads the given HTML and initializes the Autofill JS scripts.
   void LoadHtml(NSString* html) {
     ChromeWebTest::LoadHtml(html);
-    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+
+    __block web::WebFrame* main_frame = nullptr;
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      return main_frame != nullptr;
+    }));
+    ASSERT_TRUE(main_frame);
+
+    uint32_t next_available_id = 1;
+    autofill::FormUtilJavaScriptFeature::GetInstance()
+        ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+    // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
+                 intValue] == int{next_available_id};
+    }));
   }
 
   web::WebFrame* main_web_frame() {

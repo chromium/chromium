@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -322,6 +323,29 @@ class PasswordControllerTest : public ChromeWebTest {
       [accessoryMediator_ injectWebState:web_state()];
       [accessoryMediator_ injectProvider:suggestionController_];
     }
+  }
+
+  bool SetUpUniqueIDs() {
+    __block web::WebFrame* main_frame = nullptr;
+    bool success =
+        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+          main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+          return main_frame != nullptr;
+        });
+    if (!success) {
+      return false;
+    }
+    DCHECK(main_frame);
+
+    constexpr uint32_t next_available_id = 1;
+    autofill::FormUtilJavaScriptFeature::GetInstance()
+        ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+    // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
+                 intValue] == int{next_available_id};
+    });
   }
 
   void WaitForFormManagersCreation() {
@@ -1296,7 +1320,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
 // not sent to the store then the request the the store is sent.
 TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   LoadHtml(kHtmlWithoutPasswordForm);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+  ASSERT_TRUE(SetUpUniqueIDs());
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
   // The standard pattern is to use a __block variable WaitUntilCondition but
@@ -1828,7 +1852,6 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
 
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms()));
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   FormRendererId form_id = FormRendererId(1);
   FieldRendererId username_id = FieldRendererId(2);
   FieldRendererId password_id = FieldRendererId(3);
@@ -1839,6 +1862,7 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
                      << has_commited << " is_same_document=" << is_same_document
                      << " is_renderer_initiated=" << is_renderer_initiated);
         LoadHtml(SysUTF8ToNSString(kHtml));
+        ASSERT_TRUE(SetUpUniqueIDs());
 
         auto& form_managers =
             passwordController_.passwordManager->form_managers();

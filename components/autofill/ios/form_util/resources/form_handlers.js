@@ -10,8 +10,7 @@
 
 goog.provide('__crWeb.formHandlers');
 
-goog.require('__crWeb.fill');
-goog.require('__crWeb.form');
+// Requires __crWeb.fill and __crWeb.form.
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been

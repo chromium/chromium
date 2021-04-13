@@ -6,6 +6,4 @@
 // as possible.
 goog.provide('__crWeb.testBundle');
 
-goog.require('__crWeb.fill');
-goog.require('__crWeb.form');
 goog.require('__crWeb.passwords');

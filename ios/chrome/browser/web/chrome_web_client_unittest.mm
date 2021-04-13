@@ -135,8 +135,8 @@ TEST_F(ChromeWebClientTest, UserAgent) {
   EXPECT_EQ(0u, product_str.find("CriOS/"));
 }
 
-// Tests that ChromeWebClient provides autofill controller script for WKWebView.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
+// Tests that ChromeWebClient provides form handler script for WKWebView.
+TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptFormHandler) {
   // Chrome scripts rely on __gCrWeb object presence.
   WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
   web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
@@ -145,8 +145,8 @@ TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   NSString* script =
       web_client.Get()->GetDocumentStartScriptForAllFrames(browser_state());
   web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object",
-              web::test::ExecuteJavaScript(web_view, @"typeof __gCrWeb.fill"));
+  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
+                             web_view, @"typeof __gCrWeb.formHandlers"));
 }
 
 // Tests PrepareErrorPage wth non-post, not Off The Record error.

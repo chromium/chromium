@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
@@ -90,8 +91,6 @@ js_compile_bundle("test_bundle") {
   closure_entry_point = "__crWeb.testBundle"
   testonly = true
   sources = [
-    "//components/autofill/ios/form_util/resources/fill.js",
-    "//components/autofill/ios/form_util/resources/form.js",
     "resources/password_controller.js",
     "resources/test_bundle.js",
   ]

@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/js_password_manager.h"
@@ -440,8 +441,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
 - (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID
                                   inFrame:(web::WebFrame*)frame {
-  [self.jsPasswordManager setUpForUniqueIDsWithInitialState:nextAvailableID
-                                                    inFrame:frame];
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(frame, nextAvailableID);
 }
 
 - (void)updateFieldDataOnUserInput:(autofill::FieldRendererId)field_id

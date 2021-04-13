@@ -480,8 +480,6 @@ js_compile_bundle("web_view_all_frames") {
   closure_entry_point = "__crWeb.webViewAllFrames"
   sources = [
     "//components/autofill/ios/browser/resources/suggestion_controller.js",
-    "//components/autofill/ios/form_util/resources/fill.js",
-    "//components/autofill/ios/form_util/resources/form.js",
     "//components/autofill/ios/form_util/resources/form_handlers.js",
     "resources/web_view_all_frames.js",
   ]

@@ -82,10 +82,6 @@ std::unique_ptr<base::Value> SerializePasswordFormFillData(
             generatedPassword:(NSString*)generatedPassword
             completionHandler:(void (^)(BOOL))completionHandler;
 
-// Sets up the next available unique ID value in a document.
-- (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID
-                                  inFrame:(web::WebFrame*)frame;
-
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_JS_PASSWORD_MANAGER_H_

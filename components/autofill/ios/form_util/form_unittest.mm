@@ -4,11 +4,12 @@
 
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,14 +29,17 @@ class FormTestClient : public web::FakeWebClient {
 };
 
 // Text fixture to test password controller.
-class FormJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+class FormJsTest : public web::WebTestWithWebState {
  public:
-  FormJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(
-            std::make_unique<FormTestClient>()) {}
+  FormJsTest() : web::WebTestWithWebState(std::make_unique<FormTestClient>()) {
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(GetWebClient());
+    web_client->SetJavaScriptFeatures(
+        {autofill::FormUtilJavaScriptFeature::GetInstance()});
+  }
 
   void SetUp() override {
-    web::WebJsTest<web::WebTestWithWebState>::SetUp();
+    web::WebTestWithWebState::SetUp();
     observer_ =
         std::make_unique<autofill::TestFormActivityObserver>(web_state());
     autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state())
@@ -45,10 +49,19 @@ class FormJsTest : public web::WebJsTest<web::WebTestWithWebState> {
   void TearDown() override {
     autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state())
         ->RemoveObserver(observer_.get());
-    web::WebJsTest<web::WebTestWithWebState>::TearDown();
+    web::WebTestWithWebState::TearDown();
   }
 
  protected:
+  web::WebFrame* WaitForMainFrame() {
+    __block web::WebFrame* main_frame = nullptr;
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      return main_frame != nullptr;
+    }));
+    return main_frame;
+  }
+
   std::unique_ptr<autofill::TestFormActivityObserver> observer_;
 };
 
@@ -164,7 +177,20 @@ TEST_F(FormJsTest, FormSameOriginIFrame) {
 // Tests that a new form triggers form_changed event.
 TEST_F(FormJsTest, AddForm) {
   LoadHtml(@"<body></body>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           int{next_available_id};
+  }));
+
   ExecuteJavaScript(
       @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var form = document.createElement('form');"
@@ -243,8 +269,21 @@ TEST_F(FormJsTest, RemoveForm) {
             "<input type=\"password\" name=\"password\" id=\"id2\">"
             "<input type=\"submit\" id=\"submit_input\"/>"
             "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);"
-                    @"__gCrWeb.formHandlers.trackFormMutations(10);"
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           int{next_available_id};
+  }));
+
+  ExecuteJavaScript(@"__gCrWeb.formHandlers.trackFormMutations(10);"
                     @"var form1 = document.getElementById('form1');"
                     @"__gCrWeb.fill.setUniqueIDIfNeeded(form1);"
                     @"form1.parentNode.removeChild(form1);");

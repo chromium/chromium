@@ -15,15 +15,29 @@ source_set("form_util") {
     "form_activity_params.h",
     "form_activity_tab_helper.h",
     "form_activity_tab_helper.mm",
+    "form_util_java_script_feature.h",
+    "form_util_java_script_feature.mm",
     "unique_id_data_tab_helper.h",
     "unique_id_data_tab_helper.mm",
   ]
   deps = [
+    ":fill_js",
+    ":form_js",
     "//base",
     "//components/autofill/core/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
+}
+
+js_compile_bundle("fill_js") {
+  closure_entry_point = "__crWeb.fill"
+  sources = [ "resources/fill.js" ]
+}
+
+js_compile_bundle("form_js") {
+  closure_entry_point = "__crWeb.form"
+  sources = [ "resources/form.js" ]
 }
 
 source_set("test_support") {
@@ -71,11 +85,6 @@ js_compile_bundle("form_util_js") {
   visibility = [ ":unit_tests" ]
   testonly = true
 
-  # Form_handlers depends on form and fill.
   closure_entry_point = "__crWeb.formHandlers"
-  sources = [
-    "resources/fill.js",
-    "resources/form.js",
-    "resources/form_handlers.js",
-  ]
+  sources = [ "resources/form_handlers.js" ]
 }

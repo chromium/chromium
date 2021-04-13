@@ -7,10 +7,15 @@
 #include "base/format_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #include "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_js_test.h"
+#import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -20,6 +25,9 @@
 
 // Unit tests for ios/chrome/browser/web/resources/autofill_controller.js
 namespace {
+
+using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForJSCompletionTimeout;
 
 // Structure for getting element by name using JavaScripts.
 struct ElementByName {
@@ -813,6 +821,15 @@ class AutofillControllerJsTest : public web::WebJsTest<ChromeWebTest> {
       : web::WebJsTest<ChromeWebTest>(std::make_unique<ChromeWebClient>()) {}
 
  protected:
+  web::WebFrame* WaitForMainFrame() {
+    __block web::WebFrame* main_frame = nullptr;
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      return main_frame != nullptr;
+    }));
+    return main_frame;
+  }
+
   // Helper method that EXPECTs |javascript| evaluation on page
   // |kHTMLForTestingElements| with expectation given by
   // |elements_with_true_expected|.
@@ -1595,7 +1612,19 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   html = [html stringByAppendingFormat:@"</body></html>"];
 
   LoadHtml(html);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           int{next_available_id};
+  }));
 
   NSDictionary* expected = @{
     @"name" : @"TestForm",
@@ -1808,7 +1837,20 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
 
 TEST_F(AutofillControllerJsTest, FillActiveFormFieldUsingRendererIDs) {
   LoadHtml(kHTMLForTestingElements);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           int{next_available_id};
+  }));
+
   // Simulate form parsing to set renderer IDs.
   ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
 
