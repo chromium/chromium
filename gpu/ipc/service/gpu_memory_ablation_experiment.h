@@ -72,23 +72,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   void StopSequence(uint32_t sequence_num);
 
  private:
-  // Tracks the time spent doing the allocations/deallocations in order to
-  // determine if the change in metrics was solely due to the ablation.
-  //
-  // The memory allocated for ablation is not reported directly to
-  // GpuChannelManager::GpuPeakMemoryMonitor, as GpuMemoryAblationExperiment
-  // acts as the MemoryTracker for its own allocations. This tracks the peak
-  // allocation so that it can be reported.
-  struct SequenceTracker {
-   public:
-    SequenceTracker() = default;
-    ~SequenceTracker() = default;
-
-    base::TimeDelta allocs_;
-    base::TimeDelta deallocs_;
-    uint64_t peak_memory_ = 0u;
-  };
-
   // The initialization status of the feature. It defaults to |UNINITIALIZED|
   // and is updated upon the success or failure of initializing the needed GPU
   // resources.
@@ -133,10 +116,12 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   // The Mailboxes allocated for each image.
   std::vector<Mailbox> mailboxes_;
 
-  // Tracks the time spent doing the allocations/deallocations, along with the
-  // peak memory allocated. Thus allowing to determine if the change in only
-  // metrics was solely due to the ablation.
-  base::flat_map<uint32_t, SequenceTracker> sequences_;
+  // The memory allocated for ablation is not reported directly to
+  // GpuChannelManager::GpuPeakMemoryMonitor, as GpuMemoryAblationExperiment
+  // acts as the MemoryTracker for its own allocations. This tracks the peak
+  // allocation so that it can be reported.
+  base::flat_map<uint32_t /*sequence_num*/, uint64_t /*peak_memory*/>
+      sequences_;
 
   // The memory allocated for ablation is not reported directly to
   // GpuChannelManager::GpuPeakMemoryMonitor, as this class acts as the

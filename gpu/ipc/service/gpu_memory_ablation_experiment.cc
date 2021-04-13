@@ -113,23 +113,17 @@ uint64_t GpuMemoryAblationExperiment::GetPeakMemory(
   auto it = sequences_.find(sequence_num);
   if (it == sequences_.end())
     return 0u;
-
-  return it->second.peak_memory_;
+  return it->second;
 }
 
 void GpuMemoryAblationExperiment::StartSequence(uint32_t sequence_num) {
-  sequences_.emplace(sequence_num, SequenceTracker());
+  sequences_.emplace(sequence_num, 0u);
 }
 
 void GpuMemoryAblationExperiment::StopSequence(uint32_t sequence_num) {
   auto it = sequences_.find(sequence_num);
   if (it == sequences_.end())
     return;
-
-  TRACE_EVENT_INSTANT2("gpu.memory", "Memory.GPU.PeakMemoryUsage.AblationTimes",
-                       TRACE_EVENT_SCOPE_THREAD, "alloc",
-                       it->second.allocs_.InMilliseconds(), "dealloc",
-                       it->second.deallocs_.InMilliseconds());
 
   sequences_.erase(it);
 }
@@ -141,7 +135,6 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
       ScopedMakeContextCurrent();
   if (!scoped_current)
     return;
-  base::Time start = base::Time::Now();
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -166,16 +159,11 @@ void GpuMemoryAblationExperiment::AllocateGpuMemory() {
   canvas->clear(SK_ColorWHITE);
 
   mailboxes_.push_back(mailbox);
-
-  base::TimeDelta delta = base::Time::Now() - start;
-  for (auto& it : sequences_)
-    it.second.allocs_ += delta;
 }
 
 void GpuMemoryAblationExperiment::DeleteGpuMemory() {
   if (mailboxes_.empty())
     return;
-  base::Time start = base::Time::Now();
 
   auto mailbox = mailboxes_.front();
   // We can't successfully destroy the image if we cannot get the context,
@@ -190,10 +178,6 @@ void GpuMemoryAblationExperiment::DeleteGpuMemory() {
     factory_->DestroySharedImage(mailbox);
 
   mailboxes_.erase(mailboxes_.begin());
-
-  base::TimeDelta delta = base::Time::Now() - start;
-  for (auto& it : sequences_)
-    it.second.deallocs_ += delta;
 }
 
 bool GpuMemoryAblationExperiment::InitGpu(GpuChannelManager* channel_manager) {
@@ -248,8 +232,8 @@ void GpuMemoryAblationExperiment::TrackMemoryAllocatedChange(int64_t delta) {
   DCHECK(delta >= 0 || gpu_allocation_size_ >= static_cast<uint64_t>(-delta));
   gpu_allocation_size_ += delta;
   for (auto& it : sequences_) {
-    if (gpu_allocation_size_ > it.second.peak_memory_)
-      it.second.peak_memory_ = gpu_allocation_size_;
+    if (gpu_allocation_size_ > it.second)
+      it.second = gpu_allocation_size_;
   }
 }
 

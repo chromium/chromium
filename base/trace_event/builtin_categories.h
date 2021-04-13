@@ -86,7 +86,6 @@
   X("gpu")                                                               \
   X("gpu.angle")                                                         \
   X("gpu.capture")                                                       \
-  X("gpu.memory")                                                        \
   X("headless")                                                          \
   X("hwoverlays")                                                        \
   X("identity")                                                          \
