@@ -1,6 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
@@ -177,9 +178,9 @@
         </template>
         <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
         <template is="dom-if" if="[[isPSimPendingActivationNetwork_]]" restamp>
-          <!-- TODO(crbug.com/1196507) Add on-click listener to button-->
           <cr-button id="activateButton"
               aria-label$="[[getActivateBtnA11yLabel_(item)]]"
+              on-click="onActivateButtonClick_"
               disabled="[[disabled_]]">
             [[i18n('networkListItemActivate')]]
           </cr-button>

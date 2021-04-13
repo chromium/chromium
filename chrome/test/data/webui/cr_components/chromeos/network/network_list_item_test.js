@@ -21,6 +21,8 @@
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
 // #import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // clang-format on
 
 suite('NetworkListItemTest', function() {
@@ -125,7 +127,7 @@ suite('NetworkListItemTest', function() {
     assertEquals('provider1', providerName.textContent.trim());
   });
 
-  test('Unactivated pSIM UI visibility', async () => {
+  test('Pending activation pSIM UI visibility', async () => {
     const networkStateText = listItem.$.networkStateText;
     assertTrue(!!networkStateText);
     assertTrue(networkStateText.hidden);
@@ -179,18 +181,43 @@ suite('NetworkListItemTest', function() {
     };
     mojoApi_.setManagedPropertiesForTest(managedPropertiesNotActivated);
 
-    listItem.item =
+    const networkState =
         OncMojo.managedPropertiesToNetworkState(managedPropertiesNotActivated);
+    listItem.item = networkState;
+
     await flushAsync();
 
     // Activate button should now be showing.
-    assertTrue(!!listItem.$$('#activateButton'));
+    const activateButton = listItem.$$('#activateButton');
+    assertTrue(!!activateButton);
     // Network state text should not be showing.
     assertTrue(networkStateText.hidden);
 
     // Arrow button should also be visible.
-    let arrow = listItem.$$('#subpageButton');
+    const arrow = listItem.$$('#subpageButton');
     assertTrue(!!arrow);
+
+    // Clicking the activate button should fire the show-cellular-setup event.
+    const showCellularSetupPromise =
+        test_util.eventToPromise('show-cellular-setup', listItem);
+    activateButton.click();
+    const showCellularSetupEvent = await showCellularSetupPromise;
+    assertEquals(
+        showCellularSetupEvent.detail.pageName,
+        cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
+
+    // Selecting the row should fire the show-detail event.
+    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    listItem.$.divOuter.click();
+    const showDetailEvent = await showDetailPromise;
+    assertEquals(showDetailEvent.detail, networkState);
+  });
+
+  test('Unavailable pSIM UI visibility', async () => {
+    const networkStateText = listItem.$.networkStateText;
+    assertTrue(!!networkStateText);
+    assertTrue(networkStateText.hidden);
+    assertFalse(!!listItem.$$('#activateButton'));
 
     // Set item to an unactivated eSIM network without a payment URL.
     const managedPropertiesESimUnavailable =
@@ -233,7 +260,7 @@ suite('NetworkListItemTest', function() {
         listItem.i18n('networkListItemUnavailableSimNetwork'));
 
     // Arrow button should still be visible.
-    arrow = listItem.$$('#subpageButton');
+    const arrow = listItem.$$('#subpageButton');
     assertTrue(!!arrow);
   });
 
