@@ -2677,6 +2677,7 @@ void AutotestPrivateSetAssistantEnabledFunction::OnAssistantStatusChanged(
 }
 
 void AutotestPrivateSetAssistantEnabledFunction::Timeout() {
+  DCHECK(!did_respond());
   Respond(Error("Assistant service timed out"));
 }
 
@@ -2920,6 +2921,7 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
 
 void AutotestPrivateSendAssistantTextQueryFunction::
     OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
+  DCHECK(!did_respond());
   if (error) {
     Respond(Error(error.value()));
   } else {
@@ -2933,7 +2935,11 @@ void AutotestPrivateSendAssistantTextQueryFunction::
 }
 
 void AutotestPrivateSendAssistantTextQueryFunction::Timeout() {
+  DCHECK(!did_respond());
   Respond(Error("Assistant response timeout."));
+
+  // Reset to unsubscribe OnInteractionFinishedCallback().
+  interaction_helper_.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2978,6 +2984,7 @@ AutotestPrivateWaitForAssistantQueryStatusFunction::Run() {
 
 void AutotestPrivateWaitForAssistantQueryStatusFunction::
     OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
+  DCHECK(!did_respond());
   if (error) {
     Respond(Error(error.value()));
   } else {
@@ -2991,7 +2998,11 @@ void AutotestPrivateWaitForAssistantQueryStatusFunction::
 }
 
 void AutotestPrivateWaitForAssistantQueryStatusFunction::Timeout() {
+  DCHECK(!did_respond());
   Respond(Error("No query response received before time out."));
+
+  // Reset to unsubscribe OnInteractionFinishedCallback().
+  interaction_helper_.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
