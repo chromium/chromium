@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckI
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,7 +66,7 @@ public class SafetyCheckMediatorTest {
     @Mock
     private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock
-    private SigninActivityLauncher mSigninLauncher;
+    private SyncConsentActivityLauncher mSigninLauncher;
     @Mock
     private SettingsLauncher mSettingsLauncher;
     @Mock

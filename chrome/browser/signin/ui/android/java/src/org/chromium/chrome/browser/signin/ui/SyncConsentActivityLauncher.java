@@ -13,8 +13,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Allows for launching {@link SigninActivity} in modularized code. */
-public interface SigninActivityLauncher {
+/** Allows for launching {@link SyncConsentActivity} in modularized code. */
+public interface SyncConsentActivityLauncher {
     @IntDef({SigninAccessPoint.SETTINGS, SigninAccessPoint.BOOKMARK_MANAGER,
             SigninAccessPoint.RECENT_TABS, SigninAccessPoint.SIGNIN_PROMO,
             SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN})

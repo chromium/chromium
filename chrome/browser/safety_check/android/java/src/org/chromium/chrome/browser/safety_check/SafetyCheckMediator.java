@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckBridge.SafetyCheckCom
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -65,7 +65,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
     /** An instance of SettingsLauncher to start other activities. */
     private SettingsLauncher mSettingsLauncher;
     /** Client to launch a SigninActivity. */
-    private SigninActivityLauncher mSigninLauncher;
+    private SyncConsentActivityLauncher mSigninLauncher;
     /** Async logic for password check. */
     private boolean mShowSafePasswordState;
     private boolean mPasswordsLoaded;
@@ -152,7 +152,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
      */
     public SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
-            SettingsLauncher settingsLauncher, SigninActivityLauncher signinLauncher) {
+            SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher) {
         this(model, client, settingsLauncher, signinLauncher, null, new Handler());
         // Have to initialize this after the constructor call, since a "this" instance is needed.
         mSafetyCheckBridge = new SafetyCheckBridge(SafetyCheckMediator.this);
@@ -160,7 +160,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
 
     @VisibleForTesting
     SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
-            SettingsLauncher settingsLauncher, SigninActivityLauncher signinLauncher,
+            SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
             SafetyCheckBridge bridge, Handler handler) {
         mModel = model;
         mUpdatesClient = client;

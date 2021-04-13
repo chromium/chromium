@@ -38,12 +38,13 @@ public final class SigninPromoUtil {
     /**
      * Launches the {@link SigninActivity} if it needs to be displayed.
      * @param context The {@link Context} to launch the {@link SigninActivity}.
-     * @param signinActivityLauncher launcher used to launch the {@link SigninActivity}.
+     * @param syncConsentActivityLauncher launcher used to launch the {@link SigninActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
     public static boolean launchSigninPromoIfNeeded(Context context,
-            SigninActivityLauncher signinActivityLauncher, final int currentMajorVersion) {
+            SyncConsentActivityLauncher syncConsentActivityLauncher,
+            final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
         final int lastPromoMajorVersion = prefManager.getSigninPromoLastShownVersion();
         if (lastPromoMajorVersion == 0) {
@@ -90,7 +91,8 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        signinActivityLauncher.launchActivityIfAllowed(context, SigninAccessPoint.SIGNIN_PROMO);
+        syncConsentActivityLauncher.launchActivityIfAllowed(
+                context, SigninAccessPoint.SIGNIN_PROMO);
         prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
         prefManager.setSigninPromoLastAccountNames(new HashSet<>(currentAccountNames));
         return true;

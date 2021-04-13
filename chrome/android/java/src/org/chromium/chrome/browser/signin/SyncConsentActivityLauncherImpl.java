@@ -13,33 +13,33 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
- * SigninActivityLauncher creates the proper intent and then launches the
- * SigninActivity in different scenarios.
+ * SyncConsentActivityLauncher creates the proper intent and then launches the
+ * {@link SyncConsentActivity} in different scenarios.
  */
-public final class SigninActivityLauncherImpl implements SigninActivityLauncher {
-    private static SigninActivityLauncher sLauncher;
+public final class SyncConsentActivityLauncherImpl implements SyncConsentActivityLauncher {
+    private static SyncConsentActivityLauncher sLauncher;
 
     /**
      * Singleton instance getter
      */
-    public static SigninActivityLauncher get() {
+    public static SyncConsentActivityLauncher get() {
         if (sLauncher == null) {
-            sLauncher = new SigninActivityLauncherImpl();
+            sLauncher = new SyncConsentActivityLauncherImpl();
         }
         return sLauncher;
     }
 
     @VisibleForTesting
-    public static void setLauncherForTest(@Nullable SigninActivityLauncher launcher) {
+    public static void setLauncherForTest(@Nullable SyncConsentActivityLauncher launcher) {
         sLauncher = launcher;
     }
 
-    private SigninActivityLauncherImpl() {}
+    private SyncConsentActivityLauncherImpl() {}
 
     /**
      * Launches the SigninActivity with default sign-in flow from personalized sign-in promo.

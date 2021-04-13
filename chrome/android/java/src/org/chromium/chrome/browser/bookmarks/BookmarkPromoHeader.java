@@ -19,7 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -102,7 +102,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
             mSigninPromoController = new SigninPromoController(
-                    SigninAccessPoint.BOOKMARK_MANAGER, SigninActivityLauncherImpl.get());
+                    SigninAccessPoint.BOOKMARK_MANAGER, SyncConsentActivityLauncherImpl.get());
             mAccountManagerFacade.addObserver(this);
         } else {
             mProfileDataCache = null;

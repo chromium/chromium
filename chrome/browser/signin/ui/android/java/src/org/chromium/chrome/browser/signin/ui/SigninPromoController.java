@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher.AccessPoint;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -62,7 +62,7 @@ public class SigninPromoController {
     private final @Nullable String mImpressionsTilXButtonHistogramName;
     private final @StringRes int mDescriptionStringId;
     private final @StringRes int mDescriptionStringIdNoAccount;
-    private final SigninActivityLauncher mSigninActivityLauncher;
+    private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private boolean mWasDisplayed;
     private boolean mWasUsed;
 
@@ -98,12 +98,12 @@ public class SigninPromoController {
     /**
      * Creates a new SigninPromoController.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
-     * @param signinActivityLauncher Launcher of {@link SigninActivity}.
+     * @param syncConsentActivityLauncher Launcher of {@link SigninActivity}.
      */
     public SigninPromoController(
-            @AccessPoint int accessPoint, SigninActivityLauncher signinActivityLauncher) {
+            @AccessPoint int accessPoint, SyncConsentActivityLauncher syncConsentActivityLauncher) {
         mAccessPoint = accessPoint;
-        mSigninActivityLauncher = signinActivityLauncher;
+        mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 mImpressionCountName =
@@ -314,20 +314,20 @@ public class SigninPromoController {
     private void signinWithNewAccount(Context context) {
         recordSigninButtonUsed();
         RecordUserAction.record(mSigninNewAccountUserActionName);
-        mSigninActivityLauncher.launchActivityForPromoAddAccountFlow(context, mAccessPoint);
+        mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(context, mAccessPoint);
     }
 
     private void signinWithDefaultAccount(Context context) {
         recordSigninButtonUsed();
         RecordUserAction.record(mSigninWithDefaultUserActionName);
-        mSigninActivityLauncher.launchActivityForPromoDefaultFlow(
+        mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
                 context, mAccessPoint, mProfileData.getAccountEmail());
     }
 
     private void signinWithNotDefaultAccount(Context context) {
         recordSigninButtonUsed();
         RecordUserAction.record(mSigninNotDefaultUserActionName);
-        mSigninActivityLauncher.launchActivityForPromoChooseAccountFlow(
+        mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
                 context, mAccessPoint, mProfileData.getAccountEmail());
     }
 

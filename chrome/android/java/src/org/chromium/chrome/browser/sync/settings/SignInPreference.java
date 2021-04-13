@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -190,7 +190,7 @@ public class SignInPreference
         setWidgetLayoutResource(0);
         setViewEnabled(true);
         setOnPreferenceClickListener(pref
-                -> SigninActivityLauncherImpl.get().launchActivityIfAllowed(
+                -> SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                         getContext(), SigninAccessPoint.SETTINGS));
 
         if (!mWasGenericSigninPromoDisplayed) {

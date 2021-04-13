@@ -52,7 +52,7 @@ final class SigninBridge {
             WindowAndroid windowAndroid, @SigninAccessPoint int accessPoint) {
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
-            SigninActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
+            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(context, accessPoint);
         }
     }
 

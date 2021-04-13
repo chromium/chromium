@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
@@ -315,7 +315,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
                 settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
             } else {
-                SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                         context, SigninAccessPoint.SETTINGS, primaryAccountName);
             }
             return true;

@@ -61,8 +61,8 @@ import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
@@ -125,7 +125,7 @@ public class MainSettingsFragmentTest {
     private PasswordCheck mPasswordCheck;
 
     @Mock
-    private SigninActivityLauncher mMockSigninActivityLauncher;
+    private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
     private @Nullable TemplateUrlService mActualTemplateUrlService;
 
@@ -136,7 +136,7 @@ public class MainSettingsFragmentTest {
         MockitoAnnotations.initMocks(this);
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
-        SigninActivityLauncherImpl.setLauncherForTest(mMockSigninActivityLauncher);
+        SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         NightModeUtils.setNightModeSupportedForTesting(true);
     }
@@ -322,7 +322,7 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         onView(withText(R.string.sync_category_title)).perform(click());
-        verify(mMockSigninActivityLauncher)
+        verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
                         eq(SigninAccessPoint.SETTINGS), eq(accountInfo.getEmail()));
     }

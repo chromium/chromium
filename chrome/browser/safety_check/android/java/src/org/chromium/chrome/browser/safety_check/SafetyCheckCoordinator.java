@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordScriptsFetcherBridge;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -22,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
-    private SigninActivityLauncher mSigninLauncher;
+    private SyncConsentActivityLauncher mSigninLauncher;
     private SafetyCheckMediator mMediator;
 
     /**
@@ -36,7 +36,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
      */
     public static void create(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
-            SigninActivityLauncher signinLauncher) {
+            SyncConsentActivityLauncher signinLauncher) {
         new SafetyCheckCoordinator(
                 settingsFragment, updatesClient, settingsLauncher, signinLauncher);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
@@ -47,7 +47,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
 
     private SafetyCheckCoordinator(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
-            SigninActivityLauncher signinLauncher) {
+            SyncConsentActivityLauncher signinLauncher) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         // Create the model and the mediator once the view is created.

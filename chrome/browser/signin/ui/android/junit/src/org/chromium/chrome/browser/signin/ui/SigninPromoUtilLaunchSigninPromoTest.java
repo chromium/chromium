@@ -72,7 +72,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     private IdentityManager mIdentityManagerMock;
 
     @Mock
-    private SigninActivityLauncher mLauncherMock;
+    private SyncConsentActivityLauncher mLauncherMock;
 
     private final Context mContext = RuntimeEnvironment.systemContext;
     private final SigninPreferencesManager mPrefManager = SigninPreferencesManager.getInstance();

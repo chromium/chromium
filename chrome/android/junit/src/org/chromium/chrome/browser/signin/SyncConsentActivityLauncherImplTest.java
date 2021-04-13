@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
- * Tests {@link SigninActivityLauncherImpl}.
+ * Tests {@link SyncConsentActivityLauncherImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SyncConsentActivityLauncherImplTest {
@@ -55,7 +55,7 @@ public class SyncConsentActivityLauncherImplTest {
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsAllowed() {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
-        Assert.assertTrue(SigninActivityLauncherImpl.get().launchActivityIfAllowed(
+        Assert.assertTrue(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                 mContextMock, SigninAccessPoint.SETTINGS));
         verify(mContextMock).startActivity(notNull());
     }
@@ -65,7 +65,7 @@ public class SyncConsentActivityLauncherImplTest {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
         Object toastBeforeCall = ShadowToast.getLatestToast();
-        Assert.assertFalse(SigninActivityLauncherImpl.get().launchActivityIfAllowed(
+        Assert.assertFalse(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                 mContext, SigninAccessPoint.SETTINGS));
         Object toastAfterCall = ShadowToast.getLatestToast();
         Assert.assertEquals(
@@ -76,7 +76,7 @@ public class SyncConsentActivityLauncherImplTest {
     public void testLaunchActivityIfAllowedWhenSigninIsDisabledByPolicy() {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
-        Assert.assertFalse(SigninActivityLauncherImpl.get().launchActivityIfAllowed(
+        Assert.assertFalse(SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                 mContext, SigninAccessPoint.SETTINGS));
         Assert.assertTrue(ShadowToast.showedCustomToast(
                 mContext.getResources().getString(R.string.managed_by_your_organization),

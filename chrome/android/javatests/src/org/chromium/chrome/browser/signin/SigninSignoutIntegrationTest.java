@@ -121,7 +121,7 @@ public class SigninSignoutIntegrationTest {
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         SyncConsentActivity syncConsentActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
                 });
