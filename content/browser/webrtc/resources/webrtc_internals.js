@@ -222,6 +222,7 @@ function changeToLegacyGetStats() {
   selectElement.value = currentGetStatsMethod;
   requestStats();
 }
+window.changeToLegacyGetStats = changeToLegacyGetStats;
 
 /**
  * A helper function for getting a peer connection element id.
