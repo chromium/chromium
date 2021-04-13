@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
@@ -291,7 +292,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
   EXPECT_TRUE(did_log_info);
   EXPECT_TRUE(did_log_error);
 }
-#endif
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(LoggingTest, InitWithFileDescriptor) {
@@ -712,7 +713,8 @@ namespace nested_test {
 
 #if defined(OS_FUCHSIA)
 
-// Verifies that calling the log macro goes to the Fuchsia system logs.
+// Verifies that calling the log macro goes to the Fuchsia system logs, by
+// default.
 TEST_F(LoggingTest, FuchsiaSystemLogging) {
   constexpr char kLogMessage[] = "system log!";
 
@@ -721,11 +723,15 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
   // Connect the test LogListenerSafe to the Log.
   std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
       std::make_unique<fuchsia::logger::LogFilterOptions>();
-  options->tags = {"base_unittests__exec"};
+  options->filter_by_pid = true;
+  options->pid = base::Process::Current().Pid();
   fuchsia::logger::LogPtr log = base::ComponentContextForProcess()
                                     ->svc()
                                     ->Connect<fuchsia::logger::Log>();
   listener.ListenToLog(log.get(), std::move(options));
+
+  // Ensure that logging is directed to the system debug log.
+  CHECK(InitLogging({.logging_dest = LOG_DEFAULT}));
 
   // Emit the test log message, and spin the loop until it is reported to the
   // test listener.
