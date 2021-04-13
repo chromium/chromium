@@ -20,4 +20,14 @@ STATIC_ASSERT_ENUM(DragDropTypes::DRAG_COPY, DragOperation::kCopy);
 STATIC_ASSERT_ENUM(DragDropTypes::DRAG_LINK, DragOperation::kLink);
 STATIC_ASSERT_ENUM(DragDropTypes::DRAG_MOVE, DragOperation::kMove);
 
+DragOperation PreferredDragOperation(int operations) {
+  if (operations & DragDropTypes::DRAG_COPY)
+    return DragOperation::kCopy;
+  if (operations & DragDropTypes::DRAG_MOVE)
+    return DragOperation::kMove;
+  if (operations & DragDropTypes::DRAG_LINK)
+    return DragOperation::kLink;
+  return DragOperation::kNone;
+}
+
 }  // namespace ui

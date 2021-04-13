@@ -25,7 +25,6 @@ DesktopDragDropClientWin::DesktopDragDropClientWin(
     HWND window,
     DesktopWindowTreeHostWin* desktop_host)
     : drag_drop_in_progress_(false),
-      drag_operation_(0),
       desktop_host_(desktop_host) {
   drop_target_ = new DesktopDropTargetWin(root_window);
   drop_target_->Init(window);
@@ -36,15 +35,14 @@ DesktopDragDropClientWin::~DesktopDragDropClientWin() {
     DragCancel();
 }
 
-int DesktopDragDropClientWin::StartDragAndDrop(
+ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int operation,
+    int allowed_operations,
     ui::mojom::DragEventSource source) {
   drag_drop_in_progress_ = true;
-  drag_operation_ = operation;
   if (source == ui::mojom::DragEventSource::kTouch) {
     gfx::Point screen_point = display::win::ScreenWin::DIPToScreenPoint(
         {screen_location.x(), screen_location.y()});
@@ -78,7 +76,8 @@ int DesktopDragDropClientWin::StartDragAndDrop(
   HRESULT result = ::DoDragDrop(
       ui::OSExchangeDataProviderWin::GetIDataObject(*data.get()),
       drag_source_.Get(),
-      ui::DragDropTypes::DragOperationToDropEffect(operation), &effect);
+      ui::DragDropTypes::DragOperationToDropEffect(allowed_operations),
+      &effect);
   if (alive && source == ui::mojom::DragEventSource::kTouch) {
     // In a normal drag drop, ::DoDragDrop calls QueryContinueDrag every time
     // it gets a mouse or keyboard event. The windows doc
@@ -109,12 +108,12 @@ int DesktopDragDropClientWin::StartDragAndDrop(
   if (result != DRAGDROP_S_DROP)
     effect = DROPEFFECT_NONE;
 
-  return ui::DragDropTypes::DropEffectToDragOperation(effect);
+  return ui::PreferredDragOperation(
+      ui::DragDropTypes::DropEffectToDragOperation(effect));
 }
 
 void DesktopDragDropClientWin::DragCancel() {
   drag_source_->CancelDrag();
-  drag_operation_ = 0;
 }
 
 bool DesktopDragDropClientWin::IsDragDropInProgress() {

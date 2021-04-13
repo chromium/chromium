@@ -30,9 +30,10 @@
 #include "ui/events/event_handler.h"
 #endif
 
-using base::ASCIIToUTF16;
-
 namespace views {
+
+using ::base::ASCIIToUTF16;
+using ::ui::mojom::DragOperation;
 
 class TestMenuButton : public MenuButton {
  public:
@@ -189,12 +190,12 @@ class TestDragDropClient : public aura::client::DragDropClient,
   ~TestDragDropClient() override;
 
   // aura::client::DragDropClient:
-  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                       aura::Window* root_window,
-                       aura::Window* source_window,
-                       const gfx::Point& screen_location,
-                       int operation,
-                       ui::mojom::DragEventSource source) override;
+  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
+                                 aura::Window* root_window,
+                                 aura::Window* source_window,
+                                 const gfx::Point& screen_location,
+                                 int allowed_operations,
+                                 ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override {}
@@ -216,18 +217,18 @@ TestDragDropClient::TestDragDropClient() = default;
 
 TestDragDropClient::~TestDragDropClient() = default;
 
-int TestDragDropClient::StartDragAndDrop(
+DragOperation TestDragDropClient::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int operation,
+    int allowed_operations,
     ui::mojom::DragEventSource source) {
   if (IsDragDropInProgress())
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   drag_in_progress_ = true;
   target_ = root_window;
-  return operation;
+  return ui::PreferredDragOperation(allowed_operations);
 }
 
 void TestDragDropClient::DragCancel() {

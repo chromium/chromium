@@ -21,6 +21,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -37,8 +38,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 uint32_t DndActionsToDragOperations(const base::flat_set<DndAction>& actions) {
   uint32_t dnd_operations = 0;
@@ -72,13 +74,13 @@ DndAction DragOperationsToPreferredDndAction(int op) {
 }
 #endif
 
-DndAction DragOperationToDndAction(int op) {
+DndAction DragOperationToDndAction(DragOperation op) {
   switch (op) {
-    case ui::DragDropTypes::DragOperation::DRAG_NONE:
+    case DragOperation::kNone:
       return DndAction::kNone;
-    case ui::DragDropTypes::DragOperation::DRAG_MOVE:
+    case DragOperation::kMove:
       return DndAction::kMove;
-    case ui::DragDropTypes::DragOperation::DRAG_COPY:
+    case DragOperation::kCopy:
       return DndAction::kCopy;
     default:
       NOTREACHED();
@@ -318,7 +320,7 @@ void DragDropOperation::StartDragDropOperation() {
 
   // This triggers a nested run loop that terminates when the drag and drop
   // operation is completed.
-  int op = drag_drop_controller_->StartDragAndDrop(
+  DragOperation op = drag_drop_controller_->StartDragAndDrop(
       std::move(os_exchange_data_), origin_->get()->window()->GetRootWindow(),
       origin_->get()->window(), drag_start_point, dnd_operations,
       event_source_);
@@ -327,7 +329,7 @@ void DragDropOperation::StartDragDropOperation() {
   if (!weak_ptr)
     return;
 
-  if (op) {
+  if (op != DragOperation::kNone) {
     // Success
 
     // TODO(crbug.com/994065) This is currently not the actual mime type used by

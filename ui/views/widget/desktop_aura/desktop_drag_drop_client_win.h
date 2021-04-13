@@ -39,12 +39,13 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   ~DesktopDragDropClientWin() override;
 
   // Overridden from aura::client::DragDropClient:
-  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                       aura::Window* root_window,
-                       aura::Window* source_window,
-                       const gfx::Point& screen_location,
-                       int operation,
-                       ui::mojom::DragEventSource source) override;
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
@@ -54,8 +55,6 @@ class VIEWS_EXPORT DesktopDragDropClientWin
 
  private:
   bool drag_drop_in_progress_;
-
-  int drag_operation_;
 
   Microsoft::WRL::ComPtr<ui::DragSourceWin> drag_source_;
 

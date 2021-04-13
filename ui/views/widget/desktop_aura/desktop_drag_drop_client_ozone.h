@@ -12,6 +12,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -70,12 +71,13 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   };
 
   // aura::client::DragDropClient
-  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                       aura::Window* root_window,
-                       aura::Window* source_window,
-                       const gfx::Point& root_location,
-                       int operation,
-                       ui::mojom::DragEventSource source) override;
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& root_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override;
   void DragCancel() override;
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
@@ -98,9 +100,8 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
 
   // ui::WmDragHandler::Delegate
   void OnDragLocationChanged(const gfx::Point& screen_point_px) override;
-  void OnDragOperationChanged(
-      ui::DragDropTypes::DragOperation operation) override;
-  void OnDragFinished(int operation) override;
+  void OnDragOperationChanged(ui::mojom::DragOperation operation) override;
+  void OnDragFinished(ui::mojom::DragOperation operation) override;
 
   // Returns a DropTargetEvent to be passed to the DragDropDelegate.
   // Updates the delegate if needed, which in its turn calls their
@@ -141,8 +142,8 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   // used at dropping.
   int last_drop_operation_ = 0;
 
-  // The operation bitfield.
-  int drag_operation_ = 0;
+  // The selected operation on drop.
+  ui::mojom::DragOperation drag_operation_ = ui::mojom::DragOperation::kNone;
 
   std::unique_ptr<DragContext> drag_context_;
 

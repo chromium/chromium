@@ -5,7 +5,7 @@
 #ifndef ASH_DRAG_DROP_TOPLEVEL_WINDOW_DRAG_DELEGATE_H_
 #define ASH_DRAG_DROP_TOPLEVEL_WINDOW_DRAG_DELEGATE_H_
 
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace gfx {
 class PointF;
@@ -25,7 +25,7 @@ class ToplevelWindowDragDelegate {
       const gfx::PointF& start_location,
       ui::mojom::DragEventSource source) = 0;
 
-  virtual int OnToplevelWindowDragDropped() = 0;
+  virtual ui::mojom::DragOperation OnToplevelWindowDragDropped() = 0;
 
   virtual void OnToplevelWindowDragCancelled() = 0;
 

@@ -6754,6 +6754,7 @@ if (!is_android) {
       deps += [
         "//ui/aura:aura_interactive_ui_tests",
         "//ui/base/dragdrop:types",
+        "//ui/base/dragdrop/mojom",
       ]
     } else {
       sources -= [
