@@ -305,9 +305,6 @@ id<GREYMatcher> NoBookmarksLabel() {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
-  // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.

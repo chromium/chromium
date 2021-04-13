@@ -162,6 +162,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // Clears fake sync server data if the server is running.
 - (void)clearSyncServerData;
 
+// Clears the first sync setup preference. The user will be effectively in
+// the signed-in state with no syncing consent.
+- (void)clearSyncFirstSetupComplete;
+
 // Starts the sync server. The server should not be running when calling this.
 - (void)startSync;
 

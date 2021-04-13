@@ -77,10 +77,8 @@ namespace {
 
 // List of sources for which sign out is always allowed.
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Allowed, because data has not been synced yet.
     signin_metrics::ProfileSignout::ABORT_SIGNIN,
-#endif
     // Allowed, because only used on Android and the primary account must be
     // cleared when the account is removed from device
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,

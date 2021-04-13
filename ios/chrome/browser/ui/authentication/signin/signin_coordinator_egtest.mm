@@ -459,13 +459,9 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   GREYAssertEqual(expectedURL, [ChromeEarlGrey webStateVisibleURL],
                   @"Didn't open new tab with example.com.");
 
-  if (tapSettingsLink) {
-    // Should be signed in.
-    [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  } else {
-    // Should be not signed in.
-    [SigninEarlGrey verifySignedOut];
-  }
+  // Should be not signed in.
+  [SigninEarlGrey verifySignedOut];
+
   // Check that the web page is visible.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(

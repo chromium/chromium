@@ -69,19 +69,20 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
   [self selectIdentityWithEmail:fakeIdentity.userEmail];
+  [self tapSigninConfirmationDialog];
+  CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Sync utilities require sync to be initialized in order to perform
+  // operations on the Sync server.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+
   if (!enableSync) {
-    // Use "settings" link and open an external URL to not turn on sync.
-    [SigninEarlGreyUI tapSettingsLink];
-    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
-    [ChromeEarlGreyUI waitForAppToIdle];
-    [ChromeEarlGrey simulateExternalAppURLOpening];
-  } else {
-    [self tapSigninConfirmationDialog];
-    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
-    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-        performAction:grey_tap()];
+    [ChromeEarlGrey stopSync];
+    [ChromeEarlGrey clearSyncFirstSetupComplete];
   }
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 + (void)signOut {

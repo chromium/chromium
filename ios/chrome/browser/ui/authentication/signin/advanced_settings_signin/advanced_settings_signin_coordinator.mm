@@ -6,10 +6,13 @@
 
 #include "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -49,6 +52,8 @@ using l10n_util::GetNSString;
 // Confirm cancel sign-in/sync dialog.
 @property(nonatomic, strong)
     ActionSheetCoordinator* cancelConfirmationAlertCoordinator;
+// Manager for user's Google identities.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 @end
 
@@ -62,6 +67,8 @@ using l10n_util::GetNSString;
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   DCHECK(authenticationService->IsAuthenticated());
+  self.identityManager = IdentityManagerFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
   self.advancedSettingsSigninNavigationController =
       [[AdvancedSettingsSigninNavigationController alloc] init];
   self.advancedSettingsSigninNavigationController.modalPresentationStyle =
@@ -98,6 +105,11 @@ using l10n_util::GetNSString;
   DCHECK(self.advancedSettingsSigninNavigationController);
   [self.syncSettingsCoordinator stop];
   self.syncSettingsCoordinator = nil;
+
+  // Revokes all refresh tokens and alerts services of the signed-out state.
+  self.identityManager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ABORT_SIGNIN,
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:

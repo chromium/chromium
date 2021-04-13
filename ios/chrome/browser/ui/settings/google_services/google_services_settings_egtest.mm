@@ -135,9 +135,7 @@ using chrome_test_util::SyncSettingsConfirmButton;
   // Needs to wait until the sign-in dialog is fully dismissed to continue.
   [ChromeEarlGreyUI waitForAppToIdle];
   [self openGoogleServicesSettings];
-  // Verify the sync is not confirmed yet.
-  [self assertCellWithTitleID:IDS_IOS_SYNC_SETUP_NOT_CONFIRMED_TITLE
-                 detailTextID:IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Opens the SSO add account view, from the Google services settings.
