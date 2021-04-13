@@ -40,3 +40,14 @@ std::string NearbyConnectionsManager::ConnectionsStatusToString(
       return "kPayloadUnknown";
   }
 }
+
+NearbyConnectionsManager::PayloadStatusListener::PayloadStatusListener() =
+    default;
+
+NearbyConnectionsManager::PayloadStatusListener::~PayloadStatusListener() =
+    default;
+
+base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
+NearbyConnectionsManager::PayloadStatusListener::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
+}

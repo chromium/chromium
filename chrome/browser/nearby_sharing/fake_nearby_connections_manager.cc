@@ -86,9 +86,10 @@ void FakeNearbyConnectionsManager::Disconnect(const std::string& endpoint_id) {
   connection_endpoint_infos_.erase(endpoint_id);
 }
 
-void FakeNearbyConnectionsManager::Send(const std::string& endpoint_id,
-                                        PayloadPtr payload,
-                                        PayloadStatusListener* listener) {
+void FakeNearbyConnectionsManager::Send(
+    const std::string& endpoint_id,
+    PayloadPtr payload,
+    base::WeakPtr<PayloadStatusListener> listener) {
   DCHECK(!is_shutdown());
   if (send_payload_callback_)
     send_payload_callback_.Run(std::move(payload), listener);
@@ -96,7 +97,7 @@ void FakeNearbyConnectionsManager::Send(const std::string& endpoint_id,
 
 void FakeNearbyConnectionsManager::RegisterPayloadStatusListener(
     int64_t payload_id,
-    PayloadStatusListener* listener) {
+    base::WeakPtr<PayloadStatusListener> listener) {
   DCHECK(!is_shutdown());
 
   payload_status_listeners_[payload_id] = listener;
@@ -138,7 +139,7 @@ FakeNearbyConnectionsManager::GetIncomingPayload(int64_t payload_id) {
 
 void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
   DCHECK(!is_shutdown());
-  PayloadStatusListener* listener =
+  base::WeakPtr<PayloadStatusListener> listener =
       GetRegisteredPayloadStatusListener(payload_id);
   if (listener) {
     listener->OnStatusUpdate(
@@ -221,7 +222,7 @@ void FakeNearbyConnectionsManager::SetPayloadPathStatus(
   payload_path_status_[payload_id] = status;
 }
 
-FakeNearbyConnectionsManager::PayloadStatusListener*
+base::WeakPtr<FakeNearbyConnectionsManager::PayloadStatusListener>
 FakeNearbyConnectionsManager::GetRegisteredPayloadStatusListener(
     int64_t payload_id) {
   auto it = payload_status_listeners_.find(payload_id);

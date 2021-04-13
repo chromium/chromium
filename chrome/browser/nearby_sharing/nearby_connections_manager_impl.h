@@ -54,9 +54,10 @@ class NearbyConnectionsManagerImpl
   void Disconnect(const std::string& endpoint_id) override;
   void Send(const std::string& endpoint_id,
             PayloadPtr payload,
-            PayloadStatusListener* listener) override;
-  void RegisterPayloadStatusListener(int64_t payload_id,
-                                     PayloadStatusListener* listener) override;
+            base::WeakPtr<PayloadStatusListener> listener) override;
+  void RegisterPayloadStatusListener(
+      int64_t payload_id,
+      base::WeakPtr<PayloadStatusListener> listener) override;
   void RegisterPayloadPath(int64_t payload_id,
                            const base::FilePath& file_path,
                            ConnectionsCallback callback) override;
@@ -153,8 +154,9 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;
-  // A map of payload_id to PayloadStatusListener*.
-  base::flat_map<int64_t, PayloadStatusListener*> payload_status_listeners_;
+  // A map of payload_id to PayloadStatusListener weak pointer.
+  base::flat_map<int64_t, base::WeakPtr<PayloadStatusListener>>
+      payload_status_listeners_;
   // A map of payload_id to PayloadPtr.
   base::flat_map<int64_t, PayloadPtr> incoming_payloads_;
 
