@@ -57,7 +57,6 @@ promise_test(async testCase => {
     await storageFoundation.delete('test_file');
     await storageFoundation.releaseCapacity(granted_capacity);
   });
-  const writeSharedArrayBuffer = new SharedArrayBuffer(granted_capacity + 1);
   const writeBuffer = new Uint8Array(granted_capacity + 1);
   writeBuffer.set(Array(granted_capacity + 1).fill(64));
 
