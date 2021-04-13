@@ -1933,11 +1933,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-incognito-mode-availability-ios",
-    "owners": [ "tinazwang", "sebsg" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-incognito-shortcut-on-desktop",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 92

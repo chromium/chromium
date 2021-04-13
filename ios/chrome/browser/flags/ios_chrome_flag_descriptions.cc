@@ -192,12 +192,6 @@ const char kEnableFullPageScreenshotDescription[] =
     "Enables the option of capturing an entire webpage as a PDF when a "
     "screenshot is taken.";
 
-const char kEnableIncognitoModeAvailabilityIOSName[] =
-    "Enable Incognito Mode Management on IOS ";
-const char kEnableIncognitoModeAvailabilityIOSDescription[] =
-    "Enable the corresponding behaviours and UIs when incognito mode is "
-    "managed by the organization.";
-
 const char kEnableIOSManagedSettingsUIName[] = "Enable IOS Managed Settings UI";
 const char kEnableIOSManagedSettingsUIDescription[] =
     "Enable showing a different UI when the setting is managed by an "
