@@ -108,7 +108,7 @@ std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {
 void PageActionIconView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   View::ViewHierarchyChanged(details);
-  if (details.is_add && details.child == this && GetNativeTheme()) {
+  if (details.is_add && details.child == this) {
     UpdateIconImage();
     UpdateBorder();
   }
