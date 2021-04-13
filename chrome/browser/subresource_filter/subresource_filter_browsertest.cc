@@ -71,6 +71,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -665,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser()->OpenURL(content::OpenURLParams(
-      GURL(content::kChromeUICrashURL), content::Referrer(),
+      GURL(blink::kChromeUICrashURL), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
   crash_observer.Wait();
 }

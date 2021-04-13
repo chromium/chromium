@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -42,7 +43,7 @@ void SimulateGPUCrash(Browser* browser) {
   // either of the NavigateToURL entry points to support these two
   // constraints, so we use Navigate directly.
   NavigateParams params(
-      browser, GURL(content::kChromeUIGpuCrashURL),
+      browser, GURL(blink::kChromeUIGpuCrashURL),
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;

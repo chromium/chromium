@@ -11591,7 +11591,7 @@ TEST_F(WebFrameTest, LoadJavascriptURLInNewFrame) {
   KURL javascript_url = ToKURL("javascript:location='" + redirect_url + "'");
   url_test_helpers::RegisterMockedURLLoad(ToKURL(redirect_url),
                                           test::CoreTestDataPath("foo.html"));
-  helper.LocalMainFrame()->LoadJavaScriptURL(javascript_url);
+  helper.LocalMainFrame()->GetFrame()->LoadJavaScriptURL(javascript_url);
   RunPendingTasks();
 
   // The result of the JS url replaces the existing contents on the

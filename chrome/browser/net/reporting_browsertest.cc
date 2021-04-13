@@ -33,6 +33,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace {
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
 
   // Simulate a crash on the page.
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetController().LoadURL(GURL(content::kChromeUICrashURL),
+  contents->GetController().LoadURL(GURL(blink::kChromeUICrashURL),
                                     content::Referrer(),
                                     ui::PAGE_TRANSITION_TYPED, std::string());
 

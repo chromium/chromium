@@ -15,6 +15,7 @@
 #include "content/common/url_schemes.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -48,7 +49,7 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
 
   // Renderer debug URLs (e.g. chrome://kill) are handled in the renderer
   // process directly and should not be sent to the network stack.
-  if (IsRendererDebugURL(url))
+  if (blink::IsRendererDebugURL(url))
     return false;
 
   // For you information, even though a "data:" url doesn't generate actual
@@ -61,51 +62,6 @@ bool IsURLHandledByNetworkStack(const GURL& url) {
   // - the ones that target the top-level frame on Android.
 
   return true;
-}
-
-bool IsRendererDebugURL(const GURL& url) {
-  if (!url.is_valid())
-    return false;
-
-  if (url.SchemeIs(url::kJavaScriptScheme))
-    return true;
-
-  if (!url.SchemeIs(kChromeUIScheme))
-    return false;
-
-  if (url == kChromeUICheckCrashURL || url == kChromeUIBadCastCrashURL ||
-      url == kChromeUICrashURL || url == kChromeUIDumpURL ||
-      url == kChromeUIKillURL || url == kChromeUIHangURL ||
-      url == kChromeUIShorthangURL || url == kChromeUIMemoryExhaustURL) {
-    return true;
-  }
-
-#if defined(ADDRESS_SANITIZER)
-  if (url == kChromeUICrashHeapOverflowURL ||
-      url == kChromeUICrashHeapUnderflowURL ||
-      url == kChromeUICrashUseAfterFreeURL) {
-    return true;
-  }
-#endif
-
-#if defined(OS_WIN)
-  if (url == kChromeUIHeapCorruptionCrashURL)
-    return true;
-#endif
-
-#if DCHECK_IS_ON()
-  if (url == kChromeUICrashDcheckURL)
-    return true;
-#endif
-
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
-  if (url == kChromeUICrashCorruptHeapBlockURL ||
-      url == kChromeUICrashCorruptHeapURL) {
-    return true;
-  }
-#endif
-
-  return false;
 }
 
 bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {

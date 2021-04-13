@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -756,8 +757,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // We can't use NavigateToURL here since it accesses the shell() after
   // navigating, which the shell_closer deletes.
   ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), GURL(kChromeUICrashURL), 1);
+  NavigateToURLBlockUntilNavigationsComplete(shell(),
+                                             GURL(blink::kChromeUICrashURL), 1);
 
   // The key here is that all the RenderProcessExited callbacks precede all the
   // RenderProcessHostDestroyed callbacks.

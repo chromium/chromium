@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/crash_helpers.h"
+#include "third_party/blink/common/crash_helpers.h"
 
 #include "base/debug/alias.h"
 
-namespace content {
+namespace blink {
 
 namespace internal {
 
@@ -38,4 +38,4 @@ NOINLINE void BadCastCrashIntentionally() {
 
 }  // namespace internal
 
-}  // namespace content
+}  // namespace blink

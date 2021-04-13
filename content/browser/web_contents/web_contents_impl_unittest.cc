@@ -68,6 +68,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -437,10 +438,10 @@ TEST_F(WebContentsImplTest, NavigateToInvalidURL) {
 // inside a view-source: URL. This verifies that the navigation is not allowed
 // to proceed after the view-source: URL rewriting logic has run.
 TEST_F(WebContentsImplTest, NavigateToViewSourceRendererDebugURL) {
-  const GURL renderer_debug_url(kChromeUIKillURL);
+  const GURL renderer_debug_url(blink::kChromeUIKillURL);
   const GURL view_source_debug_url("view-source:" + renderer_debug_url.spec());
-  EXPECT_TRUE(IsRendererDebugURL(renderer_debug_url));
-  EXPECT_FALSE(IsRendererDebugURL(view_source_debug_url));
+  EXPECT_TRUE(blink::IsRendererDebugURL(renderer_debug_url));
+  EXPECT_FALSE(blink::IsRendererDebugURL(view_source_debug_url));
   controller().LoadURL(view_source_debug_url, Referrer(),
                        ui::PAGE_TRANSITION_GENERATED, std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());

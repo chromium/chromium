@@ -804,7 +804,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       CommitSameDocumentNavigationCallback callback) override;
-  void HandleRendererDebugURL(const GURL& url) override;
   void UpdateSubresourceLoaderFactories(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories) override;

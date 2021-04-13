@@ -328,9 +328,6 @@ interface Frame {
       CommitNavigationParams request_params)
       => (blink.mojom.CommitResult commit_result);
 
-  // Asks the renderer to handle a renderer-debug URL.
-  HandleRendererDebugURL(url.mojom.Url url);
-
   // Provides the renderer an updated |subresource_loader_factories|.
   //
   // This method is intended to fix broken loaders after a Network Service

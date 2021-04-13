@@ -95,6 +95,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
@@ -293,7 +294,7 @@ bool IsValidURLForNavigation(bool is_main_frame,
   // provides defense-in-depth if a renderer debug URL manages to get here via
   // some other path. We want to reject the navigation here so it doesn't
   // violate assumptions in downstream code.
-  if (IsRendererDebugURL(dest_url)) {
+  if (blink::IsRendererDebugURL(dest_url)) {
     LOG(WARNING) << "Refusing to load renderer debug URL: "
                  << dest_url.possibly_invalid_spec();
     return false;
@@ -2778,7 +2779,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     DCHECK(pending_entry_ == entries_[pending_entry_index_].get() ||
            pending_entry_ == entry_replaced_by_post_commit_error_.get());
   }
-  DCHECK(!IsRendererDebugURL(pending_entry_->GetURL()));
+  DCHECK(!blink::IsRendererDebugURL(pending_entry_->GetURL()));
   bool is_forced_reload = needs_reload_;
   needs_reload_ = false;
   FrameTreeNode* root = frame_tree_.root();
@@ -3172,7 +3173,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   // Note: we intentionally leave the pending entry in place for renderer debug
   // URLs, unlike the cases below where we clear it if the navigation doesn't
   // proceed.
-  if (IsRendererDebugURL(params.url)) {
+  if (blink::IsRendererDebugURL(params.url)) {
     // Renderer-debug URLs won't go through NavigationThrottlers so we have to
     // check them explicitly. See bug 913334.
     if (GetContentClient()->browser()->ShouldBlockRendererDebugURL(

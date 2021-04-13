@@ -23,6 +23,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterBrowserTest, MemoryExhaust) {
   // this URL will cause an OOM associated with the previous committed URL.
   ScopedAllowRendererCrashes allow_renderer_crashes(
       browser()->tab_strip_model()->GetActiveWebContents());
-  NavigateToURL(browser(), GURL(content::kChromeUIMemoryExhaustURL));
+  NavigateToURL(browser(), GURL(blink::kChromeUIMemoryExhaustURL));
   EXPECT_EQ(crash_url, last_oom_url_.value());
 }
 
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PortalOutOfMemoryReporterBrowserTest,
   OutOfMemoryReporter::FromWebContents(web_contents)->AddObserver(this);
 
   const GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
-  const GURL memory_exhaust_url(content::kChromeUIMemoryExhaustURL);
+  const GURL memory_exhaust_url(blink::kChromeUIMemoryExhaustURL);
 
   // Navigate the main web contents to a page with a <portal> element.
   ui_test_utils::NavigateToURL(browser(), url);
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PortalOutOfMemoryReporterBrowserTest,
   const GURL main_url(embedded_test_server()->GetURL("/portal/activate.html"));
   const GURL crash_url(
       embedded_test_server()->GetURL("/portal/activate-portal.html"));
-  const GURL memory_exhaust_url(content::kChromeUIMemoryExhaustURL);
+  const GURL memory_exhaust_url(blink::kChromeUIMemoryExhaustURL);
 
   // Navigate the main web contents to a page with a <portal> element.
   ui_test_utils::NavigateToURL(browser(), main_url);

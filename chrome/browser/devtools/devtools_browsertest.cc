@@ -109,6 +109,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
@@ -1916,7 +1917,7 @@ class DevToolsReattachAfterCrashTest : public DevToolsTest {
     content::RenderProcessHostWatcher crash_observer(
         GetInspectedTab(),
         content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    ui_test_utils::NavigateToURL(browser(), GURL(content::kChromeUICrashURL));
+    ui_test_utils::NavigateToURL(browser(), GURL(blink::kChromeUICrashURL));
     crash_observer.Wait();
     content::TestNavigationObserver navigation_observer(GetInspectedTab(), 1);
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);

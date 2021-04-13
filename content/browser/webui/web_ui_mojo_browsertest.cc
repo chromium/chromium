@@ -44,6 +44,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace content {
 namespace {
@@ -390,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, ChromeSendAvailable_AfterCrash) {
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   shell()->web_contents()->GetController().LoadURL(
-      GURL(content::kChromeUICrashURL), content::Referrer(),
+      GURL(blink::kChromeUICrashURL), content::Referrer(),
       ui::PAGE_TRANSITION_TYPED, std::string());
   crash_observer.Wait();
   EXPECT_FALSE(web_ui->GetRemoteForTest().is_bound());

@@ -337,7 +337,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_client_redirect,
       bool has_transient_user_activation,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
-  void LoadJavaScriptURL(const WebURL&) override;
   FallbackContentResult MaybeRenderFallbackContent(
       const WebURLError&) const override;
   void SetCommittedFirstRealLoad() override;

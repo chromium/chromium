@@ -53,59 +53,12 @@ CONTENT_EXPORT extern const char kChromeUITracingHost[];
 CONTENT_EXPORT extern const char kChromeUIUkmHost[];
 CONTENT_EXPORT extern const char kChromeUIWebRTCInternalsHost[];
 
-// Full about URLs (including schemes).
-CONTENT_EXPORT extern const char kChromeUIBadCastCrashURL[];
-CONTENT_EXPORT extern const char kChromeUICheckCrashURL[];
-CONTENT_EXPORT extern const char kChromeUIBrowserCrashURL[];
-CONTENT_EXPORT extern const char kChromeUIBrowserUIHang[];
-CONTENT_EXPORT extern const char kChromeUICrashURL[];
-CONTENT_EXPORT extern const char kChromeUIDelayedBrowserUIHang[];
-CONTENT_EXPORT extern const char kChromeUIDumpURL[];
-CONTENT_EXPORT extern const char kChromeUIGpuCleanURL[];
-CONTENT_EXPORT extern const char kChromeUIGpuCrashURL[];
-CONTENT_EXPORT extern const char kChromeUIGpuHangURL[];
-CONTENT_EXPORT extern const char kChromeUIHangURL[];
-CONTENT_EXPORT extern const char kChromeUIKillURL[];
-CONTENT_EXPORT extern const char kChromeUIMemoryExhaustURL[];
-CONTENT_EXPORT extern const char kChromeUIMemoryPressureCriticalURL[];
-CONTENT_EXPORT extern const char kChromeUIMemoryPressureModerateURL[];
-CONTENT_EXPORT extern const char kChromeUINetworkErrorsListingURL[];
-CONTENT_EXPORT extern const char kChromeUINetworkErrorURL[];
-CONTENT_EXPORT extern const char kChromeUIPpapiFlashCrashURL[];
-CONTENT_EXPORT extern const char kChromeUIPpapiFlashHangURL[];
-CONTENT_EXPORT extern const char kChromeUIProcessInternalsURL[];
-#if defined(OS_ANDROID)
-CONTENT_EXPORT extern const char kChromeUIGpuJavaCrashURL[];
-#endif
-#if defined(OS_WIN)
-CONTENT_EXPORT extern const char kChromeUIBrowserHeapCorruptionURL[];
-CONTENT_EXPORT extern const char kChromeUIHeapCorruptionCrashURL[];
-#endif
-#if defined(ADDRESS_SANITIZER)
-CONTENT_EXPORT extern const char kChromeUICrashHeapOverflowURL[];
-CONTENT_EXPORT extern const char kChromeUICrashHeapUnderflowURL[];
-CONTENT_EXPORT extern const char kChromeUICrashUseAfterFreeURL[];
-#if defined(OS_WIN)
-CONTENT_EXPORT extern const char kChromeUICrashCorruptHeapBlockURL[];
-CONTENT_EXPORT extern const char kChromeUICrashCorruptHeapURL[];
-#endif  // OS_WIN
-#endif  // ADDRESS_SANITIZER
-
-#if DCHECK_IS_ON()
-CONTENT_EXPORT extern const char kChromeUICrashDcheckURL[];
-#endif
-
 // Special URL used to start a navigation to an error page.
 CONTENT_EXPORT extern const char kUnreachableWebDataURL[];
 
 // Special URL used to rewrite URLs coming from untrusted processes, when the
 // source process is not allowed access to the initially requested URL.
 CONTENT_EXPORT extern const char kBlockedURL[];
-
-// Full about URLs (including schemes).
-CONTENT_EXPORT extern const char kChromeUINetworkViewCacheURL[];
-CONTENT_EXPORT extern const char kChromeUIResourcesURL[];
-CONTENT_EXPORT extern const char kChromeUIShorthangURL[];
 
 }  // namespace content
 

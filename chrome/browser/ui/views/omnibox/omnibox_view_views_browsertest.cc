@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -698,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_ReloadAfterKill) {
   // Kill the tab with chrome://kill
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    ui_test_utils::NavigateToURL(browser(), GURL(content::kChromeUIKillURL));
+    ui_test_utils::NavigateToURL(browser(), GURL(blink::kChromeUIKillURL));
     EXPECT_TRUE(tab->IsCrashed());
   }
 

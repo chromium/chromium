@@ -763,6 +763,9 @@ interface LocalFrame {
   ExtractSmartClipData(gfx.mojom.Rect rect)
       => (mojo_base.mojom.String16 text, mojo_base.mojom.String16 html,
               gfx.mojom.Rect clip_rect);
+
+  // Asks the renderer to handle a renderer-debug URL.
+  HandleRendererDebugURL(url.mojom.Url url);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

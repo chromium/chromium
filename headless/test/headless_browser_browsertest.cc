@@ -46,6 +46,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/geometry/size.h"
@@ -493,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, MAYBE_GenerateMinidump) {
   browser_context_ = browser()->CreateBrowserContextBuilder().Build();
 
   web_contents_ = browser_context_->CreateWebContentsBuilder()
-                      .SetInitialURL(GURL(content::kChromeUICrashURL))
+                      .SetInitialURL(GURL(blink::kChromeUICrashURL))
                       .Build();
 
   web_contents_->AddObserver(this);

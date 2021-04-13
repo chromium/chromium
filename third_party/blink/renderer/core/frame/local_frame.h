@@ -699,6 +699,7 @@ class CORE_EXPORT LocalFrame final
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) final;
 #endif
+  void HandleRendererDebugURL(const KURL& url) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,
@@ -799,6 +800,8 @@ class CORE_EXPORT LocalFrame final
   // Called after the document in this frame dispatched the prerenderingchange
   // event.
   void DidActivateForPrerendering();
+
+  void LoadJavaScriptURL(const KURL& url);
 
  private:
   friend class FrameNavigationDisabler;

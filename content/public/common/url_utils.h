@@ -23,12 +23,6 @@ CONTENT_EXPORT bool IsSavableURL(const GURL& url);
 // about:blank. In these cases, no request needs to be sent.
 CONTENT_EXPORT bool IsURLHandledByNetworkStack(const GURL& url);
 
-// Returns whether the given url is either a debugging url handled in the
-// renderer process, such as one that crashes or hangs the renderer, or a
-// javascript: URL that operates on the current page in the renderer.  Such URLs
-// do not represent actual navigations and can be loaded in any SiteInstance.
-CONTENT_EXPORT bool IsRendererDebugURL(const GURL& url);
-
 // Determines whether it is safe to redirect from |from_url| to |to_url|.
 CONTENT_EXPORT bool IsSafeRedirectTarget(const GURL& from_url,
                                          const GURL& to_url);

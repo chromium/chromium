@@ -10,6 +10,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/web_ui/constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace chrome {
 
@@ -626,27 +627,27 @@ const size_t kNumberOfChromeInternalsPathURLs =
     base::size(kChromeInternalsPathURLs);
 
 const char* const kChromeDebugURLs[] = {
-    content::kChromeUIBadCastCrashURL,
-    content::kChromeUIBrowserCrashURL,
-    content::kChromeUICrashURL,
-    content::kChromeUIDumpURL,
-    content::kChromeUIKillURL,
-    content::kChromeUIHangURL,
-    content::kChromeUIShorthangURL,
-    content::kChromeUIGpuCleanURL,
-    content::kChromeUIGpuCrashURL,
-    content::kChromeUIGpuHangURL,
-    content::kChromeUIMemoryExhaustURL,
-    content::kChromeUIMemoryPressureCriticalURL,
-    content::kChromeUIMemoryPressureModerateURL,
-    content::kChromeUIPpapiFlashCrashURL,
-    content::kChromeUIPpapiFlashHangURL,
+    blink::kChromeUIBadCastCrashURL,
+    blink::kChromeUIBrowserCrashURL,
+    blink::kChromeUICrashURL,
+    blink::kChromeUIDumpURL,
+    blink::kChromeUIKillURL,
+    blink::kChromeUIHangURL,
+    blink::kChromeUIShorthangURL,
+    blink::kChromeUIGpuCleanURL,
+    blink::kChromeUIGpuCrashURL,
+    blink::kChromeUIGpuHangURL,
+    blink::kChromeUIMemoryExhaustURL,
+    blink::kChromeUIMemoryPressureCriticalURL,
+    blink::kChromeUIMemoryPressureModerateURL,
+    blink::kChromeUIPpapiFlashCrashURL,
+    blink::kChromeUIPpapiFlashHangURL,
 #if defined(OS_WIN)
-    content::kChromeUIBrowserHeapCorruptionURL,
-    content::kChromeUIHeapCorruptionCrashURL,
+    blink::kChromeUIBrowserHeapCorruptionURL,
+    blink::kChromeUIHeapCorruptionCrashURL,
 #endif
 #if defined(OS_ANDROID)
-    content::kChromeUIGpuJavaCrashURL,
+    blink::kChromeUIGpuJavaCrashURL,
     kChromeUIJavaCrashURL,
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

@@ -59,8 +59,6 @@ target(link_target_type, "renderer") {
     "compositor/compositor_dependencies.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
-    "crash_helpers.cc",
-    "crash_helpers.h",
     "discardable_memory_utils.cc",
     "discardable_memory_utils.h",
     "dom_automation_controller.cc",

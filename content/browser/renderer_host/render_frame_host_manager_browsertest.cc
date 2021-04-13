@@ -82,6 +82,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using base::ASCIIToUTF16;
@@ -2447,7 +2448,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   RenderProcessHostWatcher crash_observer(
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(shell(), GURL(kChromeUICrashURL)));
+  EXPECT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell(), GURL(blink::kChromeUICrashURL)));
   crash_observer.Wait();
 
   // We should not change SiteInstance and BrowsingInstance on navigations to
@@ -2474,12 +2476,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   RenderProcessHostWatcher crash_observer(
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(shell(), GURL(kChromeUICrashURL)));
+  EXPECT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell(), GURL(blink::kChromeUICrashURL)));
   crash_observer.Wait();
 
   // Load the crash URL again but don't wait for any action.  If it is not
   // ignored this time, we will fail the WebUI CHECK in InitRenderView.
-  shell()->LoadURL(GURL(kChromeUICrashURL));
+  shell()->LoadURL(GURL(blink::kChromeUICrashURL));
 
   // Ensure that such URLs can still work as the initial navigation of a tab.
   // We postpone the initial navigation of the tab using an empty GURL, so that
@@ -2489,7 +2492,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                              GURL(), nullptr, gfx::Size());
   RenderProcessHostWatcher crash_observer2(
       shell2->web_contents(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(shell2, GURL(kChromeUIKillURL)));
+  EXPECT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell2, GURL(blink::kChromeUIKillURL)));
   crash_observer2.Wait();
 }
 

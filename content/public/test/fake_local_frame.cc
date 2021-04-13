@@ -143,6 +143,8 @@ void FakeLocalFrame::ExtractSmartClipData(
 }
 #endif
 
+void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

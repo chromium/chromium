@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_CRASH_HELPERS_H_
-#define CONTENT_RENDERER_CRASH_HELPERS_H_
+#ifndef THIRD_PARTY_BLINK_COMMON_CRASH_HELPERS_H_
+#define THIRD_PARTY_BLINK_COMMON_CRASH_HELPERS_H_
 
 #include "base/compiler_specific.h"
 
-namespace content {
+namespace blink {
 
 namespace internal {
 
@@ -21,6 +21,6 @@ NOINLINE void BadCastCrashIntentionally();
 
 }  // namespace internal
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_CRASH_HELPERS_H_
+#endif  // THIRD_PARTY_BLINK_COMMON_CRASH_HELPERS_H_

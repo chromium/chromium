@@ -42,6 +42,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
@@ -1796,8 +1797,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorCodeOnRedirect) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  GURL redirect_url = embedded_test_server()->GetURL(
-      std::string("/server-redirect?") + kChromeUINetworkErrorsListingURL);
+  GURL redirect_url =
+      embedded_test_server()->GetURL(std::string("/server-redirect?") +
+                                     blink::kChromeUINetworkErrorsListingURL);
   NavigationHandleObserver observer(shell()->web_contents(), redirect_url);
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
   EXPECT_TRUE(
@@ -2043,13 +2045,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   const GURL kTestUrls[] = {GURL("javascript:window.alert('hello')"),
-                            GURL(kChromeUIBadCastCrashURL),
-                            GURL(kChromeUICrashURL),
-                            GURL(kChromeUIDumpURL),
-                            GURL(kChromeUIKillURL),
-                            GURL(kChromeUIHangURL),
-                            GURL(kChromeUIShorthangURL),
-                            GURL(kChromeUIMemoryExhaustURL)};
+                            GURL(blink::kChromeUIBadCastCrashURL),
+                            GURL(blink::kChromeUICrashURL),
+                            GURL(blink::kChromeUIDumpURL),
+                            GURL(blink::kChromeUIKillURL),
+                            GURL(blink::kChromeUIHangURL),
+                            GURL(blink::kChromeUIShorthangURL),
+                            GURL(blink::kChromeUIMemoryExhaustURL)};
 
   for (const auto& test_url : kTestUrls) {
     SCOPED_TRACE(testing::Message() << "renderer_debug_url = " << test_url);

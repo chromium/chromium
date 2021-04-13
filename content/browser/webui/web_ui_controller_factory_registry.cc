@@ -13,6 +13,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -87,7 +88,7 @@ bool WebUIControllerFactoryRegistry::IsURLAcceptableForWebUI(
          // See http://crbug.com/42547
          url.spec() == url::kAboutBlankURL ||
          // javascript: and debug URLs like chrome://kill are allowed.
-         IsRendererDebugURL(url);
+         blink::IsRendererDebugURL(url);
 }
 
 WebUIControllerFactoryRegistry::WebUIControllerFactoryRegistry() = default;

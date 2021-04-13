@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 using content::OpenURLParams;
@@ -79,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
 
   // Navigate to chrome://hang/ to stall the process.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(content::kChromeUIHangURL),
+      browser(), GURL(blink::kChromeUIHangURL),
       WindowOpenDisposition::CURRENT_TAB, 0);
 
   // Visit a normal URL in another NTP that hasn't committed.

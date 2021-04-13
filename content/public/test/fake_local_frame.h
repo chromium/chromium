@@ -109,6 +109,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ExtractSmartClipData(const gfx::Rect& rect,
                             ExtractSmartClipDataCallback callback) override;
 #endif
+  void HandleRendererDebugURL(const GURL& url) override;
+
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 

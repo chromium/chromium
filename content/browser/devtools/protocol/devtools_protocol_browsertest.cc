@@ -59,6 +59,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
@@ -1088,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
 
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     params = WaitForNotification("Target.targetCrashed", true);
   }
   ClearNotifications();
@@ -1202,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorTargetCrashedNavigate) {
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -1227,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -1251,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -2106,7 +2107,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationTest,
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
     NavigateToURLBlockUntilNavigationsComplete(
-        shell(), GURL(content::kChromeUICrashURL), 1);
+        shell(), GURL(blink::kChromeUICrashURL), 1);
   }
 
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);

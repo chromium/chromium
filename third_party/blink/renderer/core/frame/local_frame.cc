@@ -45,6 +45,7 @@
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -192,6 +193,7 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -2544,6 +2546,22 @@ void LocalFrame::DidActivateForPrerendering() {
   GetLocalFrameHostRemote().DidActivateForPrerendering();
 }
 
+void LocalFrame::LoadJavaScriptURL(const KURL& url) {
+  // Protect privileged pages against bookmarklets and other JavaScript
+  // manipulations.
+  if (SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
+          GetDocument()->Url().Protocol()))
+    return;
+
+  // TODO(mustaq): This is called only through the user typing a javascript URL
+  // into the omnibox.  See https://crbug.com/1082900
+  NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction, false);
+  DomWindow()->GetScriptController().ExecuteJavaScriptURL(
+      url, network::mojom::CSPDisposition::DO_NOT_CHECK,
+      &DOMWrapperWorld::MainWorld());
+}
+
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
       IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
@@ -3593,6 +3611,23 @@ void LocalFrame::ExtractSmartClipData(const gfx::Rect& rect,
   std::move(callback).Run(clip_text, clip_html, clip_rect);
 }
 #endif  // defined(OS_ANDROID)
+
+void LocalFrame::HandleRendererDebugURL(const KURL& url) {
+  DCHECK(IsRendererDebugURL(url));
+  if (url.ProtocolIs("javascript")) {
+    // JavaScript URLs should be sent to Blink for handling.
+    LoadJavaScriptURL(url);
+  } else {
+    // This is a Chrome Debug URL. Handle it.
+    HandleChromeDebugURL(url);
+  }
+
+  // The browser sets its status as loading before calling this IPC. Inform it
+  // that the load stopped if needed, while leaving the debug URL visible in the
+  // address bar.
+  if (!IsLoading())
+    Client()->DidStopLoading();
+}
 
 bool LocalFrame::ShouldThrottleDownload() {
   const auto now = base::TimeTicks::Now();

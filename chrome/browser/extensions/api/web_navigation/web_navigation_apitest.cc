@@ -50,6 +50,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -550,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Crash) {
 
   content::RenderProcessHostWatcher process_watcher(
       tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  ui_test_utils::NavigateToURL(browser(), GURL(content::kChromeUICrashURL));
+  ui_test_utils::NavigateToURL(browser(), GURL(blink::kChromeUICrashURL));
   process_watcher.Wait();
 
   url = GURL(embedded_test_server()->GetURL(

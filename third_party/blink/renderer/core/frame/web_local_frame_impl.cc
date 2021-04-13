@@ -2349,23 +2349,6 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
       mojom::blink::TriggeringEventInfo::kNotFromEvent, std::move(extra_data));
 }
 
-void WebLocalFrameImpl::LoadJavaScriptURL(const WebURL& url) {
-  DCHECK(GetFrame());
-  // Protect privileged pages against bookmarklets and other javascript
-  // manipulations.
-  if (SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
-          GetFrame()->GetDocument()->Url().Protocol()))
-    return;
-
-  // TODO(mustaq): This is called only through the user typing a javascript URL
-  // into the omnibox.  See https://crbug.com/1082900
-  LocalFrame::NotifyUserActivation(
-      GetFrame(), mojom::blink::UserActivationNotificationType::kInteraction);
-  GetFrame()->DomWindow()->GetScriptController().ExecuteJavaScriptURL(
-      url, network::mojom::CSPDisposition::DO_NOT_CHECK,
-      &DOMWrapperWorld::MainWorld());
-}
-
 WebNavigationControl::FallbackContentResult
 WebLocalFrameImpl::MaybeRenderFallbackContent(const WebURLError& error) const {
   DCHECK(GetFrame());

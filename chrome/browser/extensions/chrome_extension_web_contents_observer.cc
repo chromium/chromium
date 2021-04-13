@@ -28,6 +28,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/switches.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace extensions {
 
@@ -73,7 +74,7 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   if ((extension->is_extension() || extension->is_platform_app()) &&
       Manifest::IsComponentLocation(extension->location())) {
     policy->GrantRequestOrigin(
-        process_id, url::Origin::Create(GURL(content::kChromeUIResourcesURL)));
+        process_id, url::Origin::Create(GURL(blink::kChromeUIResourcesURL)));
     policy->GrantRequestOrigin(
         process_id, url::Origin::Create(GURL(chrome::kChromeUIThemeURL)));
   }

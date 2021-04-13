@@ -49,6 +49,7 @@
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
@@ -420,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_CrossSiteAfterCrash) {
   RenderProcessHostWatcher crash_observer(
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_FALSE(NavigateToURL(shell(), GURL(kChromeUICrashURL)));
+  EXPECT_FALSE(NavigateToURL(shell(), GURL(blink::kChromeUICrashURL)));
   // Wait for browser to notice the renderer crash.
   crash_observer.Wait();
 

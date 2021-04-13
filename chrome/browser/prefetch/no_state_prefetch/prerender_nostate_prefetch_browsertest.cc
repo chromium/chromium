@@ -73,6 +73,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
@@ -1299,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       GetNoStatePrefetchManager()->AddPrerenderFromExternalRequest(
-          GURL(content::kChromeUICrashURL), content::Referrer(),
+          GURL(blink::kChromeUICrashURL), content::Referrer(),
           storage_namespace, gfx::Rect(kSize)));
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
   test_prerender->WaitForStop();

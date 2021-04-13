@@ -119,6 +119,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -1160,7 +1161,7 @@ NavigationRequest::NavigationRequest(
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
-  DCHECK(!IsRendererDebugURL(common_params_->url));
+  DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
@@ -1729,7 +1730,7 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
 
   if (IsInMainFrame()) {
     DCHECK(!common_params_->navigation_start.is_null());
-    DCHECK(!IsRendererDebugURL(common_params_->url));
+    DCHECK(!blink::IsRendererDebugURL(common_params_->url));
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "navigation", "Navigation StartToCommit",
         TRACE_ID_WITH_SCOPE("StartToCommit", TRACE_ID_LOCAL(this)),
@@ -3779,7 +3780,7 @@ void NavigationRequest::CommitNavigation() {
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
          (was_redirected_ && common_params_->url.IsAboutBlank()));
   DCHECK(!common_params_->url.SchemeIs(url::kJavaScriptScheme));
-  DCHECK(!IsRendererDebugURL(common_params_->url));
+  DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(sandbox_flags_to_commit_);
 
   AddOldPageInfoToCommitParamsIfNeeded();
@@ -5084,7 +5085,7 @@ void NavigationRequest::UpdateStateFollowingRedirect(
   // ResourceLoader::OnReceivedRedirect.
   // Note: the |common_params_->url| below is the post-redirect URL.
   // See https://crbug.com/728398.
-  CHECK(!IsRendererDebugURL(common_params_->url));
+  CHECK(!blink::IsRendererDebugURL(common_params_->url));
 
   // Update the navigation parameters.
   if (!(common_params_->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT)) {

@@ -15,6 +15,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -74,7 +75,7 @@ static bool ReverseViewSource(GURL* url, BrowserContext* browser_context) {
 
 static bool DebugURLHandler(GURL* url, BrowserContext* browser_context) {
   // Circumvent processing URLs that the renderer process will handle.
-  return IsRendererDebugURL(*url);
+  return blink::IsRendererDebugURL(*url);
 }
 
 // static

@@ -31,6 +31,7 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
@@ -410,7 +411,7 @@ void NavigationSimulatorImpl::Start() {
   state_ = STARTED;
 
   CHECK(request_);
-  if (IsRendererDebugURL(navigation_url_))
+  if (blink::IsRendererDebugURL(navigation_url_))
     return;
 
   if (!NeedsThrottleChecks()) {
@@ -631,7 +632,7 @@ void NavigationSimulatorImpl::Commit() {
   if (!keep_loading_)
     StopLoading();
 
-  if (!IsRendererDebugURL(navigation_url_))
+  if (!blink::IsRendererDebugURL(navigation_url_))
     CHECK_EQ(1, num_did_finish_navigation_called_);
 }
 
@@ -682,7 +683,7 @@ void NavigationSimulatorImpl::Fail(int error_code) {
   CHECK_EQ(0, num_did_finish_navigation_called_)
       << "NavigationSimulatorImpl::Fail cannot be called after the "
          "navigation has finished";
-  CHECK(!IsRendererDebugURL(navigation_url_));
+  CHECK(!blink::IsRendererDebugURL(navigation_url_));
 
   if (state_ == INITIALIZATION)
     Start();
@@ -1135,7 +1136,7 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
   request =
       web_contents_->GetMainFrame()->frame_tree_node()->navigation_request();
   if (!request) {
-    if (IsRendererDebugURL(navigation_url_)) {
+    if (blink::IsRendererDebugURL(navigation_url_)) {
       // We don't create NavigationRequests nor NavigationHandles for a
       // navigation to a renderer-debug URL. Instead, the URL is passed to the
       // current RenderFrameHost so that the renderer process can handle it.

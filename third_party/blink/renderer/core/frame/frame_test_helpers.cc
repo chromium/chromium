@@ -157,7 +157,7 @@ cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings() {
 void LoadFrameDontWait(WebLocalFrame* frame, const WebURL& url) {
   auto* impl = To<WebLocalFrameImpl>(frame);
   if (url.ProtocolIs("javascript")) {
-    impl->LoadJavaScriptURL(url);
+    impl->GetFrame()->LoadJavaScriptURL(url);
   } else {
     auto params = std::make_unique<WebNavigationParams>();
     params->url = url;

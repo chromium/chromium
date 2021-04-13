@@ -54,11 +54,6 @@ class WebNavigationControl : public WebLocalFrame {
       bool has_transient_user_activation,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
-  // Loads a JavaScript URL in the frame.
-  // TODO(dgozman): this may replace the document, so perhaps we should
-  // return something meaningful?
-  virtual void LoadJavaScriptURL(const WebURL&) = 0;
-
   enum FallbackContentResult {
     // An error page should be shown instead of fallback.
     NoFallbackContent,

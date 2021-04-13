@@ -42,6 +42,7 @@
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUICrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
                        MAYBE_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUIHeapCorruptionCrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUICheckCrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICheckCrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
 
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUIMemoryExhaustURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIMemoryExhaustURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();

@@ -34,6 +34,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -1162,7 +1163,7 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If the URL to navigate to can be associated with any site instance,
   // we want to keep it in the same process.
-  if (IsRendererDebugURL(url))
+  if (blink::IsRendererDebugURL(url))
     return true;
 
   // Any process can host an about:blank URL, except the one used for error
@@ -1510,7 +1511,7 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   // Some special URLs will match the site instance of any other URL. This is
   // done before checking both of them for validity, since we want these URLs
   // to have the same site instance as even an invalid one.
-  if (IsRendererDebugURL(src_url) || IsRendererDebugURL(dest_url))
+  if (blink::IsRendererDebugURL(src_url) || blink::IsRendererDebugURL(dest_url))
     return true;
 
   // If either URL is invalid, they aren't part of the same site.

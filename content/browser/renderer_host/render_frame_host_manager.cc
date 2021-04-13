@@ -63,6 +63,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -1443,7 +1444,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       SiteInstanceImpl::GetEffectiveURL(browser_context, destination_url);
   // Don't force a new BrowsingInstance for URLs that are handled in the
   // renderer process, like javascript: or debug URLs like chrome://crash.
-  if (IsRendererDebugURL(destination_effective_url))
+  if (blink::IsRendererDebugURL(destination_effective_url))
     return ShouldSwapBrowsingInstance::kNo_RendererDebugURL;
 
   if (cross_origin_opener_policy_mismatch)

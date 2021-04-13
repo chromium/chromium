@@ -32,6 +32,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "url/url_constants.h"
 
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateWithLeftoverFrames) {
 
   // Hang the renderer so that it doesn't send any FrameDetached messages.
   // (This navigation will never complete, so don't wait for it.)
-  shell()->LoadURL(GURL(kChromeUIHangURL));
+  shell()->LoadURL(GURL(blink::kChromeUIHangURL));
 
   // Check that the frame tree still has children.
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());

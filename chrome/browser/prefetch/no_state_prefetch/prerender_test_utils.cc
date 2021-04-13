@@ -37,6 +37,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;
@@ -130,7 +131,7 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
 bool TestNoStatePrefetchContents::CheckURL(const GURL& url) {
   // Prevent FINAL_STATUS_UNSUPPORTED_SCHEME when navigating to about:crash in
   // the PrerenderRendererCrash test.
-  if (url.spec() != content::kChromeUICrashURL)
+  if (url.spec() != blink::kChromeUICrashURL)
     return NoStatePrefetchContents::CheckURL(url);
   return true;
 }

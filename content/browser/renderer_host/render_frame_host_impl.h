@@ -1070,7 +1070,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                         int extended_error_code,
                         const base::Optional<std::string>& error_page_content);
 
-  // Seneds a renderer-debug URL to the renderer process for handling.
+  // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
 
   // Sets up the Mojo connection between this instance and its associated render

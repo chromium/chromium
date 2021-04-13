@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/display/display_switches.h"
 #include "url/gurl.h"
 
@@ -165,7 +166,8 @@ void ContentCaptureDeviceBrowserTestBase::CrashTheRenderer() {
   RenderProcessHostWatcher crash_observer(
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  ASSERT_TRUE(NavigateToURLAndExpectNoCommit(shell(), GURL(kChromeUICrashURL)));
+  ASSERT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell(), GURL(blink::kChromeUICrashURL)));
   crash_observer.Wait();
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 }

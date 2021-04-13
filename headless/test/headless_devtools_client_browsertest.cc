@@ -36,6 +36,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 #define EXPECT_SIZE_EQ(expected, actual)               \
@@ -494,7 +495,7 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
     devtools_client_->GetInspector()->GetExperimental()->AddObserver(this);
     devtools_client_->GetInspector()->GetExperimental()->Enable(
         inspector::EnableParams::Builder().Build());
-    devtools_client_->GetPage()->Navigate(content::kChromeUICrashURL);
+    devtools_client_->GetPage()->Navigate(blink::kChromeUICrashURL);
   }
 
   void OnTargetCrashed(const inspector::TargetCrashedParams& params) override {

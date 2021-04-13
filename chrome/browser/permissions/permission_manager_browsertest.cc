@@ -19,6 +19,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 
 namespace {
 
@@ -135,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
       incognito_browser()->tab_strip_model()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   incognito_browser()->OpenURL(content::OpenURLParams(
-      GURL(content::kChromeUICrashURL), content::Referrer(),
+      GURL(blink::kChromeUICrashURL), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
   crash_observer.Wait();
 

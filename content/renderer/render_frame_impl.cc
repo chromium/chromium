@@ -85,7 +85,6 @@
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/content_security_policy_util.h"
-#include "content/renderer/crash_helpers.h"
 #include "content/renderer/dom_automation_controller.h"
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
@@ -136,6 +135,7 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/features.h"
@@ -229,13 +229,6 @@
 #include "content/renderer/pepper/pepper_plugin_registry.h"
 #include "content/renderer/pepper/pepper_webplugin_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
-#endif
-
-#if defined(OS_WIN)
-#include "base/debug/invalid_access_win.h"
-#include "base/process/kill.h"
-#elif defined(OS_POSIX)
-#include <signal.h>
 #endif
 
 #if defined(OS_ANDROID)
@@ -1332,123 +1325,6 @@ class RenderFrameImpl::FrameURLLoaderFactory
 
   DISALLOW_COPY_AND_ASSIGN(FrameURLLoaderFactory);
 };
-
-// The following methods are outside of the anonymous namespace to ensure that
-// the corresponding symbols get emmitted even on symbol_level 1.
-NOINLINE void ExhaustMemory() {
-  volatile void* ptr = nullptr;
-  do {
-    ptr = malloc(0x10000000);
-    base::debug::Alias(&ptr);
-  } while (ptr);
-}
-
-#if defined(ADDRESS_SANITIZER)
-NOINLINE void MaybeTriggerAsanError(const GURL& url) {
-  // NOTE(rogerm): We intentionally perform an invalid heap access here in
-  //     order to trigger an Address Sanitizer (ASAN) error report.
-  if (url == kChromeUICrashHeapOverflowURL) {
-    LOG(ERROR) << "Intentionally causing ASAN heap overflow"
-               << " because user navigated to " << url.spec();
-    base::debug::AsanHeapOverflow();
-  } else if (url == kChromeUICrashHeapUnderflowURL) {
-    LOG(ERROR) << "Intentionally causing ASAN heap underflow"
-               << " because user navigated to " << url.spec();
-    base::debug::AsanHeapUnderflow();
-  } else if (url == kChromeUICrashUseAfterFreeURL) {
-    LOG(ERROR) << "Intentionally causing ASAN heap use-after-free"
-               << " because user navigated to " << url.spec();
-    base::debug::AsanHeapUseAfterFree();
-#if defined(OS_WIN)
-  } else if (url == kChromeUICrashCorruptHeapBlockURL) {
-    LOG(ERROR) << "Intentionally causing ASAN corrupt heap block"
-               << " because user navigated to " << url.spec();
-    base::debug::AsanCorruptHeapBlock();
-  } else if (url == kChromeUICrashCorruptHeapURL) {
-    LOG(ERROR) << "Intentionally causing ASAN corrupt heap"
-               << " because user navigated to " << url.spec();
-    base::debug::AsanCorruptHeap();
-#endif  // OS_WIN
-  }
-}
-#endif  // ADDRESS_SANITIZER
-
-// Returns true if the URL is a debug URL, false otherwise. These URLs do not
-// commit, though they are intentionally left in the address bar above the
-// effect they cause (e.g., a sad tab).
-void HandleChromeDebugURL(const GURL& url) {
-  DCHECK(IsRendererDebugURL(url) && !url.SchemeIs(url::kJavaScriptScheme));
-  if (url == kChromeUIBadCastCrashURL) {
-    LOG(ERROR) << "Intentionally crashing (with bad cast)"
-               << " because user navigated to " << url.spec();
-    internal::BadCastCrashIntentionally();
-  } else if (url == kChromeUICrashURL) {
-    LOG(ERROR) << "Intentionally crashing (with null pointer dereference)"
-               << " because user navigated to " << url.spec();
-    internal::CrashIntentionally();
-  } else if (url == kChromeUIDumpURL) {
-    // This URL will only correctly create a crash dump file if content is
-    // hosted in a process that has correctly called
-    // base::debug::SetDumpWithoutCrashingFunction.  Refer to the documentation
-    // of base::debug::DumpWithoutCrashing for more details.
-    base::debug::DumpWithoutCrashing();
-#if defined(OS_WIN) || defined(OS_POSIX)
-  } else if (url == kChromeUIKillURL) {
-    LOG(ERROR) << "Intentionally terminating current process because user"
-                  " navigated to "
-               << url.spec();
-    // Simulate termination such that the base::GetTerminationStatus() API will
-    // return TERMINATION_STATUS_PROCESS_WAS_KILLED.
-#if defined(OS_WIN)
-    base::Process::TerminateCurrentProcessImmediately(
-        base::win::kProcessKilledExitCode);
-#elif defined(OS_POSIX)
-    PCHECK(kill(base::Process::Current().Pid(), SIGTERM) == 0);
-#endif
-#endif  // defined(OS_WIN) || defined(OS_POSIX)
-  } else if (url == kChromeUIHangURL) {
-    LOG(ERROR) << "Intentionally hanging ourselves with sleep infinite loop"
-               << " because user navigated to " << url.spec();
-    for (;;) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
-    }
-  } else if (url == kChromeUIShorthangURL) {
-    LOG(ERROR) << "Intentionally sleeping renderer for 20 seconds"
-               << " because user navigated to " << url.spec();
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(20));
-  } else if (url == kChromeUIMemoryExhaustURL) {
-    LOG(ERROR)
-        << "Intentionally exhausting renderer memory because user navigated to "
-        << url.spec();
-    ExhaustMemory();
-  } else if (url == kChromeUICheckCrashURL) {
-    LOG(ERROR) << "Intentionally causing CHECK because user navigated to "
-               << url.spec();
-    CHECK(false);
-  }
-
-#if defined(OS_WIN)
-  if (url == kChromeUIHeapCorruptionCrashURL) {
-    LOG(ERROR)
-        << "Intentionally causing heap corruption because user navigated to "
-        << url.spec();
-    base::debug::win::TerminateWithHeapCorruption();
-  }
-#endif
-
-#if DCHECK_IS_ON()
-  if (url == kChromeUICrashDcheckURL) {
-    LOG(ERROR) << "Intentionally causing DCHECK because user navigated to "
-               << url.spec();
-
-    DCHECK(false) << "Intentional DCHECK.";
-  }
-#endif
-
-#if defined(ADDRESS_SANITIZER)
-  MaybeTriggerAsanError(url);
-#endif  // ADDRESS_SANITIZER
-}
 
 std::string UniqueNameForWebFrame(blink::WebFrame* frame) {
   return frame->IsWebLocalFrame()
@@ -2870,7 +2746,7 @@ void RenderFrameImpl::CommitNavigation(
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
-  DCHECK(!IsRendererDebugURL(common_params->url));
+  DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
 
   AssertNavigationCommits assert_navigation_commits(
@@ -3332,7 +3208,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::CommitNavigationParamsPtr commit_params,
     CommitSameDocumentNavigationCallback callback) {
-  DCHECK(!IsRendererDebugURL(common_params->url));
+  DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsReload(common_params->navigation_type));
   DCHECK(!commit_params->is_view_source);
   DCHECK(NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
@@ -3430,24 +3306,6 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
       commit_status != blink::mojom::CommitResult::Ok) {
     GetFrameHost()->DidStopLoading();
   }
-}
-
-void RenderFrameImpl::HandleRendererDebugURL(const GURL& url) {
-  DCHECK(IsRendererDebugURL(url));
-  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
-  if (url.SchemeIs(url::kJavaScriptScheme)) {
-    // Javascript URLs should be sent to Blink for handling.
-    frame_->LoadJavaScriptURL(url);
-  } else {
-    // This is a Chrome Debug URL. Handle it.
-    HandleChromeDebugURL(url);
-  }
-
-  // The browser sets its status as loading before calling this IPC. Inform it
-  // that the load stopped if needed, while leaving the debug URL visible in the
-  // address bar.
-  if (weak_this && frame_ && !frame_->IsLoading())
-    GetFrameHost()->DidStopLoading();
 }
 
 void RenderFrameImpl::UpdateSubresourceLoaderFactories(
