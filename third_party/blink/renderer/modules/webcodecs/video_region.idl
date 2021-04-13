@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+//[ImplementedAs=VideoRegion]
+dictionary VideoRegion {
+  // TODO(sandersd): Should we make the origin optional and assume (0, 0)?
+  required [EnforceRange] unsigned long left;
+  required [EnforceRange] unsigned long top;
+  required [EnforceRange] unsigned long width;
+  required [EnforceRange] unsigned long height;
+};

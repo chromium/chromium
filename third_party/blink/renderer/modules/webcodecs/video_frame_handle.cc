@@ -6,6 +6,7 @@
 
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
@@ -16,7 +17,7 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
   DCHECK(frame_);
   DCHECK(context);
 
-  close_auditor_ = VideoFrameLogger::From(*context).GetCloseAuditor();
+  close_auditor_ = WebCodecsLogger::From(*context).GetCloseAuditor();
 
   DCHECK(close_auditor_);
 }
@@ -31,7 +32,7 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
 VideoFrameHandle::VideoFrameHandle(
     scoped_refptr<media::VideoFrame> frame,
     sk_sp<SkImage> sk_image,
-    scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor> close_auditor)
+    scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor)
     : sk_image_(std::move(sk_image)),
       frame_(std::move(frame)),
       close_auditor_(std::move(close_auditor)) {

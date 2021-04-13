@@ -16,52 +16,48 @@
               sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
 
-  // TODO(sandersd): Provide a way to find out what pixel formats are supported.
-  // TODO(sandersd): Provide a way to convert to a specific pixel format, and to
-  // find out what pixel formats can be converted to.
-
   // TODO(sandersd): It's not clear whether it's better to use undefined, or a
   // special enum value to mean 'opaque format'. Undefined does result in
   // shorter branch conditions.
   readonly attribute VideoPixelFormat? format;
   readonly attribute FrozenArray<Plane>? planes;
 
-  // The size of the frame; typically padded to a multiple of some block size.
-  readonly attribute unsigned long codedWidth;
-  readonly attribute unsigned long codedHeight;
-
-  // The region of the frame that is not padding.
-  readonly attribute unsigned long cropLeft;
-  readonly attribute unsigned long cropTop;
-  readonly attribute unsigned long cropWidth;
-  readonly attribute unsigned long cropHeight;
-
-  // The intended display size (and display aspect ratio) of the crop region.
-  // TODO(sandersd): The draft spec says double, and that makes sense, but it
-  // also makes createImageBitmap() ambiguous.
-  readonly attribute unsigned long displayWidth;
-  readonly attribute unsigned long displayHeight;
-
   // Presentation timestamp, in microseconds.
   readonly attribute unsigned long long? timestamp;
   // Presentation duration, in microseconds.
   readonly attribute unsigned long long? duration;
 
-  // TODO(sandersd): color space metadata.
+  // Dimensions of this frame's pixel data; typically padded to a macroblock
+  // multiple.
+  readonly attribute unsigned long codedWidth;
+  readonly attribute unsigned long codedHeight;
 
-  // DEPRECATED: use close() instead.
-  // Release held resources immediately.
-  [CallWith=ExecutionContext] void destroy();
+  // Convenience accessor, origin is always (0, 0).
+  readonly attribute VideoRegion codedRegion;
 
-  // Release held resources.
-  void close();
+  // Region of this frame's pixel data that is not padding.
+  readonly attribute VideoRegion visibleRegion;
+
+  // Display aspect ratio of visible region.
+  readonly attribute unsigned long displayWidth;
+  readonly attribute unsigned long displayHeight;
 
   // Creates of the copy of this VideoFrame, which needs to be independently
   // destroyed.
   [RaisesException] VideoFrame clone();
 
-  // Create an ImageBitmap from the crop region, scaled to the display size.
-  // TODO(sandersd): Should use the global createImageBitmap() instead.
+  void close();
+
+  // DEPRECATED: Use visibleRegion.
+  [CallWith=ExecutionContext] readonly attribute unsigned long cropLeft;
+  [CallWith=ExecutionContext] readonly attribute unsigned long cropTop;
+  [CallWith=ExecutionContext] readonly attribute unsigned long cropWidth;
+  [CallWith=ExecutionContext] readonly attribute unsigned long cropHeight;
+
+  // DEPRECATED: Use Window.createImageBitmap().
   [CallWith=ScriptState, RaisesException] Promise<ImageBitmap>
   createImageBitmap(optional ImageBitmapOptions options = {});
+
+  // DEPRECATED: Use close().
+  [CallWith=ExecutionContext] void destroy();
 };

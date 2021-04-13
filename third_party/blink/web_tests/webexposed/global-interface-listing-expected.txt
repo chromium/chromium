@@ -9039,6 +9039,7 @@ interface VideoEncoder
 interface VideoFrame
     attribute @@toStringTag
     getter codedHeight
+    getter codedRegion
     getter codedWidth
     getter cropHeight
     getter cropLeft
@@ -9050,6 +9051,7 @@ interface VideoFrame
     getter format
     getter planes
     getter timestamp
+    getter visibleRegion
     method clone
     method close
     method constructor

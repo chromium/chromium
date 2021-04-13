@@ -8,12 +8,17 @@ dictionary VideoFramePlaneInit {
   required unsigned long long timestamp;  // microseconds
   unsigned long long duration;  // microseconds
 
-  [EnforceRange] unsigned long codedWidth;
-  [EnforceRange] unsigned long codedHeight;
+  required [EnforceRange] unsigned long codedWidth;
+  required [EnforceRange] unsigned long codedHeight;
+
+  VideoRegion visibleRegion;
+
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+
+  // DEPRECATED: Use visibleRegion.
   [EnforceRange] unsigned long cropLeft;
   [EnforceRange] unsigned long cropTop;
   [EnforceRange] unsigned long cropWidth;
   [EnforceRange] unsigned long cropHeight;
-  [EnforceRange] unsigned long displayWidth;
-  [EnforceRange] unsigned long displayHeight;
 };

@@ -60,8 +60,8 @@ blink_modules_sources("webcodecs") {
     "video_frame_attachment.h",
     "video_frame_handle.cc",
     "video_frame_handle.h",
-    "video_frame_logger.cc",
-    "video_frame_logger.h",
+    "webcodecs_logger.cc",
+    "webcodecs_logger.h",
   ]
   deps = [
     "//media",

@@ -23,10 +23,7 @@ dictionary VideoDecoderConfig {
   [EnforceRange] unsigned long codedHeight;
 
   // Hint about the visible region of the content.
-  [EnforceRange] unsigned long cropLeft;
-  [EnforceRange] unsigned long cropTop;
-  [EnforceRange] unsigned long cropWidth;
-  [EnforceRange] unsigned long cropHeight;
+  VideoRegion visibleRegion;
 
   // Hint about the pixel aspect ratio of the content.
   [EnforceRange] unsigned long displayWidth;
@@ -37,4 +34,10 @@ dictionary VideoDecoderConfig {
   // (imagebitmap, colorspace conversion).
 
   HardwarePreference hardwareAcceleration = "allow";
+
+  // DEPRECATED: Use visibleRegion.
+  [EnforceRange] unsigned long cropLeft;
+  [EnforceRange] unsigned long cropTop;
+  [EnforceRange] unsigned long cropWidth;
+  [EnforceRange] unsigned long cropHeight;
 };

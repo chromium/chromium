@@ -74,38 +74,21 @@ const invalidConfigs = [
     },
   },
   {
-    comment: 'Out of bounds crop size caused by left/top offset',
+    comment: 'Out of bounds visibleRegion',
     config: {
       codec: h264.codec,
       codedWidth: 1920,
       codedHeight: 1088,
-      cropLeft: 10,
-      cropTop: 10,
-      // When unspecified, these default to coded dimensions
-      // cropWidth: 1920,
-      // cropHeight: 1088
+      visibleRegion: {left: 10, top: 10, width: 1920, height: 1088},
     },
   },
   {
-    comment: 'Out of bounds crop size',
+    comment: 'Way out of bounds visibleRegion',
     config: {
       codec: h264.codec,
       codedWidth: 1920,
       codedHeight: 1088,
-      cropLeft: 10,
-      cropTop: 10,
-      cropWidth: 1920,
-      cropHeight: 1088,
-    },
-  },
-  {
-    comment: 'Way out of bounds crop size',
-    config: {
-      codec: h264.codec,
-      codedWidth: 1920,
-      codedHeight: 1088,
-      cropWidth: 4000,
-      cropHeight: 5000,
+      visibleRegion: {left: 0, top: 0, width: 4000, height: 5000},
     },
   },
   {
@@ -155,10 +138,7 @@ promise_test(t => {
     codec: h264.codec,
     codedWidth: 1920,
     codedHeight: 1088,
-    cropLeft: 0,
-    cropTop: 0,
-    cropWidth: 1920,
-    cropHeight: 1080,
+    visibleRegion: {left: 0, top: 0, width: 1920, height: 1080},
     displayWidth: 1920,
     displayHeight: 1080
   });
@@ -171,10 +151,7 @@ promise_test(t => {
     codec: h264.codec,
     codedWidth: 1920,
     codedHeight: 1088,
-    cropLeft: 0,
-    cropTop: 0,
-    cropWidth: 1920,
-    cropHeight: 1080,
+    visibleRegion: {left: 0, top: 0, width: 1920, height: 1080},
     displayWidth: 1920,
     displayHeight: 1080,
     description: new Uint8Array([1, 2, 3]),
@@ -195,9 +172,10 @@ promise_test(t => {
     assert_equals(decoderSupport.config.codec, validConfig.codec);
     assert_equals(decoderSupport.config.codedWidth, validConfig.codedWidth);
     assert_equals(decoderSupport.config.codedHeight, validConfig.codedHeight);
-    assert_equals(decoderSupport.config.cropLeft, validConfig.cropLeft);
-    assert_equals(decoderSupport.config.cropTop, validConfig.cropTop);
-    assert_equals(decoderSupport.config.cropWidth, validConfig.cropWidth);
+    assert_equals(decoderSupport.config.visibleRegion.top, 0);
+    assert_equals(decoderSupport.config.visibleRegion.left, 0);
+    assert_equals(decoderSupport.config.visibleRegion.width, 1920);
+    assert_equals(decoderSupport.config.visibleRegion.height, 1080);
     assert_equals(decoderSupport.config.displayWidth, validConfig.displayWidth);
     assert_equals(decoderSupport.config.displayHeight, validConfig.displayHeight);
 
@@ -244,8 +222,8 @@ promise_test(async t => {
     output(frame) {
       t.step(() => {
         assert_equals(++numOutputs, 1, "outputs");
-        assert_equals(frame.cropWidth, 320, "cropWidth");
-        assert_equals(frame.cropHeight, 240, "cropHeight");
+        assert_equals(frame.visibleRegion.width, 320, "visibleRegion.width");
+        assert_equals(frame.visibleRegion.height, 240, "visibleRegion.height");
         assert_equals(frame.timestamp, 0, "timestamp");
         frame.close();
       });

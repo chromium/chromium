@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame_logger.h"
+#include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -42,7 +42,7 @@ class MODULES_EXPORT VideoFrameHandle
                    ExecutionContext*);
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
-                   scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor>);
+                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>);
   VideoFrameHandle(scoped_refptr<media::VideoFrame>, sk_sp<SkImage> sk_image);
 
   // Returns a copy of |frame_|, which should be re-used throughout the scope
@@ -85,7 +85,7 @@ class MODULES_EXPORT VideoFrameHandle
   WTF::Mutex mutex_;
   sk_sp<SkImage> sk_image_;
   scoped_refptr<media::VideoFrame> frame_;
-  scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor> close_auditor_;
+  scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor_;
 };
 
 }  // namespace blink

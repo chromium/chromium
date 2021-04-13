@@ -1787,6 +1787,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface VideoFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter codedHeight
+[Worker]     getter codedRegion
 [Worker]     getter codedWidth
 [Worker]     getter cropHeight
 [Worker]     getter cropLeft
@@ -1798,6 +1799,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter format
 [Worker]     getter planes
 [Worker]     getter timestamp
+[Worker]     getter visibleRegion
 [Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor

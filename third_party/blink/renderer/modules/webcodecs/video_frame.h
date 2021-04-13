@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/plane.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_region.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -68,10 +69,13 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
 
-  uint32_t cropLeft() const;
-  uint32_t cropTop() const;
-  uint32_t cropWidth() const;
-  uint32_t cropHeight() const;
+  VideoRegion* codedRegion() const;
+  VideoRegion* visibleRegion() const;
+
+  uint32_t cropLeft(ExecutionContext*) const;
+  uint32_t cropTop(ExecutionContext*) const;
+  uint32_t cropWidth(ExecutionContext*) const;
+  uint32_t cropHeight(ExecutionContext*) const;
 
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_LOGGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_LOGGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_WEBCODECS_LOGGER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_WEBCODECS_LOGGER_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -18,7 +19,7 @@ namespace blink {
 
 // This class is used to distribute a VideoFrameCloseAuditor flag to
 // VideoFrameHandles. If a handle's destructor is run without having received a
-// call to Invalidate(), it will set |close_auditor_|. The VideoFrameLogger
+// call to Invalidate(), it will set |close_auditor_|. The WebCodecsLogger
 // periodically checks whether or not the flag is set, and outputs an error
 // message to the JS console, reminding developers to call close() on their
 // VideoFrames.
@@ -26,9 +27,8 @@ namespace blink {
 // This class lets us avoid making VideoFrames ExecutionLifeCycleObservers,
 // which could add 1000s of observers per second. It also avoids the use of
 // a pre-finzalizer on VideoFrames, which could have a GC performance impact.
-class MODULES_EXPORT VideoFrameLogger
-    : public GarbageCollected<VideoFrameLogger>,
-      public Supplement<ExecutionContext> {
+class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
+                                       public Supplement<ExecutionContext> {
  public:
   // Class that reports when blink::VideoFrames have been garbage collected
   // without having close() called on them. This is a web page application
@@ -50,34 +50,42 @@ class MODULES_EXPORT VideoFrameLogger
 
   static const char kSupplementName[];
 
-  static VideoFrameLogger& From(ExecutionContext&);
+  static WebCodecsLogger& From(ExecutionContext&);
 
-  explicit VideoFrameLogger(ExecutionContext&);
-  virtual ~VideoFrameLogger() = default;
+  explicit WebCodecsLogger(ExecutionContext&);
+  virtual ~WebCodecsLogger() = default;
 
   // Disallow copy and assign.
-  VideoFrameLogger& operator=(const VideoFrameLogger&) = delete;
-  VideoFrameLogger(const VideoFrameLogger&) = delete;
+  WebCodecsLogger& operator=(const WebCodecsLogger&) = delete;
+  WebCodecsLogger(const WebCodecsLogger&) = delete;
 
   // Returns |close_auditor_| and starts |timer_| if needed.
   scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
-  void LogCreateImageBitmapDeprecationNotice();
+  void LogVideoFrameCreateImageBitmapDeprecation();
+  void LogCropDeprecation();
+  void LogPlaneInitRowsDeprecation();
+  void LogVideoFrameDestroyDeprecation();
 
   void Trace(Visitor*) const override;
 
  private:
+  enum class Deprecation {
+    kVideoFrameCreateImageBitmap = 1 << 0,
+    kCrop = 1 << 1,
+    kVideoFrameDestroy = 1 << 2,
+  };
+
   void LogCloseErrors(TimerBase*);
+  void LogDeprecation(Deprecation, const String& message);
 
   base::TimeTicks last_auditor_access_;
-
   scoped_refptr<VideoFrameCloseAuditor> close_auditor_;
+  HeapTaskRunnerTimer<WebCodecsLogger> timer_;
 
-  HeapTaskRunnerTimer<VideoFrameLogger> timer_;
-
-  bool already_logged_create_image_bitmap_deprecation_ = false;
+  uint32_t logged_deprecations_ = 0;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_LOGGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_WEBCODECS_LOGGER_H_

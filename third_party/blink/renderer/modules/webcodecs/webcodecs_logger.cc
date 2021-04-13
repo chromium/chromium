@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webcodecs/video_frame_logger.h"
+#include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 
@@ -15,35 +15,35 @@ constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kTimerShutdownDelay =
     base::TimeDelta::FromSeconds(60);
 
-void VideoFrameLogger::VideoFrameCloseAuditor::ReportUnclosedFrame() {
+void WebCodecsLogger::VideoFrameCloseAuditor::ReportUnclosedFrame() {
   were_frames_not_closed_ = true;
 }
 
-void VideoFrameLogger::VideoFrameCloseAuditor::Clear() {
+void WebCodecsLogger::VideoFrameCloseAuditor::Clear() {
   were_frames_not_closed_ = false;
 }
 
-VideoFrameLogger::VideoFrameLogger(ExecutionContext& context)
+WebCodecsLogger::WebCodecsLogger(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
       close_auditor_(base::MakeRefCounted<VideoFrameCloseAuditor>()),
       timer_(context.GetTaskRunner(TaskType::kInternalMedia),
              this,
-             &VideoFrameLogger::LogCloseErrors) {}
+             &WebCodecsLogger::LogCloseErrors) {}
 
 // static
-VideoFrameLogger& VideoFrameLogger::From(ExecutionContext& context) {
-  VideoFrameLogger* supplement =
-      Supplement<ExecutionContext>::From<VideoFrameLogger>(context);
+WebCodecsLogger& WebCodecsLogger::From(ExecutionContext& context) {
+  WebCodecsLogger* supplement =
+      Supplement<ExecutionContext>::From<WebCodecsLogger>(context);
   if (!supplement) {
-    supplement = MakeGarbageCollected<VideoFrameLogger>(context);
+    supplement = MakeGarbageCollected<WebCodecsLogger>(context);
     Supplement<ExecutionContext>::ProvideTo(context, supplement);
   }
 
   return *supplement;
 }
 
-scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor>
-VideoFrameLogger::GetCloseAuditor() {
+scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>
+WebCodecsLogger::GetCloseAuditor() {
   // We cannot directly log close errors: they are detected during garbage
   // collection, and it would be unsafe to access GC'ed objects from a GC'ed
   // object's destructor. Instead, start a timer here to periodically poll for
@@ -56,19 +56,26 @@ VideoFrameLogger::GetCloseAuditor() {
   return close_auditor_;
 }
 
-void VideoFrameLogger::LogCreateImageBitmapDeprecationNotice() {
-  if (already_logged_create_image_bitmap_deprecation_)
-    return;
-
-  already_logged_create_image_bitmap_deprecation_ = true;
-  GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kDeprecation,
-      mojom::blink::ConsoleMessageLevel::kWarning,
-      "VideoFrame.createImageBitmap() is deprecated; please use "
-      "createImageBitmap(VideoFrame)."));
+void WebCodecsLogger::LogVideoFrameCreateImageBitmapDeprecation() {
+  LogDeprecation(Deprecation::kVideoFrameCreateImageBitmap,
+                 "VideoFrame.createImageBitmap() is deprecated; please use "
+                 "createImageBitmap(VideoFrame).");
 }
 
-void VideoFrameLogger::LogCloseErrors(TimerBase*) {
+void WebCodecsLogger::LogCropDeprecation() {
+  LogDeprecation(
+      Deprecation::kCrop,
+      "cropTop, cropLeft, cropWidth, and cropHeight are deprecated; please "
+      "use visibleRegion.");
+}
+
+void WebCodecsLogger::LogVideoFrameDestroyDeprecation() {
+  LogDeprecation(
+      Deprecation::kVideoFrameDestroy,
+      "VideoFrame.destroy() is deprecated; please use VideoFrame.close().");
+}
+
+void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.
   if (base::TimeTicks::Now() - last_auditor_access_ > kTimerShutdownDelay &&
@@ -92,12 +99,22 @@ void VideoFrameLogger::LogCloseErrors(TimerBase*) {
   close_auditor_->Clear();
 }
 
-void VideoFrameLogger::Trace(Visitor* visitor) const {
+void WebCodecsLogger::LogDeprecation(Deprecation id, const String& message) {
+  uint32_t id_bits = static_cast<uint32_t>(id);
+  if (logged_deprecations_ & id_bits)
+    return;
+  logged_deprecations_ |= id_bits;
+  GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kDeprecation,
+      mojom::blink::ConsoleMessageLevel::kWarning, message));
+}
+
+void WebCodecsLogger::Trace(Visitor* visitor) const {
   visitor->Trace(timer_);
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
 // static
-const char VideoFrameLogger::kSupplementName[] = "VideoFrameLogger";
+const char WebCodecsLogger::kSupplementName[] = "WebCodecsLogger";
 
 }  // namespace blink

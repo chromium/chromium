@@ -28,7 +28,7 @@ function testTexImage2DFromVideoFrame(
   let u32Data = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
   u32Data.fill(0xFF966432);  // 'rgb(50, 100, 150)';
   let argbPlaneData = new Uint8Array(u32Data.buffer);
-  let argbPlane = {src: argbPlaneData, stride: width * 4, rows: height};
+  let argbPlane = {src: argbPlaneData, stride: width * 4};
   let frame = new VideoFrame('ABGR', [argbPlane], vfInit);
 
   let gl_canvas = new OffscreenCanvas(width, height);

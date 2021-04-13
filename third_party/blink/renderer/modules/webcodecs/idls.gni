@@ -52,6 +52,7 @@ modules_dictionary_idl_files = [
   "video_encoder_init.idl",
   "video_frame_init.idl",
   "video_frame_plane_init.idl",
+  "video_region.idl",
 ]
 
 modules_typedefs_enums_only_idl_files = [

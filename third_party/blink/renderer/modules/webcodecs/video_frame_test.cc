@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
+#include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -87,8 +88,8 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(1000u, blink_frame->timestamp().value());
   EXPECT_EQ(112u, blink_frame->codedWidth());
   EXPECT_EQ(208u, blink_frame->codedHeight());
-  EXPECT_EQ(100u, blink_frame->cropWidth());
-  EXPECT_EQ(200u, blink_frame->cropHeight());
+  EXPECT_EQ(100u, blink_frame->visibleRegion()->width());
+  EXPECT_EQ(200u, blink_frame->visibleRegion()->height());
   EXPECT_EQ(media_frame, blink_frame->frame());
 
   blink_frame->close();
@@ -96,8 +97,8 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_FALSE(blink_frame->timestamp().has_value());
   EXPECT_EQ(0u, blink_frame->codedWidth());
   EXPECT_EQ(0u, blink_frame->codedHeight());
-  EXPECT_EQ(0u, blink_frame->cropWidth());
-  EXPECT_EQ(0u, blink_frame->cropHeight());
+  EXPECT_EQ(0u, blink_frame->visibleRegion()->width());
+  EXPECT_EQ(0u, blink_frame->visibleRegion()->height());
   EXPECT_EQ(nullptr, blink_frame->frame());
 }
 
@@ -194,7 +195,7 @@ TEST_F(VideoFrameTest, LeakedHandlesReportLeaks) {
   // Remove the last reference to the handle without calling Invalidate().
   handle.reset();
 
-  auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
+  auto& logger = WebCodecsLogger::From(*scope.GetExecutionContext());
 
   EXPECT_TRUE(logger.GetCloseAuditor()->were_frames_not_closed());
 }
@@ -212,7 +213,7 @@ TEST_F(VideoFrameTest, InvalidatedHandlesDontReportLeaks) {
   handle->Invalidate();
   handle.reset();
 
-  auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
+  auto& logger = WebCodecsLogger::From(*scope.GetExecutionContext());
 
   EXPECT_FALSE(logger.GetCloseAuditor()->were_frames_not_closed());
 }
