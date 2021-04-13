@@ -936,15 +936,15 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     }
     // Returns nullptr if the resulting cookie is not canonical.
     std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
-        smt.ColumnString(2),                          // name
-        value,                                        // value
-        smt.ColumnString(1),                          // domain
-        smt.ColumnString(4),                          // path
-        Time::FromInternalValue(smt.ColumnInt64(0)),  // creation_utc
-        Time::FromInternalValue(smt.ColumnInt64(5)),  // expires_utc
-        Time::FromInternalValue(smt.ColumnInt64(8)),  // last_access_utc
-        smt.ColumnBool(6),                            // secure
-        smt.ColumnBool(7),                            // http_only
+        smt.ColumnString(2),  // name
+        value,                // value
+        smt.ColumnString(1),  // domain
+        smt.ColumnString(4),  // path
+        smt.ColumnTime(0),    // creation_utc
+        smt.ColumnTime(5),    // expires_utc
+        smt.ColumnTime(8),    // last_access_utc
+        smt.ColumnBool(6),    // secure
+        smt.ColumnBool(7),    // http_only
         DBCookieSameSiteToCookieSameSite(
             static_cast<DBCookieSameSite>(smt.ColumnInt(13))),  // samesite
         DBCookiePriorityToCookiePriority(
@@ -1310,7 +1310,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
       switch (po->op()) {
         case PendingOperation::COOKIE_ADD:
           add_statement.Reset(true);
-          add_statement.BindInt64(0, po->cc().CreationDate().ToInternalValue());
+          add_statement.BindTime(0, po->cc().CreationDate());
           add_statement.BindString(1, po->cc().Domain());
           add_statement.BindString(2, po->cc().Name());
           if (crypto_ && crypto_->ShouldEncrypt()) {
@@ -1329,11 +1329,10 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
             add_statement.BindBlob(12, "", 0);  // encrypted_value
           }
           add_statement.BindString(4, po->cc().Path());
-          add_statement.BindInt64(5, po->cc().ExpiryDate().ToInternalValue());
+          add_statement.BindTime(5, po->cc().ExpiryDate());
           add_statement.BindBool(6, po->cc().IsSecure());
           add_statement.BindBool(7, po->cc().IsHttpOnly());
-          add_statement.BindInt64(8,
-                                  po->cc().LastAccessDate().ToInternalValue());
+          add_statement.BindTime(8, po->cc().LastAccessDate());
           add_statement.BindBool(9, po->cc().IsPersistent());
           add_statement.BindBool(10, po->cc().IsPersistent());
           add_statement.BindInt(
@@ -1352,8 +1351,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
 
         case PendingOperation::COOKIE_UPDATEACCESS:
           update_access_statement.Reset(true);
-          update_access_statement.BindInt64(
-              0, po->cc().LastAccessDate().ToInternalValue());
+          update_access_statement.BindTime(0, po->cc().LastAccessDate());
           update_access_statement.BindString(1, po->cc().Name());
           update_access_statement.BindString(2, po->cc().Domain());
           update_access_statement.BindString(3, po->cc().Path());
