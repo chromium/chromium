@@ -13,6 +13,10 @@
   position: absolute;
 }
 
+#ptz-toast.hidden {
+  display: none;
+}
+
 #ptz-toast::before {
   content: url(/images/ptz_toast_icon.svg);
   display: inline-block;
