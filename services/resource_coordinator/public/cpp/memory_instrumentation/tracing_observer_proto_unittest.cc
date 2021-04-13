@@ -16,11 +16,11 @@
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/trace_time.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/smaps.pbzero.h"
@@ -271,7 +271,8 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
   EXPECT_TRUE(packet->has_timestamp());
   EXPECT_EQ(kTimestampProto, packet->timestamp());
   EXPECT_TRUE(packet->has_timestamp_clock_id());
-  EXPECT_EQ(static_cast<uint32_t>(kTraceClockId), packet->timestamp_clock_id());
+  EXPECT_EQ(static_cast<uint32_t>(base::tracing::kTraceClockId),
+            packet->timestamp_clock_id());
   EXPECT_TRUE(packet->has_memory_tracker_snapshot());
 
   const MemoryTrackerSnapshot& snapshot = packet->memory_tracker_snapshot();
@@ -339,7 +340,7 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
   EXPECT_TRUE(process_stats_trace_packet->has_timestamp());
   EXPECT_EQ(kTimestampProto, process_stats_trace_packet->timestamp());
   EXPECT_TRUE(process_stats_trace_packet->has_timestamp_clock_id());
-  EXPECT_EQ(static_cast<uint32_t>(kTraceClockId),
+  EXPECT_EQ(static_cast<uint32_t>(base::tracing::kTraceClockId),
             process_stats_trace_packet->timestamp_clock_id());
   EXPECT_TRUE(process_stats_trace_packet->has_process_stats());
 

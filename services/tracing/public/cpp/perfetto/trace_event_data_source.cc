@@ -37,6 +37,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
+#include "base/tracing/trace_time.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -45,7 +46,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "services/tracing/public/cpp/perfetto/track_event_thread_local_event_sink.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
@@ -243,7 +243,7 @@ void TraceEventMetadataSource::GenerateMetadataFromGenerator(
   }
   trace_packet->set_timestamp(
       TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-  trace_packet->set_timestamp_clock_id(kTraceClockId);
+  trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
   auto* chrome_metadata = trace_packet->set_chrome_metadata();
   generator.Run(chrome_metadata, privacy_filtering_enabled_);
 }
@@ -260,7 +260,7 @@ void TraceEventMetadataSource::GenerateMetadataPacket(
   }
   trace_packet->set_timestamp(
       TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-  trace_packet->set_timestamp_clock_id(kTraceClockId);
+  trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
   generator.Run(trace_packet.get(), privacy_filtering_enabled_);
 }
 
@@ -279,7 +279,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
     }
     trace_packet->set_timestamp(
         TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-    trace_packet->set_timestamp_clock_id(kTraceClockId);
+    trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
     event_bundle = trace_packet->set_chrome_events();
   }
 
@@ -364,14 +364,15 @@ void TraceEventMetadataSource::GenerateMetadata(
     TracePacketHandle generator_trace_packet = trace_writer->NewTracePacket();
     generator_trace_packet->set_timestamp(
         TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-    generator_trace_packet->set_timestamp_clock_id(kTraceClockId);
+    generator_trace_packet->set_timestamp_clock_id(
+        base::tracing::kTraceClockId);
     generator.Run(generator_trace_packet.get(), privacy_filtering_enabled);
   }
 
   TracePacketHandle trace_packet = trace_writer_->NewTracePacket();
   trace_packet->set_timestamp(
       TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-  trace_packet->set_timestamp_clock_id(kTraceClockId);
+  trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
   auto* chrome_metadata = trace_packet->set_chrome_metadata();
   for (auto& generator : *proto_generators) {
     generator.Run(chrome_metadata, privacy_filtering_enabled);
@@ -382,7 +383,7 @@ void TraceEventMetadataSource::GenerateMetadata(
     trace_packet = trace_writer_->NewTracePacket();
     trace_packet->set_timestamp(
         TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-    trace_packet->set_timestamp_clock_id(kTraceClockId);
+    trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
     ChromeEventBundle* event_bundle = trace_packet->set_chrome_events();
     for (auto& generator : *json_generators) {
       GenerateJsonMetadataFromGenerator(generator, event_bundle);
@@ -1298,7 +1299,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
       perfetto::protos::pbzero::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED);
   trace_packet->set_timestamp(
       TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-  trace_packet->set_timestamp_clock_id(kTraceClockId);
+  trace_packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
 
   TrackDescriptor* track_descriptor = trace_packet->set_track_descriptor();
   auto process_track = perfetto::ProcessTrack::Current();

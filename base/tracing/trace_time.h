@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACE_TIME_H_
-#define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACE_TIME_H_
+#ifndef BASE_TRACING_TRACE_TIME_H_
+#define BASE_TRACING_TRACE_TIME_H_
 
 #include "build/build_config.h"
 #include "third_party/perfetto/protos/perfetto/common/builtin_clock.pbzero.h"
 
+namespace base {
 namespace tracing {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
@@ -29,5 +30,6 @@ constexpr perfetto::protos::pbzero::BuiltinClock kTraceClockId =
 int64_t TraceBootTicksNow();
 
 }  // namespace tracing
+}  // namespace base
 
-#endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACE_TIME_H_
+#endif  // BASE_TRACING_TRACE_TIME_H_

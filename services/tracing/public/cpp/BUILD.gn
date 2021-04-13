@@ -82,8 +82,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/trace_packet_tokenizer.h",
       "perfetto/trace_string_lookup.cc",
       "perfetto/trace_string_lookup.h",
-      "perfetto/trace_time.cc",
-      "perfetto/trace_time.h",
       "perfetto/traced_value_proto_writer.cc",
       "perfetto/traced_value_proto_writer.h",
       "perfetto/track_event_thread_local_event_sink.cc",

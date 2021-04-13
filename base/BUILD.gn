@@ -2306,6 +2306,8 @@ component("base") {
       "tracing/perfetto_platform.h",
       "tracing/perfetto_task_runner.cc",
       "tracing/perfetto_task_runner.h",
+      "tracing/trace_time.cc",
+      "tracing/trace_time.h",
       "tracing/tracing_tls.cc",
       "tracing/tracing_tls.h",
     ]

@@ -29,11 +29,11 @@
 #include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
+#include "base/tracing/trace_time.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -136,7 +136,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     ASSERT_EQ(packet->clock_snapshot().clocks().size(), 3);
 
     EXPECT_EQ(packet->clock_snapshot().clocks()[0].clock_id(),
-              static_cast<uint32_t>(kTraceClockId));
+              static_cast<uint32_t>(base::tracing::kTraceClockId));
     EXPECT_FALSE(packet->clock_snapshot().clocks()[0].has_unit_multiplier_ns());
     EXPECT_FALSE(packet->clock_snapshot().clocks()[0].has_is_incremental());
 

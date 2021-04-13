@@ -12,10 +12,10 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/trace_time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace tracing {
@@ -205,7 +205,8 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
   // conversion to BOOTTIME caused CrOS and chromecast system data source data
   // to be misaligned.
   builtin_data_sources->set_primary_trace_clock(
-      static_cast<perfetto::protos::gen::BuiltinClock>(kTraceClockId));
+      static_cast<perfetto::protos::gen::BuiltinClock>(
+          base::tracing::kTraceClockId));
 
   // Chrome emits system / trace config metadata itself.
   builtin_data_sources->set_disable_trace_config(privacy_filtering_enabled);

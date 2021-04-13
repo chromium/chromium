@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
+#include "base/tracing/trace_time.h"
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/base/time.h"
 
+namespace base {
 namespace tracing {
 
 int64_t TraceBootTicksNow() {
@@ -23,3 +24,4 @@ int64_t TraceBootTicksNow() {
 }
 
 }  // namespace tracing
+}  // namespace base

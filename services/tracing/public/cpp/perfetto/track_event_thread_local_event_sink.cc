@@ -16,13 +16,13 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/trace_time.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/clock_snapshot.pbzero.h"
@@ -914,7 +914,7 @@ void TrackEventThreadLocalEventSink::DoResetIncrementalState(
     ClockSnapshot* clocks = packet->set_clock_snapshot();
     // Reference clock is in nanoseconds.
     ClockSnapshot::Clock* clock_reference = clocks->add_clocks();
-    clock_reference->set_clock_id(kTraceClockId);
+    clock_reference->set_clock_id(base::tracing::kTraceClockId);
     clock_reference->set_timestamp(timestamp.since_origin().InNanoseconds());
     // Absolute clock in micros.
     ClockSnapshot::Clock* clock_absolute = clocks->add_clocks();
