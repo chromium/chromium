@@ -4,7 +4,9 @@
 
 #include "components/arc/ime/key_event_result_receiver.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -178,6 +180,28 @@ TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
   // 'A' key should be sent to the proxy IME.
   EXPECT_TRUE(result.has_value());
   EXPECT_TRUE(result.value());
+}
+
+TEST_F(KeyEventResultReceiverTest, Histrogram) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramName[] = "Arc.ChromeOsImeLatency";
+  auto delay = base::TimeDelta::FromMilliseconds(100);
+
+  receiver()->SetCallback(base::DoNothing());
+
+  ForwardBy(delay);
+
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
+  receiver()->DispatchKeyEventPostIME(&event);
+
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+  histogram_tester.ExpectUniqueTimeSample(kHistogramName, delay, 1);
+
+  receiver()->SetCallback(base::DoNothing());
+
+  ForwardBy(base::TimeDelta::FromSeconds(1));
+
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
 }  // namespace arc
