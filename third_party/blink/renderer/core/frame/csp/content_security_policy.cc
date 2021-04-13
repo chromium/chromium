@@ -1457,13 +1457,6 @@ bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
       ExperimentalContentSecurityPolicyFeaturesEnabled();
 }
 
-bool ContentSecurityPolicy::ShouldSendCSPHeader(ResourceType type) const {
-  // TODO(mkwst): Revisit this once the CORS prefetch issue with the 'CSP'
-  //              header is worked out, one way or another:
-  //              https://github.com/whatwg/fetch/issues/52
-  return false;
-}
-
 // static
 bool ContentSecurityPolicy::ShouldBypassMainWorld(
     const ExecutionContext* context) {

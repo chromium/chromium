@@ -503,14 +503,6 @@ void FrameFetchContext::PopulateResourceRequest(
 
   ModifyRequestForCSP(request);
   AddClientHintsIfNecessary(hints_preferences, resource_width, request);
-
-  const ContentSecurityPolicy* csp =
-      GetContentSecurityPolicyForWorld(options.world_for_csp.get());
-  if (csp && csp->ShouldSendCSPHeader(type))
-    // TODO(crbug.com/993769): Test if this header returns duplicated values
-    // (i.e. "CSP: active, active") on asynchronous "stale-while-revalidate"
-    // revalidation requests and if this is unexpected behavior.
-    request.AddHttpHeaderField("CSP", "active");
 }
 
 bool FrameFetchContext::IsPrerendering() const {

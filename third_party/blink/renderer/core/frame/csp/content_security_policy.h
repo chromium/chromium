@@ -388,8 +388,6 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool ExperimentalFeaturesEnabled() const;
 
-  bool ShouldSendCSPHeader(ResourceType) const;
-
   // Whether the main world's CSP should be bypassed based on the current
   // javascript world we are in.
   // Note: This is deprecated. New usages should not be added. Operations in an
