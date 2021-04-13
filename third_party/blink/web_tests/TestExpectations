@@ -6803,3 +6803,6 @@ crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Pass Failur
 
 # Sheriff 2021-04-13
 crbug.com/1198515 [ Mac ] external/wpt/web-animations/timing-model/animations/playing-an-animation.html [ Pass Failure ]
+
+# Temporarily disabled to land a devtools-frontend change.
+crbug.com/1197542 http/tests/devtools/elements/styles-2/metrics-box-sizing.js [ Pass Failure ]
