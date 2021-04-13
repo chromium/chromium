@@ -19,6 +19,7 @@ base::trace_event::TraceLog::OptionalAutoLock::lock_
 blink::xpath::EvaluationContext::node
 WTF::HashTableAddResult::container_
 WTF::HashTableAddResult::stored_value
+cast_channel::CastTransportTest::logger_
 
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
