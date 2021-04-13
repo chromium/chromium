@@ -29,7 +29,7 @@ JOBS_STATE_FILE = 'jobs_state.json'
 DATASET_PKL_FILE = 'dataset.pkl'
 DATASET_CSV_FILE = 'dataset.csv'
 
-CLOUD_STORAGE_DIR = 'gs://chrome-health-tvdata/pinboard'
+CLOUD_STORAGE_DIR = 'gs://showy-dashboard-data/pinboard'
 TZ = 'America/Los_Angeles'  # MTV-time.
 
 
