@@ -19,6 +19,7 @@
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="2801787514987684416">להציג את פרטי החנות?</translation>
+<translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="3194464645767632461">דירוג</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
@@ -32,7 +33,7 @@
 <translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
-<translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />))}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}many{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}many{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="5007392906805964215">עיון</translation>

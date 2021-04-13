@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
+<translation id="1715359911173058521">Došlo je do problema u komunikaciji sa skenerom. Proverite mrežnu ili USB vezu i probajte ponovo.</translation>
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Otkazuje se skeniranje</translation>
@@ -216,6 +217,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostaje {0} pokušaj}one{Preostaje {0} pokušaj}few{Preostaju {0} pokušaja}other{Preostaje {0} pokušaja}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Nismo uspeli da dovršimo skeniranje</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fajl je skeniran i sačuvan u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
+<translation id="6037291330010597344">Mehanizam za uvlačenje dokumenata na skeneru je prazan. Dodajte dokumente i probajte ponovo.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Nepoznati identitet</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -252,6 +255,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> je otkazan</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
+<translation id="6388847657025262518">Mehanizam za uvlačenje dokumenata na skeneru je zaglavljen. Proverite mehanizam i probajte ponovo.</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6456394469623773452">Dobar</translation>
@@ -273,6 +277,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
+<translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite ga i probajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje sa medijskim serverima nije uspelo</translation>
 <translation id="6957231940976260713">Naziv usluge</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
@@ -287,6 +292,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
+<translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Tip datoteke</translation>

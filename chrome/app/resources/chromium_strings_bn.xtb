@@ -60,6 +60,7 @@
 <translation id="3130323860337406239">Chromium আপনার মাইক্রোফোন ব্যবহার করছে৷</translation>
 <translation id="3155163173539279776">Chromium আবার লঞ্চ করুন</translation>
 <translation id="3179665906251668410">Chromium ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
+<translation id="3185330573522821672">আপনার নতুন Chromium প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="3190315855212034486">ওহো! Chromium ক্র্যাশ করেছে৷ এখন আবার শুরু করবেন?</translation>
 <translation id="3229526316128325841">Chromium আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে।</translation>
 <translation id="3258596308407688501">Chromium তার ডেটা ডিরেক্টরিতে পড়তে এবং লিখতে পারে না:
@@ -74,6 +75,7 @@
 <translation id="3430503420100763906">Chromium প্রোফাইল থেকে আপনার সব Chromium স্টাফ আলাদা করতে পারবেন। বন্ধু এবং পরিবারের জন্য প্রোফাইল তৈরি করুন অথবা অফিস এবং বিনোদনের প্রোফাইল আলাদা আলাদা রাখুন।</translation>
 <translation id="347328004046849135">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড দিয়ে আপনি সাইন-ইন করলে আপনাকে Chromium বিজ্ঞপ্তি দিয়ে জানাবে</translation>
 <translation id="3474745554856756813">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
+<translation id="3497319089134299931"><ph name="SHORTCUT" /> ব্যবহার করে একটি Chromium প্রোফাইল থেকে আরেকটিতে পাল্টানো যায়</translation>
 <translation id="3509308970982693815">দয়া করে সব Chromium উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
 <translation id="3575459661164320785">আপনার কম্পিউটারে ক্ষতিকারক সফ্টওয়্যার পাওয়া গেছে। Chromium এটিকে সরিয়ে দিতে পারে, আপনার সেটিংস রিস্টোর করতে পারে এবং বিভিন্ন এক্সটেনশন বন্ধ করে দিতে পারে যাতে আপনার ব্রাউজার আবার স্বাভাবিকভাবে কাজ করে।</translation>
 <translation id="3639635944603682591">এই ডিভাইস থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -154,6 +156,7 @@
 <translation id="6120345080069858279">Chromium আপনার Google অ্যাকাউন্টে এই পাসওয়ার্ডটি সেভ করবে। আপনাকে এটি মনে রাখতে হবে না।</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> বিপজ্জনক, তাই Chromium এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="6134968993075716475">'Safe Browsing'-এর সুবিধা বন্ধ করা আছে। তবে এটি চালু রাখার জন্য Chromium আপনাকে সাজেস্ট করছে।</translation>
+<translation id="6145820983052037069">আপনি এখানে একটি Chromium প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
 <translation id="6183079672144801177">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chromium-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="6212496753309875659">এই কম্পিউটারে ইতিমধ্যে Chromium-এর আরও একটি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যার কাজ না করে, দয়া করে Chromium আনইনস্টল করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium এখন আবার লঞ্চ হবে}=1{Chromium ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>

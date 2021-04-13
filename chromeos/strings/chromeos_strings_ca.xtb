@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
+<translation id="1715359911173058521">S'ha produït un problema en establir la comunicació amb l'escàner. Comprova la xarxa o la connexió USB i torna-ho a provar.</translation>
 <translation id="1717874160321062422">Gestionat per <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
@@ -216,6 +217,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">L'escaneig no s'ha pogut completar</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
+<translation id="6037291330010597344">L'alimentador de documents de l'escàner està buit. Afegeix documents i torna-ho a provar.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040852767465482106">Identitat anònima</translation>
 <translation id="604124094241169006">Automàtic</translation>
@@ -252,6 +255,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
+<translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
 <translation id="6423239382391657905">VPN oberta</translation>
 <translation id="6456394469623773452">Bona</translation>
@@ -273,6 +277,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
+<translation id="6910312834584889076">La tapa de l'escàner està oberta. Tanca-la i torna-ho a provar.</translation>
 <translation id="6911383237894364323">No es pot connectar als servidors multimèdia</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
@@ -287,6 +292,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
+<translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>

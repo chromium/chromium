@@ -5524,7 +5524,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
 <translation id="8329984337216493753">Kebijakan ini aktif dalam mode eceran saja.
 
-      Jika DeviceIdleLogoutTimeout ditentukan, kebijakan ini menetapkan durasi kotak peringatan dengan pewaktu hitungan mundur yang ditampilkan ke pengguna sebelum proses keluar dieksekusi.
+      Jika DeviceIdleLogoutTimeout ditentukan, kebijakan ini menetapkan durasi kotak peringatan dengan timer hitungan mundur yang ditampilkan ke pengguna sebelum proses keluar dieksekusi.
 
       Nilai kebijakan harus ditentukan dalam milidetik.</translation>
 <translation id="8331479227794770304">Aktifkan tombol lengket</translation>

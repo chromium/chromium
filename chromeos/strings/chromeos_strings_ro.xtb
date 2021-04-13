@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
+<translation id="1715359911173058521">Există o problemă de comunicare cu scanerul. Verifică-ți conexiunea USB sau la rețea și încearcă din nou.</translation>
 <translation id="1717874160321062422">Gestionat de <ph name="FIRST_MANAGER" /> și de <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
@@ -216,6 +217,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} încercare rămasă}few{{0} încercări rămase}other{{0} de încercări rămase}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Nu s-a putut finaliza scanarea</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5916084858004523819">Interzis</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fișierul a fost scanat și salvat în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fișierul nu a fost găsit</translation>
+<translation id="6037291330010597344">Alimentatorul de documente al scanerului este gol. Adaugă documente și încearcă din nou.</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6040852767465482106">Identitate anonimă</translation>
 <translation id="604124094241169006">Automat</translation>
@@ -252,6 +255,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
+<translation id="6388847657025262518">Alimentatorul de documente al scanerului este blocat. Verifică alimentatorul și încearcă din nou.</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bun</translation>
@@ -273,6 +277,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
+<translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
 <translation id="6911383237894364323">Nu se poate conecta la serverele media</translation>
 <translation id="6957231940976260713">Nume serviciu</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
@@ -287,6 +292,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
+<translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>

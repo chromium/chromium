@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">නැවතිණි - තීන්ත අවසන් විය</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS විසඳුම්කාරක පැවතීම</translation>
+<translation id="1715359911173058521">ස්කෑනරය සමඟ සන්නිවේදනය කිරීමේ ගැටලුවක් තිබේ. ජාලය හෝ USB සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> සහ <ph name="SECOND_MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ස්කෑන් කිරීම අවලංගු කරමින්</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">කළමනාකරණය කෙරේ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{උත්සාහයන් {0}ක් ඉතිරිය}one{උත්සාහයන් {0}ක් ඉතිරිය}other{උත්සාහයන් {0}ක් ඉතිරිය}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">ස්කෑන් කිරීම සම්පූර්ණ කළ නොහැකි විය</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">සක්‍රීය වෙමින්...</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">තහනම්</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ඔබගේ ගොනුව සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}one{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}other{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}}</translation>
 <translation id="5931523347251946569">ගොනුව හමු නොවිණි</translation>
+<translation id="6037291330010597344">ස්කෑනරයේ ලේඛන සංග්‍රහය හිස්ය. ලේඛන එක් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6040852767465482106">නිර්නාමික අනන්‍යතාව</translation>
 <translation id="604124094241169006">ස්වයංක්‍රීය</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="6325525973963619867">අසාර්ථක විය</translation>
 <translation id="636850387210749493">ව්‍යාපාරික බඳවාගැනීම</translation>
+<translation id="6388847657025262518">ස්කෑනරයේ ලේඛන සංග්‍රහය තදබදයට පත්ව ඇත. සංග්‍රහය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="641081527798843608">විෂය ගැළපුම</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">කදිමයි</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">අසාර්ථක වූ DNS විභේදන</translation>
 <translation id="6768237774506518020">ඉහළ DNS විභේදන අසාර්ථක වීම් අනුපාතය</translation>
 <translation id="6853312040151791195">විසර්ජන වේගය</translation>
+<translation id="6910312834584889076">ස්කෑනරයේ ආවරණය විවෘතයි. කවරය වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="6911383237894364323">මාධ්‍ය සේවාදායක වෙත සබැඳීමට නොහැකිය</translation>
 <translation id="6957231940976260713">සේවා නාමය</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">ගැලරිය</translation>
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
+<translation id="7271040990581020067">ස්කෑනරය දැනට භාවිතයේ ඇත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">ජාල උපාංග</translation>
 <translation id="7359657277149375382">ගොනු වර්ගය</translation>
