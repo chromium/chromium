@@ -189,6 +189,20 @@ class SoftwareVideoEncoderTest
         });
   }
 
+  void DecodeAndWaitForStatus(
+      scoped_refptr<DecoderBuffer> buffer,
+      const base::Location& location = base::Location::Current()) {
+    base::RunLoop run_loop;
+    decoder_->Decode(
+        std::move(buffer), base::BindLambdaForTesting([&](Status status) {
+          EXPECT_TRUE(status.is_ok())
+              << " Callback created: " << location.ToString()
+              << " Code: " << status.code() << " Error: " << status.message();
+          run_loop.Quit();
+        }));
+    run_loop.Run(location);
+  }
+
   int CountDifferentPixels(VideoFrame& frame1, VideoFrame& frame2) {
     int diff_cnt = 0;
     uint8_t tolerance = 10;
@@ -400,8 +414,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   }
 
   encoder_->Flush(ValidatingStatusCB());
-  decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), ValidatingStatusCB());
-  RunUntilIdle();
+  DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
   EXPECT_EQ(decoded_frames.size(), frames_to_encode.size());
   for (auto i = 0u; i < decoded_frames.size(); i++) {
     auto original_frame = frames_to_encode[i];
@@ -476,12 +489,10 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
         auto buffer = DecoderBuffer::CopyFrom(chunk.data.get(), chunk.size);
         buffer->set_timestamp(chunk.timestamp);
         buffer->set_is_key_frame(chunk.key_frame);
-        decoder_->Decode(std::move(buffer), ValidatingStatusCB());
-        RunUntilIdle();
+        DecodeAndWaitForStatus(std::move(buffer));
       }
     }
-    decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), ValidatingStatusCB());
-    RunUntilIdle();
+    DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
 
     int rate_decimator =
         (1 << (options.temporal_layers - 1)) / (1 << max_layer);
@@ -632,9 +643,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
 
     if (chunk.desc.has_value()) {
       if (decoder_)
-        decoder_->Decode(DecoderBuffer::CreateEOSBuffer(),
-                         ValidatingStatusCB());
-      RunUntilIdle();
+        DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
       PrepareDecoder(options.frame_size, std::move(decoder_output_cb),
                      chunk.desc.value());
     }
@@ -642,11 +651,9 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
     auto buffer = DecoderBuffer::FromArray(std::move(output.data), output.size);
     buffer->set_timestamp(output.timestamp);
     buffer->set_is_key_frame(output.key_frame);
-    decoder_->Decode(std::move(buffer), ValidatingStatusCB());
-    RunUntilIdle();
+    DecodeAndWaitForStatus(std::move(buffer));
   }
-  decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), ValidatingStatusCB());
-  RunUntilIdle();
+  DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
   EXPECT_EQ(decoded_frames.size(), total_frames_count);
 }
 
