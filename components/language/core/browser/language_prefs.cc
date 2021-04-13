@@ -249,8 +249,8 @@ size_t LanguagePrefs::NumFluentLanguages() const {
 }
 
 void ResetLanguagePrefs(PrefService* prefs) {
-  prefs->ClearPref(language::prefs::kAcceptLanguages);
   prefs->ClearPref(language::prefs::kSelectedLanguages);
+  prefs->ClearPref(language::prefs::kAcceptLanguages);
   prefs->ClearPref(language::prefs::kFluentLanguages);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->ClearPref(language::prefs::kPreferredLanguages);
