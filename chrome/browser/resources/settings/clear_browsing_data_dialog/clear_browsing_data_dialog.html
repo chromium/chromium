@@ -162,6 +162,10 @@
                 sub-label="[[counters_.cache_basic]]"
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
+            <div id="searchHistoryTextBox"
+                hidden="[[!shouldShowSearchHistoryLabel_]]">
+                $i18nRaw{clearSearchHistorySummarySignedIn}
+            </div>
           </div>
           <div id="advanced-tab">
             <div class="row time-range-row">

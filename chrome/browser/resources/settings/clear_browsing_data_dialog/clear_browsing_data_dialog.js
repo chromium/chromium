@@ -261,6 +261,13 @@ Polymer({
       type: Boolean,
       value: () => loadTimeData.getBoolean('searchHistoryLink'),
     },
+
+    /** @private */
+    shouldShowSearchHistoryLabel_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeShouldShowSearchHistoryLabel_(isSignedIn_)'
+    },
   },
 
   listeners: {'settings-boolean-control-change': 'updateClearButtonState_'},
@@ -378,6 +385,16 @@ Polymer({
       return historySummarySignedIn;
     }
     return historySummary;
+  },
+
+  /**
+   * Whether the search history text box should be shown.
+   * @param {boolean} isSignedIn
+   * @return {boolean}
+   * @private
+   */
+  computeShouldShowSearchHistoryLabel_(isSignedIn) {
+    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
   },
 
   /**

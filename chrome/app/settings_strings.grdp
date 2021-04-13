@@ -961,6 +961,9 @@
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED" desc="A description for the basic tab explaining browsing history for users with history sync.">
     Clears history from all signed-in devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
   </message>
+  <message name="IDS_SETTINGS_CLEAR_SEARCH_BROWSING_HISTORY_SUMMARY_SIGNED_IN" desc="A description explaining that search history can be cleared through the Google account.">
+    To clear <ph name="BEGIN_LINK_SEARCH">&lt;a target="_blank" href="$1"&gt;</ph>search<ph name="END_LINK_SEARCH">&lt;/a&gt;</ph> or other forms of history, visit <ph name="BEGIN_LINK_GOOGLE">&lt;a target="_blank" href="$2"&gt;</ph>My Google Account<ph name="END_LINK_GOOGLE">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_CLEAR_DOWNLOAD_HISTORY" desc="Checkbox for deleting Download History">
     Download history
   </message>

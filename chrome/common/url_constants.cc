@@ -248,6 +248,9 @@ const char kSafeBrowsingHelpCenterURL[] =
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";
 
+const char kSearchHistoryUrlInClearBrowsingData[] =
+    "https://myactivity.google.com/myactivity?product=19&utm_source=chrome_cbd";
+
 const char kSeeMoreSecurityTipsURL[] =
     "https://support.google.com/accounts/answer/32040";
 

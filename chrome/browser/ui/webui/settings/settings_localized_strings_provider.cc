@@ -421,6 +421,12 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED,
           base::ASCIIToUTF16(chrome::kMyActivityUrlInClearBrowsingData)));
   html_source->AddString(
+      "clearSearchHistorySummarySignedIn",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_CLEAR_SEARCH_BROWSING_HISTORY_SUMMARY_SIGNED_IN,
+          base::ASCIIToUTF16(chrome::kSearchHistoryUrlInClearBrowsingData),
+          base::ASCIIToUTF16(chrome::kMyActivityUrlInClearBrowsingData)));
+  html_source->AddString(
       "historyDeletionDialogBody",
       l10n_util::GetStringFUTF16(
           IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE,

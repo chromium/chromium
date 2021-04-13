@@ -228,6 +228,22 @@ suite('ClearBrowsingDataDesktop', function() {
     passphraseLink.click();
     assertEquals(routes.SYNC, Router.getInstance().getCurrentRoute());
   });
+
+  test('ClearBrowsingDataSearchHistorySignedOut', function() {
+    webUIListenerCallback('update-sync-state', {
+      signedIn: false,
+    });
+    flush();
+    assertFalse(isVisible(element.$$('#searchHistoryTextBox')));
+  });
+
+  test('ClearBrowsingDataSearchHistorySignedIn', function() {
+    webUIListenerCallback('update-sync-state', {
+      signedIn: true,
+    });
+    flush();
+    assertTrue(isVisible(element.$$('#searchHistoryTextBox')));
+  });
 });
 
 suite('ClearBrowsingDataAllPlatforms', function() {

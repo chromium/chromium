@@ -217,6 +217,10 @@ extern const char kSafeBrowsingHelpCenterURL[];
 // "Learn more" URL for safety tip bubble.
 extern const char kSafetyTipHelpCenterURL[];
 
+// Google search history URL that leads users of the CBD dialog to their search
+// history in their Google account.
+extern const char kSearchHistoryUrlInClearBrowsingData[];
+
 // The URL for the "See more security tips" with advices how to create a strong
 // password.
 extern const char kSeeMoreSecurityTipsURL[];
