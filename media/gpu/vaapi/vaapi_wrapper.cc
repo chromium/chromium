@@ -2549,7 +2549,10 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferLocked");
 
-  {
+  // vaSyncSurface() is not necessary on Intel platforms as long as there is a
+  // vaMapBuffer() like in ScopedVABufferMapping below, see b/184312032.
+  if (GetImplementationType() != VAImplementation::kIntelI965 ||
+      GetImplementationType() != VAImplementation::kIntelIHD) {
     TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer_SyncSurface");
     const VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
