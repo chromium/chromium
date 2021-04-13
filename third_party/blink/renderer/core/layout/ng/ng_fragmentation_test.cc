@@ -272,11 +272,11 @@ TEST_F(NGFragmentationTest, InkOverflowInline) {
   const auto* flow_thread = To<LayoutBlockFlow>(container->FirstChild());
   DCHECK(flow_thread->IsLayoutFlowThread());
   // |flow_thread| is in the stitched coordinate system.
+  // Legacy had (0, 0, 150, 30), but NG doesn't compute for |LayoutFlowThread|.
   EXPECT_EQ(flow_thread->PhysicalVisualOverflowRect(),
-            PhysicalRect(0, 0, 150, 30));
-  // TOOD(crbug.com/1144203): This should be (0, 0, 260, 15).
+            PhysicalRect(0, 0, 100, 30));
   EXPECT_EQ(container->PhysicalVisualOverflowRect(),
-            PhysicalRect(0, 0, 210, 15));
+            PhysicalRect(0, 0, 260, 15));
 }
 
 TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxColumnBox) {

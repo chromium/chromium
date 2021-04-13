@@ -539,17 +539,10 @@ bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
     return false;
   // TODO(crbug.com/1144203): Following conditions are not supported in NG
   // visual overflow yet.
-  if (IsTableNGRow() || IsTableNG() || IsRenderedLegend() || IsMathML())
+  if (IsTableNGRow() || IsTableNG() || IsRenderedLegend() ||
+      IsColumnSpanAll() || IsMathML())
     return false;
-  if (IsInlineBox()) {
-    return true;
-  }
-  if (const LayoutBox* box = OwnerLayoutBox()) {
-    if (box->PhysicalFragmentCount() > 1)
-      return false;
-    return true;
-  }
-  NOTREACHED();
+  DCHECK(IsInlineBox() || OwnerLayoutBox());
   return true;
 }
 

@@ -7321,8 +7321,9 @@ void LayoutBox::ClearVisualOverflow() {
 
 bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
   NOT_DESTROYED();
-  // TODO(crbug.com/1144203): Block-fragmented objects are not supported yet.
-  if (PhysicalFragmentCount() != 1)
+  // TODO(crbug.com/1144203): Legacy, or no-fragments-objects such as
+  // table-column. What to do with them is TBD.
+  if (!PhysicalFragmentCount())
     return false;
   const NGPhysicalBoxFragment& fragment = *GetPhysicalFragment(0);
   if (!fragment.CanUseFragmentsForInkOverflow())
@@ -7357,6 +7358,18 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
     if (UNLIKELY(current->HasLayer() &&
                  To<LayoutBoxModelObject>(current)->HasSelfPaintingLayer())) {
       current = current->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+    if (UNLIKELY(current->IsLayoutMultiColumnSet() ||
+                 current->IsLayoutMultiColumnSpannerPlaceholder())) {
+      // These objects do not need visual overflows in NG, and never have
+      // children.
+      current = current->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+    if (UNLIKELY(current->IsLayoutFlowThread())) {
+      // These objects do not need visual overflows in NG.
+      current = current->NextInPreOrder(this);
       continue;
     }
 
@@ -7420,9 +7433,59 @@ bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     return true;
   }
 
-  // TODO(crbug.com/1144203): Block-fragmented objects not supported yet.
-  NOTREACHED();
-  return false;
+  // When block-fragmented, stitch visual overflows from all fragments.
+  const LayoutBlock* cb = ContainingBlock();
+  DCHECK(cb);
+  const WritingMode writing_mode = cb->StyleRef().GetWritingMode();
+  bool has_overflow = false;
+  PhysicalRect self_rect;
+  PhysicalRect contents_rect;
+  const NGPhysicalBoxFragment* last_fragment = nullptr;
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    DCHECK(fragment.CanUseFragmentsForInkOverflow());
+    if (!fragment.HasInkOverflow()) {
+      last_fragment = &fragment;
+      continue;
+    }
+    has_overflow = true;
+
+    PhysicalRect fragment_self_rect = fragment.SelfInkOverflow();
+    PhysicalRect fragment_contents_rect = fragment.ContentsInkOverflow();
+
+    // Stitch this fragment to the bottom of the last one in horizontal
+    // writing mode, or to the right in vertical. Flipped blocks is handled
+    // later, after the loop.
+    if (last_fragment) {
+      const auto* break_token =
+          To<NGBlockBreakToken>(last_fragment->BreakToken());
+      DCHECK(break_token);
+      const LayoutUnit block_offset = break_token->ConsumedBlockSize();
+      if (blink::IsHorizontalWritingMode(writing_mode)) {
+        fragment_self_rect.offset.top += block_offset;
+        fragment_contents_rect.offset.top += block_offset;
+      } else {
+        fragment_self_rect.offset.left += block_offset;
+        fragment_contents_rect.offset.left += block_offset;
+      }
+    }
+    last_fragment = &fragment;
+
+    self_rect.Unite(fragment_self_rect);
+    contents_rect.Unite(fragment_contents_rect);
+  }
+
+  if (!has_overflow) {
+    ClearVisualOverflow();
+    return true;
+  }
+  if (UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
+    DCHECK(!blink::IsHorizontalWritingMode(writing_mode));
+    const LayoutUnit flip_offset = cb->Size().Width() - Size().Width();
+    self_rect.offset.left += flip_offset;
+    contents_rect.offset.left += flip_offset;
+  }
+  SetVisualOverflow(self_rect, contents_rect);
+  return true;
 }
 
 bool LayoutBox::PercentageLogicalHeightIsResolvable() const {
