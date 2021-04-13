@@ -141,6 +141,8 @@ feedwire::Request CreateFeedQueryRequest(
   if (base::FeatureList::IsEnabled(kInterestFeedV2Autoplay)) {
     feed_request.add_client_capability(
         feedwire::Capability::INLINE_VIDEO_AUTOPLAY);
+    feed_request.add_client_capability(
+        feedwire::Capability::OPEN_VIDEO_COMMAND);
   }
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
