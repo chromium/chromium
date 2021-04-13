@@ -10,7 +10,7 @@
 
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/glib_signal.h"
-#include "ui/gtk/gtk_buildflags.h"
+#include "ui/gtk/gtk_compat.h"
 
 namespace ui {
 

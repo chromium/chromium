@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -31,7 +30,7 @@ extern "C" {
 namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
-COMPONENT_EXPORT(GTK) bool LoadGtk(int gtk_version);
+bool LoadGtk();
 
 const base::Version& GtkVersion();
 

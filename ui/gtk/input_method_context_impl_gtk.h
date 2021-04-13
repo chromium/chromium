@@ -12,7 +12,6 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gtk/gtk_buildflags.h"
 
 using GtkIMContext = struct _GtkIMContext;
 using GdkWindow = struct _GdkWindow;
