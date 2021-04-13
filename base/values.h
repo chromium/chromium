@@ -578,8 +578,10 @@ class BASE_EXPORT Value {
   // Serializes to a string for logging and debug purposes.
   std::string DebugString() const;
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Write this object into a trace.
   void WriteIntoTracedValue(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
  protected:
   // Checked convenience accessors for dict and list.

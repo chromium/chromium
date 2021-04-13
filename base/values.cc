@@ -1009,6 +1009,7 @@ std::string Value::DebugString() const {
   return json;
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 void Value::WriteIntoTracedValue(perfetto::TracedValue context) const {
   switch (type()) {
     case Type::BOOLEAN:
@@ -1043,6 +1044,7 @@ void Value::WriteIntoTracedValue(perfetto::TracedValue context) const {
       return;
   }
 }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 Value* Value::SetKeyInternal(StringPiece key,
                              std::unique_ptr<Value>&& val_ptr) {
