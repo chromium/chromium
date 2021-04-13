@@ -42,6 +42,8 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
+using IsInsecureCredential = CredentialEditBridge::IsInsecureCredential;
+
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
     : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
   password_manager_presenter_.Initialize();
@@ -214,7 +216,8 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
       password_manager_presenter_.GetPassword(index);
   if (form && !credential_edit_bridge_) {
     credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        form, password_manager_presenter_.GetUsernamesForRealm(index),
+        *form, IsInsecureCredential(false),
+        password_manager_presenter_.GetUsernamesForRealm(index),
         &saved_passwords_presenter_, &password_manager_presenter_,
         base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                        base::Unretained(this)),
@@ -232,7 +235,8 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
       password_manager_presenter_.GetPasswordException(index);
   if (form && !credential_edit_bridge_) {
     credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        form, password_manager_presenter_.GetUsernamesForRealm(index),
+        *form, IsInsecureCredential(false),
+        password_manager_presenter_.GetUsernamesForRealm(index),
         &saved_passwords_presenter_, &password_manager_presenter_,
         base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                        base::Unretained(this)),

@@ -18,11 +18,14 @@
 // in order to launch or dismiss the edit UI.
 class CredentialEditBridge {
  public:
+  using IsInsecureCredential =
+      base::StrongAlias<class IsInsecureCredentialTag, bool>;
   // Returns a new bridge if none exists. If a bridge already exitst, it returns
   // null, since that means the edit UI is already open and it should not be
   // shared.
   static std::unique_ptr<CredentialEditBridge> MaybeCreate(
-      const password_manager::PasswordForm* credential,
+      const password_manager::PasswordForm credential,
+      IsInsecureCredential is_insecure_credential,
       std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       PasswordManagerPresenter* password_manager_presenter,
@@ -53,7 +56,8 @@ class CredentialEditBridge {
 
  private:
   CredentialEditBridge(
-      const password_manager::PasswordForm* credential,
+      const password_manager::PasswordForm credential,
+      IsInsecureCredential is_insecure_credential,
       std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       PasswordManagerPresenter* password_manager_presenter,
@@ -72,7 +76,11 @@ class CredentialEditBridge {
   std::u16string GetDisplayFederationOrigin();
 
   // The credential to be edited.
-  const password_manager::PasswordForm* credential_ = nullptr;
+  const password_manager::PasswordForm credential_;
+
+  // Whether the credential being edited is an insecure credential. Used to
+  // customize the deletion confirmation dialog string.
+  IsInsecureCredential is_insecure_credential_;
 
   // All the usernames saved for the current site/app.
   std::vector<std::u16string> existing_usernames_;

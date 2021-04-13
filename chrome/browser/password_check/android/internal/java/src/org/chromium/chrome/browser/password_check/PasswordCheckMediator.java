@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckProperties
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.VIEW_CREDENTIAL;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.VIEW_DIALOG_HANDLER;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Pair;
 
@@ -29,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
@@ -230,9 +232,13 @@ class PasswordCheckMediator
     }
 
     @Override
-    public void onEdit(CompromisedCredential credential) {
+    public void onEdit(CompromisedCredential credential, Context context) {
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.EDIT_PASSWORD_CLICK);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
+            mDelegate.onEditCredential(credential, context);
+            return;
+        }
         if (!mReauthenticationHelper.canReauthenticate()) {
             mReauthenticationHelper.showScreenLockToast(ReauthReason.VIEW_PASSWORD);
             return;

@@ -70,6 +70,7 @@ public class CredentialEditMediator implements UiActionHandler {
     private PropertyModel mModel;
     private String mOriginalUsername;
     private String mOriginalPassword;
+    private boolean mIsInsecureCredential;
     private Set<String> mExistingUsernames;
 
     /**
@@ -163,9 +164,10 @@ public class CredentialEditMediator implements UiActionHandler {
         mModel = model;
     }
 
-    void setCredential(String username, String password) {
+    void setCredential(String username, String password, boolean isInsecureCredential) {
         mOriginalUsername = username;
         mOriginalPassword = password;
+        mIsInsecureCredential = isInsecureCredential;
 
         mModel.set(USERNAME, username);
         mModel.set(PASSWORD_VISIBLE, false);
@@ -244,8 +246,10 @@ public class CredentialEditMediator implements UiActionHandler {
         if (resources == null) return;
         String title =
                 resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
-        String message = resources.getString(
-                R.string.password_entry_edit_deletion_dialog_body, mModel.get(URL_OR_APP));
+        String message = resources.getString(mIsInsecureCredential
+                        ? R.string.password_check_delete_credential_dialog_body
+                        : R.string.password_entry_edit_deletion_dialog_body,
+                mModel.get(URL_OR_APP));
         mDeleteDialogHelper.showConfirmation(title, message,
                 R.string.password_entry_edit_delete_credential_dialog_confirm, () -> {
                     recordDeleted();

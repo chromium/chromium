@@ -68,9 +68,9 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
     @CalledByNative
     void setCredential(String displayUrlOrAppName, String username, String password,
-            String displayFederationOrigin) {
-        mCoordinator.setCredential(
-                displayUrlOrAppName, username, password, displayFederationOrigin);
+            String displayFederationOrigin, boolean isInsecureCredential) {
+        mCoordinator.setCredential(displayUrlOrAppName, username, password, displayFederationOrigin,
+                isInsecureCredential);
     }
 
     @CalledByNative

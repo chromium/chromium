@@ -93,6 +93,14 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
 
+  // Returns all the usernames for credentials saved for `signon_realm`. If
+  // `is_using_account_store` is true, this method will only consider
+  // credentials saved in the account store. Otherwiser it will only consider
+  // credentials saved in the profile store.
+  std::vector<std::u16string> GetUsernamesForRealm(
+      const std::string& signon_realm,
+      bool is_using_account_store);
+
   // Allows clients and register and de-register themselves.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

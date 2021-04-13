@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.password_check;
 
 import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.url.GURL;
 
 /**
@@ -181,6 +183,12 @@ class PasswordCheckBridge {
                 mNativePasswordCheckBridge, credential, newPassword);
     }
 
+    void onEditCredential(
+            CompromisedCredential credential, Context context, SettingsLauncher settingsLauncher) {
+        PasswordCheckBridgeJni.get().onEditCredential(
+                mNativePasswordCheckBridge, credential, context, settingsLauncher);
+    }
+
     void removeCredential(CompromisedCredential credential) {
         PasswordCheckBridgeJni.get().removeCredential(mNativePasswordCheckBridge, credential);
     }
@@ -213,6 +221,8 @@ class PasswordCheckBridge {
         void launchCheckupInAccount(long nativePasswordCheckBridge, Activity activity);
         void updateCredential(long nativePasswordCheckBridge, CompromisedCredential credential,
                 String newPassword);
+        void onEditCredential(long nativePasswordCheckBridge, CompromisedCredential credential,
+                Context context, SettingsLauncher settingsLauncher);
         void removeCredential(long nativePasswordCheckBridge, CompromisedCredential credentials);
         void destroy(long nativePasswordCheckBridge);
     }

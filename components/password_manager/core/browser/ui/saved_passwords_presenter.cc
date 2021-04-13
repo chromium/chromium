@@ -156,6 +156,19 @@ SavedPasswordsPresenter::GetSavedPasswords() const {
   return passwords_;
 }
 
+std::vector<std::u16string> SavedPasswordsPresenter::GetUsernamesForRealm(
+    const std::string& signon_realm,
+    bool is_using_account_store) {
+  std::vector<std::u16string> usernames;
+  for (const auto& form : passwords_) {
+    if (form.signon_realm == signon_realm &&
+        form.IsUsingAccountStore() == is_using_account_store) {
+      usernames.push_back(form.username_value);
+    }
+  }
+  return usernames;
+}
+
 void SavedPasswordsPresenter::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

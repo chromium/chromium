@@ -17,6 +17,14 @@ public interface PasswordCheckComponentUi {
      */
     interface Delegate {
         /**
+         * Launch the UI allowing the user to edit the given credential.
+         *
+         * @param credential A {@link CompromisedCredential} to be edited.
+         * @param context The context to launch the editing UI from.
+         */
+        void onEditCredential(CompromisedCredential credential, Context context);
+
+        /**
          * Remove the given credential from the password store.
          * @param credential A {@link CompromisedCredential}.
          */

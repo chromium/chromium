@@ -570,6 +570,9 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PASSWORD_ENTRY_EDIT_DELETION_DIALOG_BODY" desc="Text explaining the user that deleting the credential that they are viewing will not remove their account on the reaspective website.">
         Deleting this password will not delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_PASSWORD_CHECK_DELETE_CREDENTIAL_DIALOG_BODY" desc="The body of a prompt to confirm that the user intends to delete the stored password.">
+        Deleting this password will not delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph>. Change your password or delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph> to keep it safe from others.
+      </message>
       <message name="IDS_PASSWORD_ENTRY_EDIT_DELETE_CREDENTIAL_DIALOG_TITLE" desc="The title of a prompt to confirm that the user intends to delete the stored password.">
         Delete password?
       </message>
