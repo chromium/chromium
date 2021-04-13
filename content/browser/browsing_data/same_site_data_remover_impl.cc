@@ -13,7 +13,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/metrics/user_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/same_site_data_remover.h"
 #include "net/cookies/canonical_cookie.h"
@@ -121,8 +120,6 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins(
 // Defines the ClearSameSiteNoneData function declared in same_site_remover.h.
 // Clears cookies and associated data available in third-party contexts.
 void ClearSameSiteNoneData(base::OnceClosure closure, BrowserContext* context) {
-  base::RecordAction(
-      base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
@@ -135,8 +132,6 @@ void ClearSameSiteNoneCookiesAndStorageForOrigins(
     base::OnceClosure closure,
     BrowserContext* context,
     StoragePartition::OriginMatcherFunction clear_storage_origin_matcher) {
-  base::RecordAction(
-      base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 

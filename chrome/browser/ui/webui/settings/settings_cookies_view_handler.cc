@@ -15,12 +15,12 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/browsing_data/third_party_data_remover.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/cookies_tree_model_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/same_site_data_remover.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
@@ -384,7 +384,7 @@ void CookiesViewHandler::HandleRemoveThirdParty(const base::ListValue* args) {
 
   pending_requests_.emplace(
       base::BindOnce(
-          content::ClearSameSiteNoneData,
+          ClearThirdPartyData,
           base::BindOnce(&CookiesViewHandler::RecreateCookiesTreeModel,
                          callback_weak_ptr_factory_.GetWeakPtr()),
           profile),
