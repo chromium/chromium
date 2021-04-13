@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 
-// A view controller to showcase an example hero screen for the new first-run
+// A view controller to showcase an example hero screen for the new first run
 // experience.
 @interface SCFirstRunHeroScreenViewController : FirstRunScreenViewController
 
