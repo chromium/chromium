@@ -6980,8 +6980,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
 
 // Check that a video suspends when the page goes to the cache and can resume
 // after restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_VideoSuspendAndResume) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -7004,7 +7003,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       let result = event_name;
       video.addEventListener(event_name, event => {
         document.title = result;
-        video.testObserverEvents.push(result);
+        // Ignore 'canplaythrough' event as we can randomly get extra
+        // 'canplaythrough' events after playing here.
+        if (result != 'canplaythrough')
+          video.testObserverEvents.push(result);
       });
     }
 
@@ -7053,7 +7055,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Confirm that the media pauses automatically when going to the cache.
   // TODO(hajimehoshi): Confirm that this media automatically resumes if
   // autoplay attribute exists.
-  EXPECT_EQ(ListValueOf("canplaythrough", "play", "pause", "play"),
+  EXPECT_EQ(ListValueOf("play", "pause", "play"),
             EvalJs(rfh_a, "video.testObserverEvents"));
 }
 
