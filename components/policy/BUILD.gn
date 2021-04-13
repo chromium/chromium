@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/python.gni")
+import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -457,6 +458,8 @@ if (gen_policy_templates_zip) {
     args = [
       "--output",
       rebase_path(output_zip_file, root_build_dir),
+      "--timestamp",
+      build_timestamp,
       "--base_dir",
       rebase_path(policy_templates_base_dir, root_build_dir),
       "--languages",

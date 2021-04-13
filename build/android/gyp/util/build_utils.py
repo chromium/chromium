@@ -19,6 +19,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
@@ -366,10 +367,45 @@ def ExtractAll(zip_path, path=None, no_clobber=True, pattern=None,
   return extracted
 
 
+def HermeticDateTime(timestamp=None):
+  """Returns a constant ZipInfo.date_time tuple.
+
+  Args:
+    timestamp: Unix timestamp to use for files in the archive.
+
+  Returns:
+    A ZipInfo.date_time tuple for Jan 1, 2001, or the given timestamp.
+  """
+  if not timestamp:
+    return (2001, 1, 1, 0, 0, 0)
+  utc_time = time.gmtime(timestamp)
+  return (utc_time.tm_year, utc_time.tm_mon, utc_time.tm_mday, utc_time.tm_hour,
+          utc_time.tm_min, utc_time.tm_sec)
+
+
 def HermeticZipInfo(*args, **kwargs):
-  """Creates a ZipInfo with a constant timestamp and external_attr."""
+  """Creates a zipfile.ZipInfo with a constant timestamp and external_attr.
+
+  If a date_time value is not provided in the positional or keyword arguments,
+  the default value from HermeticDateTime is used.
+
+  Args:
+    See zipfile.ZipInfo.
+
+  Returns:
+    A zipfile.ZipInfo.
+  """
+  # The caller may have provided a date_time either as a positional parameter
+  # (args[1]) or as a keyword parameter. Use the default hermetic date_time if
+  # none was provided.
+  date_time = None
+  if len(args) >= 2:
+    date_time = args[1]
+  elif 'date_time' in kwargs:
+    date_time = kwargs['date_time']
+  if not date_time:
+    kwargs['date_time'] = HermeticDateTime()
   ret = zipfile.ZipInfo(*args, **kwargs)
-  ret.date_time = (2001, 1, 1, 0, 0, 0)
   ret.external_attr = (0o644 << 16)
   return ret
 
@@ -378,7 +414,8 @@ def AddToZipHermetic(zip_file,
                      zip_path,
                      src_path=None,
                      data=None,
-                     compress=None):
+                     compress=None,
+                     date_time=None):
   """Adds a file to the given ZipFile with a hard-coded modified time.
 
   Args:
@@ -388,6 +425,7 @@ def AddToZipHermetic(zip_file,
     data: File data as a string.
     compress: Whether to enable compression. Default is taken from ZipFile
         constructor.
+    date_time: The last modification date and time for the archive member.
   """
   assert (src_path is None) != (data is None), (
       '|src_path| and |data| are mutually exclusive.')
@@ -395,7 +433,7 @@ def AddToZipHermetic(zip_file,
     zipinfo = zip_path
     zip_path = zipinfo.filename
   else:
-    zipinfo = HermeticZipInfo(filename=zip_path)
+    zipinfo = HermeticZipInfo(filename=zip_path, date_time=date_time)
 
   _CheckZipPath(zip_path)
 
@@ -432,8 +470,12 @@ def AddToZipHermetic(zip_file,
   zip_file.writestr(zipinfo, data, compress_type)
 
 
-def DoZip(inputs, output, base_dir=None, compress_fn=None,
-          zip_prefix_path=None):
+def DoZip(inputs,
+          output,
+          base_dir=None,
+          compress_fn=None,
+          zip_prefix_path=None,
+          timestamp=None):
   """Creates a zip file from a list of files.
 
   Args:
@@ -443,6 +485,7 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None,
     compress_fn: Applied to each input to determine whether or not to compress.
         By default, items will be |zipfile.ZIP_STORED|.
     zip_prefix_path: Path prepended to file path in zip file.
+    timestamp: Unix timestamp to use for files in the archive.
   """
   if base_dir is None:
     base_dir = '.'
@@ -461,12 +504,17 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None,
   if not isinstance(output, zipfile.ZipFile):
     out_zip = zipfile.ZipFile(output, 'w')
 
+  date_time = HermeticDateTime(timestamp)
   try:
     for zip_path, fs_path in input_tuples:
       if zip_prefix_path:
         zip_path = os.path.join(zip_prefix_path, zip_path)
       compress = compress_fn(zip_path) if compress_fn else None
-      AddToZipHermetic(out_zip, zip_path, src_path=fs_path, compress=compress)
+      AddToZipHermetic(out_zip,
+                       zip_path,
+                       src_path=fs_path,
+                       compress=compress,
+                       date_time=date_time)
   finally:
     if output is not out_zip:
       out_zip.close()

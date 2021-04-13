@@ -27,6 +27,10 @@ def main():
   """
   parser = argparse.ArgumentParser()
   parser.add_argument("--output", dest="output")
+  parser.add_argument("--timestamp",
+                      type=int,
+                      metavar="TIME",
+                      help="Unix timestamp to use for files in the archive")
   parser.add_argument("--base_dir", dest="base_dir")
   parser.add_argument("--languages", dest="languages")
   parser.add_argument("--add", action="append", dest="files", default=[])
@@ -44,7 +48,7 @@ def main():
       file_list.append(file_to_add)
 
   with build_utils.AtomicOutput(args.output) as f:
-    build_utils.DoZip(file_list, f, args.base_dir)
+    build_utils.DoZip(file_list, f, args.base_dir, timestamp=args.timestamp)
 
 
 if '__main__' == __name__:
