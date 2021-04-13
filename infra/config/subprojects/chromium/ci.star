@@ -909,7 +909,6 @@ ci.android_builder(
 # running on CQ.
 ci.android_builder(
     name = "android-pie-arm64-coverage-experimental-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "p-cov",
@@ -5310,6 +5309,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac11 Tests",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = consoles.console_view_entry(
         category = "mac",
