@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, AppRemovedFromPolicyList) {
 
   ClearConfiguration();
   WaitForUpdate();
-  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
+  ASSERT_EQ(GetValues({kKey1, kKey2}), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, UnknownKeys) {

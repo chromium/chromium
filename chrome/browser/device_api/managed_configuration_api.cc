@@ -143,7 +143,7 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const std::vector<std::string>& keys,
     base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)> callback) {
   if (!CanHaveManagedStore(origin)) {
-    return std::move(callback).Run(std::make_unique<base::DictionaryValue>());
+    return std::move(callback).Run(nullptr);
   }
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,

@@ -181,14 +181,21 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
 
 void NavigatorManagedData::OnConfigurationReceived(
     ScriptPromiseResolver* scoped_resolver,
-    const HashMap<String, String>& configurations) {
+    const base::Optional<HashMap<String, String>>& configurations) {
   pending_promises_.erase(scoped_resolver);
 
   ScriptState* script_state = scoped_resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
 
+  if (!configurations.has_value()) {
+    scoped_resolver->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
+                                           kNotHighTrustedAppExceptionMessage));
+    return;
+  }
+
   V8ObjectBuilder result(script_state);
-  for (const auto& config_pair : configurations) {
+  for (const auto& config_pair : *configurations) {
     v8::Local<v8::Value> v8_object;
     if (v8::JSON::Parse(script_state->GetContext(),
                         V8String(script_state->GetIsolate(), config_pair.value))
