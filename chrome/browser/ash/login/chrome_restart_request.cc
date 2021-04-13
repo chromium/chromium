@@ -31,6 +31,7 @@
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -244,6 +245,7 @@ void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
       &ash::features::kAutoNightLight,
       &chromeos::features::kLacrosPrimary,
       &chromeos::features::kLacrosSupport,
+      &::features::kPluginVm,
   };
 
   std::vector<std::string> enabled_features;
