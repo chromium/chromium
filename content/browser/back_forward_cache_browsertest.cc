@@ -3848,29 +3848,24 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   RenderFrameHostImpl* rfh_b = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
 
   // 3) Crash A's renderer process while it is in the cache.
-  RenderProcessHost* process = rfh_a->GetProcess();
-  RenderProcessHostWatcher crash_observer(
-      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-  rfh_a->GetProcess()->Shutdown(0);
-
-  // The cached RenderFrameHost should be destroyed (not kept in the cache).
-  crash_observer.Wait();
-  delete_observer_rfh_a.WaitUntilDeleted();
+  {
+    RenderProcessHost* process = rfh_a->GetProcess();
+    RenderProcessHostWatcher crash_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+    EXPECT_TRUE(process->Shutdown(0));
+    crash_observer.Wait();
+  }
 
   // rfh_b should still be the current frame.
   EXPECT_EQ(current_frame_host(), rfh_b);
-  EXPECT_FALSE(delete_observer_rfh_b.deleted());
 
   // 4) Go back to A.
   web_contents()->GetController().GoBack();
