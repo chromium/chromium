@@ -80,8 +80,8 @@ void SyncConfirmationHandler::RegisterMessages() {
       base::BindRepeating(&SyncConfirmationHandler::HandleInitializedWithSize,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "accountImageRequest",
-      base::BindRepeating(&SyncConfirmationHandler::HandleAccountImageRequest,
+      "accountInfoRequest",
+      base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
 }
 
@@ -103,19 +103,19 @@ void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
 
-void SyncConfirmationHandler::HandleAccountImageRequest(
+void SyncConfirmationHandler::HandleAccountInfoRequest(
     const base::ListValue* args) {
   DCHECK(ProfileSyncServiceFactory::IsSyncAllowed(profile_));
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
-  // Fire the "account-image-changed" listener from |SetUserImageURL()|.
+  // Fire the "account-info-changed" listener from |SetAccountInfo()|.
   // Note: If the account info is not available yet in the
   // IdentityManager, i.e. account_info is empty, the listener will be
   // fired again through |OnAccountUpdated()|.
-  if (primary_account_info)
-    SetUserImageURL(primary_account_info->picture_url);
+  if (primary_account_info && primary_account_info->IsValid())
+    SetAccountInfo(*primary_account_info);
 }
 
 void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
@@ -155,26 +155,24 @@ void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
       sync_consent);
 }
 
-void SyncConfirmationHandler::SetUserImageURL(const std::string& picture_url) {
+void SyncConfirmationHandler::SetAccountInfo(const AccountInfo& info) {
+  DCHECK(info.IsValid());
   if (!ProfileSyncServiceFactory::IsSyncAllowed(profile_)) {
     // The sync disabled confirmation handler does not present the user image.
     // Avoid updating the image URL in this case.
     return;
   }
 
-  GURL picture_gurl(picture_url);
-  if (!picture_gurl.is_valid()) {
-    // As long as the provided gaia picture is not valid, stick to the default
-    // avatar provided in the load-time data.
-    return;
-  }
-
+  GURL picture_gurl(info.picture_url);
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
       picture_gurl, kProfileImageSize, false /* no_silhouette */);
-  base::Value picture_url_value(picture_gurl_with_options.spec());
+
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetKey("src", base::Value(picture_gurl_with_options.spec()));
+  value.SetKey("showEnterpriseBadge", base::Value(info.IsManaged()));
 
   AllowJavascript();
-  FireWebUIListener("account-image-changed", picture_url_value);
+  FireWebUIListener("account-info-changed", value);
 }
 
 void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
@@ -188,7 +186,7 @@ void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
   }
 
   identity_manager_->RemoveObserver(this);
-  SetUserImageURL(info.picture_url);
+  SetAccountInfo(info);
 }
 
 void SyncConfirmationHandler::CloseModalSigninWindow(
@@ -231,7 +229,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
   if (!primary_account_info->IsValid()) {
     identity_manager_->AddObserver(this);
   } else {
-    SetUserImageURL(primary_account_info->picture_url);
+    SetAccountInfo(*primary_account_info);
   }
 
   if (browser_)

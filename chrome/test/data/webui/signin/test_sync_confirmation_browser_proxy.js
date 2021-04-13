@@ -12,7 +12,7 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy {
       'undo',
       'goToSettings',
       'initializedWithSize',
-      'requestAccountImage',
+      'requestAccountInfo',
     ]);
   }
 
@@ -37,7 +37,7 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  requestAccountImage() {
-    this.methodCalled('requestAccountImage');
+  requestAccountInfo() {
+    this.methodCalled('requestAccountInfo');
   }
 }

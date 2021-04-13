@@ -17,7 +17,7 @@ suite('SigninSyncConfirmationTest', function() {
     document.body.append(app);
     // Check that the account image is requested when the app element is
     // attached to the document.
-    await browserProxy.whenCalled('requestAccountImage');
+    await browserProxy.whenCalled('requestAccountInfo');
   });
 
   // Tests that no DCHECKS are thrown during initialization of the UI.
@@ -50,7 +50,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
     document.body.append(app);
     // Wait for the app element to get attached to the document (which is when
     // the account image gets requested).
-    await browserProxy.whenCalled('requestAccountImage');
+    await browserProxy.whenCalled('requestAccountInfo');
   });
 
   const STANDARD_CONSENT_DESCRIPTION_TEXT = [

@@ -38,9 +38,9 @@ export class SyncConfirmationBrowserProxy {
   initializedWithSize(height) {}
 
   /**
-   * Called when the WebUIListener for "account-image-changed" was added.
+   * Called when the WebUIListener for "account-info-changed" was added.
    */
-  requestAccountImage() {}
+  requestAccountInfo() {}
 }
 
 /** @implements {SyncConfirmationBrowserProxy} */
@@ -66,8 +66,8 @@ export class SyncConfirmationBrowserProxyImpl {
   }
 
   /** @override */
-  requestAccountImage() {
-    chrome.send('accountImageRequest');
+  requestAccountInfo() {
+    chrome.send('accountInfoRequest');
   }
 }
 
