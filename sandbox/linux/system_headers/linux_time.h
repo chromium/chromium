@@ -11,6 +11,32 @@
 #define CPUCLOCK_CLOCK_MASK 3
 #endif
 
+#if !defined(CPUCLOCK_PROF)
+#define CPUCLOCK_PROF 0
+#endif
+
+#if !defined(CPUCLOCK_VIRT)
+#define CPUCLOCK_VIRT 1
+#endif
+
+#if !defined(CPUCLOCK_SCHED)
+#define CPUCLOCK_SCHED 2
+#endif
+
+#if !defined(CPUCLOCK_PERTHREAD_MASK)
+#define CPUCLOCK_PERTHREAD_MASK 4
+#endif
+
+#if !defined(MAKE_PROCESS_CPUCLOCK)
+#define MAKE_PROCESS_CPUCLOCK(pid, clock) \
+  ((int)(~(unsigned)(pid) << 3) | (int)(clock))
+#endif
+
+#if !defined(MAKE_THREAD_CPUCLOCK)
+#define MAKE_THREAD_CPUCLOCK(tid, clock) \
+  ((int)(~(unsigned)(tid) << 3) | (int)((clock) | CPUCLOCK_PERTHREAD_MASK))
+#endif
+
 #if !defined(CLOCKFD)
 #define CLOCKFD 3
 #endif
