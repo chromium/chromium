@@ -393,6 +393,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
 
+  // Determine given the |url|, whether the |url_request_| should include
+  // credentials and client certificates.
+  void SetRequestCredentials(const GURL& url);
+
+  // Returns whether sending/storing credentials is allowed by COEP.
+  // |url| is the latest request URL, either the original URL or
+  // `redirect_info.new_url`.
+  // When Cross-Origin-Embedder-Policy: cors-or-credentialless is set, do not
+  // send or store credentials for no-cors cross-origin request.
+  bool CoepAllowCredentials(const GURL& url);
+
   net::URLRequestContext* url_request_context_;
 
   // |url_loader_factory_| is guaranteed to outlive URLLoader, so it is safe to
@@ -494,6 +505,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   int64_t reported_total_encoded_bytes_ = 0;
 
   const mojom::RequestMode request_mode_;
+  const mojom::CredentialsMode request_credentials_mode_;
 
   bool has_user_activation_ = false;
 

@@ -54,9 +54,11 @@
 #include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -69,6 +71,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -466,6 +469,35 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   return hints;
 }
 
+// Returns true if the |credentials_mode| of the request allows sending
+// credentials.
+bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
+  switch (credentials_mode) {
+    case mojom::CredentialsMode::kInclude:
+    // TODO(crbug.com/943939): Make this work with CredentialsMode::kSameOrigin.
+    case mojom::CredentialsMode::kSameOrigin:
+      return true;
+
+    case mojom::CredentialsMode::kOmit:
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
+      return false;
+  }
+}
+
+// Returns true when the |credentials_mode| of the request allows sending client
+// certificates.
+bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
+  switch (credentials_mode) {
+    case mojom::CredentialsMode::kInclude:
+    case mojom::CredentialsMode::kOmit:
+    case mojom::CredentialsMode::kSameOrigin:
+      return true;
+
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
+      return false;
+  }
+}
+
 }  // namespace
 
 URLLoader::URLLoader(
@@ -519,6 +551,7 @@ URLLoader::URLLoader(
       want_raw_headers_(request.report_raw_headers),
       devtools_request_id_(request.devtools_request_id),
       request_mode_(request.mode),
+      request_credentials_mode_(request.credentials_mode),
       request_destination_(request.destination),
       resource_scheduler_client_(std::move(resource_scheduler_client)),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
@@ -650,17 +683,7 @@ URLLoader::URLLoader(
   }
 
   url_request_->SetLoadFlags(request.load_flags);
-
-  // net::LOAD_DO_NOT_* are in the process of being converted to
-  // credentials_mode. See https://crbug.com/799935.
-  // TODO(crbug.com/943939): Make this work with CredentialsMode::kSameOrigin.
-  if (request.credentials_mode == mojom::CredentialsMode::kOmit ||
-      request.credentials_mode ==
-          mojom::CredentialsMode::kOmitBug_775438_Workaround) {
-    url_request_->set_allow_credentials(false);
-    url_request_->set_send_client_certs(request.credentials_mode ==
-                                        mojom::CredentialsMode::kOmit);
-  }
+  SetRequestCredentials(request.url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
@@ -1157,6 +1180,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   DCHECK(!deferred_redirect_url_);
   deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
+  SetRequestCredentials(redirect_info.new_url);
 
   // Send the redirect response to the client, allowing them to inspect it and
   // optionally follow the redirect.
@@ -2345,6 +2369,62 @@ URLLoader::GetURLLoaderNetworkServiceObserver() const {
   if (url_loader_factory_)
     return url_loader_factory_->GetURLLoaderNetworkServiceObserver();
   return nullptr;
+}
+
+void URLLoader::SetRequestCredentials(const GURL& url) {
+  bool coep_allow_credentials = CoepAllowCredentials(url);
+
+  bool allow_credentials = ShouldAllowCredentials(request_credentials_mode_) &&
+                           coep_allow_credentials;
+
+  bool allow_client_certificates =
+      ShouldSendClientCertificates(request_credentials_mode_) &&
+      coep_allow_credentials;
+
+  // TODO(https://crbug.com/799935) net::LOAD_DO_NOT_* are in the process of
+  // being converted to credentials_mode. Using set_allow_credentials will
+  // implicitly override the deprecated LOAD_DO_NOT_SAVE_COOKIE flag. As a
+  // result, set_allow_credentials should not be called when not needed, or it
+  // would have side effects.
+  if (url_request_->allow_credentials() != allow_credentials)
+    url_request_->set_allow_credentials(allow_credentials);
+
+  url_request_->set_send_client_certs(allow_client_certificates);
+}
+
+// https://github.com/mikewest/credentiallessness
+bool URLLoader::CoepAllowCredentials(const GURL& url) {
+  switch (request_mode_) {
+    case mojom::RequestMode::kCors:
+    case mojom::RequestMode::kCorsWithForcedPreflight:
+    case mojom::RequestMode::kNavigate:
+    case mojom::RequestMode::kSameOrigin:
+      return true;
+
+    case mojom::RequestMode::kNoCors:
+      break;
+  }
+
+  mojom::CrossOriginEmbedderPolicyValue coep_policy =
+      factory_params_->client_security_state
+          ? factory_params_->client_security_state->cross_origin_embedder_policy
+                .value
+          : mojom::CrossOriginEmbedderPolicyValue::kNone;
+  if (coep_policy !=
+      mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless) {
+    return true;
+  }
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kCrossOriginEmbedderPolicyCredentialless));
+
+  url::Origin request_origin = url::Origin::Create(url);
+  url::Origin request_initiator =
+      GetTrustworthyInitiator(url_request_->initiator(),
+                              factory_params_->request_initiator_origin_lock);
+  if (request_origin.IsSameOriginWith(request_initiator))
+    return true;
+
+  return false;
 }
 
 }  // namespace network

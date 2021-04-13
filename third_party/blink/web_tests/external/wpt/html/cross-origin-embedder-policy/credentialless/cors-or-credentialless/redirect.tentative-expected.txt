@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Setup
-PASS same-origin -> same-origin
-FAIL same-origin -> cross-origin assert_equals: expected (undefined) undefined but got (string) "cross_origin"
-PASS cross-origin -> same-origin
-FAIL cross-origin -> cross-origin assert_equals: expected (undefined) undefined but got (string) "cross_origin"
-Harness: the test ran to completion.
-
