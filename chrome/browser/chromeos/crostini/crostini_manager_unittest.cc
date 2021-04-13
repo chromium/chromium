@@ -65,7 +65,7 @@ constexpr int64_t kDiskSizeBytes = 4ll * 1024 * 1024 * 1024;  // 4 GiB
 const char kTerminaKernelVersion[] =
     "4.19.56-05556-gca219a5b1086 #3 SMP PREEMPT Mon Jul 1 14:36:38 CEST 2019";
 const char kCrostiniCorruptionHistogram[] = "Crostini.FilesystemCorruption";
-constexpr auto kLongTime = base::TimeDelta::FromDays(1);
+constexpr auto kLongTime = base::TimeDelta::FromDays(10);
 
 void ExpectFailure(base::OnceClosure closure, bool success) {
   EXPECT_FALSE(success);
@@ -917,7 +917,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_concierge_client_->create_disk_image_called());
   ExpectCrostiniRestartResult(CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
@@ -947,7 +947,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_FALSE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -997,7 +997,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartVm) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1017,7 +1017,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForVmStarted) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1049,7 +1049,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartLxd) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1067,7 +1067,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1101,7 +1101,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateContainer) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
@@ -1117,7 +1117,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerCreated) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1216,7 +1216,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1234,7 +1234,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartContainer) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1249,7 +1249,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1283,7 +1283,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringSshKeysFetched) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());
@@ -1388,7 +1388,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringMountContainer) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
   task_environment_.FastForwardBy(kLongTime);
-  run_loop()->Run();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());

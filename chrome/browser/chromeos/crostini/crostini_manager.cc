@@ -473,7 +473,9 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kCreateContainer,
        base::TimeDelta::FromMinutes(5)},
       {mojom::InstallerState::kSetupContainer, base::TimeDelta::FromMinutes(5)},
-      {mojom::InstallerState::kStartContainer, base::TimeDelta::FromMinutes(5)},
+      // StartContainer might need to do a UID remapping, which in the worst
+      // case can take a very long time.
+      {mojom::InstallerState::kStartContainer, base::TimeDelta::FromDays(5)},
       {mojom::InstallerState::kFetchSshKeys, base::TimeDelta::FromMinutes(5)},
       {mojom::InstallerState::kMountContainer, base::TimeDelta::FromMinutes(5)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
