@@ -231,6 +231,7 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
   structured_data->mutable_events()->Swap(
       events_.get()->get()->mutable_uma_events());
   events_.get()->get()->clear_uma_events();
+  events_->StartWrite();
 }
 
 bool StructuredMetricsProvider::HasIndependentMetrics() {
