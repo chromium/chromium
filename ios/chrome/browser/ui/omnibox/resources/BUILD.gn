@@ -4,24 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("omnibox_transparent_background") {
-  sources = [
-    "omnibox_transparent_background.imageset/Contents.json",
-    "omnibox_transparent_background.imageset/omnibox_transparent_background.png",
-    "omnibox_transparent_background.imageset/omnibox_transparent_background@2x.png",
-    "omnibox_transparent_background.imageset/omnibox_transparent_background@3x.png",
-  ]
-}
-
-imageset("omnibox_background") {
-  sources = [
-    "omnibox_background.imageset/Contents.json",
-    "omnibox_background.imageset/omnibox_background.png",
-    "omnibox_background.imageset/omnibox_background@2x.png",
-    "omnibox_background.imageset/omnibox_background@3x.png",
-  ]
-}
-
 imageset("omnibox_clear_icon") {
   sources = [
     "omnibox_clear_icon.imageset/Contents.json",
@@ -49,30 +31,12 @@ imageset("omnibox_completion_bookmark") {
   ]
 }
 
-imageset("omnibox_completion_calculator") {
-  sources = [
-    "omnibox_completion_calculator.imageset/Contents.json",
-    "omnibox_completion_calculator.imageset/omnibox_completion_calculator.png",
-    "omnibox_completion_calculator.imageset/omnibox_completion_calculator@2x.png",
-    "omnibox_completion_calculator.imageset/omnibox_completion_calculator@3x.png",
-  ]
-}
-
 imageset("omnibox_completion_history") {
   sources = [
     "omnibox_completion_history.imageset/Contents.json",
     "omnibox_completion_history.imageset/omnibox_completion_history.png",
     "omnibox_completion_history.imageset/omnibox_completion_history@2x.png",
     "omnibox_completion_history.imageset/omnibox_completion_history@3x.png",
-  ]
-}
-
-imageset("omnibox_completion_search") {
-  sources = [
-    "omnibox_completion_search.imageset/Contents.json",
-    "omnibox_completion_search.imageset/omnibox_completion_search.png",
-    "omnibox_completion_search.imageset/omnibox_completion_search@2x.png",
-    "omnibox_completion_search.imageset/omnibox_completion_search@3x.png",
   ]
 }
 
@@ -160,14 +124,6 @@ imageset("background_solid") {
     "background_solid.imageset/Contents.json",
     "background_solid.imageset/background_solid@2x.png",
     "background_solid.imageset/background_solid@3x.png",
-  ]
-}
-
-imageset("background_stroke") {
-  sources = [
-    "background_stroke.imageset/Contents.json",
-    "background_stroke.imageset/background_stroke@2x.png",
-    "background_stroke.imageset/background_stroke@3x.png",
   ]
 }
 
