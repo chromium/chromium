@@ -5,13 +5,14 @@
 #ifndef UI_EVENTS_WIN_KEYBOARD_HOOK_OBSERVER_H_
 #define UI_EVENTS_WIN_KEYBOARD_HOOK_OBSERVER_H_
 
-#include "ui/events/events_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // Used in conjunction with the KeyboardHookMonitor class to receive
 // notifications when a low-level keyboard hook is registered or unregistered.
-class EVENTS_EXPORT KeyboardHookObserver : public base::CheckedObserver {
+class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookObserver
+    : public base::CheckedObserver {
  public:
   // Called when a low-level keyboard hook is registered.
   virtual void OnHookRegistered() {}

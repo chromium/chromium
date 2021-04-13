@@ -36,6 +36,7 @@
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
 #include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
+#include "ui/ozone/platform/x11/x11_keyboard_hook_ozone.h"
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
@@ -156,6 +157,20 @@ class OzonePlatformX11 : public OzonePlatform,
           std::make_unique<X11GlobalShortcutListenerOzone>(delegate);
     }
     return global_shortcut_listener_.get();
+  }
+
+  std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
+      PlatformKeyboardHookTypes type,
+      base::RepeatingCallback<void(KeyEvent* event)> callback,
+      base::Optional<base::flat_set<DomCode>> dom_codes,
+      gfx::AcceleratedWidget accelerated_widget) override {
+    switch (type) {
+      case PlatformKeyboardHookTypes::kModifier:
+        return std::make_unique<X11KeyboardHookOzone>(
+            std::move(dom_codes), std::move(callback), accelerated_widget);
+      case PlatformKeyboardHookTypes::kMedia:
+        return nullptr;
+    }
   }
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {

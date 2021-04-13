@@ -10,12 +10,12 @@
 #include <windows.h>
 
 #include "base/check.h"
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "ui/events/event.h"
-#include "ui/events/events_export.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -25,7 +25,8 @@ namespace ui {
 // it key event data.  This method is used by both the low-level keyboard hook
 // and by unit tests which simulate the hooked behavior w/o actually installing
 // a hook (doing so would cause problems with test parallelization).
-class EVENTS_EXPORT KeyboardHookWinBase : public KeyboardHookBase {
+class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
+    : public KeyboardHookBase {
  public:
   KeyboardHookWinBase(base::Optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,

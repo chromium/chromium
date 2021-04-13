@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/keyboard_hook_base.h"
+#include "ui/events/keyboard_hook.h"
 
 #include <memory>
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -17,7 +16,9 @@
 #endif
 
 #if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/keyboard_hook_ozone.h"
+#include "ui/ozone/public/platform_keyboard_hook.h"
 #endif
 
 namespace ui {
@@ -27,24 +28,23 @@ std::unique_ptr<KeyboardHook> KeyboardHook::CreateModifierKeyboardHook(
     base::Optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget,
     KeyEventCallback callback) {
-  std::unique_ptr<KeyboardHookBase> keyboard_hook;
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
-    keyboard_hook = std::make_unique<KeyboardHookOzone>(std::move(dom_codes),
-                                                        std::move(callback));
+    return std::make_unique<KeyboardHookOzone>(
+        PlatformKeyboardHookTypes::kModifier, std::move(callback),
+        std::move(dom_codes), accelerated_widget);
   }
 #endif
 #if defined(USE_X11)
-  if (!keyboard_hook) {
-    keyboard_hook = std::make_unique<KeyboardHookX11>(
-        std::move(dom_codes), accelerated_widget, std::move(callback));
-  }
-#endif
-  DCHECK(keyboard_hook);
-  if (!keyboard_hook->RegisterHook())
+  auto keyboard_hook_x11 = std::make_unique<KeyboardHookX11>(
+      std::move(dom_codes), accelerated_widget, std::move(callback));
+  if (!keyboard_hook_x11->RegisterHook())
     return nullptr;
-
-  return keyboard_hook;
+  return keyboard_hook_x11;
+#else
+  NOTREACHED();
+  return nullptr;
+#endif
 }
 
 // static

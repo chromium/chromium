@@ -36,70 +36,72 @@ namespace ui {
 enum class DomCode;
 
 // Get the EventType from a native event.
-EventType EventTypeFromMSG(const MSG& native_event);
+EVENTS_EXPORT EventType EventTypeFromMSG(const MSG& native_event);
 
 // Get the EventFlags from a native event.
-int EventFlagsFromMSG(const MSG& native_event);
+EVENTS_EXPORT int EventFlagsFromMSG(const MSG& native_event);
 
 // Get the timestamp from a native event.
 // Note: This is not a pure function meaning that multiple applications on the
 // same native event may return different values.
-base::TimeTicks EventTimeFromMSG(const MSG& native_event);
+EVENTS_EXPORT base::TimeTicks EventTimeFromMSG(const MSG& native_event);
 
 // Get the location from a native event.  The coordinate system of the resultant
 // |Point| has the origin at top-left of the "root window".  The nature of
 // this "root window" and how it maps to platform-specific drawing surfaces is
 // defined in ui/aura/root_window.* and ui/aura/window_tree_host*.
-gfx::Point EventLocationFromMSG(const MSG& native_event);
+EVENTS_EXPORT gfx::Point EventLocationFromMSG(const MSG& native_event);
 
 // Gets the location in native system coordinate space.
-gfx::Point EventSystemLocationFromMSG(const MSG& native_event);
+EVENTS_EXPORT gfx::Point EventSystemLocationFromMSG(const MSG& native_event);
 
 // Returns the KeyboardCode from a native event.
-KeyboardCode KeyboardCodeFromMSG(const MSG& native_event);
+EVENTS_EXPORT KeyboardCode KeyboardCodeFromMSG(const MSG& native_event);
 
 // Returns the DOM KeyboardEvent code (physical location in the
 // keyboard) from a native event.
-DomCode CodeFromMSG(const MSG& native_event);
+EVENTS_EXPORT DomCode CodeFromMSG(const MSG& native_event);
 
 // Returns true if the keyboard event is a character event rather than
 // a keystroke event.
-bool IsCharFromMSG(const MSG& native_event);
+EVENTS_EXPORT bool IsCharFromMSG(const MSG& native_event);
 
 // Returns the flags of the button that changed during a press/release.
-int GetChangedMouseButtonFlagsFromMSG(const MSG& native_event);
+EVENTS_EXPORT int GetChangedMouseButtonFlagsFromMSG(const MSG& native_event);
 
 // Returns the detailed pointer information for mouse events.
-PointerDetails GetMousePointerDetailsFromMSG(const MSG& native_event);
+EVENTS_EXPORT PointerDetails
+GetMousePointerDetailsFromMSG(const MSG& native_event);
 
 // Gets the mouse wheel offsets from a native event.
-gfx::Vector2d GetMouseWheelOffsetFromMSG(const MSG& native_event);
+EVENTS_EXPORT gfx::Vector2d GetMouseWheelOffsetFromMSG(const MSG& native_event);
 
 // Returns a copy of |native_event|. Depending on the platform, this copy may
 // need to be deleted with ReleaseCopiedMSGEvent().
-MSG CopyMSGEvent(const MSG& native_event);
+EVENTS_EXPORT MSG CopyMSGEvent(const MSG& native_event);
 
 // Delete a |native_event| previously created by CopyMSGEvent().
-void ReleaseCopiedMSGEvent(const MSG& native_event);
+EVENTS_EXPORT void ReleaseCopiedMSGEvent(const MSG& native_event);
 
 // Returns the detailed pointer information for touch events.
-PointerDetails GetTouchPointerDetailsFromMSG(const MSG& native_event);
+EVENTS_EXPORT PointerDetails
+GetTouchPointerDetailsFromMSG(const MSG& native_event);
 
 // Clear the touch id from bookkeeping if it is a release/cancel event.
-void ClearTouchIdIfReleased(const MSG& native_event);
+EVENTS_EXPORT void ClearTouchIdIfReleased(const MSG& native_event);
 
 // Gets the fling velocity from a native event. is_cancel is set to true if
 // this was a tap down, intended to stop an ongoing fling.
-bool GetFlingData(const MSG& native_event,
-                  float* vx,
-                  float* vy,
-                  float* vx_ordinal,
-                  float* vy_ordinal,
-                  bool* is_cancel);
+EVENTS_EXPORT bool GetFlingData(const MSG& native_event,
+                                float* vx,
+                                float* vy,
+                                float* vx_ordinal,
+                                float* vy_ordinal,
+                                bool* is_cancel);
 
 // Returns whether this is a scroll event and optionally gets the amount to be
 // scrolled.
-bool GetScrollOffsetsFromMSG(const MSG& native_event);
+EVENTS_EXPORT bool GetScrollOffsetsFromMSG(const MSG& native_event);
 
 }  // namespace ui
 

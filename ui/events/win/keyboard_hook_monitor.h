@@ -5,7 +5,7 @@
 #ifndef UI_EVENTS_WIN_KEYBOARD_HOOK_MONITOR_H_
 #define UI_EVENTS_WIN_KEYBOARD_HOOK_MONITOR_H_
 
-#include "ui/events/events_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -16,7 +16,7 @@ class KeyboardHookObserver;
 // Note that the KeyboardHookMonitor impl is bound to the thread which creates
 // it.  In the browser process, this will be the UI thread.  All methods should
 // be called on that thread and all observer methods will be run on that thread.
-class EVENTS_EXPORT KeyboardHookMonitor {
+class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookMonitor {
  public:
   static KeyboardHookMonitor* GetInstance();
 

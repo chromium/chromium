@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/platform_object.h"
 #include "ui/ozone/platform_selection.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"
@@ -113,6 +114,20 @@ PlatformGlobalShortcutListener*
 OzonePlatform::GetPlatformGlobalShortcutListener(
     PlatformGlobalShortcutListenerDelegate* delegate) {
   return nullptr;
+}
+
+std::unique_ptr<PlatformKeyboardHook> OzonePlatform::CreateKeyboardHook(
+    PlatformKeyboardHookTypes type,
+    base::RepeatingCallback<void(KeyEvent* event)> callback,
+    base::Optional<base::flat_set<DomCode>> dom_codes,
+    gfx::AcceleratedWidget accelerated_widget) {
+  switch (type) {
+    case PlatformKeyboardHookTypes::kModifier:
+      return std::make_unique<BaseKeyboardHook>(std::move(dom_codes),
+                                                std::move(callback));
+    case PlatformKeyboardHookTypes::kMedia:
+      return nullptr;
+  }
 }
 
 bool OzonePlatform::IsNativePixmapConfigSupported(

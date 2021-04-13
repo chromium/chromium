@@ -819,7 +819,10 @@ component("views") {
           "widget/desktop_aura/desktop_screen_win.h",
           "widget/desktop_aura/desktop_window_tree_host_win.cc",
         ]
-        deps += [ "//ui/events:dom_keyboard_layout" ]
+        deps += [
+          "//ui/events:dom_keyboard_layout",
+          "//ui/events:keyboard_hook",
+        ]
       }
       if (use_ozone) {
         public += [ "widget/desktop_aura/desktop_screen_ozone.h" ]

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
@@ -25,14 +26,20 @@ class NativeDisplayDelegate;
 }
 
 namespace ui {
+enum class DomCode;
+enum class PlatformKeyboardHookTypes;
+
 class CursorFactory;
 class GpuPlatformSupportHost;
 class InputController;
+class KeyEvent;
 class OverlayManagerOzone;
 class PlatformClipboard;
 class PlatformGLEGLUtility;
 class PlatformGlobalShortcutListener;
 class PlatformGlobalShortcutListenerDelegate;
+class PlatformKeyboardHook;
+class PlatformUtils;
 class PlatformMenuUtils;
 class PlatformScreen;
 class PlatformUserInputMonitor;
@@ -226,6 +233,18 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   virtual PlatformUtils* GetPlatformUtils();
   virtual PlatformGlobalShortcutListener* GetPlatformGlobalShortcutListener(
       PlatformGlobalShortcutListenerDelegate* delegate);
+  // Returns the keyboard hook that captures the specified keys.  See more in
+  // ui::KeyboardHook.  However, unlike that interface, Ozone tries to register
+  // the hook that it has created, and returns the one only if it was registered
+  // successfully.
+  // Handles creating both modifier and media keyboard hooks.  |dom_codes| and
+  // |accelerated_widget| are only used if |type| is
+  // PlatformKeyboardHookTypes::kModifier.
+  virtual std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
+      PlatformKeyboardHookTypes type,
+      base::RepeatingCallback<void(KeyEvent* event)> callback,
+      base::Optional<base::flat_set<DomCode>> dom_codes,
+      gfx::AcceleratedWidget accelerated_widget);
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

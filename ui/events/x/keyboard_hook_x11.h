@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "ui/base/x/x11_keyboard_hook.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
@@ -16,7 +17,7 @@
 namespace ui {
 
 // A default implementation for the X11 platform.
-class KeyboardHookX11 : public KeyboardHookBase {
+class KeyboardHookX11 : public KeyboardHookBase, public XKeyboardHook {
  public:
   KeyboardHookX11(base::Optional<base::flat_set<DomCode>> dom_codes,
                   gfx::AcceleratedWidget accelerated_widget,
@@ -27,21 +28,6 @@ class KeyboardHookX11 : public KeyboardHookBase {
 
   // KeyboardHookBase:
   bool RegisterHook() override;
-
- private:
-  // Helper methods for setting up key event capture.
-  void CaptureAllKeys();
-  void CaptureSpecificKeys();
-  void CaptureKeyForDomCode(DomCode dom_code);
-
-  THREAD_CHECKER(thread_checker_);
-
-  // The x11 default connection and the owner's native window.
-  x11::Connection* const connection_ = nullptr;
-  const x11::Window x_window_ = x11::Window::None;
-
-  // Tracks the keys that were grabbed.
-  std::vector<int> grabbed_keys_;
 };
 
 }  // namespace ui

@@ -374,6 +374,7 @@ source_set("base") {
     "//ui/display:display",
     "//ui/events:events",
     "//ui/events:events_base",
+    "//ui/events:keyboard_hook",
     "//url:url",
   ]
 

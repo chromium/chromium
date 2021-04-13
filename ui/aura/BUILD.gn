@@ -123,6 +123,7 @@ component("aura") {
     "//ui/events",
     "//ui/events:dom_keyboard_layout",
     "//ui/events:events_base",
+    "//ui/events:keyboard_hook",
     "//ui/events/platform",
     "//ui/gfx",
     "//ui/gfx:gfx_switches",
