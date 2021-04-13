@@ -173,6 +173,12 @@
       kClassForInstantiationKey : @"SCDefaultBrowserFullscreenPromoCoordinator",
       showcase::kUseCaseKey : @"Default Browser Fullscreen Promo UI",
     },
+    @{
+      showcase::kClassForDisplayKey : @"SCFirstRunHeroScreenViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCFirstRunHeroScreenViewController",
+      showcase::kUseCaseKey : @"New First Run Experience example hero screen",
+    },
   ];
 }
 

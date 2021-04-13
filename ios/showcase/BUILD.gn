@@ -31,6 +31,7 @@ group("features") {
     "//ios/showcase/content_suggestions",
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
+    "//ios/showcase/first_run",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",

@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("first_run") {
+  sources = [
+    "sc_first_run_hero_screen_view_controller.h",
+    "sc_first_run_hero_screen_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/first_run",
+    "//ios/showcase/common",
+  ]
+  frameworks = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

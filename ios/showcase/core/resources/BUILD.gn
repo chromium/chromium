@@ -28,6 +28,8 @@ bundle_data("icons") {
     "Icon-76.png",
     "Icon-80.png",
     "Icon-87.png",
+    "Sample-banner-tall.png",
+    "Sample-banner.png",
     "Sample-screenshot-portrait.png",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
