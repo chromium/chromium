@@ -28,7 +28,7 @@ class VirtualKeyboardDelegate {
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 
   using OnGetClipboardHistoryCallback =
-      base::Callback<void(base::Value history)>;
+      base::OnceCallback<void(base::Value history)>;
 
   // Fetch information about the preferred configuration of the keyboard. On
   // exit, |settings| is populated with the keyboard configuration if execution
