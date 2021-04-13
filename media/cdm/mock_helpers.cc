@@ -15,10 +15,16 @@ MockCdmAuxiliaryHelper::~MockCdmAuxiliaryHelper() = default;
 void MockCdmAuxiliaryHelper::SetFileReadCB(FileReadCB file_read_cb) {}
 
 cdm::Buffer* MockCdmAuxiliaryHelper::CreateCdmBuffer(size_t capacity) {
+  if (!allocator_)
+    return nullptr;
+
   return allocator_->CreateCdmBuffer(capacity);
 }
 
 std::unique_ptr<VideoFrameImpl> MockCdmAuxiliaryHelper::CreateCdmVideoFrame() {
+  if (!allocator_)
+    return nullptr;
+
   return allocator_->CreateCdmVideoFrame();
 }
 

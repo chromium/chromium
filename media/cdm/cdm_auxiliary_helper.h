@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_allocator.h"
 #include "media/cdm/output_protection.h"
@@ -50,6 +51,12 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   // Gets the origin of the frame associated with the CDM, which could be empty
   // if the origin is unavailable or if error happened.
   virtual url::Origin GetCdmOrigin();
+
+  // Gets the origin ID of the frame associated with the CDM. The origin ID does
+  // not reveal the origin directly and is resettable by the user by clearing
+  // browsing data. The origin ID can be empty if an error happened and should
+  // be handled by the caller.
+  virtual base::UnguessableToken GetCdmOriginId();
 
   // CdmAllocator implementation.
   cdm::Buffer* CreateCdmBuffer(size_t capacity) override;

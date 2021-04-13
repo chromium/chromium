@@ -5,8 +5,10 @@
 #include "media/cdm/win/media_foundation_cdm_factory.h"
 
 #include <combaseapi.h>
+#include <initguid.h>  // Needed for DEFINE_PROPERTYKEY to work properly.
 #include <mferror.h>
 #include <mfmediaengine.h>
+#include <propkeydef.h>  // Needed for DEFINE_PROPERTYKEY.
 #include <propvarutil.h>
 
 #include "base/bind.h"
@@ -25,6 +27,22 @@ namespace media {
 namespace {
 
 using Microsoft::WRL::ComPtr;
+
+// Key to the CDM Origin ID to be passed to the CDM for privacy purposes. The
+// same value is also used in MediaFoundation CDMs. Do NOT change this value!
+DEFINE_PROPERTYKEY(EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID,
+                   0x1218a3e2,
+                   0xcfb0,
+                   0x4c98,
+                   0x90,
+                   0xe5,
+                   0x5f,
+                   0x58,
+                   0x18,
+                   0xd4,
+                   0xb6,
+                   0x7e,
+                   PID_FIRST_USABLE);
 
 void SetBSTR(const wchar_t* str, PROPVARIANT* propvariant) {
   propvariant->vt = VT_BSTR;
@@ -106,20 +124,28 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
   return S_OK;
 }
 
-HRESULT BuildCdmProperties(ComPtr<IPropertyStore>& properties) {
+HRESULT BuildCdmProperties(const base::UnguessableToken& cdm_origin_id,
+                           ComPtr<IPropertyStore>& properties) {
   ComPtr<IPropertyStore> temp_properties;
   RETURN_IF_FAILED(PSCreateMemoryPropertyStore(IID_PPV_ARGS(&temp_properties)));
+
+  base::win::ScopedPropVariant cdm_origin_id_var;
+  RETURN_IF_FAILED(InitPropVariantFromString(
+      base::UTF8ToWide(cdm_origin_id.ToString()).c_str(),
+      cdm_origin_id_var.Receive()));
+  RETURN_IF_FAILED(temp_properties->SetValue(
+      EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID, cdm_origin_id_var.get()));
 
   // TODO(xhwang): Provide per-user, per-profile and per-key-system path here.
   base::FilePath temp_dir;
   CHECK(base::GetTempDir(&temp_dir));
   CHECK(base::DirectoryExists(temp_dir));
 
-  base::win::ScopedPropVariant propvar;
-  RETURN_IF_FAILED(
-      InitPropVariantFromString(temp_dir.value().c_str(), propvar.Receive()));
+  base::win::ScopedPropVariant cdm_store_path_var;
+  RETURN_IF_FAILED(InitPropVariantFromString(temp_dir.value().c_str(),
+                                             cdm_store_path_var.Receive()));
   RETURN_IF_FAILED(temp_properties->SetValue(
-      MF_CONTENTDECRYPTIONMODULE_STOREPATH, propvar.get()));
+      MF_CONTENTDECRYPTIONMODULE_STOREPATH, cdm_store_path_var.get()));
 
   properties = temp_properties;
   return S_OK;
@@ -127,7 +153,9 @@ HRESULT BuildCdmProperties(ComPtr<IPropertyStore>& properties) {
 
 }  // namespace
 
-MediaFoundationCdmFactory::MediaFoundationCdmFactory() = default;
+MediaFoundationCdmFactory::MediaFoundationCdmFactory(
+    std::unique_ptr<CdmAuxiliaryHelper> helper)
+    : helper_(std::move(helper)) {}
 
 MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 
@@ -209,9 +237,16 @@ HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
       key_system_str.c_str(), configurations, ARRAYSIZE(configurations),
       &cdm_access));
 
+  // Don't cache `cdm_origin_id` in this class since user can clear it any time.
+  base::UnguessableToken cdm_origin_id = helper_->GetCdmOriginId();
+  if (cdm_origin_id.is_empty()) {
+    DLOG(ERROR) << "Failed to get CDM origin ID";
+    return E_FAIL;
+  }
+
   ComPtr<IPropertyStore> cdm_properties;
   ComPtr<IMFContentDecryptionModule> cdm;
-  RETURN_IF_FAILED(BuildCdmProperties(cdm_properties));
+  RETURN_IF_FAILED(BuildCdmProperties(cdm_origin_id, cdm_properties));
   RETURN_IF_FAILED(
       cdm_access->CreateContentDecryptionModule(cdm_properties.Get(), &cdm));
 
