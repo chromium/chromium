@@ -631,7 +631,6 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   {
     auto form_structure = std::make_unique<FormStructure>(form);
-    form_structure->set_is_rich_query_enabled(true);
     form_structures.push_back(std::move(form_structure));
   }
 
@@ -1785,7 +1784,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   }
 }
 
-TEST_P(AutofillQueryTest, RichMetadata_Enabled) {
+TEST_P(AutofillQueryTest, Metadata) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
   form.url = GURL("https://origin.com");
@@ -1835,109 +1834,6 @@ TEST_P(AutofillQueryTest, RichMetadata_Enabled) {
   AutofillDownloadManager download_manager(driver_.get(), this);
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
-
-  // Turn on rich query encoding.
-  form_structures.front()->set_is_rich_query_enabled(true);
-
-  // Generate a query request.
-  ASSERT_TRUE(SendQueryRequest(form_structures));
-  EXPECT_EQ(1u, call_count_);
-
-  // We should have intercepted exactly on query request. Parse it.
-  ASSERT_EQ(1u, payloads_.size());
-  AutofillPageQueryRequest query;
-  ASSERT_TRUE(query.ParseFromString(payloads_.front()));
-
-  // Validate that we have one form in the query.
-  ASSERT_EQ(query.forms_size(), 1);
-  const auto& query_form = query.forms(0);
-
-  // The form should have metadata, and the metadata value should be equal
-  // those initialized above.
-  ASSERT_TRUE(query_form.has_metadata());
-  EXPECT_EQ(UTF8ToUTF16(query_form.metadata().id().encoded_bits()),
-            form.id_attribute);
-  EXPECT_EQ(UTF8ToUTF16(query_form.metadata().name().encoded_bits()),
-            form.name_attribute);
-
-  // The form should have 3 fields, and their metadata value should be equal
-  // those initialized above.
-  ASSERT_EQ(3, query_form.fields_size());
-  ASSERT_EQ(static_cast<int>(form.fields.size()), query_form.fields_size());
-  for (int i = 0; i < query_form.fields_size(); ++i) {
-    const auto& query_field = query_form.fields(i);
-    const auto& form_field = form.fields[i];
-    ASSERT_TRUE(query_field.has_metadata());
-    const auto& meta = query_field.metadata();
-    EXPECT_EQ(UTF8ToUTF16(meta.id().encoded_bits()), form_field.id_attribute);
-    EXPECT_EQ(UTF8ToUTF16(meta.name().encoded_bits()),
-              form_field.name_attribute);
-    EXPECT_EQ(meta.type().encoded_bits(), form_field.form_control_type);
-    EXPECT_EQ(UTF8ToUTF16(meta.label().encoded_bits()), form_field.label);
-    EXPECT_EQ(UTF8ToUTF16(meta.aria_label().encoded_bits()),
-              form_field.aria_label);
-    EXPECT_EQ(UTF8ToUTF16(meta.aria_description().encoded_bits()),
-              form_field.aria_description);
-    EXPECT_EQ(UTF8ToUTF16(meta.css_class().encoded_bits()),
-              form_field.css_classes);
-    EXPECT_EQ(UTF8ToUTF16(meta.placeholder().encoded_bits()),
-              form_field.placeholder);
-  }
-}
-
-TEST_P(AutofillQueryTest, RichMetadata_Disabled) {
-  // Initialize a form. Note that this state is post-parse.
-  FormData form;
-  form.url = GURL("https://origin.com");
-  form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = u"form-id-attribute";
-  form.name_attribute = u"form-name-attribute";
-  form.name = form.name_attribute;
-
-  // Add field 0.
-  FormFieldData field;
-  field.id_attribute = u"field-id-attribute-1";
-  field.name_attribute = u"field-name-attribute-1";
-  field.name = field.name_attribute;
-  field.label = u"field-label";
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
-  field.form_control_type = "text";
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
-  form.fields.push_back(field);
-
-  // Add field 1.
-  field.id_attribute = u"field-id-attribute-2";
-  field.name_attribute = u"field-name-attribute-2";
-  field.name = field.name_attribute;
-  field.label = u"field-label";
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
-  field.form_control_type = "text";
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
-  form.fields.push_back(field);
-
-  // Add field 2.
-  field.id_attribute = u"field-id-attribute-3";
-  field.name_attribute = u"field-name-attribute-3";
-  field.name = field.name_attribute;
-  field.label = u"field-label";
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
-  field.form_control_type = "text";
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
-  form.fields.push_back(field);
-
-  // Setup the form structures to query.
-  AutofillDownloadManager download_manager(driver_.get(), this);
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
-
-  // Turn off rich query encoding.
-  form_structures.front()->set_is_rich_query_enabled(false);
 
   // Generate a query request.
   ASSERT_TRUE(SendQueryRequest(form_structures));

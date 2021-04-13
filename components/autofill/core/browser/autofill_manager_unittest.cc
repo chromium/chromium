@@ -7592,65 +7592,6 @@ TEST_P(AutofillManagerStructuredProfileTest,
   ASSERT_FALSE(external_delegate_->is_all_server_suggestions());
 }
 
-// If the rich query feature is enabled, the IsRichQueryEnabled methods only
-// returns true if the channel is neither STABLE not BETA.
-TEST_P(AutofillManagerStructuredProfileTest,
-       IsRichQueryEnabled_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillRichMetadataQueries);
-
-  for (auto channel :
-       {version_info::Channel::STABLE, version_info::Channel::BETA,
-        version_info::Channel::CANARY, version_info::Channel::DEV,
-        version_info::Channel::UNKNOWN}) {
-    SCOPED_TRACE(::testing::Message()
-                 << "Channel " << static_cast<int>(channel));
-    // One more call is from TestAutofillManager constructor.
-    EXPECT_CALL(autofill_client_, GetChannel()).WillRepeatedly(Return(channel));
-    TestAutofillManager test_instance(autofill_driver_.get(), &autofill_client_,
-                                      &personal_data_,
-                                      autocomplete_history_manager_.get());
-    switch (channel) {
-      case version_info::Channel::STABLE:
-      case version_info::Channel::BETA:
-        EXPECT_FALSE(AutofillManager::IsRichQueryEnabled(channel));
-        EXPECT_FALSE(test_instance.is_rich_query_enabled());
-        break;
-      case version_info::Channel::CANARY:
-      case version_info::Channel::DEV:
-      case version_info::Channel::UNKNOWN:
-        EXPECT_TRUE(AutofillManager::IsRichQueryEnabled(channel));
-        EXPECT_TRUE(test_instance.is_rich_query_enabled());
-        break;
-    }
-  }
-}
-
-// No matter what the channel, IsRichQueryEnabled returns false if the feature
-// is disabled.
-TEST_P(AutofillManagerStructuredProfileTest,
-       IsRichQueryEnabled_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillRichMetadataQueries);
-
-  for (auto channel :
-       {version_info::Channel::STABLE, version_info::Channel::BETA,
-        version_info::Channel::CANARY, version_info::Channel::DEV,
-        version_info::Channel::UNKNOWN}) {
-    SCOPED_TRACE(::testing::Message()
-                 << "Channel " << static_cast<int>(channel));
-    EXPECT_FALSE(AutofillManager::IsRichQueryEnabled(channel));
-    // One more call is from TestAutofillManager constructor.
-    EXPECT_CALL(autofill_client_, GetChannel()).WillRepeatedly(Return(channel));
-    TestAutofillManager test_instance(autofill_driver_.get(), &autofill_client_,
-                                      &personal_data_,
-                                      autocomplete_history_manager_.get());
-    EXPECT_FALSE(test_instance.is_rich_query_enabled());
-  }
-}
-
 TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogAutocompleteShownMetric) {
   FormData form;

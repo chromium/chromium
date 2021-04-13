@@ -100,13 +100,6 @@ void AutofillHandler::LogAutofillTypePredictionsAvailable(
 }
 
 // static
-bool AutofillHandler::IsRichQueryEnabled(version_info::Channel channel) {
-  return base::FeatureList::IsEnabled(features::kAutofillRichMetadataQueries) &&
-         channel != version_info::Channel::STABLE &&
-         channel != version_info::Channel::BETA;
-}
-
-// static
 bool AutofillHandler::IsRawMetadataUploadingEnabled(
     version_info::Channel channel) {
   return channel == version_info::Channel::CANARY ||
@@ -133,8 +126,7 @@ AutofillHandler::AutofillHandler(
     : driver_(driver),
       client_(client),
       log_manager_(client ? client->GetLogManager() : nullptr),
-      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()),
-      is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
+      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
         driver, this, GetAPIKeyForUrl(channel),
@@ -258,7 +250,6 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
-    form_structure->set_is_rich_query_enabled(is_rich_query_enabled_);
     if (form_structure->ShouldBeQueried())
       queryable_forms.push_back(form_structure);
     else

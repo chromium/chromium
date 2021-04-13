@@ -367,8 +367,6 @@ class FormStructure {
 
   void set_randomized_encoder(std::unique_ptr<RandomizedEncoder> encoder);
 
-  void set_is_rich_query_enabled(bool v) { is_rich_query_enabled_ = v; }
-
   const LanguageCode& current_page_language() const {
     return current_page_language_;
   }

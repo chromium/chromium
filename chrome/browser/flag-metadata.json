@@ -408,11 +408,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "autofill-rich-metadata-queries",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82

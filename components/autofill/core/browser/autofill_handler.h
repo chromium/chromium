@@ -57,10 +57,6 @@ class AutofillHandler
     virtual void OnFormParsed() = 0;
   };
 
-  // Rich queries are enabled by feature flag iff this chrome instance is
-  // neither on the STABLE nor BETA release channel.
-  static bool IsRichQueryEnabled(version_info::Channel channel);
-
   // Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
   // channel.
   static bool IsRawMetadataUploadingEnabled(version_info::Channel channel);
@@ -309,9 +305,6 @@ class AutofillHandler
       std::unique_ptr<AutofillDownloadManager> manager) {
     download_manager_ = std::move(manager);
   }
-
-  // Exposed for testing.
-  bool is_rich_query_enabled() const { return is_rich_query_enabled_; }
 #endif  // UNIT_TEST
 
  private:
@@ -359,9 +352,6 @@ class AutofillHandler
   // Utility for logging URL keyed metrics.
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
-
-  // Tracks whether or not rich query encoding is enabled for this client.
-  const bool is_rich_query_enabled_ = false;
 
   // Task to delay propagate the query result to driver for testing.
   base::CancelableOnceCallback<void(const std::vector<FormStructure*>&)>

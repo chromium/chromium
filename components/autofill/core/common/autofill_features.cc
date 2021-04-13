@@ -280,13 +280,6 @@ const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
     "AutofillRetrieveOverallPredictionsFromCache",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// On Canary and Dev channels only, this feature flag instructs chrome to send
-// rich form/field metadata with queries. This will trigger the use of richer
-// field-type predictions model on the server, for testing/evaluation of those
-// models prior to a client-push.
-const base::Feature kAutofillRichMetadataQueries{
-    "AutofillRichMetadataQueries", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether UPI/VPA values will be saved and filled into payment forms.
 const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

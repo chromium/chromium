@@ -527,34 +527,6 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
-void EncodeFormMetadataForQuery(const FormStructure& form,
-                                AutofillRandomizedFormMetadata* metadata) {
-  DCHECK(metadata);
-  metadata->mutable_id()->set_encoded_bits(
-      base::UTF16ToUTF8(form.id_attribute()));
-  metadata->mutable_name()->set_encoded_bits(
-      base::UTF16ToUTF8(form.name_attribute()));
-}
-
-void EncodeFieldMetadataForQuery(const FormFieldData& field,
-                                 AutofillRandomizedFieldMetadata* metadata) {
-  DCHECK(metadata);
-  metadata->mutable_id()->set_encoded_bits(
-      base::UTF16ToUTF8(field.id_attribute));
-  metadata->mutable_name()->set_encoded_bits(
-      base::UTF16ToUTF8(field.name_attribute));
-  metadata->mutable_type()->set_encoded_bits(field.form_control_type);
-  metadata->mutable_label()->set_encoded_bits(base::UTF16ToUTF8(field.label));
-  metadata->mutable_aria_label()->set_encoded_bits(
-      base::UTF16ToUTF8(field.aria_label));
-  metadata->mutable_aria_description()->set_encoded_bits(
-      base::UTF16ToUTF8(field.aria_description));
-  metadata->mutable_css_class()->set_encoded_bits(
-      base::UTF16ToUTF8(field.css_classes));
-  metadata->mutable_placeholder()->set_encoded_bits(
-      base::UTF16ToUTF8(field.placeholder));
-}
-
 // Creates the type relationship rules map. The keys represent the type that has
 // rules, and the value represents the list of required types for the given
 // key. In order to respect the rule, only one of the required types is needed.
@@ -1962,10 +1934,6 @@ void FormStructure::EncodeFormForQuery(
   query_form->set_signature(form_signature().value());
   queried_form_signatures->push_back(form_signature());
 
-  if (is_rich_query_enabled_) {
-    EncodeFormMetadataForQuery(*this, query_form->mutable_metadata());
-  }
-
   for (const auto& field : fields_) {
     if (ShouldSkipField(*field))
       continue;
@@ -1973,10 +1941,6 @@ void FormStructure::EncodeFormForQuery(
     AutofillPageQueryRequest::Form::Field* added_field =
         query_form->add_fields();
     added_field->set_signature(field->GetFieldSignature().value());
-
-    if (is_rich_query_enabled_) {
-      EncodeFieldMetadataForQuery(*field, added_field->mutable_metadata());
-    }
   }
 }
 

@@ -317,12 +317,6 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
-const char kAutofillRichMetadataQueriesName[] =
-    "Autofill - Rich metadata queries (Canary/Dev only)";
-const char kAutofillRichMetadataQueriesDescription[] =
-    "Transmit rich form/field metadata when querying the autofill server. "
-    "This feature only works on the Canary and Dev channels.";
-
 const char kAutofillSaveAndFillVPAName[] =
     "Offer save and autofill of UPI/VPA values";
 const char kAutofillSaveAndFillVPADescription[] =

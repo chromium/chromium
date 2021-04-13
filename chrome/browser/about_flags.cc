@@ -5007,11 +5007,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableToolbarStatusChip)},
 
-    {"autofill-rich-metadata-queries",
-     flag_descriptions::kAutofillRichMetadataQueriesName,
-     flag_descriptions::kAutofillRichMetadataQueriesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillRichMetadataQueries)},
-
 #if defined(USE_AURA)
     {"touchpad-overscroll-history-navigation",
      flag_descriptions::kTouchpadOverscrollHistoryNavigationName,

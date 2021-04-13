@@ -46,11 +46,6 @@ extern const char kAutofillSaveCardDismissOnNavigationDescription[];
 extern const char kAutofillSaveCardInfobarEditSupportName[];
 extern const char kAutofillSaveCardInfobarEditSupportDescription[];
 
-// Title and description for the flag to enable rich autofill queries on
-// Canary/Dev.
-extern const char kAutofillRichMetadataQueriesName[];
-extern const char kAutofillRichMetadataQueriesDescription[];
-
 // Title and description for the flag that controls whether Autofill's
 // suggestions' labels are formatting with a mobile-friendly approach.
 extern const char kAutofillUseMobileLabelDisambiguationName[];

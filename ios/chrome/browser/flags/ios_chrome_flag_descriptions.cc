@@ -56,12 +56,6 @@ const char kAutofillSaveCardInfobarEditSupportDescription[] =
     "When enabled and saving a credit card to Google Payments, a dialog is "
     "displayed that allows editing the card info before confirming save.";
 
-const char kAutofillRichMetadataQueriesName[] =
-    "Autofill - Rich metadata queries (Canary/Dev only)";
-const char kAutofillRichMetadataQueriesDescription[] =
-    "Transmit rich form/field metadata when querying the autofill server. "
-    "This feature only works on the Canary and Dev channels.";
-
 const char kAutofillUseMobileLabelDisambiguationName[] =
     "Autofill Uses Mobile Label Disambiguation";
 const char kAutofillUseMobileLabelDisambiguationDescription[] =
