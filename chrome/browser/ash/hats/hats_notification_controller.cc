@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/hats/hats_notification_controller.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -14,13 +14,13 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_dialog.h"
+#include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/hats/hats_config.h"
-#include "chrome/browser/chromeos/hats/hats_dialog.h"
-#include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"

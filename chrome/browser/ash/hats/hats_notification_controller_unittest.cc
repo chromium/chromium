@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/hats/hats_notification_controller.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/chromeos/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/pref_names.h"

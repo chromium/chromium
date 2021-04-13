@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_HATS_HATS_FINCH_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_HATS_HATS_FINCH_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_HATS_HATS_FINCH_HELPER_H_
+#define CHROME_BROWSER_ASH_HATS_HATS_FINCH_HELPER_H_
 
 #include <limits.h>
 
@@ -99,4 +99,4 @@ class HatsFinchHelper {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_HATS_HATS_FINCH_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_HATS_HATS_FINCH_HELPER_H_

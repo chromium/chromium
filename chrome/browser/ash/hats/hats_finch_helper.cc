@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/hats/hats_finch_helper.h"
+#include "chrome/browser/ash/hats/hats_finch_helper.h"
 
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "chrome/browser/chromeos/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"

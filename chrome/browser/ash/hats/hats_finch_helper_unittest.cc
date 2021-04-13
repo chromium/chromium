@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/hats/hats_finch_helper.h"
+#include "chrome/browser/ash/hats/hats_finch_helper.h"
 
 #include <map>
 #include <set>
@@ -10,7 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_HATS_HATS_DIALOG_H_
-#define CHROME_BROWSER_CHROMEOS_HATS_HATS_DIALOG_H_
+#ifndef CHROME_BROWSER_ASH_HATS_HATS_DIALOG_H_
+#define CHROME_BROWSER_ASH_HATS_HATS_DIALOG_H_
 
 #include <string>
 
@@ -57,4 +57,4 @@ class HatsDialog : public ui::WebDialogDelegate {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_HATS_HATS_DIALOG_H_
+#endif  // CHROME_BROWSER_ASH_HATS_HATS_DIALOG_H_

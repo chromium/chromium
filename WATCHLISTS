@@ -1073,7 +1073,7 @@
                   'extensions/test/data/(app|web)_view',
     },
     'hats': {
-      'filepath': 'chrome/browser/chromeos/hats/',
+      'filepath': 'chrome/browser/ash/hats/',
     },
     'headless': {
       'filepath': 'headless/'
