@@ -128,14 +128,27 @@ Polymer({
     },
 
     /**
-     * Indicates the network item is a pSIM network not yet activated.
+     * Indicates the network item is a pSIM network not yet activated but
+     * eligible for activation.
      * @private
      */
-    isPSimUnactivatedNetwork_: {
+    isPSimPendingActivationNetwork_: {
       type: Boolean,
       reflectToAttribute: true,
       value: false,
-      computed: 'computeIsPSimUnactivatedNetwork_(managedProperties_)',
+      computed: 'computeIsPSimPendingActivationNetwork_(managedProperties_)',
+    },
+
+    /**
+     * Indicates the network item is a pSIM network that is not activated nor
+     * available to be activated.
+     * @private
+     */
+    isPSimUnavailableNetwork_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsPSimUnavailableNetwork_(managedProperties_)',
     },
 
     /**
@@ -523,6 +536,9 @@ Polymer({
       if (this.isCellularNetworkScanning_()) {
         return this.i18n('networkListItemScanning');
       }
+      if (this.isPSimUnavailableNetwork_) {
+        return this.i18n('networkListItemUnavailableSimNetwork');
+      }
     }
 
     const connectionState = this.networkState.connectionState;
@@ -547,7 +563,10 @@ Polymer({
         this.networkState.type === mojom.NetworkType.kCellular &&
         this.networkState.typeState.cellular.simLocked &&
         this.isUpdatedCellularUiEnabled_) {
-      return 'locked';
+      return 'warning';
+    }
+    if (this.isPSimUnavailableNetwork_) {
+      return 'warning';
     }
     return 'cr-secondary-text';
   },
@@ -575,7 +594,7 @@ Polymer({
    * @private
    */
   isSubpageButtonVisible_(networkState, showButtons, disabled_) {
-    if (this.isPSimUnactivatedNetwork_ || this.isPSimActivatingNetwork_) {
+    if (this.isPSimPendingActivationNetwork_ || this.isPSimActivatingNetwork_) {
       return true;
     }
     return !!networkState && showButtons && !disabled_ &&
@@ -725,12 +744,41 @@ Polymer({
   },
 
   /**
+   * @param {?chromeos.networkConfig.mojom.ManagedCellularProperties|undefined}
+   *     cellularProperties
+   * @return {boolean}
+   * @private
+   */
+  isUnactivatedPSimNetwork_(cellularProperties) {
+    if (!cellularProperties || cellularProperties.eid) {
+      return false;
+    }
+    return cellularProperties.activationState ===
+        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated;
+  },
+
+  /**
+   * @param {?chromeos.networkConfig.mojom.ManagedCellularProperties|undefined}
+   *     cellularProperties
+   * @return {boolean}
+   * @private
+   */
+  hasPaymentPortalInfo_(cellularProperties) {
+    if (!cellularProperties) {
+      return false;
+    }
+    return !!(
+        cellularProperties.paymentPortal &&
+        cellularProperties.paymentPortal.url);
+  },
+
+  /**
    * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
    *     managedProperties
    * @return {boolean}
    * @private
    */
-  computeIsPSimUnactivatedNetwork_(managedProperties) {
+  computeIsPSimPendingActivationNetwork_(managedProperties) {
     if (!this.isUpdatedCellularUiEnabled_) {
       return false;
     }
@@ -738,18 +786,8 @@ Polymer({
       return false;
     }
     const cellularProperties = managedProperties.typeProperties.cellular;
-    if (!cellularProperties || cellularProperties.eid) {
-      return false;
-    }
-    if (cellularProperties.activationState !==
-        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated) {
-      return false;
-    }
-    if (cellularProperties.paymentPortal &&
-        cellularProperties.paymentPortal.url) {
-      return true;
-    }
-    return false;
+    return this.isUnactivatedPSimNetwork_(cellularProperties) &&
+        this.hasPaymentPortalInfo_(cellularProperties);
   },
 
   /**
@@ -758,6 +796,24 @@ Polymer({
    */
   getActivateBtnA11yLabel_() {
     return this.i18n('networkListItemActivateA11yLabel', this.getItemName_());
+  },
+
+  /**
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean}
+   * @private
+   */
+  computeIsPSimUnavailableNetwork_(managedProperties) {
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    const cellularProperties = managedProperties.typeProperties.cellular;
+    return this.isUnactivatedPSimNetwork_(cellularProperties) &&
+        !this.hasPaymentPortalInfo_(cellularProperties);
   },
 
   /**

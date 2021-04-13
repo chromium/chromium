@@ -100,6 +100,8 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"networkListItemActivateA11yLabel",
      IDS_NETWORK_LIST_ITEM_ACTIVATE_A11Y_LABEL},
     {"networkListItemActivating", IDS_NETWORK_LIST_ITEM_ACTIVATING},
+    {"networkListItemUnavailableSimNetwork",
+     IDS_NETWORK_LIST_ITEM_UNAVAILABLE_SIM_NETWORK},
     {"networkListItemDownload", IDS_NETWORK_LIST_ITEM_DOWNLOAD},
     {"networkListItemDownloadA11yLabel",
      IDS_NETWORK_LIST_ITEM_DOWNLOAD_A11Y_LABEL},
