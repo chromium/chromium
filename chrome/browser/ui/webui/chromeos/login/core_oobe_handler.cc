@@ -306,7 +306,7 @@ void CoreOobeHandler::OnOSVersionLabelTextUpdated(
 
 void CoreOobeHandler::OnEnterpriseInfoUpdated(const std::string& message_text,
                                               const std::string& asset_id) {
-  CallJS("cr.ui.Oobe.setEnterpriseInfo", message_text, asset_id);
+  // Not relevant in OOBE mode.
 }
 
 void CoreOobeHandler::OnDeviceInfoUpdated(const std::string& bluetooth_name) {
