@@ -137,8 +137,8 @@ ScriptPromise WebId::get(ScriptState* script_state,
   // has not been spec'd yet.
   KURL provider = KURL(NullURL(), options->provider());
   if (!provider.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "Invalid provider URL");
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Invalid provider URL.");
     return ScriptPromise();
   }
 

@@ -6769,6 +6769,11 @@ crbug.com/1197296 [ Mac10.15 ] virtual/unified-autoplay/external/wpt/feature-pol
 
 crbug.com/1196745 [ Mac10.15 ] editing/selection/editable-links.html [ Skip ]
 
+# WebID
+# These tests are only valid when WebID flag is enabled
+crbug.com/1067455 wpt_internal/webid/* [ Failure ]
+crbug.com/1067455 virtual/webid/* [ Pass ]
+
 # Will be fixed by PlzDedicatedWorker.
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Timeout ]
 # These timeout because COEP reporting to a worker is not implemented.
