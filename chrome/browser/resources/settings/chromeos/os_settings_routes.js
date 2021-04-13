@@ -6,8 +6,6 @@
 
 /**
  * Specifies all possible os routes in settings.
- * TODO(crbug.com/1097328): Delete OS_LANGUAGES_DETAILS and
- *     OS_LANGUAGES_INPUT_METHODS as they are unused.
  *
  * @typedef {{
  *   ABOUT: !settings.Route,
@@ -64,10 +62,8 @@
  *   ON_STARTUP: !settings.Route,
  *   OS_ACCESSIBILITY: !settings.Route,
  *   OS_LANGUAGES: !settings.Route,
- *   OS_LANGUAGES_DETAILS: !settings.Route,
  *   OS_LANGUAGES_EDIT_DICTIONARY: !settings.Route,
  *   OS_LANGUAGES_INPUT: !settings.Route,
- *   OS_LANGUAGES_INPUT_METHODS: !settings.Route,
  *   OS_LANGUAGES_INPUT_METHOD_OPTIONS: !settings.Route,
  *   OS_LANGUAGES_LANGUAGES: !settings.Route,
  *   OS_LANGUAGES_SMART_INPUTS: !settings.Route,

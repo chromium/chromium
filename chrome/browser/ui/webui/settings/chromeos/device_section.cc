@@ -527,6 +527,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyRepeatRateFast", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_FAST},
       {"showKeyboardShortcutViewer",
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
+      // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"keyboardShowLanguageAndInput",
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
       {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1097328): Delete this file and the 'displayLanguageRestart'
+//     i18n string definition, as this is unused.
+
 /**
  * @fileoverview 'os-settings-languages-page' is the settings sub-page
  * for language and input method settings.
@@ -96,11 +99,6 @@ cr.define('settings', function() {
      * @param {!settings.Route} oldRoute
      */
     currentRouteChanged(route, oldRoute) {
-      // Does not apply to this page.
-      if (route !== settings.routes.OS_LANGUAGES_DETAILS) {
-        return;
-      }
-
       this.attemptDeepLink();
     },
 
@@ -117,7 +115,7 @@ cr.define('settings', function() {
       // only fire once.
       assert(!oldConfig);
       this.focusConfig.set(
-          settings.routes.OS_LANGUAGES_INPUT_METHODS.path,
+          settings.routes.OS_LANGUAGES_INPUT.path,
           () => cr.ui.focusWithoutInk(this.$.manageInputMethods));
     },
 
@@ -230,7 +228,7 @@ cr.define('settings', function() {
     onManageInputMethodsTap_() {
       this.languagesMetricsProxy_.recordManageInputMethods();
       settings.Router.getInstance().navigateTo(
-          settings.routes.OS_LANGUAGES_INPUT_METHODS);
+          settings.routes.OS_LANGUAGES_INPUT);
     },
 
     /**

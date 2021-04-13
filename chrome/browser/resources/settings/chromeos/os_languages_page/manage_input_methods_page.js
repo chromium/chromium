@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1097328): Delete this file, as it is unused.
+
 /**
  * @fileoverview 'settings-manage-input-methods-page' is a sub-page for enabling
  * and disabling input methods. Input methods are grouped by base languages to

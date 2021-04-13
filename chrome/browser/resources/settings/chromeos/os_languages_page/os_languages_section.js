@@ -27,29 +27,12 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.OS_LANGUAGES_DETAILS) {
-          map.set(
-              settings.routes.OS_LANGUAGES_DETAILS.path,
-              '#languagesSubpageTrigger');
-        }
         if (settings.routes.OS_LANGUAGES_SMART_INPUTS) {
           map.set(
               settings.routes.OS_LANGUAGES_SMART_INPUTS.path,
               '#smartInputsSubpageTrigger');
         }
         return map;
-      },
-    },
-
-    // TODO(crbug.com/1097328): Delete this.
-    /**
-     * This is enabled when language settings update feature flag is enabled.
-     * @private
-     * */
-    languageSettingsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return true;
       },
     },
 
@@ -79,40 +62,9 @@ Polymer({
   },
 
   /** @private */
-  onLanguagesTap_() {
-    // TODO(crbug.com/950007): Add UMA metric for opening language details.
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_DETAILS);
-  },
-
-  /** @private */
   onSmartInputsClick_() {
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_LANGUAGES_SMART_INPUTS);
-  },
-
-  /**
-   * @param {string|undefined} uiLanguage Current UI language fully specified,
-   *     e.g. "English (United States)".
-   * @param {string} id The input method ID, e.g. "US Keyboard".
-   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
-   * @return {string} A sublabel for the 'Languages and input' row
-   * @private
-   */
-  getSubLabel_(uiLanguage, id, languageHelper) {
-    const languageDisplayName =
-        this.getLanguageDisplayName_(uiLanguage, languageHelper);
-    if (!languageDisplayName) {
-      return '';
-    }
-    const inputMethodDisplayName =
-        this.getInputMethodDisplayName_(id, languageHelper);
-    if (!inputMethodDisplayName) {
-      return languageDisplayName;
-    }
-    // It is OK to use string concatenation here because it is just joining a 2
-    // element list (i.e. it's a standard format).
-    return languageDisplayName + ', ' + inputMethodDisplayName;
   },
 
   /**

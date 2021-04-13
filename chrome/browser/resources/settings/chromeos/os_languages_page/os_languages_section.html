@@ -30,35 +30,23 @@
     <settings-animated-pages id="pages" section="osLanguages"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <template is="dom-if" if="[[!languageSettingsV2Enabled_]]">
-          <cr-link-row
-              id="languagesSubpageTrigger"
-              label="$i18n{osLanguagesPageTitle}"
-              sub-label="[[getSubLabel_(languages.prospectiveUILanguage,
-                  languages.inputMethods.currentId, languageHelper)]]"
-              on-click="onLanguagesTap_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[languageSettingsV2Enabled_]]">
-            <cr-link-row
-                id="languagesPageTrigger"
-                label="$i18n{languagesPageTitle}"
-                sub-label="[[getLanguageDisplayName_(
-                    languages.prospectiveUILanguage, languageHelper)]]"
-                on-click="onLanguagesV2Click_"
-                role-description="$i18n{subpageArrowRoleDescription}">
-            </cr-link-row>
-            <cr-link-row
-                class="hr"
-                id="inputPageTrigger"
-                label="$i18n{inputPageTitle}"
-                sub-label="[[getInputMethodDisplayName_(
-                  languages.inputMethods.currentId, languageHelper)]]"
-                on-click="onInputClick_"
-                role-description="$i18n{subpageArrowRoleDescription}">
-            </cr-link-row>
-        </template>
+        <cr-link-row
+            id="languagesPageTrigger"
+            label="$i18n{languagesPageTitle}"
+            sub-label="[[getLanguageDisplayName_(
+                languages.prospectiveUILanguage, languageHelper)]]"
+            on-click="onLanguagesV2Click_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row
+            class="hr"
+            id="inputPageTrigger"
+            label="$i18n{inputPageTitle}"
+            sub-label="[[getInputMethodDisplayName_(
+              languages.inputMethods.currentId, languageHelper)]]"
+            on-click="onInputClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
         <template is="dom-if" if="[[smartInputsEnabled_]]">
           <cr-link-row
               class="hr"
@@ -69,20 +57,6 @@
           </cr-link-row>
         </template>
       </div>
-
-      <!-- "Language and input" sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/details">
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]"
-            page-title="$i18n{osLanguagesPageTitle}">
-          <os-settings-languages-page
-              focus-config="[[focusConfig_]]"
-              language-helper="{{languageHelper}}"
-              languages="{{languages}}"
-              prefs="{{prefs}}">
-          </os-settings-languages-page>
-        </settings-subpage>
-      </template>
 
       <!-- "Languages" page. -->
       <template is="dom-if" route-path="/osLanguages/languages">
@@ -116,21 +90,6 @@
             page-title="$i18n{smartInputsTitle}">
           <os-settings-smart-inputs-page prefs="{{prefs}}">
           </os-settings-smart-inputs-page>
-        </settings-subpage>
-      </template>
-
-      <!-- "Manage input methods" sub-sub-page. -->
-      <template is="dom-if" route-path="/osLanguages/inputMethods">
-        <!-- TODO(crbug.com/950007): Associate control with the sub-subpage
-             trigger button from os-settings-language-page's shadow dom. -->
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]"
-            page-title="$i18n{manageInputMethodsPageTitle}">
-          <settings-manage-input-methods-page
-              language-helper="[[languageHelper]]"
-              languages="{{languages}}"
-              prefs="{{prefs}}">
-          </settings-manage-input-methods-page>
         </settings-subpage>
       </template>
 

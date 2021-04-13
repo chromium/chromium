@@ -359,7 +359,6 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"osLanguagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE},
       {"languagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE},
       {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
-      {"osLanguagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE},
       {"osLanguagesListTitle", IDS_OS_SETTINGS_LANGUAGES_LIST_TITLE},
       {"inputMethodsListTitle",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_LIST_TITLE},
@@ -369,6 +368,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
       {"manageInputMethods", IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGE},
+      // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"manageInputMethodsPageTitle",
        IDS_SETTINGS_LANGUAGES_MANAGE_INPUT_METHODS_TITLE},
       {"showImeMenu", IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU},

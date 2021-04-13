@@ -104,18 +104,6 @@ cr.define('settings', function() {
           chromeos.settings.mojom.Setting.kKeyboardShortcuts,
         ]),
       },
-
-      // TODO(crbug.com/1097328): Delete this.
-      /**
-       * This is enabled when language settings update feature flag is enabled.
-       * @private
-       */
-      languageSettingsV2Enabled_: {
-        type: Boolean,
-        value() {
-          return true;
-        },
-      },
     },
 
     /** @override */
@@ -183,18 +171,9 @@ cr.define('settings', function() {
 
     /** @private */
     onFocusConfigChange_() {
-      let path, id;
-      if (this.languageSettingsV2Enabled_) {
-        path = settings.routes.OS_LANGUAGES_INPUT.path;
-        id = '#showLanguagesInput';
-      } else {
-        path = settings.routes.OS_LANGUAGES_DETAILS.path;
-        id = '#showLanguagesDetails';
-      }
-
-      this.focusConfig.set(path, () => {
+      this.focusConfig.set(settings.routes.OS_LANGUAGES_INPUT.path, () => {
         Polymer.RenderStatus.afterNextRender(this, () => {
-          cr.ui.focusWithoutInk(assert(this.$$(id)));
+          cr.ui.focusWithoutInk(assert(this.$$('#showLanguagesInput')));
         });
       });
     },
@@ -216,13 +195,6 @@ cr.define('settings', function() {
     onShowKeyboardShortcutViewerTap_() {
       settings.DevicePageBrowserProxyImpl.getInstance()
           .showKeyboardShortcutViewer();
-    },
-
-    /** @private */
-    onShowLanguageInputTap_() {
-      settings.Router.getInstance().navigateTo(
-          settings.routes.OS_LANGUAGES_DETAILS,
-          /*dynamicParams=*/ null, /*removeSearch=*/ true);
     },
 
     /** @private */
