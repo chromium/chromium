@@ -177,7 +177,7 @@ vars = {
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
-  'luci_go': 'git_revision:fb5219c5ee72f9a55dae91e1ea7009750b575fb5',
+  'luci_go': 'git_revision:d3c477bcb09ee66dbedfd9f1e8a915ab9d64bdbb',
 
   # This can be overridden, e.g. with custom_vars, to build clang from HEAD
   # instead of downloading the prebuilt pinned revision.
