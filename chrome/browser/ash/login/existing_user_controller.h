@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -389,7 +389,8 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // the store is not yet initialized when the login is attempted.
   std::unique_ptr<PolicyStoreLoadWaiter> policy_store_waiter_;
 
-  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
       observed_user_manager_{this};
 
   // Factory of callbacks.

@@ -8,7 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -329,11 +329,11 @@ class ChallengeResponseExtensionLoadObserverTest
 
   void SetUpOnMainThread() override {
     ChallengeResponseAuthKeysLoaderBrowserTest::SetUpOnMainThread();
-    process_manager_observer_.Add(GetProcessManager());
+    process_manager_observation_.Observe(GetProcessManager());
   }
 
   void TearDownOnMainThread() override {
-    process_manager_observer_.RemoveAll();
+    process_manager_observation_.Reset();
     ChallengeResponseAuthKeysLoaderBrowserTest::TearDownOnMainThread();
   }
 
@@ -371,14 +371,16 @@ class ChallengeResponseExtensionLoadObserverTest
   }
 
   void OnProcessManagerShutdown(extensions::ProcessManager* manager) override {
-    process_manager_observer_.Remove(manager);
+    DCHECK(process_manager_observation_.IsObservingSource(manager));
+    process_manager_observation_.Reset();
   }
 
  private:
   base::RunLoop* extension_host_created_loop_ = nullptr;
   extensions::ExtensionHost* extension_host_ = nullptr;
-  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
-      process_manager_observer_{this};
+  base::ScopedObservation<extensions::ProcessManager,
+                          extensions::ProcessManagerObserver>
+      process_manager_observation_{this};
 };
 
 // Tests that observers get cleaned up properly if the observed ExtensionHost

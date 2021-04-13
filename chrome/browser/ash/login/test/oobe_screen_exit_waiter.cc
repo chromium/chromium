@@ -26,7 +26,7 @@ void OobeScreenExitWaiter::Wait() {
   }
   ASSERT_FALSE(run_loop_);
 
-  oobe_ui_observer_.Add(GetOobeUI());
+  oobe_ui_observation_.Observe(GetOobeUI());
 
   state_ = State::WAITING_FOR_SCREEN_EXIT;
 
@@ -38,7 +38,7 @@ void OobeScreenExitWaiter::Wait() {
 
   ASSERT_EQ(State::DONE, state_);
 
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
 }
 
 void OobeScreenExitWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
@@ -49,7 +49,7 @@ void OobeScreenExitWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
 }
 
 void OobeScreenExitWaiter::OnDestroyingOobeUI() {
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
   EndWait();
 }
 

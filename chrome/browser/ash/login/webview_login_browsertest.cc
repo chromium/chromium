@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -234,7 +234,7 @@ class ErrorScreenWatcher : public OobeUI::Observer {
  public:
   ErrorScreenWatcher() {
     OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-    oobe_ui_observer_.Add(oobe_ui);
+    oobe_ui_observation_.Observe(oobe_ui);
 
     if (oobe_ui->current_screen() == ErrorScreenView::kScreenId)
       has_error_screen_been_shown_ = true;
@@ -260,7 +260,7 @@ class ErrorScreenWatcher : public OobeUI::Observer {
   void OnDestroyingOobeUI() override {}
 
  private:
-  ScopedObserver<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   bool has_error_screen_been_shown_ = false;
 };

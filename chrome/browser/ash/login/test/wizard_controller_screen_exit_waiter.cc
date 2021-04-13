@@ -32,7 +32,7 @@ void WizardControllerExitWaiter::Wait() {
   }
   ASSERT_FALSE(run_loop_);
 
-  screen_observer_.Add(wizard_controller);
+  screen_observation_.Observe(wizard_controller);
 
   state_ = State::WAITING_FOR_SCREEN_EXIT;
 
@@ -45,7 +45,7 @@ void WizardControllerExitWaiter::Wait() {
 
   ASSERT_EQ(State::DONE, state_);
 
-  screen_observer_.RemoveAll();
+  screen_observation_.Reset();
 }
 
 void WizardControllerExitWaiter::OnCurrentScreenChanged(
@@ -56,7 +56,7 @@ void WizardControllerExitWaiter::OnCurrentScreenChanged(
 }
 
 void WizardControllerExitWaiter::OnShutdown() {
-  screen_observer_.RemoveAll();
+  screen_observation_.Reset();
   EndWait();
 }
 

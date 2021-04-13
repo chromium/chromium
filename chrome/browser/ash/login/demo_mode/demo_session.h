@@ -13,7 +13,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -220,17 +221,17 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   std::unique_ptr<DemoResources> demo_resources_;
 
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_manager_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
+                                     extensions::ExtensionRegistryObserver>
+      extension_registry_observations_{this};
 
-  ScopedObserver<extensions::AppWindowRegistry,
-                 extensions::AppWindowRegistry::Observer>
-      app_window_registry_observer_{this};
+  base::ScopedMultiSourceObservation<extensions::AppWindowRegistry,
+                                     extensions::AppWindowRegistry::Observer>
+      app_window_registry_observations_{this};
 
   scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader_;
 

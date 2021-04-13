@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
@@ -65,9 +65,9 @@ class DemoPreferencesScreen
   // restored if user presses back button.
   std::string initial_input_method_;
 
-  ScopedObserver<input_method::InputMethodManager,
-                 input_method::InputMethodManager::Observer>
-      input_manager_observer_{this};
+  base::ScopedObservation<input_method::InputMethodManager,
+                          input_method::InputMethodManager::Observer>
+      input_manager_observation_{this};
 
   DemoPreferencesScreenView* view_;
   ScreenExitCallback exit_callback_;

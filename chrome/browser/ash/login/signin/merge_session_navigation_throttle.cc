@@ -40,7 +40,7 @@ MergeSessionNavigationThrottle::Create(content::NavigationHandle* handle) {
 
 MergeSessionNavigationThrottle::MergeSessionNavigationThrottle(
     content::NavigationHandle* handle)
-    : NavigationThrottle(handle), login_manager_observer_(this) {
+    : NavigationThrottle(handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -87,7 +87,7 @@ bool MergeSessionNavigationThrottle::BeforeDefer() {
   chromeos::OAuth2LoginManager* manager =
       GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (manager && manager->ShouldBlockTabLoading()) {
-    login_manager_observer_.Add(manager);
+    login_manager_observation_.Observe(manager);
     proceed_timer_.Start(FROM_HERE, kTotalWaitTime, this,
                          &MergeSessionNavigationThrottle::Proceed);
     return true;
@@ -100,7 +100,8 @@ void MergeSessionNavigationThrottle::Proceed() {
   chromeos::OAuth2LoginManager* manager =
       GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (manager) {
-    login_manager_observer_.Remove(manager);
+    DCHECK(login_manager_observation_.IsObservingSource(manager));
+    login_manager_observation_.Reset();
   }
   Resume();
 }

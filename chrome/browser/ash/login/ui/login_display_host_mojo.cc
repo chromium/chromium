@@ -553,14 +553,14 @@ void LoginDisplayHostMojo::OnDestroyingOobeUI() {
 
 // views::ViewObserver:
 void LoginDisplayHostMojo::OnViewBoundsChanged(views::View* observed_view) {
-  DCHECK(scoped_observer_.IsObserving(observed_view));
+  DCHECK(scoped_observation_.IsObservingSource(observed_view));
   for (auto& observer : observers_)
     observer.WebDialogViewBoundsChanged(observed_view->GetBoundsInScreen());
 }
 
 void LoginDisplayHostMojo::OnViewIsDeleting(views::View* observed_view) {
-  DCHECK(scoped_observer_.IsObserving(observed_view));
-  scoped_observer_.Remove(observed_view);
+  DCHECK(scoped_observation_.IsObservingSource(observed_view));
+  scoped_observation_.Reset();
 }
 
 bool LoginDisplayHostMojo::IsOobeUIDialogVisible() const {
@@ -576,7 +576,7 @@ void LoginDisplayHostMojo::LoadOobeDialog() {
       login_display_.get());
 
   views::View* web_dialog_view = dialog_->GetWebDialogView();
-  scoped_observer_.Add(web_dialog_view);
+  scoped_observation_.Observe(web_dialog_view);
 }
 
 void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(

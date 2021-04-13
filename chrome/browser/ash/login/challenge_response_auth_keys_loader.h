@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/login/auth/challenge_response_key.h"
@@ -86,7 +86,7 @@ class ChallengeResponseAuthKeysLoader final : public ProfileObserver {
   // Whether the sign-in profile is destroyed.
   bool profile_is_destroyed_ = false;
 
-  ScopedObserver<Profile, ProfileObserver> profile_subscription_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_subscription_{this};
 
   base::WeakPtrFactory<ChallengeResponseAuthKeysLoader> weak_ptr_factory_{this};
 };

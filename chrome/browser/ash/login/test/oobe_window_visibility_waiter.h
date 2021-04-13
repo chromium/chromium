@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -33,7 +33,8 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
 
   const bool target_visibility_;
   base::OnceClosure wait_stop_closure_;
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OobeWindowVisibilityWaiter);
 };

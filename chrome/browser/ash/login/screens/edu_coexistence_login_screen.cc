@@ -48,7 +48,7 @@ EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(
     : BaseScreen(EduCoexistenceLoginScreen::kScreenId,
                  OobeScreenPriority::DEFAULT),
       exit_callback_(exit_callback) {
-  observed_login_display_host_.Add(LoginDisplayHost::default_host());
+  observed_login_display_host_.Observe(LoginDisplayHost::default_host());
 }
 
 EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() {}

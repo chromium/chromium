@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -40,9 +40,9 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
  private:
   base::Optional<session_manager::SessionState> target_state_;
   base::OnceClosure session_state_callback_;
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionStateWaiter);
 };

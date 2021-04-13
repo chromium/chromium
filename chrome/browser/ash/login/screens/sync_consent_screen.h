@@ -11,7 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "components/sync/driver/sync_service.h"
@@ -157,8 +157,8 @@ class SyncConsentScreen : public BaseScreen,
   ScreenExitCallback exit_callback_;
 
   // Manages sync service observer lifetime.
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   // Primary user ind his Profile (if screen is shown).
   const user_manager::User* user_ = nullptr;

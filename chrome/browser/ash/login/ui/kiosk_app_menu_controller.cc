@@ -25,9 +25,9 @@
 namespace chromeos {
 
 KioskAppMenuController::KioskAppMenuController() {
-  kiosk_observer_.Add(KioskAppManager::Get());
-  kiosk_observer_.Add(ArcKioskAppManager::Get());
-  kiosk_observer_.Add(WebKioskAppManager::Get());
+  kiosk_observations_.AddObservation(KioskAppManager::Get());
+  kiosk_observations_.AddObservation(ArcKioskAppManager::Get());
+  kiosk_observations_.AddObservation(WebKioskAppManager::Get());
 }
 
 KioskAppMenuController::~KioskAppMenuController() = default;

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -51,7 +51,8 @@ class DialogWindowWaiter : public aura::EnvObserver,
   base::RunLoop run_loop_;
 
   std::set<aura::Window*> dialog_windows_;
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DialogWindowWaiter);
 };

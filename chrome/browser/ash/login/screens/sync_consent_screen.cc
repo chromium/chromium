@@ -149,7 +149,7 @@ void SyncConsentScreen::ShowImpl() {
     view_->SetThrobberVisible(true /*visible*/);
     syncer::SyncService* service = GetSyncService(profile_);
     if (service)
-      sync_service_observer_.Add(service);
+      sync_service_observation_.Observe(service);
   }
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
@@ -158,7 +158,7 @@ void SyncConsentScreen::ShowImpl() {
 }
 
 void SyncConsentScreen::HideImpl() {
-  sync_service_observer_.RemoveAll();
+  sync_service_observation_.Reset();
   view_->Hide();
 }
 

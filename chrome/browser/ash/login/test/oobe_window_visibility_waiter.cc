@@ -27,7 +27,7 @@ void OobeWindowVisibilityWaiter::Wait() {
 
   base::RunLoop run_loop;
   wait_stop_closure_ = run_loop.QuitClosure();
-  window_observer_.Add(window);
+  window_observation_.Observe(window);
   run_loop.Run();
 }
 
@@ -35,13 +35,13 @@ void OobeWindowVisibilityWaiter::OnWindowVisibilityChanged(aura::Window* window,
                                                            bool visible) {
   if (visible != target_visibility_)
     return;
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   std::move(wait_stop_closure_).Run();
 }
 
 void OobeWindowVisibilityWaiter::OnWindowDestroyed(aura::Window* window) {
   DCHECK(!target_visibility_);
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   std::move(wait_stop_closure_).Run();
 }
 

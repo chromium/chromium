@@ -162,9 +162,10 @@ void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   }
 
   // Start tracking user activity, if it's already not in progress.
-  if (!user_activity_observer_.IsObserving(ui::UserActivityDetector::Get())) {
+  if (!user_activity_observation_.IsObservingSource(
+          ui::UserActivityDetector::Get())) {
     if (!AttemptRemovalIfUsageOverThreshold()) {
-      user_activity_observer_.Add(ui::UserActivityDetector::Get());
+      user_activity_observation_.Observe(ui::UserActivityDetector::Get());
       OnUserActivity(nullptr);
     }
   }
@@ -248,7 +249,7 @@ DemoModeResourcesRemover::DemoModeResourcesRemover(PrefService* local_state)
   CHECK(!g_instance);
   g_instance = this;
 
-  userdataauth_observer_.Observe(UserDataAuthClient::Get());
+  userdataauth_observation_.Observe(UserDataAuthClient::Get());
   ChromeUserManager::Get()->AddSessionStateObserver(this);
 }
 
@@ -275,7 +276,7 @@ bool DemoModeResourcesRemover::AttemptRemovalIfUsageOverThreshold() {
     return false;
 
   // Stop observing usage.
-  user_activity_observer_.RemoveAll();
+  user_activity_observation_.Reset();
   AttemptRemoval(RemovalReason::kRegularUsage, RemovalCallback());
   return true;
 }
@@ -289,10 +290,10 @@ void DemoModeResourcesRemover::OnRemovalDone(RemovalReason reason,
     local_state_->SetBoolean(kDemoModeResourcesRemoved, true);
     local_state_->ClearPref(kAccumulatedUsagePref);
 
-    userdataauth_observer_.Reset();
+    userdataauth_observation_.Reset();
     ChromeUserManager::Get()->RemoveSessionStateObserver(this);
 
-    user_activity_observer_.RemoveAll();
+    user_activity_observation_.Reset();
     usage_start_ = base::nullopt;
     usage_end_ = base::nullopt;
   }

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREEN_WAITER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -75,10 +75,10 @@ class OobeScreenWaiter : public OobeUI::Observer,
   // visible. True by default.
   bool check_native_window_visible_ = true;
 
-  ScopedObserver<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
-  ScopedObserver<aura::Window, aura::WindowObserver> native_window_observer_{
-      this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      native_window_observation_{this};
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

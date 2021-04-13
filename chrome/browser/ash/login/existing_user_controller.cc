@@ -22,7 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -372,7 +372,7 @@ class ExistingUserController::PolicyStoreLoadWaiter
                         base::OnceClosure callback)
       : callback_(std::move(callback)) {
     DCHECK(!store->is_initialized());
-    scoped_observer_.Add(store);
+    scoped_observation_.Observe(store);
   }
   ~PolicyStoreLoadWaiter() override = default;
 
@@ -381,20 +381,21 @@ class ExistingUserController::PolicyStoreLoadWaiter
 
   // policy::CloudPolicyStore::Observer:
   void OnStoreLoaded(policy::CloudPolicyStore* store) override {
-    scoped_observer_.RemoveAll();
+    scoped_observation_.Reset();
     std::move(callback_).Run();
   }
   void OnStoreError(policy::CloudPolicyStore* store) override {
     // If store load fails, run the callback to unblock public session login
     // attempt, which will likely fail.
-    scoped_observer_.RemoveAll();
+    scoped_observation_.Reset();
     std::move(callback_).Run();
   }
 
  private:
   base::OnceClosure callback_;
-  ScopedObserver<policy::CloudPolicyStore, policy::CloudPolicyStore::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<policy::CloudPolicyStore,
+                          policy::CloudPolicyStore::Observer>
+      scoped_observation_{this};
 };
 
 // static
@@ -442,7 +443,7 @@ ExistingUserController::ExistingUserController()
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
                           base::Unretained(this)));
 
-  observed_user_manager_.Add(user_manager::UserManager::Get());
+  observed_user_manager_.Observe(user_manager::UserManager::Get());
 }
 
 void ExistingUserController::Init(const user_manager::UserList& users) {

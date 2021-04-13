@@ -442,7 +442,8 @@ DemoSession::DemoSession()
           std::make_unique<base::OneShotTimer>()) {
   // SessionManager may be unset in unit tests.
   if (session_manager::SessionManager::Get()) {
-    session_manager_observer_.Add(session_manager::SessionManager::Get());
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
     OnSessionStateChanged();
   }
   ChromeUserManager::Get()->AddSessionStateObserver(this);
@@ -501,12 +502,12 @@ void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
   DCHECK(profile);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
-  if (!extension_registry_observer_.IsObserving(extension_registry))
-    extension_registry_observer_.Add(extension_registry);
+  if (!extension_registry_observations_.IsObservingSource(extension_registry))
+    extension_registry_observations_.AddObservation(extension_registry);
   extensions::AppWindowRegistry* app_window_registry =
       extensions::AppWindowRegistry::Get(profile);
-  if (!app_window_registry_observer_.IsObserving(app_window_registry))
-    app_window_registry_observer_.Add(app_window_registry);
+  if (!app_window_registry_observations_.IsObservingSource(app_window_registry))
+    app_window_registry_observations_.AddObservation(app_window_registry);
   extensions_external_loader_->LoadApp(id);
 }
 
@@ -562,7 +563,7 @@ void DemoSession::RemoveSplashScreen() {
     return;
   WallpaperControllerClientImpl::Get()->RemoveAlwaysOnTopWallpaper();
   remove_splash_screen_fallback_timer_.reset();
-  app_window_registry_observer_.RemoveAll();
+  app_window_registry_observations_.RemoveAllObservations();
   splash_screen_removed_ = true;
 }
 

@@ -24,7 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -457,7 +457,7 @@ class ExtensionReadyObserver : public extensions::ExtensionRegistryObserver {
   ExtensionReadyObserver(extensions::ExtensionRegistry* registry,
                          const std::string& extension_id)
       : extension_id_(extension_id) {
-    extension_registry_observer_.Add(registry);
+    extension_registry_observation_.Observe(registry);
   }
 
   int fired_times() const { return count_; }
@@ -472,8 +472,9 @@ class ExtensionReadyObserver : public extensions::ExtensionRegistryObserver {
 
   int count_ = 0;
 
-  ScopedObserver<extensions::ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   const std::string extension_id_;
 };
 

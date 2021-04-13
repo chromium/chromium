@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -53,9 +53,9 @@ class MergeSessionNavigationThrottle
   // navigation.
   void Proceed();
 
-  ScopedObserver<chromeos::OAuth2LoginManager,
-                 chromeos::OAuth2LoginManager::Observer>
-      login_manager_observer_;
+  base::ScopedObservation<chromeos::OAuth2LoginManager,
+                          chromeos::OAuth2LoginManager::Observer>
+      login_manager_observation_{this};
 
   base::OneShotTimer proceed_timer_;
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_TEST_HELPERS_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -33,8 +33,9 @@ class KioskSessionInitializedWaiter : public KioskAppManagerObserver {
   // KioskAppManagerObserver:
   void OnKioskSessionInitialized() override;
 
-  ScopedObserver<KioskAppManagerBase, KioskAppManagerObserver> scoped_observer_{
-      this};
+  base::ScopedMultiSourceObservation<KioskAppManagerBase,
+                                     KioskAppManagerObserver>
+      scoped_observations_{this};
   base::RunLoop run_loop_;
 };
 

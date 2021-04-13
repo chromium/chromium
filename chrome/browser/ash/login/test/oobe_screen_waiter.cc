@@ -28,12 +28,12 @@ void OobeScreenWaiter::Wait() {
   }
   DCHECK(!run_loop_);
 
-  oobe_ui_observer_.Add(GetOobeUI());
+  oobe_ui_observation_.Observe(GetOobeUI());
   if (check_native_window_visible_) {
     aura::Window* native_window =
         LoginDisplayHost::default_host()->GetNativeWindow();
     DCHECK(native_window);
-    native_window_observer_.Add(native_window);
+    native_window_observation_.Observe(native_window);
   }
 
   state_ = State::WAITING_FOR_SCREEN;
@@ -47,9 +47,9 @@ void OobeScreenWaiter::Wait() {
   ASSERT_EQ(State::DONE, state_)
       << " Timed out while waiting for " << target_screen_.name;
 
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
   if (check_native_window_visible_)
-    native_window_observer_.RemoveAll();
+    native_window_observation_.Reset();
 
   if (assert_last_screen_)
     EXPECT_EQ(target_screen_, GetOobeUI()->current_screen());
@@ -103,7 +103,7 @@ bool OobeScreenWaiter::IsNativeWindowVisible() {
 }
 
 void OobeScreenWaiter::OnDestroyingOobeUI() {
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
 
   EXPECT_EQ(State::DONE, state_);
 

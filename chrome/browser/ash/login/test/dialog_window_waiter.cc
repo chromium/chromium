@@ -16,7 +16,7 @@ DialogWindowWaiter::DialogWindowWaiter(const std::u16string& dialog_title)
 
 DialogWindowWaiter::~DialogWindowWaiter() {
   aura::Env::GetInstance()->RemoveObserver(this);
-  window_observer_.RemoveAll();
+  window_observations_.RemoveAllObservations();
   // Explicitly close any help app dialogs still open to prevent flaky errors in
   // browser tests. Remove when crbug.com/951828 is fixed.
   for (aura::Window* dialog_window : dialog_windows_)
@@ -28,13 +28,13 @@ void DialogWindowWaiter::Wait() {
 }
 
 void DialogWindowWaiter::OnWindowInitialized(aura::Window* window) {
-  DCHECK(!window_observer_.IsObserving(window));
-  window_observer_.Add(window);
+  DCHECK(!window_observations_.IsObservingSource(window));
+  window_observations_.AddObservation(window);
 }
 
 void DialogWindowWaiter::OnWindowDestroyed(aura::Window* window) {
-  if (window_observer_.IsObserving(window))
-    window_observer_.Remove(window);
+  if (window_observations_.IsObservingSource(window))
+    window_observations_.RemoveObservation(window);
   dialog_windows_.erase(window);
 }
 

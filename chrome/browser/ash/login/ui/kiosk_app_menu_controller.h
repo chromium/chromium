@@ -8,7 +8,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 
@@ -32,8 +32,9 @@ class KioskAppMenuController : public KioskAppManagerObserver {
   void LaunchApp(const ash::KioskAppMenuEntry& app);
   void OnMenuWillShow();
 
-  ScopedObserver<KioskAppManagerBase, KioskAppManagerObserver> kiosk_observer_{
-      this};
+  base::ScopedMultiSourceObservation<KioskAppManagerBase,
+                                     KioskAppManagerObserver>
+      kiosk_observations_{this};
 
   base::WeakPtrFactory<KioskAppMenuController> weak_factory_{this};
 

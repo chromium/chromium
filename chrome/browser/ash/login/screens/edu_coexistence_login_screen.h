@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_EDU_COEXISTENCE_LOGIN_SCREEN_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
@@ -57,7 +57,7 @@ class EduCoexistenceLoginScreen : public BaseScreen,
   std::unique_ptr<InlineLoginDialogChromeOSOnboarding::Delegate>
       dialog_delegate_;
 
-  ScopedObserver<LoginDisplayHost, LoginDisplayHost::Observer>
+  base::ScopedObservation<LoginDisplayHost, LoginDisplayHost::Observer>
       observed_login_display_host_{this};
 };
 

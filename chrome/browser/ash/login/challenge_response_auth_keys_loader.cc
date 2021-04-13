@@ -13,7 +13,8 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -165,8 +166,8 @@ class ExtensionLoadObserver final
 
   explicit ExtensionLoadObserver(base::TimeDelta maximum_waiting_time)
       : maximum_waiting_time_(maximum_waiting_time) {
-    process_manager_observer_.Add(GetProcessManager());
-    extension_registry_observer_.Add(GetExtensionRegistry());
+    process_manager_observation_.Observe(GetProcessManager());
+    extension_registry_observation_.Observe(GetExtensionRegistry());
   }
   ExtensionLoadObserver(const ExtensionLoadObserver&) = delete;
   ExtensionLoadObserver& operator=(const ExtensionLoadObserver&) = delete;
@@ -209,7 +210,8 @@ class ExtensionLoadObserver final
   }
 
   void OnShutdown(extensions::ExtensionRegistry* registry) override {
-    extension_registry_observer_.Remove(registry);
+    DCHECK(extension_registry_observation_.IsObservingSource(registry));
+    extension_registry_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
 
@@ -222,15 +224,16 @@ class ExtensionLoadObserver final
   }
 
   void OnProcessManagerShutdown(extensions::ProcessManager* manager) override {
-    process_manager_observer_.Remove(manager);
+    DCHECK(process_manager_observation_.IsObservingSource(manager));
+    process_manager_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
 
   // extensions::ExtensionHostObserver
 
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override {
-    DCHECK(extension_host_observer_.IsObserving(host));
-    extension_host_observer_.Remove(host);
+    DCHECK(extension_host_observations_.IsObservingSource(host));
+    extension_host_observations_.RemoveObservation(host);
     StopWaitingOnExtension(host->extension_id());
   }
 
@@ -306,8 +309,8 @@ class ExtensionLoadObserver final
     }
 
     // Observe first load of background page.
-    if (!extension_host_observer_.IsObserving(extension_host)) {
-      extension_host_observer_.Add(extension_host);
+    if (!extension_host_observations_.IsObservingSource(extension_host)) {
+      extension_host_observations_.AddObservation(extension_host);
     }
   }
 
@@ -337,13 +340,15 @@ class ExtensionLoadObserver final
   // Ids of all extensions that are necessary but not yet ready.
   base::flat_set<std::string> extensions_waited_for_;
 
-  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
-      process_manager_observer_{this};
-  ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
-      extension_host_observer_{this};
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ProcessManager,
+                          extensions::ProcessManagerObserver>
+      process_manager_observation_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionHost,
+                                     extensions::ExtensionHostObserver>
+      extension_host_observations_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionLoadObserver> weak_ptr_factory_{this};
 };
@@ -363,7 +368,7 @@ bool ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
 ChallengeResponseAuthKeysLoader::ChallengeResponseAuthKeysLoader()
     : maximum_extension_load_waiting_time_(
           kDefaultMaximumExtensionLoadWaitingTime) {
-  profile_subscription_.Add(GetProfile());
+  profile_subscription_.Observe(GetProfile());
 }
 
 ChallengeResponseAuthKeysLoader::~ChallengeResponseAuthKeysLoader() = default;
@@ -401,7 +406,8 @@ void ChallengeResponseAuthKeysLoader::LoadAvailableKeys(
 void ChallengeResponseAuthKeysLoader::OnProfileWillBeDestroyed(
     Profile* profile) {
   profile_is_destroyed_ = true;
-  profile_subscription_.Remove(profile);
+  DCHECK(profile_subscription_.IsObservingSource(profile));
+  profile_subscription_.Reset();
 }
 
 void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(

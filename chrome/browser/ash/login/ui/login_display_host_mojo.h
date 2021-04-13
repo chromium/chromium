@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
@@ -229,7 +229,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   base::OnceClosure owner_verified_callback_;
   scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
-  ScopedObserver<views::View, views::ViewObserver> scoped_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
+      this};
 
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 

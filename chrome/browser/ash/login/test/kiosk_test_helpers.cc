@@ -12,8 +12,8 @@
 namespace chromeos {
 
 KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
-  scoped_observer_.Add(KioskAppManager::Get());
-  scoped_observer_.Add(WebKioskAppManager::Get());
+  scoped_observations_.AddObservation(KioskAppManager::Get());
+  scoped_observations_.AddObservation(WebKioskAppManager::Get());
 }
 
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
