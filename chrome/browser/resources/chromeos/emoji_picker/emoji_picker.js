@@ -139,6 +139,9 @@ export class EmojiPicker extends PolymerElement {
     /** @private {?number} */
     this.groupScrollTimeout = null;
 
+    /** @private {?number} */
+    this.groupButtonScrollTimeout = null;
+
     /** @private {?EmojiButton} */
     this.activeVariant = null;
 
@@ -150,6 +153,9 @@ export class EmojiPicker extends PolymerElement {
 
     /** @private {boolean} */
     this.highlightBarMoving = false;
+
+    /** @private {boolean} */
+    this.groupTabsMoving = false;
 
 
     this.addEventListener(
@@ -251,13 +257,14 @@ export class EmojiPicker extends PolymerElement {
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
     }
-    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 250);
+    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 100);
   }
 
   onRightChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = GROUP_ICON_SIZE * 6;
     this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 3].groupId);
     this.highlightBarMoving = true;
+    this.groupTabsMoving = true;
     this.shadowRoot.getElementById('bar').style.left = EMOJI_GROUP_SIZE_PX;
   }
 
@@ -265,6 +272,7 @@ export class EmojiPicker extends PolymerElement {
     this.shadowRoot.getElementById('tabs').scrollLeft = 0;
     this.scrollToGroup(GROUP_TABS[0].groupId);
     this.highlightBarMoving = true;
+    this.groupTabsMoving = true;
     if (this.history.emoji.length > 0) {
       this.shadowRoot.getElementById('bar').style.left = '0';
     } else {
@@ -282,8 +290,26 @@ export class EmojiPicker extends PolymerElement {
         .scrollIntoView();
   }
 
+  /**
+   * @private
+   */
   onGroupsScroll() {
     this.updateChevrons();
+    this.groupTabsMoving = true;
+
+    if (this.groupButtonScrollTimeout) {
+      clearTimeout(this.groupButtonScrollTimeout);
+    }
+    this.groupButtonScrollTimeout =
+        setTimeout(this.groupTabScrollFinished.bind(this), 100);
+  }
+
+  /**
+   * @private
+   */
+  groupTabScrollFinished() {
+    this.groupTabsMoving = false;
+    this.updateActiveGroup();
   }
 
   /**
@@ -336,23 +362,19 @@ export class EmojiPicker extends PolymerElement {
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
-    // once tab scroll is updated - update the position of the highlight bar.
-    if (!this.highlightBarMoving) {
+    // Once tab scroll is updated, update the position of the highlight bar.
+    if (!this.highlightBarMoving && !this.groupTabsMoving) {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
-      let tabscrollLeft =
-          Math.round(
-              this.shadowRoot.getElementById('tabs').scrollLeft /
-              GROUP_ICON_SIZE) *
-          GROUP_ICON_SIZE;
-      if (tabscrollLeft > GROUP_ICON_SIZE * index) {
-        tabscrollLeft = Math.max(GROUP_ICON_SIZE * (index - 1), 0);
+      let tabscrollLeft = this.shadowRoot.getElementById('tabs').scrollLeft;
+      if (tabscrollLeft > GROUP_ICON_SIZE * (index - 1)) {
+        tabscrollLeft = 0;
       }
       if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
           GROUP_ICON_SIZE * index) {
-        // 3 = 1 for 1 based index + 2 for chevrons (left and right can display
-        // at the same time).
-        tabscrollLeft = GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
+        // 5 = We want the seventh icon to be first. Then -1 for chevron, -1 for
+        // 1 based indexing.
+        tabscrollLeft = GROUP_ICON_SIZE * (5);
       }
 
       this.shadowRoot.getElementById('tabs').scrollLeft = tabscrollLeft;
