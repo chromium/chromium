@@ -317,9 +317,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessTest,
 #endif
 
 // Tests mouse lock can be escaped with ESC key.
-// TODO(crbug.com/1191959) Disable the test because of its flakiness.
-IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_EscapingMouseLock) {
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
