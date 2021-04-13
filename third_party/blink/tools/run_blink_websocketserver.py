@@ -40,7 +40,6 @@ on WebSocket, you can navigate to:
 import sys
 import optparse
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import pywebsocket
 

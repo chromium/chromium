@@ -36,7 +36,6 @@ import os
 import signal
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.tool.blink_tool import BlinkTool
 

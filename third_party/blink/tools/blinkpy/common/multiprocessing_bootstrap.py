@@ -38,8 +38,6 @@ import os
 import subprocess
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
-
 
 def run(*parts):
     up = os.path.dirname

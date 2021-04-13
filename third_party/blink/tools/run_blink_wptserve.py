@@ -12,7 +12,6 @@ Could be tried by running this scrip then navigating to:
     http://localhost:8001/referrer-policy/origin/http-rp/same-origin/http-http/img-tag/generic.no-redirect.http.html
 """
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import wptserve
 

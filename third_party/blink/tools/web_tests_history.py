@@ -5,7 +5,6 @@
 
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.web_tests.web_tests_history import main
 
 if __name__ == '__main__':

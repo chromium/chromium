@@ -38,7 +38,6 @@ find is legitimately a problem."""
 
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.style.main import CheckBlinkStyle
 
 if __name__ == "__main__":
