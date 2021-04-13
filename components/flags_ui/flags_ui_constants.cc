@@ -21,7 +21,6 @@ const char kRestartBrowser[] = "restartBrowser";
 const char kFlagsRestartButton[] = "flagsRestartButton";
 const char kFlagsRestartNotice[] = "flagsRestartNotice";
 const char kNeedsRestart[] = "needsRestart";
-const char kReturnExperimentalFeatures[] = "returnExperimentalFeatures";
 const char kShowBetaChannelPromotion[] = "showBetaChannelPromotion";
 const char kShowDevChannelPromotion[] = "showDevChannelPromotion";
 const char kShowOwnerWarning[] = "showOwnerWarning";

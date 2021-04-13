@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import 'chrome://resources/js/jstemplate_compiled.js';
+import './strings.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isIOS, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 let lastChanged = null;
 let lastFocused = null;
 const restartButton = $('experiment-restart-button');
@@ -9,8 +22,9 @@ const restartButton = $('experiment-restart-button');
 /** @type {?function():void} */
 let experimentalFeaturesResolver = null;
 
+// Exported on |window| since this is needed by tests.
 /** @type {!Promise} */
-const experimentalFeaturesReady = new Promise(resolve => {
+window.experimentalFeaturesReadyForTest = new Promise(resolve => {
   experimentalFeaturesResolver = resolve;
 });
 
@@ -84,7 +98,7 @@ function renderTemplate(experimentalFeaturesData) {
     };
   }
 
-  assert(restartButton || cr.isIOS);
+  assert(restartButton || isIOS);
   if (restartButton) {
     restartButton.onclick = restartBrowser;
   }
@@ -171,7 +185,8 @@ function highlightReferencedFlag() {
  * |returnExperimentalFeatures()| will be called with reply.
  */
 function requestExperimentalFeaturesData() {
-  chrome.send('requestExperimentalFeatures');
+  sendWithPromise('requestExperimentalFeatures')
+      .then(returnExperimentalFeatures);
 }
 
 /** Restart browser and restore tabs. */
@@ -659,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Get and display the data upon loading.
   requestExperimentalFeaturesData();
   setupRestartButton();
-  cr.ui.FocusOutlineManager.forDocument(document);
+  FocusOutlineManager.forDocument(document);
 });
 
 // Update the highlighted flag when the hash changes.

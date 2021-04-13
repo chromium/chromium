@@ -30,12 +30,14 @@ generate_grd("build_grdp") {
     "disabled_select.png",
     "error.svg",
     "icon_copy_content.svg",
+    "icon_cancel.svg",
     "icon_search.svg",
     "icon_refresh.svg",
     "open_in_new.svg",
     "select.png",
     "throbber_medium.svg",
     "throbber_small.svg",
+    "dark/icon_search.svg",
   ]
 
   if (!is_android && !is_ios) {
@@ -45,11 +47,9 @@ generate_grd("build_grdp") {
       "arrow_right.svg",
       "business.svg",
       "dark/arrow_down.svg",
-      "dark/icon_search.svg",
       "icon_arrow_back.svg",
       "icon_arrow_dropdown.svg",
       "icon_bookmark.svg",
-      "icon_cancel.svg",
       "icon_clear.svg",
       "icon_delete_gray.svg",
       "icon_edit.svg",

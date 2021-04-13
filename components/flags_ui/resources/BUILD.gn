@@ -5,15 +5,14 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  uses_legacy_modules = true
   deps = [ ":flags" ]
 }
 
 js_library("flags") {
   deps = [
     "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
 }

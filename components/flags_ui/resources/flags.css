@@ -172,7 +172,7 @@ button {
 }
 
 #search {
-  background: var(--input-background) url(../../../ui/webui/resources/images/icon_search.svg) no-repeat 8px 50%;
+  background: var(--input-background) url(chrome://resources/images/icon_search.svg) no-repeat 8px 50%;
   border: 1px solid transparent;
   border-radius: 3px;
   box-sizing: border-box;
@@ -188,7 +188,7 @@ button {
 
 @media (prefers-color-scheme: dark) {
   #search {
-    background-image: url(../../../ui/webui/resources/images/dark/icon_search.svg);
+    background-image: url(chrome://resources/images/dark/icon_search.svg);
   }
 
   #search::placeholder {
@@ -202,7 +202,7 @@ button {
 }
 
 .clear-search {
-  -webkit-mask-image: url(../../../ui/webui/resources/images/icon_cancel.svg);
+  -webkit-mask-image: url(chrome://resources/images/icon_cancel.svg);
   -webkit-mask-size: 20px;
   background: var(--secondary-color);
   border: 0;

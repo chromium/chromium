@@ -127,7 +127,7 @@ void WaitForExperimentalFeatures(content::WebContents* contents) {
   bool unused;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       contents,
-      "experimentalFeaturesReady.then(() => {"
+      "experimentalFeaturesReadyForTest.then(() => {"
       "  window.domAutomationController.send(true);"
       "});",
       &unused));
