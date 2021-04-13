@@ -448,7 +448,6 @@ try_.chromium_android_builder(
 # TODO(crbug/1182468) Remove when experiment is done.
 try_.chromium_android_builder(
     name = "android-pie-arm64-coverage-experimental-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = True,
     cores = 16,
     goma_jobs = goma.jobs.J300,
