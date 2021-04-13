@@ -406,7 +406,6 @@ PrerenderHost::ActivatePrerenderedContents(
 
   ActivateResult result =
       page_holder_->Activate(old_render_frame_host, navigation_request);
-
   if (result.status != FinalStatus::kActivated) {
     RecordFinalStatus(result.status);
     return nullptr;

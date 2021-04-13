@@ -36,6 +36,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
   ThrottleCheckResult WillStartOrRedirectRequest();
 
+  bool is_deferred_ = false;
   base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
       this};
 };

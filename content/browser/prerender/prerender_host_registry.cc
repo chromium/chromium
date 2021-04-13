@@ -212,11 +212,21 @@ void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {
   reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
 }
 
-PrerenderHost* PrerenderHostRegistry::FindHostById(int frame_tree_node_id) {
+PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
+    int frame_tree_node_id) {
   auto id_iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (id_iter == prerender_host_by_frame_tree_node_id_.end())
     return nullptr;
   return id_iter->second.get();
+}
+
+PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
+    int frame_tree_node_id) {
+  auto iter =
+      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
+    return nullptr;
+  return iter->second.get();
 }
 
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(

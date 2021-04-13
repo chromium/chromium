@@ -127,9 +127,13 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Abandons the host reserved by ReserveHostToActivate().
   void AbandonReservedHost(int frame_tree_node_id);
 
-  // Returns the non-reserved host. Returns nullptr if the frame tree node id
-  // doesn't match any host.
-  PrerenderHost* FindHostById(int frame_tree_node_id);
+  // Returns the non-reserved host with the given id. Returns nullptr if the id
+  // does not match any non-reserved host.
+  PrerenderHost* FindNonReservedHostById(int frame_tree_node_id);
+
+  // Returns the reserved host with the given id. Returns nullptr if the id
+  // does not match any reserved host.
+  PrerenderHost* FindReservedHostById(int frame_tree_node_id);
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.

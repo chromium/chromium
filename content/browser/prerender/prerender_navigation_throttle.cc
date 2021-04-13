@@ -94,10 +94,22 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return CANCEL;
   }
 
-  // Take the prerender host of the prerendering page.
-  const PrerenderHost* prerender_host = prerender_host_registry->FindHostById(
-      frame_tree_node->frame_tree_node_id());
-  DCHECK(prerender_host);
+  // Get the prerender host of the prerendering page.
+  const PrerenderHost* prerender_host =
+      prerender_host_registry->FindNonReservedHostById(
+          frame_tree_node->frame_tree_node_id());
+  if (!prerender_host) {
+    // If there is no host, we are already reserved for activation. Just let
+    // the navigation proceed, since cancelling it now might break the
+    // activation navigation. We also cannot defer because the activation
+    // machinery waits for the navigation to commit before activating.
+    // TODO(https://crbug.com/1198395): Somehow handle this, probably by
+    // deferring after support is added to activate while the main frame is
+    // still being navigated; or else cancelling prerendering.
+    DCHECK(prerender_host_registry->FindReservedHostById(
+        frame_tree_node->frame_tree_node_id()));
+    return PROCEED;
+  }
 
   // Cancel prerendering if this is cross-origin prerendering, cross-origin
   // redirection during prerendering, or cross-origin navigation from a

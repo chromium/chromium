@@ -737,9 +737,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
 
 // Makes sure that cross-origin subframe navigations are deferred during
 // prerendering.
-// Flaky https://crbug.com/1190262.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       DISABLED_DeferCrossOriginSubframeNavigation) {
+                       DeferCrossOriginSubframeNavigation) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?initial");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -825,9 +824,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
 // Makes sure that subframe navigations are deferred if cross-origin redirects
 // are observed in a prerendering page.
-// Flaky https://crbug.com/1190262.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       DISABLED_DeferCrossOriginRedirectsOnSubframeNavigation) {
+                       DeferCrossOriginRedirectsOnSubframeNavigation) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?initial");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
