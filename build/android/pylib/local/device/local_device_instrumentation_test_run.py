@@ -559,8 +559,8 @@ class LocalDeviceInstrumentationTestRun(
       if not device.PathExists(coverage_directory):
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True)
-      coverage_device_file = os.path.join(coverage_directory, coverage_basename,
-                                          '.exec')
+      coverage_device_file = os.path.join(coverage_directory, coverage_basename)
+      coverage_device_file += '.exec'
       extras['coverageFile'] = coverage_device_file
     # Save screenshot if screenshot dir is specified (save locally) or if
     # a GS bucket is passed (save in cloud).
