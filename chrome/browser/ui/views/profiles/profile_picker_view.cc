@@ -492,8 +492,14 @@ ProfilePickerView::~ProfilePickerView() {
   if (system_profile_contents_)
     system_profile_contents_->SetDelegate(nullptr);
 
-  // Log profile creation flow abortion.
-  if (sign_in_ && state_ != kFinalizing) {
+  // Abort signed-in profile creation.
+  if (sign_in_ && !sign_in_->is_aborted && state_ != kFinalizing) {
+    // TODO(crbug.com/1196290): Schedule the profile for deletion here, it's not
+    // needed any more. This triggers a crash if the browser is shutting down
+    // completely. Figure a way how to delete the profile only if that does not
+    // compete with a shutdown.
+
+    // Log profile creation flow abortion.
     if (sign_in_->name_for_signed_in_profile.empty()) {
       ProfileMetrics::LogProfileAddSignInFlowOutcome(
           ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
@@ -678,6 +684,9 @@ void ProfilePickerView::CancelSignIn() {
       return;
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
+      // Finished here, avoid aborting the flow again in the destructor (which
+      // is called as a result of Clear()).
+      sign_in_->is_aborted = true;
       Clear();
       return;
     }
