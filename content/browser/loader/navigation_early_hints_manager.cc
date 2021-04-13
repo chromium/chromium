@@ -303,7 +303,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.destination = LinkAsAttributeToRequestDestination(link->as);
   request.url = link->href;
   request.site_for_cookies = site_for_cookies;
-  request.request_initiator = url::Origin::Create(navigation_request.url);
+  request.request_initiator = top_frame_origin;
   request.referrer = navigation_request.url;
   request.referrer_policy = navigation_request.referrer_policy;
   request.load_flags = net::LOAD_NORMAL;
