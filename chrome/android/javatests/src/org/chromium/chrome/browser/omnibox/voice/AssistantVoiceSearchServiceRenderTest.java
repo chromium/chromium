@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -65,19 +65,23 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Mock
+    private GSAState mGsaState;
+    @Mock
+    private ExternalAuthUtils mExternalAuthUtils;
+
     @Before
     public void setUp() throws Exception {
         SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
-        GSAState gsaState = Mockito.mock(GSAState.class);
-        doReturn(false).when(gsaState).isAgsaVersionBelowMinimum(anyString(), anyString());
-        doReturn(true).when(gsaState).canAgsaHandleIntent(anyObject());
-        GSAState.setInstanceForTesting(gsaState);
+        doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(anyString(), anyString());
+        doReturn(true).when(mGsaState).canAgsaHandleIntent(anyObject());
+        doReturn(true).when(mGsaState).isGsaInstalled();
+        GSAState.setInstanceForTesting(mGsaState);
 
-        ExternalAuthUtils externalAuthUtils = Mockito.mock(ExternalAuthUtils.class);
-        doReturn(true).when(externalAuthUtils).isGoogleSigned(anyString());
-        doReturn(true).when(externalAuthUtils).isChromeGoogleSigned();
-        ExternalAuthUtils.setInstanceForTesting(externalAuthUtils);
+        doReturn(true).when(mExternalAuthUtils).isGoogleSigned(anyString());
+        doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
