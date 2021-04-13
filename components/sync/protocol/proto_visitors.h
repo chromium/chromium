@@ -1090,6 +1090,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedCreditCard& proto) {
   VISIT(nickname);
   VISIT(card_issuer);
   VISIT(instrument_id);
+  VISIT_ENUM(virtual_card_enrollment_state);
+  VISIT(card_art_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WalletMetadataSpecifics& proto) {
