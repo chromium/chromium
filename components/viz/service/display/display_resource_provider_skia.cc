@@ -80,9 +80,6 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
 
     child_info.child_to_parent_map.erase(child_id);
     resource.imported_count = 0;
-#if defined(OS_ANDROID)
-    DeletePromotionHint(it);
-#endif
     resources_.erase(it);
   }
 

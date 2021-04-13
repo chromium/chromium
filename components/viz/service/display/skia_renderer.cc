@@ -755,15 +755,6 @@ void SkiaRenderer::BeginDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::BeginDrawingFrame");
 
   DCHECK(!current_frame_resource_fence_->WasSet());
-
-#if defined(OS_ANDROID)
-  for (const auto& pass : *current_frame()->render_passes_in_draw_order) {
-    for (auto* quad : pass->quad_list) {
-      for (ResourceId resource_id : quad->resources)
-        resource_provider()->InitializePromotionHintRequest(resource_id);
-    }
-  }
-#endif
 }
 
 void SkiaRenderer::FinishDrawingFrame() {

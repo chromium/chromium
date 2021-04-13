@@ -234,9 +234,6 @@ DisplayResourceProviderGL::DeleteAndReturnUnusedResourcesToChildImpl(
 
     child_info.child_to_parent_map.erase(child_id);
     resource.imported_count = 0;
-#if defined(OS_ANDROID)
-    DeletePromotionHint(it);
-#endif
     DeleteResourceInternal(it);
   }
 
@@ -270,11 +267,6 @@ void DisplayResourceProviderGL::WaitSyncToken(ResourceId id) {
   if (!resource)
     return;
   WaitSyncTokenInternal(resource);
-
-#if defined(OS_ANDROID)
-  // Now that the resource is synced, we may send it a promotion hint.
-  InitializePromotionHintRequest(id);
-#endif
 }
 
 GLenum DisplayResourceProviderGL::BindForSampling(ResourceId resource_id,

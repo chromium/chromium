@@ -120,41 +120,14 @@ bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) {
   return resource->transferable.is_backed_by_surface_texture;
 }
 
-size_t DisplayResourceProvider::CountPromotionHintRequestsForTesting() {
-  return wants_promotion_hints_set_.size();
-}
-
-void DisplayResourceProvider::InitializePromotionHintRequest(ResourceId id) {
+bool DisplayResourceProvider::DoesResourceWantPromotionHint(ResourceId id) {
   ChildResource* resource = TryGetResource(id);
   // TODO(ericrk): We should never fail TryGetResource, but we appear to
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
-  if (!resource)
-    return;
-
-  // We could sync all |wants_promotion_hint| resources elsewhere, and send 'no'
-  // to all resources that weren't used.  However, there's no real advantage.
-  if (resource->transferable.wants_promotion_hint)
-    wants_promotion_hints_set_.insert(id);
+  return resource && resource->transferable.wants_promotion_hint;
 }
 #endif
-
-bool DisplayResourceProvider::DoesResourceWantPromotionHint(
-    ResourceId id) const {
-#if defined(OS_ANDROID)
-  return wants_promotion_hints_set_.count(id) > 0;
-#else
-  return false;
-#endif
-}
-
-bool DisplayResourceProvider::DoAnyResourcesWantPromotionHints() const {
-#if defined(OS_ANDROID)
-  return wants_promotion_hints_set_.size() > 0;
-#else
-  return false;
-#endif
-}
 
 bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) {
   ChildResource* resource = TryGetResource(id);
@@ -316,16 +289,6 @@ bool DisplayResourceProvider::ReadLockFenceHasPassed(
     const ChildResource* resource) {
   return !resource->read_lock_fence || resource->read_lock_fence->HasPassed();
 }
-
-#if defined(OS_ANDROID)
-void DisplayResourceProvider::DeletePromotionHint(ResourceMap::iterator it) {
-  ChildResource* resource = &it->second;
-  // If this resource was interested in promotion hints, then remove it from
-  // the set of resources that we'll notify.
-  if (resource->transferable.wants_promotion_hint)
-    wants_promotion_hints_set_.erase(it->first);
-}
-#endif
 
 DisplayResourceProvider::CanDeleteNowResult
 DisplayResourceProvider::CanDeleteNow(const Child& child_info,

@@ -74,18 +74,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // can't really be promoted to an overlay.
   bool IsBackedBySurfaceTexture(ResourceId id);
 
-  // Return the number of resources that request promotion hints.
-  size_t CountPromotionHintRequestsForTesting();
-
-  // This should be called after WaitSyncToken in GLRenderer.
-  void InitializePromotionHintRequest(ResourceId id);
-#endif
-
   // Indicates if this resource wants to receive promotion hints.
-  bool DoesResourceWantPromotionHint(ResourceId id) const;
-
-  // Return true if and only if any resource wants a promotion hint.
-  bool DoAnyResourcesWantPromotionHints() const;
+  bool DoesResourceWantPromotionHint(ResourceId id);
+#endif
 
   bool IsResourceSoftwareBacked(ResourceId id);
   // Return the format of the underlying buffer that can be used for scanout.
@@ -355,9 +346,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // specified filter for both minification and magnification. Returns the
   // texture target used. The resource must be locked for reading.
   bool ReadLockFenceHasPassed(const ChildResource* resource);
-#if defined(OS_ANDROID)
-  void DeletePromotionHint(ResourceMap::iterator it);
-#endif
 
   void DeleteAndReturnUnusedResourcesToChild(
       ChildMap::iterator child_it,
@@ -399,11 +387,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // A process-unique ID used for disambiguating memory dumps from different
   // resource providers.
   int tracing_id_;
-
-#if defined(OS_ANDROID)
-  // Set of ResourceIds that would like to be notified about promotion hints.
-  ResourceIdSet wants_promotion_hints_set_;
-#endif
 
   // Indicates that gpu thread is available and calls like
   // ReleaseImageContexts() are expected to finish in finite time. It's always
