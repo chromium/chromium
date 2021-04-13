@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

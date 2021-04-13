@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
 #include "dbus/property.h"

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "components/background_task_scheduler/background_task_scheduler.h"
 #include "components/background_task_scheduler/task_ids.h"
 #include "components/background_task_scheduler/task_info.h"

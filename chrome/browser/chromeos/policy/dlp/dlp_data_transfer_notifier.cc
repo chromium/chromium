@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "ui/aura/window_tree_host.h"

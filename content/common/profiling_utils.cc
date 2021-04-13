@@ -10,7 +10,6 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/environment.h"
 #include "base/files/file.h"

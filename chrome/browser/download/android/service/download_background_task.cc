@@ -4,7 +4,6 @@
 
 #include "base/android/callback_android.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/download_service_factory.h"

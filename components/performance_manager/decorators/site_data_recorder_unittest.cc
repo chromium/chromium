@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"

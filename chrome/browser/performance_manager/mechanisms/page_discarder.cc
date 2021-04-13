@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"

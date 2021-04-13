@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"

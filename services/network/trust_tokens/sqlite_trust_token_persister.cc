@@ -4,7 +4,6 @@
 
 #include "services/network/trust_tokens/sqlite_trust_token_persister.h"
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"

@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/launch_util.h"

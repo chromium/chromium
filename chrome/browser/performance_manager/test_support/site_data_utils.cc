@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/test_support/site_data_utils.h"
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

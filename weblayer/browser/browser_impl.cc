@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"

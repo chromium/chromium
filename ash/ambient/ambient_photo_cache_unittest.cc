@@ -5,7 +5,6 @@
 #include "ash/ambient/ambient_photo_cache.h"
 
 #include "ash/ambient/ambient_constants.h"
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"

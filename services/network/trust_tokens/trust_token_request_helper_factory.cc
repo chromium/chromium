@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "net/base/isolation_info.h"

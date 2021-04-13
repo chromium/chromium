@@ -18,7 +18,6 @@
 #include "components/history/core/browser/history_service.h"
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"

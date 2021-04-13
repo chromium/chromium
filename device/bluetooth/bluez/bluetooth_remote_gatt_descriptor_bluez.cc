@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/property.h"

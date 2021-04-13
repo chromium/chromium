@@ -4,7 +4,6 @@
 
 #include "chrome/browser/lacros/cert_db_initializer_impl.h"
 
-#include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"

@@ -11,7 +11,6 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/check.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"

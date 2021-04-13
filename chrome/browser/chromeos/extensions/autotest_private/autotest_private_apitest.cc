@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

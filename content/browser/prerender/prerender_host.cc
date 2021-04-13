@@ -4,7 +4,6 @@
 
 #include "content/browser/prerender/prerender_host.h"
 
-#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"

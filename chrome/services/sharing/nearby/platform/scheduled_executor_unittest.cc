@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"

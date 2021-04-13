@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/monotonic_clock.h"

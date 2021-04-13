@@ -4,7 +4,6 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"

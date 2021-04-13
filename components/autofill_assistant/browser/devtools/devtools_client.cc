@@ -10,7 +10,6 @@
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"

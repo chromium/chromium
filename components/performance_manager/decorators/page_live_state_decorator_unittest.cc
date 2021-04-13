@@ -5,7 +5,6 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"

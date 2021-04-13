@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"

@@ -14,7 +14,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"

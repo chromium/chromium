@@ -10,7 +10,6 @@
 #include "chromeos/printing/ppd_metadata_manager.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"

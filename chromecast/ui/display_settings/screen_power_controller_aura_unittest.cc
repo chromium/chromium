@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

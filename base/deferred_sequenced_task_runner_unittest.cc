@@ -5,7 +5,6 @@
 #include "base/deferred_sequenced_task_runner.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"

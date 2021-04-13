@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"

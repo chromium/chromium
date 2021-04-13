@@ -9,7 +9,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"

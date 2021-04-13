@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"

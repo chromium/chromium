@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/task_traits.h"

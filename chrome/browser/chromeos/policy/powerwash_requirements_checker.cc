@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

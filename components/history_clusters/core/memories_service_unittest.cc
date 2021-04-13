@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

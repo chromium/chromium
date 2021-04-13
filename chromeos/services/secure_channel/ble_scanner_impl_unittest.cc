@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"

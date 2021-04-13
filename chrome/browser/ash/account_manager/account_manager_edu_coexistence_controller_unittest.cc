@@ -12,7 +12,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"

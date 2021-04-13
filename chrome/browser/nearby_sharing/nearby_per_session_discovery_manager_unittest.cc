@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

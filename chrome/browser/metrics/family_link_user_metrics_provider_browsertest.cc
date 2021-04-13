@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

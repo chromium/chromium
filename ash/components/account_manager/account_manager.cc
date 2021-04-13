@@ -12,7 +12,6 @@
 #include "ash/components/account_manager/tokens.pb.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

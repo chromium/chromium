@@ -4,7 +4,6 @@
 
 #include "components/speech/upstream_loader.h"
 
-#include "base/callback_forward.h"
 #include "components/speech/upstream_loader_client.h"
 
 namespace speech {
