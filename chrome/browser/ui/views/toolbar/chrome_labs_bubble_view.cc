@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -17,6 +18,7 @@
 #include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -268,6 +270,16 @@ bool ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
 
 void ChromeLabsBubbleView::ShowRelaunchPrompt() {
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
+
+  // Manually announce the relaunch footer message because VoiceOver doesn't
+  // announces the message when the footer appears.
+#if defined(OS_MAC)
+  if (restart_prompt_->GetVisible()) {
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE));
+  }
+#endif
+
   DCHECK_EQ(g_chrome_labs_bubble, this);
   g_chrome_labs_bubble->SizeToContents();
 }
