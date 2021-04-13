@@ -73,6 +73,20 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
   }
 
   AtkObject* GetRootAtkObject() { return AtkObjectFromNode(GetRootAsAXNode()); }
+
+  // If we were compiled with a newer version of ATK than the runtime version,
+  // it's possible that the state we want to expose and/or emit an event for
+  // is not present. This will generate a runtime error.
+  bool PlatformSupportsState(AtkStateType atk_state_type) {
+    static base::Optional<int> max_state_type = base::nullopt;
+    if (!max_state_type.has_value()) {
+      GEnumClass* enum_class =
+          G_ENUM_CLASS(g_type_class_ref(atk_state_type_get_type()));
+      max_state_type = enum_class->maximum;
+      g_type_class_unref(enum_class);
+    }
+    return atk_state_type < max_state_type.value();
+  }
 };
 
 static void EnsureAtkObjectHasAttributeWithValue(
@@ -366,7 +380,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectState) {
   ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_VISIBLE));
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_BUSY));
 #if defined(ATK_216)
-  ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_CHECKABLE));
+  // Runtime check in case we were compiled with a newer version of ATK.
+  if (PlatformSupportsState(ATK_STATE_CHECKABLE))
+    ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_CHECKABLE));
 #endif
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_CHECKED));
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_DEFAULT));
@@ -376,7 +392,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectState) {
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_FOCUSABLE));
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_FOCUSED));
 #if defined(ATK_216)
-  ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_HAS_POPUP));
+  // Runtime check in case we were compiled with a newer version of ATK.
+  if (PlatformSupportsState(ATK_STATE_HAS_POPUP))
+    ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_HAS_POPUP));
 #endif
   ASSERT_FALSE(atk_state_set_contains_state(state_set, ATK_STATE_HORIZONTAL));
   ASSERT_FALSE(
@@ -441,7 +459,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectState) {
   ASSERT_TRUE(ATK_IS_STATE_SET(state_set));
   ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_EXPANDABLE));
 #if defined(ATK_216)
-  ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_HAS_POPUP));
+  // Runtime check in case we were compiled with a newer version of ATK.
+  if (PlatformSupportsState(ATK_STATE_HAS_POPUP))
+    ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_HAS_POPUP));
 #endif
   ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_HORIZONTAL));
   ASSERT_TRUE(atk_state_set_contains_state(state_set, ATK_STATE_SELECTABLE));
@@ -2538,6 +2558,53 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectExpandRebuildsPlatformNode) {
 
   g_object_unref(original_atk_object);
 }
+
+#if defined(ATK_216)
+TEST_F(AXPlatformNodeAuraLinuxTest, TestReadonlyChanged) {
+  // Runtime check in case we were compiled with a newer version of ATK.
+  if (!PlatformSupportsState(ATK_STATE_READ_ONLY))
+    return;
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kTextField;
+  Init(root_data);
+
+  AXNode* root = GetRootAsAXNode();
+  AtkObject* atk_object = AtkObjectFromNode(root);
+  AXPlatformNodeAuraLinux* node = GetPlatformNode(root);
+
+  bool is_read_only = false;
+  g_signal_connect(atk_object, "state-change",
+                   G_CALLBACK(+[](AtkObject* atkobject, gchar* state_changed,
+                                  gboolean new_value, bool* flag) {
+                     if (!g_strcmp0(state_changed, "read-only"))
+                       *flag = new_value;
+                   }),
+                   &is_read_only);
+
+  root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kReadOnly));
+  root->SetData(root_data);
+  node->OnReadonlyChanged();
+  ASSERT_TRUE(is_read_only);
+
+  root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kNone));
+  root->SetData(root_data);
+  node->OnReadonlyChanged();
+  ASSERT_FALSE(is_read_only);
+
+  root_data.AddIntAttribute(
+      ax::mojom::IntAttribute::kRestriction,
+      static_cast<int32_t>(ax::mojom::Restriction::kReadOnly));
+  root->SetData(root_data);
+  node->OnReadonlyChanged();
+  ASSERT_TRUE(is_read_only);
+}
+#endif
 
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectParentChanged) {
   AXNodeData root_data;

@@ -217,6 +217,12 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     log += base::ToUpperASCII(event);
     if (event_name.find("state-change") != std::string::npos) {
       std::string state_type = g_value_get_string(&params[1]);
+
+      // We do this to make it possible to run the events tests in more
+      // environments.
+      if (!IncludeState(atk_state_type_for_name(state_type.c_str())))
+        return;
+
       log += ":" + base::ToUpperASCII(state_type);
 
       gchar* parameter = g_strdup_value_contents(&params[2]);
