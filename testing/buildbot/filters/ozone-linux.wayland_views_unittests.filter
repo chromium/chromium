@@ -9,6 +9,7 @@
 
 # crbug.com/1186996: tests below require XKB.
 -EditableComboboxTest.TypingInTextfieldUnhighlightsMenuItem
+-EditableComboboxTest.EscClosesMenuWithoutSelectingHighlightedMenuItem
 -TextfieldTest.ContextMenuDisplayTest
 -TextfieldTest.ControlAndSelectTest
 -TextfieldTest.CursorMovement
