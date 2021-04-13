@@ -65,9 +65,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
 const CGFloat kDiscoverFeedLoadedHeight = 1000;
 }
 
-NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
-    @"contentSuggestionsMostVisitedAccessibilityIdentifierPrefix";
-
 @interface ContentSuggestionsViewController ()<UIGestureRecognizerDelegate> {
   CGFloat _initialContentOffset;
 }

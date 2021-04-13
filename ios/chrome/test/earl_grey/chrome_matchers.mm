@@ -489,6 +489,10 @@ id<GREYMatcher> FakeOmnibox() {
   return [ChromeMatchersAppInterface fakeOmnibox];
 }
 
+id<GREYMatcher> NTPLogo() {
+  return [ChromeMatchersAppInterface ntpLogo];
+}
+
 id<GREYMatcher> WebViewMatcher() {
   return [ChromeMatchersAppInterface webViewMatcher];
 }

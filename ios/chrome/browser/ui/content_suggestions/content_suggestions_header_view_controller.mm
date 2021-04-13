@@ -252,6 +252,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     [self addFakeTapView];
     [self.headerView addSubview:self.fakeOmnibox];
     self.logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.logoVendor.view.accessibilityIdentifier =
+        ntp_home::NTPLogoAccessibilityID();
     self.fakeOmnibox.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self.headerView addSeparatorToSearchField:self.fakeOmnibox];

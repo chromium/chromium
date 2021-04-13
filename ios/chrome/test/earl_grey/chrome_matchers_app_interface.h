@@ -381,6 +381,9 @@
 // Returns matcher for a fake omnibox on a new tab page.
 + (id<GREYMatcher>)fakeOmnibox;
 
+// Returns matcher for a logo on a new tab page.
++ (id<GREYMatcher>)ntpLogo;
+
 // Returns a matcher for the current WebView.
 + (id<GREYMatcher>)webViewMatcher;
 

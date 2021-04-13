@@ -7,12 +7,15 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_app_interface.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -118,6 +121,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 - (void)setUp {
   [super setUp];
   [ContentSuggestionsAppInterface makeSuggestionsAvailable];
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
 
   self.defaultSearchEngine =
       [ContentSuggestionsAppInterface defaultSearchEngine];
@@ -630,13 +636,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 - (void)testFavicons {
   for (NSInteger index = 0; index < 8; index++) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID([NSString
-                       stringWithFormat:@"%@%li",
-                                        @"contentSuggestionsMostVisitedAccessib"
-                                        @"ilityIdentifierPrefix",
-                                        index])]
-        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
   // Change the Search Engine to Yahoo!.
@@ -653,13 +659,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Check again the favicons.
   for (NSInteger index = 0; index < 8; index++) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID([NSString
-                       stringWithFormat:@"%@%li",
-                                        @"contentSuggestionsMostVisitedAccessib"
-                                        @"ilityIdentifierPrefix",
-                                        index])]
-        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
   // Change the Search Engine to Google.
@@ -673,6 +679,48 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// TODO(crbug.com/1194106): Add tests for overscroll menu.
+- (void)testMinimumHeight {
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
+  [self testNTPInitialPositionAndContent:[ContentSuggestionsAppInterface
+                                             collectionView]];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ContentSuggestionCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Ensures that tiles are still all visible with feed turned off.
+  for (NSInteger index = 0; index < 8; index++) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID([NSString
+                stringWithFormat:
+                    @"%@%li",
+                    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    index])] assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
+// Test to ensure that initial position and content are maintained when rotating
+// the device back and forth.
+- (void)testInitialPositionAndOrientationChange {
+  UICollectionView* collectionView =
+      [ContentSuggestionsAppInterface collectionView];
+
+  [self testNTPInitialPositionAndContent:collectionView];
+
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
+                                error:nil];
+
+  [self testNTPInitialPositionAndContent:collectionView];
+
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+
+  [self testNTPInitialPositionAndContent:collectionView];
 }
 
 #pragma mark - Helpers
@@ -701,6 +749,17 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+}
+
+- (void)testNTPInitialPositionAndContent:(UICollectionView*)collectionView {
+  // TODO(crbug.com/1194106): Initial offset should not be 0 with refactored
+  // NTP, until native header is used.
+  GREYAssertTrue(collectionView.contentOffset.y == 0,
+                 @"The NTP is not scrolled to top by default.");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
