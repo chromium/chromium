@@ -1611,17 +1611,21 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
   if (!is_stable && !is_always)
     return false;
 
+  // Scrollbar-gutter propagates to the viewport
+  // (see:|Document::PropagateStyleToViewport|).
   if (orientation == kVerticalScrollbar) {
     EOverflow overflow = StyleRef().OverflowY();
     return (StyleRef().IsScrollbarGutterForce() ||
             overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            StyleRef().IsHorizontalWritingMode() &&
+           GetNode() != GetDocument().ViewportDefiningElement() &&
            !(is_stable && UsesOverlayScrollbars());
   } else {
     EOverflow overflow = StyleRef().OverflowX();
     return (StyleRef().IsScrollbarGutterForce() ||
             overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            !StyleRef().IsHorizontalWritingMode() &&
+           GetNode() != GetDocument().ViewportDefiningElement() &&
            !(is_stable && UsesOverlayScrollbars());
   }
 }

@@ -2142,6 +2142,8 @@ void Document::PropagateStyleToViewport() {
                    mojom::blink::ScrollBehavior::kAuto);
     PROPAGATE_FROM(document_element_style, DarkColorScheme, SetDarkColorScheme,
                    false);
+    PROPAGATE_FROM(document_element_style, ScrollbarGutter, SetScrollbarGutter,
+                   kScrollbarGutterAuto);
   }
 
   changed |= PropagateScrollSnapStyleToViewport(*this, document_element_style,
