@@ -5408,7 +5408,8 @@ def CheckDeprecationOfPreferences(input_api, output_api):
       'Please make sure to properly deprecate preferences by clearing their\n'
       'value for a couple of milestones before finally removing the code.\n'
       'Otherwise data may stay in the preferences files forever. See\n'
-      'Migrate*Prefs() in chrome/browser/prefs/browser_prefs.cc for examples.\n'
+      'Migrate*Prefs() in chrome/browser/prefs/browser_prefs.cc and\n'
+      'chrome/browser/prefs/README.md for examples.\n'
       'This may be a false positive warning (e.g. if you move preference\n'
       'registrations to a different place).\n',
       potential_problems
