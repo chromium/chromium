@@ -9,10 +9,8 @@ js_type_check("closure_compile") {
     ":assistant_logs_info",
     ":feedback",
     ":feedback_util",
+    ":sys_info",
     ":take_screenshot",
-
-    # TODO(crbug.com/1167223): Fix and enable remaining js_library() targets.
-    #":sys_info",
   ]
 }
 

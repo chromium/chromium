@@ -27,6 +27,11 @@ function getButtonForValueDiv(valueDiv) {
   return $(valueDiv.id + '-btn');
 }
 
+function getSystemInformation() {
+  return new Promise(
+      resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
+}
+
 /**
  * Expands the multiline table cell that contains the given valueDiv.
  * @param {HTMLElement} button The expand button.
@@ -232,6 +237,5 @@ function createTable(systemInfo) {
  * Initializes the page when the window is loaded.
  */
 window.onload = function() {
-  // The getFullSystemInfo promise is set from the parent page
-  getFullSystemInfo().then(createTable);
+  getSystemInformation().then(createTable);
 };

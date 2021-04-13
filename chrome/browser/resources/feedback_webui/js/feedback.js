@@ -50,21 +50,19 @@ class FeedbackHelper {
   }
 
   getFullSystemInformation() {
-    return new Promise(resolve => {
-      if (this.systemInformationLoaded) {
-        resolve(feedbackInfo.systemInformation);
+    if (this.systemInformationLoaded) {
+      return Promise.resolve(feedbackInfo.systemInformation);
+    }
+
+    return this.getSystemInformation().then(sysInfo => {
+      if (feedbackInfo.systemInformation) {
+        feedbackInfo.systemInformation =
+            feedbackInfo.systemInformation.concat(sysInfo);
       } else {
-        this.getSystemInformation().then(function(sysInfo) {
-          if (feedbackInfo.systemInformation) {
-            feedbackInfo.systemInformation =
-                feedbackInfo.systemInformation.concat(sysInfo);
-          } else {
-            feedbackInfo.systemInformation = sysInfo;
-          }
-          this.systemInformationLoaded = true;
-          resolve(feedbackInfo.systemInformation);
-        });
+        feedbackInfo.systemInformation = sysInfo;
       }
+      this.systemInformationLoaded = true;
+      return feedbackInfo.systemInformation;
     });
   }
 
@@ -114,6 +112,24 @@ class FeedbackHelper {
   // Send a message to close the WebDialog
   closeDialog() {
     chrome.send('dialogClose');
+  }
+
+  // <if expr="chromeos">
+  showAssistantLogsInfo() {
+    chrome.send('showAssistantLogsInfo');
+  }
+
+  showBluetoothLogsInfo() {
+    chrome.send('showBluetoothLogsInfo');
+  }
+  // </if>
+
+  showSystemInfo() {
+    chrome.send('showSystemInfo');
+  }
+
+  showMetrics() {
+    chrome.send('showMetrics');
   }
 }
 
@@ -559,37 +575,42 @@ function initialize() {
     }
     // </if>
 
-    const sysInfoUrlElement = $('sys-info-url');
-    if (sysInfoUrlElement) {
-      // Opens a new window showing the full anonymized system+app
-      // information.
-      sysInfoUrlElement.onclick = function(e) {
-        e.preventDefault();
-        const params = `status=no,location=no,toolbar=no,menubar=no,
-              width=640,height=400,left=200,top=200`;
+    // This call is needed so the systemInformation in the feedbackInfo object
+    // is populated, although the sysInfo is not being used here.
+    feedbackHelper.getFullSystemInformation().then(function(sysInfo) {
+      const sysInfoUrlElement = $('sys-info-url');
+      if (sysInfoUrlElement) {
+        // Opens a new window showing the full anonymized system+app
+        // information.
+        sysInfoUrlElement.onclick = function(e) {
+          e.preventDefault();
 
-        const sysWin =
-            window.open('/html/sys_info.html', SYSINFO_WINDOW_ID, params);
+          feedbackHelper.showSystemInfo();
+        };
 
-        if (sysWin) {
-          sysWin.window.getFullSystemInfo = feedbackHelper.getSystemInformation;
-        }
-      };
+        sysInfoUrlElement.onauxclick = function(e) {
+          e.preventDefault();
+        };
+      }
 
-      sysInfoUrlElement.onauxclick = function(e) {
-        e.preventDefault();
-      };
-    }
+      const histogramUrlElement = $('histograms-url');
+      if (histogramUrlElement) {
+        histogramUrlElement.onclick = function(e) {
+          e.preventDefault();
 
-    const histogramUrlElement = $('histograms-url');
-    if (histogramUrlElement) {
-      // Opens a new window showing the histogram metrics.
-      setupLinkHandlers(
-          histogramUrlElement, 'chrome://histograms', true /* useAppWindow */);
-    }
+          feedbackHelper.showMetrics();
+        };
+
+        histogramUrlElement.onauxclick = function(e) {
+          e.preventDefault();
+        };
+      }
+    });
 
     // The following URLs don't open on login screen, so hide them.
     // TODO(crbug.com/1116383): Find a solution to display them properly.
+    // Update: the bluetooth and assistant logs links will work on login
+    // screen now. But to limit the scope of this CL, they are still hidden.
     if (feedbackInfo.flow != chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
       const legalHelpPageUrlElement = $('legal-help-page-url');
       if (legalHelpPageUrlElement) {
@@ -612,17 +633,13 @@ function initialize() {
             false /* useAppWindow */);
       }
 
+      // <if expr="chromeos">
       const bluetoothLogsInfoLinkElement = $('bluetooth-logs-info-link');
       if (bluetoothLogsInfoLinkElement) {
         bluetoothLogsInfoLinkElement.onclick = function(e) {
           e.preventDefault();
 
-          const params = `status=no,location=no,toolbar=no,menubar=no,
-              width=400,height=120,left=200,top=200,resizable=no,`;
-
-          const blueToothWin = window.open(
-              '/html/bluetooth_logs_info.html', 'bluetooth_logs_window',
-              params);
+          feedbackHelper.showBluetoothLogsInfo();
 
           bluetoothLogsInfoLinkElement.onauxclick = function(e) {
             e.preventDefault();
@@ -635,18 +652,14 @@ function initialize() {
         assistantLogsInfoLinkElement.onclick = function(e) {
           e.preventDefault();
 
-          const params = `status=no,location=no,toolbar=no,menubar=no,
-              width=400,height=120,left=200,top=200,resizable=no,`;
-
-          const blueToothWin = window.open(
-              '/html/assistant_logs_info.html', 'assistant_logs_window',
-              params);
+          feedbackHelper.showAssistantLogsInfo();
 
           assistantLogsInfoLinkElement.onauxclick = function(e) {
             e.preventDefault();
           };
         };
       }
+      // </if>
     }
 
     // Make sure our focus starts on the description field.

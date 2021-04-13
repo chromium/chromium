@@ -17,24 +17,6 @@ body {
   width: 100%;
 }
 
-#assistant-title-bar {
-  -webkit-app-region: drag;
-  align-items: center;
-  background-color: #fff;
-  display: flex;
-  min-height: 20px;
-}
-
-#assistant-close-button {
-  position: absolute;
-  right: 0;
-}
-
-html[dir='rtl'] #assistant-close-button {
-  left: 0;
-  right: auto;
-}
-
 #assistant-logs-info-container {
   line-height: 20px;
   margin-bottom: 20px;
