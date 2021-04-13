@@ -3919,10 +3919,6 @@ const char kArcEnableUsapDesc[] =
     "Enable ARC Unspecialized Application Processes when applicable for "
     "high-memory devices.";
 
-const char kArcUsbHostName[] = "Enable ARC USB host integration";
-const char kArcUsbHostDescription[] =
-    "Allow Android apps to use USB host feature on ChromeOS devices.";
-
 const char kAshEnablePipRoundedCornersName[] =
     "Enable Picture-in-Picture rounded corners.";
 const char kAshEnablePipRoundedCornersDescription[] =

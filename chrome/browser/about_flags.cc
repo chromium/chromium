@@ -4017,9 +4017,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcUseHighMemoryDalvikProfileName,
      flag_descriptions::kArcUseHighMemoryDalvikProfileDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUseHighMemoryDalvikProfile)},
-    {"arc-usb-host", flag_descriptions::kArcUsbHostName,
-     flag_descriptions::kArcUsbHostDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kUsbHostFeature)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-generic-sensor-extra-classes",
      flag_descriptions::kEnableGenericSensorExtraClassesName,

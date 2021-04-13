@@ -82,11 +82,6 @@ const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
 const base::Feature kUseHighMemoryDalvikProfile{
     "ArcUseHighMemoryDalvikProfile", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls ARC USB host integration.
-// When enabled, Android apps will be able to use usb host features.
-const base::Feature kUsbHostFeature{"ArcUsbHost",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.

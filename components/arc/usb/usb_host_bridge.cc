@@ -307,11 +307,6 @@ std::vector<std::string> ArcUsbHostBridge::GetEventReceiverPackages(
 }
 
 void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
-  if (!base::FeatureList::IsEnabled(arc::kUsbHostFeature)) {
-    VLOG(1) << "AndroidUSBHost: feature is disabled; ignoring";
-    return;
-  }
-
   if (!allowed)
     return;
 

@@ -2259,9 +2259,6 @@ extern const char kArcUseHighMemoryDalvikProfileDesc[];
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 
-extern const char kArcUsbHostName[];
-extern const char kArcUsbHostDescription[];
-
 extern const char kAshEnablePipRoundedCornersName[];
 extern const char kAshEnablePipRoundedCornersDescription[];
 

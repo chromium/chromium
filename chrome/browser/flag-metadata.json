@@ -214,11 +214,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "arc-usb-host",
-    "owners": [ "lgcheng" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "arc-use-high-memory-dalvik-profile",
     "owners": [ "khmel" ],
     "expiry_milestone": 92
