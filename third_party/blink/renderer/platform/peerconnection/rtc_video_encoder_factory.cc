@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
-#include "third_party/webrtc/common_video/h264/profile_level_id.h"
 #include "third_party/webrtc/media/base/codec.h"
+#include "third_party/webrtc/media/base/h264_profile_level_id.h"
 #include "third_party/webrtc/media/base/vp9_profile.h"
 
 namespace blink {
