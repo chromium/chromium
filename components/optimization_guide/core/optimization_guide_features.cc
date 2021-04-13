@@ -331,6 +331,16 @@ int PredictionModelFetchRandomMaxDelaySecs() {
                                           "fetch_random_max_delay_secs", 60);
 }
 
+base::TimeDelta PredictionModelFetchRetryDelay() {
+  return base::TimeDelta::FromMinutes(GetFieldTrialParamByFeatureAsInt(
+      kOptimizationTargetPrediction, "fetch_retry_minutes", 2));
+}
+
+base::TimeDelta PredictionModelFetchInterval() {
+  return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
+      kOptimizationTargetPrediction, "fetch_interval_hours", 24));
+}
+
 base::flat_set<std::string> ExternalAppPackageNamesApprovedForFetch() {
   std::string value = base::GetFieldTrialParamValueByFeature(
       kRemoteOptimizationGuideFetching, "approved_external_app_packages");

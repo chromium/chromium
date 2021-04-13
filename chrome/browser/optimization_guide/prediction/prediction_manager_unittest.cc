@@ -47,9 +47,9 @@
 using leveldb_proto::test::FakeDB;
 
 namespace {
-// Retry delay is 16 minutes to allow for kFetchRetryDelaySecs +
-// some random delay to pass.
-constexpr int kTestFetchRetryDelaySecs = 60 * 16 + 62;
+// Retry delay is 2 minutes to allow for fetch retry delay + some random delay
+// to pass.
+constexpr int kTestFetchRetryDelaySecs = 60 * 2 + 62;
 // 24 hours + random fetch delay.
 constexpr int kUpdateFetchModelAndFeaturesTimeSecs = 24 * 60 * 60 + 62;
 
@@ -223,6 +223,16 @@ enum class PredictionModelFetcherEndState {
   kFetchSuccessWithModelDownloadUrls = 3,
 };
 
+void RunGetModelsCallback(
+    ModelsFetchedCallback callback,
+    std::unique_ptr<proto::GetModelsResponse> get_models_response) {
+  if (get_models_response) {
+    std::move(callback).Run(std::move(get_models_response));
+    return;
+  }
+  std::move(callback).Run(base::nullopt);
+}
+
 // A mock class implementation of PredictionModelFetcher.
 class TestPredictionModelFetcher : public PredictionModelFetcher {
  public:
@@ -247,28 +257,32 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
       return false;
     }
 
+    std::unique_ptr<proto::GetModelsResponse> get_models_response;
     count_hosts_fetched_ = hosts.size();
     switch (fetch_state_) {
       case PredictionModelFetcherEndState::kFetchFailed:
-        std::move(models_fetched_callback).Run(base::nullopt);
-        return false;
+        get_models_response = nullptr;
+        break;
       case PredictionModelFetcherEndState::
           kFetchSuccessWithModelsAndHostsModelFeatures:
         models_fetched_ = true;
-        std::move(models_fetched_callback).Run(BuildGetModelsResponse(hosts));
-        return true;
+        get_models_response = BuildGetModelsResponse(hosts);
+        break;
       case PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse:
         models_fetched_ = true;
-        std::move(models_fetched_callback)
-            .Run(BuildGetModelsResponse(/*hosts=*/{}));
-        return true;
+        get_models_response = BuildGetModelsResponse(/*hosts=*/{});
+        break;
       case PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls:
         models_fetched_ = true;
-        std::move(models_fetched_callback)
-            .Run(BuildGetModelsResponse(hosts,
-                                        /*output_model_as_download_url=*/true));
-        return true;
+        get_models_response =
+            BuildGetModelsResponse(hosts,
+                                   /*output_model_as_download_url=*/true);
+        break;
     }
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&RunGetModelsCallback,
+                                  std::move(models_fetched_callback),
+                                  std::move(get_models_response)));
     return true;
   }
 

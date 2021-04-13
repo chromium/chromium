@@ -299,6 +299,14 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // was last attempted to |last_attempt_time|.
   void SetLastModelAndFeaturesFetchAttemptTime(base::Time last_attempt_time);
 
+  // Return the time when a prediction model fetch was last successfully
+  // completed.
+  base::Time GetLastFetchSuccessTime() const;
+
+  // Set the last time when a fetch for prediction models last succeeded to
+  // |last_success_time|.
+  void SetLastModelFetchSuccessTime(base::Time last_success_time);
+
   // Determine whether to schedule fetching new prediction models and host model
   // features or fetch immediately due to override.
   void MaybeScheduleModelAndHostModelFeaturesFetch();

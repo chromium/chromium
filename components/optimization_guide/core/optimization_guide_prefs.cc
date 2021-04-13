@@ -23,6 +23,11 @@ const char kHintsFetcherLastFetchAttempt[] =
 const char kModelAndFeaturesLastFetchAttempt[] =
     "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
 
+// A pref that stores the last time a prediction model fetch was successful.
+// This helps determine when to schedule the next fetch.
+const char kModelLastFetchSuccess[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_success";
+
 // A dictionary pref that stores the set of hosts that cannot have hints fetched
 // for until visited again after fetching from the remote Optimization Guide
 // Service was first allowed. If The hash of the host is in the dictionary, then
@@ -78,6 +83,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kModelAndFeaturesLastFetchAttempt,
       base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
       PrefRegistry::LOSSY_PREF);
+  registry->RegisterInt64Pref(kModelLastFetchSuccess, 0,
+                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kHintsFetcherTopHostBlocklist,
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kHintsFetcherHostsSuccessfullyFetched,
