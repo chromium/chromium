@@ -5,10 +5,10 @@ Running: testSetUp
 
 Running: testChangeMultipleThings
 Wrapper identity: identity
-Event Symbol(AttrModified): H2
-Event Symbol(AttrModified): H2
-Event Symbol(NodeInserted): UL
-Event Symbol(NodeRemoved): UL
+Event AttrModified: H2
+Event AttrModified: H2
+Event NodeInserted: UL
+Event NodeRemoved: UL
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -26,10 +26,10 @@ Event Symbol(NodeRemoved): UL
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(AttrRemoved): H2
-Event Symbol(AttrRemoved): H2
-Event Symbol(NodeInserted): UL
-Event Symbol(NodeRemoved): UL
+Event AttrRemoved: H2
+Event AttrRemoved: H2
+Event NodeInserted: UL
+Event NodeRemoved: UL
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -50,8 +50,8 @@ Event Symbol(NodeRemoved): UL
 
 Running: testChangeNestingLevel
 Wrapper identity: identity
-Event Symbol(NodeInserted): DIV
-Event Symbol(NodeRemoved): UL
+Event NodeInserted: DIV
+Event NodeRemoved: UL
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -69,8 +69,8 @@ Event Symbol(NodeRemoved): UL
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): UL
-Event Symbol(NodeRemoved): DIV
+Event NodeInserted: UL
+Event NodeRemoved: DIV
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -91,8 +91,8 @@ Event Symbol(NodeRemoved): DIV
 
 Running: testSwapNodes
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -110,8 +110,8 @@ Event Symbol(NodeRemoved): H2
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -132,7 +132,7 @@ Event Symbol(NodeRemoved): H2
 
 Running: testEditTwoRoots
 Wrapper identity: identity
-Event Symbol(NodeInserted): DIV
+Event NodeInserted: DIV
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -150,7 +150,7 @@ Event Symbol(NodeInserted): DIV
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeRemoved): DIV
+Event NodeRemoved: DIV
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -173,9 +173,9 @@ Running: testDupeNode
 Replacing '<h2>Getting involved</h2>' with '<h2>Getting involved</h2><h2>Getting involved</h2>'
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H2
+Event NodeInserted: H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -193,7 +193,7 @@ Event Symbol(NodeRemoved): H2
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeRemoved): H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
