@@ -1628,6 +1628,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
         // Test fails with out-of-process network service. crbug.com/1071721
@@ -1665,6 +1666,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testResolveDisablePreload(@EnabledFeature int enabledFeature) throws Exception {
         simulateSlowResolveSearch("intelligence");
 
@@ -1702,6 +1704,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1192561")
     public void testResolveGestureSelects(@EnabledFeature int enabledFeature) throws Exception {
         simulateResolveSearch("intelligence");
         Assert.assertEquals("Intelligence", getSelectedText());
@@ -1721,6 +1724,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
     public void testTapGestureOnSpecialCharacterDoesntSelect() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -1757,6 +1761,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testTapGestureFollowedByInvalidTextTapCloses() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -1915,6 +1920,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285, https://crbug.com/1192561")
     public void testContextualSearchNotDismissedOnBackgroundTabCrash(
             @EnabledFeature int enabledFeature) throws Exception {
         ChromeTabUtils.newTabFromMenu(
@@ -2011,6 +2017,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testTapOnARIAIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -2370,6 +2377,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
     public void testNotifyObserversAfterLongPressWithoutSurroundings(
             @EnabledFeature int enabledFeature) throws Exception {
         // Mark the user undecided so we won't allow sending surroundings.
@@ -2462,6 +2470,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testPreventHandlingCurrentSelectionModification() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -2624,6 +2633,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
     public void testSelectionExpansionOnSearchTermResolution(@EnabledFeature int enabledFeature)
             throws Exception {
         mFakeServer.reset();
@@ -2868,6 +2878,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testChainedSearchContentVisibility() throws Exception {
         // Chained searches are tap-triggered very close to existing tap-triggered searches.
         FeatureList.setTestFeatures(ENABLE_NONE);
@@ -3018,6 +3029,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testTapWithoutLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving an English word should NOT trigger translation.
         simulateResolveSearch("search");
@@ -3271,6 +3283,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testQuickActionIntent(@EnabledFeature int enabledFeature) throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
         IntentFilter quickActionFilter = new IntentFilter(Intent.ACTION_VIEW);
@@ -3435,6 +3448,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1058297")
     public void testAllInternalStatesVisitedResolvingTap() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -3501,6 +3515,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -3531,6 +3546,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1180304")
     public void testTriggeringContextualSearchHidesFindInPageOverlay(
             @EnabledFeature int enabledFeature) throws Exception {
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
