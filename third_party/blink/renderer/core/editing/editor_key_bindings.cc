@@ -69,6 +69,11 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   auto* edit_context =
       GetFrame().GetInputMethodController().GetActiveEditContext();
   if (edit_context) {
+    if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+                                      key_event->text) !=
+        DispatchEventResult::kNotCanceled)
+      return true;
+
     WebString text(WTF::String(key_event->text));
     edit_context->InsertText(text);
     return true;

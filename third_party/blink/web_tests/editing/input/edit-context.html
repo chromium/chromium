@@ -85,6 +85,22 @@ test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
+  test.focus();
+  editContext.focus();
+  test.editContext = editContext;
+  test.addEventListener("beforeinput", e => {
+    if (e.inputType === "insertText") {
+      e.preventDefault();
+    }
+  });
+  eventSender.keyDown('a');
+  assert_equals(editContext.text, "");
+}, 'beforeInput(insertText) should be cancelable');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
   test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
