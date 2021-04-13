@@ -819,14 +819,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // recent orientation change.
   virtual void SetIsXrOverlaySetup() = 0;
 
-  // Returns true if this RenderFrameHost is currently stored in the
-  // back-forward cache.
-  //
-  // TODO(hajimehoshi): Introduce an enum value for lifecycle states and replace
-  // IsInBackForwardCache with the enum values and a new function like
-  // DidChangeLifecycleState.
-  virtual bool IsInBackForwardCache() = 0;
-
   // Returns the UKM source id for the page load (last committed cross-document
   // non-bfcache navigation in the main frame).
   // This id typically has an associated PageLoad UKM event.

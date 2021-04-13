@@ -329,14 +329,16 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 
   // The previous page should be bfcached.
   EXPECT_FALSE(deleted.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 3) Navigate back to A. |RenderFrameHost| have to be restored from
   // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_a|.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   EXPECT_EQ(web_contents()->GetMainFrame(), rfh_a);
-  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Geolocation icon should be on again.
   EXPECT_TRUE(geolocation_icon.GetVisible());

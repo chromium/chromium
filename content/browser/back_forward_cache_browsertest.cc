@@ -1271,8 +1271,9 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
                     bool cached,
                     bool backgrounded) {
     EXPECT_FALSE(deleted_observer.deleted());
-    EXPECT_EQ(cached,
-              deleted_observer.render_frame_host()->IsInBackForwardCache());
+    EXPECT_EQ(cached, static_cast<RenderFrameHostImpl*>(
+                          deleted_observer.render_frame_host())
+                          ->IsInBackForwardCache());
     EXPECT_EQ(backgrounded, deleted_observer.render_frame_host()
                                 ->GetProcess()
                                 ->IsProcessBackgrounded());

@@ -785,7 +785,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), url_b);
   ASSERT_FALSE(a_observer.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   permissions::MockPermissionRequest req;
   GetPermissionRequestManager()->AddRequest(rfh_a, &req);
@@ -810,7 +811,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), url_b);
   ASSERT_FALSE(a_observer.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   content::RenderFrameHost* rfh_b = GetActiveMainFrame();
 
   // PERMISSION_MEDIASTREAM_MIC, PERMISSION_MEDIASTREAM_CAMERA, and

@@ -51,7 +51,8 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
     java_to_js_messaging_->OnPostMessage(message->message);
   }
   bool IsInBackForwardCache() override {
-    return render_frame_host_->IsInBackForwardCache();
+    return render_frame_host_->GetLifecycleState() ==
+           content::RenderFrameHost::LifecycleState::kInBackForwardCache;
   }
 
  private:

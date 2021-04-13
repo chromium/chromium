@@ -14723,7 +14723,8 @@ IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerWithBfcacheBrowserTest,
       "b.com", "/navigation_controller/page_with_sandbox_iframe.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), cached_url));
-  RenderFrameHost* cached_rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHostImpl* cached_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
   content::RenderFrameDeletedObserver observer(cached_rfh);
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

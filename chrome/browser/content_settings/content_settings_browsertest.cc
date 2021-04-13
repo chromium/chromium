@@ -943,7 +943,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
           ->IsContentBlocked(ContentSettingsType::COOKIES));
 
   ui_test_utils::NavigateToURL(browser(), other_url);
-  EXPECT_TRUE(main_frame->IsInBackForwardCache());
+  EXPECT_EQ(main_frame->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   EXPECT_FALSE(
       PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
           ->IsContentBlocked(ContentSettingsType::COOKIES));

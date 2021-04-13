@@ -83,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   // Ensure that |rfh_a| is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -131,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, CSSAllowed) {
   // Ensure that |rfh_a| is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_NE(rfh_a, rfh_b);
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 }  // namespace extensions

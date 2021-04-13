@@ -421,7 +421,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& relying_party_id,
       const url::Origin& effective_origin) override;
   void SetIsXrOverlaySetup() override;
-  bool IsInBackForwardCache() override;
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartition* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
@@ -717,6 +716,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost is ready to be deleted
   // (LifecycleStateImpl::kReadyToBeDeleted).
   bool IsPendingDeletion();
+
+  // Returns true if this RenderFrameHost is currently stored in the
+  // back-forward cache i.e., when lifecycle_state() is kInBackForwardCache.
+  bool IsInBackForwardCache();
 
   // Returns a pending same-document navigation request in this frame that has
   // the navigation_token |token|, if any.

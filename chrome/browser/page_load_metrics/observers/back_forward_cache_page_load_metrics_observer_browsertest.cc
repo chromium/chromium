@@ -109,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
   {
@@ -120,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     waiter->Wait();
     histogram_tester().ExpectTotalCount(
@@ -143,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A again.
   {
@@ -154,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     waiter->Wait();
     histogram_tester().ExpectTotalCount(
@@ -191,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
   {
@@ -207,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     web_contents()->WasShown();
 
@@ -250,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore, 0);
@@ -265,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     content::SimulateMouseClick(web_contents(), 0,
                                 blink::WebPointerProperties::Button::kLeft);
@@ -307,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
   double next_score;
@@ -321,7 +330,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     base::ListValue expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
@@ -350,7 +360,8 @@ return score;
 
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   auto samples = histogram_tester().GetAllSamples(
       internal::
@@ -383,11 +394,13 @@ return score;
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(rfh_a, top_frame_host());
-  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   histogram_tester().ExpectTotalCount(
       internal::
@@ -420,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
   {
@@ -431,7 +445,8 @@ IN_PROC_BROWSER_TEST_F(
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     waiter->Wait();
     histogram_tester().ExpectTotalCount(
@@ -478,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
   double next_score;
@@ -492,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(rfh_a, top_frame_host());
-    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
     base::ListValue expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
@@ -521,7 +538,8 @@ return score;
 
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   ExpectMetricValueForUrl(url_a,
                           "CumulativeShiftScoreAfterBackForwardCacheRestore",
@@ -554,11 +572,13 @@ return score;
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(rfh_a, top_frame_host());
-  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Navigate to B again.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   ExpectMetricCountForUrl(
       url_a, "CumulativeShiftScoreAfterBackForwardCacheRestore", 2);

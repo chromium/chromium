@@ -120,7 +120,7 @@ TEST_F(ColorChooserTestWithBackForwardCache,
 
   // Navigate to A.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl1);
-  RenderFrameHost* rfh_a = contents()->GetMainFrame();
+  RenderFrameHostImpl* rfh_a = contents()->GetMainFrame();
 
   // End should be called at least once on navigating to a new URL.
   std::unique_ptr<MockColorChooser> mock_color_chooser =
