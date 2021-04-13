@@ -13,22 +13,26 @@ template("ts_library") {
                              "deps",
                              "extra_deps",
                              "sources",
-                             "definitions",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
     outputs = [
       "$target_gen_dir/tsconfig.json",
-      "$target_gen_dir/tsconfig.manifest",
       "$target_gen_dir/tsconfig.tsbuildinfo",
     ]
-    foreach(_source, sources) {
-      _filename =
-          get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
-      outputs += [
-        "$target_gen_dir/$_filename.js",
-        "$target_gen_dir/$_filename.d.ts",
-      ]
+
+    assert(defined(sources) || defined(invoker.definitions))
+
+    if (defined(sources)) {
+      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
+      foreach(_source, sources) {
+        _filename =
+            get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
+        outputs += [
+          "$target_gen_dir/$_filename.js",
+          "$target_gen_dir/$_filename.d.ts",
+        ]
+      }
     }
 
     root_dir = "."
@@ -37,14 +41,22 @@ template("ts_library") {
     }
 
     args = [
-             "--root_dir",
-             rebase_path(root_dir, root_build_dir),
-             "--gen_dir",
-             rebase_path(target_gen_dir, root_build_dir),
-             "--sources",
-           ] + sources
+      "--root_dir",
+      rebase_path(root_dir, root_build_dir),
+      "--gen_dir",
+      rebase_path(target_gen_dir, root_build_dir),
+    ]
 
-    if (defined(definitions)) {
+    if (defined(sources)) {
+      args += [ "--sources" ] + sources
+    }
+
+    if (defined(invoker.definitions)) {
+      inputs += invoker.definitions
+      definitions = []
+      foreach(_definition, invoker.definitions) {
+        definitions += [ rebase_path(_definition, target_gen_dir) ]
+      }
       args += [ "--definitions" ] + definitions
     }
 

@@ -131,10 +131,10 @@ ts_library("library") {
     "js/hello_world.ts",
   ]
   definitions = [
-    "js/assert.m.d.ts",
-    "js/cr.m.d.ts",
-    "js/promise_resolver.m.d.ts",
-    "js/util.m.d.ts",
+    "$target_gen_dir/js/assert.m.d.ts",
+    "$target_gen_dir/js/cr.m.d.ts",
+    "$target_gen_dir/js/promise_resolver.m.d.ts",
+    "$target_gen_dir/js/util.m.d.ts",
   ]
   extra_deps = [
     ":generate_definitions",

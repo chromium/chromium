@@ -32,19 +32,21 @@ def main(argv):
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--path_mappings', nargs='*')
   parser.add_argument('--root_dir', required=True)
-  parser.add_argument('--sources', nargs='*', required=True)
+  parser.add_argument('--sources', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   args = parser.parse_args(argv)
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
-  sources = [os.path.join(root_dir, f) for f in args.sources]
 
   with open(os.path.join(_HERE_DIR, 'tsconfig_base.json')) as root_tsconfig:
     tsconfig = json.loads(root_tsconfig.read())
 
-  tsconfig['files'] = sources
+  tsconfig['files'] = []
+  if args.sources is not None:
+    # Source .ts files are always resolved as being relative to |root_dir|.
+    tsconfig['files'].extend([os.path.join(root_dir, f) for f in args.sources])
+
   if args.definitions is not None:
-    # Definitions .d.ts files are always assumed to reside in |gen_dir|.
     tsconfig['files'].extend(args.definitions)
 
   tsconfig['compilerOptions']['rootDir'] = root_dir
@@ -67,12 +69,14 @@ def main(argv):
       os.path.join(args.gen_dir, 'tsconfig.json')
   ])
 
-  with open(os.path.join(args.gen_dir, 'tsconfig.manifest'), 'w') \
-      as manifest_file:
-    manifest_data = {}
-    manifest_data['base_dir'] = args.gen_dir
-    manifest_data['files'] = [re.sub(r'\.ts$', '.js', f) for f in args.sources]
-    json.dump(manifest_data, manifest_file)
+  if args.sources is not None:
+    with open(os.path.join(args.gen_dir, 'tsconfig.manifest'), 'w') \
+        as manifest_file:
+      manifest_data = {}
+      manifest_data['base_dir'] = args.gen_dir
+      manifest_data['files'] = \
+          [re.sub(r'\.ts$', '.js', f) for f in args.sources]
+      json.dump(manifest_data, manifest_file)
 
 
 if __name__ == '__main__':
