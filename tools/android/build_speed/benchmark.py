@@ -30,6 +30,7 @@ import pathlib
 import re
 import subprocess
 import sys
+import threading
 import time
 import shutil
 
@@ -37,10 +38,8 @@ from typing import Dict, Iterator, List, Tuple
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
-_SRC_ROOT = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
-sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
-# pylint: disable=import-error
+_SRC_ROOT = pathlib.Path(__file__).parents[3].resolve()
+sys.path.append(str(_SRC_ROOT / 'build' / 'android'))
 from pylib import constants
 
 _COMMON_ARGS = [
@@ -169,6 +168,25 @@ def _backup_file(file_path: str):
         shutil.move(file_backup_path, file_path)
 
 
+@contextlib.contextmanager
+def _run_server(no_server: bool):
+    if no_server:
+        yield
+        return
+    cmd = [_SRC_ROOT / 'build' / 'android' / 'fast_local_dev_server.py']
+    # Avoid the build server's output polluting benchmark results, but allow
+    # stderr to get through in case the build server fails with an error.
+    server_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
+    try:
+        yield
+    finally:
+        # Since Popen's default context manager just waits on exit, we need to
+        # use our custom context manager to actually terminate the build server
+        # when the current build is done to avoid skewing the next benchmark.
+        server_proc.terminate()
+        server_proc.wait()
+
+
 def _run_and_time_cmd(cmd: List[str]) -> float:
     logging.debug('Running %s', cmd)
     start = time.time()
@@ -249,11 +267,11 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
-                   output_directory: str, target: str,
-                   repeat: int) -> Iterator[Tuple[str, List[float]]]:
+                   output_directory: str, target: str, repeat: int,
+                   no_server: bool) -> Iterator[Tuple[str, List[float]]]:
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
-    with _backup_file(args_gn_path):
+    with _backup_file(args_gn_path), _run_server(no_server):
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
@@ -300,11 +318,15 @@ def main():
     parser.add_argument('-A',
                         '--args',
                         choices=_GN_ARG_PRESETS.keys(),
-                        default='fast_local_dev',
+                        default='incremental_install',
                         help='The set of GN args to use for these benchmarks.')
     parser.add_argument('--bundle',
                         action='store_true',
                         help='Switch the default target from apk to bundle.')
+    parser.add_argument('--no-server',
+                        action='store_true',
+                        help='Do not start a faster local dev server before '
+                        'running the test.')
     parser.add_argument('-r',
                         '--repeat',
                         type=int,
@@ -335,16 +357,12 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    if args.bundle:
-        target = _TARGETS['bundle']
-    else:
-        target = _TARGETS['apk']
-
+    target = _TARGETS['bundle' if args.bundle else 'apk']
     gn_args = _GN_ARG_PRESETS[args.args]
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat)
+                             args.repeat, args.no_server)
 
-    print('Summary')
+    print(f'Summary ({"not " if args.no_server else ""}using build server)')
     print(f'gn args: {" ".join(gn_args)}')
     print(f'target: {target}')
     for name, result in results:
