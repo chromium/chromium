@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "url/gurl.h"
 
-namespace memories {
+namespace history_clusters {
 
 GURL RemoteModelEndpoint();
 
@@ -19,6 +19,6 @@ extern const char kRemoteModelEndpointParam[];
 // Enables debug features; e.g. displaying typed_count on chrome://history.
 extern const base::Feature kDebug;
 
-}  // namespace memories
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_FEATURES_H_

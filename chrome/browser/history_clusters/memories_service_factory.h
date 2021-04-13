@@ -9,7 +9,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
-namespace memories {
+namespace history_clusters {
 class MemoriesService;
 }
 
@@ -17,7 +17,7 @@ class MemoriesService;
 // history into useful Memories to be surfaced in UI.
 class MemoriesServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static memories::MemoriesService* GetForBrowserContext(
+  static history_clusters::MemoriesService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
  private:

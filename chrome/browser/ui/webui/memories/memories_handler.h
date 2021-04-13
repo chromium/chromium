@@ -33,20 +33,20 @@ class QueryResults;
 #endif
 
 // Handles bidirectional communication between memories page and the browser.
-class MemoriesHandler : public memories::mojom::PageHandler {
+class MemoriesHandler : public history_clusters::mojom::PageHandler {
  public:
-  MemoriesHandler(
-      mojo::PendingReceiver<memories::mojom::PageHandler> pending_page_handler,
-      Profile* profile,
-      content::WebContents* web_contents);
+  MemoriesHandler(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+                      pending_page_handler,
+                  Profile* profile,
+                  content::WebContents* web_contents);
   ~MemoriesHandler() override;
 
   MemoriesHandler(const MemoriesHandler&) = delete;
   MemoriesHandler& operator=(const MemoriesHandler&) = delete;
 
-  // memories::mojom::PageHandler:
+  // history_clusters::mojom::PageHandler:
   void SetPage(
-      mojo::PendingRemote<memories::mojom::Page> pending_page) override;
+      mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
   void QueryMemories(const std::string& query,
                      QueryMemoriesCallback callback) override;
 
@@ -54,11 +54,11 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   void OnMemoriesQueryResults(
       const std::string& query,
       QueryMemoriesCallback callback,
-      std::vector<memories::mojom::MemoryPtr> memory_mojoms);
+      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms);
 
 #if !defined(CHROME_BRANDED)
   using MemoriesQueryResultsCallback =
-      base::OnceCallback<void(std::vector<memories::mojom::MemoryPtr>)>;
+      base::OnceCallback<void(std::vector<history_clusters::mojom::MemoryPtr>)>;
   void OnHistoryQueryResults(MemoriesQueryResultsCallback callback,
                              history::QueryResults results);
   base::CancelableTaskTracker history_task_tracker_;
@@ -67,8 +67,8 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   Profile* profile_;
   content::WebContents* web_contents_;
 
-  mojo::Remote<memories::mojom::Page> page_;
-  mojo::Receiver<memories::mojom::PageHandler> page_handler_;
+  mojo::Remote<history_clusters::mojom::Page> page_;
+  mojo::Receiver<history_clusters::mojom::PageHandler> page_handler_;
 
   base::WeakPtrFactory<MemoriesHandler> weak_ptr_factory_{this};
 };

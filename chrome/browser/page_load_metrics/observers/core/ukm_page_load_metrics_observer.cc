@@ -1041,7 +1041,7 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
       HistoryClustersTabHelper::FromWebContents(web_contents);
   if (!clusters_helper)
     return;
-  const memories::VisitContextSignals memories_signals =
+  const history_clusters::VisitContextSignals memories_signals =
       clusters_helper->OnUkmNavigationComplete(navigation_id_, page_end_reason);
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when

@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "components/history_clusters/core/memories_features.h"
 
-namespace memories {
+namespace history_clusters {
 
 MemoriesService::MemoriesService(
     history::HistoryService* history_service,
@@ -43,7 +43,7 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
   if (visit.status.history_rows && visit.status.navigation_end_signals &&
       (visit.status.ukm_page_end_signals ||
        !visit.status.expect_ukm_page_end_signals)) {
-    if (base::FeatureList::IsEnabled(memories::kMemories))
+    if (base::FeatureList::IsEnabled(history_clusters::kMemories))
       visits_.push_back(visit);
     incomplete_visits_.erase(nav_id);
     // TODO(tommycli/manukh): Persist |visits_| to History, and take out of
@@ -56,4 +56,4 @@ void MemoriesService::QueryMemories(const std::string& query,
   remote_model_helper_->GetMemories(visits_, std::move(callback));
 }
 
-}  // namespace memories
+}  // namespace history_clusters

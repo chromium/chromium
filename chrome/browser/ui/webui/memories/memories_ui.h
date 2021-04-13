@@ -26,10 +26,11 @@ class MemoriesUI : public ui::MojoWebUIController {
   MemoriesUI(const MemoriesUI&) = delete;
   MemoriesUI& operator=(const MemoriesUI&) = delete;
 
-  // Instantiates the implementor of the memories::mojom::PageHandler mojo
-  // interface passing to it the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<memories::mojom::PageHandler> pending_page_handler);
+  // Instantiates the implementor of the history_clusters::mojom::PageHandler
+  // mojo interface passing to it the pending receiver that will be internally
+  // bound.
+  void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+                         pending_page_handler);
 
  private:
   Profile* profile_;

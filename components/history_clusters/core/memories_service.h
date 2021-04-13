@@ -18,7 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace memories {
+namespace history_clusters {
 
 // This Service is the API for UIs to fetch Chrome Memories.
 class MemoriesService : public KeyedService {
@@ -69,6 +69,6 @@ class MemoriesService : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(MemoriesService);
 };
 
-}  // namespace memories
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_

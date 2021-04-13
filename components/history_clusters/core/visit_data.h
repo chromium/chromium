@@ -8,7 +8,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 
-namespace memories {
+namespace history_clusters {
 
 // Context signals about a page visit collected during the page lifetime.
 // This struct encapsulates data that's shared between UKM and the on-device
@@ -85,6 +85,6 @@ struct MemoriesVisit {
   RecordingStatus status;
 };
 
-}  // namespace memories
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_

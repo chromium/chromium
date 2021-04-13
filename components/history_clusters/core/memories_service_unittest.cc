@@ -48,11 +48,11 @@ class MemoriesServiceTest : public testing::Test {
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        memories_service_(std::make_unique<memories::MemoriesService>(
+        memories_service_(std::make_unique<history_clusters::MemoriesService>(
             nullptr,
             shared_url_loader_factory_)),
         memories_service_test_api_(
-            std::make_unique<memories::MemoriesServiceTestApi>(
+            std::make_unique<history_clusters::MemoriesServiceTestApi>(
                 memories_service_.get())),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         run_loop_quit_(run_loop_.QuitClosure()) {}
@@ -68,7 +68,7 @@ class MemoriesServiceTest : public testing::Test {
     AddVisit(visit);
   }
 
-  void AddVisit(const memories::MemoriesVisit& visit) {
+  void AddVisit(const history_clusters::MemoriesVisit& visit) {
     auto& visit_copy =
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
     visit_copy = visit;
@@ -89,8 +89,9 @@ class MemoriesServiceTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  std::unique_ptr<memories::MemoriesService> memories_service_;
-  std::unique_ptr<memories::MemoriesServiceTestApi> memories_service_test_api_;
+  std::unique_ptr<history_clusters::MemoriesService> memories_service_;
+  std::unique_ptr<history_clusters::MemoriesServiceTestApi>
+      memories_service_test_api_;
 
   // Used to allow decoding in tests without spinning up an isolated process.
   base::test::TaskEnvironment task_environment_;
@@ -108,12 +109,13 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   auto AddVisitWithDetails = [&](int time, const GURL& url,
                                  const std::u16string title, int visit_id,
                                  int page_end_reason) {
-    memories::MemoriesVisit visit;
+    history_clusters::MemoriesVisit visit;
     visit.visit_row.visit_time = IntToTime(time);
     visit.url_row.set_url(url);
     visit.url_row.set_title(title);
@@ -127,7 +129,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         ASSERT_EQ(memories.size(), 2u);
         EXPECT_FALSE(memories[0]->id.is_empty());
@@ -219,10 +221,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -238,14 +241,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, ""}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, ""}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the empty response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -262,14 +266,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -290,14 +295,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -318,14 +324,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         EXPECT_TRUE(memories.empty());
         run_loop_quit_.Run();
@@ -346,21 +353,22 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
+      history_clusters::kMemories,
+      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify not reached.
         EXPECT_TRUE(false);
       }));
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](memories::Memories memories) {
+      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
         // Verify the parsed response.
         EXPECT_EQ(memories.size(), 2u);
         run_loop_quit_.Run();
@@ -379,7 +387,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
 }
 
 TEST_F(MemoriesServiceTest, CompleteVisitIfReady) {
-  auto test = [&](memories::RecordingStatus status, bool expected_complete) {
+  auto test = [&](history_clusters::RecordingStatus status,
+                  bool expected_complete) {
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = status;
     memories_service_->CompleteVisitIfReady(0);
@@ -428,7 +437,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReady) {
     test({true, true, true, true, false}, false);
   }
 
-  auto test_dcheck = [&](memories::RecordingStatus status) {
+  auto test_dcheck = [&](history_clusters::RecordingStatus status) {
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = status;
     EXPECT_DCHECK_DEATH(memories_service_->CompleteVisitIfReady(0));
@@ -457,7 +466,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReadyWhenFeatureDisabled) {
     // When the feature is disabled, the incomplete visit should be removed but
     // not added to visits.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(memories::kMemories);
+    feature_list.InitAndDisableFeature(history_clusters::kMemories);
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = {true, true, true};
     memories_service_->CompleteVisitIfReady(0);
@@ -469,7 +478,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReadyWhenFeatureDisabled) {
     // When the feature is enabled, the incomplete visit should be removed and
     // added to visits.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(memories::kMemories);
+    feature_list.InitAndEnableFeature(history_clusters::kMemories);
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = {true, true, true};
     memories_service_->CompleteVisitIfReady(0);

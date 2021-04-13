@@ -150,8 +150,9 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
             url,
             base::BindOnce(
                 [](HistoryClustersTabHelper* history_clusters_tab_helper,
-                   memories::MemoriesService* memories_service,
-                   int64_t navigation_id, memories::MemoriesVisit& visit,
+                   history_clusters::MemoriesService* memories_service,
+                   int64_t navigation_id,
+                   history_clusters::MemoriesVisit& visit,
                    history::URLRow url_row, history::VisitVector visits) {
                   DCHECK(history_clusters_tab_helper);
                   DCHECK(memories_service);
@@ -187,7 +188,8 @@ void HistoryClustersTabHelper::TagNavigationAsExpectingUkmNavigationComplete(
   StartNewNavigationIfNeeded(navigation_id);
 }
 
-memories::VisitContextSignals HistoryClustersTabHelper::OnUkmNavigationComplete(
+history_clusters::VisitContextSignals
+HistoryClustersTabHelper::OnUkmNavigationComplete(
     int64_t navigation_id,
     const page_load_metrics::PageEndReason page_end_reason) {
   auto* memories_service = GetMemoriesService();
@@ -267,7 +269,8 @@ void HistoryClustersTabHelper::WebContentsDestroyed() {
     RecordPageEndMetricsIfNeeded(navigation_id);
 }
 
-memories::MemoriesService* HistoryClustersTabHelper::GetMemoriesService() {
+history_clusters::MemoriesService*
+HistoryClustersTabHelper::GetMemoriesService() {
   if (!web_contents()) {
     NOTREACHED();
     return nullptr;

@@ -74,7 +74,8 @@ WEB_UI_CONTROLLER_TYPE_IMPL(MemoriesUI)
 MemoriesUI::~MemoriesUI() = default;
 
 void MemoriesUI::BindInterface(
-    mojo::PendingReceiver<memories::mojom::PageHandler> pending_page_handler) {
+    mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+        pending_page_handler) {
   memories_handler_ = std::make_unique<MemoriesHandler>(
       std::move(pending_page_handler), profile_, web_contents_);
 }

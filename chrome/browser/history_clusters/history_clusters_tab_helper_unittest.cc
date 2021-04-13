@@ -62,14 +62,14 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitAndEnableFeature(memories::kMemories);
+    feature_list_.InitAndEnableFeature(history_clusters::kMemories);
 
     HistoryClustersTabHelper::CreateForWebContents(web_contents());
     helper_ = HistoryClustersTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(helper_);
 
     memories_service_test_api_ =
-        std::make_unique<memories::MemoriesServiceTestApi>(
+        std::make_unique<history_clusters::MemoriesServiceTestApi>(
             MemoriesServiceFactory::GetForBrowserContext(
                 web_contents()->GetBrowserContext()));
     ASSERT_TRUE(memories_service_test_api_);
@@ -89,7 +89,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     run_loop_quit_ = run_loop_.QuitClosure();
   }
 
-  std::vector<memories::MemoriesVisit> GetVisits() const {
+  std::vector<history_clusters::MemoriesVisit> GetVisits() const {
     return memories_service_test_api_->GetVisits();
   }
 
@@ -112,7 +112,8 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   HistoryClustersTabHelper* helper_;
 
-  std::unique_ptr<memories::MemoriesServiceTestApi> memories_service_test_api_;
+  std::unique_ptr<history_clusters::MemoriesServiceTestApi>
+      memories_service_test_api_;
 
   base::CancelableTaskTracker tracker_;
   history::HistoryService* history_service_;

@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 
-namespace memories {
+namespace history_clusters {
 
 GURL RemoteModelEndpoint() {
   return GURL(base::GetFieldTrialParamValueByFeature(
@@ -20,4 +20,4 @@ const char kRemoteModelEndpointParam[] = "MemoriesRemoteModelEndpoint";
 // Enables debug info; e.g. shows visit metadata on chrome://history entries.
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
 
-}  // namespace memories
+}  // namespace history_clusters

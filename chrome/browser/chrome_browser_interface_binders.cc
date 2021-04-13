@@ -661,7 +661,7 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<memories::mojom::PageHandler,
+  RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
                                          MemoriesUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

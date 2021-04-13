@@ -4488,11 +4488,11 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"memories", flag_descriptions::kMemoriesName,
      flag_descriptions::kMemoriesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(memories::kMemories)},
+     FEATURE_VALUE_TYPE(history_clusters::kMemories)},
 
     {"memories-debug", flag_descriptions::kMemoriesDebugName,
      flag_descriptions::kMemoriesDebugDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(memories::kDebug)},
+     FEATURE_VALUE_TYPE(history_clusters::kDebug)},
 
     {"search-prefetch", flag_descriptions::kEnableSearchPrefetchName,
      flag_descriptions::kEnableSearchPrefetchDescription, kOsAll,

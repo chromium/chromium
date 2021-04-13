@@ -18,7 +18,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-namespace memories {
+namespace history_clusters {
 
 using Memories = std::vector<mojom::MemoryPtr>;
 using MemoriesCallback = base::OnceCallback<void(Memories)>;
@@ -54,6 +54,6 @@ class MemoriesRemoteModelHelper {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-}  // namespace memories
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_

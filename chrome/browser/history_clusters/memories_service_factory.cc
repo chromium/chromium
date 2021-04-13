@@ -12,9 +12,9 @@
 #include "content/public/browser/storage_partition.h"
 
 // static
-memories::MemoriesService* MemoriesServiceFactory::GetForBrowserContext(
+history_clusters::MemoriesService* MemoriesServiceFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  return static_cast<memories::MemoriesService*>(
+  return static_cast<history_clusters::MemoriesService*>(
       GetInstance().GetServiceForBrowserContext(browser_context, true));
 }
 
@@ -41,7 +41,8 @@ KeyedService* MemoriesServiceFactory::BuildServiceInstanceFor(
   auto url_loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(context)
           ->GetURLLoaderFactoryForBrowserProcess();
-  return new memories::MemoriesService(history_service, url_loader_factory);
+  return new history_clusters::MemoriesService(history_service,
+                                               url_loader_factory);
 }
 
 content::BrowserContext* MemoriesServiceFactory::GetBrowserContextToUse(

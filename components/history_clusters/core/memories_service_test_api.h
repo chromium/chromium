@@ -10,7 +10,7 @@
 #include "components/history_clusters/core/memories_service.h"
 #include "components/history_clusters/core/visit_data.h"
 
-namespace memories {
+namespace history_clusters {
 
 class MemoriesServiceTestApi {
  public:
@@ -24,6 +24,6 @@ class MemoriesServiceTestApi {
   MemoriesService* memories_service_;
 };
 
-}  // namespace memories
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_TEST_API_H_

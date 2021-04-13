@@ -20,7 +20,7 @@ const size_t kMaxExpectedResponseSize = 1024 * 1024;
 // Helpers to translate from |MemoriesVisit|s to |base::Value|; and from
 // |base::Value| to |mojom::MemoryPtr|s.
 
-base::Value VisitToValue(const memories::MemoriesVisit& visit) {
+base::Value VisitToValue(const history_clusters::MemoriesVisit& visit) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("visitId",
               base::Value(static_cast<double>(visit.visit_row.visit_id)));
@@ -44,7 +44,8 @@ base::Value VisitToValue(const memories::MemoriesVisit& visit) {
   return dict;
 }
 
-base::Value VisitsToValue(const std::vector<memories::MemoriesVisit>& visits) {
+base::Value VisitsToValue(
+    const std::vector<history_clusters::MemoriesVisit>& visits) {
   base::Value visits_list(base::Value::Type::LIST);
   for (const auto& visit : visits)
     visits_list.Append(VisitToValue(visit));
@@ -73,10 +74,10 @@ std::vector<T> FindListKeyAndCast(
   return casted;
 }
 
-memories::mojom::VisitPtr ValueToVisit(
-    const std::vector<memories::MemoriesVisit>& visits,
+history_clusters::mojom::VisitPtr ValueToVisit(
+    const std::vector<history_clusters::MemoriesVisit>& visits,
     const base::Value& visit_id_value) {
-  auto visit = memories::mojom::Visit::New();
+  auto visit = history_clusters::mojom::Visit::New();
   visit->id = visit_id_value.GetIfInt().value_or(-1);
 
   const auto memory_visit_it = base::ranges::find(
@@ -98,12 +99,12 @@ memories::mojom::VisitPtr ValueToVisit(
   return visit;
 }
 
-memories::mojom::MemoryPtr ValueToMemory(
-    const std::vector<memories::MemoriesVisit>& visits,
+history_clusters::mojom::MemoryPtr ValueToMemory(
+    const std::vector<history_clusters::MemoriesVisit>& visits,
     const base::Value& value) {
-  auto memory = memories::mojom::Memory::New();
+  auto memory = history_clusters::mojom::Memory::New();
   memory->id = base::UnguessableToken::Create();
-  memory->top_visits = FindListKeyAndCast<memories::mojom::VisitPtr>(
+  memory->top_visits = FindListKeyAndCast<history_clusters::mojom::VisitPtr>(
       value, "visitIds", base::BindRepeating(&ValueToVisit, visits));
   // TODO(manukh) fill out:
   //  |id|
@@ -115,16 +116,16 @@ memories::mojom::MemoryPtr ValueToMemory(
   return memory;
 }
 
-memories::Memories ValueToMemories(
-    const std::vector<memories::MemoriesVisit>& visits,
+history_clusters::Memories ValueToMemories(
+    const std::vector<history_clusters::MemoriesVisit>& visits,
     const base::Value& value) {
-  return FindListKeyAndCast<memories::mojom::MemoryPtr>(
+  return FindListKeyAndCast<history_clusters::mojom::MemoryPtr>(
       value, "memories", base::BindRepeating(&ValueToMemory, visits));
 }
 
 }  // namespace
 
-namespace memories {
+namespace history_clusters {
 
 MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -135,7 +136,7 @@ MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 void MemoriesRemoteModelHelper::GetMemories(
     const std::vector<MemoriesVisit>& visits,
     MemoriesCallback callback) {
-  const GURL endpoint(memories::RemoteModelEndpoint());
+  const GURL endpoint(history_clusters::RemoteModelEndpoint());
   if (!endpoint.is_valid() || visits.empty()) {
     std::move(callback).Run({});
     return;
@@ -232,4 +233,4 @@ MemoriesRemoteModelHelper::CreateLoader(
   return loader;
 }
 
-}  // namespace memories
+}  // namespace history_clusters
