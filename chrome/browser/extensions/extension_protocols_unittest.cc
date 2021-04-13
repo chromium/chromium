@@ -289,7 +289,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
   content::BrowserContext* browser_context() {
-    return force_incognito_ ? testing_profile_->GetPrimaryOTRProfile()
+    return force_incognito_ ? testing_profile_->GetPrimaryOTRProfile(
+                                  /*create_if_needed=*/true)
                             : testing_profile_.get();
   }
 

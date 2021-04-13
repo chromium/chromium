@@ -118,7 +118,9 @@ void CupsPrintJobNotification::Click(
   // open the Print Manageament App. There is a check in Browser::Browser
   // that only OffTheRecord profiles can open browser windows in guest mode.
   chrome::ShowPrintManagementApp(
-      profile_->IsGuestSession() ? profile_->GetPrimaryOTRProfile() : profile_);
+      profile_->IsGuestSession()
+          ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : profile_);
 }
 
 void CupsPrintJobNotification::CleanUpNotification() {

@@ -37,7 +37,8 @@ TEST_F(ChromeMediaRouterFactoryTest, CreateForRegularProfile) {
 }
 
 TEST_F(ChromeMediaRouterFactoryTest, CreateForIncognitoProfile) {
-  Profile* incognito_profile = profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito_profile);
 
   // Makes sure a MediaRouter can be created from an incognito Profile.
@@ -51,7 +52,8 @@ TEST_F(ChromeMediaRouterFactoryTest, CreateForIncognitoProfile) {
 
 TEST_F(ChromeMediaRouterFactoryTest, IncognitoBrowserContextShutdown) {
   // Creates an incognito profile.
-  Profile* incognito = profile()->GetPrimaryOTRProfile();
+  Profile* incognito =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   MockMediaRouter* router = static_cast<MockMediaRouter*>(
       MediaRouterFactory::GetApiForBrowserContext(profile()));
   ASSERT_TRUE(router);

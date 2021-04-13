@@ -60,7 +60,7 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   // is used for browsing in guest sessions. We do this because the "original"
   // profile of the guest session can't create windows.
   if (profile->IsGuestSession())
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // We don't support launching SWA in incognito profiles, use the original
   // profile if an incognito profile is provided (with the exception of guest

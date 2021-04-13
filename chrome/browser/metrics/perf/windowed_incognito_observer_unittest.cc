@@ -65,7 +65,8 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   size_t OpenBrowserWindow(bool incognito) {
     auto browser_window = std::make_unique<TestBrowserWindow>();
     Profile* browser_profile =
-        incognito ? profile_->GetPrimaryOTRProfile() : profile_.get();
+        incognito ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                  : profile_.get();
     Browser::CreateParams params(browser_profile, true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window.get();

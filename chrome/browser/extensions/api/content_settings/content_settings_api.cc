@@ -148,9 +148,10 @@ ContentSettingsContentSettingGetFunction::Run() {
           Error(content_settings_api_constants::kIncognitoSessionOnlyError));
     }
     map = HostContentSettingsMapFactory::GetForProfile(
-        profile->GetPrimaryOTRProfile());
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
     cookie_settings =
-        CookieSettingsFactory::GetForProfile(profile->GetPrimaryOTRProfile())
+        CookieSettingsFactory::GetForProfile(
+            profile->GetPrimaryOTRProfile(/*create_if_needed=*/true))
             .get();
   } else {
     map = HostContentSettingsMapFactory::GetForProfile(profile);

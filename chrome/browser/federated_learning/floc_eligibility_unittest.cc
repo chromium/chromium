@@ -210,8 +210,9 @@ class FlocEligibilityIncognitoUnitTest : public FlocEligibilityUnitTest {
   void InitWebContents() override {
     TestingProfile::Builder().BuildIncognito(profile());
     incognito_web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        profile()->GetPrimaryOTRProfile(),
-        content::SiteInstance::Create(profile()->GetPrimaryOTRProfile()));
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        content::SiteInstance::Create(
+            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   }
 
   content::WebContents* GetWebContents() override {

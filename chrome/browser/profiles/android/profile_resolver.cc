@@ -59,12 +59,8 @@ void OnProfileLoadedFromManager(ProfileToken token_proto,
   if (profile && !token_proto.otr_profile_id().empty()) {
     Profile::OTRProfileID otrProfileId =
         Profile::OTRProfileID::Deserialize(token_proto.otr_profile_id());
-    // Avoid GetOffTheRecordProfile creating new OTR profile.
-    if (profile->HasOffTheRecordProfile(otrProfileId)) {
-      profile = profile->GetOffTheRecordProfile(otrProfileId);
-    } else {
-      profile = nullptr;
-    }
+    profile = profile->GetOffTheRecordProfile(otrProfileId,
+                                              /*create_if_needed=*/false);
   }
 
   std::move(callback).Run(profile);

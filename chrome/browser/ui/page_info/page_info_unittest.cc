@@ -237,7 +237,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 
       incognito_web_contents_ =
           content::WebContentsTester::CreateTestWebContents(
-              profile()->GetPrimaryOTRProfile(), nullptr);
+              profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+              nullptr);
 
       content_settings::PageSpecificContentSettings::CreateForWebContents(
           incognito_web_contents_.get(),

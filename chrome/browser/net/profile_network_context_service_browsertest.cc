@@ -359,9 +359,11 @@ class AmbientAuthenticationTestWithPolicy
         service->GetInteger(prefs::kAmbientAuthenticationInPrivateModesEnabled);
 
     Profile* regular_profile = browser()->profile();
-    Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+    Profile* incognito_profile =
+        regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     Profile* non_primary_otr_profile = regular_profile->GetOffTheRecordProfile(
-        Profile::OTRProfileID("Test::AmbientAuthentication"));
+        Profile::OTRProfileID("Test::AmbientAuthentication"),
+        /*create_if_needed=*/true);
 
     EXPECT_TRUE(AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
         regular_profile));

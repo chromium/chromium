@@ -161,7 +161,8 @@ void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
 int CountBrowsersFor(Profile* profile) {
   int browser_count = chrome::GetBrowserCount(profile);
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile())
-    browser_count += chrome::GetBrowserCount(profile->GetPrimaryOTRProfile());
+    browser_count += chrome::GetBrowserCount(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   return browser_count;
 }
 

@@ -516,8 +516,8 @@ void InProcessBrowserTest::OpenDevToolsWindow(
 Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
                                                    const GURL& url) {
   chrome::OpenURLOffTheRecord(profile, url);
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile->GetPrimaryOTRProfile(), false);
+  Browser* browser = chrome::FindTabbedBrowser(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
   content::TestNavigationObserver observer(
       browser->tab_strip_model()->GetActiveWebContents());
   observer.Wait();
@@ -537,8 +537,8 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
   if (!profile)
     profile = browser()->profile();
   // Create a new browser with using the incognito profile.
-  Browser* incognito = Browser::Create(
-      Browser::CreateParams(profile->GetPrimaryOTRProfile(), true));
+  Browser* incognito = Browser::Create(Browser::CreateParams(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
   AddBlankTabAndShow(incognito);
   return incognito;
 }
@@ -572,7 +572,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
 
   Profile* profile = profile_manager->GetProfileByPath(guest_path);
   if (!profile->IsEphemeralGuestProfile())
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   const bool is_ephemeral = Profile::IsEphemeralGuestProfileEnabled();
   EXPECT_EQ(is_ephemeral, profile->IsEphemeralGuestProfile());

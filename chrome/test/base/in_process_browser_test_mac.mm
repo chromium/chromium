@@ -30,8 +30,8 @@ Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     chrome::OpenURLOffTheRecord(profile, url);
-    Browser* browser =
-        chrome::FindTabbedBrowser(profile->GetPrimaryOTRProfile(), false);
+    Browser* browser = chrome::FindTabbedBrowser(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
     content::TestNavigationObserver observer(
         browser->tab_strip_model()->GetActiveWebContents());
     observer.Wait();
@@ -60,8 +60,8 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
       profile = browser()->profile();
 
     // Create a new browser with using the incognito profile.
-    Browser* incognito = Browser::Create(
-        Browser::CreateParams(profile->GetPrimaryOTRProfile(), true));
+    Browser* incognito = Browser::Create(Browser::CreateParams(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
     AddBlankTabAndShow(incognito);
     return incognito;
   }

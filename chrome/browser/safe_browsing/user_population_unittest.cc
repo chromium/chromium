@@ -71,7 +71,8 @@ TEST(GetUserPopulationTest, PopulatesIncognito) {
   EXPECT_FALSE(population.is_incognito());
 
   Profile* incognito_profile = profile.GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::SafeBrowsingUserPopulation"));
+      Profile::OTRProfileID("Test::SafeBrowsingUserPopulation"),
+      /*create_if_needed=*/true);
   population = GetUserPopulation(incognito_profile);
   EXPECT_TRUE(population.is_incognito());
 }

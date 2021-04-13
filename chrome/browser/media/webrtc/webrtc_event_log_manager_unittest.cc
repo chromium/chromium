@@ -1223,7 +1223,8 @@ class WebRtcEventLogManagerTestIncognito
   void SetUp() override {
     WebRtcEventLogManagerTestBase::SetUp();
 
-    incognito_profile_ = browser_context_->GetPrimaryOTRProfile();
+    incognito_profile_ =
+        browser_context_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     incognito_rph_ =
         std::make_unique<MockRenderProcessHost>(incognito_profile_);
   }

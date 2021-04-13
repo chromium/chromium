@@ -427,7 +427,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
   uint64_t original_client_id = ukm_test_helper.GetClientId();
   EXPECT_NE(0U, original_client_id);
 
-  Profile* incognito_profile = profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   PlatformBrowser incognito_browser1 =
       CreateIncognitoPlatformBrowser(incognito_profile);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
@@ -466,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   std::unique_ptr<ProfileSyncServiceHarness> harness =
       EnableSyncForProfile(profile);
 
-  Profile* incognito_profile = profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   PlatformBrowser incognito_browser =
       CreateIncognitoPlatformBrowser(incognito_profile);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());

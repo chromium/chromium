@@ -915,7 +915,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestIsSameOrParent) {
   Profile* regular_profile = browser()->profile();
   Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
       otr_profile_id, /*create_if_needed=*/true);
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   EXPECT_TRUE(regular_profile->IsSameOrParent(otr_profile));
   EXPECT_TRUE(otr_profile->IsSameOrParent(regular_profile));
@@ -947,14 +948,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
   EXPECT_EQ(profile_metrics::BrowserProfileType::kRegular,
             ProfileMetrics::GetBrowserProfileType(regular_profile));
 
-  Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
             profile_metrics::GetBrowserContextType(incognito_profile));
   EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
             ProfileMetrics::GetBrowserProfileType(incognito_profile));
 
   Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID("profile::otr"));
+      Profile::OTRProfileID("profile::otr"), /*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
             profile_metrics::GetBrowserContextType(otr_profile));
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
@@ -1240,6 +1242,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   // Test.
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);
-  EXPECT_FALSE(profile->GetPrimaryOTRProfile()->IsMainProfile());
+  EXPECT_FALSE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                   ->IsMainProfile());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -165,7 +165,10 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled_OffTheRecord) {
   EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
-      browser()->profile()->GetPrimaryOTRProfile()->GetProfileKey()));
+      browser()
+          ->profile()
+          ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          ->GetProfileKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,

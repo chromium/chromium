@@ -33,7 +33,8 @@ std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
     bool popup) {
   TestBrowserWindow* window = new TestBrowserWindow;
   new TestBrowserWindowOwner(window);
-  Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile()
+  Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
+                                     /*create_if_needed=*/true)
                                : browser()->profile();
   Browser::Type type = popup ? Browser::TYPE_POPUP : Browser::TYPE_NORMAL;
 
@@ -105,20 +106,20 @@ TEST_F(ExistingWindowSubMenuModelTest, ShouldShowSubmenuIncognito) {
   // Shouldn't show menu for one window.
   ASSERT_FALSE(ExistingWindowSubMenuModel::ShouldShowSubmenu(profile()));
   ASSERT_FALSE(ExistingWindowSubMenuModel::ShouldShowSubmenu(
-      profile()->GetPrimaryOTRProfile()));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   // Create an incognito browser. We shouldn't show the menu, because we only
   // move tabs between windows of the same profile.
   std::unique_ptr<Browser> incognito_browser_1(CreateTestBrowser(true, false));
   ASSERT_FALSE(ExistingWindowSubMenuModel::ShouldShowSubmenu(profile()));
   ASSERT_FALSE(ExistingWindowSubMenuModel::ShouldShowSubmenu(
-      profile()->GetPrimaryOTRProfile()));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   // Add another incognito browser, and make sure we do show the menu now.
   std::unique_ptr<Browser> incognito_browser_2(CreateTestBrowser(true, false));
   ASSERT_FALSE(ExistingWindowSubMenuModel::ShouldShowSubmenu(profile()));
   ASSERT_TRUE(ExistingWindowSubMenuModel::ShouldShowSubmenu(
-      profile()->GetPrimaryOTRProfile()));
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 // Ensure we don't show the menu on a popup window.

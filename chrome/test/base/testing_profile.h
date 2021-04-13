@@ -325,7 +325,7 @@ class TestingProfile : public Profile {
   // TODO(https://crbug.com/1191315): Remove default value after auditing and
   // updating use cases.
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
-                                  bool create_if_needed = true) override;
+                                  bool create_if_needed) override;
   std::vector<Profile*> GetAllOffTheRecordProfiles() override;
   void DestroyOffTheRecordProfile(Profile* otr_profile) override;
   bool HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;

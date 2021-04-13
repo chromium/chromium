@@ -118,14 +118,14 @@ void DispatchEventToExtensions(Profile* profile,
           // If off the record profile does not exist, there should be no
           // extensions running in incognito at this time, and consequentially
           // no need to dispatch an event restricted to an incognito extension.
-          // Furthermore, avoid calling GetPrimaryOTRProfile() in this case -
-          // this method creates off the record profile if one does not exist.
-          // Unnecessarily creating off the record profile is undesirable, and
-          // can lead to a crash if incognito is disallowed for the current
-          // profile (see https://crbug.com/796814).
+          // Furthermore, avoid calling GetPrimaryOTRProfile() if the profile
+          // does not exist. Unnecessarily creating off the record profile is
+          // undesirable, and can lead to a crash if incognito is disallowed for
+          // the current profile (see https://crbug.com/796814).
           if (!profile->HasPrimaryOTRProfile())
             continue;
-          restrict_to_profile = profile->GetPrimaryOTRProfile();
+          restrict_to_profile =
+              profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
         } else {  // Handle case b).
           bool controlled_from_incognito = false;
           bool controlled_by_extension =

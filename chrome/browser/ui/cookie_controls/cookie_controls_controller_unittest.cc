@@ -251,7 +251,7 @@ TEST_F(CookieControlsTest, Incognito) {
   // content_settings::CookieControlsController.
   std::unique_ptr<content::WebContents> incognito_web_contents =
       content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(), nullptr);
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       incognito_web_contents.get(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
@@ -259,7 +259,8 @@ TEST_F(CookieControlsTest, Incognito) {
   auto* tester = content::WebContentsTester::For(incognito_web_contents.get());
   MockCookieControlsView incognito_mock_;
   content_settings::CookieControlsController incognito_cookie_controls(
-      CookieSettingsFactory::GetForProfile(profile()->GetPrimaryOTRProfile()),
+      CookieSettingsFactory::GetForProfile(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       CookieSettingsFactory::GetForProfile(profile()));
   incognito_cookie_controls.AddObserver(&incognito_mock_);
 

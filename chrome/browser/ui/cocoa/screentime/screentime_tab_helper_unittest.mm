@@ -39,8 +39,8 @@ class ScreentimeTabHelperTest : public ::testing::Test {
 };
 
 TEST_F(ScreentimeTabHelperTest, NeverUsedInIncognito) {
-  auto* otr_profile =
-      profile()->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID());
+  auto* otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
 
   EXPECT_TRUE(TabHelper::IsScreentimeEnabledForProfile(profile()));
   EXPECT_FALSE(TabHelper::IsScreentimeEnabledForProfile(otr_profile));

@@ -454,7 +454,10 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         // Incognito actually uses the non-incognito prefs, so this should end
         // up being the same pref store as in the KProfile case.
-        return browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+        return browser()
+            ->profile()
+            ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+            ->GetPrefs();
     }
   }
 
@@ -483,7 +486,8 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         ProfileNetworkContextServiceFactory::GetForContext(
-            browser()->profile()->GetPrimaryOTRProfile())
+            browser()->profile()->GetPrimaryOTRProfile(
+                /*create_if_needed=*/true))
             ->FlushProxyConfigMonitorForTesting();
         break;
     }

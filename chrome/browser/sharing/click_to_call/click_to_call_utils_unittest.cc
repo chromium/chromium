@@ -56,7 +56,9 @@ class ClickToCallUtilsTest : public testing::Test {
       const std::string& selection_text,
       bool use_incognito_profile = false) {
     Profile* profile_to_use =
-        use_incognito_profile ? profile_.GetPrimaryOTRProfile() : &profile_;
+        use_incognito_profile
+            ? profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true)
+            : &profile_;
     base::Optional<std::string> phone_number =
         ExtractPhoneNumberForClickToCall(profile_to_use, selection_text);
     EXPECT_FALSE(phone_number.has_value())
@@ -92,8 +94,8 @@ TEST_F(ClickToCallUtilsTest, PolicyDisabled_DoNotOfferAnyMenu) {
 }
 
 TEST_F(ClickToCallUtilsTest, IncognitoProfile_DoNotOfferAnyMenu) {
-  EXPECT_FALSE(ShouldOfferClickToCallForURL(profile_.GetPrimaryOTRProfile(),
-                                            GURL(kTelUrl)));
+  EXPECT_FALSE(ShouldOfferClickToCallForURL(
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true), GURL(kTelUrl)));
   ExpectClickToCallDisabledForSelectionText(kSelectionTextWithNumber,
                                             /*use_incognito_profile =*/true);
 }

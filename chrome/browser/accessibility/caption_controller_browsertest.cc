@@ -185,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
                                   prefs::kSodaEnUsConfigPath));
 
   // Ensure that live caption is also enabled in the incognito profile.
-  Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_TRUE(
       incognito_profile->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(

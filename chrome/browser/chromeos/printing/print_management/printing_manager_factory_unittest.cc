@@ -53,8 +53,9 @@ TEST(PrintingManagerFactoryTest, OffTheRecordProfileHasService) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<Profile> profile = CreateProfile("");
 
-  EXPECT_NE(nullptr, PrintingManagerFactory::GetForProfile(
-                         profile->GetPrimaryOTRProfile()));
+  EXPECT_NE(nullptr,
+            PrintingManagerFactory::GetForProfile(
+                profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 TEST(PrintingManagerFactoryTest, SigninProfileNoService) {

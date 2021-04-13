@@ -135,7 +135,8 @@ Profile* GetIncognitoProfile(base::FilePath profile_dir) {
     return nullptr;
   }
 
-  return profile_manager->GetProfile(profile_dir)->GetPrimaryOTRProfile();
+  return profile_manager->GetProfile(profile_dir)
+      ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 }
 
 }  // anonymous namespace
@@ -547,7 +548,7 @@ Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
   // GetActiveUserProfile() or GetProfileByUserIdHash() returns a new instance
   // of ProfileImpl(), but actually its off-the-record profile should be used.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   return profile;
 }
@@ -576,7 +577,7 @@ Profile* ProfileHelperImpl::GetProfileByUserUnsafe(
   // GetActiveUserProfile() or GetProfileByUserIdHash() returns a new instance
   // of ProfileImpl(), but actually its off-the-record profile should be used.
   if (profile && user_manager::UserManager::Get()->IsLoggedInAsGuest())
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
 

@@ -85,9 +85,11 @@ TEST_F(ProfileResolverTest, TestResolveDifferentProfiles) {
 
 TEST_F(ProfileResolverTest, TestResolveOtrProfiles) {
   TestingProfile* profile = manager()->CreateTestingProfile("foo");
-  Profile* primaryOtrProfile = profile->GetPrimaryOTRProfile();
+  Profile* primaryOtrProfile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Profile* anotherOtrProfile = profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUnique("Test:Foo"));
+      Profile::OTRProfileID::CreateUnique("Test:Foo"),
+      /*create_if_needed=*/true);
 
   std::string token = TokenizeProfile(profile);
   std::string primaryOtrToken = TokenizeProfile(primaryOtrProfile);
@@ -144,7 +146,8 @@ TEST_F(ProfileResolverTest, TestResolveBadOtrToken) {
 TEST_F(ProfileResolverTest, TestResolveUnloadedProfile) {
   TestingProfile* profile = manager()->CreateTestingProfile("foo");
   ProfileKey* profile_key = profile->GetProfileKey();
-  Profile* primary_otr_profile = profile->GetPrimaryOTRProfile();
+  Profile* primary_otr_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   std::string profile_token = TokenizeProfile(profile);
   std::string profile_key_token = TokenizeProfileKey(profile_key);

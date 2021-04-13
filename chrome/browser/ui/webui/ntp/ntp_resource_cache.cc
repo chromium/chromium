@@ -453,7 +453,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
     const content::WebContents::Getter wc_getter) {
   const ui::NativeTheme* native_theme = webui::GetNativeTheme(wc_getter.Run());
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
-      profile_->GetPrimaryOTRProfile());
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;

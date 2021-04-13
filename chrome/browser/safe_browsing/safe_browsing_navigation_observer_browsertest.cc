@@ -524,7 +524,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                                                  extended_reporting_enabled);
     return SafeBrowsingNavigationObserverManager::
         CountOfRecentNavigationsToAppend(
-            is_incognito ? *browser()->profile()->GetPrimaryOTRProfile()
+            is_incognito ? *browser()->profile()->GetPrimaryOTRProfile(
+                               /*create_if_needed=*/true)
                          : *browser()->profile(),
             result);
   }

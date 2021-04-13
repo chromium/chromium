@@ -73,14 +73,14 @@ class ProfileActivityMetricsRecorderTest
   }
 
   void ActivateIncognitoBrowser(Profile* profile) {
-    ActivateBrowser(profile->GetPrimaryOTRProfile());
+    ActivateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   void ActivateGuestBrowser(Profile* profile) {
     if (IsEphemeral())
       ActivateBrowser(profile);
     else
-      ActivateBrowser(profile->GetPrimaryOTRProfile());
+      ActivateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   void SimulateUserEvent() {

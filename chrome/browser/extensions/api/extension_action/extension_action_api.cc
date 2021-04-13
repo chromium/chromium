@@ -589,8 +589,8 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   if ((!browser || !browser->window()->IsActive()) &&
       util::IsIncognitoEnabled(extension()->id(), profile) &&
       profile->HasPrimaryOTRProfile()) {
-    browser =
-        chrome::FindLastActiveWithProfile(profile->GetPrimaryOTRProfile());
+    browser = chrome::FindLastActiveWithProfile(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   // If there's no active browser, or the Toolbar isn't visible, abort.

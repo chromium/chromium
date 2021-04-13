@@ -255,8 +255,8 @@ TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysEnabledInIncognitoMode) {
   std::unique_ptr<TestingProfile> original_profile = normal_builder.Build();
 
   // Create a new browser based on the off the record profile.
-  Browser::CreateParams profile_params(original_profile->GetPrimaryOTRProfile(),
-                                       true);
+  Browser::CreateParams profile_params(
+      original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true);
   std::unique_ptr<Browser> otr_browser(
       CreateBrowserWithTestWindowForParams(profile_params));
 
@@ -510,12 +510,13 @@ TEST_P(GuestBrowserCommandControllerTest, OptionsConsistency) {
 TEST_F(BrowserCommandControllerTest, IncognitoModeOnSigninAllowedPrefChange) {
   // Set up a profile with an off the record profile.
   std::unique_ptr<TestingProfile> profile1 = TestingProfile::Builder().Build();
-  Profile* profile2 = profile1->GetPrimaryOTRProfile();
+  Profile* profile2 = profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   EXPECT_EQ(profile2->GetOriginalProfile(), profile1.get());
 
   // Create a new browser based on the off the record profile.
-  Browser::CreateParams profile_params(profile1->GetPrimaryOTRProfile(), true);
+  Browser::CreateParams profile_params(
+      profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true), true);
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(profile_params));
 

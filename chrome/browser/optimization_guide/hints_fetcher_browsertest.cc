@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     base::HistogramTester incognito_histogram_tester;
     // Instantiate off the record Optimization Guide Service.
     OptimizationGuideKeyedServiceFactory::GetForProfile(
-        browser()->profile()->GetPrimaryOTRProfile())
+        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true))
         ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
 
     Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());

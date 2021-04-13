@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderBrowserTest, NoProviderInIncognitoMode) {
   ASSERT_TRUE(browser()->profile()->HasPrimaryOTRProfile());
 
   Profile* off_the_record_profile =
-      browser()->profile()->GetPrimaryOTRProfile();
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(off_the_record_profile);
 
   FlocIdProvider* incognito_floc_id_provider =

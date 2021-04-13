@@ -384,7 +384,8 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
   DCHECK(!profile_->IsOffTheRecord());
   observed_profiles_.AddObservation(profile_);
   if (profile->HasPrimaryOTRProfile())
-    OnOffTheRecordProfileCreated(profile->GetPrimaryOTRProfile());
+    OnOffTheRecordProfileCreated(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   else
     ObserveOffTheRecordPrefs(profile->GetReadOnlyOffTheRecordPrefs());
 }

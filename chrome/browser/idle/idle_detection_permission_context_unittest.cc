@@ -73,7 +73,7 @@ class IdleDetectionPermissionContextTest
 // Tests auto-denial after a time delay in incognito.
 TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
   TestIdleDetectionPermissionContext permission_context(
-      profile()->GetPrimaryOTRProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   GURL url("https://www.example.com");
   NavigateAndCommit(url);
 
@@ -137,7 +137,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 // Tests how multiple parallel permission requests get auto-denied in incognito.
 TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   TestIdleDetectionPermissionContext permission_context(
-      profile()->GetPrimaryOTRProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   GURL url("https://www.example.com");
   NavigateAndCommit(url);
   web_contents()->WasShown();

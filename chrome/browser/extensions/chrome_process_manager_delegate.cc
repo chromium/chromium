@@ -172,7 +172,7 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   // incognito profile is destroyed, then close the incognito background hosts
   // as well. This happens in a few tests. http://crbug.com/138843
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
-    Profile* otr = profile->GetPrimaryOTRProfile();
+    Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);
     if (observed_profiles_.IsObservingSource(otr))
       observed_profiles_.RemoveObservation(otr);

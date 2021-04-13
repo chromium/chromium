@@ -404,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // need a different profile, and creating a popup window with an incognito
   // profile is a quick and dirty way of achieving this.
   Browser* popup = CreateEmptyBrowserForType(
-      Browser::TYPE_POPUP, browser()->profile()->GetPrimaryOTRProfile());
+      Browser::TYPE_POPUP,
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   NavigateParams params(MakeNavigateParams(popup));
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
@@ -940,8 +941,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_Disposition_Incognito) {
 
   // Navigate() should have opened a new toplevel incognito window.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_EQ(browser()->profile()->GetPrimaryOTRProfile(),
-            params.browser->profile());
+  EXPECT_EQ(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      params.browser->profile());
 
   // |source_contents| should be set to NULL because the profile for the new
   // page is different from the originating page.
@@ -958,7 +960,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_Disposition_Incognito) {
 // reuses an existing incognito window when possible.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_IncognitoRefocus) {
   Browser* incognito_browser = CreateEmptyBrowserForType(
-      Browser::TYPE_NORMAL, browser()->profile()->GetPrimaryOTRProfile());
+      Browser::TYPE_NORMAL,
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
   Navigate(&params);
@@ -1686,8 +1689,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateWithoutBrowser) {
 
   // Now navigate using the incognito profile and check that a new window
   // is created.
-  NavigateParams params_incognito(browser()->profile()->GetPrimaryOTRProfile(),
-                                  GetGoogleURL(), ui::PAGE_TRANSITION_LINK);
+  NavigateParams params_incognito(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      GetGoogleURL(), ui::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params_incognito);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 }

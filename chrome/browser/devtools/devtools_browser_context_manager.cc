@@ -35,7 +35,8 @@ content::BrowserContext* DevToolsBrowserContextManager::CreateBrowserContext() {
       ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
 
   Profile* otr_profile = original_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForDevTools());
+      Profile::OTRProfileID::CreateUniqueForDevTools(),
+      /*create_if_needed=*/true);
   const std::string& context_id = otr_profile->UniqueId();
   otr_profiles_[context_id] = otr_profile;
   otr_profile->AddObserver(this);

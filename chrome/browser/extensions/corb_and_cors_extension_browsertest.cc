@@ -2275,7 +2275,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
   Profile* regular_profile = browser()->profile();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
       Browser::Create(Browser::CreateParams(incognito_profile, true));
   {
@@ -2396,7 +2397,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
   Profile* regular_profile = browser()->profile();
   Browser* regular_browser = browser();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
       Browser::Create(Browser::CreateParams(incognito_profile, true));
   {
@@ -2531,7 +2533,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
   Profile* regular_profile = browser()->profile();
-  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
       Browser::Create(Browser::CreateParams(incognito_profile, true));
   {

@@ -496,8 +496,8 @@ void Profile::NotifyOffTheRecordProfileCreated(Profile* off_the_record) {
     observer.OnOffTheRecordProfileCreated(off_the_record);
 }
 
-Profile* Profile::GetPrimaryOTRProfile() {
-  return GetOffTheRecordProfile(OTRProfileID::PrimaryID());
+Profile* Profile::GetPrimaryOTRProfile(bool create_if_needed) {
+  return GetOffTheRecordProfile(OTRProfileID::PrimaryID(), create_if_needed);
 }
 
 bool Profile::HasPrimaryOTRProfile() {

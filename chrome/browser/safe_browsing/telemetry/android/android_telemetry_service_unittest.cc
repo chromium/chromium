@@ -90,7 +90,8 @@ class AndroidTelemetryServiceTest : public testing::Test {
   }
 
   void SetOffTheRecordProfile() {
-    telemetry_service_->profile_ = profile()->GetPrimaryOTRProfile();
+    telemetry_service_->profile_ =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 
   void ResetProfile() { telemetry_service_->profile_ = profile(); }

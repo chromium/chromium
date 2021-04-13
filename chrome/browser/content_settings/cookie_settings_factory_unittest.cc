@@ -35,7 +35,8 @@ class CookieSettingsFactoryTest : public testing::Test {
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
   scoped_refptr<content_settings::CookieSettings> incognito_settings =
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile());
+      CookieSettingsFactory::GetForProfile(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Modify the regular cookie settings after the incognito cookie settings have
   // been instantiated.
@@ -57,7 +58,8 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
   scoped_refptr<content_settings::CookieSettings> incognito_settings =
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile());
+      CookieSettingsFactory::GetForProfile(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Apply the general blocking to the regular profile.
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
@@ -109,17 +111,18 @@ TEST_P(GuestCookieSettingsFactoryTest, GuestProfile) {
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();
   std::unique_ptr<Profile> guest_profile = guest_profile_builder.Build();
-  Profile* profile_to_use = is_ephemeral()
-                                ? guest_profile.get()
-                                : guest_profile->GetPrimaryOTRProfile();
+  Profile* profile_to_use =
+      is_ephemeral()
+          ? guest_profile.get()
+          : guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   scoped_refptr<content_settings::CookieSettings> guest_settings =
       CookieSettingsFactory::GetForProfile(profile_to_use);
   EXPECT_FALSE(guest_settings->ShouldBlockThirdPartyCookies());
 
   // OTOH, cookie blocking is default for an incognito profile.
-  EXPECT_TRUE(
-      CookieSettingsFactory::GetForProfile(profile_.GetPrimaryOTRProfile())
-          ->ShouldBlockThirdPartyCookies());
+  EXPECT_TRUE(CookieSettingsFactory::GetForProfile(
+                  profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true))
+                  ->ShouldBlockThirdPartyCookies());
 }
 
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,

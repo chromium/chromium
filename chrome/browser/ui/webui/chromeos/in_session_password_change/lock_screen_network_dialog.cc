@@ -38,7 +38,8 @@ void LockScreenNetworkDialog::OnDialogClosed(const std::string& json_retval) {
 
 void LockScreenNetworkDialog::Show(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ShowSystemDialogForBrowserContext(profile->GetPrimaryOTRProfile());
+  ShowSystemDialogForBrowserContext(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 }
 
 void LockScreenNetworkDialog::Dismiss() {

@@ -147,7 +147,8 @@ std::vector<RecentSitePermissions> GetRecentSitePermissions(
 
   if (profile->HasPrimaryOTRProfile()) {
     incognito_settings = GetAllSettingsForProfile(
-        profile->GetPrimaryOTRProfile(), content_types);
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        content_types);
 
     // Remove all permission entries in the incognito map which also have
     // an entry in the regular settings. This may result in an empty setting

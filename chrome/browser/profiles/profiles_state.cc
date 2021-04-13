@@ -325,7 +325,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
   // For guest profiles the browsing data is in the OTR profile.
   if (profile->IsGuestSession())
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   profile->Wipe();
 }

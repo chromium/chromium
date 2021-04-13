@@ -1301,7 +1301,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   const Extension* file_manager = extension_registry()->GetExtensionById(
       "hhaomjibdihmijegdhdafkllkbggdgoj", ExtensionRegistry::ENABLED);
   ASSERT_TRUE(file_manager != NULL);
-  Profile* incognito_profile = profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito_profile != NULL);
 
   // Wait until the file manager has had a chance to register its listener

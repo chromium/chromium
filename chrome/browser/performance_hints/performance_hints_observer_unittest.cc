@@ -97,7 +97,7 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
         static_cast<MockOptimizationGuideKeyedService*>(
             OptimizationGuideKeyedServiceFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
-                    profile()->GetPrimaryOTRProfile(),
+                    profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                     base::BindRepeating([](content::BrowserContext* context)
                                             -> std::unique_ptr<KeyedService> {
                       return std::make_unique<
@@ -150,7 +150,7 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PerformanceHintsObserverTest, IncognitoDoesNotRegisterPerformanceHints) {
   std::unique_ptr<content::WebContents> incognito_web_contents(
       content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(), nullptr));
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
 
   EXPECT_CALL(*mock_otr_optimization_guide_keyed_service_,
               RegisterOptimizationTypes(testing::UnorderedElementsAre(

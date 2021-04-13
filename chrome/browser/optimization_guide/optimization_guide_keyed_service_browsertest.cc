@@ -685,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideKeyedService* otr_ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
-          browser()->profile()->GetPrimaryOTRProfile());
+          browser()->profile()->GetPrimaryOTRProfile(
+              /*create_if_needed=*/true));
   otr_ogks->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
 
   // Navigate to a URL that has a hint from a component and wait for that hint
@@ -711,7 +712,8 @@ IN_PROC_BROWSER_TEST_F(
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideKeyedService* otr_ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
-          browser()->profile()->GetPrimaryOTRProfile());
+          browser()->profile()->GetPrimaryOTRProfile(
+              /*create_if_needed=*/true));
 
   base::HistogramTester histogram_tester;
 

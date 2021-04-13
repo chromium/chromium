@@ -667,7 +667,8 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 
   {
     // Construct an off-the-record profile and browser.
-    Profile* off_the_record_profile = profile()->GetPrimaryOTRProfile();
+    Profile* off_the_record_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
         off_the_record_profile, base::BindRepeating(&BuildToolbarModel));

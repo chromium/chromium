@@ -44,7 +44,7 @@ HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
 
   // Guest sessions are supported but redirect to the primary OTR profile.
   if (profile->IsGuestSession())
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Don't create the service for OTR profiles outside of guest sessions.
   return profile->IsOffTheRecord() ? nullptr : context;

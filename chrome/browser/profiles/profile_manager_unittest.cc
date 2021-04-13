@@ -1038,7 +1038,7 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   EXPECT_EQ(IncognitoModePrefs::kDefaultAvailability,
             IncognitoModePrefs::GetAvailability(prefs));
 
-  ASSERT_TRUE(profile->GetPrimaryOTRProfile());
+  ASSERT_TRUE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   IncognitoModePrefs::SetAvailability(prefs, IncognitoModePrefs::DISABLED);
   EXPECT_FALSE(
@@ -1194,7 +1194,8 @@ TEST_F(ProfileManagerTest, LastOpenedProfilesDoesNotContainIncognito) {
   EXPECT_EQ(profile1, last_opened_profiles[0]);
 
   // And for profile2.
-  Browser::CreateParams profile2_params(profile1->GetPrimaryOTRProfile(), true);
+  Browser::CreateParams profile2_params(
+      profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true), true);
   std::unique_ptr<Browser> browser2a(
       CreateBrowserWithTestWindowForParams(profile2_params));
 

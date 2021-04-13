@@ -287,7 +287,8 @@ bool CanOpenProfileOnStartup(Profile* profile) {
     return chrome::GetBrowserCount(profile->GetOriginalProfile()) > 0;
 
   return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
-         (chrome::GetBrowserCount(profile->GetPrimaryOTRProfile()) > 0);
+         (chrome::GetBrowserCount(
+              profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)) > 0);
 #endif
 }
 
@@ -593,13 +594,13 @@ Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
     profile = g_browser_process->profile_manager()->GetProfile(
         ProfileManager::GetGuestProfilePath());
     if (!profile->IsEphemeralGuestProfile())
-      profile = profile->GetPrimaryOTRProfile();
+      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     return profile;
   }
 
   if (IncognitoModePrefs::ShouldLaunchIncognito(command_line,
                                                 profile->GetPrefs())) {
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1004,7 +1005,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // signin page.
   if (command_line.HasSwitch(credential_provider::kGcpwSigninSwitch)) {
     // Use incognito profile since this is a credential provider logon.
-    Profile* profile = last_used_profile->GetPrimaryOTRProfile();
+    Profile* profile =
+        last_used_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     DCHECK(profile->IsIncognitoProfile());
     // NOTE: All launch urls are ignored when running with --gcpw-signin since
     // this mode only loads Google's sign in page.
@@ -1116,7 +1118,8 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
   if (last_opened_profiles.empty() || was_windows_notification_launch) {
     if (CanOpenProfileOnStartup(last_used_profile)) {
       Profile* profile_to_open = last_used_profile->IsGuestSession()
-                                     ? last_used_profile->GetPrimaryOTRProfile()
+                                     ? last_used_profile->GetPrimaryOTRProfile(
+                                           /*create_if_needed=*/true)
                                      : last_used_profile;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup) {

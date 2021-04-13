@@ -929,7 +929,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoModeTest) {
   // Get an incognito profile and toolbar.
   ToolbarActionsModel* incognito_model =
       extensions::extension_action_test_util::CreateToolbarModelForProfile(
-          profile()->GetPrimaryOTRProfile());
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   ToolbarActionsModelTestObserver incognito_observer(incognito_model);
   EXPECT_EQ(0u, incognito_observer.moved_count());
@@ -1035,7 +1035,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   // Get an incognito profile and toolbar.
   ToolbarActionsModel* incognito_model =
       extensions::extension_action_test_util::CreateToolbarModelForProfile(
-          profile()->GetPrimaryOTRProfile());
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ToolbarActionsModelTestObserver incognito_observer(incognito_model);
 
   // Right now, no actions are enabled in incognito mode.

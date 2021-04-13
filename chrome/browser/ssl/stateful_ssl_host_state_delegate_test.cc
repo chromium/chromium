@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, PRE_AfterRestart) {
   auto* incognito_tab =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
 
-  Profile* incognito = profile->GetPrimaryOTRProfile();
+  Profile* incognito = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   content::SSLHostStateDelegate* incognito_state =
       incognito->GetSSLHostStateDelegate();
   EXPECT_EQ(
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
   auto* incognito_tab =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
 
-  Profile* incognito = profile->GetPrimaryOTRProfile();
+  Profile* incognito = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   content::SSLHostStateDelegate* incognito_state =
       incognito->GetSSLHostStateDelegate();
 

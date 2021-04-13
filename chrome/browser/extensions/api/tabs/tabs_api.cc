@@ -566,9 +566,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   Profile* calling_profile = Profile::FromBrowserContext(browser_context());
-  Profile* window_profile = open_incognito_window
-                                ? calling_profile->GetPrimaryOTRProfile()
-                                : calling_profile;
+  Profile* window_profile =
+      open_incognito_window
+          ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : calling_profile;
 
   // Look for optional tab id.
   if (create_data && create_data->tab_id) {

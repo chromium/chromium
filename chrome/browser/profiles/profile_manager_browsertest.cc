@@ -443,14 +443,14 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, ProfileFromProfileKey) {
                           profile2->GetProfileKey()));
 
   // Create off-the-record profiles.
-  Profile* otr_1a = profile1->GetPrimaryOTRProfile();
-  Profile* otr_1b =
-      profile1->GetOffTheRecordProfile(Profile::OTRProfileID("profile::otr1"));
-  Profile* otr_1c =
-      profile1->GetOffTheRecordProfile(Profile::OTRProfileID("profile::otr2"));
-  Profile* otr_2a = profile2->GetPrimaryOTRProfile();
-  Profile* otr_2b =
-      profile2->GetOffTheRecordProfile(Profile::OTRProfileID("profile::otr1"));
+  Profile* otr_1a = profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* otr_1b = profile1->GetOffTheRecordProfile(
+      Profile::OTRProfileID("profile::otr1"), /*create_if_needed=*/true);
+  Profile* otr_1c = profile1->GetOffTheRecordProfile(
+      Profile::OTRProfileID("profile::otr2"), /*create_if_needed=*/true);
+  Profile* otr_2a = profile2->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* otr_2b = profile2->GetOffTheRecordProfile(
+      Profile::OTRProfileID("profile::otr1"), /*create_if_needed=*/true);
 
   EXPECT_EQ(otr_1a,
             profile_manager->GetProfileFromProfileKey(otr_1a->GetProfileKey()));
@@ -745,7 +745,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, IncognitoProfile) {
   size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
 
   // Create an incognito profile.
-  Profile* incognito_profile = profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   EXPECT_TRUE(profile->HasPrimaryOTRProfile());
   ASSERT_TRUE(profile_manager->IsValidProfile(incognito_profile));

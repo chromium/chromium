@@ -165,7 +165,8 @@ HatsNextWebDialog::HatsNextWebDialog(
                     ->GetAppMenuButton(),
           views::BubbleBorder::TOP_RIGHT),
       otr_profile_(browser->profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"))),
+          Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"),
+          /*create_if_needed=*/true)),
       browser_(browser),
       trigger_id_(trigger_id),
       hats_survey_url_(hats_survey_url),

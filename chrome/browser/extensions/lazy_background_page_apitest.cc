@@ -89,7 +89,7 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
                            UnloadedExtensionReason reason) override {
     original_complete_ = std::make_unique<LazyBackgroundObserver>(profile_);
     incognito_complete_ = std::make_unique<LazyBackgroundObserver>(
-        profile_->GetPrimaryOTRProfile());
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   Profile* profile_;

@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SplitModeIncognito) {
   ResultCatcher catcher, catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   LoadAndReplyWhenSatisfied(SYNC,
       "assertEmpty", "assertEmpty", "split_incognito");
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ResultCatcher catcher, catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   LoadAndReplyWhenSatisfied(SYNC,
       "assertNoNotifications", "assertNoNotifications", "split_incognito");
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ResultCatcher catcher, catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   LoadAndReplyWhenSatisfied(SYNC,
       "assertNoNotifications", "assertNoNotifications", "split_incognito");
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ResultCatcher catcher, catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   const Extension* extension =
       LoadAndReplyWhenSatisfied(SYNC,
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   ResultCatcher catcher, catcher_incognito;
   catcher.RestrictToBrowserContext(browser()->profile());
   catcher_incognito.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   const Extension* extension =
       LoadAndReplyWhenSatisfied(LOCAL,

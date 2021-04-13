@@ -34,7 +34,8 @@ TEST_F(ChromeLocalPresentationManagerFactoryTest, CreateForRegularProfile) {
 }
 
 TEST_F(ChromeLocalPresentationManagerFactoryTest, CreateForIncognitoProfile) {
-  Profile* incognito_profile = profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito_profile);
 
   // Makes sure a LocalPresentationManager can be created from an incognito

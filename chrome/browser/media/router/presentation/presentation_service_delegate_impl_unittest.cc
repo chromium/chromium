@@ -272,7 +272,8 @@ class PresentationServiceDelegateImplIncognitoTest
  protected:
   content::WebContents* GetWebContents() override {
     if (!off_the_record_web_contents_) {
-      Profile* incognito_profile = profile()->GetPrimaryOTRProfile();
+      Profile* incognito_profile =
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
       off_the_record_web_contents_ =
           content::WebContentsTester::CreateTestWebContents(incognito_profile,
                                                             nullptr);
@@ -816,8 +817,9 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
 
   // Set the user preference for |origin| to prefer tab mirroring.
   {
-    ListPrefUpdate update(profile()->GetPrimaryOTRProfile()->GetPrefs(),
-                          prefs::kMediaRouterTabMirroringSources);
+    ListPrefUpdate update(
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
+        prefs::kMediaRouterTabMirroringSources);
     update->AppendIfNotPresent(std::make_unique<base::Value>(origin));
   }
 
@@ -847,8 +849,9 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
 
   // Remove the user preference for |origin| in OffTheRecord.
   {
-    ListPrefUpdate update(profile()->GetPrimaryOTRProfile()->GetPrefs(),
-                          prefs::kMediaRouterTabMirroringSources);
+    ListPrefUpdate update(
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
+        prefs::kMediaRouterTabMirroringSources);
     update->Remove(base::Value(origin), nullptr);
   }
 

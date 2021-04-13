@@ -119,7 +119,8 @@ void CookiesEventRouter::OnCookieChange(bool otr,
                    change.cause != net::CookieChangeCause::INSERTED);
 
   Profile* profile =
-      otr ? profile_->GetPrimaryOTRProfile() : profile_->GetOriginalProfile();
+      otr ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : profile_->GetOriginalProfile();
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
   dict->Set(cookies_api_constants::kCookieKey, cookie.ToValue());
@@ -175,9 +176,10 @@ void CookiesEventRouter::MaybeStartListening() {
   DCHECK(profile_);
 
   Profile* original_profile = profile_->GetOriginalProfile();
-  Profile* otr_profile = original_profile->HasPrimaryOTRProfile()
-                             ? original_profile->GetPrimaryOTRProfile()
-                             : nullptr;
+  Profile* otr_profile =
+      original_profile->HasPrimaryOTRProfile()
+          ? original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : nullptr;
 
   if (!receiver_.is_bound())
     BindToCookieManager(&receiver_, original_profile);
@@ -565,7 +567,8 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   std::unique_ptr<base::ListValue> incognito_tab_ids;
   if (include_incognito_information() &&
       original_profile->HasPrimaryOTRProfile()) {
-    incognito_profile = original_profile->GetPrimaryOTRProfile();
+    incognito_profile =
+        original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     if (incognito_profile)
       incognito_tab_ids = std::make_unique<base::ListValue>();
   }

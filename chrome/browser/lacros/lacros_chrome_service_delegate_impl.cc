@@ -85,7 +85,9 @@ void LacrosChromeServiceDelegateImpl::NewWindow(bool incognito) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
-  chrome::NewEmptyWindow(incognito ? profile->GetPrimaryOTRProfile() : profile);
+  chrome::NewEmptyWindow(
+      incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                : profile);
 }
 
 void LacrosChromeServiceDelegateImpl::NewTab() {

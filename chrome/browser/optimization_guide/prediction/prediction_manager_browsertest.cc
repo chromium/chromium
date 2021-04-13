@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
     base::HistogramTester otr_histogram_tester;
 
     OptimizationGuideKeyedServiceFactory::GetForProfile(
-        browser()->profile()->GetPrimaryOTRProfile())
+        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true))
         ->RegisterOptimizationTargets(
             {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
     RetryForHistogramUntilCountReached(
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
 
   // Register with off the record profile.
   OptimizationGuideKeyedServiceFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile())
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true))
       ->RegisterOptimizationTargets(
           {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
   // Wait until logic finishes running.

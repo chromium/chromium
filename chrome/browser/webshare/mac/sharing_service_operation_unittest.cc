@@ -39,7 +39,8 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetIncognito() {
-    Profile* const otr_profile = profile()->GetPrimaryOTRProfile();
+    Profile* const otr_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsOffTheRecord());
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
     scoped_refptr<content::SiteInstance> instance =

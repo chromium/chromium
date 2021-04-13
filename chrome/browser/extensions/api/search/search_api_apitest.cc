@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Incognito) {
 IN_PROC_BROWSER_TEST_F(SearchApiTest, IncognitoSplit) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   CreateIncognitoBrowser(browser()->profile());
   ASSERT_TRUE(RunExtensionTest({.name = "search/query/incognito_split"},
                                {.allow_in_incognito = true}))

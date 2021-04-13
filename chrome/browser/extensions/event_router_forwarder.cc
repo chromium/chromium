@@ -96,7 +96,8 @@ void EventRouterForwarder::HandleEvent(
   if (dispatch_to_off_the_record_profiles) {
     for (Profile* profile : profiles_to_dispatch_to) {
       if (profile->HasPrimaryOTRProfile())
-        profiles_to_dispatch_to.insert(profile->GetPrimaryOTRProfile());
+        profiles_to_dispatch_to.insert(
+            profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
     }
   }
 

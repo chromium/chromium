@@ -114,7 +114,8 @@ PresentationReceiverWindowController::PresentationReceiverWindowController(
     base::OnceClosure termination_callback,
     TitleChangeCallback title_change_callback)
     : otr_profile_(profile->GetOffTheRecordProfile(
-          Profile::OTRProfileID::CreateUniqueForMediaRouter())),
+          Profile::OTRProfileID::CreateUniqueForMediaRouter(),
+          /*create_if_needed=*/true)),
       web_contents_(WebContents::Create(CreateWebContentsParams(otr_profile_))),
       window_(PresentationReceiverWindow::Create(this, bounds)),
       termination_callback_(std::move(termination_callback)),

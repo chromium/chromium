@@ -180,7 +180,7 @@ TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
             Browser::GetCreationStatusForProfile(test_profile.get()));
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
-                test_profile->GetPrimaryOTRProfile()));
+                test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 // Tests BrowserCreate() when Incognito mode is disabled.
@@ -194,7 +194,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
   // disabled.
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
-                test_profile->GetPrimaryOTRProfile()));
+                test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   // Verify creating a browser in the original profile succeeds.
   Browser::CreateParams create_params(test_profile.get(), false);
@@ -218,7 +218,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
 
   // Creating a browser in OTR test profile should succeed.
   Browser::CreateParams off_the_record_create_params(
-      test_profile->GetPrimaryOTRProfile(), false);
+      test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
   std::unique_ptr<BrowserWindow> test_window(CreateBrowserWindow());
   off_the_record_create_params.window = test_window.get();
   std::unique_ptr<Browser> otr_browser(
@@ -243,7 +243,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
 
   // Creating a browser in OTR test profile should succeed.
   Browser::CreateParams off_the_record_create_params(
-      test_profile->GetPrimaryOTRProfile(), false);
+      test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
   std::unique_ptr<BrowserWindow> otr_test_window(CreateBrowserWindow());
   off_the_record_create_params.window = otr_test_window.get();
   std::unique_ptr<Browser> otr_browser(
@@ -428,7 +428,8 @@ TEST_P(GuestBrowserUnitTest, CreateGuestSessionBrowser) {
 
     // Create OTR profile for the Guest profile.
     EXPECT_TRUE(otr_profile_builder.BuildIncognito(test_profile.get()));
-    guest_profile = test_profile->GetPrimaryOTRProfile();
+    guest_profile =
+        test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 
   // Creating a browser should succeed.

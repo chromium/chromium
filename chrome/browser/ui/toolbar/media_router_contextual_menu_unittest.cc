@@ -73,7 +73,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
     MediaRouterActionController::SetAlwaysShowActionPref(profile(), true);
 
     media_router::MediaRouterUIServiceFactory::GetInstance()->SetTestingFactory(
-        profile()->GetPrimaryOTRProfile(),
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         base::BindRepeating(&BuildUIService));
   }
 
@@ -156,8 +156,8 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
 
   std::unique_ptr<BrowserWindow> window(CreateBrowserWindow());
   std::unique_ptr<Browser> incognito_browser(
-      CreateBrowser(profile()->GetPrimaryOTRProfile(), Browser::TYPE_NORMAL,
-                    false, window.get()));
+      CreateBrowser(profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+                    Browser::TYPE_NORMAL, false, window.get()));
 
   MediaRouterContextualMenu incognito_menu(incognito_browser.get(),
                                            kShownByPolicy, &observer_);

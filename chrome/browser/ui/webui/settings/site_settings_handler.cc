@@ -506,7 +506,8 @@ void SiteSettingsHandler::RegisterMessages() {
 void SiteSettingsHandler::OnJavascriptAllowed() {
   ObserveSourcesForProfile(profile_);
   if (profile_->HasPrimaryOTRProfile())
-    ObserveSourcesForProfile(profile_->GetPrimaryOTRProfile());
+    ObserveSourcesForProfile(
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Here we only subscribe to the HostZoomMap for the default storage partition
   // since we don't allow the user to manage the zoom levels for apps.
@@ -756,8 +757,8 @@ void SiteSettingsHandler::HandleGetAllSites(const base::ListValue* args) {
   // settings. Thus if it exists, just get exceptions for the incognito profile.
   Profile* profile = profile_;
   if (profile_->HasPrimaryOTRProfile() &&
-      profile_->GetPrimaryOTRProfile() != profile_) {
-    profile = profile_->GetPrimaryOTRProfile();
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true) != profile_) {
+    profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
   DCHECK(profile);
   HostContentSettingsMap* map =
@@ -944,9 +945,10 @@ void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
       content_type, profile_, extension_registry, web_ui(), /*incognito=*/false,
       exceptions.get());
 
-  Profile* incognito = profile_->HasPrimaryOTRProfile()
-                           ? profile_->GetPrimaryOTRProfile()
-                           : nullptr;
+  Profile* incognito =
+      profile_->HasPrimaryOTRProfile()
+          ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : nullptr;
   // On Chrome OS in Guest mode the incognito profile is the primary profile,
   // so do not fetch an extra copy of the same exceptions.
   if (incognito && incognito != profile_) {
@@ -1112,7 +1114,7 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (incognito) {
     if (!profile_->HasPrimaryOTRProfile())
       return;
-    profile = profile_->GetPrimaryOTRProfile();
+    profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     profile = profile_;
   }
@@ -1177,7 +1179,7 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   if (incognito) {
     if (!profile_->HasPrimaryOTRProfile())
       return;
-    profile = profile_->GetPrimaryOTRProfile();
+    profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     profile = profile_;
   }

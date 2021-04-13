@@ -200,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   // Setting an incognito preference should not create an incognito profile.
   EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
 
-  PrefService* otr_prefs = profile_->GetPrimaryOTRProfile()->GetPrefs();
+  PrefService* otr_prefs =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
   auto* otr_pref = otr_prefs->FindPreference(prefs::kCookieControlsMode);
   ASSERT_TRUE(otr_pref);
   EXPECT_TRUE(otr_pref->IsExtensionControlled());
@@ -227,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
 
   EXPECT_TRUE(profile_->HasPrimaryOTRProfile());
 
-  PrefService* otr_prefs = profile_->GetPrimaryOTRProfile()->GetPrefs();
+  PrefService* otr_prefs =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
   auto* otr_pref = otr_prefs->FindPreference(prefs::kCookieControlsMode);
   ASSERT_TRUE(otr_pref);
   EXPECT_TRUE(otr_pref->IsExtensionControlled());
@@ -262,7 +264,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
   extensions::ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile_);
   extensions::ResultCatcher catcher_incognito;
-  catcher_incognito.RestrictToBrowserContext(profile_->GetPrimaryOTRProfile());
+  catcher_incognito.RestrictToBrowserContext(
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // Open an incognito window.
   OpenURLOffTheRecord(profile_, GURL("chrome://newtab/"));

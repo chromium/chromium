@@ -59,8 +59,9 @@ void UpdateGoogleSpeechSynthesisKeepAliveCount(content::BrowserContext* context,
     return;
 
   UpdateGoogleSpeechSynthesisKeepAliveCountHelper(
-      profile->HasPrimaryOTRProfile() ? profile->GetPrimaryOTRProfile()
-                                      : profile,
+      profile->HasPrimaryOTRProfile()
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : profile,
       increment);
 }
 

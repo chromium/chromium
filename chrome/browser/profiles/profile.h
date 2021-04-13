@@ -257,17 +257,17 @@ class Profile : public content::BrowserContext {
   // WARNING: Once a profile is no longer used, use
   // ProfileDestroyer::DestroyProfileWhenAppropriate or
   // ProfileDestroyer::DestroyOffTheRecordProfileNow to destroy it.
-  // TODO(https://crbug.com/1191315): Remove default value after auditing and
-  // updating use cases.
   virtual Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
-                                          bool create_if_needed = true) = 0;
+                                          bool create_if_needed) = 0;
 
   // Returns all OffTheRecord profiles.
   virtual std::vector<Profile*> GetAllOffTheRecordProfiles() = 0;
 
   // Returns the primary OffTheRecord profile. Creates the profile if it doesn't
-  // exist.
-  Profile* GetPrimaryOTRProfile();
+  // exist. If primary OffTheRecord profile does not exist and
+  // |create_if_needed| is true, a new profile is created, otherwise nullptr is
+  // returned.
+  Profile* GetPrimaryOTRProfile(bool create_if_needed);
 
   // Destroys the OffTheRecord profile.
   virtual void DestroyOffTheRecordProfile(Profile* otr_profile) = 0;

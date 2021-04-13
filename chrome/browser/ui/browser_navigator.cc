@@ -266,8 +266,9 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     }
     case WindowOpenDisposition::OFF_THE_RECORD:
       // Make or find an incognito window.
-      return {GetOrCreateBrowser(profile->GetPrimaryOTRProfile(),
-                                 params.user_gesture),
+      return {GetOrCreateBrowser(
+                  profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+                  params.user_gesture),
               -1};
     // The following types result in no navigation.
     case WindowOpenDisposition::SAVE_TO_DISK:

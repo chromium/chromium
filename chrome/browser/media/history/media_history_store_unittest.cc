@@ -107,7 +107,7 @@ class MediaHistoryStoreUnitTest
 
     // Set up the media history store for OTR.
     otr_service_ = std::make_unique<MediaHistoryKeyedService>(
-        profile_->GetPrimaryOTRProfile());
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   void TearDown() override {

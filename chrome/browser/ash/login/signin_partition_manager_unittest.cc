@@ -133,7 +133,8 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   Profile* GetSigninProfile() {
-    return signin_browser_context_->GetPrimaryOTRProfile();
+    return signin_browser_context_->GetPrimaryOTRProfile(
+        /*create_if_needed=*/true);
   }
 
   SigninPartitionManager* GetSigninPartitionManager() {

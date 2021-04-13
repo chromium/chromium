@@ -592,7 +592,7 @@ bool InputImeEventRouter::RegisterImeExtension(
   }
 
   if (is_login && profile->HasPrimaryOTRProfile()) {
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 
   auto observer = std::make_unique<ImeObserverChromeOS>(extension_id, profile);

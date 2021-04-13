@@ -562,10 +562,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
   // case of guest sessions, retrieving the service instance for the primary OTR
   // profile should yield the same result as retrieving the service instance for
   // a non-OTR guest session profile.
-  ASSERT_TRUE(guest_profile->GetPrimaryOTRProfile());
+  ASSERT_TRUE(guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   HoldingSpaceKeyedService* const primary_otr_guest_profile_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          guest_profile->GetPrimaryOTRProfile());
+          guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ASSERT_EQ(guest_profile_service, primary_otr_guest_profile_service);
 
   // Construct a second OTR profile from `guest_profile`.

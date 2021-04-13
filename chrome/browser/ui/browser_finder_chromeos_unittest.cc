@@ -91,7 +91,8 @@ TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
   set_browser(nullptr);
 
   // Create an incognito browser.
-  Browser::CreateParams params(profile()->GetPrimaryOTRProfile(), true);
+  Browser::CreateParams params(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), true);
   std::unique_ptr<Browser> incognito_browser(
       chrome::CreateBrowserWithViewsTestWindowForParams(params));
   // Incognito windows are excluded in GetBrowserCount() because kMatchAll

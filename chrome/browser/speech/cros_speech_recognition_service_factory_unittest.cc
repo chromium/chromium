@@ -21,7 +21,7 @@ TEST(CrosSpeechRecognitionServiceFactoryTest, IncognitoProfile) {
 
   const speech::SpeechRecognitionService* const service =
       CrosSpeechRecognitionServiceFactory::GetForProfile(
-          profile.GetPrimaryOTRProfile());
+          profile.GetPrimaryOTRProfile(/*create_if_needed=*/true));
   EXPECT_THAT(service, Not(IsNull()));
 }
 

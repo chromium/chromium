@@ -19,7 +19,7 @@ AndroidIncognitoSessionDurationsServiceFactory::GetForActiveUserProfile() {
   if (!profile->HasPrimaryOTRProfile())
     return nullptr;
   return AndroidIncognitoSessionDurationsServiceFactory::GetForProfile(
-      profile->GetPrimaryOTRProfile());
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 }
 
 // static

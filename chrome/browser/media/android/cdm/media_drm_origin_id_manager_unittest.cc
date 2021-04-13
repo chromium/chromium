@@ -403,7 +403,8 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
 TEST_F(MediaDrmOriginIdManagerTest, Incognito) {
   // No MediaDrmOriginIdManager should be created for an incognito profile.
   Initialize();
-  auto* incognito_profile = profile_->GetPrimaryOTRProfile();
+  auto* incognito_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_FALSE(
       MediaDrmOriginIdManagerFactory::GetForProfile(incognito_profile));
 }

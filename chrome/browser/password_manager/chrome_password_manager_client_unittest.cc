@@ -403,7 +403,7 @@ TEST_F(ChromePasswordManagerClientTest,
        SavingAndFillingDisabledConditionsInOffTheRecord) {
   std::unique_ptr<WebContents> incognito_web_contents(
       content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(), nullptr));
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
   std::unique_ptr<MockChromePasswordManagerClient> client(
       new MockChromePasswordManagerClient(incognito_web_contents.get()));
   EXPECT_CALL(*client, GetMainFrameCertStatus()).WillRepeatedly(Return(0));
@@ -428,7 +428,10 @@ TEST_F(ChromePasswordManagerClientTest,
   TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
       scoped_feature_list, /*enabled=*/false);
   profile()->SetGuestSession(true);
-  profile()->GetPrimaryOTRProfile()->AsTestingProfile()->SetGuestSession(true);
+  profile()
+      ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+      ->AsTestingProfile()
+      ->SetGuestSession(true);
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));

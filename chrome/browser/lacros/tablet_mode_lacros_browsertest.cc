@@ -39,7 +39,8 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
 
   // Create an incognito window and make it visible.
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(), true));
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
   AddBlankTabAndShow(incognito_browser);
   aura::Window* incognito_window =
       incognito_browser->window()->GetNativeWindow();

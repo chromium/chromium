@@ -376,8 +376,8 @@ TEST_P(MediaEngagementServiceTest, IncognitoEngagementService) {
   base::Time origin1_time = Now();
   RecordVisitAndPlaybackAndAdvanceClock(origin2);
 
-  MediaEngagementService* incognito_service =
-      MediaEngagementService::Get(profile()->GetPrimaryOTRProfile());
+  MediaEngagementService* incognito_service = MediaEngagementService::Get(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ExpectScores(incognito_service, origin1, 0.05, 1, 1, origin1_time);
   ExpectScores(incognito_service, origin2, 0.05, 1, 1, Now());
   ExpectScores(incognito_service, origin3, 0.0, 0, 0, TimeNotSet());
@@ -411,8 +411,8 @@ TEST_P(MediaEngagementServiceTest, IncognitoOverrideRegularProfile) {
                TimeNotSet());
   ExpectScores(kOrigin2, 0.0, 1, 0, TimeNotSet());
 
-  MediaEngagementService* incognito_service =
-      MediaEngagementService::Get(profile()->GetPrimaryOTRProfile());
+  MediaEngagementService* incognito_service = MediaEngagementService::Get(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ExpectScores(incognito_service, kOrigin1, 0.05,
                MediaEngagementScore::GetScoreMinVisits(), 1, TimeNotSet());
   ExpectScores(incognito_service, kOrigin2, 0.0, 1, 0, TimeNotSet());

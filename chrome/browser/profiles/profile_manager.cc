@@ -342,7 +342,8 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback client_callback,
   }
   DCHECK(profile);
   std::move(client_callback)
-      .Run(incognito ? profile->GetPrimaryOTRProfile() : profile);
+      .Run(incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     : profile);
 }
 
 #if !defined(OS_ANDROID)
@@ -517,7 +518,7 @@ Profile* ProfileManager::GetLastUsedProfileAllowedByPolicy() {
   if (!profile)
     return nullptr;
   if (IsOffTheRecordModeForced(profile))
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
 
@@ -627,7 +628,7 @@ Profile* ProfileManager::CreateInitialProfile() {
           profile_manager->GetInitialProfileDir()));
 
   if (profile_manager->ShouldGoOffTheRecord(profile))
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
 
@@ -731,7 +732,7 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
         SetNonPersonalProfilePrefs(profile);
       }
       if (profile->IsGuestSession() || profile->IsSystemProfile())
-        profile = profile->GetPrimaryOTRProfile();
+        profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
       // Profile has already been created. Run callback immediately.
       callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
@@ -793,7 +794,9 @@ Profile* ProfileManager::GetLastUsedProfile(
   LOG_IF(FATAL, !profile) << "Calling GetLastUsedProfile() before profile "
                           << "initialization is completed.";
 
-  return profile->IsGuestSession() ? profile->GetPrimaryOTRProfile() : profile;
+  return profile->IsGuestSession()
+             ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+             : profile;
 #else
   return GetProfile(GetLastUsedProfileDir(user_data_dir));
 #endif
@@ -1292,7 +1295,7 @@ void ProfileManager::OnProfileCreated(Profile* profile,
   if (success) {
     DoFinalInit(info, go_off_the_record);
     if (go_off_the_record)
-      profile = profile->GetPrimaryOTRProfile();
+      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     profile = nullptr;
     profiles_info_.erase(iter);
@@ -1612,7 +1615,7 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfileFromPath(
     // many of the browser and ui tests fail. We do return the OTR profile
     // if the login-profile switch is passed so that we can test this.
     if (ShouldGoOffTheRecord(profile))
-      return profile->GetPrimaryOTRProfile();
+      return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     DCHECK(!user_manager::UserManager::Get()->IsLoggedInAsGuest());
     return profile;
   }
@@ -1628,7 +1631,7 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfileFromPath(
   // Some unit tests didn't initialize the UserManager.
   if (user_manager::UserManager::IsInitialized() &&
       user_manager::UserManager::Get()->IsLoggedInAsGuest())
-    return profile->GetPrimaryOTRProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 #else
   base::FilePath default_profile_dir(user_data_dir);

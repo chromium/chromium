@@ -22,8 +22,8 @@ CookieControlsServiceBridge::CookieControlsServiceBridge(
 void CookieControlsServiceBridge::UpdateServiceIfNecessary() {
   // This class is only for the incognito NTP, so it is safe to always use the
   // primary OTR profile.
-  Profile* profile =
-      ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile();
+  Profile* profile = ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
   CookieControlsService* new_service =
       CookieControlsServiceFactory::GetForProfile(profile);
   // Update the service only if it is for a new profile

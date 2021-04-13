@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS, PRE_RestoreBrowserWindows) {
   // Create a second normal browser window.
   CreateBrowserWithParams(Browser::CreateParams(profile(), true));
   // Create a third incognito browser window which should not get restored.
-  CreateBrowserWithParams(
-      Browser::CreateParams(profile()->GetPrimaryOTRProfile(), true));
+  CreateBrowserWithParams(Browser::CreateParams(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
   TurnOnSessionRestore();
 }
 

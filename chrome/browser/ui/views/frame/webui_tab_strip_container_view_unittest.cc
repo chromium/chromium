@@ -117,9 +117,9 @@ TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
   // Another group from a different profile.
   std::unique_ptr<BrowserWindow> new_window(
       std::make_unique<TestBrowserWindow>());
-  std::unique_ptr<Browser> new_browser =
-      CreateBrowser(browser()->profile()->GetPrimaryOTRProfile(),
-                    browser()->type(), false, new_window.get());
+  std::unique_ptr<Browser> new_browser = CreateBrowser(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->type(), false, new_window.get());
   AddTab(new_browser.get(), GURL("http://foo"));
 
   tab_groups::TabGroupId new_group_id =

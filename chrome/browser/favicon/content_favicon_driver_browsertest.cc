@@ -892,7 +892,8 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
 
   // Visiting the site in incognito mode should always load the favicon.
   Browser* incognito = Browser::Create(Browser::CreateParams(
-      browser()->profile()->GetPrimaryOTRProfile(), true));
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
   AddBlankTabAndShow(incognito);
   {
     PendingTaskWaiter waiter(

@@ -1594,7 +1594,7 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   service_->AddPointsForTesting(url2, 2);
 
   auto incognito_service = std::make_unique<SiteEngagementService>(
-      profile()->GetPrimaryOTRProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   incognito_service->SetClockForTesting(&clock_);
   EXPECT_EQ(1, incognito_service->GetScore(url1));
   EXPECT_EQ(2, incognito_service->GetScore(url2));
@@ -1637,7 +1637,7 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   HostContentSettingsMap* incognito_settings_map =
       HostContentSettingsMapFactory::GetForProfile(
-          profile()->GetPrimaryOTRProfile());
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // All scores are 0 to start.
   EXPECT_EQ(0, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
@@ -1661,8 +1661,8 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
   EXPECT_EQ(2, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               incognito_settings_map, url2));
 
-  SiteEngagementService* incognito_service =
-      SiteEngagementService::Get(profile()->GetPrimaryOTRProfile());
+  SiteEngagementService* incognito_service = SiteEngagementService::Get(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ASSERT_TRUE(incognito_service);
   incognito_service->AddPointsForTesting(url1, 3);
   incognito_service->AddPointsForTesting(url2, 1);

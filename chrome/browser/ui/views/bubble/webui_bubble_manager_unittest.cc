@@ -109,7 +109,7 @@ TEST_F(WebUIBubbleManagerTest,
   const char* kProfileName = "Person 1";
   auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
   auto* otr_profile = test_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::WebUIBubble"));
+      Profile::OTRProfileID("Test::WebUIBubble"), /*create_if_needed=*/true);
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);

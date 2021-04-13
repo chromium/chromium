@@ -351,8 +351,9 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito) {
   Profile* profile = (browser && browser->profile())
                          ? browser->profile()->GetOriginalProfile()
                          : ProfileManager::GetActiveUserProfile();
-  chrome::NewEmptyWindow(is_incognito ? profile->GetPrimaryOTRProfile()
-                                      : profile);
+  chrome::NewEmptyWindow(
+      is_incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                   : profile);
 }
 
 void ChromeNewWindowClient::OpenFileManager() {

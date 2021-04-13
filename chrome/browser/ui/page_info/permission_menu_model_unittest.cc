@@ -38,7 +38,8 @@ class PermissionMenuModelTest : public testing::Test {
 
   void SetOffTheRecordProfile() {
     delegate_ = std::make_unique<ChromePageInfoUiDelegate>(
-        profile()->GetPrimaryOTRProfile(), GURL("http://www.google.com"));
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        GURL("http://www.google.com"));
   }
 
   void SetPageInfoUiDelegate() {

@@ -865,7 +865,8 @@ base::Value GetChooserExceptionListFromProfile(
       objects = chooser_context->GetAllGrantedObjects();
 
   if (profile->HasPrimaryOTRProfile()) {
-    Profile* incognito_profile = profile->GetPrimaryOTRProfile();
+    Profile* incognito_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     permissions::ChooserContextBase* incognito_chooser_context =
         chooser_type.get_context(incognito_profile);
     std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>

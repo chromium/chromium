@@ -610,7 +610,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
 TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   std::unique_ptr<content::WebContents> incognito_web_contents(
       content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(), nullptr));
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
 
   // Set up password manager stuff.
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(

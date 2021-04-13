@@ -85,8 +85,9 @@ void UsbPrinterNotification::Click(
       // open the Settings page. There is a check in Browser::Browser that only
       // OffTheRecord profiles can open browser windows in guest mode.
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_->IsGuestSession() ? profile_->GetPrimaryOTRProfile()
-                                     : profile_,
+          profile_->IsGuestSession()
+              ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+              : profile_,
           chromeos::settings::mojom::kPrintingDetailsSubpagePath);
     }
     return;

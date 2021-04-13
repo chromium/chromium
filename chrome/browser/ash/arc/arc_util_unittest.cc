@@ -226,8 +226,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(nullptr));
 
   // false for incognito mode profile.
-  EXPECT_FALSE(
-      IsArcAllowedForProfileOnFirstCall(profile()->GetPrimaryOTRProfile()));
+  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfileLegacy) {
@@ -241,8 +241,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfileLegacy) {
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(nullptr));
 
   // false for incognito mode profile.
-  EXPECT_FALSE(
-      IsArcAllowedForProfileOnFirstCall(profile()->GetPrimaryOTRProfile()));
+  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_DisableArc) {

@@ -451,8 +451,8 @@ void GetManagers(content::BrowserContext* context,
   *manager = BrowserContext::GetDownloadManager(profile->GetOriginalProfile());
   if (profile->HasPrimaryOTRProfile() &&
       (include_incognito || profile->IsOffTheRecord())) {
-    *incognito_manager =
-        BrowserContext::GetDownloadManager(profile->GetPrimaryOTRProfile());
+    *incognito_manager = BrowserContext::GetDownloadManager(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   } else {
     *incognito_manager = NULL;
   }
@@ -1160,9 +1160,10 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
     bool off_record = ((incognito_manager != NULL) &&
                        (incognito_manager->GetDownload(download_id) != NULL));
     Profile* profile = Profile::FromBrowserContext(browser_context());
-    std::unique_ptr<base::DictionaryValue> json_item(
-        DownloadItemToJSON(*it, off_record ? profile->GetPrimaryOTRProfile()
-                                           : profile->GetOriginalProfile()));
+    std::unique_ptr<base::DictionaryValue> json_item(DownloadItemToJSON(
+        *it, off_record
+                 ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                 : profile->GetOriginalProfile()));
     json_results->Append(std::move(json_item));
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_SEARCH);

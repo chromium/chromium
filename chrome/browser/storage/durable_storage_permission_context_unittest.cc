@@ -113,7 +113,7 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
 
 TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
   TestDurablePermissionContext permission_context(
-      profile()->GetPrimaryOTRProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   GURL url("https://www.google.com");
   MakeOriginImportant(url);
   NavigateAndCommit(url);
@@ -139,7 +139,8 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
 TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
   TestDurablePermissionContext permission_context(
       profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID("Test::DurableStorage")));
+          Profile::OTRProfileID("Test::DurableStorage"),
+          /*create_if_needed=*/true));
   GURL url("https://www.google.com");
   MakeOriginImportant(url);
   NavigateAndCommit(url);

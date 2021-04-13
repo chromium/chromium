@@ -1773,7 +1773,7 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (properties.incognito && *properties.incognito)
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   const Extension* extension =
       properties.extension_id

@@ -608,7 +608,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
   scoped_refptr<extensions::FileManagerPrivateMountCrostiniFunction> function(
       new extensions::FileManagerPrivateMountCrostiniFunction());
   // Use incognito profile.
-  function->set_browser_context(browser()->profile()->GetPrimaryOTRProfile());
+  function->set_browser_context(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   extensions::api_test_utils::SendResponseHelper response_helper(
       function.get());

@@ -72,8 +72,8 @@ TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
 }
 
 TEST_F(GuestOsExternalProtocolHandlerTest, OffTheRecordProfile) {
-  auto* otr_profile =
-      profile()->GetOffTheRecordProfile(Profile::OTRProfileID("otr-id"));
+  auto* otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID("otr-id"), /*create_if_needed=*/true);
 
   EXPECT_FALSE(guest_os::GetHandler(otr_profile, GURL("testscheme:12341234")));
 

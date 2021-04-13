@@ -369,7 +369,7 @@ WebContents* RestoreContentsFromByteBuffer(void* data,
     // Serialization and deserialization related functionalities are only
     // supported for Incognito tabbed Activities and they use primary OTR
     // profile.
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 
   WebContents::CreateParams params(profile);

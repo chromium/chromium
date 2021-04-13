@@ -641,7 +641,8 @@ IN_PROC_BROWSER_TEST_F(
     SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
     ServiceNotCreatedWhenIncognito) {
   EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
-                         browser()->profile()->GetPrimaryOTRProfile()));
+                         browser()->profile()->GetPrimaryOTRProfile(
+                             /*create_if_needed=*/true)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -693,7 +694,8 @@ class SearchPrefetchServiceEnabledBrowserTest
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        ServiceNotCreatedWhenIncognito) {
   EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
-                         browser()->profile()->GetPrimaryOTRProfile()));
+                         browser()->profile()->GetPrimaryOTRProfile(
+                             /*create_if_needed=*/true)));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,

@@ -318,7 +318,8 @@ MenuManager::MenuManager(content::BrowserContext* context, StateStore* store)
   Profile* profile = Profile::FromBrowserContext(context);
   observed_profiles_.AddObservation(profile);
   if (profile->HasPrimaryOTRProfile())
-    observed_profiles_.AddObservation(profile->GetPrimaryOTRProfile());
+    observed_profiles_.AddObservation(
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   if (store_)
     store_->RegisterKey(kContextMenusKey);
 }

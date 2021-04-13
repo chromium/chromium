@@ -125,8 +125,9 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
   content::WebContentsTester* otr_web_contents_tester =
       content::WebContentsTester::For(otr_web_contents.get());
   otr_web_contents_tester->SetLastCommittedURL(GURL("https://incognito.com"));
-  FakeTabModel otr_tab_model(profile()->GetPrimaryOTRProfile(),
-                             {otr_web_contents.get()});
+  FakeTabModel otr_tab_model(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      {otr_web_contents.get()});
   TabModelList::AddTabModel(&otr_tab_model);
 
   std::vector<GURL> urls =

@@ -67,8 +67,9 @@ TEST(ScanServiceFactoryTest, OriginalProfileHasService) {
 TEST(ScanServiceFactoryTest, OffTheRecordProfileHasService) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<Profile> profile = CreateProfile("");
-  EXPECT_NE(nullptr, ScanServiceFactory::GetForBrowserContext(
-                         profile->GetPrimaryOTRProfile()));
+  EXPECT_NE(nullptr,
+            ScanServiceFactory::GetForBrowserContext(
+                profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
 // Test that the ScanService cannot be created with a signin profile.

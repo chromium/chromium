@@ -124,7 +124,8 @@ class BrowserCloseTest : public testing::Test {
   Profile* CreateIncognitoProfile(Profile* profile,
                                   int windows,
                                   int downloads) {
-    Profile* otr_profile = profile->GetPrimaryOTRProfile();
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
     ConfigureCreatedProfile(otr_profile, windows, downloads);
 
@@ -373,7 +374,9 @@ class GuestBrowserCloseTest : public BrowserCloseTest,
   Profile* CreateGuestProfile(int windows, int downloads) {
     TestingProfile* profile = profile_manager()->CreateGuestProfile();
     Profile* guest_profile =
-        is_ephemeral_ ? profile : profile->GetPrimaryOTRProfile();
+        is_ephemeral_
+            ? profile
+            : profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     ConfigureCreatedProfile(guest_profile, windows, downloads);
 
     return guest_profile;

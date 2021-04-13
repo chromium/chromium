@@ -47,7 +47,8 @@ TEST_F(ProfileProtoDBFactoryTest, TestIncognitoProfile) {
   EXPECT_EQ(nullptr,
             ProfileProtoDBFactory<
                 persisted_state_db::PersistedStateContentProto>::GetInstance()
-                ->GetForProfile(profile()->GetPrimaryOTRProfile()));
+                ->GetForProfile(profile()->GetPrimaryOTRProfile(
+                    /*create_if_needed=*/true)));
 }
 
 TEST_F(ProfileProtoDBFactoryTest, TestSameProfile) {

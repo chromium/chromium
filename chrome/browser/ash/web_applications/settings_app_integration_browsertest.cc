@@ -101,7 +101,8 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
 
   // When launching from incognito profile, OS Settings gets launched to the
   // original profile.
-  Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   web_app::LaunchSystemWebAppAsync(incognito_profile,
                                    web_app::SystemAppType::SETTINGS);
   web_app::FlushSystemWebAppLaunchesForTesting(

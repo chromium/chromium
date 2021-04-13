@@ -53,7 +53,7 @@ void LockScreenStartReauthDialog::OnProfileCreated(
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
     profile_ = profile;
     g_dialog->ShowSystemDialogForBrowserContext(
-        profile->GetPrimaryOTRProfile());
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
     // Show network screen if needed.
     if (!network_state_helper_->IsConnected()) {
       ShowLockScreenNetworkDialog();

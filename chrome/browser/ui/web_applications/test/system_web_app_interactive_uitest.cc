@@ -63,7 +63,8 @@ class SystemWebAppLinkCaptureBrowserTest
  protected:
   Browser* CreateIncognitoBrowser() {
     Browser* incognito = Browser::Create(Browser::CreateParams(
-        browser()->profile()->GetPrimaryOTRProfile(), true));
+        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        true));
 
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
@@ -690,7 +691,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   ASSERT_TRUE(startup_profile->IsRegularProfile());
 
   WaitForTestSystemAppInstall();
-  Profile* incognito_profile = startup_profile->GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      startup_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();

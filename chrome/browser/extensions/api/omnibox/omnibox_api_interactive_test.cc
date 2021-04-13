@@ -254,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
   Profile* profile = browser()->profile();
   ResultCatcher catcher_incognito;
-  catcher_incognito.RestrictToBrowserContext(profile->GetPrimaryOTRProfile());
+  catcher_incognito.RestrictToBrowserContext(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   ASSERT_TRUE(
       RunExtensionTest({.name = "omnibox"}, {.allow_in_incognito = true}))

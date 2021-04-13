@@ -1206,7 +1206,7 @@ ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
 
 PrefService* ProfileImpl::GetOffTheRecordPrefs() {
   if (HasPrimaryOTRProfile()) {
-    return GetPrimaryOTRProfile()->GetPrefs();
+    return GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
   } else {
     // The extensions preference API and many tests call this method even when
     // there's no OTR profile, in order to figure out what a pref value would

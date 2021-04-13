@@ -17,9 +17,10 @@ class OptimizationGuideTabUrlProviderTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     otr_browser_window_ = CreateBrowserWindow();
-    otr_browser_ =
-        CreateBrowser(profile()->GetPrimaryOTRProfile(), browser()->type(),
-                      /*hosted_app=*/false, otr_browser_window_.get());
+    otr_browser_ = CreateBrowser(
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+        browser()->type(),
+        /*hosted_app=*/false, otr_browser_window_.get());
     tab_url_provider_ =
         std::make_unique<OptimizationGuideTabUrlProvider>(profile());
   }

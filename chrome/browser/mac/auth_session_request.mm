@@ -176,7 +176,7 @@ Browser* AuthSessionRequest::CreateBrowser(
     return nullptr;
 
   if (request.shouldUseEphemeralSession)
-    profile = profile->GetPrimaryOTRProfile();
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   if (!profile)
     return nullptr;
 
