@@ -11,7 +11,6 @@
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider.h"
-#include "chrome/browser/media/router/providers/extension/extension_media_route_provider_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -92,12 +91,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
 
-  // Registers a Mojo remote to the extension MRP with
-  // |extension_provider_proxy_| and does initializations specific to the
-  // extension MRP.
-  void RegisterExtensionMediaRouteProvider(
-      mojo::PendingRemote<mojom::MediaRouteProvider> extension_provider_remote);
-
   // Binds |this| to a Mojo pending receiver, so that clients can acquire a
   // handle to a MediaRouter instance via the Mojo service connector.
   // Passes the extension's ID to the event page request manager.
@@ -108,14 +101,9 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void InitializeMediaRouteProviders();
 
   // Helper methods for InitializeMediaRouteProviders().
-  void InitializeExtensionMediaRouteProviderProxy();
   void InitializeWiredDisplayMediaRouteProvider();
   void InitializeCastMediaRouteProvider();
   void InitializeDialMediaRouteProvider();
-
-  // Invoked when a Mojo connection error is encountered with the message pipe
-  // to |extension_provider_proxy_|.
-  void OnExtensionProviderError();
 
 #if defined(OS_WIN)
   // Ensures that mDNS discovery is enabled in the MRPM extension. This can be
@@ -131,10 +119,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
   // Gets the per-profile Cast SDK hash token used by Cast and DIAL MRPs.
   std::string GetHashToken();
-
-  // MediaRouteProvider proxy that forwards calls to the MRPM in the component
-  // extension.
-  std::unique_ptr<ExtensionMediaRouteProviderProxy> extension_provider_proxy_;
 
   // MediaRouteProvider for casting to local screens.
   std::unique_ptr<WiredDisplayMediaRouteProvider> wired_display_provider_;
@@ -165,10 +149,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   // |false| to |true|.
   bool should_enable_mdns_discovery_ = false;
 #endif
-
-  // The number of times a Mojo connection error is encountered with the
-  // message pipe to |extension_provider_proxy_|.
-  int extension_provider_error_count_ = 0;
 
   base::WeakPtrFactory<MediaRouterDesktop> weak_factory_{this};
 

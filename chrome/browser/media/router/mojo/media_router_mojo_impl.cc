@@ -82,22 +82,6 @@ content::WebContents* GetWebContentsFromId(
   return nullptr;
 }
 
-MediaRouteProviderId FixProviderId(MediaRouteProviderId provider_id) {
-  // This is a hack to ensure the extension handles the CreateRoute call until
-  // the CastMediaRouteProvider supports it.
-  // TODO(crbug.com/698940): Remove check for Cast when CastMediaRouteProvider
-  // supports route management.
-  // TODO(https://crbug.com/808720): Remove check for DIAL when in-browser DIAL
-  // MRP is fully implemented.
-  if ((provider_id == MediaRouteProviderId::CAST &&
-       !CastMediaRouteProviderEnabled()) ||
-      (provider_id == MediaRouteProviderId::DIAL &&
-       !DialMediaRouteProviderEnabled())) {
-    return MediaRouteProviderId::EXTENSION;
-  }
-  return provider_id;
-}
-
 DesktopMediaPickerController::Params MakeDesktopPickerParams(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -280,7 +264,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
     RecordPresentationRequestUrlBySink(source, sink->provider_id());
   }
 
-  const MediaRouteProviderId provider_id = FixProviderId(sink->provider_id());
+  const MediaRouteProviderId provider_id = sink->provider_id();
 
   const std::string presentation_id = MediaRouterBase::CreatePresentationId();
   auto mr_callback = base::BindOnce(

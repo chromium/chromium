@@ -157,8 +157,6 @@ static_library("router") {
       "providers/dial/dial_media_route_provider.h",
       "providers/dial/dial_media_route_provider_metrics.cc",
       "providers/dial/dial_media_route_provider_metrics.h",
-      "providers/extension/extension_media_route_provider_proxy.cc",
-      "providers/extension/extension_media_route_provider_proxy.h",
       "providers/wired_display/wired_display_media_route_provider.cc",
       "providers/wired_display/wired_display_media_route_provider.h",
       "providers/wired_display/wired_display_presentation_receiver.h",
@@ -272,7 +270,6 @@ source_set("unittests") {
       "discovery/media_sink_discovery_metrics_unittest.cc",
       "event_page_request_manager_unittest.cc",
       "media_router_feature_unittest.cc",
-      "mojo/media_router_desktop_unittest.cc",
       "mojo/media_router_mojo_impl_unittest.cc",
       "mojo/media_router_mojo_metrics_unittest.cc",
       "mojo/media_sink_service_status_unittest.cc",
@@ -297,7 +294,6 @@ source_set("unittests") {
       "providers/dial/dial_activity_manager_unittest.cc",
       "providers/dial/dial_internal_message_util_unittest.cc",
       "providers/dial/dial_media_route_provider_unittest.cc",
-      "providers/extension/extension_media_route_provider_proxy_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
     deps += [
