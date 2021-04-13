@@ -83,7 +83,6 @@ target(link_target_type, "child") {
     "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
     "//media",
-    "//media/blink",
     "//mojo/core/embedder",
     "//net",
     "//services/device/public/cpp:device_features",
