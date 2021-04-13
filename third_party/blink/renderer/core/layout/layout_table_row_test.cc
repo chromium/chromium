@@ -146,7 +146,7 @@ TEST_F(LayoutTableRowTest, VisualOverflow) {
   // TablesNG row geometry does not include border spacing. Legacy does.
   // All row geometry expectations are different.
   if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    EXPECT_EQ(LayoutRect(110, 0, 210, 320), row1->ContentsVisualOverflowRect());
+    EXPECT_EQ(LayoutRect(0, 0, 320, 320), row1->ContentsVisualOverflowRect());
     EXPECT_EQ(LayoutRect(0, 0, 430, 320), row1->SelfVisualOverflowRect());
   } else {
     EXPECT_EQ(LayoutRect(120, 0, 210, 320), row1->ContentsVisualOverflowRect());

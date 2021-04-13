@@ -119,22 +119,14 @@ LayoutBlock* LayoutNGTableRow::StickyContainer() const {
   return Table();
 }
 
-// This is necessary because TableRow paints beyond border box if it contains
-// rowspanned cells.
+#if DCHECK_IS_ON()
 void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
   NOT_DESTROYED();
-  LayoutBlock::AddVisualOverflowFromBlockChildren();
-  for (LayoutBox* child = FirstChildBox(); child;
-       child = child->NextSiblingBox()) {
-    DCHECK(child->IsTableCell());
-    // Cells that do not span rows do not contribute to excess overflow.
-    if (To<LayoutNGTableCell>(child)->ComputedRowSpan() == 1)
-      continue;
-    LayoutRect child_visual_overflow_rect =
-        child->VisualOverflowRectForPropagation();
-    AddSelfVisualOverflow(child_visual_overflow_rect);
-  }
+  // This is computed in |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and
+  // that we should not reach here.
+  NOTREACHED();
 }
+#endif
 
 PositionWithAffinity LayoutNGTableRow::PositionForPoint(
     const PhysicalOffset& offset) const {

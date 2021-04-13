@@ -70,7 +70,9 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
     return false;
   }
 
+#if DCHECK_IS_ON()
   void AddVisualOverflowFromBlockChildren() override;
+#endif
 
   bool VisualRectRespectsVisibility() const final {
     NOT_DESTROYED();

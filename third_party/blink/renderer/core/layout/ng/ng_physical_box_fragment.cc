@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -539,7 +540,7 @@ bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
     return false;
   // TODO(crbug.com/1144203): Following conditions are not supported in NG
   // visual overflow yet.
-  if (IsTableNGRow() || IsRenderedLegend() || IsColumnSpanAll() || IsMathML())
+  if (IsRenderedLegend() || IsColumnSpanAll() || IsMathML())
     return false;
   DCHECK(IsInlineBox() || OwnerLayoutBox());
   return true;
@@ -988,7 +989,8 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   const ComputedStyle& style = Style();
   const bool has_visual_overflowing_effect = style.HasVisualOverflowingEffect();
   const bool is_table = IsTableNG();
-  if (!has_visual_overflowing_effect && !is_table)
+  const bool is_table_row = IsTableNGRow();
+  if (!has_visual_overflowing_effect && !is_table && !is_table_row)
     return LocalRect();
 
   PhysicalRect ink_overflow(LocalRect());
@@ -1005,6 +1007,25 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
       borders_overflow.Expand(
           visual_size_diff.ConvertToPhysical(style.GetWritingDirection()));
       ink_overflow.Unite(borders_overflow);
+    }
+  } else if (UNLIKELY(is_table_row)) {
+    // This is necessary because table-rows paints beyond border box if it
+    // contains rowspanned cells.
+    for (const NGLink& child : PostLayoutChildren()) {
+      const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
+      if (!child_fragment.IsTableNGCell())
+        continue;
+      const auto* child_layout_object =
+          To<LayoutNGTableCell>(child_fragment.GetLayoutObject());
+      if (child_layout_object->ComputedRowSpan() == 1)
+        continue;
+      PhysicalRect child_rect;
+      if (child_fragment.CanUseFragmentsForInkOverflow())
+        child_rect = child_fragment.InkOverflow();
+      else
+        child_rect = child_layout_object->PhysicalVisualOverflowRect();
+      child_rect.offset += child.offset;
+      ink_overflow.Unite(child_rect);
     }
   }
 
