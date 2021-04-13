@@ -13,8 +13,6 @@
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 #include "chrome/browser/generic_sensor/sensor_permission_context.h"
 #include "chrome/browser/idle/idle_detection_permission_context.h"
-#include "chrome/browser/media/midi_permission_context.h"
-#include "chrome/browser/media/midi_sysex_permission_context.h"
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
@@ -36,6 +34,8 @@
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/file_handling_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
+#include "components/permissions/contexts/midi_permission_context.h"
+#include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
 #include "components/permissions/permission_manager.h"
@@ -60,9 +60,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     Profile* profile) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
   permission_contexts[ContentSettingsType::MIDI_SYSEX] =
-      std::make_unique<MidiSysexPermissionContext>(profile);
+      std::make_unique<permissions::MidiSysexPermissionContext>(profile);
   permission_contexts[ContentSettingsType::MIDI] =
-      std::make_unique<MidiPermissionContext>(profile);
+      std::make_unique<permissions::MidiPermissionContext>(profile);
   permission_contexts[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<NotificationPermissionContext>(profile);
 #if !defined(OS_ANDROID)

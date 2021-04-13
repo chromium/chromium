@@ -2,43 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/midi_sysex_permission_context.h"
+#include "components/permissions/contexts/midi_sysex_permission_context.h"
 
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "build/build_config.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/infobars/infobar_service.h"
-#else
-#include "components/permissions/permission_request_manager.h"
-#endif
+namespace permissions {
 
 namespace {
 
 class TestPermissionContext : public MidiSysexPermissionContext {
  public:
-  explicit TestPermissionContext(Profile* profile)
-      : MidiSysexPermissionContext(profile),
+  explicit TestPermissionContext(content::BrowserContext* browser_context)
+      : MidiSysexPermissionContext(browser_context),
         permission_set_(false),
         permission_granted_(false),
         tab_context_updated_(false) {}
 
-  ~TestPermissionContext() override {}
+  ~TestPermissionContext() override = default;
 
   bool permission_granted() { return permission_granted_; }
 
@@ -52,7 +45,7 @@ class TestPermissionContext : public MidiSysexPermissionContext {
   }
 
  protected:
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
+  void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_origin,
                         bool allowed) override {
     tab_context_updated_ = true;
@@ -64,33 +57,25 @@ class TestPermissionContext : public MidiSysexPermissionContext {
   bool tab_context_updated_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
-class MidiSysexPermissionContextTests : public ChromeRenderViewHostTestHarness {
+class MidiSysexPermissionContextTests
+    : public content::RenderViewHostTestHarness {
  protected:
   MidiSysexPermissionContextTests() = default;
+  ~MidiSysexPermissionContextTests() override = default;
 
  private:
-  // ChromeRenderViewHostTestHarness:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-#if defined(OS_ANDROID)
-    InfoBarService::CreateForWebContents(web_contents());
-#else
-    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
-#endif
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(MidiSysexPermissionContextTests);
+  TestPermissionsClient client_;
 };
 
 // Web MIDI sysex permission should be denied for insecure origin.
 TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
-  TestPermissionContext permission_context(profile());
+  TestPermissionContext permission_context(browser_context());
   GURL url("http://www.example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
-  const permissions::PermissionRequestID id(
+  const PermissionRequestID id(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
       web_contents()->GetMainFrame()->GetRoutingID(), -1);
   permission_context.RequestPermission(
@@ -103,7 +88,8 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
   EXPECT_TRUE(permission_context.tab_context_updated());
 
   ContentSetting setting =
-      HostContentSettingsMapFactory::GetForProfile(profile())
+      PermissionsClient::Get()
+          ->GetSettingsMap(browser_context())
           ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
                               ContentSettingsType::MIDI_SYSEX);
   EXPECT_EQ(CONTENT_SETTING_ASK, setting);
@@ -111,24 +97,27 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
 
 // Web MIDI sysex permission status should be denied for insecure origin.
 TEST_F(MidiSysexPermissionContextTests, TestInsecureQueryingUrl) {
-  TestPermissionContext permission_context(profile());
+  TestPermissionContext permission_context(browser_context());
   GURL insecure_url("http://www.example.com");
   GURL secure_url("https://www.example.com");
 
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ASK,
-            HostContentSettingsMapFactory::GetForProfile(profile())
+            PermissionsClient::Get()
+                ->GetSettingsMap(browser_context())
                 ->GetContentSetting(insecure_url.GetOrigin(),
                                     insecure_url.GetOrigin(),
                                     ContentSettingsType::MIDI_SYSEX));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
-      HostContentSettingsMapFactory::GetForProfile(profile())
+      PermissionsClient::Get()
+          ->GetSettingsMap(browser_context())
           ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
                               ContentSettingsType::MIDI_SYSEX));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
-      HostContentSettingsMapFactory::GetForProfile(profile())
+      PermissionsClient::Get()
+          ->GetSettingsMap(browser_context())
           ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
                               ContentSettingsType::MIDI_SYSEX));
 
@@ -144,3 +133,5 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureQueryingUrl) {
                                      insecure_url, secure_url)
                 .content_setting);
 }
+
+}  // namespace permissions

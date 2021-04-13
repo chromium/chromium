@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/midi_sysex_permission_context.h"
+#include "components/permissions/contexts/midi_sysex_permission_context.h"
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
+
+namespace permissions {
 
 MidiSysexPermissionContext::MidiSysexPermissionContext(
     content::BrowserContext* browser_context)
@@ -17,12 +21,11 @@ MidiSysexPermissionContext::MidiSysexPermissionContext(
           ContentSettingsType::MIDI_SYSEX,
           blink::mojom::PermissionsPolicyFeature::kMidiFeature) {}
 
-MidiSysexPermissionContext::~MidiSysexPermissionContext() {}
+MidiSysexPermissionContext::~MidiSysexPermissionContext() = default;
 
-void MidiSysexPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
-    bool allowed) {
+void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
+                                                  const GURL& requesting_frame,
+                                                  bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           id.render_process_id(), id.render_frame_id());
@@ -42,3 +45,5 @@ void MidiSysexPermissionContext::UpdateTabContext(
 bool MidiSysexPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }
+
+}  // namespace permissions

@@ -5,13 +5,13 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/media/midi_permission_context.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -150,7 +150,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
   // Midi is allowed by default in the top level frame but not in subframes.
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 
@@ -176,7 +176,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DisabledTopLevelFrame) {
       &parent, blink::mojom::PermissionsPolicyFeature::kMidiFeature,
       std::vector<std::string>());
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 
@@ -198,7 +198,7 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, EnabledForChildFrame) {
   // Enable midi for the child frame.
   content::RenderFrameHost* child = AddChildRFH(
       parent, kOrigin2, blink::mojom::PermissionsPolicyFeature::kMidiFeature);
-  MidiPermissionContext midi(profile());
+  permissions::MidiPermissionContext midi(profile());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, child));
 

@@ -10,6 +10,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
+#include "components/permissions/contexts/midi_permission_context.h"
+#include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
@@ -61,6 +63,11 @@ class SafePermissionContext : public permissions::PermissionContextBase {
 permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     content::BrowserContext* browser_context) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
+  permission_contexts[ContentSettingsType::MIDI_SYSEX] =
+      std::make_unique<permissions::MidiSysexPermissionContext>(
+          browser_context);
+  permission_contexts[ContentSettingsType::MIDI] =
+      std::make_unique<permissions::MidiPermissionContext>(browser_context);
 #if defined(OS_ANDROID)
   using GeolocationPermissionContext =
       permissions::GeolocationPermissionContextAndroid;

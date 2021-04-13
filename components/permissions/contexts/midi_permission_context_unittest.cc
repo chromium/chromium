@@ -2,26 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/midi_permission_context.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/permissions/contexts/midi_permission_context.h"
+
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
+namespace permissions {
 
 class MidiPermissionContextTests : public testing::Test {
  public:
-  TestingProfile* profile() { return &profile_; }
+  content::TestBrowserContext* browser_context() { return &browser_context_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  content::TestBrowserContext browser_context_;
+  TestPermissionsClient client_;
 };
 
 // Web MIDI permission status should be allowed only for secure origins.
 TEST_F(MidiPermissionContextTests, TestNoSysexAllowedAllOrigins) {
-  MidiPermissionContext permission_context(profile());
+  MidiPermissionContext permission_context(browser_context());
   GURL insecure_url("http://www.example.com");
   GURL secure_url("https://www.example.com");
 
@@ -44,4 +47,4 @@ TEST_F(MidiPermissionContextTests, TestNoSysexAllowedAllOrigins) {
                 .content_setting);
 }
 
-}  // namespace
+}  // namespace permissions
