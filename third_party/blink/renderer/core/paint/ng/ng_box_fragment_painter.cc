@@ -747,7 +747,7 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
 }
 
 void NGBoxFragmentPainter::PaintFloatingChildren(
-    const NGPhysicalContainerFragment& container,
+    const NGPhysicalFragment& container,
     const PaintInfo& paint_info,
     const PaintInfo& float_paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
@@ -802,31 +802,29 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     if (paint_info.phase == PaintPhase::kSelectionDragImage)
       continue;
 
-    const auto* child_container =
-        DynamicTo<NGPhysicalContainerFragment>(&child_fragment);
-    if (!child_container || !child_container->HasFloatingDescendantsForPaint())
+    if (!child_fragment.HasFloatingDescendantsForPaint())
       continue;
 
-    if (child_container->HasNonVisibleOverflow()) {
+    if (child_fragment.HasNonVisibleOverflow()) {
       // We need to properly visit this fragment for painting, rather than
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
-      NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(*child_container))
+      NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
           .Paint(paint_info);
       continue;
     }
 
-    if (child_container->IsFragmentainerBox()) {
+    if (child_fragment.IsFragmentainerBox()) {
       // This is a fragmentainer, and when node inside a fragmentation context
       // paints multiple block fragments, we need to distinguish between them
       // somehow, for paint caching to work. Therefore, establish a display item
       // scope here.
       unsigned identifier = FragmentainerUniqueIdentifier(
-          To<NGPhysicalBoxFragment>(*child_container));
+          To<NGPhysicalBoxFragment>(child_fragment));
       ScopedDisplayItemFragment scope(paint_info.context, identifier);
-      PaintFloatingChildren(*child_container, paint_info, float_paint_info);
+      PaintFloatingChildren(child_fragment, paint_info, float_paint_info);
     } else {
-      PaintFloatingChildren(*child_container, paint_info, float_paint_info);
+      PaintFloatingChildren(child_fragment, paint_info, float_paint_info);
     }
   }
 
@@ -2191,7 +2189,7 @@ bool NGBoxFragmentPainter::HitTestItemsChildren(
 
 bool NGBoxFragmentPainter::HitTestFloatingChildren(
     const HitTestContext& hit_test,
-    const NGPhysicalContainerFragment& container,
+    const NGPhysicalFragment& container,
     const PhysicalOffset& accumulated_offset) {
   DCHECK_EQ(hit_test.action, kHitTestFloat);
   DCHECK(container.HasFloatingDescendantsForPaint());
@@ -2229,29 +2227,25 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     if (child_fragment.IsPaintedAtomically())
       continue;
 
-    const auto* child_container =
-        DynamicTo<NGPhysicalContainerFragment>(&child_fragment);
-    if (!child_container)
-      continue;
     // If this is a legacy root, fallback to legacy. It does not have
     // |HasFloatingDescendantsForPaint()| set, but it may have floating
     // descendants.
-    if (child_container->IsLegacyLayoutRoot()) {
-      if (child_container->GetMutableLayoutObject()->NodeAtPoint(
+    if (child_fragment.IsLegacyLayoutRoot()) {
+      if (child_fragment.GetMutableLayoutObject()->NodeAtPoint(
               *hit_test.result, hit_test.location, child_offset,
               hit_test.action))
         return true;
       continue;
     }
-    if (!child_container->HasFloatingDescendantsForPaint())
+    if (!child_fragment.HasFloatingDescendantsForPaint())
       continue;
 
-    if (child_container->HasNonVisibleOverflow()) {
+    if (child_fragment.HasNonVisibleOverflow()) {
       // We need to properly visit this fragment for hit-testing, rather than
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
-      if (child_container->CanTraverse()) {
-        if (NGBoxFragmentPainter(*To<NGPhysicalBoxFragment>(child_container))
+      if (child_fragment.CanTraverse()) {
+        if (NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
                 .NodeAtPoint(*hit_test.result, hit_test.location, child_offset,
                              kHitTestFloat))
           return true;
@@ -2263,7 +2257,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
       continue;
     }
 
-    if (HitTestFloatingChildren(hit_test, *child_container, child_offset))
+    if (HitTestFloatingChildren(hit_test, child_fragment, child_offset))
       return true;
   }
   return false;

@@ -23,7 +23,7 @@ namespace blink {
 namespace {
 
 LayoutUnit CalculateColumnContentBlockSize(
-    const NGPhysicalContainerFragment& fragment,
+    const NGPhysicalFragment& fragment,
     WritingDirectionMode writing_direction) {
   WritingModeConverter converter(writing_direction, fragment.Size());
   // Note that what we're doing here is almost the same as what we do when
@@ -40,8 +40,8 @@ LayoutUnit CalculateColumnContentBlockSize(
     // block direction. The combination of overflow-x:clip and
     // overflow-y:visible should enter children here.
     if (child->IsContainer() && !child->HasNonVisibleOverflow()) {
-      LayoutUnit children_size = CalculateColumnContentBlockSize(
-          To<NGPhysicalContainerFragment>(*child), writing_direction);
+      LayoutUnit children_size =
+          CalculateColumnContentBlockSize(*child, writing_direction);
       if (size < children_size)
         size = children_size;
     }

@@ -2404,7 +2404,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats() {
 }
 
 void LayoutBlockFlow::AddVisualOverflowFromFloats(
-    const NGPhysicalContainerFragment& fragment) {
+    const NGPhysicalFragment& fragment) {
   NOT_DESTROYED();
   DCHECK(!NeedsLayout());
   DCHECK(!ChildPrePaintBlockedByDisplayLock());
@@ -2419,8 +2419,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats(
       continue;
     }
 
-    if (const NGPhysicalContainerFragment* child_container =
-            DynamicTo<NGPhysicalContainerFragment>(child.get())) {
+    if (const NGPhysicalFragment* child_container = child.get()) {
       if (child_container->HasFloatingDescendantsForPaint() &&
           !child_container->IsFormattingContextRoot())
         AddVisualOverflowFromFloats(*child_container);
@@ -4592,7 +4591,7 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
 }
 
 void LayoutBlockFlow::RecalcFloatingDescendantsVisualOverflow(
-    const NGPhysicalContainerFragment& fragment) {
+    const NGPhysicalFragment& fragment) {
   DCHECK(fragment.HasFloatingDescendantsForPaint());
 
   for (const NGLink& child : fragment.PostLayoutChildren()) {
@@ -4602,8 +4601,7 @@ void LayoutBlockFlow::RecalcFloatingDescendantsVisualOverflow(
       continue;
     }
 
-    if (const NGPhysicalContainerFragment* child_container_fragment =
-            DynamicTo<NGPhysicalContainerFragment>(child.get())) {
+    if (const NGPhysicalFragment* child_container_fragment = child.get()) {
       if (child_container_fragment->HasFloatingDescendantsForPaint())
         RecalcFloatingDescendantsVisualOverflow(*child_container_fragment);
     }

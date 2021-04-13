@@ -162,8 +162,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
             horizontal.kern_before_degree + horizontal.kern_after_degree +
             base_margins.inline_start,
         base_margins.block_start - base_ascent + ascent};
-    container_builder_.AddChild(To<NGPhysicalContainerFragment>(*base_fragment),
-                                base_offset);
+    container_builder_.AddChild(*base_fragment, base_offset);
     base.StoreMargins(ConstraintSpace(), base_margins);
   }
   if (index) {
@@ -172,8 +171,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
             horizontal.kern_before_degree,
         index_margins.block_start + ascent + descent - index_bottom_raise -
             index_descent - index_ascent};
-    container_builder_.AddChild(
-        To<NGPhysicalContainerFragment>(*index_fragment), index_offset);
+    container_builder_.AddChild(*index_fragment, index_offset);
     index.StoreMargins(ConstraintSpace(), index_margins);
   }
 

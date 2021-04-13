@@ -188,7 +188,7 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
     PropagateBreak(child_layout_result);
 }
 
-void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
+void NGBoxFragmentBuilder::AddChild(const NGPhysicalFragment& child,
                                     const LogicalOffset& child_offset,
                                     const LayoutInline* inline_container,
                                     const NGMarginStrut* margin_strut,

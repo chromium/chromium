@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalContainerFragment {
+struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalFragment {
   FontHeight metrics;
 };
 
@@ -36,11 +36,11 @@ const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
     PassKey key,
     NGLineBoxFragmentBuilder* builder)
-    : NGPhysicalContainerFragment(builder,
-                                  builder->GetWritingMode(),
-                                  children_,
-                                  kFragmentLineBox,
-                                  builder->line_box_type_),
+    : NGPhysicalFragment(builder,
+                         builder->GetWritingMode(),
+                         children_,
+                         kFragmentLineBox,
+                         builder->line_box_type_),
       metrics_(builder->metrics_) {
   // A line box must have a metrics unless it's an empty line box.
   DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
@@ -134,8 +134,8 @@ bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
 }
 
 void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
-  // |children_| is traced in |NGPhysicalContainerFragment|.
-  NGPhysicalContainerFragment::TraceAfterDispatch(visitor);
+  // |children_| is traced in |NGPhysicalFragment|.
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

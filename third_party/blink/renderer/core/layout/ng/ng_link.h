@@ -16,7 +16,7 @@ namespace blink {
 // allowing entire fragment subtrees to be reused and cached regardless
 // of placement.
 // This class is stored in a C-style regular array on
-// NGPhysicalContainerFragment. It cannot have destructors. Fragment reference
+// NGPhysicalFragment. It cannot have destructors. Fragment reference
 // counting is done manually.
 struct CORE_EXPORT NGLink {
   DISALLOW_NEW();

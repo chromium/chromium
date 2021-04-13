@@ -203,7 +203,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                  bool offset_includes_relative_position = false,
                  bool propagate_oof_descendants = true);
 
-  void AddChild(const NGPhysicalContainerFragment&,
+  void AddChild(const NGPhysicalFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
                 const NGMarginStrut* margin_strut = nullptr,

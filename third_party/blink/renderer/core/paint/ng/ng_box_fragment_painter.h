@@ -157,7 +157,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                     const PhysicalOffset& paint_offset,
                     const PhysicalOffset& parent_offset);
   void PaintFloatingItems(const PaintInfo&, NGInlineCursor* cursor);
-  void PaintFloatingChildren(const NGPhysicalContainerFragment&,
+  void PaintFloatingChildren(const NGPhysicalFragment&,
                              const PaintInfo& paint_info,
                              const PaintInfo& float_paint_info);
   void PaintFloats(const PaintInfo&);
@@ -236,7 +236,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                             const NGPhysicalBoxFragment& container,
                             const NGInlineCursor& children);
   bool HitTestFloatingChildren(const HitTestContext& hit_test,
-                               const NGPhysicalContainerFragment& container,
+                               const NGPhysicalFragment& container,
                                const PhysicalOffset& accumulated_offset);
   bool HitTestFloatingChildItems(const HitTestContext& hit_test,
                                  const NGInlineCursor& children,

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
@@ -22,8 +22,7 @@ class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 enum class NGOutlineType;
 
-class CORE_EXPORT NGPhysicalBoxFragment final
-    : public NGPhysicalContainerFragment {
+class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
   static const NGPhysicalBoxFragment* Create(
       NGBoxFragmentBuilder* builder,
@@ -402,7 +401,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   const NGFragmentItems* ComputeItemsAddress() const {
     DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
            has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
-    const NGLink* children_end = children_ + Children().size();
+    const NGLink* children_end = children_ + const_num_children_;
     return reinterpret_cast<const NGFragmentItems*>(children_end);
   }
 

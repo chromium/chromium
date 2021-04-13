@@ -51,10 +51,9 @@ const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
                  updated_layout_overflow));
 }
 
-NGLayoutResult::NGLayoutResult(
-    NGBoxFragmentBuilderPassKey passkey,
-    const NGPhysicalContainerFragment* physical_fragment,
-    NGBoxFragmentBuilder* builder)
+NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
+                               const NGPhysicalFragment* physical_fragment,
+                               NGBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
@@ -112,10 +111,9 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->grid_layout_data_ = std::move(builder->grid_data_);
 }
 
-NGLayoutResult::NGLayoutResult(
-    NGLineBoxFragmentBuilderPassKey passkey,
-    const NGPhysicalContainerFragment* physical_fragment,
-    NGLineBoxFragmentBuilder* builder)
+NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,
+                               const NGPhysicalFragment* physical_fragment,
+                               NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {}
 
@@ -174,9 +172,8 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 #endif
 }
 
-NGLayoutResult::NGLayoutResult(
-    const NGLayoutResult& other,
-    const NGPhysicalContainerFragment* physical_fragment)
+NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
+                               const NGPhysicalFragment* physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
       intrinsic_block_size_(other.intrinsic_block_size_),
@@ -197,9 +194,8 @@ NGLayoutResult::NGLayoutResult(
 #endif
 }
 
-NGLayoutResult::NGLayoutResult(
-    const NGPhysicalContainerFragment* physical_fragment,
-    NGContainerFragmentBuilder* builder)
+NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
+                               NGContainerFragmentBuilder* builder)
     : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
                              : NGConstraintSpace()),
       physical_fragment_(std::move(physical_fragment)),

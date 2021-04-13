@@ -994,8 +994,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   // from them.
   for (const auto& child : base::make_span(children).subspan(children_before)) {
     DCHECK(child.fragment->IsLineBox());
-    PropagateBaselineFromChild(To<NGPhysicalContainerFragment>(*child.fragment),
-                               child.offset.block_offset);
+    PropagateBaselineFromChild(*child.fragment, child.offset.block_offset);
   }
 
   previous_inflow_position->logical_block_offset += result.used_block_size;
@@ -2637,7 +2636,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 }
 
 void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
-    const NGPhysicalContainerFragment& child,
+    const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
   // Check if we've already found an appropriate baseline.
   if (container_builder_.Baseline() &&
@@ -2994,8 +2993,7 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
     const NGPhysicalFragment& child =
         *container_builder_.Children()[0].fragment;
     if (child.IsTextControlContainer()) {
-      const auto& grand_children =
-          To<NGPhysicalContainerFragment>(child).PostLayoutChildren();
+      const auto& grand_children = child.PostLayoutChildren();
       const auto begin = grand_children.begin();
       if (begin != grand_children.end()) {
         NGFragment grand_child_fragment(ConstraintSpace().GetWritingDirection(),

@@ -300,7 +300,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
 const NGOutOfFlowLayoutPart::ContainingBlockInfo
 NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate,
-    const NGPhysicalContainerFragment* containing_block_fragment) {
+    const NGPhysicalFragment* containing_block_fragment) {
   if (candidate.containing_block_rect)
     return {default_writing_direction_, *candidate.containing_block_rect};
   if (candidate.inline_container) {
@@ -594,7 +594,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     // Collect the children of the multicol fragments.
     for (auto& child :
          multicol_box_fragment->GetMutableChildrenForOutOfFlow().Children()) {
-      const auto* fragment = To<NGPhysicalContainerFragment>(child.get());
+      const auto* fragment = child.get();
       LogicalOffset offset =
           converter.ToLogical(child.Offset(), fragment->Size());
       if (fragment->IsFragmentainerBox()) {
@@ -635,13 +635,13 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     // and store the resulting nodes inside |oof_nodes_to_layout|.
     for (const auto& descendant :
          multicol_box_fragment->OutOfFlowPositionedFragmentainerDescendants()) {
-      const NGPhysicalContainerFragment* containing_block_fragment =
+      const NGPhysicalFragment* containing_block_fragment =
           descendant.containing_block.fragment;
       LogicalOffset containing_block_offset =
           converter.ToLogical(descendant.containing_block.offset,
                               containing_block_fragment->Size());
 
-      const NGPhysicalContainerFragment* fixedpos_containing_block_fragment =
+      const NGPhysicalFragment* fixedpos_containing_block_fragment =
           descendant.fixedpos_containing_block.fragment;
       LogicalOffset fixedpos_containing_block_offset;
       if (fixedpos_containing_block_fragment) {
@@ -790,7 +790,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     const NGLogicalOutOfFlowPositionedNode& oof_node) {
   NGBlockNode node = oof_node.node;
-  const NGPhysicalContainerFragment* containing_block_fragment =
+  const NGPhysicalFragment* containing_block_fragment =
       oof_node.containing_block.fragment;
 
 #if DCHECK_IS_ON()
@@ -1378,8 +1378,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
   } else {
     const NGLayoutResult* new_result = algorithm->Layout();
     node.ReplaceColumnResult(new_result, fragment);
-    const NGPhysicalContainerFragment* new_fragment =
-        &new_result->PhysicalFragment();
+    const NGPhysicalFragment* new_fragment = &new_result->PhysicalFragment();
     container_builder_->ReplaceChild(index, *new_fragment,
                                      fragmentainer.offset);
 

@@ -27,7 +27,7 @@ class LayoutObject;
 class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
-class NGPhysicalContainerFragment;
+class NGPhysicalFragment;
 class NGSimplifiedOOFLayoutAlgorithm;
 struct NGLink;
 struct NGLogicalContainingBlock;
@@ -193,7 +193,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   const ContainingBlockInfo GetContainingBlockInfo(
       const NGLogicalOutOfFlowPositionedNode&,
-      const NGPhysicalContainerFragment* = nullptr);
+      const NGPhysicalFragment* = nullptr);
 
   void ComputeInlineContainingBlocks(
       const HeapVector<NGLogicalOutOfFlowPositionedNode>&);

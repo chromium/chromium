@@ -178,8 +178,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
       To<NGPhysicalBoxFragment>(previous_result_.PhysicalFragment());
 
   for (const auto& child_link : previous_fragment.Children()) {
-    const auto& child_fragment =
-        *To<NGPhysicalContainerFragment>(child_link.get());
+    const auto& child_fragment = *child_link.get();
 
     // We'll add OOF-positioned candidates below.
     if (child_fragment.IsOutOfFlowPositioned())
@@ -276,7 +275,7 @@ NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
 
 void NGSimplifiedLayoutAlgorithm::AddChildFragment(
     const NGLink& old_fragment,
-    const NGPhysicalContainerFragment& new_fragment,
+    const NGPhysicalFragment& new_fragment,
     const NGMarginStrut* margin_strut,
     bool is_self_collapsing) {
   DCHECK_EQ(old_fragment->Size(), new_fragment.Size());

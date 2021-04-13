@@ -28,7 +28,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalContainerFragment {
+struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   NGInkOverflow ink_overflow;
@@ -178,7 +178,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
   // that array here, which requires a manual allocation + placement new.
-  // The initialization of the array is done by NGPhysicalContainerFragment;
+  // The initialization of the array is done by NGPhysicalFragment;
   // we pass the buffer as a constructor argument.
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), builder, has_layout_overflow,
@@ -243,13 +243,13 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     bool has_fragment_items,
     bool has_rare_data,
     WritingMode block_or_line_writing_mode)
-    : NGPhysicalContainerFragment(builder,
-                                  block_or_line_writing_mode,
-                                  children_,
-                                  kFragmentBox,
-                                  builder->BoxType(),
-                                  has_fragment_items,
-                                  has_rare_data) {
+    : NGPhysicalFragment(builder,
+                         block_or_line_writing_mode,
+                         children_,
+                         kFragmentBox,
+                         builder->BoxType(),
+                         has_fragment_items,
+                         has_rare_data) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
 
@@ -333,9 +333,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     bool has_layout_overflow,
     const PhysicalRect& layout_overflow,
     bool recalculate_layout_overflow)
-    : NGPhysicalContainerFragment(other,
-                                  recalculate_layout_overflow,
-                                  children_),
+    : NGPhysicalFragment(other, recalculate_layout_overflow, children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
@@ -1549,14 +1547,14 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
 #endif
 
 void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
-  // |children_| is traced in |NGPhysicalContainerFragment|.
+  // |children_| is traced in |NGPhysicalFragment|.
   // These if branches are safe since |const_has_fragment_items_| and
   // |const_has_rare_data_| are const and set in ctor.
   if (const_has_fragment_items_)
     visitor->Trace(*ComputeItemsAddress());
   if (const_has_rare_data_)
     visitor->Trace(*ComputeRareDataAddress());
-  NGPhysicalContainerFragment::TraceAfterDispatch(visitor);
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 void NGPhysicalBoxFragment::RareData::Trace(Visitor* visitor) const {

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -72,7 +72,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
     break_token_ = break_token;
   }
 
-  void AddChild(const NGPhysicalContainerFragment&, const LogicalOffset&);
+  void AddChild(const NGPhysicalFragment&, const LogicalOffset&);
 
   // Propagate data in |ChildList| without adding them to this builder. When
   // adding children as fragment items, they appear in the container, but there

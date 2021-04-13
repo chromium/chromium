@@ -242,7 +242,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   void UpdateEarlyBreakBetweenLines();
 
   // Propagates the baseline from the given |child| if needed.
-  void PropagateBaselineFromChild(const NGPhysicalContainerFragment& child,
+  void PropagateBaselineFromChild(const NGPhysicalFragment& child,
                                   LayoutUnit block_offset);
 
   // If still unresolved, resolve the fragment's BFC block offset.

@@ -26,12 +26,12 @@ struct NGPhysicalContainingBlock {
 
  public:
   PhysicalOffset offset;
-  Member<const NGPhysicalContainerFragment> fragment;
+  Member<const NGPhysicalFragment> fragment;
 
   NGPhysicalContainingBlock() : fragment(nullptr) {}
 
   NGPhysicalContainingBlock(PhysicalOffset offset,
-                            const NGPhysicalContainerFragment* fragment)
+                            const NGPhysicalFragment* fragment)
       : offset(offset), fragment(std::move(fragment)) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
@@ -44,12 +44,12 @@ struct NGLogicalContainingBlock {
 
  public:
   LogicalOffset offset;
-  Member<const NGPhysicalContainerFragment> fragment;
+  Member<const NGPhysicalFragment> fragment;
 
   NGLogicalContainingBlock() : fragment(nullptr) {}
 
   NGLogicalContainingBlock(LogicalOffset offset,
-                           const NGPhysicalContainerFragment* fragment)
+                           const NGPhysicalFragment* fragment)
       : offset(offset), fragment(std::move(fragment)) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }

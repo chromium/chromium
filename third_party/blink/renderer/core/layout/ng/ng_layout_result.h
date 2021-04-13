@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -68,10 +68,10 @@ class CORE_EXPORT NGLayoutResult final
 
   // Creates a copy of NGLayoutResult with a new (but "identical") fragment.
   NGLayoutResult(const NGLayoutResult& other,
-                 const NGPhysicalContainerFragment* physical_fragment);
+                 const NGPhysicalFragment* physical_fragment);
 
   // Delegate constructor that sets up what it can, based on the builder.
-  NGLayoutResult(const NGPhysicalContainerFragment* physical_fragment,
+  NGLayoutResult(const NGPhysicalFragment* physical_fragment,
                  NGContainerFragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
@@ -89,7 +89,7 @@ class CORE_EXPORT NGLayoutResult final
 
   ~NGLayoutResult() = default;
 
-  const NGPhysicalContainerFragment& PhysicalFragment() const {
+  const NGPhysicalFragment& PhysicalFragment() const {
     DCHECK(physical_fragment_);
     DCHECK_EQ(kSuccess, Status());
     return *physical_fragment_;
@@ -391,13 +391,13 @@ class CORE_EXPORT NGLayoutResult final
   NGLayoutResult(NGBoxFragmentBuilderPassKey, EStatus, NGBoxFragmentBuilder*);
   // This constructor requires a non-null fragment and sets a success status.
   NGLayoutResult(NGBoxFragmentBuilderPassKey,
-                 const NGPhysicalContainerFragment* physical_fragment,
+                 const NGPhysicalFragment* physical_fragment,
                  NGBoxFragmentBuilder*);
   using NGLineBoxFragmentBuilderPassKey =
       base::PassKey<NGLineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
   NGLayoutResult(NGLineBoxFragmentBuilderPassKey,
-                 const NGPhysicalContainerFragment* physical_fragment,
+                 const NGPhysicalFragment* physical_fragment,
                  NGLineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
@@ -554,7 +554,7 @@ class CORE_EXPORT NGLayoutResult final
   // as indicated by |has_valid_space_|.
   const NGConstraintSpace space_;
 
-  Member<const NGPhysicalContainerFragment> physical_fragment_;
+  Member<const NGPhysicalFragment> physical_fragment_;
 
   // |rare_data_| is not stored in the union because |Bitfields::has_rare_data|
   // is not initialized in constructor's initializer list and it cannot be

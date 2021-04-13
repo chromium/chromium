@@ -146,8 +146,7 @@ TEST_F(NGPhysicalBoxFragmentTest, DISABLED_FloatLegacyLayoutRoot) {
 TEST_F(NGPhysicalBoxFragmentTest, DISABLED_InlineBlockLegacyLayoutRoot) {
   SetBodyInnerHTML(
       "<span contenteditable style='display:inline-block'>X</span>foo");
-  const auto* line_box = To<NGPhysicalContainerFragment>(
-      GetBodyFragment().Children().front().get());
+  const auto* line_box = GetBodyFragment().Children().front().get();
   const NGPhysicalFragment* fragment = line_box->Children().front().get();
   ASSERT_TRUE(fragment);
   EXPECT_TRUE(fragment->IsBox());

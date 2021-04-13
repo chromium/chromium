@@ -32,7 +32,7 @@ void NGContainerFragmentBuilder::ChildWithOffset::Trace(
 
 void NGContainerFragmentBuilder::ReplaceChild(
     wtf_size_t index,
-    const NGPhysicalContainerFragment& new_child,
+    const NGPhysicalFragment& new_child,
     const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
   children_[index] = ChildWithOffset(offset, std::move(&new_child));
@@ -41,7 +41,7 @@ void NGContainerFragmentBuilder::ReplaceChild(
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void NGContainerFragmentBuilder::PropagateChildData(
-    const NGPhysicalContainerFragment& child,
+    const NGPhysicalFragment& child,
     const LogicalOffset& child_offset,
     const LayoutInline* inline_container,
     bool propagate_oof_descendants) {
@@ -276,7 +276,7 @@ void NGContainerFragmentBuilder::
 }
 
 void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
-    const NGPhysicalContainerFragment& fragment,
+    const NGPhysicalFragment& fragment,
     LogicalOffset offset,
     LayoutUnit fragmentainer_consumed_block_size,
     const LayoutInline* inline_container,
@@ -347,7 +347,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   const auto& out_of_flow_fragmentainer_descendants =
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
-    const NGPhysicalContainerFragment* containing_block_fragment =
+    const NGPhysicalFragment* containing_block_fragment =
         descendant.containing_block.fragment;
     if (!containing_block_fragment)
       containing_block_fragment = box_fragment;
@@ -360,7 +360,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       containing_block_offset.block_offset += fragmentainer_consumed_block_size;
     }
 
-    const NGPhysicalContainerFragment* fixedpos_containing_block_fragment =
+    const NGPhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.fragment;
     if (!fixedpos_containing_block_fragment &&
         box_fragment->GetLayoutObject() &&

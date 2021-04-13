@@ -86,7 +86,7 @@ void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
-  const auto* fragment = To<NGPhysicalContainerFragment>(child.get());
+  const auto* fragment = child.get();
   // Determine the previous position in the logical coordinate system.
   LogicalOffset child_offset =
       WritingModeConverter(writing_direction_,

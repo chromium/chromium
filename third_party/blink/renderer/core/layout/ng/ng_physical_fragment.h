@@ -5,28 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
 #include <unicode/ubidi.h>
+#include <iterator>
 
 namespace blink {
 
 class ComputedStyle;
 class FragmentData;
 class Node;
-class NGFragmentBuilder;
+class NGContainerFragmentBuilder;
+class NGFragmentItem;
 class NGInlineItem;
-class NGPhysicalFragment;
 class PaintLayer;
 struct LogicalRect;
+struct NGPhysicalOutOfFlowPositionedNode;
+
+enum class NGOutlineType;
 
 struct CORE_EXPORT NGPhysicalFragmentTraits {
   static void Destruct(const NGPhysicalFragment*);
@@ -72,19 +79,17 @@ class CORE_EXPORT NGPhysicalFragment
     kMinimumFormattingContextRoot = kAtomicInline
   };
 
-  NGPhysicalFragment(NGFragmentBuilder*,
+  NGPhysicalFragment(NGContainerFragmentBuilder* builder,
+                     WritingMode block_or_line_writing_mode,
+                     NGLink* buffer,
                      NGFragmentType type,
                      unsigned sub_type,
-                     unsigned has_fragment_items,
-                     unsigned has_rare_data);
+                     unsigned has_fragment_items = 0,
+                     unsigned has_rare_data = 0);
 
-  NGPhysicalFragment(LayoutObject* layout_object,
-                     NGStyleVariant,
-                     PhysicalSize size,
-                     NGFragmentType type,
-                     unsigned sub_type);
-
-  NGPhysicalFragment(const NGPhysicalFragment& other);
+  NGPhysicalFragment(const NGPhysicalFragment& other,
+                     bool recalculate_layout_overflow,
+                     NGLink* buffer);
 
   ~NGPhysicalFragment();
 
@@ -473,13 +478,195 @@ class CORE_EXPORT NGPhysicalFragment
   void Trace(Visitor*) const;
   void TraceAfterDispatch(Visitor*) const;
 
+  // Same as |base::span<const NGLink>|, except that:
+  // * Each |NGLink| has the latest generation of post-layout. See
+  //   |NGPhysicalFragment::UpdatedFragment()| for more details.
+  // * The iterator skips fragments for destroyed or moved |LayoutObject|.
+  class PostLayoutChildLinkList {
+    STACK_ALLOCATED();
+
+   public:
+    PostLayoutChildLinkList(wtf_size_t count, const NGLink* buffer)
+        : count_(count), buffer_(buffer) {}
+
+    class ConstIterator
+        : public std::iterator<std::input_iterator_tag, NGLink> {
+      STACK_ALLOCATED();
+
+     public:
+      using iterator_category = std::bidirectional_iterator_tag;
+      using value_type = NGLink;
+      using difference_type = ptrdiff_t;
+      using pointer = value_type*;
+      using reference = value_type&;
+
+      ConstIterator(const NGLink* current, wtf_size_t size)
+          : current_(current), end_(current + size) {
+        SkipInvalidAndSetPostLayout();
+      }
+
+      const NGLink& operator*() const { return post_layout_; }
+      const NGLink* operator->() const { return &post_layout_; }
+
+      ConstIterator& operator++() {
+        ++current_;
+        SkipInvalidAndSetPostLayout();
+        return *this;
+      }
+      bool operator==(const ConstIterator& other) const {
+        return current_ == other.current_;
+      }
+      bool operator!=(const ConstIterator& other) const {
+        return current_ != other.current_;
+      }
+
+     private:
+      void SkipInvalidAndSetPostLayout() {
+        for (; current_ != end_; ++current_) {
+          const NGPhysicalFragment* fragment = current_->fragment;
+          if (UNLIKELY(fragment->IsLayoutObjectDestroyedOrMoved()))
+            continue;
+          if (const NGPhysicalFragment* post_layout = fragment->PostLayout()) {
+            post_layout_.fragment = post_layout;
+            post_layout_.offset = current_->offset;
+            return;
+          }
+        }
+      }
+
+      const NGLink* current_;
+      const NGLink* end_;
+      NGLink post_layout_;
+    };
+    using const_iterator = ConstIterator;
+
+    const_iterator begin() const { return const_iterator(buffer_, count_); }
+    const_iterator end() const { return const_iterator(buffer_ + count_, 0); }
+
+    wtf_size_t size() const { return count_; }
+    bool empty() const { return count_ == 0; }
+
+   private:
+    wtf_size_t count_;
+    const NGLink* buffer_;
+  };
+
+  const NGBreakToken* BreakToken() const { return break_token_; }
+
+  // Returns the children of |this|.
+  //
+  // Note, children in this collection maybe old generations. Items in this
+  // collection are safe, but their children (grandchildren of |this|) maybe
+  // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
+  base::span<const NGLink> Children() const {
+    DCHECK(children_valid_);
+    return base::make_span(buffer_, const_num_children_);
+  }
+
+  // Similar to |Children()| but all children are the latest generation of
+  // post-layout, and therefore all descendants are safe.
+  PostLayoutChildLinkList PostLayoutChildren() const {
+    DCHECK(children_valid_);
+    return PostLayoutChildLinkList(const_num_children_, buffer_);
+  }
+
+  // Returns true if we have any floating descendants which need to be
+  // traversed during the float paint phase.
+  bool HasFloatingDescendantsForPaint() const {
+    return has_floating_descendants_for_paint_;
+  }
+
+  // Returns true if we have any adjoining-object descendants (floats, or
+  // inline-level OOF-positioned objects).
+  bool HasAdjoiningObjectDescendants() const {
+    return has_adjoining_object_descendants_;
+  }
+
+  // Returns true if we aren't able to re-use this fragment if the
+  // |NGConstraintSpace::PercentageResolutionBlockSize| changes.
+  bool DependsOnPercentageBlockSize() const {
+    return depends_on_percentage_block_size_;
+  }
+
+  void SetChildrenInvalid() const;
+  bool ChildrenValid() const { return children_valid_; }
+
+  bool HasOutOfFlowPositionedDescendants() const {
+    DCHECK(!oof_positioned_descendants_ ||
+           !oof_positioned_descendants_->IsEmpty());
+    return oof_positioned_descendants_;
+  }
+
+  base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
+      const {
+    if (!HasOutOfFlowPositionedDescendants())
+      return base::span<NGPhysicalOutOfFlowPositionedNode>();
+    return {oof_positioned_descendants_->data(),
+            oof_positioned_descendants_->size()};
+  }
+
+  // This exposes a mutable part of the fragment for |NGOutOfFlowLayoutPart|.
+  class MutableChildrenForOutOfFlow final {
+    STACK_ALLOCATED();
+
+   protected:
+    friend class NGOutOfFlowLayoutPart;
+    base::span<NGLink> Children() const {
+      return base::make_span(buffer_, num_children_);
+    }
+
+   private:
+    friend class NGPhysicalFragment;
+    MutableChildrenForOutOfFlow(const NGLink* buffer, wtf_size_t num_children)
+        : buffer_(const_cast<NGLink*>(buffer)), num_children_(num_children) {}
+
+    NGLink* buffer_;
+    wtf_size_t num_children_;
+  };
+
+  MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
+    DCHECK(children_valid_);
+    return MutableChildrenForOutOfFlow(buffer_, const_num_children_);
+  }
+
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
   const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
 
-  // The following bitfields are only to be used by NGPhysicalContainerFragment
-  // (it's defined here to save memory, since that class has no bitfields).
+  void AddScrollableOverflowForInlineChild(
+      const NGPhysicalBoxFragment& container,
+      const ComputedStyle& container_style,
+      const NGFragmentItem& line,
+      bool has_hanging,
+      const NGInlineCursor& cursor,
+      TextHeightType height_type,
+      PhysicalRect* overflow) const;
+
+  static void AdjustScrollableOverflowForHanging(
+      const PhysicalRect& rect,
+      const WritingMode container_writing_mode,
+      PhysicalRect* overflow);
+
+  void AddOutlineRectsForNormalChildren(
+      Vector<PhysicalRect>* outline_rects,
+      const PhysicalOffset& additional_offset,
+      NGOutlineType outline_type,
+      const LayoutBoxModelObject* containing_block) const;
+  void AddOutlineRectsForCursor(Vector<PhysicalRect>* outline_rects,
+                                const PhysicalOffset& additional_offset,
+                                NGOutlineType outline_type,
+                                const LayoutBoxModelObject* containing_block,
+                                NGInlineCursor* cursor) const;
+  void AddOutlineRectsForDescendant(
+      const NGLink& descendant,
+      Vector<PhysicalRect>* rects,
+      const PhysicalOffset& additional_offset,
+      NGOutlineType outline_type,
+      const LayoutBoxModelObject* containing_block) const;
+
+  static bool DependsOnPercentageBlockSize(const NGContainerFragmentBuilder&);
+
   unsigned has_floating_descendants_for_paint_ : 1;
   unsigned has_adjoining_object_descendants_ : 1;
   unsigned depends_on_percentage_block_size_ : 1;
@@ -530,9 +717,15 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
 
-  // Note: We've used 32-bit bit field. If you need more bits, please think to
-  // share bit fields, or put them before layout_object_ to fill the gap after
-  // RefCounted on 64-bit systems.
+  const wtf_size_t const_num_children_;
+  Member<const NGBreakToken> break_token_;
+  const Member<HeapVector<NGPhysicalOutOfFlowPositionedNode>>
+      oof_positioned_descendants_;
+
+  // Because flexible arrays need to be the last member in a class, the actual
+  // storage is in the subclass and we just keep a pointer to it here. Holding a
+  // raw ptr to |NGLink| here is safe with the same reason.
+  const NGLink* buffer_;
 
  private:
   friend struct NGPhysicalFragmentTraits;

@@ -81,7 +81,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   }
 
   void ReplaceChild(wtf_size_t index,
-                    const NGPhysicalContainerFragment& new_child,
+                    const NGPhysicalFragment& new_child,
                     const LogicalOffset offset);
 
   const ChildrenVector& Children() const { return children_; }
@@ -179,7 +179,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // appending them to our list of descendants.
   // In addition, propagate any inner multicols with pending OOF descendants.
   void PropagateOOFPositionedInfo(
-      const NGPhysicalContainerFragment& fragment,
+      const NGPhysicalFragment& fragment,
       LogicalOffset offset,
       LayoutUnit fragmentainer_consumed_block_size,
       const LayoutInline* inline_container = nullptr,
@@ -241,7 +241,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
  protected:
   friend class NGInlineLayoutStateStack;
   friend class NGLayoutResult;
-  friend class NGPhysicalContainerFragment;
+  friend class NGPhysicalFragment;
 
   NGContainerFragmentBuilder(NGLayoutInputNode node,
                              const ComputedStyle* style,
@@ -253,7 +253,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     layout_object_ = node.GetLayoutBox();
   }
 
-  void PropagateChildData(const NGPhysicalContainerFragment& child,
+  void PropagateChildData(const NGPhysicalFragment& child,
                           const LogicalOffset& child_offset,
                           const LayoutInline* inline_container = nullptr,
                           bool propagate_oof_descendants = true);

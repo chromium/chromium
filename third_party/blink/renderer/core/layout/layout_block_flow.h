@@ -59,7 +59,7 @@ class LayoutMultiColumnSpannerPlaceholder;
 class LayoutRubyRun;
 class MarginInfo;
 class NGOffsetMapping;
-class NGPhysicalContainerFragment;
+class NGPhysicalFragment;
 
 struct NGInlineNodeData;
 
@@ -504,7 +504,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // These functions are only public so we can call it from NGBlockNode while
   // we're still working on LayoutNG.
   void AddVisualOverflowFromFloats();
-  void AddVisualOverflowFromFloats(const NGPhysicalContainerFragment& fragment);
+  void AddVisualOverflowFromFloats(const NGPhysicalFragment& fragment);
   void AddLayoutOverflowFromFloats();
 
   virtual NGInlineNodeData* TakeNGInlineNodeData() {
@@ -955,7 +955,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void SetCollapsedBottomMargin(const MarginInfo&);
 
   static void RecalcFloatingDescendantsVisualOverflow(
-      const NGPhysicalContainerFragment& fragment);
+      const NGPhysicalFragment& fragment);
 
   // Apply any forced fragmentainer break that's set on the current class A
   // break point.

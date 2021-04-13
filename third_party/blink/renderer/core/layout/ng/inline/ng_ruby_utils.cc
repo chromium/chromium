@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 
 namespace blink {
@@ -104,8 +103,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
   if (!item.layout_result)
     return overhang;
 
-  const auto& run_fragment =
-      To<NGPhysicalContainerFragment>(item.layout_result->PhysicalFragment());
+  const auto& run_fragment = item.layout_result->PhysicalFragment();
   LayoutUnit start_overhang = LayoutUnit::Max();
   LayoutUnit end_overhang = LayoutUnit::Max();
   bool found_line = false;
@@ -127,9 +125,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
       // RubyBase's inline_size is always same as RubyRun's inline_size.
       // Overhang values are offsets from RubyBase's inline edges to
       // the outmost text.
-      for (const auto& base_child_link :
-           To<NGPhysicalContainerFragment>(child_fragment)
-               .PostLayoutChildren()) {
+      for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
         const LayoutUnit line_inline_size =
             NGFragment(writing_direction, *base_child_link).InlineSize();
         if (line_inline_size == LayoutUnit())

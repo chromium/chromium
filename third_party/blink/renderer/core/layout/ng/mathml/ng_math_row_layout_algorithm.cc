@@ -77,8 +77,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
         Node(), ChildAvailableSize(), ConstraintSpace(), child);
     const NGLayoutResult* result =
         To<NGBlockNode>(child).Layout(child_space, nullptr /* break token */);
-    const NGPhysicalContainerFragment& physical_fragment =
-        result->PhysicalFragment();
+    const NGPhysicalFragment& physical_fragment = result->PhysicalFragment();
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            To<NGPhysicalBoxFragment>(physical_fragment));
 
@@ -134,9 +133,7 @@ const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
   adjust_offset += LogicalOffset{center_offset, max_row_block_baseline};
   for (auto& child_data : children) {
     child_data.offset += adjust_offset;
-    container_builder_.AddChild(
-        To<NGPhysicalContainerFragment>(*child_data.fragment),
-        child_data.offset);
+    container_builder_.AddChild(*child_data.fragment, child_data.offset);
     child_data.child.StoreMargins(ConstraintSpace(), child_data.margins);
   }
 
