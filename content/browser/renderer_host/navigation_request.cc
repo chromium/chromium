@@ -3431,7 +3431,7 @@ void NavigationRequest::OnStartChecksComplete(
   }
 
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
-  if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation())
+  if (IsPageActivation())
     loader_type = NavigationURLLoader::LoaderType::kNoop;
 
   loader_ = NavigationURLLoader::Create(
@@ -3481,8 +3481,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK(result.action() != NavigationThrottle::DEFER);
   DCHECK(result.action() != NavigationThrottle::BLOCK_RESPONSE);
-  DCHECK(!IsServedFromBackForwardCache());
-  DCHECK(!IsPrerenderedPageActivation());
+  DCHECK(!IsPageActivation());
 
   bool collapse_frame =
       result.action() == NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE;
@@ -5140,8 +5139,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache or prerendered pages.
   DCHECK(!IsSameDocument());
-  DCHECK(!IsServedFromBackForwardCache());
-  DCHECK(!IsPrerenderedPageActivation());
+  DCHECK(!IsPageActivation());
 
   ContentBrowserClient* client = GetContentClient()->browser();
   BrowserContext* context =
@@ -5197,8 +5195,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // Only cross-RenderFrameHost navigations create speculative
     // RenderFrameHosts whereas SameDocument, BackForwardCache and
     // PrerenderedActivation navigations don't.
-    DCHECK(!IsSameDocument() && !IsServedFromBackForwardCache() &&
-           !IsPrerenderedPageActivation());
+    DCHECK(!IsSameDocument() && !IsPageActivation());
     render_frame_host_->SetLifecycleStateToPendingCommit();
   }
 
@@ -5206,10 +5203,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
 
-  if (!IsSameDocument() && !IsServedFromBackForwardCache() &&
-      !IsPrerenderedPageActivation()) {
+  if (!IsSameDocument() && !IsPageActivation())
     UpdatePrivateNetworkRequestPolicy();
-  }
 
   if (appcache_handle_) {
     DCHECK(appcache_handle_->host());
@@ -5300,10 +5295,8 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // The origin to commit is not known until we get the final network response.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
 
-  if (IsSameDocument() || IsServedFromBackForwardCache() ||
-      IsPrerenderedPageActivation()) {
+  if (IsSameDocument() || IsPageActivation())
     return GetRenderFrameHost()->GetLastCommittedOrigin();
-  }
 
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
@@ -6218,6 +6211,10 @@ bool NavigationRequest::IsPrerenderedPageActivation() const {
 
 bool NavigationRequest::IsServedFromBackForwardCache() const {
   return rfh_restored_from_back_forward_cache_ != nullptr;
+}
+
+bool NavigationRequest::IsPageActivation() const {
+  return IsPrerenderedPageActivation() || IsServedFromBackForwardCache();
 }
 
 std::unique_ptr<NavigationEntryImpl>

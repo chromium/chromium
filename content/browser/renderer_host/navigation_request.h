@@ -830,6 +830,10 @@ class CONTENT_EXPORT NavigationRequest
   // adds a const qualifier.
   bool IsServedFromBackForwardCache() const;
 
+  // Whether this navigation is activating an existing page (e.g. served from
+  // the BackForwardCache or Prerender)
+  bool IsPageActivation() const;
+
   // See comments for |prerender_navigation_entry_|.
   void SetPrerenderNavigationEntry(
       std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry) {

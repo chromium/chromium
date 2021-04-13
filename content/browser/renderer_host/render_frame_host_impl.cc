@@ -8970,11 +8970,12 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   }
 
   // A cross-document navigation requires an embedding token. Navigations
-  // served from the back-forward cache do not require new embedding tokens as
-  // the token is already set.
-  bool is_served_from_bfcache =
-      navigation_request && navigation_request->IsServedFromBackForwardCache();
-  if (!is_served_from_bfcache) {
+  // activating an existing document do not require new embedding tokens as the
+  // token is already set.
+  bool is_page_activation =
+      navigation_request && navigation_request->IsPageActivation();
+  DCHECK(!is_page_activation || embedding_token_.has_value());
+  if (!is_page_activation) {
     if (!is_same_document_navigation && !params->embedding_token.has_value()) {
       bad_message::ReceivedBadMessage(process,
                                       bad_message::RFH_MISSING_EMBEDDING_TOKEN);
