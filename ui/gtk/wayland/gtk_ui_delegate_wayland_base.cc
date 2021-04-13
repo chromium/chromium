@@ -10,17 +10,8 @@
 #include "base/callback.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "ui/base/glib/glib_cast.h"
 #include "ui/gtk/gtk_compat.h"
-
-#if BUILDFLAG(GTK_VERSION) >= 4
-#include <gdk/wayland/gdkwayland.h>
-#else
-#include <gdk/gdkwayland.h>
-
-#define WEAK_GTK_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
-WEAK_GTK_FN(gdk_wayland_window_set_transient_for_exported);
-#endif
 
 namespace ui {
 
@@ -53,14 +44,12 @@ GdkWindow* GtkUiDelegateWaylandBase::GetGdkWindow(
 bool GtkUiDelegateWaylandBase::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
-#if BUILDFLAG(GTK_VERSION) < 4
-  if (!gdk_wayland_window_set_transient_for_exported) {
+  if (!gtk::GtkCheckVersion(3, 22)) {
     LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
                  << GTK_MAJOR_VERSION << '.' << GTK_MINOR_VERSION << '.'
                  << GTK_MICRO_VERSION;
     return false;
   }
-#endif
 
   return SetGtkWidgetTransientForImpl(
       parent, base::BindOnce(&GtkUiDelegateWaylandBase::OnHandle,
@@ -81,14 +70,15 @@ void GtkUiDelegateWaylandBase::ShowGtkWindow(GtkWindow* window) {
 void GtkUiDelegateWaylandBase::OnHandle(GtkWidget* widget,
                                         const std::string& handle) {
   char* parent = const_cast<char*>(handle.c_str());
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto* toplevel =
-      GDK_TOPLEVEL(gtk_native_get_surface(gtk_widget_get_native(widget)));
-  gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);
-#else
-  gdk_wayland_window_set_transient_for_exported(gtk_widget_get_window(widget),
-                                                parent);
-#endif
+  if (gtk::GtkCheckVersion(4)) {
+    auto* toplevel = GlibCast<GdkToplevel>(
+        gtk_native_get_surface(gtk_widget_get_native(widget)),
+        gdk_toplevel_get_type());
+    gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);
+  } else {
+    gdk_wayland_window_set_transient_for_exported(gtk_widget_get_window(widget),
+                                                  parent);
+  }
 }
 
 }  // namespace ui

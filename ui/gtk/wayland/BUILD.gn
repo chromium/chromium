@@ -15,6 +15,7 @@ component("wayland") {
   deps = [
     "//base",
     "//build/config/linux/gtk",
+    "//ui/base",
     "//ui/gtk:gtk_compat",
   ]
   public_deps = [ "//ui/gtk:gtk_ui_delegate" ]

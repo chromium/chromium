@@ -23,13 +23,15 @@ class GtkEventLoopX11 {
   GtkEventLoopX11& operator=(const GtkEventLoopX11&) = delete;
 
  private:
-#if BUILDFLAG(GTK_VERSION) >= 4
-  CHROMEG_CALLBACK_0(GtkEventLoopX11, gboolean, OnEvent, GdkEvent*);
+  // This state is only used on GTK4.
   GdkSurface* surface_ = nullptr;
   gulong signal_id_ = 0;
-#else
+
+  // Only called on GTK3.
   static void DispatchGdkEvent(GdkEvent* gdk_event, gpointer);
-#endif
+
+  // Only called on GTK4.
+  CHROMEG_CALLBACK_0(GtkEventLoopX11, gboolean, OnEvent, GdkEvent*);
 };
 
 }  // namespace ui

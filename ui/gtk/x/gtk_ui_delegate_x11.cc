@@ -20,20 +20,6 @@
 #include "ui/platform_window/x11/x11_window.h"
 #include "ui/platform_window/x11/x11_window_manager.h"
 
-extern "C" {
-GdkWindow* gdk_x11_window_foreign_new_for_display(GdkDisplay* display,
-                                                  unsigned long window);
-
-GdkWindow* gdk_x11_window_lookup_for_display(GdkDisplay* display,
-                                             unsigned long window);
-
-#if BUILDFLAG(GTK_VERSION) >= 4
-unsigned long gdk_x11_surface_get_xid(GdkSurface* surface);
-#else
-unsigned long gdk_x11_window_get_xid(GdkWindow* window);
-#endif
-}
-
 namespace ui {
 
 GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
@@ -62,20 +48,12 @@ void GtkUiDelegateX11::OnInitialized(GtkWidget* widget) {
 }
 
 GdkKeymap* GtkUiDelegateX11::GetGdkKeymap() {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  NOTREACHED();
-  return nullptr;
-#else
+  DCHECK(!gtk::GtkCheckVersion(4));
   return gdk_keymap_get_for_display(GetGdkDisplay());
-#endif
 }
 
 GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  // This function is only used by InputMethodContextImplGtk with GTK3.
-  NOTREACHED();
-  return nullptr;
-#else
+  DCHECK(!gtk::GtkCheckVersion(4));
   GdkDisplay* display = GetGdkDisplay();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
       display, static_cast<uint32_t>(window_id));
@@ -85,18 +63,15 @@ GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
     gdk_window = gdk_x11_window_foreign_new_for_display(
         display, static_cast<uint32_t>(window_id));
   return gdk_window;
-#endif
 }
 
 bool GtkUiDelegateX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  auto x11_window = static_cast<x11::Window>(gdk_x11_surface_get_xid(
-      gtk_native_get_surface(gtk_widget_get_native(widget))));
-#else
   auto x11_window = static_cast<x11::Window>(
-      gdk_x11_window_get_xid(gtk_widget_get_window(widget)));
-#endif
+      gtk::GtkCheckVersion(4)
+          ? gdk_x11_surface_get_xid(
+                gtk_native_get_surface(gtk_widget_get_native(widget)))
+          : gdk_x11_window_get_xid(gtk_widget_get_window(widget)));
   SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
               parent);
   SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,

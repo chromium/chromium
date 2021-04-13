@@ -52,6 +52,7 @@ using GtkSnapshot = GdkSnapshot;
 using GdkPaintable = struct _GdkPaintable;
 using GtkNative = struct _GtkNative;
 using GdkSurface = struct _GdkSurface;
+using GdkToplevel = struct _GdkToplevel;
 
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
 #else
@@ -66,6 +67,8 @@ using GdkKeymap = struct _GdkKeymap;
 using GtkIconInfo = struct _GtkIconInfo;
 using GdkScreen = struct _GdkScreen;
 using GdkColor = struct _GdkColor;
+
+using GdkEventFunc = void (*)(GdkEvent* event, gpointer data);
 
 struct _GdkEventKey {
   GdkEventType type;
