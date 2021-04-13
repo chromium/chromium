@@ -2927,6 +2927,8 @@ source_set("chromeos") {
     "printing/printer_installation_manager.h",
     "printing/printer_metrics_provider.cc",
     "printing/printer_metrics_provider.h",
+    "printing/printer_setup_util.cc",
+    "printing/printer_setup_util.h",
     "printing/printers_map.cc",
     "printing/printers_map.h",
     "printing/printers_sync_bridge.cc",
