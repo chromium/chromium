@@ -946,9 +946,9 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageCompressionPageInfoState(false);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SubresourceRedirectLoginRobotsBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestFirstKImagesLoadFaster)) {
+// Test is flaky, see crbug.com/1198646
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
+                       DISABLED_TestFirstKImagesLoadFaster) {
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
   NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
