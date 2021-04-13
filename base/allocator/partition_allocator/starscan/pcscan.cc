@@ -1360,11 +1360,9 @@ void PCScanTask::FinishScanner() {
       pcscan_.scheduler_.scheduling_backend().GetQuarantineData().last_size,
       stats_.survived_quarantine_size());
 
-  const size_t total_pa_heap_size =
-      PCScanInternal::Instance().CalculateTotalHeapSize();
-
-  pcscan_.scheduler_.AccountFreed(stats_.survived_quarantine_size());
-  pcscan_.scheduler_.scheduling_backend().GrowLimitIfNeeded(total_pa_heap_size);
+  pcscan_.scheduler_.scheduling_backend().UpdateScheduleAfterScan(
+      stats_.survived_quarantine_size(),
+      PCScanInternal::Instance().CalculateTotalHeapSize());
 
   PCScanInternal::Instance().reset_current_pcscan_task();
   // Check that concurrent task can't be scheduled twice.
@@ -1511,7 +1509,6 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
   }
 
   scheduler_.scheduling_backend().ScanStarted();
-  epoch_.fetch_add(1, std::memory_order_relaxed);
 
   // Create PCScan task.
   auto task = base::MakeRefCounted<PCScanTask>(*this);

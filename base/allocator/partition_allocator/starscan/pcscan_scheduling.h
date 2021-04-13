@@ -28,12 +28,15 @@ struct QuarantineData final {
 
   std::atomic<size_t> current_size{0u};
   std::atomic<size_t> size_limit{kQuarantineSizeMinLimit};
+  std::atomic<size_t> epoch{0u};
   size_t last_size{0u};
 };
 
 class PCScanSchedulingBackend {
  public:
   explicit inline constexpr PCScanSchedulingBackend(PCScanScheduler&);
+  // No virtual destructor to allow constant initialization of PCScan as
+  // static global which directly embeds LimitBackend as default backend.
 
   PCScanSchedulingBackend(const PCScanSchedulingBackend&) = delete;
   PCScanSchedulingBackend& operator=(const PCScanSchedulingBackend&) = delete;
@@ -48,7 +51,8 @@ class PCScanSchedulingBackend {
   virtual void ScanStarted() = 0;
 
   // Invoked at the end of a scan to compute a new limit.
-  virtual void GrowLimitIfNeeded(size_t) = 0;
+  virtual void UpdateScheduleAfterScan(size_t survived_bytes,
+                                       size_t heap_size) = 0;
 
  protected:
   PCScanScheduler& scheduler_;
@@ -63,7 +67,7 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 
   bool LimitReached() final;
   void ScanStarted() final;
-  void GrowLimitIfNeeded(size_t) final;
+  void UpdateScheduleAfterScan(size_t, size_t) final;
 };
 
 // The scheduler that is embedded in the PCSCan frontend which requires a fast
@@ -80,6 +84,10 @@ class BASE_EXPORT PCScanScheduler final {
   // Account freed `bytes`. Returns true if scan should be triggered
   // immediately, and false otherwise.
   ALWAYS_INLINE bool AccountFreed(size_t bytes);
+
+  size_t epoch() const {
+    return quarantine_data_.epoch.load(std::memory_order_relaxed);
+  }
 
   // Sets a new scheduling backend that should be used by the scanner.
   void SetNewSchedulingBackend(PCScanSchedulingBackend&);

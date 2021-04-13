@@ -26,10 +26,13 @@ bool LimitBackend::LimitReached() {
 
 void LimitBackend::ScanStarted() {
   auto& data = GetQuarantineData();
+  data.epoch.fetch_add(1, std::memory_order_relaxed);
   data.last_size = data.current_size.exchange(0, std::memory_order_relaxed);
 }
 
-void LimitBackend::GrowLimitIfNeeded(size_t heap_size) {
+void LimitBackend::UpdateScheduleAfterScan(size_t survived_bytes,
+                                           size_t heap_size) {
+  scheduler_.AccountFreed(survived_bytes);
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
   auto& data = GetQuarantineData();

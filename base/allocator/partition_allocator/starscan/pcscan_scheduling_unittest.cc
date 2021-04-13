@@ -30,7 +30,8 @@ TEST(PCScanSchedulerLimitBackendTest, ScanAtQuarantineSizeFraction) {
   LimitBackend limit_backend(scheduler);
   scheduler.SetNewSchedulingBackend(limit_backend);
   constexpr size_t kHeapSize = 100 * kMB;
-  limit_backend.GrowLimitIfNeeded(kHeapSize);
+  constexpr size_t kNoSurvivedBytes = 0;
+  limit_backend.UpdateScheduleAfterScan(kNoSurvivedBytes, kHeapSize);
   constexpr size_t kExpectedTriggerSize = static_cast<size_t>(
       static_cast<double>(kHeapSize) * LimitBackend::kQuarantineSizeFraction);
   EXPECT_FALSE(scheduler.AccountFreed(kExpectedTriggerSize / 2));

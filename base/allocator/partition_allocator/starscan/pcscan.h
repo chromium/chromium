@@ -122,13 +122,12 @@ class BASE_EXPORT PCScan final {
   // Reinitialize internal structures (e.g. card table).
   void ReinitForTesting();
 
-  size_t epoch() const { return epoch_.load(std::memory_order_relaxed); }
+  size_t epoch() const { return scheduler_.epoch(); }
 
   // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
   static PCScan instance_ PA_CONSTINIT;
 
   PCScanScheduler scheduler_{};
-  std::atomic<size_t> epoch_{0u};
   std::atomic<State> state_{State::kNotRunning};
 };
 
