@@ -2516,6 +2516,29 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_browsertests",
+        "test_id_prefix": "ninja://headless:headless_browsertests/"
+      },
+      {
+        "args": [
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -3707,6 +3730,28 @@
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-16.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_browsertests",
+        "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
         "args": [
