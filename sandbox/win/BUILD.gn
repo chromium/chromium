@@ -95,8 +95,6 @@ static_library("sandbox") {
     "src/restricted_token_utils.h",
     "src/sandbox.cc",
     "src/sandbox.h",
-    "src/sandbox_constants.cc",
-    "src/sandbox_constants.h",
     "src/sandbox_factory.h",
     "src/sandbox_globals.cc",
     "src/sandbox_nt_types.h",

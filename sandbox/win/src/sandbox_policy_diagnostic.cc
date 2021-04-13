@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
-#include "sandbox/win/src/sandbox_constants.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/win_utils.h"
@@ -29,6 +28,26 @@
 namespace sandbox {
 
 namespace {
+
+// Keys in base::Value snapshots of Policies for chrome://sandbox.
+const char kAppContainerCapabilities[] = "appContainerCapabilities";
+const char kAppContainerInitialCapabilities[] =
+    "appContainerInitialCapabilities";
+const char kAppContainerSid[] = "appContainerSid";
+const char kDesiredIntegrityLevel[] = "desiredIntegrityLevel";
+const char kDesiredMitigations[] = "desiredMitigations";
+const char kDisconnectCsrss[] = "disconnectCsrss";
+const char kHandlesToClose[] = "handlesToClose";
+const char kJobLevel[] = "jobLevel";
+const char kLockdownLevel[] = "lockdownLevel";
+const char kLowboxSid[] = "lowboxSid";
+const char kPlatformMitigations[] = "platformMitigations";
+const char kPolicyRules[] = "policyRules";
+const char kProcessIds[] = "processIds";
+
+// Values in snapshots of Policies.
+const char kDisabled[] = "disabled";
+const char kEnabled[] = "enabled";
 
 base::Value ProcessIdList(std::vector<uint32_t> process_ids) {
   base::Value results(base::Value::Type::LIST);
