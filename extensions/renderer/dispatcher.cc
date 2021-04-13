@@ -266,6 +266,12 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
       extension_scheme);
 
+  // chrome-extension: resources should be allowed to register ServiceWorkers.
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
+      extension_scheme);
+
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(extension_scheme);
+
   // Initialize host permissions for any extensions that were activated before
   // WebKit was initialized.
   for (const std::string& extension_id : active_extension_ids_) {
@@ -1261,13 +1267,6 @@ void Dispatcher::SetSessionInfo(version_info::Channel channel,
   SetCurrentChannel(channel);
   SetCurrentFeatureSessionType(session_type);
   script_context_set_->set_is_lock_screen_context(is_lock_screen_context);
-
-  // chrome-extension: resources should be allowed to register ServiceWorkers.
-  blink::WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
-      blink::WebString::FromUTF8(extensions::kExtensionScheme));
-
-  blink::WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
-      blink::WebString::FromUTF8(extensions::kExtensionScheme));
 }
 
 void Dispatcher::ShouldSuspend(ShouldSuspendCallback callback) {
