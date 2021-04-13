@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
@@ -55,26 +54,6 @@ import java.util.List;
  */
 public class ShareDelegateImpl implements ShareDelegate {
     static final String CANONICAL_URL_RESULT_HISTOGRAM = "Mobile.CanonicalURLResult";
-
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    @IntDef({ShareOrigin.OVERFLOW_MENU, ShareOrigin.TOP_TOOLBAR, ShareOrigin.CONTEXT_MENU,
-            ShareOrigin.WEBSHARE_API, ShareOrigin.MOBILE_ACTION_MODE, ShareOrigin.EDIT_URL,
-            ShareOrigin.TAB_GROUP, ShareOrigin.WEBAPP_NOTIFICATION, ShareOrigin.FEED})
-    public @interface ShareOrigin {
-        int OVERFLOW_MENU = 0;
-        int TOP_TOOLBAR = 1;
-        int CONTEXT_MENU = 2;
-        int WEBSHARE_API = 3;
-        int MOBILE_ACTION_MODE = 4;
-        int EDIT_URL = 5;
-        int TAB_GROUP = 6;
-        int WEBAPP_NOTIFICATION = 7;
-        int FEED = 8;
-
-        // Must be the last one.
-        int COUNT = 9;
-    }
 
     private final BottomSheetController mBottomSheetController;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;

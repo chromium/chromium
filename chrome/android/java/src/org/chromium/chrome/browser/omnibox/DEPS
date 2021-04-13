@@ -11,8 +11,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/share/ShareDelegateImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/WarmupManager.java",
 
   "+base/android/java/src/org/chromium/base",
@@ -21,6 +19,7 @@ include_rules = [
   "+chrome/browser/privacy/settings",
   "+chrome/browser/profiles/android",
   "+chrome/browser/search_engines/android",
+  "+chrome/browser/share/android",
   "+chrome/browser/signin/services/android",
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel/android",
