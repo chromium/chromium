@@ -299,6 +299,10 @@ class ThemeService : public KeyedService,
   // The number of infobars currently displayed.
   int number_of_reinstallers_ = 0;
 
+  // Declared before |theme_syncable_service_|, because ThemeSyncableService
+  // removes itself from the |observers_| list on destruction.
+  base::ObserverList<ThemeServiceObserver> observers_;
+
   std::unique_ptr<ThemeSyncableService> theme_syncable_service_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -319,8 +323,6 @@ class ThemeService : public KeyedService,
 
   ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observer_{this};
-
-  base::ObserverList<ThemeServiceObserver> observers_;
 
   base::WeakPtrFactory<ThemeService> weak_ptr_factory_{this};
 
