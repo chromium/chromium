@@ -70,7 +70,6 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   void TearDown() override {
     if (!IsSupportedEnvironment())
       return;
-    base::win::RoUninitialize();
     ASSERT_FALSE(fake_interop().HasDataRequestedListener(hwnd_));
   }
 
