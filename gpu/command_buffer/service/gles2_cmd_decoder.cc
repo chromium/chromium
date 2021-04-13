@@ -83,6 +83,7 @@
 #include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
 #include "gpu/command_buffer/service/vertex_array_manager.h"
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -4275,6 +4276,13 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.texture_format_etc1_npot =
       caps.texture_format_etc1 && !workarounds().etc1_power_of_two_only;
+  // Vulkan currently doesn't support single-component cross-thread shared
+  // images.
+  caps.disable_one_component_textures =
+      group_->shared_image_manager() &&
+      group_->shared_image_manager()->display_context_on_another_thread() &&
+      (workarounds().avoid_one_component_egl_images ||
+       features::IsUsingVulkan());
   caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
   caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
   caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
