@@ -146,12 +146,6 @@ public class StartSurfaceConfiguration {
                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
     }
 
-    @VisibleForTesting
-    static void setFeedVisibilityForTesting(boolean isVisible) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, isVisible);
-    }
-
     /**
      * Records histograms of showing the StartSurface. Nothing will be recorded if timeDurationMs
      * isn't valid.
@@ -167,22 +161,6 @@ public class StartSurfaceConfiguration {
     public static String getHistogramName(String name, boolean isInstantStart) {
         return STARTUP_UMA_PREFIX + name
                 + (isInstantStart ? INSTANT_START_SUBFIX : REGULAR_START_SUBFIX);
-    }
-    /**
-     * @param isDense Whether the placeholder of Feed is dense. This depends on whether the first
-     *         article card of Feed is dense.
-     */
-    public static void setFeedPlaceholderDense(boolean isDense) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_PLACEHOLDER_DENSE, isDense);
-    }
-
-    /**
-     * @return Whether the placeholder of Feed is dense.
-     */
-    public static boolean isFeedPlaceholderDense() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.FEED_PLACEHOLDER_DENSE, false);
     }
 
     /**
@@ -241,5 +219,11 @@ public class StartSurfaceConfiguration {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !(SUPPORT_ACCESSIBILITY.getValue()
                         && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
+    }
+
+    @VisibleForTesting
+    static void setFeedVisibilityForTesting(boolean isVisible) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, isVisible);
     }
 }

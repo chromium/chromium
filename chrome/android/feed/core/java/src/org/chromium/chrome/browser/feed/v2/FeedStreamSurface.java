@@ -1090,9 +1090,9 @@ public class FeedStreamSurface
     }
 
     /**
-     * Feed v2's background is set to be transparent in {@link FeedSurfaceCoordinator#createStream}
+     * Feed's background is set to be transparent in {@link FeedSurfaceCoordinator#createStream}
      * if the Feed placeholder is shown. After first batch of articles are loaded, set recyclerView
-     * back to non-transparent. Since Feed v2 doesn't have fade-in animation, we add a fade-in
+     * back to non-transparent. Since Feed doesn't have fade-in animation, we add a fade-in
      * animation for Feed background to make the transition smooth.
      */
     void hidePlaceholder() {

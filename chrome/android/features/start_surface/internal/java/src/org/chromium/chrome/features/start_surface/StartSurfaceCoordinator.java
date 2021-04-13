@@ -96,7 +96,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean mIsInitPending;
 
     private boolean mIsSecondaryTaskInitPending;
-    private FeedLoadingCoordinator mFeedLoadingCoordinator;
+    private FeedPlaceholderCoordinator mFeedPlaceholderCoordinator;
 
     // Listeners used by the contained surfaces (e.g., Explore) to listen to the scroll changes on
     // the main scrollable container of the start surface.
@@ -171,9 +171,9 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
-            mFeedLoadingCoordinator = new FeedLoadingCoordinator(
+            mFeedPlaceholderCoordinator = new FeedPlaceholderCoordinator(
                     mActivity, mTasksSurface.getBodyViewContainer(), false);
-            mFeedLoadingCoordinator.setUpLoadingView();
+            mFeedPlaceholderCoordinator.setUpPlaceholderView();
         }
         startSurfaceOneshotSupplier.set(this);
     }
@@ -330,8 +330,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
         mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
-        if (mFeedLoadingCoordinator != null) {
-            mFeedLoadingCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+        if (mFeedPlaceholderCoordinator != null) {
+            mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
         }
     }
 

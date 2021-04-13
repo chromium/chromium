@@ -23,9 +23,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
 /**
- * A {@link LinearLayout} that shows loading placeholder for Feed cards with thumbnail on the right.
+ * A {@link LinearLayout} that shows loading placeholder for Feed cards.
  */
-public class FeedLoadingLayout extends LinearLayout {
+public class FeedPlaceholderLayout extends LinearLayout {
     private static final int CARD_MARGIN_DP = 12;
     private static final int CARD_TOP_PADDING_DP = 15;
     private static final int IMAGE_PLACEHOLDER_BOTTOM_PADDING_DP = 72;
@@ -43,7 +43,7 @@ public class FeedLoadingLayout extends LinearLayout {
     private boolean mIsFirstCardDense;
     private UiConfig mUiConfig;
 
-    public FeedLoadingLayout(Context context, AttributeSet attrs) {
+    public FeedPlaceholderLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         mResources = mContext.getResources();
@@ -72,10 +72,9 @@ public class FeedLoadingLayout extends LinearLayout {
     private void setHeader() {
         LinearLayout headerView = findViewById(R.id.feed_placeholder_header);
         ViewGroup.LayoutParams lp = headerView.getLayoutParams();
-            // Header blank size should be consistent with
-            // R.layout.new_tab_page_snippets_expandable_header_with_menu.
-            lp.height =
-                    getResources().getDimensionPixelSize(R.dimen.snippets_article_header_menu_size);
+        // Header blank size should be consistent with
+        // R.layout.new_tab_page_snippets_expandable_header_with_menu.
+        lp.height = getResources().getDimensionPixelSize(R.dimen.snippets_article_header_menu_size);
         headerView.setLayoutParams(lp);
     }
 
@@ -91,13 +90,10 @@ public class FeedLoadingLayout extends LinearLayout {
                 mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_padding);
         lp.setMargins(contentPadding, 0, contentPadding, dpToPx(CARD_MARGIN_DP));
 
-        // Set the First placeholder container - an image-right card.
-        // If it's in landscape mode, the placeholder should always show in dense mode. Otherwise,
-        // whether the placeholder is dense depends on whether the first article card of Feed is
-        // dense.
-        boolean isLandscape = getResources().getConfiguration().orientation
+        // Set the First placeholder container - an image-right card. If it's in landscape mode, the
+        // placeholder should always show in dense mode.
+        mIsFirstCardDense = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
-        mIsFirstCardDense = isLandscape || StartSurfaceConfiguration.isFeedPlaceholderDense();
         setPlaceholders(cardsParentView, true, lp);
 
         // Set the second and the third placeholder containers - the large image on the top.
