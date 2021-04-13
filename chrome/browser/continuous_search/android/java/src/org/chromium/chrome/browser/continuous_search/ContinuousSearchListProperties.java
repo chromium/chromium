@@ -40,7 +40,19 @@ class ContinuousSearchListProperties {
     public static final WritableIntPropertyKey TITLE_TEXT_STYLE = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey DESCRIPTION_TEXT_STYLE =
             new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey FOREGROUND_COLOR = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<OnClickListener> DISMISS_CLICK_CALLBACK =
+            new WritableObjectPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, BORDER_COLOR,
+    /**
+     * Properties used for individual items shown in the RecyclerView.
+     */
+    public static final PropertyKey[] ITEM_KEYS = {LABEL, URL, IS_SELECTED, BORDER_COLOR,
             CLICK_LISTENER, BACKGROUND_COLOR, TITLE_TEXT_STYLE, DESCRIPTION_TEXT_STYLE};
+    /**
+     * Properties used for the root view. The root view currently contains the RecyclerView
+     * and the dismiss button.
+     */
+    public static final PropertyKey[] ROOT_VIEW_KEYS = {
+            BACKGROUND_COLOR, FOREGROUND_COLOR, DISMISS_CLICK_CALLBACK};
 }

@@ -28,21 +28,21 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * Coordinator for Continuous Search Navigation UI: A RecyclerView that displays items provided
  * by the CSN infrastructure.
  */
-public class ContinuousSearchListCoordinator implements ThemeColorProvider.ThemeColorObserver {
+public class ContinuousSearchListCoordinator {
     private final ContinuousSearchListMediator mListMediator;
     private final SimpleRecyclerViewAdapter mRecyclerViewAdapter;
     private final ObservableSupplier<Tab> mTabSupplier;
-    private final ThemeColorProvider mThemeColorProvider;
-    private RecyclerView mRecyclerView;
+    private final PropertyModel mRootViewModel;
 
     public ContinuousSearchListCoordinator(ObservableSupplier<Tab> tabSupplier,
             Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
             Resources resources) {
+        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ROOT_VIEW_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
 
         final PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
-                ContinuousSearchListViewBinder::bind;
+                ContinuousSearchListViewBinder::bindListItem;
         mRecyclerViewAdapter.registerType(ListItemType.GROUP_LABEL,
                 (parent) -> inflateListItemView(parent, ListItemType.GROUP_LABEL), viewBinder);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
@@ -51,12 +51,9 @@ public class ContinuousSearchListCoordinator implements ThemeColorProvider.Theme
                 (parent) -> inflateListItemView(parent, ListItemType.AD), viewBinder);
 
         mListMediator = new ContinuousSearchListMediator(
-                listItems, setLayoutVisibility, themeColorProvider, resources);
+                listItems, mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
         mTabSupplier = tabSupplier;
         mTabSupplier.addObserver(mListMediator);
-
-        mThemeColorProvider = themeColorProvider;
-        themeColorProvider.addThemeColorObserver(this);
     }
 
     private View inflateListItemView(ViewGroup parentView, @ListItemType int listItemType) {
@@ -73,17 +70,22 @@ public class ContinuousSearchListCoordinator implements ThemeColorProvider.Theme
         return LayoutInflater.from(parentView.getContext()).inflate(layoutId, parentView, false);
     }
 
-    void initializeLayout(ViewGroup root) {
-        mRecyclerView = new RecyclerView(root.getContext());
+    void initializeLayout(ViewGroup container) {
+        View rootView = LayoutInflater.from(container.getContext())
+                                .inflate(R.layout.continuous_search_layout, container, false);
+        PropertyModelChangeProcessor.create(
+                mRootViewModel, rootView, ContinuousSearchListViewBinder::bindRootView);
+
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        root.addView(mRecyclerView, lp);
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(root.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mRecyclerViewAdapter);
-        mRecyclerView.setBackgroundColor(mThemeColorProvider.getThemeColor());
-        mRecyclerView.addOnScrollListener(new OnScrollListener() {
+        container.addView(rootView, lp);
+
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                container.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(mRecyclerViewAdapter);
+        recyclerView.addOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 // onScrolled is also called after a layout calculation. dx will be 0 in that case.
@@ -95,12 +97,5 @@ public class ContinuousSearchListCoordinator implements ThemeColorProvider.Theme
     void destroy() {
         mTabSupplier.removeObserver(mListMediator);
         mListMediator.destroy();
-        mThemeColorProvider.removeThemeColorObserver(this);
-    }
-
-    @Override
-    public void onThemeColorChanged(int color, boolean shouldAnimate) {
-        if (mRecyclerView != null) mRecyclerView.setBackgroundColor(color);
-        mListMediator.onThemeColorChanged(color, shouldAnimate);
     }
 }

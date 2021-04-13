@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchListPropert
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -31,15 +32,17 @@ import java.util.Arrays;
 public class ContinuousSearchListMediatorTest {
     private ContinuousSearchListMediator mMediator;
     private MVCListAdapter.ModelList mModelList;
+    private PropertyModel mRootViewModel;
     private CallbackHelper mLayoutVisibilityTrue;
     private CallbackHelper mLayoutVisibilityFalse;
 
     @Before
     public void setUp() {
         mModelList = new MVCListAdapter.ModelList();
+        mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ROOT_VIEW_KEYS);
         mLayoutVisibilityTrue = new CallbackHelper();
         mLayoutVisibilityFalse = new CallbackHelper();
-        mMediator = new ContinuousSearchListMediator(mModelList, (visibility) -> {
+        mMediator = new ContinuousSearchListMediator(mModelList, mRootViewModel, (visibility) -> {
             if (visibility) {
                 mLayoutVisibilityTrue.notifyCalled();
             } else {

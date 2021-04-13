@@ -26,8 +26,10 @@ import org.chromium.url.GURL;
  * Business logic for the UI component of Continuous Search Navigation. This class updates the UI on
  * search result updates.
  */
-class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserver, Callback<Tab> {
+class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserver, Callback<Tab>,
+                                              ThemeColorProvider.ThemeColorObserver {
     private final ModelList mModelList;
+    private final PropertyModel mRootViewModel;
     private final Callback<Boolean> mSetLayoutVisibility;
     private final ThemeColorProvider mThemeColorProvider;
     private final Resources mResources;
@@ -38,12 +40,26 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private boolean mVisible;
     private boolean mScrolled;
 
-    ContinuousSearchListMediator(ModelList modelList, Callback<Boolean> setLayoutVisibility,
-            ThemeColorProvider themeColorProvider, Resources resources) {
+    ContinuousSearchListMediator(ModelList modelList, PropertyModel rootViewModel,
+            Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
+            Resources resources) {
         mModelList = modelList;
+        mRootViewModel = rootViewModel;
         mSetLayoutVisibility = setLayoutVisibility;
         mThemeColorProvider = themeColorProvider;
         mResources = resources;
+
+        mRootViewModel.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK,
+                (v) -> invalidateOnUserRequest());
+        if (mThemeColorProvider != null) {
+            mThemeColorProvider.addThemeColorObserver(this);
+            int themeColor = mThemeColorProvider.getThemeColor();
+            mRootViewModel.set(ContinuousSearchListProperties.BACKGROUND_COLOR, themeColor);
+            mRootViewModel.set(ContinuousSearchListProperties.FOREGROUND_COLOR,
+                    shouldUseDarkElementColors(themeColor)
+                            ? getColor(R.color.default_icon_color_dark)
+                            : getColor(R.color.default_icon_color_light));
+        }
     }
 
     private void handleResultClick(GURL url, int position) {
@@ -56,6 +72,16 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.UI.ClickedItemPosition"
                         + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
                 position);
+    }
+
+    private void invalidateOnUserRequest() {
+        // |mCurrentUserData| should *almost* always be non-null here. This is because we invalidate
+        // the UI immediately after nullifying |mCurrentUserData|.
+        // There might be a rare race condition where the user manages to click the dismiss button
+        // after |mCurrentUserData| is nullified and before the UI is invalidated. In that case,
+        // |#invalidateOnUserRequest| will be no-op. However, the UI will be dismissed eventually
+        // when |#onInvalidate| is called.
+        if (mCurrentUserData != null) mCurrentUserData.invalidateData();
     }
 
     /**
@@ -119,7 +145,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         int backgroundColor =
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
         boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
-        return new PropertyModel.Builder(ContinuousSearchListProperties.ALL_KEYS)
+        return new PropertyModel.Builder(ContinuousSearchListProperties.ITEM_KEYS)
                 .with(ContinuousSearchListProperties.LABEL, text)
                 .with(ContinuousSearchListProperties.URL, url)
                 .with(ContinuousSearchListProperties.IS_SELECTED, false)
@@ -155,16 +181,18 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mScrolled = false;
     }
 
-    void destroy() {
-        if (mCurrentUserData != null) mCurrentUserData.removeObserver(this);
-    }
-
-    void onThemeColorChanged(int color, boolean shouldAnimate) {
+    @Override
+    public void onThemeColorChanged(int color, boolean shouldAnimate) {
         // TODO(crbug.com/1192781): Animate the color change if necessary.
-        int bgColor = getBackgroundColorForParentBackgroundColor(color);
-        boolean useDarkColors = shouldUseDarkElementColors(bgColor);
+        mRootViewModel.set(ContinuousSearchListProperties.BACKGROUND_COLOR, color);
+        mRootViewModel.set(ContinuousSearchListProperties.FOREGROUND_COLOR,
+                shouldUseDarkElementColors(color) ? getColor(R.color.default_icon_color_dark)
+                                                  : getColor(R.color.default_icon_color_light));
+
+        int itemBgColor = getBackgroundColorForParentBackgroundColor(color);
+        boolean useDarkColors = shouldUseDarkElementColors(itemBgColor);
         for (ListItem listItem : mModelList) {
-            listItem.model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, bgColor);
+            listItem.model.set(ContinuousSearchListProperties.BACKGROUND_COLOR, itemBgColor);
             listItem.model.set(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
                     useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
                                   : R.style.TextAppearance_TextMedium_Primary_Light);
@@ -189,5 +217,10 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
     private int getColor(int id) {
         return ApiCompatibilityUtils.getColor(mResources, id);
+    }
+
+    void destroy() {
+        if (mCurrentUserData != null) mCurrentUserData.removeObserver(this);
+        if (mThemeColorProvider != null) mThemeColorProvider.removeThemeColorObserver(this);
     }
 }
