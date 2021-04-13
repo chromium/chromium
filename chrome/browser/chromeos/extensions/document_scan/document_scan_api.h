@@ -37,8 +37,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
 
   void OnNamesReceived(std::vector<std::string> scanner_names);
   void OnPageReceived(std::string scanned_image, uint32_t /*page_number*/);
-  void OnScanCompleted(bool success,
-                       lorgnette::ScanFailureMode /*failure_mode*/);
+  void OnScanCompleted(lorgnette::ScanFailureMode failure_mode);
 
   base::Optional<std::string> scan_data_;
   std::unique_ptr<document_scan::Scan::Params> params_;

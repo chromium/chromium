@@ -444,12 +444,10 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ScanService::OnScanCompleted(bool success,
-                                  lorgnette::ScanFailureMode failure_mode) {
-  DCHECK_EQ(success, failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
-
+void ScanService::OnScanCompleted(lorgnette::ScanFailureMode failure_mode) {
   // |scanned_images_| only has data for PDF scans.
-  if (success && !scanned_images_.empty()) {
+  if (failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
+      !scanned_images_.empty()) {
     DCHECK(!scanned_file_paths_.empty());
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
@@ -467,7 +465,7 @@ void ScanService::OnScanCompleted(bool success,
           [](lorgnette::ScanFailureMode failure_mode) { return failure_mode; },
           failure_mode),
       base::BindOnce(&ScanService::OnAllPagesSaved,
-                     weak_ptr_factory_.GetWeakPtr(), success));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScanService::OnCancelCompleted(bool success) {
@@ -489,12 +487,9 @@ void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
   scanned_file_paths_.push_back(saved_file_path);
 }
 
-void ScanService::OnAllPagesSaved(bool success,
-                                  lorgnette::ScanFailureMode failure_mode) {
-  DCHECK_EQ(success, failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
-
+void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
   base::Optional<scanning::ScanJobFailureReason> failure_reason = base::nullopt;
-  if (!success) {
+  if (failure_mode != lorgnette::SCAN_FAILURE_MODE_NO_FAILURE) {
     failure_reason = GetScanJobFailureReason(failure_mode);
     scanned_file_paths_.clear();
   } else if (page_save_failed_) {
@@ -507,8 +502,9 @@ void ScanService::OnAllPagesSaved(bool success,
       mojo::ConvertTo<mojo_ipc::ScanResult>(
           static_cast<lorgnette::ScanFailureMode>(failure_mode)),
       scanned_file_paths_);
-  RecordScanJobResult(success && !page_save_failed_, failure_reason,
-                      num_pages_scanned_);
+  RecordScanJobResult(failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
+                          !page_save_failed_,
+                      failure_reason, num_pages_scanned_);
 }
 
 void ScanService::ClearScanState() {

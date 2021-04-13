@@ -116,8 +116,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::string device_name;
     chromeos::ScanProtocol protocol;  // Unused.
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      std::move(completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+      std::move(completion_callback).Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
     }
 

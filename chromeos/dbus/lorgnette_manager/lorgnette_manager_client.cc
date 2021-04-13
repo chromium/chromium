@@ -67,8 +67,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void StartScan(
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
-      base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
-          completion_callback,
+      base::OnceCallback<void(lorgnette::ScanFailureMode)> completion_callback,
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
       override {
@@ -82,7 +81,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(completion_callback), false,
+          FROM_HERE, base::BindOnce(std::move(completion_callback),
                                     lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       return;
     }
@@ -194,8 +193,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // cancellation, as well as a ScanDataReader which is responsible for reading
   // from the pipe of data into a string.
   struct ScanJobState {
-    base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
-        completion_callback;
+    base::OnceCallback<void(lorgnette::ScanFailureMode)> completion_callback;
     base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback;
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
     VoidDBusMethodCallback cancel_callback;
@@ -218,7 +216,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode GetNextImageRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(state.completion_callback), false,
+          FROM_HERE, base::BindOnce(std::move(state.completion_callback),
                                     lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       scan_job_state_.erase(uuid);
       return;
@@ -339,7 +337,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!data.has_value()) {
       LOG(ERROR) << "Reading scan data failed";
       std::move(state.completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+          .Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -350,7 +348,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       GetNextImage(uuid);
     } else {
       std::move(state.completion_callback)
-          .Run(true, lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
+          .Run(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
       scan_job_state_.erase(uuid);
     }
   }
@@ -360,7 +358,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!response) {
       LOG(ERROR) << "Failed to obtain StartScanResponse";
       std::move(state.completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+          .Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
     }
 
@@ -369,14 +367,14 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode StartScanResponse proto";
       std::move(state.completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+          .Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
     }
 
     if (response_proto.state() == lorgnette::SCAN_STATE_FAILED) {
       LOG(ERROR) << "Starting Scan failed: " << response_proto.failure_reason();
       std::move(state.completion_callback)
-          .Run(false, response_proto.scan_failure_mode());
+          .Run(response_proto.scan_failure_mode());
       return;
     }
 
@@ -433,7 +431,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!response) {
       LOG(ERROR) << "Failed to obtain GetNextImage response";
       std::move(state.completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+          .Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -443,7 +441,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode GetNextImageResponse proto";
       std::move(state.completion_callback)
-          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+          .Run(lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -452,7 +450,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       LOG(ERROR) << "Getting next image failed: "
                  << response_proto.failure_reason();
       std::move(state.completion_callback)
-          .Run(false, response_proto.scan_failure_mode());
+          .Run(response_proto.scan_failure_mode());
       scan_job_state_.erase(uuid);
       return;
     }
@@ -478,7 +476,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       LOG(ERROR) << "Scan job " << signal_proto.scan_uuid()
                  << " failed: " << signal_proto.failure_reason();
       std::move(state.completion_callback)
-          .Run(false, signal_proto.scan_failure_mode());
+          .Run(signal_proto.scan_failure_mode());
       scan_job_state_.erase(signal_proto.scan_uuid());
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_PAGE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid() << " page "

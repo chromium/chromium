@@ -35,8 +35,7 @@ void FakeLorgnetteManagerClient::GetScannerCapabilities(
 void FakeLorgnetteManagerClient::StartScan(
     const std::string& device_name,
     const lorgnette::ScanSettings& settings,
-    base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
-        completion_callback,
+    base::OnceCallback<void(lorgnette::ScanFailureMode)> completion_callback,
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
     base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback) {
   if (scan_response_.has_value()) {
@@ -57,11 +56,10 @@ void FakeLorgnetteManagerClient::StartScan(
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(completion_callback), scan_response_.has_value(),
-                     scan_response_.has_value()
-                         ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
-                         : lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
+      FROM_HERE, base::BindOnce(std::move(completion_callback),
+                                scan_response_.has_value()
+                                    ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
+                                    : lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
   scan_response_ = base::nullopt;
 }
 
