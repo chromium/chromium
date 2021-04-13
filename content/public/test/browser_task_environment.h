@@ -31,7 +31,7 @@ class TestBrowserThread;
 // - Public APIs of base::test::TaskEnvironment.
 //
 // Only tests that need the BrowserThread API should instantiate a
-// BrowserTaskEnvironment. Use base::test::SingleThhreadTaskEnvironment or
+// BrowserTaskEnvironment. Use base::test::SingleThreadTaskEnvironment or
 // base::test::TaskEnvironment otherwise.
 //
 // By default, BrowserThread::UI/IO are backed by a single shared message loop
