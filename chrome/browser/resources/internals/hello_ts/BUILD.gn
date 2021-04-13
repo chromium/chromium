@@ -17,7 +17,10 @@ preprocess_if_expr("preprocess_ts") {
 ts_library("build") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   sources = [ "app.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
   extra_deps = [ ":preprocess_ts" ]
 }
 

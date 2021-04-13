@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {helloWorld} from 'chrome://resources/js/hello_world.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -14,7 +16,13 @@ export class TsAppElement extends PolymerElement {
   }
 
   static get template() {
-    return html`<div>[[message]]</div>`;
+    return html`
+      <div>[[message]]</div>
+      <iron-pages attr-for-selected="id" selected="page0">
+        <div id="page0">Page0</div>
+        <div id="page1">Page1</div>
+      </iron-pages>
+    `;
   }
 
   static get properties() {
@@ -27,6 +35,12 @@ export class TsAppElement extends PolymerElement {
 
   constructor() {
     super();
+
+    // Try a third_party/polymer dependency. Ensure that TypeScript infers
+    // correctly the type from document.createElement() without explicitly
+    // declaring IronPagesElement as the type.
+    const ironPages = document.createElement('iron-pages');
+    ironPages.notifyResize();
 
     // Try helloWorld().
     this.message = helloWorld() + ' from TypeScript!';
