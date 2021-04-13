@@ -1008,26 +1008,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   }
 
   base::Optional<LogicalSize> replaced_size;
-  base::Optional<LogicalSize> aspect_ratio;
-  bool has_aspect_ratio_without_intrinsic_size = false;
   if (is_replaced) {
-    replaced_size =
-        ComputeReplacedSize(node_info.node, node_info.constraint_space,
-                            min_max_sizes, &aspect_ratio);
-    DCHECK(replaced_size.has_value() != aspect_ratio.has_value());
-    has_aspect_ratio_without_intrinsic_size = aspect_ratio.has_value();
-    // If we only have aspect ratio, and no replaced size, intrinsic size
-    // defaults to 300x150. min_max_sizes gets computed from the intrinsic size.
-    // We reset the min_max_sizes because spec says that OOF-positioned size
-    // should not be constrained by intrinsic size in this case.
-    // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
-    if (has_aspect_ratio_without_intrinsic_size) {
-      min_max_sizes = MinMaxSizes{LayoutUnit(), LayoutUnit::NearlyMax()};
-      DCHECK(!aspect_ratio->IsEmpty()) << *aspect_ratio;
-    }
-  } else if (!candidate_style.AspectRatio().IsAuto()) {
-    has_aspect_ratio_without_intrinsic_size = true;
-    aspect_ratio = node_info.node.GetAspectRatio();
+    replaced_size = ComputeReplacedSize(
+        node_info.node, node_info.constraint_space, min_max_sizes);
   }
 
   ComputeOutOfFlowInlineDimensions(
@@ -1035,22 +1018,16 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
       node_info.static_position, min_max_sizes, minmax_intrinsic_sizes_for_ar,
       replaced_size, container_writing_direction, &offset_info.node_dimensions);
 
-  // Elements with only aspect ratio compute their block size from
-  // inline size and aspect ratio.
+  // Elements with only an aspect-ratio compute their block-size from
+  // inline-size and aspect-ratio.
   // https://www.w3.org/TR/css-sizing-3/#intrinsic-sizes
-  if (has_aspect_ratio_without_intrinsic_size) {
-    // If this came from an aspect-ratio property, we need to respect
-    // box-sizing.
-    EAspectRatioType ar_type = candidate_style.AspectRatio().GetType();
-    EBoxSizing sizing =
-        (ar_type == EAspectRatioType::kRatio ||
-         (ar_type == EAspectRatioType::kAutoAndRatio && !is_replaced))
-            ? candidate_style.BoxSizing()
-            : EBoxSizing::kContentBox;
-    replaced_size = LogicalSize(
-        offset_info.node_dimensions.size.inline_size,
-        BlockSizeFromAspectRatio(border_padding, *aspect_ratio, sizing,
-                                 offset_info.node_dimensions.size.inline_size));
+  if (!is_replaced && !candidate_style.AspectRatio().IsAuto()) {
+    replaced_size =
+        LogicalSize(offset_info.node_dimensions.size.inline_size,
+                    BlockSizeFromAspectRatio(
+                        border_padding, candidate_style.LogicalAspectRatio(),
+                        candidate_style.BoxSizingForAspectRatio(),
+                        offset_info.node_dimensions.size.inline_size));
   }
 
   if (offset_info.absolute_needs_child_block_size) {

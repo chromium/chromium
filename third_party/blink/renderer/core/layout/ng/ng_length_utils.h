@@ -68,6 +68,9 @@ CORE_EXPORT bool BlockLengthUnresolvable(
 //  - |border_padding| the resolved border, and padding of the node.
 //  - |MinMaxSizes| is only used when the length is intrinsic (fit-content).
 //  - |Length| is the length to resolve.
+//  - |available_inline_size_adjustment| modifies the available size given by
+//    the space. Specifically this is used when computing the size of an
+//    OOF-positioned replaced element, adjusting for the inline insets.
 CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
     const NGConstraintSpace&,
     const ComputedStyle&,
@@ -456,11 +459,9 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
 // This routine will return precisely one of |out_replaced_size| and
 // |out_aspect_ratio|. If |out_aspect_ratio| is filled in, both inline and block
 // componenents will be non-zero.
-CORE_EXPORT base::Optional<LogicalSize> ComputeReplacedSize(
-    const NGBlockNode&,
-    const NGConstraintSpace&,
-    const base::Optional<MinMaxSizes>&,
-    base::Optional<LogicalSize>* out_aspect_ratio);
+CORE_EXPORT LogicalSize ComputeReplacedSize(const NGBlockNode&,
+                                            const NGConstraintSpace&,
+                                            const base::Optional<MinMaxSizes>&);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.
