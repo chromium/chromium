@@ -46,13 +46,10 @@ class TasksSurfaceMediator implements OverviewModeObserver {
     private final IncognitoCookieControlsManager mIncognitoCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mIncognitoCookieControlsObserver;
     private final PropertyModel mModel;
-    private final Runnable mTrendyTermUpdater;
 
     TasksSurfaceMediator(PropertyModel model, View.OnClickListener incognitoLearnMoreClickListener,
-            IncognitoCookieControlsManager incognitoCookieControlsManager, boolean isTabCarousel,
-            Runnable trendyTermUpdater) {
+            IncognitoCookieControlsManager incognitoCookieControlsManager, boolean isTabCarousel) {
         mModel = model;
-        mTrendyTermUpdater = trendyTermUpdater;
         mModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
 
         model.set(INCOGNITO_LEARN_MORE_CLICK_LISTENER, incognitoLearnMoreClickListener);
@@ -138,11 +135,7 @@ class TasksSurfaceMediator implements OverviewModeObserver {
     }
 
     @Override
-    public void startedShowing() {
-        if (mTrendyTermUpdater != null) {
-            mTrendyTermUpdater.run();
-        }
-    }
+    public void startedShowing() {}
 
     @Override
     public void finishedShowing() {}

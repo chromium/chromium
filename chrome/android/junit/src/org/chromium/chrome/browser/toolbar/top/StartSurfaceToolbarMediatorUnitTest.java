@@ -520,50 +520,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void showTabswitcherTasksOnly() {
-        createMediator(false);
-        mMediator.setTabModelSelector(mTabModelSelector);
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
-
-        mMediator.setStartSurfaceMode(true);
-        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
-        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
-        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY, true);
-        assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
-        assertTrue(mPropertyModel.get(IN_START_SURFACE_MODE));
-        assertTrue(mPropertyModel.get(IS_VISIBLE));
-        assertTrue(mPropertyModel.get(IN_START_SURFACE_MODE));
-
-        mMediator.setStartSurfaceMode(false);
-        assertFalse(mPropertyModel.get(IN_START_SURFACE_MODE));
-    }
-
-    @Test
-    public void showTabswitcherOmniboxOnlyNoIncognitoTabs() {
-        createMediator(true);
-        mMediator.setTabModelSelector(mTabModelSelector);
-        doReturn(0).when(mIncognitoTabModel).getCount();
-        mMediator.onNativeLibraryReady();
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
-
-        mMediator.setStartSurfaceMode(true);
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY, true);
-        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
-        assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertEquals(false, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
-        assertTrue(mPropertyModel.get(IS_VISIBLE));
-        assertTrue(mPropertyModel.get(IN_START_SURFACE_MODE));
-
-        mMediator.setStartSurfaceMode(false);
-        assertFalse(mPropertyModel.get(IN_START_SURFACE_MODE));
-    }
-
-    @Test
     public void testIdentityDiscStateChanges() {
         createMediator(false);
         mMediator.setTabModelSelector(mTabModelSelector);

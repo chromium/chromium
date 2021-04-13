@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
-import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -31,14 +28,12 @@ import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 // The view of the tasks surface.
@@ -46,7 +41,6 @@ class TasksView extends CoordinatorLayoutForPointer {
     private static final int OMNIBOX_BOTTOM_PADDING_DP = 4;
 
     private final Context mContext;
-    private FrameLayout mBodyViewContainer;
     private FrameLayout mCarouselTabSwitcherContainer;
     private AppBarLayout mHeaderView;
     private AppBarLayout.OnOffsetChangedListener mFakeSearchBoxShrinkAnimation;
@@ -85,11 +79,6 @@ class TasksView extends CoordinatorLayoutForPointer {
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
-        AppBarLayout.LayoutParams layoutParams =
-                (AppBarLayout.LayoutParams) (findViewById(R.id.scroll_component_container)
-                                                     .getLayoutParams());
-        layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL);
-        adjustScrollMode(layoutParams);
         setTabCarouselTitleStyle();
     }
 
@@ -98,29 +87,6 @@ class TasksView extends CoordinatorLayoutForPointer {
         super.onConfigurationChanged(newConfig);
         mUiConfig.updateDisplayStyle();
         alignHeaderForFeed();
-    }
-
-    private void adjustScrollMode(AppBarLayout.LayoutParams layoutParams) {
-        if (!StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue().equals("omniboxonly")
-                && !StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue().equals(
-                        "trendyterms")) {
-            // Scroll mode is only relevant in omnibox-only variation and trendy-terms variation.
-            return;
-        }
-        String scrollMode = StartSurfaceConfiguration.START_SURFACE_OMNIBOX_SCROLL_MODE.getValue();
-        switch (scrollMode) {
-            case "quick":
-                layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_ENTER_ALWAYS);
-                break;
-            case "pinned":
-                layoutParams.setScrollFlags(0 /* SCROLL_FLAG_NO_SCROLL */);
-                break;
-            case "top":
-            default:
-                return;
-        }
-        // This is only needed when the scroll mode is not "top".
-        layoutParams.bottomMargin = ViewUtils.dpToPx(getContext(), OMNIBOX_BOTTOM_PADDING_DP);
     }
 
     private void setTabCarouselTitleStyle() {
@@ -338,14 +304,6 @@ class TasksView extends CoordinatorLayoutForPointer {
                 (MarginLayoutParams) mHeaderView.findViewById(R.id.tab_switcher_title)
                         .getLayoutParams();
         params.topMargin = topMargin;
-    }
-
-    /**
-     * Set the visibility of the trendy terms section.
-     * @param isVisible whether the trendy terms section is visible or not.
-     */
-    void setTrendyTermsVisibility(boolean isVisible) {
-        findViewById(R.id.trendy_terms_recycler_view).setVisibility(isVisible ? VISIBLE : GONE);
     }
 
     /**

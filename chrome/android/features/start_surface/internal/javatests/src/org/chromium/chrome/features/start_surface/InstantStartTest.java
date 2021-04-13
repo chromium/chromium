@@ -579,43 +579,6 @@ public class InstantStartTest {
                 (Runnable) ReturnToChromeExperimentsUtil::shouldShowStartSurfaceAsTheHomePage);
     }
 
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
-    public void renderTabSwitcher_NoStateFile() throws IOException {
-        // clang-format on
-        startMainActivityFromLauncher();
-        waitForOverviewVisible();
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.tab_list_view),
-                "tabSwitcher_empty");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
-    public void renderTabSwitcher_CorruptedStateFile() throws IOException {
-        // clang-format on
-        createCorruptedTabStateFile();
-        startMainActivityFromLauncher();
-        waitForOverviewVisible();
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.tab_list_view),
-                "tabSwitcher_empty");
-    }
-
     private boolean allCardsHaveThumbnail(RecyclerView recyclerView) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         assert adapter != null;
@@ -641,7 +604,7 @@ public class InstantStartTest {
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @DisabledTest(message = "Test doesn't work with FeedV2. FeedV1 is removed crbug.com/1165828.")
     public void renderTabSwitcher() throws IOException, InterruptedException {
         // clang-format on
@@ -682,7 +645,7 @@ public class InstantStartTest {
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
-            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
             sdk_is_greater_than = Build.VERSION_CODES.O)
     public void renderTabGroups() throws IOException, InterruptedException {

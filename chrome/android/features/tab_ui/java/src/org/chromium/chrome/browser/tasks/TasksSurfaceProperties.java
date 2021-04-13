@@ -78,8 +78,6 @@ public class TasksSurfaceProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TAB_SWITCHER_TITLE_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey TRENDY_TERMS_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
             .WritableObjectPropertyKey RESET_TASK_SURFACE_HEADER_SCROLL_POSITION =
             new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
@@ -93,6 +91,6 @@ public class TasksSurfaceProperties {
             INCOGNITO_LEARN_MORE_CLICK_LISTENER, FAKE_SEARCH_BOX_CLICK_LISTENER,
             FAKE_SEARCH_BOX_TEXT_WATCHER, LENS_BUTTON_CLICK_LISTENER, MORE_TABS_CLICK_LISTENER,
             MV_TILES_VISIBLE, VOICE_SEARCH_BUTTON_CLICK_LISTENER, TASKS_SURFACE_BODY_TOP_MARGIN,
-            MV_TILES_CONTAINER_TOP_MARGIN, TAB_SWITCHER_TITLE_TOP_MARGIN, TRENDY_TERMS_VISIBLE,
+            MV_TILES_CONTAINER_TOP_MARGIN, TAB_SWITCHER_TITLE_TOP_MARGIN,
             RESET_TASK_SURFACE_HEADER_SCROLL_POSITION};
 }

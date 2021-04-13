@@ -60,14 +60,12 @@ public interface TabManagementDelegate {
      * @param parentTabSupplier {@link Supplier} to provide parent tab for the
      *         TasksSurface.
      * @param hasMVTiles whether has MV tiles on the surface.
-     * @param hasTrendyTerms whether has trendy terms on the surface.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @return The {@link TasksSurface}.
      */
     TasksSurface createTasksSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
-            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms,
-            WindowAndroid windowAndroid);
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, WindowAndroid windowAndroid);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.

@@ -44,9 +44,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     public TasksSurface createTasksSurface(ChromeActivity activity,
             ScrimCoordinator scrimCoordinator, PropertyModel propertyModel,
             @TabSwitcherType int tabSwitcherType, Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, boolean hasTrendyTerms, WindowAndroid windowAndroid) {
+            boolean hasMVTiles, WindowAndroid windowAndroid) {
         return new TasksSurfaceCoordinator(activity, scrimCoordinator, propertyModel,
-                tabSwitcherType, parentTabSupplier, hasMVTiles, hasTrendyTerms, windowAndroid);
+                tabSwitcherType, parentTabSupplier, hasMVTiles, windowAndroid);
     }
 
     @Override

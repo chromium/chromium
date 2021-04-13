@@ -41,23 +41,19 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final TasksSurfaceMediator mMediator;
     private MostVisitedListCoordinator mMostVisitedList;
-    private TrendyTermsCoordinator mTrendyTermsCoordinator;
     private final PropertyModel mPropertyModel;
-    private final boolean mHasTrendyTerm;
     private final @TabSwitcherType int mTabSwitcherType;
 
     public TasksSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
-            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms,
-            WindowAndroid windowAndroid) {
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, WindowAndroid windowAndroid) {
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
         mView.initialize(activity.getLifecycleDispatcher(),
-                parentTabSupplier.hasValue() ? parentTabSupplier.get().isIncognito() : false,
+                parentTabSupplier.hasValue() && parentTabSupplier.get().isIncognito(),
                 windowAndroid);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(propertyModel, mView, TasksViewBinder::bind);
         mPropertyModel = propertyModel;
-        mHasTrendyTerm = hasTrendyTerms;
         mTabSwitcherType = tabSwitcherType;
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
@@ -84,19 +80,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         };
         IncognitoCookieControlsManager incognitoCookieControlsManager =
                 new IncognitoCookieControlsManager();
-        Runnable trendyTermsUpdater = null;
-        if (hasTrendyTerms) {
-            mTrendyTermsCoordinator = new TrendyTermsCoordinator(activity,
-                    getView().findViewById(R.id.trendy_terms_recycler_view), parentTabSupplier);
-
-            trendyTermsUpdater = () -> {
-                TrendyTermsCache.maybeFetch(Profile.getLastUsedRegularProfile());
-                mTrendyTermsCoordinator.populateTrendyTerms();
-            };
-        }
         mMediator = new TasksSurfaceMediator(propertyModel, incognitoLearnMoreClickListener,
-                incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL,
-                trendyTermsUpdater);
+                incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL);
 
         if (hasMVTiles) {
             LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
@@ -167,11 +152,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         mMediator.initWithNative(omniboxStub);
-
-        if (mHasTrendyTerm && mTabSwitcher != null) {
-            mTabSwitcher.getController().addOverviewModeObserver(mMediator);
-            TrendyTermsCache.maybeFetch(Profile.getLastUsedRegularProfile());
-        }
     }
 
     @Override

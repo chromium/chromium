@@ -312,7 +312,7 @@ public class ReturnToChromeTest {
     @Feature({"ReturnToChrome"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @DisabledTest(message = "https://crbug.com/1130696")
     public void testTabSwitcherModeTriggeredBeyondThreshold() throws Exception {
         // clang-format on
@@ -340,7 +340,7 @@ public class ReturnToChromeTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @FlakyTest(message = "crbug.com/1040896")
     public void testTabSwitcherModeTriggeredBeyondThreshold_UMA() throws Exception {
         // clang-format on
@@ -376,7 +376,7 @@ public class ReturnToChromeTest {
     @Feature({"ReturnToChrome"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, sdk_is_greater_than = VERSION_CODES.O,
             message = "crbug.com/1134361")
     @DisabledTest(message = "https://crbug.com/1130696")
@@ -408,7 +408,7 @@ public class ReturnToChromeTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @FlakyTest(message = "crbug.com/1040896")
     public void testTabSwitcherModeTriggeredBeyondThreshold_WarmStart_UMA() throws Exception {
         // clang-format on
@@ -444,7 +444,7 @@ public class ReturnToChromeTest {
     @Feature({"ReturnToChrome"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs() {
         // clang-format on
         // Cannot use ChromeTabbedActivityTestRule.startMainActivityFromLauncher() because
@@ -472,7 +472,7 @@ public class ReturnToChromeTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @DisabledTest(message = "http://crbug.com/1027315")
     public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs_UMA() {
         // clang-format on
@@ -513,7 +513,7 @@ public class ReturnToChromeTest {
     @Feature({"ReturnToChrome", "RenderTest"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/omniboxonly"})
+            + "/start_surface_variation/single"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "https://crbug.com/1063984")
     public void testInitialScrollIndex() throws Exception {

@@ -24642,6 +24642,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.OmniboxOnly">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>wychen@chromium.org</owner>
   <description>
     The omnibox-only start surface is shown (the user taps the tab switcher
@@ -24690,6 +24691,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TasksOnly">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The tasks only start surface is shown (the user taps the tab switcher button
@@ -24698,6 +24700,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TrendyTerms">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <description>
@@ -24707,12 +24710,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TrendyTerms.TapTerm">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <description>The user tapped a trendy term.</description>
 </action>
 
 <action name="StartSurface.TwoPanes">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The two panes start surface is shown (the user taps the tab switcher button
@@ -24721,6 +24726,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TwoPanes.BottomBar.TapExploreSurface">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The user taps the explore button on the two panes start surface.
@@ -24728,6 +24734,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TwoPanes.BottomBar.TapHome">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The user taps the home button on the two panes start surface
@@ -24735,6 +24742,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TwoPanes.DefaultOnExploreSurface">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The two panes start surface is shown with explore surface visible by
@@ -24743,6 +24751,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StartSurface.TwoPanes.DefaultOnHomeSurface">
+  <obsolete>Deprecated due to removal starting with M92.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     The two panes start surface is shown with home surface visible by default.

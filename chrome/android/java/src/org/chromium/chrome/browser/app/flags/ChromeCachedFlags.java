@@ -126,7 +126,6 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                 StartSurfaceConfiguration.START_SURFACE_VARIATION,
-                StartSurfaceConfiguration.START_SURFACE_OMNIBOX_SCROLL_MODE,
                 StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY,
                 StartSurfaceConfiguration.TRENDY_ENABLED,
                 StartSurfaceConfiguration.TRENDY_ENDPOINT,

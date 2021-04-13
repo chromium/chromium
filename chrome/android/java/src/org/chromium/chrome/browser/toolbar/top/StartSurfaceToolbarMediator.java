@@ -319,11 +319,7 @@ class StartSurfaceToolbarMediator {
     private void updateLogoVisibility(boolean isGoogleSearchEngine) {
         mIsGoogleSearchEngine = isGoogleSearchEngine;
         boolean shouldShowLogo =
-                (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
-                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
-                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                        || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS)
-                && mIsGoogleSearchEngine;
+                mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE && mIsGoogleSearchEngine;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
     }
 
@@ -346,28 +342,22 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabButtonVisibility() {
-        boolean isShownTabswitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+        boolean isShownTabSwitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER;
 
         // This button is only shown for homepage when accessibility is enabled and
         // OverviewListLayout is shown as the tab switcher instead of the start surface.
         mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE,
-                isShownTabswitcherState
+                isShownTabSwitcherState
                         || (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                                 && !mIsTabGroupsAndroidContinuationEnabled));
     }
 
     private void updateHomeButtonVisibility() {
-        boolean isShownTabswitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+        boolean isShownTabSwitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER;
         // If start surface is not shown as the homepage, home button shouldn't be shown on tab
         // switcher page.
         mPropertyModel.set(HOME_BUTTON_IS_VISIBLE,
-                mHomepageEnabled && isShownTabswitcherState && !mPropertyModel.get(IS_INCOGNITO)
+                mHomepageEnabled && isShownTabSwitcherState && !mPropertyModel.get(IS_INCOGNITO)
                         && mShowHomeButtonOnTabSwitcher && mShouldShowStartSurfaceAsHomepage);
     }
 
