@@ -12,7 +12,7 @@
 
 #include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
-#include "chrome/browser/chromeos/child_accounts/usage_time_limit_processor.h"
+#include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 
 namespace base {
 class Value;

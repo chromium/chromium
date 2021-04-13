@@ -20685,7 +20685,7 @@
     },
     {
       'name': 'ParentAccessCodeConfig',
-      'owners': ['file://chrome/browser/chromeos/child_accounts/OWNERS', 'agawronska@chromium.org'],
+      'owners': ['file://chrome/browser/ash/child_accounts/OWNERS', 'agawronska@chromium.org'],
       'type': 'dict',
       'schema': {
         'sensitiveValue': True,

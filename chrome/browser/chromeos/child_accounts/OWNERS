@@ -1,3 +1,0 @@
-# TODO(https://crbug.com/1164001): Share OWNERS until the migration of
-# //chrome/browser/chromeos/child_accounts completes.
-file://chrome/browser/ash/child_accounts/OWNERS

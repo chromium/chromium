@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
-#include "chrome/browser/chromeos/child_accounts/usage_time_limit_processor.h"
+#include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

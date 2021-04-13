@@ -7,8 +7,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
-#include "chrome/browser/chromeos/child_accounts/time_limit_test_utils.h"
-#include "chrome/browser/chromeos/child_accounts/usage_time_limit_processor.h"
+#include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
+#include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

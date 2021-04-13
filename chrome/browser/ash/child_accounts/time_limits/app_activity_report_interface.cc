@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 
-#include "chrome/browser/chromeos/child_accounts/child_user_service.h"
-#include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace chromeos {

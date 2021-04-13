@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/child_accounts/time_limit_test_utils.h"
+#include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 
 namespace chromeos {
 

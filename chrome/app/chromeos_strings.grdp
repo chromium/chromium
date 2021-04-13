@@ -5546,7 +5546,7 @@
   <!--
     ==================================================================================
     If you change any IDS_EDU_LOGIN_INFO_* string, update kConsentScreenTextVersion in
-    chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.cc
+    chrome/browser/ash/child_accounts/secondary_account_consent_logger.cc
     to the value of "v<GERRIT_CL_NUMBER>"
   -->
   <message name="IDS_EDU_LOGIN_INFO_COEXISTENCE_TITLE" desc="Title for the screen explaining co-existence to a parent.">

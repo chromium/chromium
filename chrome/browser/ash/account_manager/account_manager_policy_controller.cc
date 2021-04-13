@@ -14,7 +14,7 @@
 #include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
+#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"

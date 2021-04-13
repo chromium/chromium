@@ -15,7 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/account_manager_facade_factory.h"
-#include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
+#include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"

@@ -6,8 +6,8 @@
 
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/child_accounts/child_account_test_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/chromeos/child_accounts/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"

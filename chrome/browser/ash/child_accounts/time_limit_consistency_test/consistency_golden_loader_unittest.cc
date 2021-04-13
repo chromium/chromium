@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h"
-#include "chrome/browser/chromeos/child_accounts/time_limit_test_utils.h"
+#include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

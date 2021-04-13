@@ -18,7 +18,7 @@ per-file os_settings_search_tag_strings.grdp=file://chrome/browser/resources/set
 
 per-file app_management_strings.grdp=file://chrome/browser/ui/webui/app_management/OWNERS
 
-per-file web_time_limit_error_page_strings.grdp=file://chrome/browser/chromeos/child_accounts/OWNERS
+per-file web_time_limit_error_page_strings.grdp=file://chrome/browser/ash/child_accounts/OWNERS
 
 per-file global_media_controls_strings.grdp=file://chrome/browser/ui/global_media_controls/OWNERS
 
