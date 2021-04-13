@@ -1,16 +1,30 @@
-# CheckedPtr
+# MiraclePtr aka CheckedPtr`<T>` aka BackupRefPtr
 
-`CheckedPtr<T>` is a smart pointer that triggers a crash when dereferencing a
-dangling pointer.  It is currently considered **experimental** - please don't
-use it in production code just yet.
-`CheckedPtr<T>` is part of the
+Chrome's biggest security problem is a constant stream of exploitable (and
+exploited) Use-after-Free (UaF) bugs. `MiraclePtr` is an unmbrella term for
+algorithms based on smart-pointer-like wrappers, whose goal is to stop UaFs from
+being exploitable, by turning them from security bugs to non-security crashes or
+memory leaks. See
 [go/miracleptr](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
-project.
+for details.
 
+`CheckedPtr<T>` is a smart-pointer-like templated class that wraps a raw
+pointer, protecting it with one of the `MiraclePtr` algorithms from being
+exploited via UaF. The class name came from the first algorithm that we
+evaluated, and is sujbect to change. `BackupRefPtr` is one of the `MiraclePtr`
+algorithms, based on reference counting, that disarms UaFs by quarantining
+allocations that have known pointers. It was deemed the most promising one and
+is the only one under consideration at the moment.
+In the current world, `MiraclePtr`, `BackupRefPtr` and `CheckedPtr<T>` became
+effectively synonyms.
+
+`CheckedPtr<T>` is currently considered **experimental** - please don't
+use it in production code just yet.
 
 ## Examples of using CheckedPtr instead of raw pointers
 
-`CheckedPtr<T>` can be used to replace raw pointer fields (aka member
+For performance reasons, currently we only consider `CheckedPtr<T>`
+to replace raw pointer fields (aka member
 variables).  For example, the following struct that uses raw pointers:
 
 ```cpp
