@@ -87,6 +87,18 @@ class PrivacySandboxSettings : public KeyedService,
                                   const url::Origin& conversion_origin,
                                   const url::Origin& reporting_origin) const;
 
+  // Determine whether |auction_party| can register an interest group, or sell /
+  // buy in an auction, on |top_frame_origin|.
+  bool IsFledgeAllowed(const url::Origin& top_frame_origin,
+                       const GURL& auction_party);
+
+  // Filter |auction_parties| down to those that may participate as a buyer for
+  // auctions run on |top_frame_origin|. Logically equivalent to calling
+  // IsFledgeAllowed() for each element of |auction_parties|.
+  std::vector<GURL> FilterFledgeAllowedParties(
+      const url::Origin& top_frame_origin,
+      const std::vector<GURL>& auction_parties);
+
   // Used by FLoC to determine whether the FLoC calculation can start in general
   // and whether the FLoC ID can be queried. If the sandbox experiment is
   // disabled, this check is equivalent to
