@@ -145,8 +145,7 @@
             "name": "urls",
             "type": "array",
             "items": { "type": "string" },
-            "description": "Erases only the URLs listed; if empty, erases all URLs.",
-            "optional": true
+            "description": "Erases only the URLs listed; if empty, erases all URLs."
           }
         ]
       }

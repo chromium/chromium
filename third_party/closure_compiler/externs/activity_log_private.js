@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ chrome.activityLogPrivate.deleteDatabase = function() {};
 
 /**
  * Delete URLs in the ActivityLog database.
- * @param {!Array<string>=} urls Erases only the URLs listed; if empty, erases
+ * @param {!Array<string>} urls Erases only the URLs listed; if empty, erases
  *     all URLs.
  */
 chrome.activityLogPrivate.deleteUrls = function(urls) {};
