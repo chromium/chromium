@@ -7,6 +7,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
@@ -16,6 +18,8 @@
 namespace chromeos {
 
 namespace {
+
+const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
 
 base::flat_set<dbus::ObjectPath> GetProfilePathsFromEuicc(
     HermesEuiccClient::Properties* euicc_properties) {
@@ -144,6 +148,14 @@ bool IsSimPrimary(const std::string& iccid, const DeviceState* device) {
     }
   }
   return false;
+}
+
+std::string GenerateStubCellularServicePath(const std::string& iccid) {
+  return base::StrCat({kNonShillCellularNetworkPathPrefix, iccid});
+}
+
+bool IsStubCellularServicePath(const std::string& service_path) {
+  return base::StartsWith(service_path, kNonShillCellularNetworkPathPrefix);
 }
 
 }  // namespace chromeos
