@@ -223,6 +223,7 @@ constexpr auto kUpdateLoadStatesInterval =
 const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
 
 using LifecycleState = RenderFrameHost::LifecycleState;
+using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
 // TODO(crbug.com/1059903): Clean up after the initial investigation.
 constexpr base::Feature kCheckWebContentsAccessFromNonCurrentFrame{
@@ -6336,9 +6337,13 @@ void WebContentsImpl::RenderFrameDeleted(
     RenderFrameHostImpl* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameDeleted",
                "render_frame_host", render_frame_host);
+  // TODO(https://crbug.com/1198076): Record the following UMA in content::Page
+  // once it is introduced.
+  LifecycleStateImpl lifecycle_state = render_frame_host->lifecycle_state();
   if (IsBeingDestroyed() && !render_frame_host->GetParent() &&
       first_navigation_completed_ &&
-      !render_frame_host->IsInBackForwardCache()) {
+      lifecycle_state != LifecycleStateImpl::kPrerendering &&
+      lifecycle_state != LifecycleStateImpl::kInBackForwardCache) {
     // Main frame has been deleted because WebContents is being destroyed.
     // Note that we aren't recording this here when the main frame is in the
     // back-forward cache because that means we've actually already navigated
