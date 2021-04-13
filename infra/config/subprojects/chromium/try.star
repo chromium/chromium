@@ -494,6 +494,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-weblayer-marshmallow-x86-rel-tests",
+)
+
+try_.chromium_android_builder(
     name = "android-weblayer-pie-x86-rel-tests",
 )
 
