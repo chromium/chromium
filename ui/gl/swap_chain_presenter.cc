@@ -30,6 +30,11 @@
 namespace gl {
 namespace {
 
+// When in BGRA888 overlay format, wait for this time delta before retrying
+// YUV format.
+constexpr base::TimeDelta kDelayForRetryingYUVFormat =
+    base::TimeDelta::FromMinutes(10);
+
 // Some drivers fail to correctly handle BT.709 video in overlays. This flag
 // converts them to BT.601 in the video processor.
 const base::Feature kFallbackBT709VideoToBT601{
@@ -235,6 +240,7 @@ SwapChainPresenter::SwapChainPresenter(
     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device)
     : layer_tree_(layer_tree),
       window_(window),
+      switched_to_BGRA8888_time_tick_(base::TimeTicks::Now()),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
       is_on_battery_power_(
@@ -274,12 +280,21 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
 
   if (swap_chain_format_ == yuv_overlay_format) {
     // Switch to BGRA once 3/4 of presents are composed.
-    if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4))
+    if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4)) {
+      switched_to_BGRA8888_time_tick_ = base::TimeTicks::Now();
       return DXGI_FORMAT_B8G8R8A8_UNORM;
+    }
   } else {
-    // Switch to YUV once 3/4 are using overlays (or unknown).
-    if (composition_count < (PresentationHistory::kPresentsToStore / 4))
+    // To prevent it from switching back and forth between YUV and BGRA8888,
+    // Wait for at least 10 minutes before we re-try YUV. On a system that
+    // can promote BGRA8888 but not YUV, the format change might cause
+    // flickers.
+    base::TimeDelta time_delta =
+        base::TimeTicks::Now() - switched_to_BGRA8888_time_tick_;
+    if (time_delta >= kDelayForRetryingYUVFormat) {
+      presentation_history_.Clear();
       return yuv_overlay_format;
+    }
   }
   return swap_chain_format_;
 }

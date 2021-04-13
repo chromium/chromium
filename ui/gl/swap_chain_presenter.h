@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -201,6 +202,9 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Current swap chain format.
   DXGI_FORMAT swap_chain_format_ = DXGI_FORMAT_B8G8R8A8_UNORM;
+
+  // Last time tick when switching to BGRA8888 format.
+  base::TimeTicks switched_to_BGRA8888_time_tick_;
 
   // Whether the swap chain was reallocated, and next present will be the first.
   bool first_present_ = false;
