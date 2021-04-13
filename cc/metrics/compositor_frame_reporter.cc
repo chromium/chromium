@@ -351,6 +351,23 @@ bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
              static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
 }
 
+bool HasMainThreadAnimation(
+    const CompositorFrameReporter::ActiveTrackers& trackers) {
+  return trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kMainThreadAnimation)) ||
+         trackers.test(
+             static_cast<size_t>(FrameSequenceTrackerType::kCanvasAnimation)) ||
+         trackers.test(
+             static_cast<size_t>(FrameSequenceTrackerType::kJSAnimation)) ||
+         trackers.test(static_cast<size_t>(FrameSequenceTrackerType::kRAF));
+}
+
+bool HasCompositorThreadAnimation(
+    const CompositorFrameReporter::ActiveTrackers& trackers) {
+  return trackers.test(
+      static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
+}
+
 }  // namespace
 
 // CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
@@ -1098,6 +1115,10 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
             break;
         }
         reporter->set_scroll_state(scroll_state);
+        reporter->set_has_main_animation(
+            HasMainThreadAnimation(active_trackers_));
+        reporter->set_has_compositor_animation(
+            HasCompositorThreadAnimation(active_trackers_));
 
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });
