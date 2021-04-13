@@ -422,7 +422,8 @@ TEST_F(KnownUserTest, RemovePrefOnCustomPref) {
   }
 }
 
-TEST_F(KnownUserTest, RemovePrefOnReservedPref) {
+// Test failing on linux-chromeos-chrome (crbug.com/1198519)
+TEST_F(KnownUserTest, DISABLED_RemovePrefOnReservedPref) {
   KnownUser known_user(local_state());
   const std::string kReservedPrefName = "device_id";
 
