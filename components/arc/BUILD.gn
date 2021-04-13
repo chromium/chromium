@@ -7,8 +7,6 @@ import("//testing/test.gni")
 
 static_library("arc") {
   sources = [
-    "app_permissions/arc_app_permissions_bridge.cc",
-    "app_permissions/arc_app_permissions_bridge.h",
     "appfuse/arc_appfuse_bridge.cc",
     "appfuse/arc_appfuse_bridge.h",
     "audio/arc_audio_bridge.cc",

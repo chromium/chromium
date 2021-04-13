@@ -36,7 +36,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/app_permissions/arc_app_permissions_bridge.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/intent_constants.h"
