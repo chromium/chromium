@@ -15,16 +15,17 @@ def CheckBreakingInstallerVersionBumpNeeded(input_api, output_api):
         f.LocalPath().startswith('chrome/test/mini_installer')):
       files.append(f.LocalPath())
 
-    if files and not breaking_version_installer_updated:
-      return [output_api.PresubmitPromptWarning('''
+  if files and not breaking_version_installer_updated:
+    return [output_api.PresubmitPromptWarning('''
 Update chrome/installer/setup/last_breaking_installer_version.cc if the changes
 found in the following files might break make downgrades not possible beyond
 this browser's version.''', items=files)]
 
-    if not files and breaking_version_installer_updated:
-      return [output_api.PresubmitPromptWarning('''
+  if not files and breaking_version_installer_updated:
+    return [output_api.PresubmitPromptWarning('''
 No installer breaking changes detected but
 chrome/installer/setup/last_breaking_installer_version.cc was updated. Please
 update chrome/installer/presubmit.py if more files need to be watched for
 breaking installer changes.''')]
-    return []
+
+  return []

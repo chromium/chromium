@@ -71,6 +71,7 @@ if (enable_swiftshader) {
   packaging_files_shlibs += [
     "$root_out_dir/swiftshader_libEGL.so",
     "$root_out_dir/swiftshader_libGLESv2.so",
+    "$root_out_dir/libvk_swiftshader.so",
   ]
 }
 
@@ -339,7 +340,10 @@ group("installer_deps") {
     ]
   }
   if (enable_swiftshader) {
-    public_deps += [ ":swiftshader_libs" ]
+    public_deps += [
+      ":swiftshader_libs",
+      "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+    ]
   }
   if (!is_chromeos_ash) {
     public_deps += [ ":rpm_packaging_files" ]
