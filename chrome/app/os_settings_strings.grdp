@@ -256,7 +256,7 @@
   <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON" desc="Text in the add fingerprint dialog telling users to place finger on the power button which is the sensor.">
     Touch the power button with your finger
   </message>
-    <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the power button. Only visible by screen reader software.">
+  <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the power button. Only visible by screen reader software.">
     The fingerprint sensor is in the power button. Touch it lightly with any finger.
   </message>
   <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD" desc="Text in the add fingerprint dialog telling users to place finger on the sensor on the keyboard.">
@@ -265,11 +265,17 @@
   <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_LEFT_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the bottom left corner of the keyboard. Only visible by screen reader software.">
     The fingerprint sensor is the bottom left-hand key on your keyboard. Touch it lightly with any finger.
   </message>
-    <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_RIGHT_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the bottom right corner of the keyboard. Only visible by screen reader software.">
+  <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_BOTTOM_RIGHT_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the bottom right corner of the keyboard. Only visible by screen reader software.">
     The fingerprint sensor is the bottom right-hand key on your keyboard. Touch it lightly with any finger.
   </message>
-    <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the top right corner of the keyboard. Only visible by screen reader software.">
+  <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD_TOP_RIGHT_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the top right corner of the keyboard. Only visible by screen reader software.">
     The fingerprint sensor is the top right-hand key on your keyboard. Touch it lightly with any finger.
+  </message>
+  <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_RIGHT_SIDE_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the right side of the chrome device. Only visible by screen reader software.">
+    The fingerprint sensor is on the right-hand side of your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Touch it lightly with any finger.
+  </message>
+  <message name="IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL" desc="Aria label in the add fingerprint dialog telling users that the fingerprint sensor is in the left side of the chrome device. Only visible by screen reader software.">
+    The fingerprint sensor is on the left-hand side of your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Touch it lightly with any finger.
   </message>
 
   <!-- Languages and Inputs (OS settings) -->
