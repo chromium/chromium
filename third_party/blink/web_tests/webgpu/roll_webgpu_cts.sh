@@ -54,7 +54,7 @@ cat << EOF
 ********************************************************************
 Roll complete!
 
-Remember to run ./regenerate_internal_cts_html.sh.
+Remember to run regenerate_internal_cts_html.py.
 Updates to WebGPUExpectations may be necessary to make it succeed.
 
 Further updates to WebGPUExpectations may be needed to pass the
