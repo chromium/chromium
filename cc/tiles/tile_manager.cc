@@ -952,7 +952,7 @@ void TileManager::PartitionImagesForCheckering(
     if (image_to_frame_index)
       (*image_to_frame_index)[image.stable_id()] = frame_index;
 
-    DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
+    DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
                          frame_index, raster_color_space, sdr_white_level);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
       checkered_images->push_back(draw_image.paint_image());
@@ -975,7 +975,7 @@ void TileManager::AddCheckeredImagesToDecodeQueue(
   for (const auto* original_draw_image : images_in_tile) {
     size_t frame_index = client_->GetFrameIndexForImage(
         original_draw_image->paint_image(), tree);
-    DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
+    DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
                          frame_index, raster_color_space, sdr_white_level);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
       image_decode_queue->emplace_back(draw_image.paint_image(), decode_type);

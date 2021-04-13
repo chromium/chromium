@@ -83,8 +83,8 @@ static void RasterizeSourceOOP(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, playback_settings.use_lcd_text,
       color_space, mailbox->name);
-  float recording_to_raster_scale =
-      transform.scale() / raster_source->recording_scale_factor();
+  gfx::Vector2dF recording_to_raster_scale = transform.scale();
+  recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());
 
   // TODO(enne): could skip the clear on new textures, as the service side has

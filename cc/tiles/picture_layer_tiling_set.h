@@ -93,14 +93,15 @@ class CC_EXPORT PictureLayerTilingSet {
   PictureLayerTiling* FindTilingWithScaleKey(float scale_key) const;
   PictureLayerTiling* FindTilingWithResolution(TileResolution resolution) const;
 
-  void MarkAllTilingsNonIdeal();
-
   // If a tiling exists whose scale is within |snap_to_existing_tiling_ratio|
-  // ratio of |start_scale|, then return that tiling's scale. Otherwise, return
-  // |start_scale|. If multiple tilings match the criteria, return the one with
-  // the least ratio to |start_scale|.
-  float GetSnappedContentsScaleKey(float start_scale,
-                                   float snap_to_existing_tiling_ratio) const;
+  // ratio of |start_scale|, then return that tiling. Otherwise, return null.
+  // If multiple tilings match the criteria, return the one with the least ratio
+  // to |start_scale|.
+  PictureLayerTiling* FindTilingWithNearestScaleKey(
+      float start_scale,
+      float snap_to_existing_tiling_ratio) const;
+
+  void MarkAllTilingsNonIdeal();
 
   // Returns the maximum contents scale of all tilings, or 0 if no tilings
   // exist. Note that this returns the maximum of x and y scales depending on

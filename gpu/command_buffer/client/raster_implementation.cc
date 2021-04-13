@@ -1179,18 +1179,19 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                           const gfx::Rect& full_raster_rect,
                                           const gfx::Rect& playback_rect,
                                           const gfx::Vector2dF& post_translate,
-                                          GLfloat post_scale,
+                                          const gfx::Vector2dF& post_scale,
                                           bool requires_clear,
                                           size_t* max_op_size_hint) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
 
-  if (std::abs(post_scale) < std::numeric_limits<float>::epsilon())
+  if (std::abs(post_scale.x()) < std::numeric_limits<float>::epsilon() ||
+      std::abs(post_scale.y()) < std::numeric_limits<float>::epsilon())
     return;
 
-  gfx::Rect query_rect =
-      gfx::ScaleToEnclosingRect(playback_rect, 1.f / post_scale);
+  gfx::Rect query_rect = gfx::ScaleToEnclosingRect(
+      playback_rect, 1.f / post_scale.x(), 1.f / post_scale.y());
   list->rtree_.Search(query_rect, &temp_raster_offsets_);
   // We can early out if we have nothing to draw and we don't need a clear. Note
   // that if there is nothing to draw, but a clear is required, then those
@@ -1209,7 +1210,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
   preamble.full_raster_rect = full_raster_rect;
   preamble.playback_rect = playback_rect;
   preamble.post_translation = post_translate;
-  preamble.post_scale = gfx::SizeF(post_scale, post_scale);
+  preamble.post_scale = gfx::SizeF(post_scale.x(), post_scale.y());
   preamble.requires_clear = requires_clear;
   preamble.background_color = raster_properties_->background_color;
 

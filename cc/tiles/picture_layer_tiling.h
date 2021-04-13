@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <unordered_map>
@@ -148,7 +149,10 @@ class CC_EXPORT PictureLayerTiling {
   // as the key for indexing and sorting. In theory we can have multiple
   // tilings with the same scale but different translation, but currently
   // we only allow tilings with unique scale for the sake of simplicity.
-  float contents_scale_key() const { return raster_transform_.scale(); }
+  float contents_scale_key() const {
+    const gfx::Vector2dF& scale = raster_transform_.scale();
+    return std::max(scale.x(), scale.y());
+  }
   const gfx::AxisTransform2d& raster_transform() const {
     return raster_transform_;
   }

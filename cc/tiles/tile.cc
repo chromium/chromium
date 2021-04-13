@@ -55,11 +55,16 @@ void Tile::AsValueInto(base::trace_event::TracedValue* value) const {
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), value, "cc::Tile", this);
   value->SetDouble("contents_scale", contents_scale_key());
 
-  value->BeginArray("raster_transform");
-  value->AppendDouble(raster_transform_.scale());
+  value->BeginDictionary("raster_transform");
+  value->BeginArray("scale");
+  value->AppendDouble(raster_transform_.scale().x());
+  value->AppendDouble(raster_transform_.scale().y());
+  value->EndArray();
+  value->BeginArray("translation");
   value->AppendDouble(raster_transform_.translation().x());
   value->AppendDouble(raster_transform_.translation().y());
   value->EndArray();
+  value->EndDictionary();
 
   MathUtil::AddToTracedValue("content_rect", content_rect_, value);
 

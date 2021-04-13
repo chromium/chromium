@@ -4,6 +4,8 @@
 
 #include "cc/layers/layer_impl.h"
 
+#include <algorithm>
+
 #include "base/stl_util.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
@@ -263,7 +265,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(15.f, layer->GetIdealContentsScale());
+    EXPECT_FLOAT_EQ(15.f, layer->GetIdealContentsScaleKey());
   }
   // Ensure that we don't fall below the device scale factor.
   {
@@ -273,7 +275,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScale());
+    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScaleKey());
   }
   // Ensure that large scales don't end up extremely large.
   {
@@ -283,7 +285,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(127.f, layer->GetIdealContentsScale());
+    EXPECT_FLOAT_EQ(127.f, layer->GetIdealContentsScaleKey());
   }
   // Test case from crbug.com/766021.
   {
@@ -294,7 +296,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
-    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScale());
+    EXPECT_FLOAT_EQ(1.f, layer->GetIdealContentsScaleKey());
   }
 }
 

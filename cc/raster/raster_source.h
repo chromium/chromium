@@ -80,7 +80,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   gfx::Size GetSize() const;
 
   // Returns the content size of this raster source at a particular scale.
-  gfx::Size GetContentSize(float content_scale) const;
+  gfx::Size GetContentSize(const gfx::Vector2dF& content_scale) const;
 
   // Populate the given list with all images that may overlap the given
   // rect in layer space.

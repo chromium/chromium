@@ -191,7 +191,8 @@ bool HeadsUpDisplayLayerImpl::WillDraw(
   }
 
   int max_texture_size = layer_tree_impl()->max_texture_size();
-  internal_contents_scale_ = GetIdealContentsScale();
+  // TODO(crbug.com/1196414): Support 2D scales in heads up layers.
+  internal_contents_scale_ = GetIdealContentsScaleKey();
   internal_content_bounds_ =
       gfx::ScaleToCeiledSize(bounds(), internal_contents_scale_);
   internal_content_bounds_.SetToMin(
@@ -379,12 +380,13 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                               can_use_lcd_text, gfx::ColorSpace::CreateSRGB(),
                               backing->mailbox.name);
       gfx::Vector2dF post_translate(0.f, 0.f);
+      gfx::Vector2dF post_scale(1.f, 1.f);
       DummyImageProvider image_provider;
       size_t max_op_size_limit =
           gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
       ri->RasterCHROMIUM(display_item_list.get(), &image_provider, size,
                          gfx::Rect(size), gfx::Rect(size), post_translate,
-                         1.f /* post_scale */, false /* requires_clear */,
+                         post_scale, false /* requires_clear */,
                          &max_op_size_limit);
       ri->EndRasterCHROMIUM();
       backing->mailbox_sync_token =

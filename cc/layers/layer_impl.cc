@@ -791,7 +791,7 @@ const RenderSurfaceImpl* LayerImpl::render_target() const {
   return GetEffectTree().GetRenderSurface(render_target_effect_tree_index());
 }
 
-float LayerImpl::GetIdealContentsScale() const {
+gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
   float page_scale = IsAffectedByPageScale()
                          ? layer_tree_impl()->current_page_scale_factor()
                          : 1.f;
@@ -801,6 +801,7 @@ float LayerImpl::GetIdealContentsScale() const {
 
   const auto& transform = ScreenSpaceTransform();
   if (transform.HasPerspective()) {
+    // TODO(crbug.com/1196414): This function should return a 2D scale.
     float scale = gfx::ComputeApproximateMaxScale(transform);
 
     const int kMaxTilesToCoverLayerDimension = 5;
@@ -827,13 +828,21 @@ float LayerImpl::GetIdealContentsScale() const {
     scale = std::round(scale);
 
     // Don't let the scale fall below the default scale.
-    return std::max(scale, default_scale);
+    scale = std::max(scale, default_scale);
+    return gfx::Vector2dF(scale, scale);
   }
 
   gfx::Vector2dF transform_scales =
       gfx::ComputeTransform2dScaleComponents(transform, default_scale);
 
-  return GetPreferredRasterScale(transform_scales);
+  // TODO(crbug.com/1196414): Remove this scale cap.
+  float scale_cap = GetPreferredRasterScale(transform_scales);
+  transform_scales.SetToMin(gfx::Vector2dF(scale_cap, scale_cap));
+  return transform_scales;
+}
+
+float LayerImpl::GetIdealContentsScaleKey() const {
+  return GetPreferredRasterScale(GetIdealContentsScale());
 }
 
 float LayerImpl::GetPreferredRasterScale(

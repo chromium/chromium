@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -164,7 +165,8 @@ class CC_EXPORT PictureLayerImpl
   void InvalidatePaintWorklets(const PaintWorkletInput::PropertyKey& key);
 
   void SetContentsScaleForTesting(float scale) {
-    ideal_contents_scale_ = raster_contents_scale_ = scale;
+    ideal_contents_scale_ = raster_contents_scale_ =
+        gfx::Vector2dF(scale, scale);
   }
 
   void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
@@ -182,7 +184,7 @@ class CC_EXPORT PictureLayerImpl
   bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
   void AdjustRasterScaleForTransformAnimation(
-      float preserved_raster_contents_scale);
+      const gfx::Vector2dF& preserved_raster_contents_scale);
   float MinimumRasterContentsScaleForWillChangeTransform() const;
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
@@ -250,18 +252,31 @@ class CC_EXPORT PictureLayerImpl
   // Device scale is from screen dpi, and it comes from device scale facter.
   float ideal_device_scale_ = 0.f;
   // Source scale comes from javascript css scale.
-  float ideal_source_scale_ = 0.f;
+  gfx::Vector2dF ideal_source_scale_;
   // Contents scale = device scale * page scale * source scale.
-  float ideal_contents_scale_ = 0.f;
+  gfx::Vector2dF ideal_contents_scale_;
 
   // Raster scales are set from ideal scales. They are scales we choose to
   // raster at. They may not match the ideal scales at times to avoid raster for
   // performance reasons.
   float raster_page_scale_ = 0.f;
   float raster_device_scale_ = 0.f;
-  float raster_source_scale_ = 0.f;
-  float raster_contents_scale_ = 0.f;
+  gfx::Vector2dF raster_source_scale_;
+  gfx::Vector2dF raster_contents_scale_;
   float low_res_raster_contents_scale_ = 0.f;
+
+  float ideal_source_scale_key() const {
+    return std::max(ideal_source_scale_.x(), ideal_source_scale_.y());
+  }
+  float ideal_contents_scale_key() const {
+    return std::max(ideal_contents_scale_.x(), ideal_contents_scale_.y());
+  }
+  float raster_source_scale_key() const {
+    return std::max(raster_source_scale_.x(), raster_source_scale_.y());
+  }
+  float raster_contents_scale_key() const {
+    return std::max(raster_contents_scale_.x(), raster_contents_scale_.y());
+  }
 
   bool is_backdrop_filter_mask_ : 1;
 

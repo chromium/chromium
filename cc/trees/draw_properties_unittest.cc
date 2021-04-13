@@ -3112,9 +3112,9 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
 
   UpdateActiveTreeDrawProperties(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(device_scale_factor, root->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(device_scale_factor, child->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(device_scale_factor, child2->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(device_scale_factor, root->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(device_scale_factor, child->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(device_scale_factor, child2->GetIdealContentsScaleKey());
 
   EXPECT_EQ(1u, GetRenderSurfaceList().size());
 
@@ -3223,9 +3223,9 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   UpdateActiveTreeDrawProperties(device_scale_factor);
 
   EXPECT_FLOAT_EQ(device_scale_factor * page_scale_factor,
-                  parent->GetIdealContentsScale());
+                  parent->GetIdealContentsScaleKey());
   EXPECT_FLOAT_EQ(device_scale_factor * page_scale_factor,
-                  perspective_surface->GetIdealContentsScale());
+                  perspective_surface->GetIdealContentsScaleKey());
   // Ideal scale is the max 2d scale component of the combined transform up to
   // the nearest render target. Here this includes the layer transform as well
   // as the device and page scale factors.
@@ -3235,7 +3235,7 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   gfx::Vector2dF scales =
       gfx::ComputeTransform2dScaleComponents(transform, 0.f);
   float max_2d_scale = std::max(scales.x(), scales.y());
-  EXPECT_FLOAT_EQ(max_2d_scale, scale_surface->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(max_2d_scale, scale_surface->GetIdealContentsScaleKey());
 
   // The ideal scale will draw 1:1 with its render target space along
   // the larger-scale axis.
@@ -3320,12 +3320,13 @@ TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
   float expected_ideal_scale =
       device_scale_factor * page_scale_factor * initial_parent_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_FLOAT_EQ(expected_ideal_scale, parent->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(expected_ideal_scale, parent->GetIdealContentsScaleKey());
 
   expected_ideal_scale = device_scale_factor * page_scale_factor *
                          initial_parent_scale * initial_child_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_FLOAT_EQ(expected_ideal_scale, child_scale->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(expected_ideal_scale,
+                  child_scale->GetIdealContentsScaleKey());
 }
 
 TEST_F(DrawPropertiesScalingTest, IdealScaleForAnimatingLayer) {
@@ -3355,11 +3356,11 @@ TEST_F(DrawPropertiesScalingTest, IdealScaleForAnimatingLayer) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_FLOAT_EQ(initial_parent_scale, parent->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(initial_parent_scale, parent->GetIdealContentsScaleKey());
   // Animating layers compute ideal scale in the same way as when
   // they are static.
   EXPECT_FLOAT_EQ(initial_child_scale * initial_parent_scale,
-                  child_scale->GetIdealContentsScale());
+                  child_scale->GetIdealContentsScaleKey());
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfaceTransformsInHighDPI) {
@@ -5952,10 +5953,10 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
 
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(mask)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(3.f, ImplOf(mask)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScaleKey());
 
   EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -5967,10 +5968,10 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
   float device_scale_factor = 4.0f;
   CommitAndActivate(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(child1)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(mask)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(20.f, ImplOf(child2)->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(12.f, ImplOf(child1)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(12.f, ImplOf(mask)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(20.f, ImplOf(child2)->GetIdealContentsScaleKey());
 
   EXPECT_FLOAT_EQ(32.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(12.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6021,10 +6022,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
 
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(1.f, ImplOf(page_scale)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(1.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(3.f, ImplOf(child1)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(5.f, ImplOf(child2)->GetIdealContentsScaleKey());
 
   EXPECT_FLOAT_EQ(8.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(3.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6038,10 +6039,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   host()->SetPageScaleFactorAndLimits(3.f, 3.f, 3.f);
   CommitAndActivate();
 
-  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(3.f, ImplOf(page_scale)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(9.f, ImplOf(child1)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(15.f, ImplOf(child2)->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(1.f, ImplOf(root)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(3.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(9.f, ImplOf(child1)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(15.f, ImplOf(child2)->GetIdealContentsScaleKey());
 
   EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(9.f, MaximumAnimationToScreenScale(ImplOf(child1)));
@@ -6054,10 +6055,10 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   device_scale_factor = 4.0f;
   CommitAndActivate(device_scale_factor);
 
-  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(12.f, ImplOf(page_scale)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(36.f, ImplOf(child1)->GetIdealContentsScale());
-  EXPECT_FLOAT_EQ(60.f, ImplOf(child2)->GetIdealContentsScale());
+  EXPECT_FLOAT_EQ(4.f, ImplOf(root)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(12.f, ImplOf(page_scale)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(36.f, ImplOf(child1)->GetIdealContentsScaleKey());
+  EXPECT_FLOAT_EQ(60.f, ImplOf(child2)->GetIdealContentsScaleKey());
 
   EXPECT_FLOAT_EQ(96.f, MaximumAnimationToScreenScale(ImplOf(child2)));
   EXPECT_FLOAT_EQ(36.f, MaximumAnimationToScreenScale(ImplOf(child1)));

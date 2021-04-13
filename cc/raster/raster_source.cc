@@ -46,11 +46,12 @@ void RasterSource::ClearForOpaqueRaster(
     const gfx::Rect& canvas_playback_rect) const {
   gfx::Rect outer_rect;
   gfx::Rect inner_rect;
-  float scale = raster_transform.scale() / recording_scale_factor_;
+  const gfx::Vector2dF& transform_scale = raster_transform.scale();
+  gfx::SizeF scale(transform_scale.x() / recording_scale_factor_,
+                   transform_scale.y() / recording_scale_factor_);
   if (!CalculateClearForOpaqueRasterRects(
-          raster_transform.translation(), gfx::SizeF(scale, scale),
-          content_size, canvas_bitmap_rect, canvas_playback_rect, outer_rect,
-          inner_rect))
+          raster_transform.translation(), scale, content_size,
+          canvas_bitmap_rect, canvas_playback_rect, outer_rect, inner_rect))
     return;
 
   raster_canvas->save();
@@ -103,8 +104,8 @@ void RasterSource::PlaybackToCanvas(
   raster_canvas->clipRect(SkRect::Make(raster_bounds));
   raster_canvas->translate(raster_transform.translation().x(),
                            raster_transform.translation().y());
-  raster_canvas->scale(raster_transform.scale() / recording_scale_factor_,
-                       raster_transform.scale() / recording_scale_factor_);
+  raster_canvas->scale(raster_transform.scale().x() / recording_scale_factor_,
+                       raster_transform.scale().y() / recording_scale_factor_);
 
   if (is_partial_raster && requires_clear_) {
     // Because Skia treats painted regions as transparent by default, we don't
@@ -171,8 +172,10 @@ gfx::Size RasterSource::GetSize() const {
   return size_;
 }
 
-gfx::Size RasterSource::GetContentSize(float content_scale) const {
-  return gfx::ScaleToCeiledSize(GetSize(), content_scale);
+gfx::Size RasterSource::GetContentSize(
+    const gfx::Vector2dF& content_scale) const {
+  return gfx::ScaleToCeiledSize(GetSize(), content_scale.x(),
+                                content_scale.y());
 }
 
 bool RasterSource::IsSolidColor() const {

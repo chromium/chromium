@@ -531,6 +531,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     gfx::Rect full_raster_rect(Size().Width(), Size().Height());
     gfx::Rect playback_rect(Size().Width(), Size().Height());
     gfx::Vector2dF post_translate(0.f, 0.f);
+    gfx::Vector2dF post_scale(1.f, 1.f);
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
@@ -542,7 +543,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
     ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
                        full_raster_rect, playback_rect, post_translate,
-                       1.f /* post_scale */, false /* requires_clear */,
+                       post_scale, false /* requires_clear */,
                        &max_op_size_hint);
 
     ri->EndRasterCHROMIUM();

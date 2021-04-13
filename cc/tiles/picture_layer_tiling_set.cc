@@ -282,7 +282,8 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
 
 #if DCHECK_IS_ON()
   for (const auto& tiling : tilings_) {
-    DCHECK_NE(tiling->contents_scale_key(), raster_transform.scale());
+    const gfx::Vector2dF& scale = raster_transform.scale();
+    DCHECK_NE(tiling->contents_scale_key(), std::max(scale.x(), scale.y()));
     DCHECK_EQ(tiling->raster_source(), raster_source.get());
   }
 #endif  // DCHECK_IS_ON()
@@ -324,6 +325,22 @@ PictureLayerTiling* PictureLayerTilingSet::FindTilingWithResolution(
   if (iter == tilings_.end())
     return nullptr;
   return iter->get();
+}
+
+PictureLayerTiling* PictureLayerTilingSet::FindTilingWithNearestScaleKey(
+    float start_scale,
+    float snap_to_existing_tiling_ratio) const {
+  PictureLayerTiling* nearest_tiling = nullptr;
+  float nearest_ratio = snap_to_existing_tiling_ratio;
+  for (const auto& tiling : tilings_) {
+    float tiling_contents_scale = tiling->contents_scale_key();
+    float ratio = LargerRatio(tiling_contents_scale, start_scale);
+    if (ratio <= nearest_ratio) {
+      nearest_tiling = tiling.get();
+      nearest_ratio = ratio;
+    }
+  }
+  return nearest_tiling;
 }
 
 void PictureLayerTilingSet::RemoveTilingsBelowScaleKey(
@@ -369,28 +386,11 @@ void PictureLayerTilingSet::RemoveAllTiles() {
     tiling->Reset();
 }
 
-float PictureLayerTilingSet::GetSnappedContentsScaleKey(
-    float start_scale,
-    float snap_to_existing_tiling_ratio) const {
-  // If a tiling exists within the max snapping ratio, snap to its scale.
-  float snapped_contents_scale = start_scale;
-  float snapped_ratio = snap_to_existing_tiling_ratio;
-  for (const auto& tiling : tilings_) {
-    float tiling_contents_scale = tiling->contents_scale_key();
-    float ratio = LargerRatio(tiling_contents_scale, start_scale);
-    if (ratio < snapped_ratio) {
-      snapped_contents_scale = tiling_contents_scale;
-      snapped_ratio = ratio;
-    }
-  }
-  return snapped_contents_scale;
-}
-
 float PictureLayerTilingSet::GetMaximumContentsScale() const {
   if (tilings_.empty())
     return 0.f;
   // The first tiling has the largest contents scale.
-  return tilings_[0]->raster_transform().scale();
+  return tilings_[0]->contents_scale_key();
 }
 
 bool PictureLayerTilingSet::TilingsNeedUpdate(

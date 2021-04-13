@@ -52,7 +52,8 @@ PictureLayerTiling::PictureLayerTiling(
 
 #if DCHECK_IS_ON()
   gfx::SizeF scaled_source_size(gfx::ScaleSize(
-      gfx::SizeF(raster_source_->GetSize()), raster_transform.scale()));
+      gfx::SizeF(raster_source_->GetSize()), raster_transform.scale().x(),
+      raster_transform.scale().y()));
   gfx::Size floored_size = gfx::ToFlooredSize(scaled_source_size);
   bool is_width_empty =
       !floored_size.width() &&
@@ -397,13 +398,13 @@ PictureLayerTiling::CoverageIterator::CoverageIterator(
     const gfx::Rect& coverage_rect)
     : tiling_(tiling),
       coverage_rect_(coverage_rect),
-      coverage_to_content_(tiling->raster_transform().scale() / coverage_scale,
-                           tiling->raster_transform().translation()) {
+      coverage_to_content_(PreScaleAxisTransform2d(tiling->raster_transform(),
+                                                   1 / coverage_scale)) {
   DCHECK(tiling_);
   // In order to avoid artifacts in geometry_rect scaling and clamping to ints,
   // the |coverage_scale| should always be at least as big as the tiling's
   // raster scales.
-  DCHECK_GE(coverage_scale, tiling_->raster_transform_.scale());
+  DCHECK_GE(coverage_scale, tiling_->contents_scale_key());
 
   // Clamp |coverage_rect| to the bounds of this tiling's raster source.
   coverage_rect_max_bounds_ =
@@ -606,7 +607,7 @@ void PictureLayerTiling::ComputeTilePriorityRects(
   }
 
   const float content_to_screen_scale =
-      ideal_contents_scale / raster_transform_.scale();
+      ideal_contents_scale / contents_scale_key();
 
   const gfx::Rect* input_rects[] = {
       &visible_rect_in_layer_space, &skewport_in_layer_space,
@@ -985,11 +986,16 @@ void PictureLayerTiling::AsValueInto(
   state->SetInteger("num_tiles", base::saturated_cast<int>(tiles_.size()));
   state->SetDouble("content_scale", contents_scale_key());
 
-  state->BeginArray("raster_transform");
-  state->AppendDouble(raster_transform_.scale());
+  state->BeginDictionary("raster_transform");
+  state->BeginArray("scale");
+  state->AppendDouble(raster_transform_.scale().x());
+  state->AppendDouble(raster_transform_.scale().y());
+  state->EndArray();
+  state->BeginArray("translation");
   state->AppendDouble(raster_transform_.translation().x());
   state->AppendDouble(raster_transform_.translation().y());
   state->EndArray();
+  state->EndDictionary();
 
   MathUtil::AddToTracedValue("visible_rect", current_visible_rect_, state);
   MathUtil::AddToTracedValue("skewport_rect", current_skewport_rect_, state);

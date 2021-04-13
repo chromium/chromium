@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 
 #include "base/timer/lap_timer.h"
 #include "base/values.h"
@@ -31,7 +32,7 @@ const int kDefaultRasterizeRepeatCount = 100;
 void RunBenchmark(RasterSource* raster_source,
                   ImageDecodeCache* image_decode_cache,
                   const gfx::Rect& content_rect,
-                  float contents_scale,
+                  const gfx::Vector2dF& contents_scale,
                   size_t repeat_count,
                   base::TimeDelta* min_time,
                   bool* is_solid_color) {
@@ -48,8 +49,8 @@ void RunBenchmark(RasterSource* raster_source,
                          base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
                          kTimeCheckInterval);
     SkColor color = SK_ColorTRANSPARENT;
-    gfx::Rect layer_rect =
-        gfx::ScaleToEnclosingRect(content_rect, 1.f / contents_scale);
+    gfx::Rect layer_rect = gfx::ScaleToEnclosingRect(
+        content_rect, 1.f / contents_scale.x(), 1.f / contents_scale.y());
     *is_solid_color =
         raster_source->PerformSolidColorAnalysis(layer_rect, &color);
 
@@ -230,7 +231,7 @@ void RasterizeAndRecordBenchmarkImpl::RunOnLayer(PictureLayerImpl* layer) {
     DCHECK(*it);
 
     gfx::Rect content_rect = (*it)->content_rect();
-    float contents_scale = (*it)->raster_transform().scale();
+    const gfx::Vector2dF& contents_scale = (*it)->raster_transform().scale();
 
     base::TimeDelta min_time;
     bool is_solid_color = false;

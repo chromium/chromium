@@ -385,7 +385,14 @@ class CC_EXPORT LayerImpl {
   // PopulateScaledSharedQuadStateQuadState() for more details.
   gfx::Rect GetScaledEnclosingRectInTargetSpace(float scale) const;
 
-  float GetIdealContentsScale() const;
+  // GetIdealContentsScale() returns the ideal 2D scale, clamped to not exceed
+  // GetPreferredRasterScale().
+  // GetIdealContentsScaleKey() returns the maximum component, a fallback to
+  // uniform scale for callers that don't support 2d scales yet.
+  // TODO(crbug.com/1196414): Remove uses of GetIdealContentsScaleKey() outside
+  // tests, and rename it to GetIdealContentsScaleKeyForTest().
+  gfx::Vector2dF GetIdealContentsScale() const;
+  float GetIdealContentsScaleKey() const;
 
   void NoteLayerPropertyChanged();
   void NoteLayerPropertyChangedFromPropertyTrees();

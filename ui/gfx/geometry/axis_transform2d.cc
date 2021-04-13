@@ -9,7 +9,7 @@
 namespace gfx {
 
 std::string AxisTransform2d::ToString() const {
-  return base::StringPrintf("[%f, %s]", scale_,
+  return base::StringPrintf("[%s, %s]", scale_.ToString().c_str(),
                             translation_.ToString().c_str());
 }
 

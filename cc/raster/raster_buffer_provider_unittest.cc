@@ -185,7 +185,7 @@ class RasterImplementationForOOPR
                       const gfx::Rect& full_raster_rect,
                       const gfx::Rect& playback_rect,
                       const gfx::Vector2dF& post_translate,
-                      GLfloat post_scale,
+                      const gfx::Vector2dF& post_scale,
                       bool requires_clear,
                       size_t* max_op_size_hint) override {}
   void EndRasterCHROMIUM() override {}
