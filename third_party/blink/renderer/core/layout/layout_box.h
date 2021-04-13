@@ -2192,8 +2192,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);
   void CopyVisualOverflowFromFragmentsRecursively();
-  bool CopyVisualOverflowFromFragments();
-  bool CopyVisualOverflowFromFragmentsWithoutInvalidations();
+  void CopyVisualOverflowFromFragments();
+  void CopyVisualOverflowFromFragmentsWithoutInvalidations();
 
   void UpdateShapeOutsideInfoAfterStyleChange(const ComputedStyle&,
                                               const ComputedStyle* old_style);

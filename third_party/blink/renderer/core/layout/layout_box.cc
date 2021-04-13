@@ -7349,8 +7349,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
   DCHECK_GT(PhysicalFragmentCount(), 0u);
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
 
-  bool succeeded = CopyVisualOverflowFromFragments();
-  DCHECK(succeeded);
+  CopyVisualOverflowFromFragments();
 
   if (ChildPrePaintBlockedByDisplayLock())
     return;
@@ -7374,7 +7373,8 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
     }
 
     if (LayoutBox* box = DynamicTo<LayoutBox>(current)) {
-      if (box->CopyVisualOverflowFromFragments()) {
+      if (box->CanUseFragmentsForVisualOverflow()) {
+        box->CopyVisualOverflowFromFragments();
         if (UNLIKELY(current->ChildPrePaintBlockedByDisplayLock()))
           current = current->NextInPreOrderAfterChildren(this);
         else
@@ -7394,32 +7394,27 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
   }
 }
 
-// Copy visual overflow from |PhysicalFragments()|. Returns whether the copy
-// succeeded or not.
-bool LayoutBox::CopyVisualOverflowFromFragments() {
+// Copy visual overflow from |PhysicalFragments()|.
+void LayoutBox::CopyVisualOverflowFromFragments() {
   NOT_DESTROYED();
+  DCHECK(CanUseFragmentsForVisualOverflow());
   const LayoutRect previous_visual_overflow = VisualOverflowRect();
-  if (!CopyVisualOverflowFromFragmentsWithoutInvalidations()) {
-    DCHECK_EQ(previous_visual_overflow, VisualOverflowRect());
-    return false;
-  }
+  CopyVisualOverflowFromFragmentsWithoutInvalidations();
   const LayoutRect visual_overflow = VisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
-    return true;
+    return;
   InvalidateIntersectionObserverCachedRects();
   SetShouldCheckForPaintInvalidation();
   GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
-  return true;
 }
 
-bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
+void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   NOT_DESTROYED();
-  if (UNLIKELY(!CanUseFragmentsForVisualOverflow()))
-    return false;
+  DCHECK(CanUseFragmentsForVisualOverflow());
   if (UNLIKELY(!PhysicalFragmentCount())) {
     DCHECK(IsLayoutTableCol());
     ClearVisualOverflow();
-    return true;
+    return;
   }
 
   if (PhysicalFragmentCount() == 1) {
@@ -7427,11 +7422,11 @@ bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     DCHECK(fragment.CanUseFragmentsForInkOverflow());
     if (!fragment.HasInkOverflow()) {
       ClearVisualOverflow();
-      return true;
+      return;
     }
     SetVisualOverflow(fragment.SelfInkOverflow(),
                       fragment.ContentsInkOverflow());
-    return true;
+    return;
   }
 
   // When block-fragmented, stitch visual overflows from all fragments.
@@ -7477,7 +7472,7 @@ bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
 
   if (!has_overflow) {
     ClearVisualOverflow();
-    return true;
+    return;
   }
   if (UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
     DCHECK(!blink::IsHorizontalWritingMode(writing_mode));
@@ -7486,7 +7481,6 @@ bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     contents_rect.offset.left += flip_offset;
   }
   SetVisualOverflow(self_rect, contents_rect);
-  return true;
 }
 
 bool LayoutBox::PercentageLogicalHeightIsResolvable() const {
