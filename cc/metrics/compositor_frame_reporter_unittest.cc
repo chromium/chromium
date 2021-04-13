@@ -108,7 +108,7 @@ class CompositorFrameReporterTest : public testing::Test {
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        CompositorFrameReporter::ActiveTrackers(), viz::BeginFrameArgs(),
+        ActiveTrackers(), viz::BeginFrameArgs(),
         /*latency_ukm_reporter=*/nullptr,
         /*should_report_metrics=*/true,
         CompositorFrameReporter::SmoothThread::kSmoothBoth,

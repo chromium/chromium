@@ -154,7 +154,7 @@ class CC_EXPORT CompositorFrameReportingController {
   viz::BeginFrameId last_submitted_frame_id_;
 
   bool next_activate_has_invalidation_ = false;
-  CompositorFrameReporter::ActiveTrackers active_trackers_;
+  ActiveTrackers active_trackers_;
   FrameSequenceMetrics::ThreadType scrolling_thread_ =
       FrameSequenceMetrics::ThreadType::kUnknown;
 

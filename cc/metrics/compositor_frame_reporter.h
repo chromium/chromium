@@ -223,9 +223,6 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start_;
   };
 
-  using ActiveTrackers =
-      std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
-
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
                           LatencyUkmReporter* latency_ukm_reporter,

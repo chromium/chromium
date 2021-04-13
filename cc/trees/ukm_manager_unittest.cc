@@ -381,7 +381,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
       },
   };
 
-  CompositorFrameReporter::ActiveTrackers active_trackers;
+  ActiveTrackers active_trackers;
   active_trackers.set(
       static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
   active_trackers.set(

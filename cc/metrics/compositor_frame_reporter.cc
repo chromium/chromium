@@ -342,32 +342,6 @@ base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
 }
 
-bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
-  return trackers.test(
-             static_cast<size_t>(FrameSequenceTrackerType::kWheelScroll)) ||
-         trackers.test(
-             static_cast<size_t>(FrameSequenceTrackerType::kTouchScroll)) ||
-         trackers.test(
-             static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
-}
-
-bool HasMainThreadAnimation(
-    const CompositorFrameReporter::ActiveTrackers& trackers) {
-  return trackers.test(static_cast<size_t>(
-             FrameSequenceTrackerType::kMainThreadAnimation)) ||
-         trackers.test(
-             static_cast<size_t>(FrameSequenceTrackerType::kCanvasAnimation)) ||
-         trackers.test(
-             static_cast<size_t>(FrameSequenceTrackerType::kJSAnimation)) ||
-         trackers.test(static_cast<size_t>(FrameSequenceTrackerType::kRAF));
-}
-
-bool HasCompositorThreadAnimation(
-    const CompositorFrameReporter::ActiveTrackers& trackers) {
-  return trackers.test(
-      static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
-}
-
 }  // namespace
 
 // CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
