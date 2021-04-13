@@ -25,9 +25,11 @@
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/security_state/core/security_state.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/dns/mock_host_resolver.h"
@@ -35,8 +37,10 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
@@ -234,4 +238,115 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
   EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
   EXPECT_TRUE(base::LowerCaseEqualsASCII(
       location_bar_view->location_icon_view()->GetText(), "not secure"));
+}
+
+class LocationBarViewGeolocationBackForwardCacheBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  LocationBarViewGeolocationBackForwardCacheBrowserTest()
+      : geo_override_(0.0, 0.0) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+         {blink::features::kLoadingTasksUnfreezable, {}},
+         {features::kBackForwardCacheMemoryControls, {}}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    // Replace any hostname to 127.0.0.1. (e.g. b.com -> 127.0.0.1)
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ContentSettingImageView& GetContentSettingImageView(
+      ContentSettingImageModel::ImageType image_type) {
+    LocationBarView* location_bar_view =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    return **std::find_if(
+        location_bar_view->GetContentSettingViewsForTest().begin(),
+        location_bar_view->GetContentSettingViewsForTest().end(),
+        [image_type](ContentSettingImageView* view) {
+          return view->GetTypeForTesting() == image_type;
+        });
+  }
+
+ private:
+  device::ScopedGeolocationOverrider geo_override_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that the geolocation icon on the omnibox is on when
+// geolocation is requested. After navigating away, the geolocation
+// icon should be turned off even if the page is kept on BFCache. When
+// navigating back to the page which requested geolocation, the
+// geolocation icon should be turned on again.
+IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
+                       CheckGeolocationIconVisibility) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Give automatic geolocation permission.
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Get the geolocation icon on the omnibox.
+  ContentSettingImageView& geolocation_icon = GetContentSettingImageView(
+      ContentSettingImageModel::ImageType::GEOLOCATION);
+
+  // Geolocation icon should be off in the beginning.
+  EXPECT_FALSE(geolocation_icon.GetVisible());
+
+  // Query current position, and wait for the query to complete.
+  content::RenderFrameHost* rfh_a = web_contents()->GetMainFrame();
+  EXPECT_EQ("received", EvalJs(rfh_a, R"(
+      new Promise(resolve => {
+        navigator.geolocation.getCurrentPosition(() => resolve('received'));
+      });
+  )"));
+
+  // Geolocation icon should be on since geolocation API is used.
+  EXPECT_TRUE(geolocation_icon.GetVisible());
+
+  content::RenderFrameDeletedObserver deleted(rfh_a);
+
+  // 2) Navigate away to B.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  content::RenderFrameHost* rfh_b = web_contents()->GetMainFrame();
+
+  // Geolocation icon should be off after navigation.
+  EXPECT_FALSE(geolocation_icon.GetVisible());
+
+  // The previous page should be bfcached.
+  EXPECT_FALSE(deleted.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Navigate back to A. |RenderFrameHost| have to be restored from
+  // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_a|.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(web_contents()->GetMainFrame(), rfh_a);
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // Geolocation icon should be on again.
+  EXPECT_TRUE(geolocation_icon.GetVisible());
+
+  // 4) Navigate forward to B. |RenderFrameHost| have to be restored from
+  // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_b|.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(web_contents()->GetMainFrame(), rfh_b);
+
+  // Geolocation icon should be off.
+  EXPECT_FALSE(geolocation_icon.GetVisible());
 }

@@ -88,13 +88,7 @@ bool IsGeolocationSupported() {
     return false;
   static constexpr base::FeatureParam<bool> geolocation_supported(
       &features::kBackForwardCache, "geolocation_supported",
-#if defined(OS_ANDROID)
       true
-#else
-      // TODO(crbug.com/989847): Omnibox icon should be updated when the page
-      //                         enters or is restored from BackForwardCache.
-      false
-#endif
   );
   return geolocation_supported.Get();
 }
