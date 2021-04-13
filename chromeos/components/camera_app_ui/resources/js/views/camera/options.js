@@ -115,8 +115,7 @@ export class Options {
     });
 
     // Restore saved mirroring states per video device.
-    const values = localStorage.get({mirroringToggles: {}});
-    this.mirroringToggles_ = values['mirroringToggles'];
+    this.mirroringToggles_ = localStorage.getObject('mirroringToggles');
     // Remove the deprecated values.
     localStorage.remove(['effectIndex', 'toggleMulti', 'toggleMirror']);
 

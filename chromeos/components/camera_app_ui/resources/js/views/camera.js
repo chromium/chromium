@@ -389,7 +389,7 @@ export class Camera extends View {
       }
 
       const ptzToastKey = 'isPTZToastShown';
-      if ((localStorage.get({[ptzToastKey]: false}))[ptzToastKey]) {
+      if (localStorage.getBool(ptzToastKey)) {
         return;
       }
       localStorage.set({[ptzToastKey]: true});
@@ -472,9 +472,9 @@ export class Camera extends View {
           .forEach((btn) => btn.offsetParent && btn.focus());
     };
     (async () => {
-      const values = localStorage.get({isFolderChangeMsgShown: false});
+      const shown = localStorage.getBool('isFolderChangeMsgShown');
       await this.configuring_;
-      if (!values['isFolderChangeMsgShown']) {
+      if (!shown) {
         localStorage.set({isFolderChangeMsgShown: true});
         await animate.play(this.banner_);
       }

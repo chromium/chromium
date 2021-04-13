@@ -84,9 +84,9 @@ export class ConstraintsPreferrer {
    * @protected
    */
   restoreResolutionPreference_(key) {
-    const values = localStorage.get({[key]: {}});
+    const preference = localStorage.getObject(key);
     this.prefResolution_ = new Map();
-    for (const [deviceId, {width, height}] of Object.entries(values[key])) {
+    for (const [deviceId, {width, height}] of Object.entries(preference)) {
       this.prefResolution_.set(deviceId, new Resolution(width, height));
     }
   }
@@ -246,8 +246,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @private
    */
   restoreFpsPreference_() {
-    const values = localStorage.get({deviceVideoFps: {}});
-    this.prefFpses_ = values['deviceVideoFps'];
+    this.prefFpses_ = localStorage.getObject('deviceVideoFps');
   }
 
   /**

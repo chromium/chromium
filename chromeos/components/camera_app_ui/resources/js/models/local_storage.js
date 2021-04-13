@@ -2,39 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertBoolean, assertInstanceof, assertString} from '../chrome_util.js';
+
 /**
- * TODO(b/185181901): Simplify the interface.
- * @param {(string|!Array<string>|!Object)} keys
- * @return {!Object}
+ * @param {string} key
+ * @param {*} defaultValue
+ * @return {*} The value in storage or defaultValue if not found.
  */
-export function get(keys) {
-  let result = {};
-  let sanitizedKeys = [];
-  if (typeof keys === 'string') {
-    sanitizedKeys = [keys];
-  } else if (Array.isArray(keys)) {
-    sanitizedKeys = keys;
-  } else if (keys !== null && typeof keys === 'object') {
-    sanitizedKeys = Object.keys(keys);
-
-    // If any key does not exist, use the default value specified in the
-    // input.
-    result = Object.assign({}, keys);
-  } else {
-    throw new Error('WebUI localStorageGet() cannot be run with ' + keys);
+function getHelper(key, defaultValue) {
+  const rawValue = window.localStorage.getItem(key);
+  if (rawValue === null) {
+    return defaultValue;
   }
+  return JSON.parse(rawValue);
+}
 
-  for (const key of sanitizedKeys) {
-    const value = window.localStorage.getItem(key);
-    if (value !== null) {
-      result[key] = JSON.parse(value);
-    } else if (result[key] === undefined) {
-      // For key that does not exist and does not have a default value, set it
-      // to null.
-      result[key] = null;
-    }
-  }
-  return result;
+/**
+ * @param {string} key
+ * @return {!Object} The object in storage or an empty object {} if not found.
+ */
+export function getObject(key) {
+  return assertInstanceof(getHelper(key, {}), Object);
+}
+
+/**
+ * @param {string} key
+ * @return {string} The string in storage or an empty string "" if not found.
+ */
+export function getString(key) {
+  return assertString(getHelper(key, ''));
+}
+/**
+ * @param {string} key
+ * @return {boolean} The boolean in storage or false if not found.
+ */
+export function getBool(key) {
+  return assertBoolean(getHelper(key, false));
 }
 
 /**
