@@ -1,0 +1,71 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_COMPONENTS_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_
+#define CHROMEOS_COMPONENTS_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_
+
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "chromeos/components/help_app_ui/search/search.mojom.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace chromeos {
+namespace help_app {
+
+// Handles search queries for the help app. Search() is expected to be invoked
+// by the Launcher search UI. Search results are obtained by matching the
+// provided query against search tags indexed in the LocalSearchService and
+// cross-referencing results with SearchTagRegistry.
+//
+// Searches that do not provide any matches result in an empty results array.
+class SearchHandler : public mojom::SearchHandler {
+ public:
+  SearchHandler(local_search_service::LocalSearchServiceProxy*
+                    local_search_service_proxy);
+  ~SearchHandler() override;
+
+  SearchHandler(const SearchHandler& other) = delete;
+  SearchHandler& operator=(const SearchHandler& other) = delete;
+
+  void BindInterface(
+      mojo::PendingReceiver<mojom::SearchHandler> pending_receiver);
+
+  // mojom::SearchHandler:
+  void Search(const std::u16string& query,
+              uint32_t max_num_results,
+              SearchCallback callback) override;
+
+ private:
+  std::vector<mojom::SearchResultPtr> GenerateSearchResultsArray(
+      const std::vector<local_search_service::Result>&
+          local_search_service_results,
+      uint32_t max_num_results) const;
+
+  void OnFindComplete(
+      SearchCallback callback,
+      uint32_t max_num_results,
+      local_search_service::ResponseStatus response_status,
+      const base::Optional<std::vector<local_search_service::Result>>&
+          local_search_service_results);
+
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
+
+  // Note: Expected to have multiple clients, so ReceiverSet is used.
+  mojo::ReceiverSet<mojom::SearchHandler> receivers_;
+
+  base::WeakPtrFactory<SearchHandler> weak_ptr_factory_{this};
+};
+
+}  // namespace help_app
+}  // namespace chromeos
+
+#endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_

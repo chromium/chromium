@@ -4,6 +4,8 @@ include_rules = [
   "+chromeos/grit/chromeos_help_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+components/content_settings/core/common",
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
   "+content/public/browser",
   "+content/public/common",
   "+ui/resources/grit/webui_generated_resources.h",

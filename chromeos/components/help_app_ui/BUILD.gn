@@ -11,6 +11,10 @@ assert(is_chromeos, "Help App is Chrome OS only")
 
 static_library("help_app_ui") {
   sources = [
+    "help_app_manager.cc",
+    "help_app_manager.h",
+    "help_app_manager_factory.cc",
+    "help_app_manager_factory.h",
     "help_app_page_handler.cc",
     "help_app_page_handler.h",
     "help_app_ui.cc",
@@ -18,6 +22,8 @@ static_library("help_app_ui") {
     "help_app_ui_delegate.h",
     "help_app_untrusted_ui.cc",
     "help_app_untrusted_ui.h",
+    "search/search_handler.cc",
+    "search/search_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -26,6 +32,7 @@ static_library("help_app_ui") {
     ":mojo_bindings",
     ":mojo_bindings_js",
     "//ash/constants",
+    "//chromeos/components/help_app_ui/search:mojo_bindings",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
@@ -34,6 +41,7 @@ static_library("help_app_ui") {
     "//chromeos/resources:help_app_resources",
     "//chromeos/strings",
     "//chromeos/system",
+    "//components/keyed_service/content:content",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
@@ -46,6 +54,20 @@ static_library("help_app_ui") {
 
 mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "search/search_handler_unittest.cc" ]
+
+  deps = [
+    ":help_app_ui",
+    "//base/test:test_support",
+    "//chromeos/components/help_app_ui/search:mojo_bindings",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gtest",
+  ]
 }
 
 group("closure_compile") {
