@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverWindowPwa) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
   ExternalInstallOptions options = CreateInstallOptions(GetInstallableAppURL());
   options.install_source = ExternalInstallSource::kExternalPolicy;
-  PendingAppManagerInstall(profile(), options);
+  ExternallyManagedAppManagerInstall(profile(), options);
 
   // Avoid any interference if active browser was changed by PWA install.
   Browser* const new_browser =
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   GURL install_url = GetInstallableAppURL();
   ExternalInstallOptions options = CreateInstallOptions(install_url);
   options.install_source = ExternalInstallSource::kExternalPolicy;
-  PendingAppManagerInstall(profile(), options);
+  ExternallyManagedAppManagerInstall(profile(), options);
 
   auto* provider = WebAppProvider::Get(browser()->profile());
   ExternallyInstalledWebAppPrefs prefs(browser()->profile()->GetPrefs());

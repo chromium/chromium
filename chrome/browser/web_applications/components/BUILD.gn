@@ -20,6 +20,8 @@ source_set("components") {
     "external_install_options.h",
     "externally_installed_web_app_prefs.cc",
     "externally_installed_web_app_prefs.h",
+    "externally_managed_app_manager.cc",
+    "externally_managed_app_manager.h",
     "file_handler_manager.cc",
     "file_handler_manager.h",
     "install_bounce_metric.cc",
@@ -30,8 +32,6 @@ source_set("components") {
     "install_manager.h",
     "os_integration_manager.cc",
     "os_integration_manager.h",
-    "pending_app_manager.cc",
-    "pending_app_manager.h",
     "policy/web_app_policy_constants.cc",
     "policy/web_app_policy_constants.h",
     "preinstalled_app_install_features.cc",
@@ -215,10 +215,10 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "externally_managed_app_manager_unittest.cc",
     "file_handler_manager_unittest.cc",
     "install_finalizer_unittest.cc",
     "os_integration_manager_unittest.cc",
-    "pending_app_manager_unittest.cc",
     "protocol_handler_manager_unittest.cc",
     "web_app_constants_unittest.cc",
     "web_app_data_retriever_unittest.cc",

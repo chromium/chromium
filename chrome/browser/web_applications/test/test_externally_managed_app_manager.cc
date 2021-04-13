@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_pending_app_manager.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 
 #include <string>
 #include <utility>
@@ -19,7 +19,8 @@
 
 namespace web_app {
 
-TestPendingAppManager::TestPendingAppManager(TestAppRegistrar* registrar)
+TestExternallyManagedAppManager::TestExternallyManagedAppManager(
+    TestAppRegistrar* registrar)
     : deduped_install_count_(0),
       deduped_uninstall_count_(0),
       registrar_(registrar) {
@@ -27,22 +28,23 @@ TestPendingAppManager::TestPendingAppManager(TestAppRegistrar* registrar)
   SetSubsystems(registrar, nullptr, nullptr, nullptr, nullptr);
 }
 
-TestPendingAppManager::~TestPendingAppManager() = default;
+TestExternallyManagedAppManager::~TestExternallyManagedAppManager() = default;
 
-void TestPendingAppManager::SimulatePreviouslyInstalledApp(
+void TestExternallyManagedAppManager::SimulatePreviouslyInstalledApp(
     const GURL& url,
     ExternalInstallSource install_source) {
   registrar_->AddExternalApp(TestInstallFinalizer::GetAppIdForUrl(url),
                              {url, install_source});
 }
 
-void TestPendingAppManager::SetInstallResultCode(
+void TestExternallyManagedAppManager::SetInstallResultCode(
     InstallResultCode result_code) {
   install_result_code_ = result_code;
 }
 
-void TestPendingAppManager::Install(ExternalInstallOptions install_options,
-                                    OnceInstallCallback callback) {
+void TestExternallyManagedAppManager::Install(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
   // TODO(nigeltao): Add error simulation when error codes are added to the API.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   auto result_code = install_result_code_;
@@ -53,7 +55,7 @@ void TestPendingAppManager::Install(ExternalInstallOptions install_options,
                                   callback = std::move(callback)]() mutable {
         const GURL& url = install_options.install_url;
         // Use a WeakPtr to be able to simulate the Install callback running
-        // after PendingAppManager gets deleted.
+        // after ExternallyManagedAppManager gets deleted.
         if (weak_ptr) {
           if (!registrar_->LookupExternalAppId(url)) {
             registrar_->AddExternalApp(
@@ -67,16 +69,17 @@ void TestPendingAppManager::Install(ExternalInstallOptions install_options,
       }));
 }
 
-void TestPendingAppManager::InstallApps(
+void TestExternallyManagedAppManager::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
   for (auto& install_options : install_options_list)
     Install(std::move(install_options), callback);
 }
 
-void TestPendingAppManager::UninstallApps(std::vector<GURL> uninstall_urls,
-                                          ExternalInstallSource install_source,
-                                          const UninstallCallback& callback) {
+void TestExternallyManagedAppManager::UninstallApps(
+    std::vector<GURL> uninstall_urls,
+    ExternalInstallSource install_source,
+    const UninstallCallback& callback) {
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   for (const auto& url : uninstall_urls) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(

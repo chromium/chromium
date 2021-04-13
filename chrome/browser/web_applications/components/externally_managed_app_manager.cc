@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 
 #include <algorithm>
 #include <map>
@@ -17,33 +17,34 @@
 
 namespace web_app {
 
-bool PendingAppManager::InstallResult::operator==(
+bool ExternallyManagedAppManager::InstallResult::operator==(
     const InstallResult& other) const {
   return std::tie(code, did_uninstall_and_replace) ==
          std::tie(other.code, other.did_uninstall_and_replace);
 }
 
-PendingAppManager::SynchronizeRequest::SynchronizeRequest(
+ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeCallback callback,
     int remaining_requests)
     : callback(std::move(callback)), remaining_requests(remaining_requests) {}
 
-PendingAppManager::SynchronizeRequest::~SynchronizeRequest() = default;
+ExternallyManagedAppManager::SynchronizeRequest::~SynchronizeRequest() =
+    default;
 
-PendingAppManager::SynchronizeRequest&
-PendingAppManager::SynchronizeRequest::operator=(
-    PendingAppManager::SynchronizeRequest&&) = default;
+ExternallyManagedAppManager::SynchronizeRequest&
+ExternallyManagedAppManager::SynchronizeRequest::operator=(
+    ExternallyManagedAppManager::SynchronizeRequest&&) = default;
 
-PendingAppManager::SynchronizeRequest::SynchronizeRequest(
+ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeRequest&& other) = default;
 
-PendingAppManager::PendingAppManager() = default;
+ExternallyManagedAppManager::ExternallyManagedAppManager() = default;
 
-PendingAppManager::~PendingAppManager() {
+ExternallyManagedAppManager::~ExternallyManagedAppManager() {
   DCHECK(!registration_callback_);
 }
 
-void PendingAppManager::SetSubsystems(
+void ExternallyManagedAppManager::SetSubsystems(
     AppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
@@ -56,7 +57,7 @@ void PendingAppManager::SetSubsystems(
   install_manager_ = install_manager;
 }
 
-void PendingAppManager::SynchronizeInstalledApps(
+void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
@@ -102,38 +103,40 @@ void PendingAppManager::SynchronizeInstalledApps(
 
   UninstallApps(
       urls_to_remove, install_source,
-      base::BindRepeating(&PendingAppManager::UninstallForSynchronizeCallback,
-                          weak_ptr_factory_.GetWeakPtr(), install_source));
-  InstallApps(
-      std::move(desired_apps_install_options),
-      base::BindRepeating(&PendingAppManager::InstallForSynchronizeCallback,
-                          weak_ptr_factory_.GetWeakPtr(), install_source));
+      base::BindRepeating(
+          &ExternallyManagedAppManager::UninstallForSynchronizeCallback,
+          weak_ptr_factory_.GetWeakPtr(), install_source));
+  InstallApps(std::move(desired_apps_install_options),
+              base::BindRepeating(
+                  &ExternallyManagedAppManager::InstallForSynchronizeCallback,
+                  weak_ptr_factory_.GetWeakPtr(), install_source));
 }
 
-void PendingAppManager::SetRegistrationCallbackForTesting(
+void ExternallyManagedAppManager::SetRegistrationCallbackForTesting(
     RegistrationCallback callback) {
   registration_callback_ = callback;
 }
 
-void PendingAppManager::ClearRegistrationCallbackForTesting() {
+void ExternallyManagedAppManager::ClearRegistrationCallbackForTesting() {
   registration_callback_ = RegistrationCallback();
 }
 
-void PendingAppManager::SetRegistrationsCompleteCallbackForTesting(
+void ExternallyManagedAppManager::SetRegistrationsCompleteCallbackForTesting(
     base::OnceClosure callback) {
   registrations_complete_callback_ = std::move(callback);
 }
 
-void PendingAppManager::OnRegistrationFinished(const GURL& install_url,
-                                               RegistrationResultCode result) {
+void ExternallyManagedAppManager::OnRegistrationFinished(
+    const GURL& install_url,
+    RegistrationResultCode result) {
   if (registration_callback_)
     registration_callback_.Run(install_url, result);
 }
 
-void PendingAppManager::InstallForSynchronizeCallback(
+void ExternallyManagedAppManager::InstallForSynchronizeCallback(
     ExternalInstallSource source,
     const GURL& app_url,
-    PendingAppManager::InstallResult result) {
+    ExternallyManagedAppManager::InstallResult result) {
   if (!IsSuccess(result.code)) {
     LOG(ERROR) << app_url << " from install source " << static_cast<int>(source)
                << " failed to install with reason "
@@ -148,7 +151,7 @@ void PendingAppManager::InstallForSynchronizeCallback(
   OnAppSynchronized(source, app_url);
 }
 
-void PendingAppManager::UninstallForSynchronizeCallback(
+void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
     ExternalInstallSource source,
     const GURL& app_url,
     bool succeeded) {
@@ -160,8 +163,9 @@ void PendingAppManager::UninstallForSynchronizeCallback(
   OnAppSynchronized(source, app_url);
 }
 
-void PendingAppManager::OnAppSynchronized(ExternalInstallSource source,
-                                          const GURL& app_url) {
+void ExternallyManagedAppManager::OnAppSynchronized(
+    ExternalInstallSource source,
+    const GURL& app_url) {
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
 
@@ -176,7 +180,7 @@ void PendingAppManager::OnAppSynchronized(ExternalInstallSource source,
     synchronize_requests_.erase(source);
   }
 }
-void PendingAppManager::ClearSynchronizeRequestsForTesting() {
+void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
   synchronize_requests_.erase(synchronize_requests_.begin(),
                               synchronize_requests_.end());
 }

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "url/gurl.h"
 
@@ -34,7 +34,7 @@ struct LoadedConfigs;
 struct ParsedConfigs;
 }  // namespace
 
-class PendingAppManager;
+class ExternallyManagedAppManager;
 
 // Installs web apps to be preinstalled on the device (AKA default apps) during
 // start up. Will keep the apps installed on the device in sync with the set of
@@ -46,7 +46,7 @@ class PreinstalledWebAppManager {
   using ConsumeParsedConfigs = base::OnceCallback<void(ParsedConfigs)>;
   using ConsumeInstallOptions =
       base::OnceCallback<void(std::vector<ExternalInstallOptions>)>;
-  using SynchronizeCallback = PendingAppManager::SynchronizeCallback;
+  using SynchronizeCallback = ExternallyManagedAppManager::SynchronizeCallback;
 
   static const char* kHistogramEnabledCount;
   static const char* kHistogramDisabledCount;
@@ -68,7 +68,8 @@ class PreinstalledWebAppManager {
       delete;
   ~PreinstalledWebAppManager();
 
-  void SetSubsystems(PendingAppManager* pending_app_manager);
+  void SetSubsystems(
+      ExternallyManagedAppManager* externally_managed_app_manager);
 
   // Loads the preinstalled app configs and synchronizes them with the device's
   // installed apps.
@@ -89,7 +90,7 @@ class PreinstalledWebAppManager {
     using DisabledConfigWithReason =
         std::pair<ExternalInstallOptions, std::string>;
     std::vector<DisabledConfigWithReason> disabled_configs;
-    std::map<GURL, PendingAppManager::InstallResult> install_results;
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results;
     std::map<GURL, bool> uninstall_results;
   };
   const DebugInfo* debug_info() const { return debug_info_.get(); }
@@ -107,12 +108,14 @@ class PreinstalledWebAppManager {
   void Synchronize(SynchronizeCallback callback,
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
-      PendingAppManager::SynchronizeCallback callback,
+      ExternallyManagedAppManager::SynchronizeCallback callback,
       std::map<GURL, std::vector<AppId>> desired_uninstall_and_replaces,
-      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, ExternallyManagedAppManager::InstallResult>
+          install_results,
       std::map<GURL, bool> uninstall_results);
   void OnStartUpTaskCompleted(
-      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, ExternallyManagedAppManager::InstallResult>
+          install_results,
       std::map<GURL, bool> uninstall_results);
 
   // The directory where default web app configs are stored.
@@ -128,7 +131,7 @@ class PreinstalledWebAppManager {
   bool IsReinstallPastMilestoneNeededSinceLastSync(
       int force_reinstall_for_milestone);
 
-  PendingAppManager* pending_app_manager_ = nullptr;
+  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
   Profile* const profile_;
 
   std::unique_ptr<DebugInfo> debug_info_;

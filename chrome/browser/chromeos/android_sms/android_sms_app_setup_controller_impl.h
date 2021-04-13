@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_setup_controller.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -26,7 +26,7 @@ class CookieManager;
 
 namespace web_app {
 enum class InstallResultCode;
-class PendingAppManager;
+class ExternallyManagedAppManager;
 }  // namespace web_app
 
 namespace chromeos {
@@ -38,7 +38,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
  public:
   AndroidSmsAppSetupControllerImpl(
       Profile* profile,
-      web_app::PendingAppManager* pending_app_manager,
+      web_app::ExternallyManagedAppManager* externally_managed_app_manager,
       HostContentSettingsMap* host_content_settings_map);
   ~AndroidSmsAppSetupControllerImpl() override;
 
@@ -95,11 +95,12 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
                      size_t num_attempts_so_far,
                      SuccessCallback callback);
 
-  void OnAppInstallResult(SuccessCallback callback,
-                          size_t num_attempts_so_far,
-                          const GURL& app_url,
-                          const GURL& install_url,
-                          web_app::PendingAppManager::InstallResult result);
+  void OnAppInstallResult(
+      SuccessCallback callback,
+      size_t num_attempts_so_far,
+      const GURL& app_url,
+      const GURL& install_url,
+      web_app::ExternallyManagedAppManager::InstallResult result);
   void SetMigrationCookie(const GURL& app_url,
                           const GURL& migrated_to_app_url,
                           SuccessCallback callback);
@@ -114,7 +115,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
   void SetPwaDelegateForTesting(std::unique_ptr<PwaDelegate> test_pwa_delegate);
 
   Profile* profile_;
-  web_app::PendingAppManager* pending_app_manager_;
+  web_app::ExternallyManagedAppManager* externally_managed_app_manager_;
   HostContentSettingsMap* host_content_settings_map_;
 
   std::unique_ptr<PwaDelegate> pwa_delegate_;

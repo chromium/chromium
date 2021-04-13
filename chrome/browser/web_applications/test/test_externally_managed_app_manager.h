@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "url/gurl.h"
 
@@ -17,13 +17,15 @@ namespace web_app {
 
 class TestAppRegistrar;
 
-// Deprecated. Please use TestPendingAppManagerImpl instead.
-class TestPendingAppManager : public PendingAppManager {
+// Deprecated. Please use TestExternallyManagedAppManagerImpl instead.
+class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
  public:
-  explicit TestPendingAppManager(TestAppRegistrar* registrar);
-  TestPendingAppManager(const TestPendingAppManager&) = delete;
-  TestPendingAppManager& operator=(const TestPendingAppManager&) = delete;
-  ~TestPendingAppManager() override;
+  explicit TestExternallyManagedAppManager(TestAppRegistrar* registrar);
+  TestExternallyManagedAppManager(const TestExternallyManagedAppManager&) =
+      delete;
+  TestExternallyManagedAppManager& operator=(
+      const TestExternallyManagedAppManager&) = delete;
+  ~TestExternallyManagedAppManager() override;
 
   // The foo_requests methods may return duplicates, if the underlying
   // InstallApps or UninstallApps arguments do. The deduped_foo_count methods
@@ -49,7 +51,7 @@ class TestPendingAppManager : public PendingAppManager {
 
   void SetInstallResultCode(InstallResultCode result_code);
 
-  // PendingAppManager:
+  // ExternallyManagedAppManager:
   void Install(ExternalInstallOptions install_options,
                OnceInstallCallback callback) override;
   void InstallApps(std::vector<ExternalInstallOptions> install_options_list,
@@ -74,10 +76,9 @@ class TestPendingAppManager : public PendingAppManager {
 
   TestAppRegistrar* registrar_;
 
-  base::WeakPtrFactory<TestPendingAppManager> weak_ptr_factory_{this};
-
+  base::WeakPtrFactory<TestExternallyManagedAppManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_

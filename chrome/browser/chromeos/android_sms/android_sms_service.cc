@@ -33,7 +33,7 @@ AndroidSmsService::AndroidSmsService(
       andoid_sms_app_setup_controller_(
           std::make_unique<AndroidSmsAppSetupControllerImpl>(
               profile_,
-              &web_app_provider->pending_app_manager(),
+              &web_app_provider->externally_managed_app_manager(),
               host_content_settings_map)),
       android_sms_app_manager_(std::make_unique<AndroidSmsAppManagerImpl>(
           profile_,

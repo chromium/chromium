@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_MANAGER_IMPL_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -15,9 +15,9 @@
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
-#include "chrome/browser/web_applications/pending_app_install_task.h"
+#include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 
 class GURL;
 class Profile;
@@ -28,18 +28,20 @@ class WebContents;
 
 namespace web_app {
 
-class PendingAppRegistrationTaskBase;
+class ExternallyManagedAppRegistrationTaskBase;
 
 // Installs, uninstalls, and updates any External Web Apps. This class should
 // only be used from the UI thread.
-class PendingAppManagerImpl : public PendingAppManager {
+class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
  public:
-  explicit PendingAppManagerImpl(Profile* profile);
-  PendingAppManagerImpl(const PendingAppManagerImpl&) = delete;
-  PendingAppManagerImpl& operator=(const PendingAppManagerImpl&) = delete;
-  ~PendingAppManagerImpl() override;
+  explicit ExternallyManagedAppManagerImpl(Profile* profile);
+  ExternallyManagedAppManagerImpl(const ExternallyManagedAppManagerImpl&) =
+      delete;
+  ExternallyManagedAppManagerImpl& operator=(
+      const ExternallyManagedAppManagerImpl&) = delete;
+  ~ExternallyManagedAppManagerImpl() override;
 
-  // PendingAppManager:
+  // ExternallyManagedAppManager:
   void Install(ExternalInstallOptions install_options,
                OnceInstallCallback callback) override;
   void InstallApps(std::vector<ExternalInstallOptions> install_options_list,
@@ -54,11 +56,11 @@ class PendingAppManagerImpl : public PendingAppManager {
  protected:
   virtual void ReleaseWebContents();
 
-  virtual std::unique_ptr<PendingAppInstallTask> CreateInstallationTask(
-      ExternalInstallOptions install_options);
+  virtual std::unique_ptr<ExternallyManagedAppInstallTask>
+  CreateInstallationTask(ExternalInstallOptions install_options);
 
-  virtual std::unique_ptr<PendingAppRegistrationTaskBase> StartRegistration(
-      GURL launch_url);
+  virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
+  StartRegistration(GURL launch_url);
 
   void OnRegistrationFinished(const GURL& launch_url,
                               RegistrationResultCode result) override;
@@ -79,7 +81,7 @@ class PendingAppManagerImpl : public PendingAppManager {
   void CreateWebContentsIfNecessary();
 
   void OnInstalled(base::Optional<AppId> app_id,
-                   PendingAppManager::InstallResult result);
+                   ExternallyManagedAppManager::InstallResult result);
 
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);
@@ -96,14 +98,14 @@ class PendingAppManagerImpl : public PendingAppManager {
 
   base::circular_deque<std::unique_ptr<TaskAndCallback>> pending_installs_;
 
-  std::unique_ptr<PendingAppRegistrationTaskBase> current_registration_;
+  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
+      current_registration_;
 
   base::circular_deque<GURL> pending_registrations_;
 
-  base::WeakPtrFactory<PendingAppManagerImpl> weak_ptr_factory_{this};
-
+  base::WeakPtrFactory<ExternallyManagedAppManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_

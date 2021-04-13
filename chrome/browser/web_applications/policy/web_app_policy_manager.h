@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
@@ -35,25 +35,26 @@ class OsIntegrationManager;
 // Web Apps on behalf of their managed users. This class tracks the policy that
 // affects Web Apps and also tracks which Web Apps are currently installed based
 // on this policy. Based on these, it decides which apps to install, uninstall,
-// and update, via a PendingAppManager.
+// and update, via a ExternallyManagedAppManager.
 class WebAppPolicyManager {
  public:
   static constexpr char kInstallResultHistogramName[] =
       "Webapp.InstallResult.Policy";
 
   // Constructs a WebAppPolicyManager instance that uses
-  // |pending_app_manager| to manage apps. |pending_app_manager| should outlive
-  // this class.
+  // |externally_managed_app_manager| to manage apps.
+  // |externally_managed_app_manager| should outlive this class.
   explicit WebAppPolicyManager(Profile* profile);
   WebAppPolicyManager(const WebAppPolicyManager&) = delete;
   WebAppPolicyManager& operator=(const WebAppPolicyManager&) = delete;
   ~WebAppPolicyManager();
 
-  void SetSubsystems(PendingAppManager* pending_app_manager,
-                     AppRegistrar* app_registrar,
-                     AppRegistryController* app_registry_controller,
-                     SystemWebAppManager* web_app_manager,
-                     OsIntegrationManager* os_integration_manager);
+  void SetSubsystems(
+      ExternallyManagedAppManager* externally_managed_app_manager,
+      AppRegistrar* app_registrar,
+      AppRegistryController* app_registry_controller,
+      SystemWebAppManager* web_app_manager,
+      OsIntegrationManager* os_integration_manager);
 
   void Start();
 
@@ -104,7 +105,8 @@ class WebAppPolicyManager {
   void RefreshPolicyInstalledApps();
   void RefreshPolicySettings();
   void OnAppsSynchronized(
-      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, ExternallyManagedAppManager::InstallResult>
+          install_results,
       std::map<GURL, bool> uninstall_results);
   void ApplyPolicySettings();
 
@@ -121,7 +123,7 @@ class WebAppPolicyManager {
 
   // Used to install, uninstall, and update apps. Should outlive this class
   // (owned by WebAppProvider).
-  PendingAppManager* pending_app_manager_ = nullptr;
+  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
   AppRegistrar* app_registrar_ = nullptr;
   AppRegistryController* app_registry_controller_ = nullptr;
   SystemWebAppManager* web_app_manager_ = nullptr;

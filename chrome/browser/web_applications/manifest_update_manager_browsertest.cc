@@ -28,10 +28,10 @@
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
@@ -303,11 +303,11 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     install_options.add_to_desktop = false;
     install_options.add_to_quick_launch_bar = false;
     install_options.install_placeholder = true;
-    GetProvider().pending_app_manager().Install(
+    GetProvider().externally_managed_app_manager().Install(
         std::move(install_options),
         base::BindLambdaForTesting(
             [&](const GURL& installed_app_url,
-                PendingAppManager::InstallResult result) {
+                ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(installed_app_url, app_url);
               EXPECT_EQ(result.code, InstallResultCode::kSuccessNewInstall);
               run_loop.Quit();
@@ -596,13 +596,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
         return std::move(http_response);
       });
 
-  // Install via PendingAppManager, the redirect to a different origin should
-  // cause it to install a placeholder app.
+  // Install via ExternallyManagedAppManager, the redirect to a different origin
+  // should cause it to install a placeholder app.
   AppId app_id = InstallPolicyApp();
   EXPECT_TRUE(GetProvider().registrar().IsPlaceholderApp(app_id));
 
   // Manifest updating should ignore non-redirect loads for placeholder apps
-  // because the PendingAppManager will handle these.
+  // because the ExternallyManagedAppManager will handle these.
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",

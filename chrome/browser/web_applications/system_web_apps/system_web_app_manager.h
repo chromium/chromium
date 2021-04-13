@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
@@ -153,12 +153,13 @@ class SystemWebAppManager {
   SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
   virtual ~SystemWebAppManager();
 
-  void SetSubsystems(PendingAppManager* pending_app_manager,
-                     AppRegistrar* registrar,
-                     AppRegistryController* registry_controller,
-                     WebAppUiManager* ui_manager,
-                     OsIntegrationManager* os_integration_manager,
-                     WebAppPolicyManager* web_app_policy_manager);
+  void SetSubsystems(
+      ExternallyManagedAppManager* externally_managed_app_manager,
+      AppRegistrar* registrar,
+      AppRegistryController* registry_controller,
+      WebAppUiManager* ui_manager,
+      OsIntegrationManager* os_integration_manager,
+      WebAppPolicyManager* web_app_policy_manager);
 
   void Start();
 
@@ -278,7 +279,8 @@ class SystemWebAppManager {
   void OnAppsSynchronized(
       bool did_force_install_apps,
       const base::TimeTicks& install_start_time,
-      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, ExternallyManagedAppManager::InstallResult>
+          install_results,
       std::map<GURL, bool> uninstall_results);
   bool ShouldForceInstallApps() const;
   void UpdateLastAttemptedInfo();
@@ -287,8 +289,8 @@ class SystemWebAppManager {
   bool CheckAndIncrementRetryAttempts();
 
   void RecordSystemWebAppInstallResults(
-      const std::map<GURL, PendingAppManager::InstallResult>& install_results)
-      const;
+      const std::map<GURL, ExternallyManagedAppManager::InstallResult>&
+          install_results) const;
 
   void RecordSystemWebAppInstallDuration(
       const base::TimeDelta& time_duration) const;
@@ -311,7 +313,7 @@ class SystemWebAppManager {
   PrefService* const pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class.
-  PendingAppManager* pending_app_manager_ = nullptr;
+  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
 
   AppRegistrar* registrar_ = nullptr;
 

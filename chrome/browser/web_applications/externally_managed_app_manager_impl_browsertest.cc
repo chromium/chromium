@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/pending_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,7 +19,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/pending_app_registration_task.h"
+#include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/service_worker_context.h"
@@ -31,7 +31,7 @@
 
 namespace web_app {
 
-class PendingAppManagerImplBrowserTest : public InProcessBrowserTest {
+class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -46,14 +46,14 @@ class PendingAppManagerImplBrowserTest : public InProcessBrowserTest {
         ->registrar();
   }
 
-  PendingAppManager& pending_app_manager() {
+  ExternallyManagedAppManager& externally_managed_app_manager() {
     return WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->pending_app_manager();
+        ->externally_managed_app_manager();
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    result_code_ =
-        PendingAppManagerInstall(browser()->profile(), install_options);
+    result_code_ = ExternallyManagedAppManagerInstall(browser()->profile(),
+                                                      install_options);
   }
 
   void CheckServiceWorkerStatus(const GURL& url,
@@ -85,7 +85,8 @@ class PendingAppManagerImplBrowserTest : public InProcessBrowserTest {
 
 // Basic integration test to make sure the whole flow works. Each step in the
 // flow is unit tested separately.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, InstallSucceeds) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       InstallSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   InstallApp(CreateInstallOptions(url));
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, InstallSucceeds) {
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        InstallSucceedsWithRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL start_url =
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        InstallSucceedsWithRedirectNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL final_url =
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 }
 
 // Installing a placeholder app with shortcuts should succeed.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 
 // Tests that the browser doesn't crash if it gets shutdown with a pending
 // installation.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        ShutdownWithPendingInstallation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -181,14 +182,14 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 
   // Start an installation but don't wait for it to finish.
   WebAppProviderBase::GetProviderBase(browser()->profile())
-      ->pending_app_manager()
+      ->externally_managed_app_manager()
       .Install(std::move(install_options), base::DoNothing());
 
   // The browser should shutdown cleanly even if there is a pending
   // installation.
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        BypassServiceWorkerCheck) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -203,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(*app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        PerformServiceWorkerCheck) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -215,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
   EXPECT_TRUE(registrar().GetAppScopeInternal(app_id.value()).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, ForceReinstall) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       ForceReinstall) {
   ASSERT_TRUE(embedded_test_server()->Start());
   {
     GURL url(embedded_test_server()->GetURL(
@@ -244,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, ForceReinstall) {
 
 // Test that adding a manifest that points to a chrome:// URL does not actually
 // install a web app that points to a chrome:// URL.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        InstallChromeURLFails) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -264,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 
 // Test that adding a web app without a manifest while using the
 // |require_manifest| flag fails.
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        RequireManifestFailsIfNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(
@@ -281,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
   ASSERT_FALSE(id.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationSucceeds) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       RegistrationSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Delay service worker registration to second load to simulate it not loading
@@ -293,14 +296,14 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationSucceeds) {
   install_options.bypass_service_worker_check = true;
   InstallApp(std::move(install_options));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  WebAppRegistrationWaiter(&pending_app_manager())
+  WebAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(install_url, RegistrationResultCode::kSuccess);
   CheckServiceWorkerStatus(
       install_url,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
                        RegistrationAlternateUrlSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -314,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
   install_options.service_worker_registration_url = registration_url;
   InstallApp(std::move(install_options));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  WebAppRegistrationWaiter(&pending_app_manager())
+  WebAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(registration_url,
                              RegistrationResultCode::kSuccess);
   CheckServiceWorkerStatus(
@@ -322,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationSkipped) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       RegistrationSkipped) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Delay service worker registration to second load to simulate it not loading
@@ -333,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationSkipped) {
   ExternalInstallOptions install_options = CreateInstallOptions(install_url);
   install_options.bypass_service_worker_check = true;
   install_options.load_and_await_service_worker_registration = false;
-  WebAppRegistrationWaiter waiter(&pending_app_manager());
+  WebAppRegistrationWaiter waiter(&externally_managed_app_manager());
   InstallApp(std::move(install_options));
   waiter.AwaitRegistrationsComplete();
 
@@ -342,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationSkipped) {
                            content::ServiceWorkerCapability::NO_SERVICE_WORKER);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       AlreadyRegistered) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Ensure service worker registered for http://embedded_test_server/web_apps/.
@@ -354,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
     EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-    WebAppRegistrationWaiter(&pending_app_manager())
+    WebAppRegistrationWaiter(&externally_managed_app_manager())
         .AwaitNextNonFailedRegistration(install_url);
     CheckServiceWorkerStatus(
         embedded_test_server()->GetURL("/web_apps/basic.html"),
@@ -372,13 +377,14 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
     install_options.bypass_service_worker_check = true;
     InstallApp(std::move(install_options));
     EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-    WebAppRegistrationWaiter(&pending_app_manager())
+    WebAppRegistrationWaiter(&externally_managed_app_manager())
         .AwaitNextRegistration(install_url,
                                RegistrationResultCode::kAlreadyRegistered);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, CannotFetchManifest) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       CannotFetchManifest) {
   // With a flaky network connection, clients may request an app whose manifest
   // cannot currently be retrieved. The app display mode is then assumed to be
   // 'browser'.
@@ -399,12 +405,13 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, CannotFetchManifest) {
   }
 
   base::RunLoop run_loop;
-  pending_app_manager().SynchronizeInstalledApps(
+  externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalPolicy,
       base::BindLambdaForTesting(
           [&run_loop, &app_url](
-              std::map<GURL, PendingAppManager::InstallResult> install_results,
+              std::map<GURL, ExternallyManagedAppManager::InstallResult>
+                  install_results,
               std::map<GURL, bool> uninstall_results) {
             EXPECT_TRUE(uninstall_results.empty());
             EXPECT_EQ(install_results.size(), 1U);
@@ -424,9 +431,10 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, CannotFetchManifest) {
   EXPECT_FALSE(registrar().GetAppThemeColor(*app_id).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationTimeout) {
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       RegistrationTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  PendingAppRegistrationTask::SetTimeoutForTesting(0);
+  ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(0);
   GURL url(embedded_test_server()->GetURL(
       "/banners/manifest_no_service_worker.html"));
   CheckServiceWorkerStatus(url,
@@ -436,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, RegistrationTimeout) {
   install_options.bypass_service_worker_check = true;
   InstallApp(std::move(install_options));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  WebAppRegistrationWaiter(&pending_app_manager())
+  WebAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 

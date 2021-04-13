@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_IMPL_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_
 
 #include <vector>
 
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/pending_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 
 namespace web_app {
 
-class TestPendingAppManagerImpl : public PendingAppManagerImpl {
+class TestExternallyManagedAppManagerImpl
+    : public ExternallyManagedAppManagerImpl {
  public:
-  explicit TestPendingAppManagerImpl(Profile* profile);
-  ~TestPendingAppManagerImpl() override;
+  explicit TestExternallyManagedAppManagerImpl(Profile* profile);
+  ~TestExternallyManagedAppManagerImpl() override;
 
   void Install(ExternalInstallOptions install_options,
                OnceInstallCallback callback) override;
@@ -38,7 +39,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
   }
 
   using HandleInstallRequestCallback =
-      base::RepeatingCallback<PendingAppManager::InstallResult(
+      base::RepeatingCallback<ExternallyManagedAppManager::InstallResult(
           const ExternalInstallOptions&)>;
 
   // Set a callback to handle install requests. If set, this callback will be
@@ -55,4 +56,4 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_PENDING_APP_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_IMPL_H_

@@ -453,13 +453,13 @@ void SystemWebAppManager::Shutdown() {
 }
 
 void SystemWebAppManager::SetSubsystems(
-    PendingAppManager* pending_app_manager,
+    ExternallyManagedAppManager* externally_managed_app_manager,
     AppRegistrar* registrar,
     AppRegistryController* registry_controller,
     WebAppUiManager* ui_manager,
     OsIntegrationManager* os_integration_manager,
     WebAppPolicyManager* web_app_policy_manager) {
-  pending_app_manager_ = pending_app_manager;
+  externally_managed_app_manager_ = externally_managed_app_manager;
   registrar_ = registrar;
   registry_controller_ = registry_controller;
   ui_manager_ = ui_manager;
@@ -504,7 +504,7 @@ void SystemWebAppManager::Start() {
 
   const bool exceeded_retries = CheckAndIncrementRetryAttempts();
   if (!exceeded_retries) {
-    pending_app_manager_->SynchronizeInstalledApps(
+    externally_managed_app_manager_->SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kSystemInstalled,
         base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
@@ -792,13 +792,13 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
 }
 
 void SystemWebAppManager::RecordSystemWebAppInstallResults(
-    const std::map<GURL, PendingAppManager::InstallResult>& install_results)
-    const {
+    const std::map<GURL, ExternallyManagedAppManager::InstallResult>&
+        install_results) const {
   // Report install result codes. Exclude kSuccessAlreadyInstalled from metrics.
   // This result means the installation pipeline is a no-op (which happens every
   // time user logs in, and if there hasn't been a version upgrade). This skews
   // the install success rate.
-  std::map<GURL, PendingAppManager::InstallResult> results_to_report;
+  std::map<GURL, ExternallyManagedAppManager::InstallResult> results_to_report;
   std::copy_if(install_results.begin(), install_results.end(),
                std::inserter(results_to_report, results_to_report.end()),
                [](const auto& url_and_result) {
@@ -842,7 +842,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
 void SystemWebAppManager::OnAppsSynchronized(
     bool did_force_install_apps,
     const base::TimeTicks& install_start_time,
-    std::map<GURL, PendingAppManager::InstallResult> install_results,
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // TODO(crbug.com/1053371): Clean up File Handler install. We install SWA file
   // handlers here, because the code that registers file handlers for regular

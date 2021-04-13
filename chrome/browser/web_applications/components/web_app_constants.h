@@ -95,7 +95,7 @@ enum class InstallResultCode {
   kExpectedAppIdCheckFailed = 15,
   // The network request for the install URL timed out.
   kInstallURLLoadTimeOut = 16,
-  // Placeholder uninstall fails (in PendingAppManager).
+  // Placeholder uninstall fails (in ExternallyManagedAppManager).
   kFailedPlaceholderUninstall = 17,
   // Web App is not considered installable, i.e. missing manifest fields, no
   // service worker, etc.
@@ -126,8 +126,8 @@ bool IsNewInstall(InstallResultCode code);
 
 std::ostream& operator<<(std::ostream& os, InstallResultCode code);
 
-// PendingAppManager: Where an app was installed from. This affects what flags
-// will be used when installing the app.
+// ExternallyManagedAppManager: Where an app was installed from. This affects
+// what flags will be used when installing the app.
 //
 // Internal means that the set of apps to install is defined statically, and
 // can be determined solely by 'first party' data: the Chromium binary,
@@ -153,7 +153,7 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code);
 //
 // In practice, every kExternalXxx enum definition should correspond to
 // exactly one place in the code where
-// PendingAppManager::SynchronizeInstalledApps is called.
+// ExternallyManagedAppManager::SynchronizeInstalledApps is called.
 enum class ExternalInstallSource {
   // Do not remove or re-order the names, only append to the end. Their
   // integer values are persisted in the preferences.
@@ -164,24 +164,27 @@ enum class ExternalInstallSource {
 
   // Installed by default on the system, such as "all such-and-such make and
   // model Chromebooks should have this app installed".
-  // The corresponding PendingAppManager::SynchronizeInstalledApps call site is
+  // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
+  // call site is
   // in WebAppProvider::OnScanForExternalWebApps.
   kExternalDefault = 1,
 
   // Installed by sys-admin policy, such as "all example.com employees should
   // have this app installed".
-  // The corresponding PendingAppManager::SynchronizeInstalledApps call site is
+  // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
+  // call site is
   // in WebAppPolicyManager::RefreshPolicyInstalledApps.
   kExternalPolicy = 2,
 
   // Installed as a Chrome component, such as a help app, or a settings app.
-  // The corresponding PendingAppManager::SynchronizeInstalledApps call site is
+  // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
+  // call site is
   // in SystemWebAppManager::RefreshPolicyInstalledApps.
   kSystemInstalled = 3,
 
   // Installed from ARC.
   // There is no call to SynchronizeInstalledApps for this type, as these apps
-  // are not installed via PendingAppManager. This is used in
+  // are not installed via ExternallyManagedAppManager. This is used in
   // ExternallyInstalledWebAppPrefs to track navigation url to app_id entries.
   kArc = 4,
 };

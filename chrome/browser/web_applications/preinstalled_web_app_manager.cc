@@ -33,7 +33,7 @@
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -317,8 +317,8 @@ PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
 PreinstalledWebAppManager::~PreinstalledWebAppManager() = default;
 
 void PreinstalledWebAppManager::SetSubsystems(
-    PendingAppManager* pending_app_manager) {
-  pending_app_manager_ = pending_app_manager;
+    ExternallyManagedAppManager* externally_managed_app_manager) {
+  externally_managed_app_manager_ = externally_managed_app_manager;
 }
 
 void PreinstalledWebAppManager::Start() {
@@ -468,8 +468,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     debug_info_->enabled_configs = parsed_configs.options_list;
   }
 
-  // Triggers |force_reinstall| in PendingAppManager if milestone increments
-  // across |force_reinstall_for_milestone|.
+  // Triggers |force_reinstall| in ExternallyManagedAppManager if milestone
+  // increments across |force_reinstall_for_milestone|.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
     if (options.force_reinstall_for_milestone &&
         IsReinstallPastMilestoneNeededSinceLastSync(
@@ -488,9 +488,9 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 }
 
 void PreinstalledWebAppManager::Synchronize(
-    PendingAppManager::SynchronizeCallback callback,
+    ExternallyManagedAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
-  DCHECK(pending_app_manager_);
+  DCHECK(externally_managed_app_manager_);
 
   std::map<GURL, std::vector<AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
@@ -498,7 +498,7 @@ void PreinstalledWebAppManager::Synchronize(
       desired_uninstalls.emplace(entry.install_url,
                                  entry.uninstall_and_replace);
   }
-  pending_app_manager_->SynchronizeInstalledApps(
+  externally_managed_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&PreinstalledWebAppManager::OnExternalWebAppsSynchronized,
@@ -507,9 +507,9 @@ void PreinstalledWebAppManager::Synchronize(
 }
 
 void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
-    PendingAppManager::SynchronizeCallback callback,
+    ExternallyManagedAppManager::SynchronizeCallback callback,
     std::map<GURL, std::vector<AppId>> desired_uninstalls,
-    std::map<GURL, PendingAppManager::InstallResult> install_results,
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // Note that we are storing the Chrome version (milestone number) instead of a
   // "has synchronised" bool in order to do version update specific logic.
@@ -553,7 +553,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 }
 
 void PreinstalledWebAppManager::OnStartUpTaskCompleted(
-    std::map<GURL, PendingAppManager::InstallResult> install_results,
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   if (debug_info_) {
     debug_info_->is_start_up_task_complete = true;

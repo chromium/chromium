@@ -196,13 +196,15 @@ class PreinstalledAppsMigrationBrowserTest
           web_app::WebAppProvider::Get(profile())
               ->preinstalled_web_app_manager();
       base::RunLoop run_loop;
-      auto quit = [this, quit_closure = run_loop.QuitClosure()](
-                      std::map<GURL, web_app::PendingAppManager::InstallResult>
-                          install_results,
-                      std::map<GURL, bool> uninstall_results) {
-        install_results_ = std::move(install_results);
-        std::move(quit_closure).Run();
-      };
+      auto quit =
+          [this, quit_closure = run_loop.QuitClosure()](
+              std::map<GURL,
+                       web_app::ExternallyManagedAppManager::InstallResult>
+                  install_results,
+              std::map<GURL, bool> uninstall_results) {
+            install_results_ = std::move(install_results);
+            std::move(quit_closure).Run();
+          };
       web_app_manager.LoadAndSynchronizeForTesting(
           base::BindLambdaForTesting(quit));
       run_loop.Run();
@@ -259,7 +261,8 @@ class PreinstalledAppsMigrationBrowserTest
 
   web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
   std::vector<base::Value> app_configs_;
-  std::map<GURL, web_app::PendingAppManager::InstallResult> install_results_;
+  std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
+      install_results_;
 };
 
 class PreinstalledAppsMigrationEnabledBrowserTest

@@ -104,7 +104,7 @@ class WebAppInstallManager final : public InstallManager,
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,
                            TaskQueueWebContentsReadyRace);
 
-  void MaybeEnqueuePendingAppSyncInstalls();
+  void MaybeEnqueueExternallyManagedAppSyncInstalls();
   void EnqueueInstallAppFromSync(
       const AppId& sync_app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
@@ -178,7 +178,7 @@ class WebAppInstallManager final : public InstallManager,
     std::unique_ptr<WebApplicationInfo> web_application_info;
     OnceInstallCallback callback;
   };
-  std::vector<AppSyncInstallRequest> pending_app_sync_installs_;
+  std::vector<AppSyncInstallRequest> externally_managed_app_sync_installs_;
 
   // A single WebContents, shared between tasks in |task_queue_|.
   std::unique_ptr<content::WebContents> web_contents_;

@@ -42,8 +42,9 @@ Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 // Return |ExternalInstallOptions| with OS shortcut creation disabled.
 ExternalInstallOptions CreateInstallOptions(const GURL& url);
 
-// Synchronous version of PendingAppManager::Install.
-InstallResultCode PendingAppManagerInstall(Profile*, ExternalInstallOptions);
+// Synchronous version of ExternallyManagedAppManager::Install.
+InstallResultCode ExternallyManagedAppManagerInstall(Profile*,
+                                                     ExternalInstallOptions);
 
 // If |proceed_through_interstitial| is true, asserts that a security
 // interstitial is shown, and clicks through it, before returning.

@@ -174,7 +174,8 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
     base::Optional<InstallResultCode> code;
 
     auto callback = base::BindLambdaForTesting(
-        [&](std::map<GURL, PendingAppManager::InstallResult> install_results,
+        [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
+                install_results,
             std::map<GURL, bool> uninstall_results) {
           if (expect_install) {
             code = install_results.at(GetWebAppUrl()).code;

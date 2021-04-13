@@ -66,7 +66,7 @@ class PreinstalledWebAppManagerBrowserTest
     WebAppProvider::Get(browser()->profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
-            [&](std::map<GURL, PendingAppManager::InstallResult>
+            [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
                 std::map<GURL, bool> uninstall_results) {
               EXPECT_EQ(install_results.size(), 0u);
@@ -110,7 +110,7 @@ class PreinstalledWebAppManagerBrowserTest
     WebAppProvider::Get(browser()->profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
-            [&](std::map<GURL, PendingAppManager::InstallResult>
+            [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
                 std::map<GURL, bool> uninstall_results) {
               auto it = install_results.find(install_url);

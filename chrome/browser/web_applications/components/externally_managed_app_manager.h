@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PENDING_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PENDING_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_EXTERNALLY_MANAGED_APP_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_EXTERNALLY_MANAGED_APP_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -30,13 +30,27 @@ class WebAppUiManager;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
-// PendingAppManager installs, uninstalls, and updates apps.
+// ExternallyManagedAppManager installs, uninstalls, and updates apps that are
+// externally managed. This means that they are not installed by the user, but
+// instead through a different system (enterprise installs, device default
+// installs, etc). See ExternalInstallSource for all of the different externally
+// managed app types. Typically there is one "manager" class per externally
+// managed app type that figures out the list of apps to have installed, and
+// that class will call SynchronizeApps for a given external install type.
 //
 // Implementations of this class should perform each set of operations serially
 // in the order in which they arrive. For example, if an uninstall request gets
 // queued while an update request for the same app is pending, implementations
 // should wait for the update request to finish before uninstalling the app.
-class PendingAppManager {
+//
+// This class also supports installing a "placeholder" app by the
+// |install_placeholder| in ExternalInstallOptions. This placeholder app is
+// installed if the install url given fails to fully load so a manifest cannot
+// be resolved, and a placeholder app is installed instead. Every time the user
+// navigates a page, if that page is ever a URL that a placeholder app is
+// 'holding' (as the app failed to load originally), then the install is
+// re-initiated, and if successful, the placeholder app is removed.
+class ExternallyManagedAppManager {
  public:
   struct InstallResult {
     InstallResultCode code;
@@ -57,10 +71,11 @@ class PendingAppManager {
       base::OnceCallback<void(std::map<GURL, InstallResult> install_results,
                               std::map<GURL, bool> uninstall_results)>;
 
-  PendingAppManager();
-  PendingAppManager(const PendingAppManager&) = delete;
-  PendingAppManager& operator=(const PendingAppManager&) = delete;
-  virtual ~PendingAppManager();
+  ExternallyManagedAppManager();
+  ExternallyManagedAppManager(const ExternallyManagedAppManager&) = delete;
+  ExternallyManagedAppManager& operator=(const ExternallyManagedAppManager&) =
+      delete;
+  virtual ~ExternallyManagedAppManager();
 
   void SetSubsystems(AppRegistrar* registrar,
                      OsIntegrationManager* os_integration_manager,
@@ -151,12 +166,12 @@ class PendingAppManager {
     int remaining_requests;
     std::map<GURL, InstallResult> install_results;
     std::map<GURL, bool> uninstall_results;
-
   };
 
-  void InstallForSynchronizeCallback(ExternalInstallSource source,
-                                     const GURL& app_url,
-                                     PendingAppManager::InstallResult result);
+  void InstallForSynchronizeCallback(
+      ExternalInstallSource source,
+      const GURL& app_url,
+      ExternallyManagedAppManager::InstallResult result);
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
                                        const GURL& app_url,
                                        bool succeeded);
@@ -173,10 +188,9 @@ class PendingAppManager {
 
   RegistrationCallback registration_callback_;
 
-  base::WeakPtrFactory<PendingAppManager> weak_ptr_factory_{this};
-
+  base::WeakPtrFactory<ExternallyManagedAppManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PENDING_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_EXTERNALLY_MANAGED_APP_MANAGER_H_

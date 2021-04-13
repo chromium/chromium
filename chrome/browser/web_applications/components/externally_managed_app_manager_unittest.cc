@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 
 #include <algorithm>
 #include <sstream>
@@ -14,18 +14,19 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/test/test_pending_app_manager.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
-class PendingAppManagerTest : public testing::Test {
+class ExternallyManagedAppManagerTest : public testing::Test {
  public:
-  PendingAppManagerTest() : pending_app_manager_(&registrar_) {}
+  ExternallyManagedAppManagerTest()
+      : externally_managed_app_manager_(&registrar_) {}
 
  protected:
   void Sync(std::vector<GURL> urls) {
-    pending_app_manager_.ResetCounts();
+    externally_managed_app_manager_.ResetCounts();
 
     std::vector<ExternalInstallOptions> install_options_list;
     for (const auto& url : urls) {
@@ -35,15 +36,14 @@ class PendingAppManagerTest : public testing::Test {
     }
 
     base::RunLoop run_loop;
-    pending_app_manager_.SynchronizeInstalledApps(
+    externally_managed_app_manager_.SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
-            [&run_loop, urls](std::map<GURL, PendingAppManager::InstallResult>
-                                  install_results,
-                              std::map<GURL, bool> uninstall_results) {
-              run_loop.Quit();
-            }));
+            [&run_loop, urls](
+                std::map<GURL, ExternallyManagedAppManager::InstallResult>
+                    install_results,
+                std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
     // Wait for SynchronizeInstalledApps to finish.
     run_loop.Run();
   }
@@ -52,9 +52,9 @@ class PendingAppManagerTest : public testing::Test {
               int deduped_uninstall_count,
               std::vector<GURL> installed_app_urls) {
     EXPECT_EQ(deduped_install_count,
-              pending_app_manager_.deduped_install_count());
+              externally_managed_app_manager_.deduped_install_count());
     EXPECT_EQ(deduped_uninstall_count,
-              pending_app_manager_.deduped_uninstall_count());
+              externally_managed_app_manager_.deduped_uninstall_count());
 
     std::map<AppId, GURL> apps = registrar_.GetExternallyInstalledApps(
         ExternalInstallSource::kInternalDefault);
@@ -68,16 +68,16 @@ class PendingAppManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   TestAppRegistrar registrar_;
-  TestPendingAppManager pending_app_manager_;
+  TestExternallyManagedAppManager externally_managed_app_manager_;
 };
 
-// Test that destroying PendingAppManager during a synchronize call that
-// installs an app doesn't crash.
-// Regression test for https://crbug.com/962808
-TEST_F(PendingAppManagerTest, DestroyDuringInstallInSynchronize) {
+// Test that destroying ExternallyManagedAppManager during a synchronize call
+// that installs an app doesn't crash. Regression test for
+// https://crbug.com/962808
+TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
   TestAppRegistrar registrar;
-  auto pending_app_manager =
-      std::make_unique<TestPendingAppManager>(&registrar);
+  auto externally_managed_app_manager =
+      std::make_unique<TestExternallyManagedAppManager>(&registrar);
 
   std::vector<ExternalInstallOptions> install_options_list;
   install_options_list.emplace_back(GURL("https://foo.example"),
@@ -87,22 +87,22 @@ TEST_F(PendingAppManagerTest, DestroyDuringInstallInSynchronize) {
                                     DisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
 
-  pending_app_manager->SynchronizeInstalledApps(
+  externally_managed_app_manager->SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kInternalDefault,
-      // PendingAppManager gives no guarantees about whether its pending
-      // callbacks will be run or not when it gets destroyed.
+      // ExternallyManagedAppManager gives no guarantees about whether its
+      // pending callbacks will be run or not when it gets destroyed.
       base::DoNothing());
-  pending_app_manager.reset();
+  externally_managed_app_manager.reset();
   base::RunLoop().RunUntilIdle();
 }
 
-// Test that destroying PendingAppManager during a synchronize call that
-// uninstalls an app doesn't crash.
-// Regression test for https://crbug.com/962808
-TEST_F(PendingAppManagerTest, DestroyDuringUninstallInSynchronize) {
+// Test that destroying ExternallyManagedAppManager during a synchronize call
+// that uninstalls an app doesn't crash. Regression test for
+// https://crbug.com/962808
+TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   TestAppRegistrar registrar;
-  auto pending_app_manager =
-      std::make_unique<TestPendingAppManager>(&registrar);
+  auto externally_managed_app_manager =
+      std::make_unique<TestExternallyManagedAppManager>(&registrar);
 
   // Install an app that will be uninstalled next.
   {
@@ -111,27 +111,27 @@ TEST_F(PendingAppManagerTest, DestroyDuringUninstallInSynchronize) {
                                       DisplayMode::kStandalone,
                                       ExternalInstallSource::kInternalDefault);
     base::RunLoop run_loop;
-    pending_app_manager->SynchronizeInstalledApps(
+    externally_managed_app_manager->SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
-            [&](std::map<GURL, PendingAppManager::InstallResult>
+            [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
                 std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
-  pending_app_manager->SynchronizeInstalledApps(
+  externally_managed_app_manager->SynchronizeInstalledApps(
       std::vector<ExternalInstallOptions>(),
       ExternalInstallSource::kInternalDefault,
-      // PendingAppManager gives no guarantees about whether its pending
-      // callbacks will be run or not when it gets destroyed.
+      // ExternallyManagedAppManager gives no guarantees about whether its
+      // pending callbacks will be run or not when it gets destroyed.
       base::DoNothing());
-  pending_app_manager.reset();
+  externally_managed_app_manager.reset();
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PendingAppManagerTest, SynchronizeInstalledApps) {
+TEST_F(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   GURL a("https://a.example.com/");
   GURL b("https://b.example.com/");
   GURL c("https://c.example.com/");

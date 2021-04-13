@@ -24,7 +24,7 @@ class WebAppMigrationManager;
 class AppRegistrar;
 class OsIntegrationManager;
 class InstallFinalizer;
-class PendingAppManager;
+class ExternallyManagedAppManager;
 class SystemWebAppManager;
 class WebAppInstallManager;
 class WebAppPolicyManager;
@@ -61,8 +61,9 @@ class TestWebAppProvider : public WebAppProvider {
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);
   void SetInstallFinalizer(std::unique_ptr<InstallFinalizer> install_finalizer);
-  void SetPendingAppManager(
-      std::unique_ptr<PendingAppManager> pending_app_manager);
+  void SetExternallyManagedAppManager(
+      std::unique_ptr<ExternallyManagedAppManager>
+          externally_managed_app_manager);
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
   void SetSystemWebAppManager(
       std::unique_ptr<SystemWebAppManager> system_web_app_manager);

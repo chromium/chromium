@@ -95,17 +95,17 @@ WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
 void WebAppPolicyManager::SetSubsystems(
-    PendingAppManager* pending_app_manager,
+    ExternallyManagedAppManager* externally_managed_app_manager,
     AppRegistrar* app_registrar,
     AppRegistryController* app_registry_controller,
     SystemWebAppManager* web_app_manager,
     OsIntegrationManager* os_integration_manager) {
-  DCHECK(pending_app_manager);
+  DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);
   DCHECK(app_registry_controller);
   DCHECK(os_integration_manager);
 
-  pending_app_manager_ = pending_app_manager;
+  externally_managed_app_manager_ = externally_managed_app_manager;
   app_registrar_ = app_registrar;
   app_registry_controller_ = app_registry_controller;
   web_app_manager_ = web_app_manager;
@@ -144,9 +144,10 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
       (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
        RunOnOsLoginPolicy::kRunWindowed);
 
-  // If the app is not a placeholder app, PendingAppManager will ignore the
-  // request.
-  pending_app_manager_->Install(std::move(install_options), base::DoNothing());
+  // If the app is not a placeholder app, ExternallyManagedAppManager will
+  // ignore the request.
+  externally_managed_app_manager_->Install(std::move(install_options),
+                                           base::DoNothing());
 }
 
 // static
@@ -239,7 +240,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     install_options_list.push_back(std::move(install_options));
   }
 
-  pending_app_manager_->SynchronizeInstalledApps(
+  externally_managed_app_manager_->SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
       base::BindOnce(&WebAppPolicyManager::OnAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -355,7 +356,7 @@ void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
 }
 
 void WebAppPolicyManager::OnAppsSynchronized(
-    std::map<GURL, PendingAppManager::InstallResult> install_results,
+    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   is_refreshing_ = false;
 

@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_pending_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager_impl.h"
 
 #include <algorithm>
 
 namespace web_app {
 
-TestPendingAppManagerImpl::TestPendingAppManagerImpl(Profile* profile)
-    : PendingAppManagerImpl(profile) {}
+TestExternallyManagedAppManagerImpl::TestExternallyManagedAppManagerImpl(
+    Profile* profile)
+    : ExternallyManagedAppManagerImpl(profile) {}
 
-TestPendingAppManagerImpl::~TestPendingAppManagerImpl() = default;
+TestExternallyManagedAppManagerImpl::~TestExternallyManagedAppManagerImpl() =
+    default;
 
-void TestPendingAppManagerImpl::Install(ExternalInstallOptions install_options,
-                                        OnceInstallCallback callback) {
+void TestExternallyManagedAppManagerImpl::Install(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
   if (handle_install_request_callback_) {
     base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -24,10 +27,11 @@ void TestPendingAppManagerImpl::Install(ExternalInstallOptions install_options,
   }
 
   install_requests_.push_back(install_options);
-  PendingAppManagerImpl::Install(install_options, std::move(callback));
+  ExternallyManagedAppManagerImpl::Install(install_options,
+                                           std::move(callback));
 }
 
-void TestPendingAppManagerImpl::InstallApps(
+void TestExternallyManagedAppManagerImpl::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
   if (handle_install_request_callback_) {
@@ -39,22 +43,22 @@ void TestPendingAppManagerImpl::InstallApps(
   std::copy(install_options_list.begin(), install_options_list.end(),
             std::back_inserter(install_requests_));
   if (!drop_requests_for_testing_) {
-    PendingAppManagerImpl::InstallApps(install_options_list,
-                                       std::move(callback));
+    ExternallyManagedAppManagerImpl::InstallApps(install_options_list,
+                                                 std::move(callback));
   }
 }
 
-void TestPendingAppManagerImpl::UninstallApps(
+void TestExternallyManagedAppManagerImpl::UninstallApps(
     std::vector<GURL> uninstall_urls,
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
   std::copy(uninstall_urls.begin(), uninstall_urls.end(),
             std::back_inserter(uninstall_requests_));
-  PendingAppManagerImpl::UninstallApps(uninstall_urls, install_source,
-                                       std::move(callback));
+  ExternallyManagedAppManagerImpl::UninstallApps(uninstall_urls, install_source,
+                                                 std::move(callback));
 }
 
-void TestPendingAppManagerImpl::SetHandleInstallRequestCallback(
+void TestExternallyManagedAppManagerImpl::SetHandleInstallRequestCallback(
     HandleInstallRequestCallback callback) {
   handle_install_request_callback_ = std::move(callback);
 }

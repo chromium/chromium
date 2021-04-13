@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_INSTALL_TASK_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_INSTALL_TASK_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
 
 #include <memory>
 
@@ -14,8 +14,8 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
@@ -37,12 +37,12 @@ class WebAppUiManager;
 enum class InstallResultCode;
 
 // Class to install WebApp from a WebContents. A queue of such tasks is owned by
-// PendingAppManager. Can only be called from the UI thread.
-class PendingAppInstallTask {
+// ExternallyManagedAppManager. Can only be called from the UI thread.
+class ExternallyManagedAppInstallTask {
  public:
-  using ResultCallback =
-      base::OnceCallback<void(base::Optional<AppId> app_id,
-                              PendingAppManager::InstallResult result)>;
+  using ResultCallback = base::OnceCallback<void(
+      base::Optional<AppId> app_id,
+      ExternallyManagedAppManager::InstallResult result)>;
 
   // Ensures the tab helpers necessary for installing an app are present.
   static void CreateTabHelpers(content::WebContents* web_contents);
@@ -51,19 +51,22 @@ class PendingAppInstallTask {
   // for |profile|. |install_options| will be used to decide some of the
   // properties of the installed app e.g. open in a tab vs. window, installed by
   // policy, etc.
-  explicit PendingAppInstallTask(Profile* profile,
-                                 WebAppUrlLoader* url_loader,
-                                 AppRegistrar* registrar,
-                                 OsIntegrationManager* os_integration_manager,
-                                 WebAppUiManager* ui_manager,
-                                 InstallFinalizer* install_finalizer,
-                                 InstallManager* install_manager,
-                                 ExternalInstallOptions install_options);
+  explicit ExternallyManagedAppInstallTask(
+      Profile* profile,
+      WebAppUrlLoader* url_loader,
+      AppRegistrar* registrar,
+      OsIntegrationManager* os_integration_manager,
+      WebAppUiManager* ui_manager,
+      InstallFinalizer* install_finalizer,
+      InstallManager* install_manager,
+      ExternalInstallOptions install_options);
 
-  PendingAppInstallTask(const PendingAppInstallTask&) = delete;
-  PendingAppInstallTask& operator=(const PendingAppInstallTask&) = delete;
+  ExternallyManagedAppInstallTask(const ExternallyManagedAppInstallTask&) =
+      delete;
+  ExternallyManagedAppInstallTask& operator=(
+      const ExternallyManagedAppInstallTask&) = delete;
 
-  virtual ~PendingAppInstallTask();
+  virtual ~ExternallyManagedAppInstallTask();
 
   // Temporarily takes a |load_url_result| to decide if a placeholder app should
   // be installed.
@@ -99,9 +102,10 @@ class PendingAppInstallTask {
                          ResultCallback result_callback,
                          const AppId& app_id,
                          InstallResultCode code);
-  void TryAppInfoFactoryOnFailure(ResultCallback result_callback,
-                                  base::Optional<AppId> app_id,
-                                  PendingAppManager::InstallResult result);
+  void TryAppInfoFactoryOnFailure(
+      ResultCallback result_callback,
+      base::Optional<AppId> app_id,
+      ExternallyManagedAppManager::InstallResult result);
   void OnOsHooksCreated(const AppId& app_id,
                         base::ScopedClosureRunner scoped_closure,
                         const OsHooksResults os_hooks_results);
@@ -118,10 +122,9 @@ class PendingAppInstallTask {
 
   const ExternalInstallOptions install_options_;
 
-  base::WeakPtrFactory<PendingAppInstallTask> weak_ptr_factory_{this};
-
+  base::WeakPtrFactory<ExternallyManagedAppInstallTask> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_INSTALL_TASK_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_

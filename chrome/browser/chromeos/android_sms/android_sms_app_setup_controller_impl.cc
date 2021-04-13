@@ -83,10 +83,10 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
 
 AndroidSmsAppSetupControllerImpl::AndroidSmsAppSetupControllerImpl(
     Profile* profile,
-    web_app::PendingAppManager* pending_app_manager,
+    web_app::ExternallyManagedAppManager* externally_managed_app_manager,
     HostContentSettingsMap* host_content_settings_map)
     : profile_(profile),
-      pending_app_manager_(pending_app_manager),
+      externally_managed_app_manager_(externally_managed_app_manager),
       host_content_settings_map_(host_content_settings_map),
       pwa_delegate_(std::make_unique<PwaDelegate>()) {}
 
@@ -252,7 +252,7 @@ void AndroidSmsAppSetupControllerImpl::TryInstallApp(const GURL& install_url,
   // bypass it as a workaround.
   options.bypass_service_worker_check = true;
   options.require_manifest = true;
-  pending_app_manager_->Install(
+  externally_managed_app_manager_->Install(
       std::move(options),
       base::BindOnce(&AndroidSmsAppSetupControllerImpl::OnAppInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -264,7 +264,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     size_t num_attempts_so_far,
     const GURL& app_url,
     const GURL& install_url,
-    web_app::PendingAppManager::InstallResult result) {
+    web_app::ExternallyManagedAppManager::InstallResult result) {
   UMA_HISTOGRAM_ENUMERATION("AndroidSms.PWAInstallationResult", result.code);
   const bool install_succeeded = web_app::IsSuccess(result.code);
 

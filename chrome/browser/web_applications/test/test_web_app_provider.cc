@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -91,10 +91,11 @@ void TestWebAppProvider::SetInstallFinalizer(
   install_finalizer_ = std::move(install_finalizer);
 }
 
-void TestWebAppProvider::SetPendingAppManager(
-    std::unique_ptr<PendingAppManager> pending_app_manager) {
+void TestWebAppProvider::SetExternallyManagedAppManager(
+    std::unique_ptr<ExternallyManagedAppManager>
+        externally_managed_app_manager) {
   CheckNotStarted();
-  pending_app_manager_ = std::move(pending_app_manager);
+  externally_managed_app_manager_ = std::move(externally_managed_app_manager);
 }
 
 void TestWebAppProvider::SetWebAppUiManager(

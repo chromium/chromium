@@ -83,7 +83,7 @@ void WebAppInstallManager::Start() {
   DCHECK(!started_);
   started_ = true;
 
-  MaybeEnqueuePendingAppSyncInstalls();
+  MaybeEnqueueExternallyManagedAppSyncInstalls();
 }
 
 void WebAppInstallManager::Shutdown() {
@@ -223,7 +223,7 @@ void WebAppInstallManager::InstallBookmarkAppFromSync(
     request.web_application_info = std::move(web_application_info);
     request.callback = std::move(callback);
 
-    pending_app_sync_installs_.push_back(std::move(request));
+    externally_managed_app_sync_installs_.push_back(std::move(request));
   }
 }
 
@@ -373,14 +373,14 @@ void WebAppInstallManager::SetUrlLoaderForTesting(
   url_loader_ = std::move(url_loader);
 }
 
-void WebAppInstallManager::MaybeEnqueuePendingAppSyncInstalls() {
-  for (AppSyncInstallRequest& request : pending_app_sync_installs_) {
+void WebAppInstallManager::MaybeEnqueueExternallyManagedAppSyncInstalls() {
+  for (AppSyncInstallRequest& request : externally_managed_app_sync_installs_) {
     EnqueueInstallAppFromSync(request.sync_app_id,
                               std::move(request.web_application_info),
                               std::move(request.callback));
   }
 
-  pending_app_sync_installs_.clear();
+  externally_managed_app_sync_installs_.clear();
 }
 
 void WebAppInstallManager::

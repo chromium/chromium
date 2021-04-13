@@ -15,13 +15,13 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_pending_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
@@ -245,10 +245,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
     test_app_registrar_ = test_app_registrar.get();
     provider->SetRegistrar(std::move(test_app_registrar));
 
-    auto test_pending_app_manager =
-        std::make_unique<TestPendingAppManager>(test_app_registrar_);
-    test_pending_app_manager_ = test_pending_app_manager.get();
-    provider->SetPendingAppManager(std::move(test_pending_app_manager));
+    auto test_externally_managed_app_manager =
+        std::make_unique<TestExternallyManagedAppManager>(test_app_registrar_);
+    test_externally_managed_app_manager_ =
+        test_externally_managed_app_manager.get();
+    provider->SetExternallyManagedAppManager(
+        std::move(test_externally_managed_app_manager));
 
     auto test_registry_controller =
         std::make_unique<TestAppRegistryController>(profile());
@@ -269,7 +271,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SimulatePreviouslyInstalledApp(GURL url,
                                       ExternalInstallSource install_source) {
-    pending_app_manager()->SimulatePreviouslyInstalledApp(url, install_source);
+    externally_managed_app_manager()->SimulatePreviouslyInstalledApp(
+        url, install_source);
   }
 
   void AwaitPolicyManagerAppsSynchronized() {
@@ -287,8 +290,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestPendingAppManager* pending_app_manager() {
-    return test_pending_app_manager_;
+  TestExternallyManagedAppManager* externally_managed_app_manager() {
+    return test_externally_managed_app_manager_;
   }
 
   WebAppPolicyManager* policy_manager() { return web_app_policy_manager_; }
@@ -315,7 +318,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   TestAppRegistrar* test_app_registrar_ = nullptr;
-  TestPendingAppManager* test_pending_app_manager_ = nullptr;
+  TestExternallyManagedAppManager* test_externally_managed_app_manager_ =
+      nullptr;
   WebAppPolicyManager* web_app_policy_manager_ = nullptr;
 };
 
@@ -324,7 +328,8 @@ TEST_F(WebAppPolicyManagerTest, NoPrefValues) {
 
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
   EXPECT_TRUE(install_requests.empty());
   ValidateEmptyWebAppSettingsPolicy();
 }
@@ -336,7 +341,8 @@ TEST_F(WebAppPolicyManagerTest, NoForceInstalledApps) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
   EXPECT_TRUE(install_requests.empty());
 }
 
@@ -444,7 +450,8 @@ TEST_F(WebAppPolicyManagerTest, TwoForceInstalledApps) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -461,7 +468,8 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithNoDefaultLaunchContainer) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetNoContainerInstallOptions());
@@ -478,7 +486,8 @@ TEST_F(WebAppPolicyManagerTest,
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
@@ -496,7 +505,8 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
@@ -515,7 +525,8 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetFallbackAppNameInstallOptions());
@@ -532,7 +543,8 @@ TEST_F(WebAppPolicyManagerTest, DynamicRefresh) {
   policy_manager()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -573,12 +585,12 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   // We should only try to install the app in the policy.
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
-  EXPECT_EQ(pending_app_manager()->install_requests(),
+  EXPECT_EQ(externally_managed_app_manager()->install_requests(),
             expected_install_options_list);
 
   // We should try to uninstall the app that is no longer in the policy.
   EXPECT_EQ(std::vector<GURL>({TabbedUrl()}),
-            pending_app_manager()->uninstall_requests());
+            externally_managed_app_manager()->uninstall_requests());
 }
 
 // Tests that we correctly uninstall an app that we installed in the same
@@ -595,7 +607,8 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
                              std::move(first_list));
   base::RunLoop().RunUntilIdle();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -610,14 +623,14 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
                              std::move(second_list));
   base::RunLoop().RunUntilIdle();
 
-  // We'll try to install the app again but PendingAppManager will handle
-  // not re-installing the app.
+  // We'll try to install the app again but ExternallyManagedAppManager will
+  // handle not re-installing the app.
   expected_install_options_list.push_back(GetWindowedInstallOptions());
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
   EXPECT_EQ(std::vector<GURL>({TabbedUrl()}),
-            pending_app_manager()->uninstall_requests());
+            externally_managed_app_manager()->uninstall_requests());
 }
 
 // Tests that we correctly reinstall a placeholder app.
@@ -632,7 +645,8 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
 
-  const auto& install_options_list = pending_app_manager()->install_requests();
+  const auto& install_options_list =
+      externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
   policy_manager()->ReinstallPlaceholderAppIfNecessary(WindowedUrl());
@@ -660,7 +674,8 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetFallbackAppNameInstallOptions());
 
-  const auto& install_options_list = pending_app_manager()->install_requests();
+  const auto& install_options_list =
+      externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
   policy_manager()->ReinstallPlaceholderAppIfNecessary(WindowedUrl());
@@ -686,7 +701,8 @@ TEST_F(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
   std::vector<ExternalInstallOptions> expected_options_list;
   expected_options_list.push_back(GetWindowedInstallOptions());
 
-  const auto& install_options_list = pending_app_manager()->install_requests();
+  const auto& install_options_list =
+      externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
   // Try to reinstall for app not installed by policy.
@@ -718,10 +734,11 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   expected_options_list.push_back(GetWindowedInstallOptions());
   expected_options_list.push_back(GetTabbedInstallOptions());
 
-  const auto& install_options_list = pending_app_manager()->install_requests();
+  const auto& install_options_list =
+      externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
   EXPECT_EQ(std::vector<GURL>({WindowedUrl()}),
-            pending_app_manager()->uninstall_requests());
+            externally_managed_app_manager()->uninstall_requests());
 
   // There should be exactly 1 app remaining.
   std::map<AppId, GURL> apps =
@@ -756,7 +773,7 @@ TEST_F(WebAppPolicyManagerTest, InstallResultHistogram) {
     base::Value list(base::Value::Type::LIST);
     list.Append(GetTabbedItem());
     list.Append(GetNoContainerItem());
-    pending_app_manager()->SetInstallResultCode(
+    externally_managed_app_manager()->SetInstallResultCode(
         InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 
     profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
@@ -849,7 +866,8 @@ TEST_F(WebAppPolicyManagerTest,
   policy_manager()->Start();
   AwaitPolicyManagerAppsSynchronized();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
@@ -907,7 +925,8 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
 
   AwaitPolicyManagerAppsSynchronized();
 
-  const auto& install_requests = pending_app_manager()->install_requests();
+  const auto& install_requests =
+      externally_managed_app_manager()->install_requests();
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());

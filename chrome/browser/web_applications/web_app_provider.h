@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 
@@ -79,7 +79,7 @@ class WebAppProvider : public WebAppProviderBase {
   InstallManager& install_manager() override;
   InstallFinalizer& install_finalizer() override;
   ManifestUpdateManager& manifest_update_manager() override;
-  PendingAppManager& pending_app_manager() override;
+  ExternallyManagedAppManager& externally_managed_app_manager() override;
   WebAppPolicyManager& policy_manager() override;
   WebAppUiManager& ui_manager() override;
   WebAppAudioFocusIdMap& audio_focus_id_map() override;
@@ -137,7 +137,7 @@ class WebAppProvider : public WebAppProviderBase {
   std::unique_ptr<AppIconManager> icon_manager_;
   std::unique_ptr<InstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
-  std::unique_ptr<PendingAppManager> pending_app_manager_;
+  std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
   std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;

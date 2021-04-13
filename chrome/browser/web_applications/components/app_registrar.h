@@ -193,7 +193,7 @@ class AppRegistrar {
   bool IsLocallyInstalled(const GURL& start_url) const;
 
   // Returns whether the app is pending successful navigation in order to
-  // complete installation via the PendingAppManager.
+  // complete installation via the ExternallyManagedAppManager.
   bool IsPlaceholderApp(const AppId& app_id) const;
 
   // Computes and returns the DisplayMode, accounting for user preference

@@ -63,8 +63,8 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    result_code_ = web_app::PendingAppManagerInstall(browser()->profile(),
-                                                     install_options);
+    result_code_ = web_app::ExternallyManagedAppManagerInstall(
+        browser()->profile(), install_options);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

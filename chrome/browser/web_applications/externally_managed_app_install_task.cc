@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/pending_app_install_task.h"
+#include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 
 #include <memory>
 #include <utility>
@@ -29,14 +29,14 @@
 namespace web_app {
 
 // static
-void PendingAppInstallTask::CreateTabHelpers(
+void ExternallyManagedAppInstallTask::CreateTabHelpers(
     content::WebContents* web_contents) {
   webapps::InstallableManager::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 }
 
-PendingAppInstallTask::PendingAppInstallTask(
+ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,
     WebAppUrlLoader* url_loader,
     AppRegistrar* registrar,
@@ -55,10 +55,11 @@ PendingAppInstallTask::PendingAppInstallTask(
       externally_installed_app_prefs_(profile_->GetPrefs()),
       install_options_(std::move(install_options)) {}
 
-PendingAppInstallTask::~PendingAppInstallTask() = default;
+ExternallyManagedAppInstallTask::~ExternallyManagedAppInstallTask() = default;
 
-void PendingAppInstallTask::Install(content::WebContents* web_contents,
-                                    ResultCallback result_callback) {
+void ExternallyManagedAppInstallTask::Install(
+    content::WebContents* web_contents,
+    ResultCallback result_callback) {
   if (install_options_.only_use_app_info_factory) {
     DCHECK(install_options_.app_info_factory);
     InstallFromInfo(std::move(result_callback));
@@ -66,12 +67,13 @@ void PendingAppInstallTask::Install(content::WebContents* web_contents,
   }
 
   url_loader_->PrepareForLoad(
-      web_contents, base::BindOnce(&PendingAppInstallTask::OnWebContentsReady,
-                                   weak_ptr_factory_.GetWeakPtr(), web_contents,
-                                   std::move(result_callback)));
+      web_contents,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebContentsReady,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents,
+                     std::move(result_callback)));
 }
 
-void PendingAppInstallTask::OnWebContentsReady(
+void ExternallyManagedAppInstallTask::OnWebContentsReady(
     content::WebContents* web_contents,
     ResultCallback result_callback,
     WebAppUrlLoader::Result prepare_for_load_result) {
@@ -80,12 +82,12 @@ void PendingAppInstallTask::OnWebContentsReady(
   url_loader_->LoadUrl(
       install_options_.install_url, web_contents,
       WebAppUrlLoader::UrlComparison::kSameOrigin,
-      base::BindOnce(&PendingAppInstallTask::OnUrlLoaded,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnUrlLoaded,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));
 }
 
-void PendingAppInstallTask::OnUrlLoaded(
+void ExternallyManagedAppInstallTask::OnUrlLoaded(
     content::WebContents* web_contents,
     ResultCallback result_callback,
     WebAppUrlLoader::Result load_url_result) {
@@ -93,7 +95,7 @@ void PendingAppInstallTask::OnUrlLoaded(
   DCHECK_EQ(web_contents->GetBrowserContext(), profile_);
 
   ResultCallback retry_on_failure = base::BindOnce(
-      &PendingAppInstallTask::TryAppInfoFactoryOnFailure,
+      &ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure,
       weak_ptr_factory_.GetWeakPtr(), std::move(result_callback));
 
   if (load_url_result == WebAppUrlLoader::Result::kUrlLoaded) {
@@ -146,10 +148,11 @@ void PendingAppInstallTask::OnUrlLoaded(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(retry_on_failure), /*app_id=*/base::nullopt,
-                     PendingAppManager::InstallResult{.code = code}));
+                     ExternallyManagedAppManager::InstallResult{.code = code}));
 }
 
-void PendingAppInstallTask::InstallFromInfo(ResultCallback result_callback) {
+void ExternallyManagedAppInstallTask::InstallFromInfo(
+    ResultCallback result_callback) {
   auto internal_install_source = ConvertExternalInstallSourceToInstallSource(
       install_options().install_source);
   auto install_params = ConvertExternalInstallOptionsToParams(install_options_);
@@ -160,12 +163,12 @@ void PendingAppInstallTask::InstallFromInfo(ResultCallback result_callback) {
   install_manager_->InstallWebAppFromInfo(
       std::move(web_app_info), ForInstallableSite::kYes, install_params,
       internal_install_source,
-      base::BindOnce(&PendingAppInstallTask::OnWebAppInstalled,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
                      /*offline_install=*/true, std::move(result_callback)));
 }
 
-void PendingAppInstallTask::UninstallPlaceholderApp(
+void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
   base::Optional<AppId> app_id =
@@ -182,12 +185,12 @@ void PendingAppInstallTask::UninstallPlaceholderApp(
   // Otherwise, uninstall the placeholder app.
   install_finalizer_->UninstallExternalWebAppByUrl(
       install_options_.install_url, install_options_.install_source,
-      base::BindOnce(&PendingAppInstallTask::OnPlaceholderUninstalled,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnPlaceholderUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));
 }
 
-void PendingAppInstallTask::OnPlaceholderUninstalled(
+void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     content::WebContents* web_contents,
     ResultCallback result_callback,
     bool uninstalled) {
@@ -202,7 +205,7 @@ void PendingAppInstallTask::OnPlaceholderUninstalled(
   ContinueWebAppInstall(web_contents, std::move(result_callback));
 }
 
-void PendingAppInstallTask::ContinueWebAppInstall(
+void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
   auto install_params = ConvertExternalInstallOptionsToParams(install_options_);
@@ -211,12 +214,13 @@ void PendingAppInstallTask::ContinueWebAppInstall(
 
   install_manager_->InstallWebAppWithParams(
       web_contents, install_params, install_source,
-      base::BindOnce(&PendingAppInstallTask::OnWebAppInstalled,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/false,
                      /*offline_install=*/false, std::move(result_callback)));
 }
 
-void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
+void ExternallyManagedAppInstallTask::InstallPlaceholder(
+    ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Optional<AppId> app_id =
@@ -227,7 +231,7 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), app_id,
-                       PendingAppManager::InstallResult{
+                       ExternallyManagedAppManager::InstallResult{
                            .code = InstallResultCode::kSuccessNewInstall}));
     return;
   }
@@ -257,16 +261,17 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
 
   install_finalizer_->FinalizeInstall(
       web_app_info, options,
-      base::BindOnce(&PendingAppInstallTask::OnWebAppInstalled,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
                      /*offline_install=*/false, std::move(callback)));
 }
 
-void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
-                                              bool offline_install,
-                                              ResultCallback result_callback,
-                                              const AppId& app_id,
-                                              InstallResultCode code) {
+void ExternallyManagedAppInstallTask::OnWebAppInstalled(
+    bool is_placeholder,
+    bool offline_install,
+    ResultCallback result_callback,
+    const AppId& app_id,
+    InstallResultCode code) {
   if (!IsNewInstall(code)) {
     std::move(result_callback).Run(/*app_id=*/base::nullopt, {.code = code});
     return;
@@ -288,7 +293,7 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   }
   base::ScopedClosureRunner scoped_closure(base::BindOnce(
       std::move(result_callback), app_id,
-      PendingAppManager::InstallResult{
+      ExternallyManagedAppManager::InstallResult{
           .code = code,
           .did_uninstall_and_replace = uninstall_and_replace_triggered}));
 
@@ -319,13 +324,13 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
 
   os_integration_manager_->InstallOsHooks(
       app_id,
-      base::BindOnce(&PendingAppInstallTask::OnOsHooksCreated,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnOsHooksCreated,
                      weak_ptr_factory_.GetWeakPtr(), app_id,
                      std::move(scoped_closure)),
       nullptr, options);
 }
 
-void PendingAppInstallTask::OnOsHooksCreated(
+void ExternallyManagedAppInstallTask::OnOsHooksCreated(
     const AppId& app_id,
     base::ScopedClosureRunner scoped_closure,
     const OsHooksResults os_hooks_results) {
@@ -333,10 +338,10 @@ void PendingAppInstallTask::OnOsHooksCreated(
   scoped_closure.RunAndReset();
 }
 
-void PendingAppInstallTask::TryAppInfoFactoryOnFailure(
+void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(
     ResultCallback result_callback,
     base::Optional<AppId> app_id,
-    PendingAppManager::InstallResult result) {
+    ExternallyManagedAppManager::InstallResult result) {
   if (!IsSuccess(result.code) && install_options().app_info_factory) {
     InstallFromInfo(std::move(result_callback));
     return;

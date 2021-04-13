@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_REGISTRATION_TASK_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_REGISTRATION_TASK_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_REGISTRATION_TASK_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_REGISTRATION_TASK_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -25,32 +25,34 @@ namespace web_app {
 enum class RegistrationResultCode;
 class WebAppUrlLoader;
 
-class PendingAppRegistrationTaskBase
+class ExternallyManagedAppRegistrationTaskBase
     : public content::ServiceWorkerContextObserver {
  public:
-  ~PendingAppRegistrationTaskBase() override;
+  ~ExternallyManagedAppRegistrationTaskBase() override;
 
   const GURL& install_url() const { return install_url_; }
 
  protected:
-  explicit PendingAppRegistrationTaskBase(const GURL& install_url);
+  explicit ExternallyManagedAppRegistrationTaskBase(const GURL& install_url);
 
  private:
   const GURL install_url_;
 };
 
-class PendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
+class ExternallyManagedAppRegistrationTask
+    : public ExternallyManagedAppRegistrationTaskBase {
  public:
   using RegistrationCallback = base::OnceCallback<void(RegistrationResultCode)>;
 
-  PendingAppRegistrationTask(const GURL& install_url,
-                             WebAppUrlLoader* url_loader,
-                             content::WebContents* web_contents,
-                             RegistrationCallback callback);
-  PendingAppRegistrationTask(const PendingAppRegistrationTask&) = delete;
-  PendingAppRegistrationTask& operator=(const PendingAppRegistrationTask&) =
-      delete;
-  ~PendingAppRegistrationTask() override;
+  ExternallyManagedAppRegistrationTask(const GURL& install_url,
+                                       WebAppUrlLoader* url_loader,
+                                       content::WebContents* web_contents,
+                                       RegistrationCallback callback);
+  ExternallyManagedAppRegistrationTask(
+      const ExternallyManagedAppRegistrationTask&) = delete;
+  ExternallyManagedAppRegistrationTask& operator=(
+      const ExternallyManagedAppRegistrationTask&) = delete;
+  ~ExternallyManagedAppRegistrationTask() override;
 
   // ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
@@ -72,12 +74,12 @@ class PendingAppRegistrationTask : public PendingAppRegistrationTaskBase {
 
   base::OneShotTimer registration_timer_;
 
-  base::WeakPtrFactory<PendingAppRegistrationTask> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ExternallyManagedAppRegistrationTask> weak_ptr_factory_{
+      this};
 
   static int registration_timeout_in_seconds_;
-
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_PENDING_APP_REGISTRATION_TASK_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_REGISTRATION_TASK_H_

@@ -9,7 +9,8 @@
 
 namespace web_app {
 
-WebAppRegistrationWaiter::WebAppRegistrationWaiter(PendingAppManager* manager)
+WebAppRegistrationWaiter::WebAppRegistrationWaiter(
+    ExternallyManagedAppManager* manager)
     : manager_(manager) {
   manager_->SetRegistrationCallbackForTesting(base::BindLambdaForTesting(
       [this](const GURL& install_url, RegistrationResultCode code) {

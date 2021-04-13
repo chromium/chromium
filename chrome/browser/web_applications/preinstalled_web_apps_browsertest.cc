@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   base::RunLoop run_loop;
   provider.preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
       base::BindLambdaForTesting(
-          [&](std::map<GURL, PendingAppManager::InstallResult> install_results,
+          [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
+                  install_results,
               std::map<GURL, bool> uninstall_results) {
             EXPECT_EQ(install_results.size(), kExpectedCount);
 

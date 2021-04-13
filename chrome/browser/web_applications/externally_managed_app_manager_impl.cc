@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/pending_app_manager_impl.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -18,39 +18,41 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/pending_app_registration_task.h"
+#include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
 namespace web_app {
 
-struct PendingAppManagerImpl::TaskAndCallback {
-  TaskAndCallback(std::unique_ptr<PendingAppInstallTask> task,
+struct ExternallyManagedAppManagerImpl::TaskAndCallback {
+  TaskAndCallback(std::unique_ptr<ExternallyManagedAppInstallTask> task,
                   OnceInstallCallback callback)
       : task(std::move(task)), callback(std::move(callback)) {}
   ~TaskAndCallback() = default;
 
-  std::unique_ptr<PendingAppInstallTask> task;
+  std::unique_ptr<ExternallyManagedAppInstallTask> task;
   OnceInstallCallback callback;
 };
 
-PendingAppManagerImpl::PendingAppManagerImpl(Profile* profile)
+ExternallyManagedAppManagerImpl::ExternallyManagedAppManagerImpl(
+    Profile* profile)
     : profile_(profile),
       externally_installed_app_prefs_(profile->GetPrefs()),
       url_loader_(std::make_unique<WebAppUrlLoader>()) {}
 
-PendingAppManagerImpl::~PendingAppManagerImpl() = default;
+ExternallyManagedAppManagerImpl::~ExternallyManagedAppManagerImpl() = default;
 
-void PendingAppManagerImpl::Install(ExternalInstallOptions install_options,
-                                    OnceInstallCallback callback) {
+void ExternallyManagedAppManagerImpl::Install(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
   pending_installs_.push_front(std::make_unique<TaskAndCallback>(
       CreateInstallationTask(std::move(install_options)), std::move(callback)));
 
   PostMaybeStartNext();
 }
 
-void PendingAppManagerImpl::InstallApps(
+void ExternallyManagedAppManagerImpl::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
   for (auto& install_options : install_options_list) {
@@ -61,9 +63,10 @@ void PendingAppManagerImpl::InstallApps(
   PostMaybeStartNext();
 }
 
-void PendingAppManagerImpl::UninstallApps(std::vector<GURL> uninstall_urls,
-                                          ExternalInstallSource install_source,
-                                          const UninstallCallback& callback) {
+void ExternallyManagedAppManagerImpl::UninstallApps(
+    std::vector<GURL> uninstall_urls,
+    ExternalInstallSource install_source,
+    const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
     finalizer()->UninstallExternalWebAppByUrl(
         url, install_source,
@@ -74,7 +77,7 @@ void PendingAppManagerImpl::UninstallApps(std::vector<GURL> uninstall_urls,
   }
 }
 
-void PendingAppManagerImpl::Shutdown() {
+void ExternallyManagedAppManagerImpl::Shutdown() {
   pending_registrations_.clear();
   current_registration_.reset();
   pending_installs_.clear();
@@ -84,12 +87,12 @@ void PendingAppManagerImpl::Shutdown() {
   ReleaseWebContents();
 }
 
-void PendingAppManagerImpl::SetUrlLoaderForTesting(
+void ExternallyManagedAppManagerImpl::SetUrlLoaderForTesting(
     std::unique_ptr<WebAppUrlLoader> url_loader) {
   url_loader_ = std::move(url_loader);
 }
 
-void PendingAppManagerImpl::ReleaseWebContents() {
+void ExternallyManagedAppManagerImpl::ReleaseWebContents() {
   DCHECK(pending_registrations_.empty());
   DCHECK(!current_registration_);
   DCHECK(pending_installs_.empty());
@@ -98,39 +101,40 @@ void PendingAppManagerImpl::ReleaseWebContents() {
   web_contents_.reset();
 }
 
-std::unique_ptr<PendingAppInstallTask>
-PendingAppManagerImpl::CreateInstallationTask(
+std::unique_ptr<ExternallyManagedAppInstallTask>
+ExternallyManagedAppManagerImpl::CreateInstallationTask(
     ExternalInstallOptions install_options) {
-  return std::make_unique<PendingAppInstallTask>(
+  return std::make_unique<ExternallyManagedAppInstallTask>(
       profile_, url_loader_.get(), registrar(), os_integration_manager(),
       ui_manager(), finalizer(), install_manager(), std::move(install_options));
 }
 
-std::unique_ptr<PendingAppRegistrationTaskBase>
-PendingAppManagerImpl::StartRegistration(GURL install_url) {
-  return std::make_unique<PendingAppRegistrationTask>(
+std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
+ExternallyManagedAppManagerImpl::StartRegistration(GURL install_url) {
+  return std::make_unique<ExternallyManagedAppRegistrationTask>(
       install_url, url_loader_.get(), web_contents_.get(),
-      base::BindOnce(&PendingAppManagerImpl::OnRegistrationFinished,
+      base::BindOnce(&ExternallyManagedAppManagerImpl::OnRegistrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), install_url));
 }
 
-void PendingAppManagerImpl::OnRegistrationFinished(
+void ExternallyManagedAppManagerImpl::OnRegistrationFinished(
     const GURL& install_url,
     RegistrationResultCode result) {
   DCHECK_EQ(current_registration_->install_url(), install_url);
-  PendingAppManager::OnRegistrationFinished(install_url, result);
+  ExternallyManagedAppManager::OnRegistrationFinished(install_url, result);
 
   current_registration_.reset();
   PostMaybeStartNext();
 }
 
-void PendingAppManagerImpl::PostMaybeStartNext() {
+void ExternallyManagedAppManagerImpl::PostMaybeStartNext() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PendingAppManagerImpl::MaybeStartNext,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&ExternallyManagedAppManagerImpl::MaybeStartNext,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PendingAppManagerImpl::MaybeStartNext() {
+void ExternallyManagedAppManagerImpl::MaybeStartNext() {
   if (current_install_)
     return;
 
@@ -162,7 +166,7 @@ void PendingAppManagerImpl::MaybeStartNext() {
           ui_manager()->GetNumWindowsForApp(app_id.value()) != 0) {
         ui_manager()->NotifyOnAllAppWindowsClosed(
             app_id.value(),
-            base::BindOnce(&PendingAppManagerImpl::Install,
+            base::BindOnce(&ExternallyManagedAppManagerImpl::Install,
                            weak_ptr_factory_.GetWeakPtr(), install_options,
                            std::move(front->callback)));
         continue;
@@ -212,7 +216,7 @@ void PendingAppManagerImpl::MaybeStartNext() {
   ReleaseWebContents();
 }
 
-void PendingAppManagerImpl::StartInstallationTask(
+void ExternallyManagedAppManagerImpl::StartInstallationTask(
     std::unique_ptr<TaskAndCallback> task) {
   DCHECK(!current_install_);
   if (current_registration_) {
@@ -224,11 +228,12 @@ void PendingAppManagerImpl::StartInstallationTask(
   current_install_ = std::move(task);
   CreateWebContentsIfNecessary();
   current_install_->task->Install(
-      web_contents_.get(), base::BindOnce(&PendingAppManagerImpl::OnInstalled,
-                                          weak_ptr_factory_.GetWeakPtr()));
+      web_contents_.get(),
+      base::BindOnce(&ExternallyManagedAppManagerImpl::OnInstalled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool PendingAppManagerImpl::RunNextRegistration() {
+bool ExternallyManagedAppManagerImpl::RunNextRegistration() {
   if (pending_registrations_.empty()) {
     if (registrations_complete_callback_)
       std::move(registrations_complete_callback_).Run();
@@ -241,18 +246,18 @@ bool PendingAppManagerImpl::RunNextRegistration() {
   return true;
 }
 
-void PendingAppManagerImpl::CreateWebContentsIfNecessary() {
+void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
   if (web_contents_)
     return;
 
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_));
-  PendingAppInstallTask::CreateTabHelpers(web_contents_.get());
+  ExternallyManagedAppInstallTask::CreateTabHelpers(web_contents_.get());
 }
 
-void PendingAppManagerImpl::OnInstalled(
+void ExternallyManagedAppManagerImpl::OnInstalled(
     base::Optional<AppId> app_id,
-    PendingAppManager::InstallResult result) {
+    ExternallyManagedAppManager::InstallResult result) {
   if (app_id && IsSuccess(result.code)) {
     MaybeEnqueueServiceWorkerRegistration(
         current_install_->task->install_options());
@@ -269,7 +274,7 @@ void PendingAppManagerImpl::OnInstalled(
       .Run(task_and_callback->task->install_options().install_url, result);
 }
 
-void PendingAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
+void ExternallyManagedAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
     const ExternalInstallOptions& install_options) {
   if (!base::FeatureList::IsEnabled(
           features::kDesktopPWAsCacheDuringDefaultInstall)) {

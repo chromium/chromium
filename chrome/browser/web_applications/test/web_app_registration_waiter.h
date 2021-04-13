@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
 
 #include "base/run_loop.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 class WebAppRegistrationWaiter {
  public:
-  explicit WebAppRegistrationWaiter(PendingAppManager* manager);
+  explicit WebAppRegistrationWaiter(ExternallyManagedAppManager* manager);
   ~WebAppRegistrationWaiter();
 
   void AwaitNextRegistration(const GURL& install_url,
@@ -24,7 +24,7 @@ class WebAppRegistrationWaiter {
   void AwaitRegistrationsComplete();
 
  private:
-  PendingAppManager* const manager_;
+  ExternallyManagedAppManager* const manager_;
   base::RunLoop run_loop_;
   GURL install_url_;
   // If unset then check for any non failure result.

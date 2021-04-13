@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
       web_app::CreateInstallOptions(GetBannerURL());
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
   options.user_display_mode = web_app::DisplayMode::kBrowser;
-  web_app::PendingAppManagerInstall(browser()->profile(), options);
+  web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
 
   // Run promotability check.
   {
@@ -296,13 +296,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
       web_app::CreateInstallOptions(GetBannerURL());
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
   options.user_display_mode = web_app::DisplayMode::kBrowser;
-  web_app::PendingAppManagerInstall(profile, options);
+  web_app::ExternallyManagedAppManagerInstall(profile, options);
 
   // Uninstall web app by policy.
   {
     base::RunLoop run_loop;
     web_app::WebAppProviderBase::GetProviderBase(profile)
-        ->pending_app_manager()
+        ->externally_managed_app_manager()
         .UninstallApps({GetBannerURL()},
                        web_app::ExternalInstallSource::kExternalPolicy,
                        base::BindLambdaForTesting(
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
           "/banners/manifest_display_override_contains_browser.json"));
   options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
   options.user_display_mode = web_app::DisplayMode::kBrowser;
-  web_app::PendingAppManagerInstall(browser()->profile(), options);
+  web_app::ExternallyManagedAppManagerInstall(browser()->profile(), options);
 
   // Run promotability check.
   {

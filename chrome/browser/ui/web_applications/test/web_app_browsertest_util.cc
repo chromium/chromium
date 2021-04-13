@@ -27,9 +27,9 @@
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -246,7 +246,7 @@ ExternalInstallOptions CreateInstallOptions(const GURL& url) {
   return install_options;
 }
 
-InstallResultCode PendingAppManagerInstall(
+InstallResultCode ExternallyManagedAppManagerInstall(
     Profile* profile,
     ExternalInstallOptions install_options) {
   DCHECK(profile);
@@ -256,11 +256,12 @@ InstallResultCode PendingAppManagerInstall(
   base::RunLoop run_loop;
   InstallResultCode result_code;
 
-  provider->pending_app_manager().Install(
+  provider->externally_managed_app_manager().Install(
       std::move(install_options),
       base::BindLambdaForTesting(
-          [&result_code, &run_loop](const GURL& provided_url,
-                                    PendingAppManager::InstallResult result) {
+          [&result_code, &run_loop](
+              const GURL& provided_url,
+              ExternallyManagedAppManager::InstallResult result) {
             result_code = result.code;
             run_loop.Quit();
           }));
