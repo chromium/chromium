@@ -77,7 +77,7 @@ cr.define('cellularSetup', function() {
   const MAX_START_ACTIVATION_ATTEMPTS = 3;
 
   /* #export */ const PSIM_SETUP_RESULT_METRIC_NAME =
-      'Network.Cellular.PSim.CellularSetupResult';
+      'Network.Cellular.PSim.SetupFlowResult';
 
   /* #export */ const SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME =
       'Network.Cellular.PSim.CellularSetup.Success.Duration';

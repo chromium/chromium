@@ -44,7 +44,7 @@ cr.define('cellular_setup', function() {
   };
 
   /* #export */ const ESIM_SETUP_RESULT_METRIC_NAME =
-      'Network.Cellular.ESim.CellularSetupResult';
+      'Network.Cellular.ESim.SetupFlowResult';
 
   /* #export */ const SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME =
       'Network.Cellular.ESim.CellularSetup.Success.Duration';
