@@ -39,14 +39,17 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+namespace blink {
+class WebKeyboardEvent;
+class WebMouseEvent;
+class WebTouchEvent;
+}  // namespace blink
+
 namespace chrome_pdf {
 
 enum class AccessibilityScrollAlignment;
-class KeyboardInputEvent;
-class MouseInputEvent;
 class PDFiumDocument;
 class PDFiumPermissions;
-class TouchInputEvent;
 struct AccessibilityActionData;
 struct AccessibilityTextRunInfo;
 struct PageCharacterIndex;
@@ -90,7 +93,7 @@ class PDFiumEngine : public PDFEngine,
              std::vector<gfx::Rect>& pending) override;
   void PostPaint() override;
   bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) override;
-  bool HandleEvent(const InputEvent& event) override;
+  bool HandleInputEvent(const blink::WebInputEvent& event) override;
   uint32_t QuerySupportedPrintOutputFormats() override;
   void PrintBegin() override;
   pp::Resource PrintPages(
@@ -397,13 +400,13 @@ class PDFiumEngine : public PDFEngine,
                       int current_page);
 
   // Input event handlers.
-  bool OnMouseDown(const MouseInputEvent& event);
-  bool OnMouseUp(const MouseInputEvent& event);
-  bool OnMouseMove(const MouseInputEvent& event);
-  void OnMouseEnter(const MouseInputEvent& event);
-  bool OnKeyDown(const KeyboardInputEvent& event);
-  bool OnKeyUp(const KeyboardInputEvent& event);
-  bool OnChar(const KeyboardInputEvent& event);
+  bool OnMouseDown(const blink::WebMouseEvent& event);
+  bool OnMouseUp(const blink::WebMouseEvent& event);
+  bool OnMouseMove(const blink::WebMouseEvent& event);
+  void OnMouseEnter(const blink::WebMouseEvent& event);
+  bool OnKeyDown(const blink::WebKeyboardEvent& event);
+  bool OnKeyUp(const blink::WebKeyboardEvent& event);
+  bool OnChar(const blink::WebKeyboardEvent& event);
 
   // Decide what cursor should be displayed.
   ui::mojom::CursorType DetermineCursorType(PDFiumPage::Area area,
@@ -439,9 +442,9 @@ class PDFiumEngine : public PDFEngine,
 
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);
-  bool OnLeftMouseDown(const MouseInputEvent& event);
-  bool OnMiddleMouseDown(const MouseInputEvent& event);
-  bool OnRightMouseDown(const MouseInputEvent& event);
+  bool OnLeftMouseDown(const blink::WebMouseEvent& event);
+  bool OnMiddleMouseDown(const blink::WebMouseEvent& event);
+  bool OnRightMouseDown(const blink::WebMouseEvent& event);
 
   // Starts a progressive paint operation given a rectangle in screen
   // coordinates. Returns the index in progressive_rects_.
@@ -562,9 +565,9 @@ class PDFiumEngine : public PDFEngine,
   bool PageIndexInBounds(int index) const;
   bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
 
-  void ScheduleTouchTimer(const TouchInputEvent& event);
+  void ScheduleTouchTimer(const blink::WebTouchEvent& event);
   void KillTouchTimer();
-  void HandleLongPress(const TouchInputEvent& event);
+  void HandleLongPress(const blink::WebTouchEvent& event);
 
   // Returns a base::Value (representing a bookmark), which in turn contains
   // child base::Value dictionaries (representing the child bookmarks).
@@ -624,12 +627,12 @@ class PDFiumEngine : public PDFEngine,
 
   // This is a layer between OnKeyDown() and actual tab handling to facilitate
   // testing.
-  bool HandleTabEvent(uint32_t modifiers);
+  bool HandleTabEvent(int modifiers);
 
   // Helper functions to handle tab events.
-  bool HandleTabEventWithModifiers(uint32_t modifiers);
-  bool HandleTabForward(uint32_t modifiers);
-  bool HandleTabBackward(uint32_t modifiers);
+  bool HandleTabEventWithModifiers(int modifiers);
+  bool HandleTabForward(int modifiers);
+  bool HandleTabBackward(int modifiers);
 
   // Updates the currently focused object stored in |focus_item_type_|. Notifies
   // |client_| about document focus change, if any.

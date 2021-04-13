@@ -5,9 +5,9 @@
 #include "build/build_config.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
-#include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -89,25 +89,26 @@ TEST_F(FormFillerTest, DoURIActionWithKeyboardModifier) {
         .Times(1);
   }
 
+  constexpr blink::WebInputEvent::Modifiers kModifierKey =
 #if defined(OS_MAC)
-#define modifier_key kInputEventModifierMetaKey;
+      blink::WebInputEvent::Modifiers::kMetaKey;
 #else
-#define modifier_key kInputEventModifierControlKey
+      blink::WebInputEvent::Modifiers::kControlKey;
 #endif
 
   int modifiers = 0;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers = kInputEventModifierAltKey;
+  modifiers = blink::WebInputEvent::Modifiers::kAltKey;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers = modifier_key;
+  modifiers = kModifierKey;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers = kInputEventModifierShiftKey;
+  modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers |= modifier_key;
+  modifiers |= kModifierKey;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers = kInputEventModifierMiddleButtonDown;
+  modifiers = blink::WebInputEvent::Modifiers::kMiddleButtonDown;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
-  modifiers |= kInputEventModifierShiftKey;
+  modifiers |= blink::WebInputEvent::Modifiers::kShiftKey;
   TriggerDoURIActionWithKeyboardModifier(engine.get(), kUri, modifiers);
 }
 

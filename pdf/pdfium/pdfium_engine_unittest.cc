@@ -19,12 +19,12 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
-#include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "pdf/ui/thumbnail.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -551,7 +551,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
   PDFiumEngineTabbingTest(const PDFiumEngineTabbingTest&) = delete;
   PDFiumEngineTabbingTest& operator=(const PDFiumEngineTabbingTest&) = delete;
 
-  bool HandleTabEvent(PDFiumEngine* engine, uint32_t modifiers) {
+  bool HandleTabEvent(PDFiumEngine* engine, int modifiers) {
     return engine->HandleTabEvent(modifiers);
   }
 
@@ -627,7 +627,8 @@ TEST_F(PDFiumEngineTabbingTest, LinkUnderCursorTest) {
   EXPECT_EQ("https://www.google.com/", GetLinkUnderCursor(engine.get()));
 
   // Tab to previous annotation.
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ("", GetLinkUnderCursor(engine.get()));
 }
 
@@ -767,26 +768,31 @@ TEST_F(PDFiumEngineTabbingTest, TabbingBackwardTest) {
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(-1, GetLastFocusedPage(engine.get()));
 
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(1, GetLastFocusedPage(engine.get()));
 
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
 
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
 
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kDocument,
             GetFocusedElementType(engine.get()));
 
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_FALSE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
             GetFocusedElementType(engine.get()));
 }
@@ -813,9 +819,11 @@ TEST_F(PDFiumEngineTabbingTest, TabbingWithModifiers) {
   EXPECT_EQ(-1, GetLastFocusedPage(engine.get()));
 
   // Tabbing with ctrl modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierControlKey));
+  ASSERT_FALSE(HandleTabEvent(engine.get(),
+                              blink::WebInputEvent::Modifiers::kControlKey));
   // Tabbing with alt modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierAltKey));
+  ASSERT_FALSE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kAltKey));
 
   // Tab to bring document into focus.
   ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
@@ -823,9 +831,11 @@ TEST_F(PDFiumEngineTabbingTest, TabbingWithModifiers) {
             GetFocusedElementType(engine.get()));
 
   // Tabbing with ctrl modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierControlKey));
+  ASSERT_FALSE(HandleTabEvent(engine.get(),
+                              blink::WebInputEvent::Modifiers::kControlKey));
   // Tabbing with alt modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierAltKey));
+  ASSERT_FALSE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kAltKey));
 
   // Tab to bring first page into focus.
   ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
@@ -833,9 +843,11 @@ TEST_F(PDFiumEngineTabbingTest, TabbingWithModifiers) {
             GetFocusedElementType(engine.get()));
 
   // Tabbing with ctrl modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierControlKey));
+  ASSERT_FALSE(HandleTabEvent(engine.get(),
+                              blink::WebInputEvent::Modifiers::kControlKey));
   // Tabbing with alt modifier.
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierAltKey));
+  ASSERT_FALSE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kAltKey));
 }
 
 TEST_F(PDFiumEngineTabbingTest, NoFocusableItemTabbingTest) {
@@ -873,11 +885,13 @@ TEST_F(PDFiumEngineTabbingTest, NoFocusableItemTabbingTest) {
             GetFocusedElementType(engine.get()));
 
   // Tabbing backward.
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kDocument,
             GetFocusedElementType(engine.get()));
 
-  ASSERT_FALSE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_FALSE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
             GetFocusedElementType(engine.get()));
 }
@@ -1055,7 +1069,8 @@ TEST_F(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
   EXPECT_EQ(1u, GetSelectionSize(engine.get()));
 
   // Tab to bring focus to a non form text area annotation (Button).
-  ASSERT_TRUE(HandleTabEvent(engine.get(), kInputEventModifierShiftKey));
+  ASSERT_TRUE(
+      HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));

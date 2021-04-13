@@ -10,6 +10,7 @@
 #include "ppapi/c/pp_input_event.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_fwlevent.h"
@@ -58,23 +59,24 @@ STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_ISPEN,
 STATIC_ASSERT_ENUM(PP_INPUTEVENT_MODIFIER_ISERASER,
                    chrome_pdf::kInputEventModifierIsEraser);
 
-// Enum asserts between InputEventModifier and FWL_* modifiers.
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierShiftKey,
+// Enum asserts between blink::WebInputEvent::Modifiers and FWL_* modifiers.
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kShiftKey,
                    FWL_EVENTFLAG_ShiftKey);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierControlKey,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kControlKey,
                    FWL_EVENTFLAG_ControlKey);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierAltKey, FWL_EVENTFLAG_AltKey);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierMetaKey,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kAltKey,
+                   FWL_EVENTFLAG_AltKey);
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kMetaKey,
                    FWL_EVENTFLAG_MetaKey);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierIsKeyPad,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kIsKeyPad,
                    FWL_EVENTFLAG_KeyPad);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierIsAutoRepeat,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kIsAutoRepeat,
                    FWL_EVENTFLAG_AutoRepeat);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierLeftButtonDown,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kLeftButtonDown,
                    FWL_EVENTFLAG_LeftButtonDown);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierMiddleButtonDown,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kMiddleButtonDown,
                    FWL_EVENTFLAG_MiddleButtonDown);
-STATIC_ASSERT_ENUM(chrome_pdf::kInputEventModifierRightButtonDown,
+STATIC_ASSERT_ENUM(blink::WebInputEvent::Modifiers::kRightButtonDown,
                    FWL_EVENTFLAG_RightButtonDown);
 
 STATIC_ASSERT_ENUM(ui::VKEY_BACK, FWL_VKEY_Back);

@@ -168,10 +168,13 @@ if (enable_pdf) {
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//printing",
+      "//third_party/blink/public/common:headers",
       "//third_party/icu",
       "//third_party/pdfium",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/events:events_base",
+      "//ui/events/blink",
       "//ui/gfx/codec",
       "//ui/gfx/range",
     ]
@@ -197,6 +200,7 @@ if (enable_pdf) {
       ":pdf",
       ":ppapi_migration",
       "//ppapi/c",
+      "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
     ]
@@ -281,6 +285,7 @@ if (enable_pdf) {
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//skia",
+      "//third_party/blink/public/common:headers",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
     ]
@@ -408,6 +413,7 @@ if (enable_pdf) {
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",
+      "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base:test_support",
       "//ui/gfx:test_support",

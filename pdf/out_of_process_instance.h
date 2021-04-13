@@ -197,10 +197,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Callback to print without re-entrancy issues.
   void OnPrint(int32_t /*unused_but_required*/);
 
-  // Helper for HandleInputEvent(). Returns whether engine() handled the event
-  // or not.
-  bool SendInputEventToEngine(const pp::InputEvent& event);
-
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
 

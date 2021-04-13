@@ -26,6 +26,10 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace blink {
+class WebInputEvent;
+}  // namespace blink
+
 namespace chrome_pdf {
 
 class Image;
@@ -147,6 +151,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `LoadUrl()` result for print preview.
   virtual void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                               int32_t result) = 0;
+
+  bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Handles `postMessage()` calls from the embedder.
   void HandleMessage(const base::Value& message);

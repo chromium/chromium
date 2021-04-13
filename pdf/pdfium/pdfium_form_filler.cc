@@ -15,7 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
-#include "pdf/ppapi_migration/input_event_conversions.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -330,11 +330,12 @@ void PDFiumFormFiller::Form_DoURIActionWithKeyboardModifier(
     FPDF_BYTESTRING uri,
     int modifiers) {
   PDFiumEngine* engine = GetEngine(param);
-  bool middle_button = !!(modifiers & kInputEventModifierMiddleButtonDown);
-  bool alt_key = !!(modifiers & kInputEventModifierAltKey);
-  bool ctrl_key = !!(modifiers & kInputEventModifierControlKey);
-  bool meta_key = !!(modifiers & kInputEventModifierMetaKey);
-  bool shift_key = !!(modifiers & kInputEventModifierShiftKey);
+  bool middle_button =
+      !!(modifiers & blink::WebInputEvent::Modifiers::kMiddleButtonDown);
+  bool alt_key = !!(modifiers & blink::WebInputEvent::Modifiers::kAltKey);
+  bool ctrl_key = !!(modifiers & blink::WebInputEvent::Modifiers::kControlKey);
+  bool meta_key = !!(modifiers & blink::WebInputEvent::Modifiers::kMetaKey);
+  bool shift_key = !!(modifiers & blink::WebInputEvent::Modifiers::kShiftKey);
 
   WindowOpenDisposition disposition = ui::DispositionFromClick(
       middle_button, alt_key, ctrl_key, meta_key, shift_key);

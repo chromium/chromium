@@ -57,6 +57,7 @@
 #include "ppapi/cpp/size.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -334,11 +335,6 @@ bool IsPreviewingPDF(int print_preview_page_count) {
   return print_preview_page_count == 0;
 }
 
-void ScaleFloatPoint(float scale, pp::FloatPoint* point) {
-  point->set_x(point->x() * scale);
-  point->set_y(point->y() * scale);
-}
-
 void ScalePoint(float scale, pp::Point* point) {
   point->set_x(static_cast<int>(point->x() * scale));
   point->set_y(static_cast<int>(point->y() * scale));
@@ -596,68 +592,11 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 }
 
 bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
-  // Ignore user input in read-only mode.
-  // TODO(dhoss): Add a test for ignored input events. It is currently difficult
-  // to unit test certain `OutOfProcessInstance` methods.
-  if (engine()->IsReadOnly())
+  std::unique_ptr<blink::WebInputEvent> web_event = GetWebInputEvent(event);
+  if (!web_event)
     return false;
 
-  // To simplify things, convert the event into device coordinates.
-  pp::InputEvent event_device_res(event);
-  {
-    pp::MouseInputEvent mouse_event(event);
-    if (!mouse_event.is_null()) {
-      pp::Point point = mouse_event.GetPosition();
-      pp::Point movement = mouse_event.GetMovement();
-      ScalePoint(device_scale(), &point);
-      point.set_x(point.x() - available_area().x());
-
-      ScalePoint(device_scale(), &movement);
-      mouse_event =
-          pp::MouseInputEvent(this, event.GetType(), event.GetTimeStamp(),
-                              event.GetModifiers(), mouse_event.GetButton(),
-                              point, mouse_event.GetClickCount(), movement);
-      event_device_res = mouse_event;
-    }
-  }
-  {
-    pp::TouchInputEvent touch_event(event);
-    if (!touch_event.is_null()) {
-      pp::TouchInputEvent new_touch_event = pp::TouchInputEvent(
-          this, touch_event.GetType(), touch_event.GetTimeStamp(),
-          touch_event.GetModifiers());
-
-      for (uint32_t i = 0;
-           i < touch_event.GetTouchCount(PP_TOUCHLIST_TYPE_TARGETTOUCHES);
-           i++) {
-        pp::TouchPoint touch_point =
-            touch_event.GetTouchByIndex(PP_TOUCHLIST_TYPE_TARGETTOUCHES, i);
-
-        pp::FloatPoint point = touch_point.position();
-        ScaleFloatPoint(device_scale(), &point);
-        point.set_x(point.x() - available_area().x());
-
-        new_touch_event.AddTouchPoint(
-            PP_TOUCHLIST_TYPE_TARGETTOUCHES,
-            {touch_point.id(), point, touch_point.radii(),
-             touch_point.rotation_angle(), touch_point.pressure()});
-      }
-      event_device_res = new_touch_event;
-    }
-  }
-
-  if (SendInputEventToEngine(event_device_res))
-    return true;
-
-  // Middle click is used for scrolling and is handled by the container page.
-  pp::MouseInputEvent mouse_event(event_device_res);
-  if (!mouse_event.is_null() &&
-      mouse_event.GetButton() == PP_INPUTEVENT_MOUSEBUTTON_MIDDLE) {
-    return false;
-  }
-
-  // Return true for unhandled clicks so the plugin takes focus.
-  return (event.GetType() == PP_INPUTEVENT_TYPE_MOUSEDOWN);
+  return PdfViewPluginBase::HandleInputEvent(*web_event);
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
@@ -1413,43 +1352,6 @@ void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   // TODO(raymes): Move this function to PPB_UMA_Private.
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
-}
-
-bool OutOfProcessInstance::SendInputEventToEngine(const pp::InputEvent& event) {
-  switch (event.GetType()) {
-    case PP_INPUTEVENT_TYPE_MOUSEDOWN:
-    case PP_INPUTEVENT_TYPE_MOUSEUP:
-    case PP_INPUTEVENT_TYPE_MOUSEMOVE:
-    case PP_INPUTEVENT_TYPE_MOUSEENTER:
-    case PP_INPUTEVENT_TYPE_MOUSELEAVE:
-      return engine()->HandleEvent(
-          GetMouseInputEvent(pp::MouseInputEvent(event)));
-    case PP_INPUTEVENT_TYPE_RAWKEYDOWN:
-    case PP_INPUTEVENT_TYPE_KEYDOWN:
-    case PP_INPUTEVENT_TYPE_KEYUP:
-    case PP_INPUTEVENT_TYPE_CHAR:
-      return engine()->HandleEvent(
-          GetKeyboardInputEvent(pp::KeyboardInputEvent(event)));
-    case PP_INPUTEVENT_TYPE_TOUCHSTART:
-    case PP_INPUTEVENT_TYPE_TOUCHEND:
-    case PP_INPUTEVENT_TYPE_TOUCHMOVE:
-    case PP_INPUTEVENT_TYPE_TOUCHCANCEL:
-      return engine()->HandleEvent(
-          GetTouchInputEvent(pp::TouchInputEvent(event)));
-    case PP_INPUTEVENT_TYPE_WHEEL:
-    case PP_INPUTEVENT_TYPE_CONTEXTMENU:
-    case PP_INPUTEVENT_TYPE_IME_COMPOSITION_START:
-    case PP_INPUTEVENT_TYPE_IME_COMPOSITION_UPDATE:
-    case PP_INPUTEVENT_TYPE_IME_COMPOSITION_END:
-    case PP_INPUTEVENT_TYPE_IME_TEXT:
-      // These event types are not used in PDFiumEngine, so there are no
-      // functions to convert them from pp::InputEvent to
-      // chrome_pdf::InputEvent. As such just send a dummy NoneInputEvent
-      // instead.
-      return engine()->HandleEvent(NoneInputEvent());
-    case PP_INPUTEVENT_TYPE_UNDEFINED:
-      return false;
-  }
 }
 
 void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
