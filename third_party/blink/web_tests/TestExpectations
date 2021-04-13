@@ -5745,3 +5745,10 @@ crbug.com/1181886 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.h
 
 # Sherif 2021-03-23
 crbug.com/1182689 [ Mac ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
+
+# Sheriff 2021-04-08
+crbug.com/1197073 [ Linux ] external/wpt/html/syntax/xmldecl/xmldecl-1.html [ Pass Failure ]
+crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html [ Pass Failure ]
+crbug.com/1197087 external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
+crbug.com/1197087 external/wpt/css/css-transitions/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
+crbug.com/1197087 virtual/threaded/external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
