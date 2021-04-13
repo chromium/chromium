@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
@@ -189,6 +190,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         ShareParams.Builder builder =
                 new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
                         .setScreenshotUri(blockingUri);
+
         share(builder.build(),
                 new ChromeShareExtras.Builder()
                         .setSaveLastUsed(!shareDirectly)
@@ -197,6 +199,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         .build(),
                 shareOrigin);
 
+        HistoryClustersTabHelper.onCurrentTabUrlShared(webContents);
         if (blockingUri == null) return;
 
         // Start screenshot capture and notify the provider when it is ready.

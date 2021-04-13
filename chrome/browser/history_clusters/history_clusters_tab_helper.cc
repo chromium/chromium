@@ -128,6 +128,11 @@ void HistoryClustersTabHelper::OnOmniboxUrlCopied() {
       .context_signals.omnibox_url_copied = true;
 }
 
+void HistoryClustersTabHelper::OnOmniboxUrlShared() {
+  // TODO(crbug.com/1171352): possibly update a different context signal.
+  OnOmniboxUrlCopied();
+}
+
 void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     int64_t navigation_id,
     const GURL& url) {

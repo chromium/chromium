@@ -10,6 +10,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -169,13 +170,13 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
         mUrlBarDelegate.clearOmniboxFocus();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.
-        Tab activityTab = mTabSupplier.get();
-        mShareDelegateSupplier.get().share(activityTab, false, ShareOrigin.EDIT_URL);
+        mShareDelegateSupplier.get().share(mTabSupplier.get(), false, ShareOrigin.EDIT_URL);
     }
 
     /** Invoked when user interacts with Copy action button. */
     private void onCopyLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
+        HistoryClustersTabHelper.onCurrentTabUrlCopied(mTabSupplier.get().getWebContents());
         Clipboard.getInstance().copyUrlToClipboard(suggestion.getUrl());
     }
 

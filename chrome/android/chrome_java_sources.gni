@@ -651,6 +651,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/history/HistoryManagerUtils.java",
   "java/src/org/chromium/chrome/browser/history/HistoryPage.java",
   "java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
+  "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
   "java/src/org/chromium/chrome/browser/historyreport/AppIndexingReporter.java",
   "java/src/org/chromium/chrome/browser/historyreport/DeltaFileEntry.java",
   "java/src/org/chromium/chrome/browser/historyreport/HistoryReportJniBridge.java",

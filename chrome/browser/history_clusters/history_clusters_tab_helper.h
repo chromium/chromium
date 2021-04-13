@@ -29,6 +29,8 @@ class HistoryClustersTabHelper
 
   // Called when the user copies the URL from the location bar.
   void OnOmniboxUrlCopied();
+  // Called when the user shares the URL via mobile sharing hub.
+  void OnOmniboxUrlShared();
 
   // Called by |HistoryTabHelper| right after submitting a new navigation for
   // |web_contents()| to HistoryService. We need close coordination with
