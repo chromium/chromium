@@ -47,6 +47,11 @@ enum OpenPosition {
 // Convenience initializers
 
 // Initializes a command intended to open a URL from browser chrome (e.g.,
+// settings).
++ (instancetype)commandWithURLFromChrome:(const GURL&)URL
+                             inIncognito:(BOOL)inIncognito;
+
+// Initializes a command intended to open a URL from browser chrome (e.g.,
 // settings). This will always open in a new foreground tab in non-incognito
 // mode.
 + (instancetype)commandWithURLFromChrome:(const GURL&)URL;

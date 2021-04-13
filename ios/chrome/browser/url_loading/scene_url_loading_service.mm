@@ -36,7 +36,9 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     if (params.from_chrome) {
       auto dismiss_completion = ^{
         ApplicationModeForTabOpening mode =
-            IsIncognitoModeForced(browser_state->GetPrefs())
+            ((IsIncognitoModeForced(browser_state->GetPrefs()) ||
+              saved_params.in_incognito) &&
+             !IsIncognitoModeDisabled(browser_state->GetPrefs()))
                 ? ApplicationModeForTabOpening::INCOGNITO
                 : ApplicationModeForTabOpening::NORMAL;
         [delegate_ openSelectedTabInMode:mode

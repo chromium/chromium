@@ -112,7 +112,11 @@
 
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController
     showSuggestionsPageWithURL:(const GURL&)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:URL
+                   inIncognito:self.browser->GetBrowserState()
+                                   ->IsOffTheRecord()];
+
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
