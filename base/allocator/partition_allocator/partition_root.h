@@ -238,6 +238,7 @@ struct BASE_EXPORT PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
+  std::atomic<int> thread_caches_being_constructed_{0};
 
   PartitionRoot() = default;
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
@@ -1267,9 +1268,15 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   if (thread_safe && LIKELY(with_thread_cache)) {
     auto* tcache = internal::ThreadCache::Get();
     if (UNLIKELY(!internal::ThreadCache::IsValid(tcache))) {
-      if (internal::ThreadCache::IsTombstone(tcache)) {
-        // Thread is being terminated, don't try to use the thread cache, and
-        // don't try to resurrect it.
+      if (internal::ThreadCache::IsTombstone(tcache) ||
+          thread_caches_being_constructed_.load(std::memory_order_relaxed)) {
+        // Two cases:
+        // 1. Thread is being terminated, don't try to use the thread cache, and
+        //    don't try to resurrect it.
+        // 2. Someone, somewhere is currently allocating a thread cache.  This
+        //    may be us, in which case we are re-entering and should not create
+        //    a thread cache. If it is not us, then this merely delays thread
+        //    cache construction a bit, which is not an issue.
       } else {
         // There is no per-thread ThreadCache allocated here yet, and this
         // partition has a thread cache, allocate a new one.
@@ -1280,19 +1287,18 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
         // create a new TLS variable. This would end up here again, which is not
         // what we want (and likely is not supported by libc).
         //
-        // To avoid this sort of reentrancy, temporarily set this partition as
-        // not supporting a thread cache. so that reentering allocations will
-        // not end up allocating a thread cache. This value may be seen by other
-        // threads as well, in which case a few allocations will not use the
-        // thread cache. As it is purely an optimization, this is not a
-        // correctness issue.
+        // To avoid this sort of reentrancy, increase the count of thread caches
+        // that are currently allocating a thread cache.
         //
         // Note that there is no deadlock or data inconsistency concern, since
         // we do not hold the lock, and has such haven't touched any internal
         // data.
-        with_thread_cache = false;
+        int before = thread_caches_being_constructed_.fetch_add(
+            1, std::memory_order_relaxed);
+        PA_CHECK(before < std::numeric_limits<int>::max());
         tcache = internal::ThreadCache::Create(this);
-        with_thread_cache = true;
+        thread_caches_being_constructed_.fetch_sub(1,
+                                                   std::memory_order_relaxed);
 
         // Cache is created empty, but at least this will trigger batch fill,
         // which may be useful, and we are already in a slow path anyway (first
