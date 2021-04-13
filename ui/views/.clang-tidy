@@ -4,4 +4,5 @@
                     modernize-replace-auto-ptr,
                     modernize-use-using'
   HeaderFilterRegex: 'ui/views/*'
+  InheritParentConfig: true
 ...
