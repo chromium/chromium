@@ -110,7 +110,6 @@ class MigrationTest : public SyncTest  {
     // Supervised user data types will be "unready" during this test, so we
     // should not request that they be migrated.
     preferred_data_types.Remove(syncer::SUPERVISED_USER_SETTINGS);
-    preferred_data_types.Remove(syncer::DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
 
     // Autofill wallet will be unready during this test, so we should not
     // request that it be migrated.

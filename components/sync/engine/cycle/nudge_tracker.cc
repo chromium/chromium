@@ -68,7 +68,6 @@ base::TimeDelta GetDefaultDelayForType(ModelType model_type,
     case PRIORITY_PREFERENCES:
     case SUPERVISED_USER_SETTINGS:
     case APP_LIST:
-    case DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
     case ARC_PACKAGE:
     case PRINTERS:
     case READING_LIST:

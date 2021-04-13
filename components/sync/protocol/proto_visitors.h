@@ -440,7 +440,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(38 == GetNumModelTypes(),
+  static_assert(37 == GetNumModelTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -459,7 +459,6 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(extension_setting);
   VISIT(history_delete_directive);
   VISIT(managed_user_setting);
-  VISIT(managed_user_whitelist);
   VISIT(nigori);
   VISIT(os_preference);
   VISIT(os_priority_preference);
@@ -559,11 +558,6 @@ VISIT_PROTO_FIELDS(const sync_pb::LinkedAppIconInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ManagedUserSettingSpecifics& proto) {
   VISIT(name);
   VISIT(value);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::ManagedUserWhitelistSpecifics& proto) {
-  VISIT(id);
-  VISIT(name);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::MetaInfo& proto) {

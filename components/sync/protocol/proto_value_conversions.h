@@ -37,7 +37,6 @@ class ExtensionSpecifics;
 class HistoryDeleteDirectiveSpecifics;
 class LinkedAppIconInfo;
 class ManagedUserSettingSpecifics;
-class ManagedUserWhitelistSpecifics;
 class NavigationRedirect;
 class NigoriSpecifics;
 class OsPreferenceSpecifics;
@@ -153,10 +152,6 @@ std::unique_ptr<base::DictionaryValue> LinkedAppIconInfoToValue(
 
 std::unique_ptr<base::DictionaryValue> ManagedUserSettingSpecificsToValue(
     const sync_pb::ManagedUserSettingSpecifics& managed_user_setting_specifics);
-
-std::unique_ptr<base::DictionaryValue> ManagedUserWhitelistSpecificsToValue(
-    const sync_pb::ManagedUserWhitelistSpecifics&
-        managed_user_whitelist_specifics);
 
 std::unique_ptr<base::DictionaryValue> NavigationRedirectToValue(
     const sync_pb::NavigationRedirect& navigation_redirect);

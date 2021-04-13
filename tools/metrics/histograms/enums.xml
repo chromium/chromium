@@ -75813,7 +75813,11 @@ would be helpful to identify which type is being sent.
       Obsolete data type.
     </obsolete>
   </int>
-  <int value="33" label="Managed User Whitelists"/>
+  <int value="33" label="Managed User Allowlists">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="34" label="Autofill Wallet"/>
   <int value="35" label="Autofill Wallet Metadata"/>
   <int value="36" label="Arc Package"/>

@@ -105,10 +105,6 @@ enum ModelType {
   SUPERVISED_USER_SETTINGS,
   // App List items, used by the ChromeOS app launcher.
   APP_LIST,
-  // TODO(crbug.com/1155257): Remove the deprecated type, because it isn't used.
-  // Supervised user allowlists. Each item contains a CRX ID (like an extension
-  // ID) and a name.
-  DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
   // ARC package items, i.e. Android apps on ChromeOS.
   ARC_PACKAGE,
   // Printer device information. ChromeOS only.
@@ -250,10 +246,9 @@ constexpr ModelTypeSet ProtocolTypes() {
       THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS,
       APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
       DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
-      DEPRECATED_SUPERVISED_USER_ALLOWLISTS, ARC_PACKAGE, PRINTERS,
-      READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF,
-      SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
-      OS_PRIORITY_PREFERENCES, SHARING_MESSAGE);
+      ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
+      SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
+      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
@@ -266,8 +261,7 @@ constexpr ModelTypeSet UserTypes() {
 // User types, which are not user-controlled.
 constexpr ModelTypeSet AlwaysPreferredUserTypes() {
   return ModelTypeSet(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                      SUPERVISED_USER_SETTINGS,
-                      DEPRECATED_SUPERVISED_USER_ALLOWLISTS, SHARING_MESSAGE);
+                      SUPERVISED_USER_SETTINGS, SHARING_MESSAGE);
 }
 
 // User types which are always encrypted.
@@ -290,7 +284,7 @@ constexpr ModelTypeSet PriorityUserTypes() {
       DEVICE_INFO, SHARING_MESSAGE,
       // For supervised users, it is important to quickly deliver changes in
       // settings and in allowed sites to the supervised user.
-      SUPERVISED_USER_SETTINGS, DEPRECATED_SUPERVISED_USER_ALLOWLISTS,
+      SUPERVISED_USER_SETTINGS,
       // These are by definition preferences for which it is important that the
       // client picks them up quickly (also because these can get changed
       // server-side). For example, such a pref could control whether a

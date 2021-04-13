@@ -40,7 +40,6 @@ import "components/sync/protocol/history_delete_directive_specifics.proto";
 import "components/sync/protocol/managed_user_setting_specifics.proto";
 import "components/sync/protocol/managed_user_shared_setting_specifics.proto";
 import "components/sync/protocol/managed_user_specifics.proto";
-import "components/sync/protocol/managed_user_whitelist_specifics.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
@@ -154,7 +153,6 @@ message EntitySpecifics {
     // TODO(tschumann): Remove once server-side dependencies are resolved.
     ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
         [deprecated = true];
-    ManagedUserWhitelistSpecifics managed_user_whitelist = 306060;
     AppListSpecifics app_list = 229170;
     AutofillWalletSpecifics autofill_wallet = 306270;
     WalletMetadataSpecifics wallet_metadata = 330441;
@@ -178,6 +176,8 @@ message EntitySpecifics {
   reserved "article";
   reserved 545005;
   reserved "mountain_share";
+  reserved 306060;
+  reserved "managed_user_whitelist";
 }
 
 message SyncEntity {

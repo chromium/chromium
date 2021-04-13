@@ -151,13 +151,13 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     self.assertEqual(6, len(results))
     self.assertTrue('APP_SETTINGS' in results[0].message)
 
-  def testBlacklistedRootTag(self):
+  def testBlocklistedRootTag(self):
     results = self._testChange('{EXTENSION_SETTING, "EXTENSION_SETTING",\n'
       '"_mts_schema_descriptor","Extension Setting",\n'
       'sync_pb::EntitySpecifics::kExtensionSettingFieldNumber, 6},')
     self.assertEqual(2, len(results))
     self.assertTrue('_mts_schema_descriptor' in results[0].message)
-    self.assertTrue("blacklist" in results[0].message)
+    self.assertTrue("blocklist" in results[0].message)
 
   def _testChange(self, modeltype_literal):
     mock_input_api = MockInputApi()

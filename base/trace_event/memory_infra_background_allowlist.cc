@@ -373,7 +373,6 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "sync/0x?/model_type/HISTORY_DELETE_DIRECTIVE",
     "sync/0x?/model_type/MANAGED_USER",
     "sync/0x?/model_type/MANAGED_USER_SETTING",
-    "sync/0x?/model_type/MANAGED_USER_WHITELIST",
     "sync/0x?/model_type/NIGORI",
     "sync/0x?/model_type/OS_PREFERENCE",
     "sync/0x?/model_type/OS_PRIORITY_PREFERENCE",

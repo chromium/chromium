@@ -133,10 +133,6 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {APP_LIST, "APP_LIST", "app_list", "App List",
      sync_pb::EntitySpecifics::kAppListFieldNumber,
      ModelTypeForHistograms::kAppList},
-    {DEPRECATED_SUPERVISED_USER_ALLOWLISTS, "MANAGED_USER_WHITELIST",
-     "managed_user_whitelists", "Managed User Whitelists",
-     sync_pb::EntitySpecifics::kManagedUserWhitelistFieldNumber,
-     ModelTypeForHistograms::kDeprecatedSupervisedUserAllowlists},
     {ARC_PACKAGE, "ARC_PACKAGE", "arc_package", "Arc Package",
      sync_pb::EntitySpecifics::kArcPackageFieldNumber,
      ModelTypeForHistograms::kArcPackage},
@@ -186,11 +182,11 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(base::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(38 == syncer::GetNumModelTypes(),
+static_assert(37 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(38 == syncer::GetNumModelTypes(),
+static_assert(37 == syncer::GetNumModelTypes(),
               "When adding a new type, update kAllocatorDumpNameAllowlist in "
               "base/trace_event/memory_infra_background_allowlist.cc.");
 
@@ -265,9 +261,6 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case APP_LIST:
       specifics->mutable_app_list();
       break;
-    case DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
-      specifics->mutable_managed_user_whitelist();
-      break;
     case ARC_PACKAGE:
       specifics->mutable_arc_package();
       break;
@@ -329,7 +322,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type) {
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(38 == syncer::GetNumModelTypes(),
+  static_assert(37 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -374,8 +367,6 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return SUPERVISED_USER_SETTINGS;
   if (specifics.has_app_list())
     return APP_LIST;
-  if (specifics.has_managed_user_whitelist())
-    return DEPRECATED_SUPERVISED_USER_ALLOWLISTS;
   if (specifics.has_arc_package())
     return ARC_PACKAGE;
   if (specifics.has_printer())
@@ -411,7 +402,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(38 == syncer::GetNumModelTypes(),
+  static_assert(37 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();
@@ -427,7 +418,6 @@ ModelTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(OS_PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(SUPERVISED_USER_SETTINGS);
-  encryptable_user_types.Remove(DEPRECATED_SUPERVISED_USER_ALLOWLISTS);
   // Proxy types have no sync representation and are therefore not encrypted.
   // Note however that proxy types map to one or more protocol types, which
   // may or may not be encrypted themselves.

@@ -18849,7 +18849,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Removed on 4/2018.
     </obsolete>
   </suffix>
-  <suffix name="MANAGED_USER_WHITELIST" label="MANAGED_USER_WHITELIST"/>
+  <suffix name="MANAGED_USER_WHITELIST" label="MANAGED_USER_ALLOWLIST">
+    <obsolete>
+      Removed 4/2021.
+    </obsolete>
+  </suffix>
   <suffix name="MOUNTAIN_SHARE" label="MOUNTAIN_SHARE">
     <obsolete>
       Removed 11/2019.
@@ -18997,7 +19001,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Deprecated 4/2018.
     </obsolete>
   </suffix>
-  <suffix name="ManagedUserWhitelist" label="Managed user whitelist"/>
+  <suffix name="ManagedUserWhitelist" label="Managed user allowlist"/>
   <suffix name="MountainShares" label="Mountain shares"/>
   <suffix name="Nigori" label="Nigori"/>
   <suffix name="Passwords" label="Passwords"/>
