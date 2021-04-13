@@ -83,6 +83,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // networks list.
   class StubCellularNetworksProvider {
    public:
+    virtual ~StubCellularNetworksProvider() = default;
+
     // Checks |network_list| to add or remove stub cellular networks. New
     // stub networks will be addeded to |new_stub_networks| list. Stub networks
     // that are not required anymore are removed from |network_list|. Returns
