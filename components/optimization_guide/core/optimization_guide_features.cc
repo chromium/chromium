@@ -264,6 +264,16 @@ size_t MaxConcurrentPageNavigationFetches() {
       "max_concurrent_page_navigation_fetches", 20);
 }
 
+int ActiveTabsHintsFetchRandomMinDelaySecs() {
+  return GetFieldTrialParamByFeatureAsInt(kRemoteOptimizationGuideFetching,
+                                          "fetch_random_min_delay_secs", 30);
+}
+
+int ActiveTabsHintsFetchRandomMaxDelaySecs() {
+  return GetFieldTrialParamByFeatureAsInt(kRemoteOptimizationGuideFetching,
+                                          "fetch_random_max_delay_secs", 60);
+}
+
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
   return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
