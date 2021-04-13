@@ -54,7 +54,8 @@
 }
 
 - (void)enterFullscreenMode {
-  DCHECK(!_inFullscreenMode);
+  if (_inFullscreenMode)
+    return;
   _inFullscreenMode = YES;
 
   _menubarTracker.reset([[FullscreenMenubarTracker alloc]
@@ -64,7 +65,8 @@
 }
 
 - (void)exitFullscreenMode {
-  DCHECK(_inFullscreenMode);
+  if (!_inFullscreenMode)
+    return;
   _inFullscreenMode = NO;
 
   _animationController->StopAnimationAndTimer();
