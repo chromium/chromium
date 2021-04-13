@@ -11,6 +11,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
 <link rel="import" href="/components/multi_step_behavior.html">
@@ -31,14 +32,6 @@
         padding-top: 20px;
         text-align: start;
         vertical-align: top;
-      }
-
-      :host-context(html[new-layout]) #contentEnrolling {
-        display: none;
-      }
-
-      :host-context(html:not([new-layout])) #subtitleEnrolling {
-        display: none;
       }
 
       #attributePromptMessage {
@@ -64,22 +57,10 @@
     </gaia-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
-    <oobe-adaptive-dialog id="step-working" for-step="working">
+    <oobe-loading-dialog text-key="oauthEnrollScreenTitle"
+        id="step-working" for-step="working">
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
-      </h1>
-      <p slot="subtitle" id="subtitleEnrolling">
-        [[i18nDynamic(locale, 'oauthEnrollWorking')]]
-      </p>
-      <paper-progress slot="progress" indeterminate>
-      </paper-progress>
-      <div slot="content" class="flex layout vertical" role="alert">
-        <div class="step-message" id="contentEnrolling">
-          [[i18nDynamic(locale, 'oauthEnrollWorking')]]
-        </div>
-      </div>
-    </oobe-adaptive-dialog>
+    </oobe-loading-dialog>
 
     <offline-ad-login-element id="step-ad-join" is-domain-join
         for-step="ad-join"

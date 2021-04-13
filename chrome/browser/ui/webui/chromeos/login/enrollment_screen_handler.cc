@@ -564,7 +564,12 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_ENTERPRISE_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
-  builder->Add("oauthEnrollDone", IDS_ENTERPRISE_ENROLLMENT_DONE);
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+    // Use Next text since the setup is not finished.
+    builder->Add("oauthEnrollDone", IDS_EULA_NEXT_BUTTON);
+  } else {
+    builder->Add("oauthEnrollDone", IDS_ENTERPRISE_ENROLLMENT_DONE);
+  }
   builder->Add("oauthEnrollRetry", IDS_ENTERPRISE_ENROLLMENT_RETRY);
   builder->Add("oauthEnrollManualEnrollment",
                IDS_ENTERPRISE_ENROLLMENT_ENROLL_MANUALLY);
