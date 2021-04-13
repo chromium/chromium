@@ -1943,6 +1943,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
+
+  if (policy.has_device_debug_packet_capture_allowed() &&
+      policy.device_debug_packet_capture_allowed().has_allowed()) {
+    policies->Set(
+        key::kDeviceDebugPacketCaptureAllowed, POLICY_LEVEL_MANDATORY,
+        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+        base::Value(policy.device_debug_packet_capture_allowed().allowed()),
+        nullptr);
+  }
 }
 
 }  // namespace

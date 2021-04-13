@@ -7405,6 +7405,8 @@
     ]
   },
 
+  "DeviceDebugPacketCaptureAllowed": {},
+
   "----- Chrome Frame policies -------------------------------------------": {},
 
   "ChromeFrameRendererSettings": {},

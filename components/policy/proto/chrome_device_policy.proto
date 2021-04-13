@@ -1773,6 +1773,11 @@ message DeviceAllowedBluetoothServicesProto {
   repeated string allowlist = 1;
 }
 
+// Policy that controls whether packet captures will be allowed on the device.
+message DeviceDebugPacketCaptureAllowedProto {
+  optional bool allowed = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1928,4 +1933,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
   optional DeviceAllowedBluetoothServicesProto
       device_allowed_bluetooth_services = 120;
+  optional DeviceDebugPacketCaptureAllowedProto
+      device_debug_packet_capture_allowed = 121;
 }
