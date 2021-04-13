@@ -155,37 +155,21 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
     signal.signal(signal.SIGTERM, raise_xvfb_error)
     signal.signal(signal.SIGINT, raise_xvfb_error)
 
-    # Before [1], the maximum number of X11 clients was 256.  After, the default
-    # limit is 256 with a configurable maximum of 512.  On systems with a large
-    # number of CPUs, the old limit of 256 may be hit for certain test suites
-    # [2] [3], so we set the limit to 512 when possible.  This flag is not
-    # available on Ubuntu 16.04 or 18.04, so a feature check is required.  Xvfb
-    # does not have a '-version' option, so checking the '-help' output is
-    # required.
-    #
-    # [1] d206c240c0b85c4da44f073d6e9a692afb6b96d2
-    # [2] https://crbug.com/1187948
-    # [3] https://crbug.com/1120107
-    xvfb_help = subprocess.check_output(
-      ['Xvfb', '-help'], stderr=subprocess.STDOUT)
-
     # Due to race condition for display number, Xvfb might fail to run.
     # If it does fail, try again up to 10 times, similarly to xvfb-run.
     for _ in range(10):
       xvfb_ready.setvalue(False)
       display = find_display()
 
-      xvfb_cmd = ['Xvfb', display, '-screen', '0', '1280x800x24', '-ac',
-                  '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR']
-      if '-maxclients' in xvfb_help:
-        xvfb_cmd += ['-maxclients', '512']
-
       # Sets SIGUSR1 to ignore for Xvfb to signal current process
       # when it is ready. Due to race condition, USR1 signal could be sent
       # before the process resets the signal handler, we cannot rely on
       # signal handler to change on time.
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
-      xvfb_proc = subprocess.Popen(xvfb_cmd, stderr=subprocess.STDOUT, env=env)
+      xvfb_proc = subprocess.Popen(
+          ['Xvfb', display, '-screen', '0', '1280x800x24', '-ac',
+           '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR'],
+          stderr=subprocess.STDOUT, env=env)
       signal.signal(signal.SIGUSR1, set_xvfb_ready)
       for _ in range(10):
         time.sleep(.1)  # gives Xvfb time to start or fail.
