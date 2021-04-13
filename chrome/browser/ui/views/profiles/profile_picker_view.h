@@ -116,7 +116,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // the sign-in flow.
     bool is_aborted = false;
 
-    // Email of the signed-in account.
+    // Email of the signed-in account. It is set after the user finishes the
+    // sign-in flow on GAIA and Chrome receives the account info.
     std::string email;
 
     std::u16string name_for_signed_in_profile;
@@ -227,6 +228,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
       bool enable_navigating_back = true,
       base::OnceClosure navigation_finished_closure = base::OnceClosure());
   void ShowScreenFinished(
+      content::WebContents* contents,
+      bool show_toolbar,
+      bool enable_navigating_back,
       base::OnceClosure navigation_finished_closure = base::OnceClosure());
 
   void BackButtonPressed(const ui::Event& event);
@@ -250,6 +254,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Finishes the flow by finalizing the profile and continuing the SAML sign-in
   // in a browser window.
   void FinishSignedInCreationFlowForSAML();
+  void OnSignInContentsFreedUp();
 
   // Internal callback to finish the last steps of the signed-in creation flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
