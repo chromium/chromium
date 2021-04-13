@@ -1752,19 +1752,6 @@ bool AXObject::IsCanvas() const {
   return RoleValue() == ax::mojom::blink::Role::kCanvas;
 }
 
-bool AXObject::IsCheckboxOrRadio() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kMenuItemCheckBox:
-    case ax::mojom::blink::Role::kMenuItemRadio:
-    case ax::mojom::blink::Role::kRadioButton:
-      return true;
-    default:
-      break;
-  }
-  return false;
-}
-
 bool AXObject::IsColorWell() const {
   return RoleValue() == ax::mojom::blink::Role::kColorWell;
 }
@@ -3153,7 +3140,7 @@ String AXObject::AriaTextAlternative(bool recursive,
     if (element) {
       HeapVector<Member<Element>> elements_from_attribute;
       Vector<String> ids;
-      ElementsFromAttribute(elements_from_attribute, attr, ids);
+      ElementsFromAttribute(element, elements_from_attribute, attr, ids);
 
       const AtomicString& aria_labelledby = GetAttribute(attr);
 
@@ -3247,13 +3234,14 @@ String AXObject::TextFromElements(
   return accumulated_text.ToString();
 }
 
-void AXObject::TokenVectorFromAttribute(Vector<String>& tokens,
-                                        const QualifiedName& attribute) const {
-  Node* node = this->GetNode();
-  if (!node || !node->IsElementNode())
+// static
+void AXObject::TokenVectorFromAttribute(Element* element,
+                                        Vector<String>& tokens,
+                                        const QualifiedName& attribute) {
+  if (!element)
     return;
 
-  String attribute_value = GetAttribute(attribute).GetString();
+  String attribute_value = element->FastGetAttribute(attribute).GetString();
   if (attribute_value.IsEmpty())
     return;
 
@@ -3261,47 +3249,59 @@ void AXObject::TokenVectorFromAttribute(Vector<String>& tokens,
   attribute_value.Split(' ', tokens);
 }
 
-void AXObject::ElementsFromAttribute(HeapVector<Member<Element>>& elements,
+// static
+bool AXObject::ElementsFromAttribute(Element* from,
+                                     HeapVector<Member<Element>>& elements,
                                      const QualifiedName& attribute,
-                                     Vector<String>& ids) const {
+                                     Vector<String>& ids) {
+  if (!from)
+    return false;
+
   // We compute the attr-associated elements, which are either explicitly set
   // element references set via the IDL, or computed from the content attribute.
-  TokenVectorFromAttribute(ids, attribute);
-  Element* element = GetElement();
-  if (!element)
-    return;
+  TokenVectorFromAttribute(from, ids, attribute);
 
   base::Optional<HeapVector<Member<Element>>> attr_associated_elements =
-      element->GetElementArrayAttribute(attribute);
+      from->GetElementArrayAttribute(attribute);
   if (!attr_associated_elements)
-    return;
+    return false;
 
   for (const auto& element : attr_associated_elements.value())
     elements.push_back(element);
+
+  return elements.size();
 }
 
-void AXObject::AriaLabelledbyElementVector(
+// static
+bool AXObject::AriaLabelledbyElementVector(
+    Element* from,
     HeapVector<Member<Element>>& elements,
-    Vector<String>& ids) const {
+    Vector<String>& ids) {
   // Try both spellings, but prefer aria-labelledby, which is the official spec.
-  ElementsFromAttribute(elements, html_names::kAriaLabelledbyAttr, ids);
-  if (!ids.size())
-    ElementsFromAttribute(elements, html_names::kAriaLabeledbyAttr, ids);
+  if (ElementsFromAttribute(from, elements, html_names::kAriaLabelledbyAttr,
+                            ids)) {
+    return true;
+  }
+
+  return ElementsFromAttribute(from, elements, html_names::kAriaLabeledbyAttr,
+                               ids);
 }
 
 String AXObject::TextFromAriaLabelledby(AXObjectSet& visited,
                                         AXRelatedObjectVector* related_objects,
                                         Vector<String>& ids) const {
   HeapVector<Member<Element>> elements;
-  AriaLabelledbyElementVector(elements, ids);
+  AriaLabelledbyElementVector(GetElement(), elements, ids);
   return TextFromElements(true, visited, elements, related_objects);
 }
 
 String AXObject::TextFromAriaDescribedby(AXRelatedObjectVector* related_objects,
                                          Vector<String>& ids) const {
   AXObjectSet visited;
+
   HeapVector<Member<Element>> elements;
-  ElementsFromAttribute(elements, html_names::kAriaDescribedbyAttr, ids);
+  ElementsFromAttribute(GetElement(), elements,
+                        html_names::kAriaDescribedbyAttr, ids);
   return TextFromElements(true, visited, elements, related_objects);
 }
 

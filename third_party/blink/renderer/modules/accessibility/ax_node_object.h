@@ -38,6 +38,7 @@ namespace blink {
 
 class AXObjectCacheImpl;
 class Element;
+class HTMLElement;
 class HTMLLabelElement;
 class Node;
 
@@ -77,9 +78,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   Element* MenuItemElementForMenu() const;
   Element* MouseButtonListener() const;
-  AXObject* CorrespondingControlAXObjectForLabelElement() const;
-  AXObject* CorrespondingLabelAXObject() const;
-  HTMLLabelElement* LabelElementContainer() const;
+  HTMLElement* CorrespondingControlForLabelElement() const;
 
   //
   // Overridden from AXObject.
@@ -210,7 +209,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                      AXRelatedObjectVector*) const override;
   String Placeholder(ax::mojom::blink::NameFrom) const override;
   String Title(ax::mojom::blink::NameFrom) const override;
-  bool NameFromLabelElement() const override;
 
   // Location
   void GetRelativeBounds(AXObject** out_container,
@@ -318,6 +316,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 #endif
 
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
+
+  static bool IsNameFromLabelElement(HTMLElement* control);
+  static bool IsRedundantLabel(HTMLLabelElement* label);
 
   DISALLOW_COPY_AND_ASSIGN(AXNodeObject);
 };

@@ -257,7 +257,8 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
   DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
 
   Vector<String> owned_id_vector;
-  owner->TokenVectorFromAttribute(owned_id_vector, html_names::kAriaOwnsAttr);
+  owner->TokenVectorFromAttribute(element, owned_id_vector,
+                                  html_names::kAriaOwnsAttr);
 
   // Track reverse relations for future tree updates.
   UpdateReverseRelations(owner, owned_id_vector);

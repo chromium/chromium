@@ -113,6 +113,7 @@ class CORE_EXPORT HTMLInputElement
   // its value can be protected from memorization by autofill or keyboards.
   bool HasBeenPasswordField() const;
 
+  bool IsCheckable() const;
   bool checked() const;
   void setChecked(
       bool,

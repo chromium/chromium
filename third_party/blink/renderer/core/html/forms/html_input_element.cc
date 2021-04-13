@@ -1024,6 +1024,10 @@ void HTMLInputElement::DispatchInputAndChangeEventIfNeeded() {
   }
 }
 
+bool HTMLInputElement::IsCheckable() const {
+  return input_type_->IsCheckable();
+}
+
 bool HTMLInputElement::checked() const {
   input_type_->ReadingChecked();
   return is_checked_;
@@ -1850,7 +1854,7 @@ int HTMLInputElement::scrollHeight() {
 }
 
 bool HTMLInputElement::ShouldAppearChecked() const {
-  return checked() && input_type_->IsCheckable();
+  return checked() && IsCheckable();
 }
 
 void HTMLInputElement::SetPlaceholderVisibility(bool visible) {

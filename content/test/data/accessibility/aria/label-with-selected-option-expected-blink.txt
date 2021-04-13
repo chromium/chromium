@@ -3,36 +3,61 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
-++++++++listBox ignored
-++++++++++listBoxOption ignored name='1' selected=false
-++++++++++listBoxOption ignored name='2' selected=true
-++++++++++listBoxOption ignored name='3' selected=false
+++++++++labelText
+++++++++++staticText name='Test 1: Flash the screen'
+++++++++++++inlineTextBox name='Test 1: Flash the screen'
+++++++++++listBox
+++++++++++++listBoxOption name='1' selected=false
+++++++++++++listBoxOption name='2' selected=true
+++++++++++++listBoxOption name='3' selected=false
+++++++++++staticText name='times.'
+++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
 ++++++++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
-++++++++comboBoxGrouping ignored
-++++++++++textField
-++++++++++listBox ignored
-++++++++++++listBoxOption ignored name='1' selected=false
-++++++++++++listBoxOption ignored name='2' selected=true
-++++++++++++listBoxOption ignored name='3' selected=false
+++++++++labelText
+++++++++++staticText name='Test 2: Flash the screen'
+++++++++++++inlineTextBox name='Test 2: Flash the screen'
+++++++++++comboBoxGrouping
+++++++++++++textField
+++++++++++++listBox
+++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++listBoxOption name='2' selected=true
+++++++++++++++listBoxOption name='3' selected=false
+++++++++++staticText name='times.'
+++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
 ++++++++checkBox name='Test 3: Flash the screen two times.' checkedState=false
-++++++++listBox ignored
-++++++++++listBoxOption ignored name='1' selected=false
-++++++++++listBoxOption ignored name='two' selected=true
-++++++++++listBoxOption ignored name='3' selected=false
+++++++++labelText
+++++++++++staticText name='Test 3: Flash the screen'
+++++++++++++inlineTextBox name='Test 3: Flash the screen'
+++++++++++listBox
+++++++++++++listBoxOption name='1' selected=false
+++++++++++++listBoxOption name='two' selected=true
+++++++++++++listBoxOption name='3' selected=false
+++++++++++staticText name='times.'
+++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
 ++++++++checkBox name='Test 4: Flash the screen two times.' checkedState=false
-++++++++comboBoxGrouping ignored
-++++++++++textField
-++++++++++listBox ignored
-++++++++++++listBoxOption ignored name='1' selected=false
-++++++++++++listBoxOption ignored name='two' selected=true
-++++++++++++listBoxOption ignored name='3' selected=false
+++++++++labelText
+++++++++++staticText name='Test 4: Flash the screen'
+++++++++++++inlineTextBox name='Test 4: Flash the screen'
+++++++++++comboBoxGrouping
+++++++++++++textField
+++++++++++++listBox
+++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++listBoxOption name='two' selected=true
+++++++++++++++listBoxOption name='3' selected=false
+++++++++++staticText name='times.'
+++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
 ++++++++checkBox name='Test 5: Flash the screen two times.' checkedState=false
-++++++++comboBoxMenuButton value='two'
-++++++++++listBox ignored
-++++++++++++listBoxOption ignored name='1' selected=false
-++++++++++++listBoxOption ignored name='two' selected=true
-++++++++++++listBoxOption ignored name='3' selected=false
+++++++++labelText
+++++++++++staticText name='Test 5: Flash the screen'
+++++++++++++inlineTextBox name='Test 5: Flash the screen'
+++++++++++comboBoxMenuButton value='two'
+++++++++++++listBox
+++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++listBoxOption name='two' selected=true
+++++++++++++++listBoxOption name='3' selected=false
+++++++++++staticText name='times.'
+++++++++++++inlineTextBox name='times.'

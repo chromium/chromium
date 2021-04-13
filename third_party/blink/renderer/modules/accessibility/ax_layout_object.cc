@@ -596,6 +596,19 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
         ignored_reasons->push_back(IgnoredReason(kAXPresentational));
       return true;
     }
+    // Ignore text inside of an ignored <label>.
+    // To save processing, only walk up the ignored objects.
+    // This means that other interesting objects inside the <label> will
+    // cause the text to be unignored.
+    AXObject* ancestor = ParentObject();
+    while (ancestor->AccessibilityIsIgnored()) {
+      if (ancestor->RoleValue() == ax::mojom::blink::Role::kLabelText) {
+        if (ignored_reasons)
+          ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+        return true;
+      }
+      ancestor = ancestor->ParentObject();
+    }
     return false;
   }
 
@@ -1170,17 +1183,18 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
   // Allow the element to perform any hit-testing it might need to do to reach
   // non-layout children.
   result = result->ElementAccessibilityHitTest(point);
-  if (result && result->AccessibilityIsIgnored()) {
+
+  while (result && result->AccessibilityIsIgnored()) {
     // If this element is the label of a control, a hit test should return the
-    // control.
-    if (auto* ax_object = DynamicTo<AXLayoutObject>(result)) {
-      AXObject* control_object =
-          ax_object->CorrespondingControlAXObjectForLabelElement();
-      if (control_object && control_object->NameFromLabelElement())
-        return control_object;
+    // control. The label is ignored because it's already reflected in the name.
+    if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
+      if (HTMLElement* control = label->control()) {
+        if (AXObject* ax_control = AXObjectCache().GetOrCreate(control))
+          return ax_control;
+      }
     }
 
-    result = result->ParentObjectUnignored();
+    result = result->ParentObject();
   }
 
   return result;

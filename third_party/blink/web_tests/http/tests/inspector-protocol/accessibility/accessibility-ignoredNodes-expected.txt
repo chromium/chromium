@@ -162,58 +162,50 @@ WebArea
 }
 
 WebArea
-  *Ignored
+  *Label
+    text "Content within label refers to label container"
 {
     domNode : label
-    ignored : true
-    ignoredReasons : [
-        [0] : {
-            name : labelFor
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        idref : checkbox
-                        nodeResult : input#checkbox
-                    }
-                ]
-                type : idref
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
             }
-        }
-    ]
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
     nodeId : <string>
+    properties : [
+    ]
     role : {
         type : internalRole
-        value : Ignored
+        value : Label
     }
 }
 
 WebArea
-  *Ignored
+  Label
+    *Ignored
 {
     domNode : span
     ignored : true
     ignoredReasons : [
         [0] : {
-            name : labelContainer
+            name : uninteresting
             value : {
-                relatedNodes : [
-                    [0] : {
-                        nodeResult : label
-                    }
-                ]
-                type : idref
-            }
-        }
-        [1] : {
-            name : labelFor
-            value : {
-                relatedNodes : [
-                    [0] : {
-                        idref : checkbox
-                        nodeResult : input#checkbox
-                    }
-                ]
-                type : idref
+                type : boolean
+                value : true
             }
         }
     ]

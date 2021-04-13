@@ -349,8 +349,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   Node* node = GetNode();
   if (!node) {
-    // TODO(accessibility) Nodeless pseudo element images are currently
-    // included, even if they don't have CSS alt text. Is this even useful?
+    // Nodeless pseudo element images are included, even if they don't have CSS
+    // alt text. This can allow auto alt to be applied to them.
     if (IsImage())
       return kIncludeObject;
     return kDefaultBehavior;
@@ -358,28 +358,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   if (IsTableLikeRole() || IsTableRowLikeRole() || IsTableCellLikeRole())
     return kIncludeObject;
-
-  // Ignore labels that are already referenced by a control but are not set to
-  // be focusable.
-  AXObject* control_ax_object = CorrespondingControlAXObjectForLabelElement();
-  if (control_ax_object && control_ax_object->IsCheckboxOrRadio() &&
-      control_ax_object->NameFromLabelElement() &&
-      AccessibleNode::GetPropertyOrARIAAttribute(
-          LabelElementContainer(), AOMStringProperty::kRole) == g_null_atom) {
-    AXObject* label_ax_object = CorrespondingLabelAXObject();
-    // If the label is set to be focusable, we should expose it.
-    if (label_ax_object && label_ax_object->CanSetFocusAttribute())
-      return kIncludeObject;
-
-    if (ignored_reasons) {
-      if (label_ax_object && label_ax_object != this)
-        ignored_reasons->push_back(
-            IgnoredReason(kAXLabelContainer, label_ax_object));
-
-      ignored_reasons->push_back(IgnoredReason(kAXLabelFor, control_ax_object));
-    }
-    return kIgnoreObject;
-  }
 
   // All focusable elements except the <body> are included.
   if (!IsA<HTMLBodyElement>(node) && CanSetFocusAttribute())
@@ -417,10 +395,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // to both Elements and pseudo-elements.
   base::Optional<String> alt_text = GetCSSAltText(GetNode());
   if (alt_text && !alt_text->IsEmpty())
-    return kIncludeObject;
-
-  // Don't ignore labels, because they serve as TitleUIElements.
-  if (IsA<HTMLLabelElement>(node))
     return kIncludeObject;
 
   // Don't ignored legends, because JAWS uses them to determine redundant text.
@@ -500,6 +474,19 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     return kIgnoreObject;
+  }
+
+  // Ignore labels that are already used to name a control.
+  // See IsRedundantLabel() for more commentary.
+  if (HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(node)) {
+    if (IsRedundantLabel(label)) {
+      if (ignored_reasons) {
+        ignored_reasons->push_back(
+            IgnoredReason(kAXLabelFor, AXObjectCache().Get(label->control())));
+      }
+      return kIgnoreObject;
+    }
+    return kIncludeObject;
   }
 
   return kDefaultBehavior;
@@ -2724,7 +2711,8 @@ void AXNodeObject::Dropeffects(
     return;
 
   Vector<String> str_dropeffects;
-  TokenVectorFromAttribute(str_dropeffects, html_names::kAriaDropeffectAttr);
+  TokenVectorFromAttribute(GetElement(), str_dropeffects,
+                           html_names::kAriaDropeffectAttr);
 
   if (str_dropeffects.IsEmpty()) {
     dropeffects.push_back(ax::mojom::blink::Dropeffect::kNone);
@@ -3129,48 +3117,75 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   return accumulated_text.ToString();
 }
 
-bool AXNodeObject::NameFromLabelElement() const {
-  // This unfortunately duplicates a bit of logic from textAlternative and
-  // nativeTextAlternative, but it's necessary because nameFromLabelElement
-  // needs to be called from computeAccessibilityIsIgnored, which isn't allowed
-  // to call axObjectCache->getOrCreate.
+// static
+bool AXNodeObject::IsNameFromLabelElement(HTMLElement* control) {
+  // This duplicates some logic from TextAlternative()/NativeTextAlternative(),
+  // but is necessary because IsNameFromLabelElement() needs to be called from
+  // ComputeAccessibilityIsIgnored(), which isn't allowed to call
+  // AXObjectCache().GetOrCreate() in random places in the tree.
 
-  if (!GetNode() && !GetLayoutObject())
+  if (!control)
     return false;
 
-  // Step 2A from: http://www.w3.org/TR/accname-aam-1.1
-  if (IsHiddenForTextAlternativeCalculation())
-    return false;
-
+  // aria-labelledby takes precedence over <label>.
   // Step 2B from: http://www.w3.org/TR/accname-aam-1.1
-  // Try both spellings, but prefer aria-labelledby, which is the official spec.
-  const QualifiedName& attr =
-      HasAttribute(html_names::kAriaLabeledbyAttr) &&
-              !HasAttribute(html_names::kAriaLabelledbyAttr)
-          ? html_names::kAriaLabeledbyAttr
-          : html_names::kAriaLabelledbyAttr;
   HeapVector<Member<Element>> elements_from_attribute;
   Vector<String> ids;
-  ElementsFromAttribute(elements_from_attribute, attr, ids);
-  if (elements_from_attribute.size() > 0)
+  if (AriaLabelledbyElementVector(control, elements_from_attribute, ids))
     return false;
 
+  // aria-label takes precedence over <label> .
   // Step 2C from: http://www.w3.org/TR/accname-aam-1.1
-  const AtomicString& aria_label =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLabel);
+  const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
+      control, AOMStringProperty::kLabel);
   if (!aria_label.IsEmpty())
     return false;
 
-  // Based on
-  // http://rawgit.com/w3c/aria/master/html-aam/html-aam.html#accessible-name-and-description-calculation
+  // <label> will be used. It contains the control or points via <label for>.
+  // Based on https://www.w3.org/TR/html-aam-1.0
   // 5.1/5.5 Text inputs, Other labelable Elements
-  auto* html_element = DynamicTo<HTMLElement>(GetNode());
-  if (html_element && html_element->IsLabelable()) {
-    if (html_element->labels() && html_element->labels()->length() > 0)
-      return true;
-  }
+  auto* labels = control->labels();
+  return labels && labels->length();
+}
 
-  return false;
+// static
+bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
+  // Determine if label is redundant:
+  // - Labelling a checkbox or radio.
+  // - Text was already used to name the checkbox/radio.
+  // - No interesting content in the label (focusable or semantically useful)
+  // TODO(accessibility) Consider moving this logic to the browser side.
+  // TODO(accessibility) Consider this for more controls, such as textboxes.
+  // There isn't a clear history why this is only done for checkboxes, and not
+  // other controls such as textboxes. It may be because the checkbox/radio
+  // itself is small, so this makes a nicely sized combined click target. Most
+  // ATs do not already have features to combine labels and controls, e.g.
+  // removing redundant announcements caused by having text and named controls
+  // as separate objects.
+  HTMLInputElement* input = DynamicTo<HTMLInputElement>(label->control());
+  if (!input)
+    return false;
+
+  if (!input->IsCheckable())
+    return false;
+
+  if (!IsNameFromLabelElement(input))
+    return false;
+
+  DCHECK_NE(input->labels()->length(), 0U);
+
+  // Look for any first child element that is not the input control itself.
+  // This could be important semantically.
+  Element* first_child = ElementTraversal::FirstChild(*label);
+  if (!first_child)
+    return true;  // No element children.
+
+  if (first_child != input)
+    return false;  // Has an element child that is not the input control.
+
+  // The first child was the input control.
+  // If there's another child, then it won't be the input control.
+  return ElementTraversal::NextSibling(*first_child) == nullptr;
 }
 
 void AXNodeObject::GetRelativeBounds(AXObject** out_container,
@@ -4101,48 +4116,6 @@ const AtomicString& AXNodeObject::GetInternalsAttribute(
   return element.EnsureElementInternals().FastGetAttribute(attribute);
 }
 
-AXObject* AXNodeObject::CorrespondingControlAXObjectForLabelElement() const {
-  HTMLLabelElement* label_element = LabelElementContainer();
-  if (!label_element)
-    return nullptr;
-
-  HTMLElement* corresponding_control = label_element->control();
-  if (!corresponding_control)
-    return nullptr;
-
-  // Make sure the corresponding control isn't a descendant of this label
-  // that's in the middle of being destroyed.
-  if (corresponding_control->GetLayoutObject() &&
-      !corresponding_control->GetLayoutObject()->Parent())
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(corresponding_control);
-}
-
-AXObject* AXNodeObject::CorrespondingLabelAXObject() const {
-  HTMLLabelElement* label_element = LabelElementContainer();
-  if (!label_element)
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(label_element);
-}
-
-HTMLLabelElement* AXNodeObject::LabelElementContainer() const {
-  if (!GetNode())
-    return nullptr;
-
-  // the control element should not be considered part of the label
-  if (IsControl())
-    return nullptr;
-
-  // the link element should not be considered part of the label
-  if (IsLink())
-    return nullptr;
-
-  // find if this has a ancestor that is a label
-  return Traversal<HTMLLabelElement>::FirstAncestorOrSelf(*GetNode());
-}
-
 bool AXNodeObject::OnNativeFocusAction() {
   // Checking if node is focusable in a native focus action requires that we
   // have updated style and layout tree, since the focus check relies on the
@@ -5053,9 +5026,8 @@ String AXNodeObject::Description(
 
   Vector<String> ids;
   HeapVector<Member<Element>> elements_from_attribute;
-  ElementsFromAttribute(elements_from_attribute,
-                        html_names::kAriaDescribedbyAttr, ids);
-  if (!elements_from_attribute.IsEmpty()) {
+  if (ElementsFromAttribute(element, elements_from_attribute,
+                            html_names::kAriaDescribedbyAttr, ids)) {
     // TODO(meredithl): Determine description sources when |aria_describedby| is
     // the empty string, in order to make devtools work with attr-associated
     // elements.
@@ -5070,7 +5042,7 @@ String AXNodeObject::Description(
     for (auto& element : elements_from_attribute)
       ids.push_back(element->GetIdAttribute());
 
-    TokenVectorFromAttribute(ids, html_names::kAriaDescribedbyAttr);
+    TokenVectorFromAttribute(element, ids, html_names::kAriaDescribedbyAttr);
     AXObjectCache().UpdateReverseRelations(this, ids);
 
     if (!description.IsNull()) {

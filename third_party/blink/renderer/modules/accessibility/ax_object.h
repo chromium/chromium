@@ -401,7 +401,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                      AtomicString& result) const;
   virtual AccessibleNode* GetAccessibleNode() const;
 
-  void TokenVectorFromAttribute(Vector<String>&, const QualifiedName&) const;
+  static void TokenVectorFromAttribute(Element* element,
+                                       Vector<String>&,
+                                       const QualifiedName&);
 
   // Serialize the properties of this node into |node_data|.
   //
@@ -438,7 +440,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   bool IsButton() const;
   bool IsCanvas() const;
-  bool IsCheckboxOrRadio() const;
   bool IsColorWell() const;
   virtual bool IsControl() const;
   virtual bool IsDefault() const;
@@ -635,13 +636,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Returns result of Accessible Name Calculation algorithm.
   // This is a simpler high-level interface to |name| used by Inspector.
   String ComputedName() const;
-
-  // Internal function used to determine whether the result of calling |GetName|
-  // on this object would return text that came from the an HTML label element
-  // or not. This is intended to be faster than calling |GetName| or
-  // |TextAlternative|, and without side effects (it won't call
-  // AXObjectCache->GetOrCreate).
-  virtual bool NameFromLabelElement() const { return false; }
 
   // Internal function used to determine whether the element supports deriving
   // its accessible name from its descendants. The result of calling |GetName|
@@ -1317,11 +1311,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                           AXObjectSet& visited,
                           HeapVector<Member<Element>>& elements,
                           AXRelatedObjectVector* related_objects) const;
-  void ElementsFromAttribute(HeapVector<Member<Element>>& elements,
-                             const QualifiedName&,
-                             Vector<String>& ids) const;
-  void AriaLabelledbyElementVector(HeapVector<Member<Element>>& elements,
-                                   Vector<String>& ids) const;
+  static bool ElementsFromAttribute(Element* from,
+                                    HeapVector<Member<Element>>& elements,
+                                    const QualifiedName&,
+                                    Vector<String>& ids);
+  static bool AriaLabelledbyElementVector(Element* from,
+                                          HeapVector<Member<Element>>& elements,
+                                          Vector<String>& ids);
   String TextFromAriaLabelledby(AXObjectSet& visited,
                                 AXRelatedObjectVector* related_objects,
                                 Vector<String>& ids) const;
