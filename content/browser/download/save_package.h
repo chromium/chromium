@@ -32,6 +32,7 @@
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/mojom/web_bundler.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "url/gurl.h"
 
 class GURL;
