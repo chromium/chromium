@@ -32,19 +32,17 @@
       connected$="[[isConnectedState_(managedProperties_)]]">
     [[getStateText_(managedProperties_)]]
   </div>
-  <template is="dom-if" if="[[showConfigurableSections_]]" restamp>
-    <cr-button on-click="onForgetTap_"
-        hidden$="[[!showForget_(managedProperties_)]]"
-        disabled="[[disabled_]]">
-      $i18n{networkButtonForget}
-    </cr-button>
-    <cr-button id="connectDisconnect"
-        class="action-button" on-click="onConnectDisconnectClick_"
-        hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
-        disabled="[[!enableConnectDisconnect_(managedProperties_, disabled_)]]">
-      [[getConnectDisconnectText_(managedProperties_)]]
-    </cr-button>
-  </template>
+  <cr-button on-click="onForgetTap_"
+      hidden$="[[!showForget_(managedProperties_)]]"
+      disabled="[[disabled_]]">
+    $i18n{networkButtonForget}
+  </cr-button>
+  <cr-button id="connectDisconnect"
+      class="action-button" on-click="onConnectDisconnectClick_"
+      hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
+      disabled="[[!enableConnectDisconnect_(managedProperties_, disabled_)]]">
+    [[getConnectDisconnectText_(managedProperties_)]]
+  </cr-button>
 </div>
 
 <template is="dom-if" if="[[showConfigurableSections_]]" restamp>

@@ -575,8 +575,6 @@ suite('InternetDetailPage', function() {
           });
           await flushAsync();
           assertTrue(internetDetailPage.showConfigurableSections_);
-          // Check that an element from first dom-if exists
-          assertTrue(!!internetDetailPage.$$('#connectDisconnect'));
           // Check that an element from the primary account section exists.
           assertTrue(!!internetDetailPage.$$('#allowDataRoaming'));
         });
@@ -610,10 +608,11 @@ suite('InternetDetailPage', function() {
           });
           await flushAsync();
           assertFalse(internetDetailPage.showConfigurableSections_);
-          // Check that an element from first dom-if exists
-          assertFalse(!!internetDetailPage.$$('#connectDisconnect'));
           // Check that an element from the primary account section exists.
           assertFalse(!!internetDetailPage.$$('#allowDataRoaming'));
+          // The section ConnectDisconnect button belongs to should still be
+          // showing.
+          assertTrue(!!internetDetailPage.$$('#connectDisconnect'));
         });
 
     test('Hide config section when sim becomes non-active', async () => {
