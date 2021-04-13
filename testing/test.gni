@@ -13,6 +13,9 @@ declare_args() {
   # For more info about RTS, please see
   # //docs/testing/regression-test-selection.md
   use_rts = false
+
+  # Some component repos (e.g. ANGLE) import //testing but do not have "location_tags.json"
+  tests_have_location_tags = true
 }
 
 if (is_android) {
@@ -125,7 +128,9 @@ template("test") {
         if (!defined(data)) {
           data = []
         }
-        data += [ "//testing/location_tags.json" ]
+        if (tests_have_location_tags) {
+          data += [ "//testing/location_tags.json" ]
+        }
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
@@ -290,7 +295,9 @@ template("test") {
       } else {
         data_deps = []
       }
-      data = [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data = [ "//testing/location_tags.json" ]
+      }
 
       if (use_rts) {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
@@ -332,7 +339,9 @@ template("test") {
       package = ":$_pkg_target"
       package_name_override = _output_name
 
-      data = [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data = [ "//testing/location_tags.json" ]
+      }
       data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
 
       if (use_rts) {
@@ -396,7 +405,9 @@ template("test") {
       if (!defined(data)) {
         data = []
       }
-      data += [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data += [ "//testing/location_tags.json" ]
+      }
     }
 
     _resources_bundle_data = target_name + "_resources_bundle_data"
@@ -476,7 +487,9 @@ template("test") {
         override_board = invoker.override_board
       }
 
-      data = [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data = [ "//testing/location_tags.json" ]
+      }
 
       if (use_rts) {
         data_deps = [ ":${invoker.target_name}__rts_filters" ]
@@ -537,7 +550,9 @@ template("test") {
       } else {
         executable = "//testing/test_env.py"
       }
-      data += [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data += [ "//testing/location_tags.json" ]
+      }
 
       executable_args = [
         "@WrappedPath(../../build/lacros/test_runner.py)",
@@ -621,7 +636,9 @@ template("test") {
       } else {
         executable = "//testing/test_env.py"
       }
-      data += [ "//testing/location_tags.json" ]
+      if (tests_have_location_tags) {
+        data += [ "//testing/location_tags.json" ]
+      }
 
       executable_args = [
         "@WrappedPath(./${_executable})",
@@ -743,7 +760,9 @@ template("script_test") {
     if (defined(invoker.data)) {
       data += invoker.data
     }
-    data += [ "//testing/location_tags.json" ]
+    if (tests_have_location_tags) {
+      data += [ "//testing/location_tags.json" ]
+    }
 
     data_deps = [ "//testing:test_scripts_shared" ]
     if (defined(invoker.data_deps)) {
