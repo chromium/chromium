@@ -425,10 +425,7 @@ String TextResourceDecoder::Decode(const char* data, size_t data_len) {
       return g_empty_string;
   }
 
-  // We check XML declaration in HTML content only if there is enough data
-  // available
-  if (((options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent &&
-        len >= kMinimumLengthOfXMLDeclaration) ||
+  if ((options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent ||
        options_.GetContentType() == TextResourceDecoderOptions::kXMLContent) &&
       !checked_for_xml_charset_) {
     if (!CheckForXMLCharset(data, len, moved_data_to_buffer))

@@ -136,7 +136,7 @@ TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
   EXPECT_TRUE(document.IsPrefetchOnly());
   HTMLDocumentParser* parser = CreateParser(document);
 
-  const char kBytes[] = "<ht";
+  const char kBytes[] = "<httttttt";
   parser->AppendBytes(kBytes, sizeof(kBytes));
   // The bytes are forwarded to the preload scanner, not to the tokenizer.
   HTMLParserScriptRunnerHost* script_runner_host =
@@ -158,7 +158,7 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   // Use ForceSynchronousParsing to allow calling append().
   HTMLDocumentParser* parser = CreateParser(document);
 
-  const char kBytes[] = "<ht";
+  const char kBytes[] = "<htttttt";
   parser->AppendBytes(kBytes, sizeof(kBytes));
   test::RunPendingTasks();
   // The bytes are forwarded to the tokenizer.

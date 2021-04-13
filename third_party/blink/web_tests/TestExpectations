@@ -2531,13 +2531,12 @@ crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.serviceworke
 crbug.com/626703 external/wpt/websockets/Send-binary-arraybufferview-int16-offset.any.html?wpt_flags=h2 [ Crash Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/url/a-element-xhtml.xhtml [ Failure Crash ]
 crbug.com/626703 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Crash Timeout Failure ]
-crbug.com/626703 [ Mac ] external/wpt/html/syntax/xmldecl/xmldecl-1.html [ Failure Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/html/syntax/xmldecl/xmldecl-1.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-intrinsic-isize-003.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/selection/contenteditable/modifying-selection-with-primary-mouse-button.tentative.html [ Failure Crash ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/readable-streams/tee.any.html [ Failure Crash ]
 crbug.com/626703 external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Crash Timeout Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/url/url-origin.any.worker.html [ Failure Crash ]
-crbug.com/626703 [ Mac ] external/wpt/html/syntax/xmldecl/xmldecl.html [ Failure Crash Timeout ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/extended-payload-length.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 external/wpt/websockets/binary/001.html?wpt_flags=h2 [ Timeout ]
@@ -6759,7 +6758,6 @@ crbug.com/1196620 [ Mac ] external/wpt/css/compositing/mix-blend-mode/mix-blend-
 crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
 
 # Sheriff 2021-04-08
-crbug.com/1197073 [ Linux ] external/wpt/html/syntax/xmldecl/xmldecl-1.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
 crbug.com/1197087 external/wpt/css/css-transitions/AnimationEffect-getComputedTiming.tentative.html [ Pass Failure ]
