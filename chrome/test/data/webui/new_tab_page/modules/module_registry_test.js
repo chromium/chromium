@@ -53,17 +53,16 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     const bazModule =
         /** @type {!HTMLElement} */ (document.createElement('div'));
     const bazModuleResolver = new PromiseResolver();
-    const descriptors = [
+    ModuleRegistry.getInstance().registerModules([
       new ModuleDescriptor('foo', 'bli', () => Promise.resolve(fooModule)),
       new ModuleDescriptor('bar', 'blu', () => Promise.resolve(null)),
       new ModuleDescriptor('baz', 'bla', () => bazModuleResolver.promise),
       new ModuleDescriptor('buz', 'blo', () => Promise.resolve(fooModule)),
-    ];
+    ]);
     windowProxy.setResultFor('now', 5.0);
 
     // Act.
-    const moduleRegistry = new ModuleRegistry(descriptors);
-    const modulesPromise = moduleRegistry.initializeModules(0);
+    const modulesPromise = ModuleRegistry.getInstance().initializeModules(0);
     callbackRouterRemote.setDisabledModules(false, ['buz']);
     // Wait for first batch of modules.
     await flushTasks();

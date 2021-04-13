@@ -14,10 +14,11 @@ import {driveDescriptor} from './drive/module.js';
 import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 // </if>
 import {ModuleDescriptor} from './module_descriptor.js';
+import {ModuleRegistry} from './module_registry.js';
 import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
-export const descriptors = [];
+const descriptors = [];
 
 if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
   descriptors.push(shoppingTasksDescriptor);
@@ -39,3 +40,5 @@ if (loadTimeData.getBoolean('driveModuleEnabled')) {
 descriptors.push(dummyDescriptor);
 descriptors.push(dummyDescriptor2);
 // </if>
+
+ModuleRegistry.getInstance().registerModules(descriptors);
