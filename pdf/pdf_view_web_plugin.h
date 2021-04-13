@@ -55,7 +55,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidFailLoading(const blink::WebURLError& error) override;
 
   // PdfViewPluginBase:
-  void UpdateCursor(ui::mojom::CursorType cursor_type) override;
+  void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;

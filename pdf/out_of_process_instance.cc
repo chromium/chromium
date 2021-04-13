@@ -824,10 +824,10 @@ void OutOfProcessInstance::SetFormFieldInFocus(bool in_focus) {
                                          : PP_TEXTINPUT_TYPE_DEV_NONE);
 }
 
-void OutOfProcessInstance::UpdateCursor(ui::mojom::CursorType cursor_type) {
-  if (cursor_type == cursor_type_)
+void OutOfProcessInstance::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
+  if (cursor_type() == new_cursor_type)
     return;
-  cursor_type_ = cursor_type;
+  set_cursor_type(new_cursor_type);
 
   const PPB_CursorControl_Dev* cursor_interface =
       reinterpret_cast<const PPB_CursorControl_Dev*>(
@@ -839,7 +839,7 @@ void OutOfProcessInstance::UpdateCursor(ui::mojom::CursorType cursor_type) {
   }
 
   cursor_interface->SetCursor(pp_instance(),
-                              PPCursorTypeFromCursorType(cursor_type_),
+                              PPCursorTypeFromCursorType(cursor_type()),
                               pp::ImageData().pp_resource(), nullptr);
 }
 

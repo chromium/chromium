@@ -162,7 +162,7 @@ class PDFEngine {
                                        const float* zoom) {}
 
     // Updates the cursor.
-    virtual void UpdateCursor(ui::mojom::CursorType cursor_type) {}
+    virtual void UpdateCursor(ui::mojom::CursorType new_cursor_type) {}
 
     // Updates the tick marks in the vertical scrollbar.
     virtual void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) {}

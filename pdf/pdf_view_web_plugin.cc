@@ -241,7 +241,7 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
           ? blink::WebInputEventResult::kHandledApplication
           : blink::WebInputEventResult::kNotHandled;
 
-  // TODO(crbug.com/1191817): Accordingly change `cursor`.
+  *cursor = cursor_type();
 
   return result;
 }
@@ -255,7 +255,9 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
-void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType cursor_type) {}
+void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
+  set_cursor_type(new_cursor_type);
+}
 
 void PdfViewWebPlugin::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {}
