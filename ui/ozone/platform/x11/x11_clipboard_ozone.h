@@ -44,8 +44,8 @@ class X11ClipboardOzone : public PlatformClipboard {
       ClipboardBuffer buffer,
       PlatformClipboard::GetMimeTypesClosure callback) override;
   bool IsSelectionOwner(ClipboardBuffer buffer) override;
-  void SetSequenceNumberUpdateCb(
-      PlatformClipboard::SequenceNumberUpdateCb cb) override;
+  void SetClipboardDataChangedCallback(
+      ClipboardDataChangedCallback data_changed_callback) override;
   bool IsSelectionBufferAvailable() const override;
 
  private:
@@ -53,8 +53,7 @@ class X11ClipboardOzone : public PlatformClipboard {
 
   const std::unique_ptr<XClipboardHelper> helper_;
 
-  // Notifies whenever clipboard sequence number is changed.
-  PlatformClipboard::SequenceNumberUpdateCb update_sequence_cb_;
+  ClipboardDataChangedCallback clipboard_changed_callback_;
 };
 
 }  // namespace ui

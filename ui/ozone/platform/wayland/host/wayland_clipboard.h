@@ -52,8 +52,8 @@ class WaylandClipboard : public PlatformClipboard {
       ClipboardBuffer buffer,
       PlatformClipboard::GetMimeTypesClosure callback) override;
   bool IsSelectionOwner(ClipboardBuffer buffer) override;
-  void SetSequenceNumberUpdateCb(
-      PlatformClipboard::SequenceNumberUpdateCb cb) override;
+  void SetClipboardDataChangedCallback(
+      ClipboardDataChangedCallback data_changed_callback) override;
   bool IsSelectionBufferAvailable() const override;
 
  private:

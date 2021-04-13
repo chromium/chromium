@@ -59,9 +59,9 @@ bool X11ClipboardOzone::IsSelectionOwner(ClipboardBuffer buffer) {
   return helper_->IsSelectionOwner(buffer);
 }
 
-void X11ClipboardOzone::SetSequenceNumberUpdateCb(
-    PlatformClipboard::SequenceNumberUpdateCb cb) {
-  update_sequence_cb_ = std::move(cb);
+void X11ClipboardOzone::SetClipboardDataChangedCallback(
+    ClipboardDataChangedCallback data_changed_callback) {
+  clipboard_changed_callback_ = std::move(data_changed_callback);
 }
 
 bool X11ClipboardOzone::IsSelectionBufferAvailable() const {
@@ -69,8 +69,8 @@ bool X11ClipboardOzone::IsSelectionBufferAvailable() const {
 }
 
 void X11ClipboardOzone::OnSelectionChanged(ClipboardBuffer buffer) {
-  if (update_sequence_cb_)
-    update_sequence_cb_.Run(buffer);
+  if (clipboard_changed_callback_)
+    clipboard_changed_callback_.Run(buffer);
 }
 
 }  // namespace ui

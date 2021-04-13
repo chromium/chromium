@@ -72,8 +72,8 @@ class StubPlatformClipboard : public PlatformClipboard {
   bool IsSelectionOwner(ClipboardBuffer buffer) override {
     return is_owner_[buffer];
   }
-  void SetSequenceNumberUpdateCb(
-      PlatformClipboard::SequenceNumberUpdateCb cb) override {}
+  void SetClipboardDataChangedCallback(
+      PlatformClipboard::ClipboardDataChangedCallback cb) override {}
   bool IsSelectionBufferAvailable() const override { return false; }
 
  private:
@@ -96,7 +96,7 @@ class ClipboardOzone::AsyncClipboardOzone {
     auto update_sequence_cb =
         base::BindRepeating(&AsyncClipboardOzone::UpdateClipboardSequenceNumber,
                             weak_factory_.GetWeakPtr());
-    platform_clipboard_->SetSequenceNumberUpdateCb(
+    platform_clipboard_->SetClipboardDataChangedCallback(
         std::move(update_sequence_cb));
   }
 
@@ -263,6 +263,8 @@ class ClipboardOzone::AsyncClipboardOzone {
 
   void UpdateClipboardSequenceNumber(ClipboardBuffer buffer) {
     ++clipboard_sequence_number_[buffer];
+
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
   // Clipboard data accumulated for writing.
