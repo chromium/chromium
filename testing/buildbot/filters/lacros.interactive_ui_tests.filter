@@ -40,7 +40,6 @@
 -StartupBrowserCreatorTest.LastUsedProfileActivated
 -TabDragging*
 -TabMetricsLoggerTest*
--ToolbarActionViewInteractiveUITest*
 -WidgetCaptureTest.SystemModalWindowReleasesCapture
 -WidgetInputMethodInteractiveTest*
 
