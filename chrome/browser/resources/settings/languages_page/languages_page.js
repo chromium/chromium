@@ -336,19 +336,6 @@ Polymer({
         /** @type {!Route} */ (routes.EDIT_DICTIONARY));
   },
 
-  // <if expr="not chromeos and not lacros">
-  /**
-   * Opens the Language Settings page.
-   * @private
-   */
-  onLanguagesSubpageClick_() {
-    if (this.enableDesktopRestructuredLanguageSettings_) {
-      Router.getInstance().navigateTo(
-          /** @type {!Route} */ (routes.LANGUAGE_SETTINGS));
-    }
-  },
-  // </if>
-
   /**
    * Handler for enabling or disabling spell check for a specific language.
    * @param {!{target: Element, model: !{item: !LanguageState}}} e
@@ -414,7 +401,7 @@ Polymer({
     return item.isManaged || !item.language.supportsSpellcheck ||
         item.downloadDictionaryFailureCount > 0;
   },
-  // </if>
+  // </if> expr="not is_macosx"
 
   /**
    * @return {string|undefined}
@@ -441,6 +428,19 @@ Polymer({
           LanguageSettingsPageImpressionType.MAIN);
     }
   },
+
+  // <if expr="not chromeos and not lacros">
+  /**
+   * Opens the Language Settings page.
+   * @private
+   */
+  onLanguagesSubpageClick_() {
+    if (this.enableDesktopRestructuredLanguageSettings_) {
+      Router.getInstance().navigateTo(
+          /** @type {!Route} */ (routes.LANGUAGE_SETTINGS));
+    }
+  },
+  // </if>
 
   /**
    * Toggles the expand button within the element being listened to.
