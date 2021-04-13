@@ -20,8 +20,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/resource/scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace content {
 class NavigationHandle;
@@ -103,6 +108,9 @@ class NewTabPageUI
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
+
+  static base::RefCountedMemory* GetFaviconResourceBytes(
+      ui::ScaleFactor scale_factor);
 
  private:
   // new_tab_page::mojom::PageHandlerFactory:

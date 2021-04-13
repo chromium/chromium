@@ -1072,22 +1072,6 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 }
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
-  // Suppress the icon for the new-tab page, even if a navigation to it is
-  // not committed yet. Note that we're looking at the visible URL, so
-  // navigations from NTP generally don't hit this case and still show an icon.
-  GURL url = web_contents->GetVisibleURL();
-  if (url.SchemeIs(content::kChromeUIScheme) &&
-      url.host_piece() == chrome::kChromeUINewTabHost) {
-    return false;
-  }
-
-  // Also suppress instant-NTP. This does not use search::IsInstantNTP since
-  // it looks at the last-committed entry and we need to show icons for pending
-  // navigations away from it.
-  if (search::IsInstantNTPURL(url, profile_)) {
-    return false;
-  }
-
   // Suppress for System Apps.
   if (app_controller_ && app_controller_->is_for_system_web_app()) {
     return false;

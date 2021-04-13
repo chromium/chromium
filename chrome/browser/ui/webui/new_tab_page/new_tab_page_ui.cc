@@ -32,8 +32,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "chrome/grit/new_tab_page_resources_map.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -45,6 +47,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
@@ -498,4 +501,12 @@ void NewTabPageUI::UpdateBackgroundColor(const NtpTheme& theme) {
                     std::string(encoded_url.data(), encoded_url.length()));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
+}
+
+// static
+base::RefCountedMemory* NewTabPageUI::GetFaviconResourceBytes(
+    ui::ScaleFactor scale_factor) {
+  return static_cast<base::RefCountedMemory*>(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+          IDR_PRODUCT_LOGO_16, scale_factor));
 }

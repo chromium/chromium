@@ -1202,6 +1202,9 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return AppLauncherPageUI::GetFaviconResourceBytes(scale_factor);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+  if (page_url.host_piece() == chrome::kChromeUINewTabPageHost)
+    return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
+
   // Bookmarks are part of NTP on Android.
   if (page_url.host_piece() == chrome::kChromeUIBookmarksHost)
     return BookmarksUI::GetFaviconResourceBytes(scale_factor);
