@@ -84,6 +84,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 
   auto segment_reader =
       SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  segment_reader->LockData();
 
   const char* segment;
   size_t position = 0;
@@ -93,6 +94,8 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
     position += length;
   }
   EXPECT_EQ(position, kDataSize);
+
+  segment_reader->UnlockData();
 }
 
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
@@ -110,6 +113,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
 
   auto segment_reader =
       SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  segment_reader->LockData();
   auto sk_data = segment_reader->GetAsSkData();
 
   const char* segment;
@@ -120,6 +124,8 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
     position += length;
   }
   EXPECT_EQ(position, kDataSize);
+
+  segment_reader->UnlockData();
 }
 
 }  // namespace blink

@@ -140,8 +140,6 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
 }
 
 void ParkableImageManager::Remove(ParkableImage* image) {
-  DCHECK(IsMainThread());
-
   MutexLocker lock(lock_);
 
   // Image could be on disk or unparked. Remove it in either case.
@@ -162,8 +160,6 @@ void ParkableImageManager::MoveImage(ParkableImage* image,
 }
 
 bool ParkableImageManager::IsRegistered(ParkableImage* image) {
-  DCHECK(IsMainThread());
-
   MutexLocker lock(lock_);
 
   auto* map = image->is_on_disk() ? &on_disk_images_ : &unparked_images_;
@@ -190,8 +186,9 @@ void ParkableImageManager::ScheduleDelayedParkingTaskIfNeeded() {
   if (has_pending_parking_task_)
     return;
 
+  auto* thread = Thread::MainThread();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      thread->GetTaskRunner();
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableImageManager::MaybeParkImages,

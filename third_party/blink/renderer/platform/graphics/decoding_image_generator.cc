@@ -37,6 +37,22 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
+namespace {
+class ScopedSegmentReaderDataLocker {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedSegmentReaderDataLocker(blink::SegmentReader* segment_reader)
+      : segment_reader_(segment_reader) {
+    segment_reader_->LockData();
+  }
+  ~ScopedSegmentReaderDataLocker() { segment_reader_->UnlockData(); }
+
+ private:
+  blink::SegmentReader* const segment_reader_;
+};
+}  // namespace
+
 namespace blink {
 
 // static
@@ -178,6 +194,8 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
   {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                  "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
+
+    ScopedSegmentReaderDataLocker lock_data(data_.get());
     decoded = frame_generator_->DecodeAndScale(
         data_.get(), all_data_received_, frame_index, decode_info, memory,
         adjusted_row_bytes, alpha_option, client_id);
@@ -226,6 +244,8 @@ bool DecodingImageGenerator::QueryYUVA(
   TRACE_EVENT0("blink", "DecodingImageGenerator::QueryYUVAInfo");
 
   DCHECK(all_data_received_);
+
+  ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->GetYUVAInfo(data_.get(), supported_data_types,
                                        yuva_pixmap_info);
 }
@@ -261,6 +281,7 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
     return false;
   }
 
+  ScopedSegmentReaderDataLocker lock_data(data_.get());
   return frame_generator_->DecodeToYUV(
       data_.get(), frame_index, pixmaps.plane(0).colorType(), plane_sizes,
       plane_addrs, plane_row_bytes);

@@ -444,6 +444,7 @@ TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
   EXPECT_TRUE(MaybePark(pi));
 
   auto snapshot = pi->MakeROSnapshot();
+  snapshot->LockData();
 
   // Run task to park image.
   RunPostedTasks();
@@ -471,6 +472,7 @@ TEST_F(ParkableImageTest, ParkAndUnparkAborted) {
   EXPECT_FALSE(MaybePark(pi));
 
   // kill the old snapshot.
+  snapshot->UnlockData();
   snapshot = nullptr;
 
   // Now that snapshot is gone, we can park.
