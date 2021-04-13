@@ -162,31 +162,20 @@ def _chromium_tests_property(*, project_trigger_overrides):
 
     return chromium_tests or None
 
-def _goma_property(*, goma_backend, goma_debug, goma_enable_ats, goma_jobs, os):
+def _goma_property(*, goma_backend, goma_debug, goma_enable_ats, goma_jobs):
     goma_properties = {}
 
     goma_backend = defaults.get_value("goma_backend", goma_backend)
-    if goma_backend != None:
-        goma_properties.update(goma_backend)
+    if goma_backend == None:
+        return None
+    goma_properties.update(goma_backend)
 
     goma_debug = defaults.get_value("goma_debug", goma_debug)
     if goma_debug:
         goma_properties["debug"] = True
 
-    goma_enable_ats = defaults.get_value("goma_enable_ats", goma_enable_ats)
-
-    # TODO(crbug.com/1040754): Remove this flag.
-    if goma_enable_ats == args.COMPUTE:
-        goma_enable_ats = (
-            os and os.category in (os_category.LINUX, os_category.WINDOWS) and
-            goma_backend in (
-                goma.backend.RBE_TOT,
-                goma.backend.RBE_STAGING,
-                goma.backend.RBE_PROD,
-            )
-        )
-    if goma_enable_ats:
-        goma_properties["enable_ats"] = True
+    if goma_enable_ats != None:
+        goma_properties["enable_ats"] = goma_enable_ats
 
     goma_jobs = defaults.get_value("goma_jobs", goma_jobs)
     if goma_jobs != None:
@@ -437,8 +426,10 @@ def builder(
         True, the 'debug' field will be set in the '$build/goma' property. By
         default, considered False.
       * goma_enable_ats - a boolean indicating whether ats should be enabled for
-        goma. If True, the 'enable_ats' field will be set in the '$build/goma'
-        property. By default, considered False.
+        goma or args.COMPUTE if ats should be enabled where it is needed.
+        If True or False are explicitly set, the 'enable_ats' field will be set
+        in the '$build/goma' property.  By default, args.COMPUTE is set and
+        'enable_ats' fields is set only if ats need to be enabled by default.
       * goma_jobs - a member of the `goma.jobs` enum indicating the number of jobs
         to be used by the builder. Sets the 'jobs' field of the '$build/goma'
         property will be set according to the enum member. By default, the 'jobs'
@@ -576,15 +567,22 @@ def builder(
     if chromium_tests != None:
         properties["$build/chromium_tests"] = chromium_tests
 
-    goma = _goma_property(
+    goma_enable_ats = defaults.get_value("goma_enable_ats", goma_enable_ats)
+
+    # TODO(crbug.com/1040754): Remove this flag.
+    if goma_enable_ats == args.COMPUTE:
+        if os and os.category in (os_category.LINUX, os_category.WINDOWS):
+            goma_enable_ats = True
+        else:
+            goma_enable_ats = None
+    gp = _goma_property(
         goma_backend = goma_backend,
         goma_debug = goma_debug,
         goma_enable_ats = goma_enable_ats,
         goma_jobs = goma_jobs,
-        os = os,
     )
-    if goma != None:
-        properties["$build/goma"] = goma
+    if gp != None:
+        properties["$build/goma"] = gp
 
     code_coverage = _code_coverage_property(
         use_clang_coverage = use_clang_coverage,
