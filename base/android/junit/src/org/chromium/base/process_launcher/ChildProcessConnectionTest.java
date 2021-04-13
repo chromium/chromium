@@ -598,4 +598,89 @@ public class ChildProcessConnectionTest {
         assertFalse(moderateConnection.isBound());
         assertFalse(moderateWaiveCpuConnection.isBound());
     }
+
+    @Test
+    public void testModerateWaiveCpuPriorityMixedWithModerate() throws RemoteException {
+        // Test that the waive cpu connection should not be bound if the strong or moderate
+        // bindings are bound.
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(false /* waiveCpuPriority */);
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+    }
+
+    @Test
+    public void testModerateWaiveCpuPriorityMixedWithStrong() throws RemoteException {
+        // Test that the waive cpu connection should not be bound if the strong or moderate
+        // bindings are bound.
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+        ChildServiceConnectionMock strongConnection = mMockConnections.get(2);
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addStrongBinding();
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeStrongBinding();
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.addStrongBinding();
+        assertTrue(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeStrongBinding();
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(strongConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        assertFalse(strongConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+    }
 }

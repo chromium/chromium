@@ -786,6 +786,9 @@ public class ChildProcessConnection {
         }
         if (mStrongBindingCount == 0) {
             mStrongBinding.bindServiceConnection();
+            if (mModerateWaiveCpuBinding.isBound()) {
+                mModerateWaiveCpuBinding.unbindServiceConnection();
+            }
             updateBindingState();
         }
         mStrongBindingCount++;
@@ -799,6 +802,10 @@ public class ChildProcessConnection {
         assert mStrongBindingCount > 0;
         mStrongBindingCount--;
         if (mStrongBindingCount == 0) {
+            if (mModerateWaiveCpuBindingCount > 0 && !mModerateWaiveCpuBinding.isBound()
+                    && !mModerateBinding.isBound()) {
+                mModerateWaiveCpuBinding.bindServiceConnection();
+            }
             mStrongBinding.unbindServiceConnection();
             updateBindingState();
         }
@@ -822,7 +829,8 @@ public class ChildProcessConnection {
             return;
         }
         if (waiveCpuPriority) {
-            if (mModerateWaiveCpuBindingCount == 0) {
+            if (mModerateWaiveCpuBindingCount == 0 && !mStrongBinding.isBound()
+                    && !mModerateBinding.isBound()) {
                 mModerateWaiveCpuBinding.bindServiceConnection();
                 updateBindingState();
             }
@@ -831,6 +839,9 @@ public class ChildProcessConnection {
         }
         if (mModerateBindingCount == 0) {
             mModerateBinding.bindServiceConnection();
+            if (mModerateWaiveCpuBinding.isBound()) {
+                mModerateWaiveCpuBinding.unbindServiceConnection();
+            }
             updateBindingState();
         }
         mModerateBindingCount++;
@@ -847,7 +858,7 @@ public class ChildProcessConnection {
         if (waiveCpuPriority) {
             assert mModerateWaiveCpuBindingCount > 0;
             mModerateWaiveCpuBindingCount--;
-            if (mModerateWaiveCpuBindingCount == 0) {
+            if (mModerateWaiveCpuBindingCount == 0 && mModerateWaiveCpuBinding.isBound()) {
                 mModerateWaiveCpuBinding.unbindServiceConnection();
                 updateBindingState();
             }
@@ -856,6 +867,10 @@ public class ChildProcessConnection {
         assert mModerateBindingCount > 0;
         mModerateBindingCount--;
         if (mModerateBindingCount == 0) {
+            if (mModerateWaiveCpuBindingCount > 0 && !mModerateWaiveCpuBinding.isBound()
+                    && !mStrongBinding.isBound()) {
+                mModerateWaiveCpuBinding.bindServiceConnection();
+            }
             mModerateBinding.unbindServiceConnection();
             updateBindingState();
         }
