@@ -120,7 +120,6 @@ class TestExporter(object):
             'any pull requests.')
         parser.add_argument(
             '--credentials-json',
-            required=True,
             help='A JSON file with an object containing zero or more of the '
             'following keys: GH_USER, GH_TOKEN, GERRIT_USER, GERRIT_TOKEN')
         parser.add_argument(
