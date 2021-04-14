@@ -759,6 +759,22 @@
     @assert ctx.textLetterSpacing === -1;
     @assert ctx.textWordSpacing === -1;
 
+- name: 2d.text.drawing.style.nonfinite.spacing
+  desc: Testing letter spacing and word spacing with nonfinite inputs
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.textLetterSpacing === 0;
+    @assert ctx.textWordSpacing === 0;
+
+    function test_word_spacing(value) {
+      ctx.textWordSpacing = value;
+      ctx.textLetterSpacing = value;
+      @assert ctx.textWordSpacing === 0;
+      @assert ctx.textLetterSpacing === 0;
+    }
+    @nonfinite test_word_spacing(<0 NaN Infinity -Infinity>);
+
 - name: 2d.text.drawing.style.spacing.measure
   desc: Testing letter spacing and word spacing
   testing:

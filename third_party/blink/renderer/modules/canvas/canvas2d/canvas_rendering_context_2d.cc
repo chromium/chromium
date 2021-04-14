@@ -801,6 +801,9 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
 
 void CanvasRenderingContext2D::setTextLetterSpacing(
     const double letter_spacing) {
+  if (UNLIKELY(!std::isfinite(letter_spacing)))
+    return;
+
   if (!GetState().HasRealizedFont())
     setFont(font());
 
@@ -810,6 +813,9 @@ void CanvasRenderingContext2D::setTextLetterSpacing(
 }
 
 void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
+  if (UNLIKELY(!std::isfinite(word_spacing)))
+    return;
+
   if (!GetState().HasRealizedFont())
     setFont(font());
 
