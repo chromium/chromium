@@ -4,22 +4,24 @@
 
 import("//build/config/python.gni")
 
+sb_files = [
+  "audio.sb",
+  "cdm.sb",
+  "common.sb",
+  "gpu.sb",
+  "nacl_loader.sb",
+  "network.sb",
+  "ppapi.sb",
+  "print_backend.sb",
+  "print_compositor.sb",
+  "renderer.sb",
+  "speech_recognition.sb",
+  "utility.sb",
+]
+
 action_foreach("package_sb_files") {
   script = "package_sb_file.py"
-  sources = [
-    "audio.sb",
-    "cdm.sb",
-    "common.sb",
-    "gpu.sb",
-    "nacl_loader.sb",
-    "network.sb",
-    "ppapi.sb",
-    "print_backend.sb",
-    "print_compositor.sb",
-    "renderer.sb",
-    "speech_recognition.sb",
-    "utility.sb",
-  ]
+  sources = sb_files
   outputs = [
     "$target_gen_dir/{{source_name_part}}.sb.h",
     "$target_gen_dir/{{source_name_part}}.sb.cc",
@@ -30,8 +32,24 @@ action_foreach("package_sb_files") {
   ]
 }
 
+action("generate_params") {
+  script = "generate_params.py"
+  sources = sb_files
+  _filename_prefix = "$target_gen_dir/params"
+  outputs = [
+    "${_filename_prefix}.cc",
+    "${_filename_prefix}.h",
+  ]
+  args = [ rebase_path(_filename_prefix, root_build_dir) ] +
+         rebase_path(sb_files, root_build_dir)
+}
+
 source_set("packaged_sb_files") {
-  sources = get_target_outputs(":package_sb_files")
+  sources = get_target_outputs(":package_sb_files") +
+            get_target_outputs(":generate_params")
   defines = [ "SANDBOX_POLICY_IMPL" ]
-  deps = [ ":package_sb_files" ]
+  deps = [
+    ":generate_params",
+    ":package_sb_files",
+  ]
 }

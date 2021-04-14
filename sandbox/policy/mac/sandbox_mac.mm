@@ -28,23 +28,6 @@
 namespace sandbox {
 namespace policy {
 
-const char* SandboxMac::kSandboxBrowserPID = "BROWSER_PID";
-const char* SandboxMac::kSandboxBundlePath = "BUNDLE_PATH";
-const char* SandboxMac::kSandboxChromeBundleId = "BUNDLE_ID";
-const char* SandboxMac::kSandboxSodaComponentPath = "SODA_COMPONENT_PATH";
-const char* SandboxMac::kSandboxSodaLanguagePackPath =
-    "SODA_LANGUAGE_PACK_PATH";
-const char* SandboxMac::kSandboxComponentPath = "COMPONENT_PATH";
-const char* SandboxMac::kSandboxDisableDenialLogging =
-    "DISABLE_SANDBOX_DENIAL_LOGGING";
-const char* SandboxMac::kSandboxEnableLogging = "ENABLE_LOGGING";
-const char* SandboxMac::kSandboxHomedirAsLiteral = "USER_HOMEDIR_AS_LITERAL";
-const char* SandboxMac::kSandboxLoggingPathAsLiteral = "LOG_FILE_PATH";
-const char* SandboxMac::kSandboxOSVersion = "OS_VERSION";
-const char* SandboxMac::kSandboxBundleVersionPath = "BUNDLE_VERSION_PATH";
-const char* SandboxMac::kSandboxDisableMetalShaderCache =
-    "DISABLE_METAL_SHADER_CACHE";
-
 // static
 base::FilePath SandboxMac::GetCanonicalPath(const base::FilePath& path) {
   base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));

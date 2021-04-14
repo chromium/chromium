@@ -406,6 +406,7 @@
 #include "chrome/browser/mac/auth_session_request.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -5923,16 +5924,14 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
   if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
     base::FilePath soda_component_path = speech::GetSodaDirectory();
     CHECK(!soda_component_path.empty());
-    CHECK(client->SetParameter(
-        sandbox::policy::SandboxMac::kSandboxSodaComponentPath,
-        soda_component_path.value()));
+    CHECK(client->SetParameter(sandbox::policy::kParamSodaComponentPath,
+                               soda_component_path.value()));
 
     base::FilePath soda_language_pack_path =
         speech::GetSodaLanguagePacksDirectory();
     CHECK(!soda_language_pack_path.empty());
-    CHECK(client->SetParameter(
-        sandbox::policy::SandboxMac::kSandboxSodaLanguagePackPath,
-        soda_language_pack_path.value()));
+    CHECK(client->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
+                               soda_language_pack_path.value()));
     return true;
   }
 

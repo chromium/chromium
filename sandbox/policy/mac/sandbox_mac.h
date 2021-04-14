@@ -31,21 +31,6 @@ class SANDBOX_POLICY_EXPORT SandboxMac {
   // valid result, or crashes.
   static std::string GetSandboxProfile(SandboxType sandbox_type);
 
-  static const char* kSandboxBrowserPID;
-  static const char* kSandboxBundlePath;
-  static const char* kSandboxChromeBundleId;
-  static const char* kSandboxSodaComponentPath;
-  static const char* kSandboxSodaLanguagePackPath;
-  static const char* kSandboxComponentPath;
-  static const char* kSandboxDisableDenialLogging;
-  static const char* kSandboxEnableLogging;
-  static const char* kSandboxHomedirAsLiteral;
-  static const char* kSandboxLoggingPathAsLiteral;
-  static const char* kSandboxOSVersion;
-
-  static const char* kSandboxBundleVersionPath;
-  static const char* kSandboxDisableMetalShaderCache;
-
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(SandboxMac);
 };
