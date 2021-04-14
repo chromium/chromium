@@ -36,9 +36,6 @@ class ProfileAndroid : public base::SupportsUserData::Data {
 
   // Return the OffTheRecord profile.
   //
-  // WARNING: This will create the OffTheRecord profile if it doesn't already
-  // exist. If this isn't what you want, you need to check
-  // HasOffTheRecordProfile() first.
   base::android::ScopedJavaLocalRef<jobject> GetOffTheRecordProfile(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

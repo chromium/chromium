@@ -105,9 +105,8 @@ base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetPrimaryOTRProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const jboolean j_create_if_needed) {
-  ProfileAndroid* otr_profile =
-      ProfileAndroid::FromProfile(profile_->GetOffTheRecordProfile(
-          Profile::OTRProfileID::PrimaryID(), j_create_if_needed));
+  ProfileAndroid* otr_profile = ProfileAndroid::FromProfile(
+      profile_->GetPrimaryOTRProfile(j_create_if_needed));
   if (!j_create_if_needed && !otr_profile)
     return nullptr;
   DCHECK(otr_profile);
