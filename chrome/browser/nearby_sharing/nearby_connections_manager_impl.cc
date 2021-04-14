@@ -13,6 +13,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -308,9 +309,10 @@ void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
   NS_LOG(INFO) << "Disconnected from " << endpoint_id;
 }
 
-void NearbyConnectionsManagerImpl::Send(const std::string& endpoint_id,
-                                        PayloadPtr payload,
-                                        PayloadStatusListener* listener) {
+void NearbyConnectionsManagerImpl::Send(
+    const std::string& endpoint_id,
+    PayloadPtr payload,
+    base::WeakPtr<PayloadStatusListener> listener) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
   if (!process_reference_)
@@ -333,7 +335,7 @@ void NearbyConnectionsManagerImpl::Send(const std::string& endpoint_id,
 
 void NearbyConnectionsManagerImpl::RegisterPayloadStatusListener(
     int64_t payload_id,
-    PayloadStatusListener* listener) {
+    base::WeakPtr<PayloadStatusListener> listener) {
   payload_status_listeners_.insert_or_assign(payload_id, listener);
 }
 
@@ -383,17 +385,20 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
 
   auto it = payload_status_listeners_.find(payload_id);
   if (it != payload_status_listeners_.end()) {
-    it->second->OnStatusUpdate(
-        PayloadTransferUpdate::New(payload_id, PayloadStatus::kCanceled,
-                                   /*total_bytes=*/0,
-                                   /*bytes_transferred=*/0),
-        /*upgraded_medium=*/base::nullopt);
-
-    // Erase using the payload ID key instead of the iterator. The
-    // OnStatusUpdate() call might result in iterator invalidation, for example,
-    // if the listener map entry is removed during a resulting payload clean-up.
+    base::WeakPtr<PayloadStatusListener> listener = it->second;
     payload_status_listeners_.erase(payload_id);
+
+    // Note: The listener might be invalidated, for example, if it is shared
+    // with another payload in the same transfer.
+    if (listener) {
+      listener->OnStatusUpdate(
+          PayloadTransferUpdate::New(payload_id, PayloadStatus::kCanceled,
+                                     /*total_bytes=*/0,
+                                     /*bytes_transferred=*/0),
+          /*upgraded_medium=*/base::nullopt);
+    }
   }
+
   process_reference_->GetNearbyConnections()->CancelPayload(
       kServiceId, payload_id,
       base::BindOnce(
@@ -634,20 +639,26 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
     return;
 
   // If this is a payload we've registered for, then forward its status to the
-  // PayloadStatusListener. We don't need to do anything more with the payload.
+  // PayloadStatusListener if it still exists. We don't need to do anything more
+  // with the payload.
   auto listener_it = payload_status_listeners_.find(update->payload_id);
   if (listener_it != payload_status_listeners_.end()) {
-    PayloadStatusListener* listener = listener_it->second;
+    base::WeakPtr<PayloadStatusListener> listener = listener_it->second;
     switch (update->status) {
       case PayloadStatus::kInProgress:
         break;
       case PayloadStatus::kSuccess:
       case PayloadStatus::kCanceled:
       case PayloadStatus::kFailure:
-        payload_status_listeners_.erase(listener_it);
+        payload_status_listeners_.erase(update->payload_id);
         break;
     }
-    listener->OnStatusUpdate(std::move(update), GetUpgradedMedium(endpoint_id));
+    // Note: The listener might be invalidated, for example, if it is shared
+    // with another payload in the same transfer.
+    if (listener) {
+      listener->OnStatusUpdate(std::move(update),
+                               GetUpgradedMedium(endpoint_id));
+    }
     return;
   }
 

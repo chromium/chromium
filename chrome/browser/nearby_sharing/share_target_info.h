@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
+#include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
@@ -76,7 +78,10 @@ class ShareTargetInfo {
     key_verification_runner_ = std::move(key_verification_runner);
   }
 
-  PayloadTracker* payload_tracker() { return payload_tracker_.get(); }
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
+  payload_tracker() {
+    return payload_tracker_->GetWeakPtr();
+  }
 
   void set_payload_tracker(std::unique_ptr<PayloadTracker> payload_tracker) {
     payload_tracker_ = std::move(payload_tracker);

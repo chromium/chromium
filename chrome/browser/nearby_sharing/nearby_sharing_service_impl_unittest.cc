@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -875,7 +876,7 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   struct PayloadInfo {
     int64_t payload_id;
-    NearbyConnectionsManager::PayloadStatusListener* listener;
+    base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener;
   };
 
   PayloadInfo AcceptAndSendPayload(
@@ -886,7 +887,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     fake_nearby_connections_manager_->set_send_payload_callback(
         base::BindLambdaForTesting(
             [&](NearbyConnectionsManager::PayloadPtr payload,
-                NearbyConnectionsManager::PayloadStatusListener* listener) {
+                base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
+                    listener) {
               ASSERT_TRUE(payload->content->is_bytes());
               std::vector<uint8_t> bytes = payload->content->get_bytes()->bytes;
               EXPECT_EQ(kTextPayload, std::string(bytes.begin(), bytes.end()));
@@ -2631,7 +2633,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
     fake_nearby_connections_manager_->SetIncomingPayload(
         id, GetTextPayloadPtr(id, kTextPayload));
 
-    auto* listener =
+    base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
         fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
             id);
     ASSERT_TRUE(listener);
@@ -2679,7 +2681,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
             run_loop_success.Quit();
           }));
 
-  auto* listener =
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
       fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
           kFilePayloadId);
   ASSERT_TRUE(listener);
@@ -2751,7 +2753,7 @@ TEST_F(NearbySharingServiceImplTest,
     // Deliberately not calling SetIncomingPayload() for text payloads to check
     // for failure condition.
 
-    auto* listener =
+    base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
         fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
             id);
     ASSERT_TRUE(listener);
@@ -2792,7 +2794,7 @@ TEST_F(NearbySharingServiceImplTest,
             run_loop_success.Quit();
           }));
 
-  auto* listener =
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
       fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
           kFilePayloadId);
   ASSERT_TRUE(listener);
@@ -2852,7 +2854,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadFailed) {
 
   run_loop_accept.Run();
 
-  auto* listener =
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
       fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
           kFilePayloadId);
   ASSERT_TRUE(listener);
@@ -2926,7 +2928,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadCancelled) {
 
   run_loop_accept.Run();
 
-  auto* listener =
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
       fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
           kFilePayloadId);
   ASSERT_TRUE(listener);
@@ -3601,7 +3603,8 @@ TEST_F(NearbySharingServiceImplTest, SendFiles_Success) {
   fake_nearby_connections_manager_->set_send_payload_callback(
       base::BindLambdaForTesting(
           [&](NearbyConnectionsManager::PayloadPtr payload,
-              NearbyConnectionsManager::PayloadStatusListener* listener) {
+              base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
+                  listener) {
             base::ScopedAllowBlockingForTesting allow_blocking;
 
             ASSERT_TRUE(payload->content->is_file());

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
@@ -46,9 +47,10 @@ class FakeNearbyConnectionsManager
   void Disconnect(const std::string& endpoint_id) override;
   void Send(const std::string& endpoint_id,
             PayloadPtr payload,
-            PayloadStatusListener* listener) override;
-  void RegisterPayloadStatusListener(int64_t payload_id,
-                                     PayloadStatusListener* listener) override;
+            base::WeakPtr<PayloadStatusListener> listener) override;
+  void RegisterPayloadStatusListener(
+      int64_t payload_id,
+      base::WeakPtr<PayloadStatusListener> listener) override;
   void RegisterPayloadPath(int64_t payload_id,
                            const base::FilePath& file_path,
                            ConnectionsCallback callback) override;
@@ -74,7 +76,8 @@ class FakeNearbyConnectionsManager
   bool IsDiscovering() const;
   bool DidUpgradeBandwidth(const std::string& endpoint_id) const;
   void SetPayloadPathStatus(int64_t payload_id, ConnectionsStatus status);
-  PayloadStatusListener* GetRegisteredPayloadStatusListener(int64_t payload_id);
+  base::WeakPtr<PayloadStatusListener> GetRegisteredPayloadStatusListener(
+      int64_t payload_id);
   void SetIncomingPayload(int64_t payload_id, PayloadPtr payload);
   base::Optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
   bool WasPayloadCanceled(const int64_t& payload_id) const;
@@ -89,8 +92,8 @@ class FakeNearbyConnectionsManager
   }
   DataUsage connected_data_usage() const { return connected_data_usage_; }
   void set_send_payload_callback(
-      base::RepeatingCallback<void(PayloadPtr, PayloadStatusListener*)>
-          callback) {
+      base::RepeatingCallback<
+          void(PayloadPtr, base::WeakPtr<PayloadStatusListener>)> callback) {
     send_payload_callback_ = std::move(callback);
   }
   const base::Optional<std::vector<uint8_t>>& advertising_endpoint_info() {
@@ -118,7 +121,8 @@ class FakeNearbyConnectionsManager
   std::map<std::string, std::vector<uint8_t>> endpoint_auth_tokens_;
   NearbyConnection* connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
-  base::RepeatingCallback<void(PayloadPtr, PayloadStatusListener*)>
+  base::RepeatingCallback<void(PayloadPtr,
+                               base::WeakPtr<PayloadStatusListener>)>
       send_payload_callback_;
   base::Optional<std::vector<uint8_t>> advertising_endpoint_info_;
   std::set<std::string> disconnected_endpoints_;
@@ -128,7 +132,8 @@ class FakeNearbyConnectionsManager
   std::map<std::string, std::vector<uint8_t>> connection_endpoint_infos_;
 
   std::map<int64_t, ConnectionsStatus> payload_path_status_;
-  std::map<int64_t, PayloadStatusListener*> payload_status_listeners_;
+  std::map<int64_t, base::WeakPtr<PayloadStatusListener>>
+      payload_status_listeners_;
   std::map<int64_t, PayloadPtr> incoming_payloads_;
   std::map<int64_t, base::FilePath> registered_payload_paths_;
 };
