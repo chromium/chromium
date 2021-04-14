@@ -28,11 +28,13 @@
 #include "cc/paint/paint_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/decorated_text.h"
 #include "ui/gfx/font.h"
@@ -280,7 +282,7 @@ Range LineCharRange(const internal::Line& line) {
 
 struct GlyphCountAndColor {
   size_t glyph_count = 0;
-  SkColor color = SK_ColorBLACK;
+  SkColor color = kPlaceholderColor;
 };
 
 class TextLog {
@@ -676,7 +678,7 @@ TEST_F(RenderTextTest, DefaultStyles) {
   EXPECT_TRUE(render_text->text().empty());
   const char* const cases[] = {kWeak, kLtr, "Hello", kRtl, "", ""};
   for (size_t i = 0; i < base::size(cases); ++i) {
-    EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(SK_ColorBLACK));
+    EXPECT_TRUE(test_api()->colors().EqualsValueForTesting(kPlaceholderColor));
     EXPECT_TRUE(test_api()->baselines().EqualsValueForTesting(NORMAL_BASELINE));
     EXPECT_TRUE(test_api()->font_size_overrides().EqualsValueForTesting(0));
     for (size_t style = 0; style < static_cast<int>(TEXT_STYLE_COUNT); ++style)
@@ -688,7 +690,7 @@ TEST_F(RenderTextTest, DefaultStyles) {
 TEST_F(RenderTextTest, SetStyles) {
   // Ensure custom default styles persist across setting and clearing text.
   RenderText* render_text = GetRenderText();
-  const SkColor color = SK_ColorRED;
+  const SkColor color = SK_ColorGREEN;
   render_text->SetColor(color);
   render_text->SetBaselineStyle(SUPERSCRIPT);
   render_text->SetWeight(Font::Weight::BOLD);
@@ -720,13 +722,13 @@ TEST_F(RenderTextTest, ApplyStyles) {
   constexpr int kTestFontSizeOverride = 20;
 
   // Apply a ranged color and style and check the resulting breaks.
-  render_text->ApplyColor(SK_ColorRED, Range(1, 4));
+  render_text->ApplyColor(SK_ColorGREEN, Range(1, 4));
   render_text->ApplyBaselineStyle(SUPERIOR, Range(2, 4));
   render_text->ApplyWeight(Font::Weight::BOLD, Range(2, 5));
   render_text->ApplyFontSizeOverride(kTestFontSizeOverride, Range(5, 7));
 
   EXPECT_TRUE(test_api()->colors().EqualsForTesting(
-      {{0, SK_ColorBLACK}, {1, SK_ColorRED}, {4, SK_ColorBLACK}}));
+      {{0, kPlaceholderColor}, {1, SK_ColorGREEN}, {4, kPlaceholderColor}}));
 
   EXPECT_TRUE(test_api()->baselines().EqualsForTesting(
       {{0, NORMAL_BASELINE}, {2, SUPERIOR}, {4, NORMAL_BASELINE}}));
@@ -751,11 +753,11 @@ TEST_F(RenderTextTest, ApplyStyles) {
   // Apply a value over the text end and check the resulting breaks (INT_MAX
   // should be used instead of the text length for the range end)
   const size_t text_length = render_text->text().length();
-  render_text->ApplyColor(SK_ColorRED, Range(0, text_length));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, text_length));
   render_text->ApplyBaselineStyle(SUPERIOR, Range(0, text_length));
   render_text->ApplyWeight(Font::Weight::BOLD, Range(2, text_length));
 
-  EXPECT_TRUE(test_api()->colors().EqualsForTesting({{0, SK_ColorRED}}));
+  EXPECT_TRUE(test_api()->colors().EqualsForTesting({{0, SK_ColorGREEN}}));
   EXPECT_TRUE(test_api()->baselines().EqualsForTesting({{0, SUPERIOR}}));
   EXPECT_TRUE(test_api()->weights().EqualsForTesting(
       {{0, Font::Weight::NORMAL}, {2, Font::Weight::BOLD}}));
@@ -804,13 +806,13 @@ TEST_F(RenderTextTest, ApplyStyleSurrogatePair) {
   gfx::Range range(2, 3);
   render_text->ApplyWeight(gfx::Font::Weight::BOLD, range);
   render_text->ApplyStyle(TEXT_STYLE_ITALIC, true, range);
-  render_text->ApplyColor(SK_ColorRED, range);
+  render_text->ApplyColor(SK_ColorGREEN, range);
   render_text->Draw(canvas());
 
   EXPECT_TRUE(test_api()->styles()[TEXT_STYLE_ITALIC].EqualsForTesting(
       {{0, false}, {2, true}, {3, false}}));
   EXPECT_TRUE(test_api()->colors().EqualsForTesting(
-      {{0, SK_ColorBLACK}, {2, SK_ColorRED}, {3, SK_ColorBLACK}}));
+      {{0, kPlaceholderColor}, {2, SK_ColorGREEN}, {3, kPlaceholderColor}}));
   EXPECT_TRUE(
       test_api()->weights().EqualsForTesting({{0, Font::Weight::NORMAL},
                                               {2, Font::Weight::BOLD},
@@ -846,7 +848,7 @@ TEST_F(RenderTextTest, ApplyStyleMultipleGraphemes) {
 TEST_F(RenderTextTest, ApplyColorSurrogatePair) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"x\U0001F601x");
-  render_text->ApplyColor(SK_ColorRED, Range(2, 3));
+  render_text->ApplyColor(SK_ColorGREEN, Range(2, 3));
   Draw();
 
   // Ensures that the color is not applied since it is in the middle of a
@@ -869,14 +871,14 @@ TEST_F(RenderTextTest, ApplyColorLongEmoji) {
   render_text->AppendText(kLongEmoji);
   render_text->AppendText(kLongEmoji);
 
-  render_text->ApplyColor(SK_ColorRED, Range(0, 2));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(8, 13));
   Draw();
 
   // Ensures that the color of the emoji is the color at its first character.
   ASSERT_EQ(3u, text_log().size());
-  EXPECT_EQ(SK_ColorRED, text_log()[0].color());
-  EXPECT_EQ(SK_ColorBLACK, text_log()[1].color());
+  EXPECT_EQ(SK_ColorGREEN, text_log()[0].color());
+  EXPECT_EQ(kPlaceholderColor, text_log()[1].color());
   EXPECT_EQ(SK_ColorBLUE, text_log()[2].color());
 
   // Reset the color.
@@ -892,11 +894,11 @@ TEST_F(RenderTextTest, ApplyColorLongEmoji) {
 TEST_F(RenderTextTest, ApplyColorObscuredEmoji) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\U0001F628\U0001F628\U0001F628");
-  render_text->ApplyColor(SK_ColorRED, Range(0, 2));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(4, 5));
 
-  const std::vector<GlyphCountAndColor> kExpectedTextLog =
-      {{1, SK_ColorRED}, {1, SK_ColorBLACK}, {1, SK_ColorBLUE}};
+  const std::vector<GlyphCountAndColor> kExpectedTextLog = {
+      {1, SK_ColorGREEN}, {1, kPlaceholderColor}, {1, SK_ColorBLUE}};
 
   // Ensures that colors are applied.
   Draw();
@@ -926,12 +928,12 @@ TEST_F(RenderTextTest, ApplyColorArabicDiacritics) {
   // from the base character.
   RenderText* render_text = GetRenderText();
   render_text->SetText(UTF8ToUTF16("\u0628\u0651\u0650"));
-  render_text->ApplyColor(SK_ColorRED, Range(0, 1));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, 1));
   render_text->ApplyColor(SK_ColorBLACK, Range(1, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(2, 3));
   Draw();
   ASSERT_EQ(1u, text_log().size());
-  EXPECT_EQ(SK_ColorRED, text_log()[0].color());
+  EXPECT_EQ(SK_ColorGREEN, text_log()[0].color());
 }
 
 TEST_F(RenderTextTest, ApplyColorArabicLigature) {
@@ -964,7 +966,7 @@ TEST_F(RenderTextTest, ApplyColorArabicLigature) {
 
   // Applying color should not break the ligature.
   // see: https://w3c.github.io/alreq/#h_styling_individual_letters
-  render_text->ApplyColor(SK_ColorRED, Range(0, 1));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, 1));
   render_text->ApplyColor(SK_ColorBLACK, Range(1, 2));
   Draw();
   ASSERT_EQ(2u, text_log().size());
@@ -978,7 +980,7 @@ TEST_F(RenderTextTest, ApplyColorArabicLigature) {
   EXPECT_EQ(final_second_glyph, colored_second_glyph);
 
   // Colors should be applied.
-  EXPECT_EQ(SK_ColorRED, text_log()[0].color());
+  EXPECT_EQ(SK_ColorGREEN, text_log()[0].color());
   EXPECT_EQ(SK_ColorBLACK, text_log()[1].color());
 }
 
@@ -986,13 +988,13 @@ TEST_F(RenderTextTest, AppendTextKeepsStyles) {
   RenderText* render_text = GetRenderText();
   // Setup basic functionality.
   render_text->SetText(u"abcd");
-  render_text->ApplyColor(SK_ColorRED, Range(0, 1));
+  render_text->ApplyColor(SK_ColorGREEN, Range(0, 1));
   render_text->ApplyBaselineStyle(SUPERSCRIPT, Range(1, 2));
   render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, Range(2, 3));
   render_text->ApplyFontSizeOverride(20, Range(3, 4));
   // Verify basic functionality.
   const std::vector<std::pair<size_t, SkColor>> expected_color = {
-      {0, SK_ColorRED}, {1, SK_ColorBLACK}};
+      {0, SK_ColorGREEN}, {1, kPlaceholderColor}};
   EXPECT_TRUE(test_api()->colors().EqualsForTesting(expected_color));
   const std::vector<std::pair<size_t, BaselineStyle>> expected_baseline = {
       {0, NORMAL_BASELINE}, {1, SUPERSCRIPT}, {2, NORMAL_BASELINE}};
@@ -1019,7 +1021,7 @@ TEST_F(RenderTextTest, AppendTextKeepsStyles) {
 
 TEST_F(RenderTextTest, SetSelection) {
   RenderText* render_text = GetRenderText();
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   render_text->SetText(u"abcdef");
   render_text->set_focused(true);
 
@@ -1027,13 +1029,13 @@ TEST_F(RenderTextTest, SetSelection) {
   render_text->SetSelection(
       {{{4, 100}}, LogicalCursorDirection::CURSOR_FORWARD});
   Draw();
-  ExpectTextLog({{4}, {2, SK_ColorRED}});
+  ExpectTextLog({{4}, {2, SK_ColorGREEN}});
 
   // Multiple selections
   render_text->SetSelection(
       {{{0, 1}, {4, 100}}, LogicalCursorDirection::CURSOR_FORWARD});
   Draw();
-  ExpectTextLog({{1, SK_ColorRED}, {3}, {2, SK_ColorRED}});
+  ExpectTextLog({{1, SK_ColorGREEN}, {3}, {2, SK_ColorGREEN}});
 
   render_text->ClearSelection();
   Draw();
@@ -1044,20 +1046,20 @@ TEST_F(RenderTextTest, SelectRangeColored) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"abcdef");
   render_text->SetColor(SK_ColorBLACK);
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   render_text->set_focused(true);
 
   render_text->SelectRange(Range(0, 1));
   Draw();
-  ExpectTextLog({{1, SK_ColorRED}, {5, SK_ColorBLACK}});
+  ExpectTextLog({{1, SK_ColorGREEN}, {5, SK_ColorBLACK}});
 
   render_text->SelectRange(Range(1, 3));
   Draw();
-  ExpectTextLog({{1, SK_ColorBLACK}, {2, SK_ColorRED}, {3, SK_ColorBLACK}});
+  ExpectTextLog({{1, SK_ColorBLACK}, {2, SK_ColorGREEN}, {3, SK_ColorBLACK}});
 
   render_text->ClearSelection();
   Draw();
-  ExpectTextLog({{6}});
+  ExpectTextLog({{6, SK_ColorBLACK}});
 }
 
 // Tests that when a selection is made and the selection background is
@@ -1098,29 +1100,29 @@ TEST_F(RenderTextTest, SelectRangeColoredGrapheme) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(UTF8ToUTF16("x\u0065\u0301y"));
   render_text->SetColor(SK_ColorBLACK);
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   render_text->set_focused(true);
 
   render_text->SelectRange(Range(0, 1));
   Draw();
-  ExpectTextLog({{1, SK_ColorRED}, {2, SK_ColorBLACK}});
+  ExpectTextLog({{1, SK_ColorGREEN}, {2, SK_ColorBLACK}});
 
   render_text->SelectRange(Range(1, 2));
   Draw();
-  ExpectTextLog({{1, SK_ColorBLACK}, {1, SK_ColorRED}, {1, SK_ColorBLACK}});
+  ExpectTextLog({{1, SK_ColorBLACK}, {1, SK_ColorGREEN}, {1, SK_ColorBLACK}});
 
   render_text->SelectRange(Range(2, 3));
   Draw();
-  ExpectTextLog({{1, SK_ColorBLACK}, {1, SK_ColorRED}, {1, SK_ColorBLACK}});
+  ExpectTextLog({{1, SK_ColorBLACK}, {1, SK_ColorGREEN}, {1, SK_ColorBLACK}});
 
   render_text->SelectRange(Range(2, 4));
   Draw();
-  ExpectTextLog({{1, SK_ColorBLACK}, {2, SK_ColorRED}});
+  ExpectTextLog({{1, SK_ColorBLACK}, {2, SK_ColorGREEN}});
 }
 
 TEST_F(RenderTextTest, SelectRangeMultiple) {
   RenderText* render_text = GetRenderText();
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   render_text->SetText(u"abcdef");
   render_text->set_focused(true);
 
@@ -1128,12 +1130,12 @@ TEST_F(RenderTextTest, SelectRangeMultiple) {
   render_text->SelectRange(Range(0, 1));
   render_text->SelectRange(Range(4, 2), false);
   Draw();
-  ExpectTextLog({{1, SK_ColorRED}, {1}, {2, SK_ColorRED}, {2}});
+  ExpectTextLog({{1, SK_ColorGREEN}, {1}, {2, SK_ColorGREEN}, {2}});
 
   // Setting a primary selection should override secondary selections
   render_text->SelectRange(Range(5, 6));
   Draw();
-  ExpectTextLog({{5}, {1, SK_ColorRED}});
+  ExpectTextLog({{5}, {1, SK_ColorGREEN}});
 
   render_text->ClearSelection();
   Draw();
@@ -5601,7 +5603,7 @@ TEST_F(RenderTextTest, DisplayRectShowsCursorRTL) {
 TEST_F(RenderTextTest, SelectionKeepsLigatures) {
   const char* kTestStrings[] = {"\u0644\u0623", "\u0633\u0627"};
   RenderText* render_text = GetRenderText();
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
 
   for (size_t i = 0; i < base::size(kTestStrings); ++i) {
     render_text->SetText(UTF8ToUTF16(kTestStrings[i]));
@@ -7335,11 +7337,11 @@ TEST_F(RenderTextTest, ColorChange) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"x");
   Draw();
-  ExpectTextLog({{1, SK_ColorBLACK}});
+  ExpectTextLog({{1, kPlaceholderColor}});
 
-  render_text->SetColor(SK_ColorRED);
+  render_text->SetColor(SK_ColorGREEN);
   Draw();
-  ExpectTextLog({{1, SK_ColorRED}});
+  ExpectTextLog({{1, SK_ColorGREEN}});
 }
 
 // Ensure style information propagates to the typeface on the text renderer.
@@ -8282,31 +8284,32 @@ TEST_F(RenderTextTest, DrawVisualText_WithSelection) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"TheRedElephantIsEatingMyPumpkin");
   // Ensure selected text is drawn differently than unselected text.
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   DrawVisualText({{3, 14}});
-  ExpectTextLog({{3, SK_ColorBLACK}, {11, SK_ColorRED}, {17, SK_ColorBLACK}});
+  ExpectTextLog(
+      {{3, kPlaceholderColor}, {11, SK_ColorGREEN}, {17, kPlaceholderColor}});
 }
 
 TEST_F(RenderTextTest, DrawVisualText_WithSelectionOnObcuredEmoji) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\U0001F628\U0001F628\U0001F628");
   render_text->SetObscured(true);
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->set_selection_color(SK_ColorGREEN);
   DrawVisualText({{4, 6}});
-  ExpectTextLog({{2, SK_ColorBLACK}, {1, SK_ColorRED}});
+  ExpectTextLog({{2, kPlaceholderColor}, {1, SK_ColorGREEN}});
 }
 
 TEST_F(RenderTextTest, DrawSelectAll) {
   const std::vector<GlyphCountAndColor> kUnselected = {
       {4, SK_ColorBLACK}};
-  const std::vector<GlyphCountAndColor> kSelected = {
-      {4, SK_ColorRED}};
+  const std::vector<GlyphCountAndColor> kSelected = {{4, SK_ColorGREEN}};
   const std::vector<GlyphCountAndColor> kFocused = {
-      {1, SK_ColorBLACK}, {2, SK_ColorRED}, {1, SK_ColorBLACK}};
+      {1, SK_ColorBLACK}, {2, SK_ColorGREEN}, {1, SK_ColorBLACK}};
 
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"Test");
-  render_text->set_selection_color(SK_ColorRED);
+  render_text->SetColor(SK_ColorBLACK);
+  render_text->set_selection_color(SK_ColorGREEN);
   render_text->SelectRange(Range(1, 3));
 
   Draw(false);

@@ -8,12 +8,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/macros.h"
-#include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -61,6 +62,8 @@ class MultilineExample::RenderTextView : public View {
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     render_text_->SetColor(SK_ColorBLACK);
+    render_text_->set_selection_color(SK_ColorBLACK);
+    render_text_->set_selection_background_focused_color(SK_ColorGRAY);
     render_text_->SetMultiline(true);
     SetBorder(CreateSolidBorder(2, SK_ColorGRAY));
   }

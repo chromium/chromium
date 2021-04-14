@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/break_list.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
@@ -58,6 +59,8 @@ class TextRunList;
 class GFX_EXPORT SkiaTextRenderer {
  public:
   explicit SkiaTextRenderer(Canvas* canvas);
+  SkiaTextRenderer(const SkiaTextRenderer&) = delete;
+  SkiaTextRenderer& operator=(const SkiaTextRenderer&) = delete;
   virtual ~SkiaTextRenderer();
 
   void SetDrawLooper(sk_sp<SkDrawLooper> draw_looper);
@@ -81,8 +84,6 @@ class GFX_EXPORT SkiaTextRenderer {
   cc::PaintCanvas* canvas_skia_;
   cc::PaintFlags flags_;
   SkFont font_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaTextRenderer);
 };
 
 struct TextToDisplayIndex {
@@ -221,12 +222,6 @@ class GFX_EXPORT RenderText {
   static constexpr bool kSelectionIsAlwaysDirected = true;
 #endif
 
-  // Default color used for the text and cursor.
-  static constexpr SkColor kDefaultColor = SK_ColorBLACK;
-
-  // Default color used for drawing selection background.
-  static constexpr SkColor kDefaultSelectionBackgroundColor = SK_ColorGRAY;
-
   // Invalid value of baseline.  Assigning this value to |baseline_| causes
   // re-calculation of baseline.
   static constexpr int kInvalidBaseline = INT_MAX;
@@ -239,6 +234,8 @@ class GFX_EXPORT RenderText {
   // with a vector glyph.
   static constexpr char16_t kPasswordReplacementChar = 0x2022;
 
+  RenderText(const RenderText&) = delete;
+  RenderText& operator=(const RenderText&) = delete;
   virtual ~RenderText();
 
   // Creates a RenderText instance.
@@ -927,11 +924,10 @@ class GFX_EXPORT RenderText {
   bool has_directed_selection_ = kSelectionIsAlwaysDirected;
 
   // The color used for drawing selected text.
-  SkColor selection_color_ = kDefaultColor;
+  SkColor selection_color_ = kPlaceholderColor;
 
   // The background color used for drawing the selection when focused.
-  SkColor selection_background_focused_color_ =
-      kDefaultSelectionBackgroundColor;
+  SkColor selection_background_focused_color_ = kPlaceholderColor;
 
   // Whether the selection visual bounds should be expanded vertically to be
   // vertically symmetric with respect to the display rect. Note this flag has
@@ -947,7 +943,7 @@ class GFX_EXPORT RenderText {
   // Color, baseline, and style breaks, used to modify ranges of text.
   // BreakList positions are stored with text indices, not display indices.
   // TODO(msw): Expand to support cursor, selection, background, etc. colors.
-  BreakList<SkColor> colors_{kDefaultColor};
+  BreakList<SkColor> colors_{kPlaceholderColor};
   BreakList<BaselineStyle> baselines_{NORMAL_BASELINE};
   BreakList<int> font_size_overrides_{0};
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
@@ -1052,8 +1048,6 @@ class GFX_EXPORT RenderText {
 
   // Tell whether or not the |layout_text_| needs an update or is up to date.
   mutable bool layout_text_up_to_date_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderText);
 };
 
 }  // namespace gfx

@@ -435,8 +435,6 @@ void ApplyRenderParams(const FontRenderParams& params,
 // static
 constexpr char16_t RenderText::kPasswordReplacementChar;
 constexpr bool RenderText::kDragToEndIfOutsideVerticalBounds;
-constexpr SkColor RenderText::kDefaultColor;
-constexpr SkColor RenderText::kDefaultSelectionBackgroundColor;
 constexpr int RenderText::kInvalidBaseline;
 constexpr SkScalar RenderText::kLineThicknessFactor;
 
