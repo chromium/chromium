@@ -229,38 +229,4 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       network::mojom::TrustTokenRedemptionPolicy::kForbid, debug_tag);
 }
 
-// static
-network::mojom::URLLoaderFactoryParamsPtr
-URLLoaderFactoryParamsHelper::CreateForRendererProcess(
-    RenderProcessHost* process) {
-  // Lock the |request_initiator| to an opaque origin - before something commits
-  // in a frame, requests initiated by such frame should use an opaque
-  // |request_initiator|.  See also https://crbug.com/1105794 and
-  // https://crbug.com/1098938.
-  url::Origin request_initiator_origin_lock = url::Origin();
-
-  // Since this function is about to get deprecated (crbug.com/1114822), it
-  // should be fine to not add support for isolation info thus using an empty
-  // NetworkIsolationKey.
-  //
-  // We may not be able to allow powerful APIs such as memory measurement APIs
-  // (see https://crbug.com/887967) without removing this call.
-  net::IsolationInfo isolation_info = net::IsolationInfo::CreateTransient();
-  base::Optional<blink::LocalFrameToken> top_frame_token = base::nullopt;
-
-  return CreateParams(
-      process,
-      url::Origin(),                  // origin
-      request_initiator_origin_lock,  // request_initiator_origin_lock
-      false,                          // is_trusted
-      top_frame_token, isolation_info,
-      nullptr,             // client_security_state
-      mojo::NullRemote(),  // coep_reporter
-      false,               // allow_universal_access_from_file_urls
-      false,               // is_for_isolated_world
-      mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),
-      network::mojom::TrustTokenRedemptionPolicy::kForbid,
-      "ParamHelper::CreateForRendererProcess");
-}
-
 }  // namespace content

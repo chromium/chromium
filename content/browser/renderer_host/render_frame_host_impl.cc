@@ -1760,7 +1760,7 @@ void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>&&
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   // By providing null |navigation_request| we will always use the last
   // committed Origin and ClientSecurityState (using GetPageUkmSourceId()
@@ -1777,8 +1777,52 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
       std::move(default_factory_receiver));
 }
 
+std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+RenderFrameHostImpl::CreateSubresourceLoaderFactoriesForInitialEmptyDocument() {
+  // This method should only be called (by RenderViewHostImpl::CreateRenderView)
+  // when creating a new local main frame in a Renderer process.
+  DCHECK(!GetParent());
+
+  // Expecting the frame to be at the initial empty document.
+  // Not DCHECK-ing `last_committed_origin_`, because it is not reset by
+  // RenderFrameHostImpl::RenderProcessExited for crashed frames.
+  DCHECK_EQ(GURL(), last_committed_url_);
+
+  auto subresource_loader_factories =
+      std::make_unique<blink::PendingURLLoaderFactoryBundle>();
+  switch (lifecycle_state()) {
+    case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+    case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+    case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+    case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+      // A newly-created frame shouldn't be in any of the states above.
+      NOTREACHED();
+      break;
+    case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+      // No subresource requests should be initiated in the speculative frame.
+      // Serving an empty bundle of `subresource_loader_factories` will
+      // desirably lead to a crash in URLLoaderFactoryBundle::GetFactory (see
+      // also the DCHECK there) if the speculative frame attempts to start a
+      // subresource load.
+      break;
+    case RenderFrameHostImpl::LifecycleStateImpl::kActive:
+    case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+      CreateNetworkServiceDefaultFactory(
+          subresource_loader_factories->pending_default_factory()
+              .InitWithNewPipeAndPassReceiver());
+
+      // The caller will send the returned factory to the renderer process.
+      // Therefore, after a NetworkService crash we need to push to the renderer
+      // an updated factory.
+      recreate_default_url_loader_factory_after_network_service_crash_ = true;
+      break;
+  }
+
+  return subresource_loader_factories;
+}
+
 void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-    base::flat_set<url::Origin> isolated_world_origins,
+    const base::flat_set<url::Origin>& isolated_world_origins,
     bool push_to_renderer_now) {
   size_t old_size =
       isolated_worlds_requiring_separate_url_loader_factory_.size();
@@ -1794,11 +1838,11 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
   //    scripts declared in the manifest - the difference is that the latter
   //    happen at a commit and the factories can just be send in the commit
   //    IPC).
-  // 2) an insertion actually took place / the factories have been modified
-  // 3) a commit has taken place before (i.e. the frame has received a factory
-  //    bundle before).
-  if (push_to_renderer_now && insertion_took_place &&
-      has_committed_any_navigation_) {
+  // 2) an insertion actually took place / the factories have been modified.
+  //
+  // See also the doc comment of `PendingURLLoaderFactoryBundle::OriginMap`
+  // (the type of `pending_isolated_world_factories` that are set below).
+  if (push_to_renderer_now && insertion_took_place) {
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories =
             std::make_unique<blink::PendingURLLoaderFactoryBundle>();
@@ -4171,19 +4215,21 @@ void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
       std::move(callback));
 }
 
+// UpdateSubresourceLoaderFactories may be called (internally/privately), when
+// RenderFrameHostImpl detects a NetworkService crash after pushing a
+// NetworkService-based factory to the renderer process.  It may also be called
+// when DevTools wants to send to the renderer process a fresh factory bundle
+// (e.g. after injecting DevToolsURLLoaderInterceptor) - the latter scenario may
+// happen even if `this` RenderFrameHostImpl has not pushed any NetworkService
+// factories to the renderer process (DevTools is agnostic to this).
 void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
-  // We only send loader factory bundle upon navigation, so
-  // bail out if the frame hasn't committed any yet.
-  if (!has_committed_any_navigation_)
-    return;
-  DCHECK(!IsOutOfProcessNetworkService() ||
-         network_service_disconnect_handler_holder_.is_bound());
-
   NavigationRequest* latest_nav_request_still_committing =
       FindLatestNavigationRequestThatIsStillCommitting();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = false;
   if (recreate_default_url_loader_factory_after_network_service_crash_) {
+    DCHECK(!IsOutOfProcessNetworkService() ||
+           network_service_disconnect_handler_holder_.is_bound());
     bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
         CreateURLLoaderFactoryParamsForMainWorld(
             latest_nav_request_still_committing,

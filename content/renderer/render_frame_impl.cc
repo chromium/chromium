@@ -1040,44 +1040,6 @@ void FillNavigationParamsOriginPolicy(
   }
 }
 
-// Asks RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess in the
-// browser process for a URLLoaderFactory.
-//
-// AVOID: see the comment on CreateDefaultURLLoaderFactoryBundle below.
-mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreateDefaultURLLoaderFactory() {
-  // It is invalid to call this in an incomplete env where
-  // RenderThreadImpl::current() returns nullptr (e.g. in some tests).
-  RenderThreadImpl* render_thread = RenderThreadImpl::current();
-  DCHECK(render_thread);
-
-  // Ask `RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess`
-  // to bind the `factory_remote` and then return the remote.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  ChildThread::Get()->BindHostReceiver(
-      factory_remote.InitWithNewPipeAndPassReceiver());
-  return factory_remote;
-}
-
-// Returns a non-null pointer to a URLLoaderFactory bundle that is not
-// associated with any specific origin, frame or worker.
-//
-// AVOID: prefer to use an origin/frame/worker-specific factory (e.g. via
-// content::RenderFrameImpl::FrameURLLoaderFactory::CreateURLLoader).  See
-// also https://crbug.com/1114822.
-//
-// TODO(https://crbug.com/1114822): Remove once we can re-add the
-// DwoC/NOTREACHED in ChildURLLoaderFactoryBundle::GetFactory without hitting
-// them in practice.
-scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-CreateDefaultURLLoaderFactoryBundle() {
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle> result =
-      base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
-          base::BindOnce(&CreateDefaultURLLoaderFactory));
-  result->MarkAsDeprecatedProcessWideFactory();
-  return result;
-}
-
 v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
                                       v8::Local<v8::Value> object,
                                       const std::u16string& name) {
@@ -1522,6 +1484,28 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 
   render_frame->in_frame_tree_ = true;
   render_frame->Initialize(nullptr);
+
+  if (params->subresource_loader_factories
+          ->IsTrackedChildPendingURLLoaderFactoryBundle()) {
+    // In renderer-initiated creation of a new main frame (e.g. popup without
+    // rel=noopener), `params->subresource_loader_factories` are inherited from
+    // the creator frame (e.g. TrackedChildURLLoaderFactoryBundle will be
+    // updated when the creator's bundle recovers from a NetworkService crash).
+    // See also https://crbug.com/1194763#c5.
+    render_frame->loader_factories_ =
+        base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
+            base::WrapUnique(
+                static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
+                    params->subresource_loader_factories.release())));
+  } else {
+    // In browser-initiated creation of a new main frame (e.g. popup with
+    // rel=noopener, or when creating a new tab) the Browser process provides
+    // `params->subresource_loader_factories`.
+    render_frame->loader_factories_ = render_frame->CreateLoaderFactoryBundle(
+        std::move(params->subresource_loader_factories),
+        base::nullopt /* subresource_overrides */,
+        mojo::NullRemote() /* prefetch_loader_factory */);
+  }
 
   return render_frame;
 }
@@ -2927,7 +2911,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     // the opener.
     auto* creator = RenderFrameImpl::FromWebFrame(frame_->Parent());
     DCHECK(creator);
-    new_loader_factories = CloneLoaderFactoriesFrom(*creator);
+    new_loader_factories = creator->CloneLoaderFactories();
   } else {
     new_loader_factories = CreateLoaderFactoryBundle(
         std::move(subresource_loader_factories),
@@ -3311,14 +3295,6 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
 void RenderFrameImpl::UpdateSubresourceLoaderFactories(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {
-  // TODO(lukasza): https://crbug.com/1013254: Avoid checking
-  // |loader_factories_| for null below - they should be guaranteed to be
-  // non-null after a frame commits (and UpdateSubresourceLoaderFactories should
-  // only be called after a commit).  The check below is just a temporary
-  // workaround to paper-over the crash in https://crbug.com/1013254.
-  if (!loader_factories_)
-    loader_factories_ = GetLoaderFactoryBundleFallback();
-
   if (loader_factories_->IsHostChildURLLoaderFactoryBundle()) {
     static_cast<blink::HostChildURLLoaderFactoryBundle*>(
         loader_factories_.get())
@@ -3639,7 +3615,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       agent_scheduling_group_, render_view_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       devtools_frame_token);
-  child_render_frame->InheritLoaderFactoriesFrom(*this);
+  child_render_frame->loader_factories_ = CloneLoaderFactories();
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
   if (is_created_by_script)
@@ -3842,24 +3818,9 @@ void RenderFrameImpl::DidCommitNavigation(
     // Commits triggered by the browser process should always provide
     // |pending_loader_factories_|.
     loader_factories_ = std::move(pending_loader_factories_);
-    DCHECK(loader_factories_->HasBoundDefaultFactory());
-  } else if (!loader_factories_) {
-    // For renderer-initiated frame creation, the factories should be inherited
-    // using the InheritLoaderFactoriesFrom method, but browser-created initial
-    // empty document currently won't get any factories.  For now, the
-    // process-wide fallback factory will be used for such browser-created
-    // initial empty documents.
-    //
-    // TODO(https://crbug.com/1114822): This case should be covered by always
-    // providing a bundle of factories via a new field of
-    // `mojom::CreateLocalMainFrameParams`.  See also
-    // https://crrev.com/c/2787689.
-
-    // This should only happen for a browser-created initial empty document.
-    DCHECK(GetWebFrame()->GetSecurityOrigin().IsOpaque());
-    DCHECK(document_loader->GetUrl().IsEmpty());
-    DCHECK(!navigation_state->common_params().initiator_origin.has_value());
   }
+  DCHECK(loader_factories_);
+  DCHECK(loader_factories_->HasBoundDefaultFactory());
 
   // TODO(dgozman): call DidStartNavigation in various places where we call
   // CommitNavigation() on the frame.
@@ -5421,25 +5382,14 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
 }
 
 blink::ChildURLLoaderFactoryBundle* RenderFrameImpl::GetLoaderFactoryBundle() {
-  if (!loader_factories_)
-    loader_factories_ = GetLoaderFactoryBundleFallback();
+  // GetLoaderFactoryBundle should not be called before `loader_factories_` have
+  // been set up - before a document is committed (e.g. before a navigation
+  // commits or the initial empty document commits) it is not possible to 1)
+  // trigger subresource loads, or 2) trigger propagation of the factories into
+  // a new frame.
+  DCHECK(loader_factories_);
+
   return loader_factories_.get();
-}
-
-scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-RenderFrameImpl::GetLoaderFactoryBundleFallback() {
-  return CreateLoaderFactoryBundle(
-      nullptr, base::nullopt /* subresource_overrides */,
-      mojo::NullRemote() /* prefetch_loader_factory */);
-}
-
-scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-RenderFrameImpl::CloneLoaderFactoriesFrom(RenderFrameImpl& frame) {
-  auto bundle_info = base::WrapUnique(
-      static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
-          frame.GetLoaderFactoryBundle()->Clone().release()));
-  return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
-      std::move(bundle_info));
 }
 
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
@@ -5449,26 +5399,19 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
         subresource_overrides,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory) {
+  DCHECK(info);
+  // We don't check `DCHECK(info->pending_default_factory())`, because it will
+  // be missing for speculative frames (and in other cases where no subresource
+  // loads are expected - e.g. in test frames created via RenderViewTest).  See
+  // also the DCHECK in URLLoaderFactoryBundle::GetFactory.
+
   auto loader_factories =
       base::MakeRefCounted<blink::HostChildURLLoaderFactoryBundle>(
           GetTaskRunner(blink::TaskType::kInternalLoading));
 
-  // CreateDefaultURLLoaderFactoryBundle can't be called if (as in some tests)
-  // RenderThreadImpl::current is null.
-  if (RenderThreadImpl::current() && !info) {
-    // This should only happen for a placeholder document or an initial empty
-    // document cases.
-    DCHECK(GetLoadingUrl().is_empty() ||
-           GetLoadingUrl().spec() == url::kAboutBlankURL);
-    loader_factories->Update(
-        CreateDefaultURLLoaderFactoryBundle()->PassInterface());
-  }
-
-  if (info) {
-    loader_factories->Update(
-        std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
-            std::move(info)));
-  }
+  loader_factories->Update(
+      std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
+          std::move(info)));
 
   if (subresource_overrides) {
     loader_factories->UpdateSubresourceOverrides(&*subresource_overrides);
@@ -6048,9 +5991,13 @@ void RenderFrameImpl::SetWebURLLoaderFactoryOverrideForTest(
   web_url_loader_factory_override_for_test_ = std::move(factory);
 }
 
-void RenderFrameImpl::InheritLoaderFactoriesFrom(RenderFrameImpl& frame) {
-  CHECK(!loader_factories_);
-  loader_factories_ = CloneLoaderFactoriesFrom(frame);
+scoped_refptr<blink::ChildURLLoaderFactoryBundle>
+RenderFrameImpl::CloneLoaderFactories() {
+  auto bundle_info = base::WrapUnique(
+      static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
+          GetLoaderFactoryBundle()->Clone().release()));
+  return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
+      std::move(bundle_info));
 }
 
 blink::scheduler::WebAgentGroupScheduler&

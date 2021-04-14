@@ -4645,8 +4645,8 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
             img.addEventListener('load', () => {
                 resolve('allowed');
             });
-            img.addEventListener('error', () => {
-                resolve('blocked');
+            img.addEventListener('error', err => {
+                resolve(`error: ${err}`);
             });
 
             // `%%s` is replaced with the value of `target_document`.
@@ -4998,7 +4998,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 // URLLoaderFactory.
 IN_PROC_BROWSER_TEST_F(
     SubresourceLoadingTest,
-    URLLoaderFactoryInInitialEmptyDoc_LongNavigationInSubframe) {
+    URLLoaderFactoryInInitialEmptyDoc_HungNavigationInSubframe) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5033,7 +5033,7 @@ IN_PROC_BROWSER_TEST_F(
 // URLLoaderFactory.
 IN_PROC_BROWSER_TEST_F(
     SubresourceLoadingTest,
-    URLLoaderFactoryInInitialEmptyDoc_LongNavigationInPopup) {
+    URLLoaderFactoryInInitialEmptyDoc_HungNavigationInPopup) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5079,7 +5079,7 @@ IN_PROC_BROWSER_TEST_F(
 // https://crbug.com/1191203.
 IN_PROC_BROWSER_TEST_F(
     SubresourceLoadingTest,
-    URLLoaderFactoryInInitialEmptyDoc_LongNavigationInPopupWithClearedOpener) {
+    URLLoaderFactoryInInitialEmptyDoc_HungNavigationInPopupWithClearedOpener) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5178,10 +5178,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   EXPECT_NE(opener_frame->GetProcess()->GetID(),
             popup_frame->GetProcess()->GetID());
 
-  // TODO(https://crbug.com/1194763): Crash recovery doesn't work when there is
-  // no opener.
-  DontTestNetworkServiceCrashes();
-
   // Inject Javascript that triggers some subresource loads over HTTP.
   //
   // To some extent, this simulates an ability of 1) Android WebView (see
@@ -5198,8 +5194,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 
 // The test below verifies that an initial empty document has a functional
 // URLLoaderFactory.
-IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
-                       URLLoaderFactoryInInitialEmptyDoc_HungNewWindow) {
+IN_PROC_BROWSER_TEST_F(
+    SubresourceLoadingTest,
+    URLLoaderFactoryInInitialEmptyDoc_HungNavigationInNewWindow) {
   // Open a new shell, starting at the "/hung" URL.
   const GURL hung_url = embedded_test_server()->GetURL("a.com", "/hung");
   Shell* new_shell =
@@ -5221,10 +5218,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   ASSERT_EQ(0, new_shell->web_contents()->GetController().GetEntryCount());
   EXPECT_EQ(GURL(), main_frame->GetLastCommittedURL());
   EXPECT_EQ("null", EvalJs(main_frame, "window.origin"));
-
-  // TODO(https://crbug.com/1194763): Crash recovery doesn't work when there is
-  // no opener.
-  DontTestNetworkServiceCrashes();
 
   // Inject Javascript that triggers some subresource loads over HTTP.
   //

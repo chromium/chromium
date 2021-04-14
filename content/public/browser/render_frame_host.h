@@ -704,10 +704,19 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const blink::mojom::MediaPlayerAction& action) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.
+  //
   // If this returns true, any redirect safety checks should be bypassed in
-  // downstream loaders.
+  // downstream loaders.  (This indicates that a layer above //content has
+  // wrapped `default_factory_receiver` and may inject arbitrary redirects - for
+  // example see WebRequestAPI::MaybeProxyURLLoaderFactory.)
+  //
+  // The parameters of the new URLLoaderFactory will be based on the current
+  // state of `this` RenderFrameHost.  For example, the
+  // `request_initiator_origin_lock` parameter will be based on the last
+  // committed origin (or on the origin of the initial empty document if one is
+  // currently hosted in the frame).
   virtual bool CreateNetworkServiceDefaultFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>&&
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver) = 0;
 
   // Requests that future URLLoaderFactoryBundle(s) sent to the renderer should
@@ -716,7 +725,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // origin will be created via
   // ContentBrowserClient::CreateURLLoaderFactoryForNetworkRequests method.
   virtual void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-      base::flat_set<url::Origin> isolated_world_origins,
+      const base::flat_set<url::Origin>& isolated_world_origins,
       bool push_to_renderer_now) = 0;
 
   // Returns true if the given sandbox flag |flags| is in effect on this frame.

@@ -397,6 +397,10 @@ WebView* RenderViewImpl::CreateView(
       std::move(reply->main_frame_interface_broker);
   main_frame_params->policy_container = std::move(reply->policy_container);
   main_frame_params->widget_params = std::move(reply->widget_params);
+  main_frame_params->subresource_loader_factories =
+      base::WrapUnique(static_cast<blink::PendingURLLoaderFactoryBundle*>(
+          creator_frame->CloneLoaderFactories()->Clone().release()));
+
   view_params->main_frame =
       mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
   view_params->blink_page_broadcast = std::move(reply->page_broadcast);
@@ -411,7 +415,6 @@ WebView* RenderViewImpl::CreateView(
       agent_scheduling_group_, compositor_deps_, std::move(view_params),
       /*was_created_by_renderer=*/true,
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
-  view->GetMainRenderFrame()->InheritLoaderFactoriesFrom(*creator_frame);
 
   if (reply->wait_for_debugger) {
     blink::WebFrameWidget* frame_widget =

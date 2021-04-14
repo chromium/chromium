@@ -460,6 +460,9 @@ bool RenderViewHostImpl::CreateRenderView(
         main_rfh->GetRenderWidgetHost()
             ->BindAndGenerateCreateFrameWidgetParams();
 
+    local_frame_params->subresource_loader_factories =
+        main_rfh->CreateSubresourceLoaderFactoriesForInitialEmptyDocument();
+
     params->main_frame = mojom::CreateMainFrameUnion::NewLocalParams(
         std::move(local_frame_params));
   } else {

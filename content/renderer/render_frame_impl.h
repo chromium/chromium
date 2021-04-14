@@ -706,7 +706,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetWebURLLoaderFactoryOverrideForTest(
       std::unique_ptr<blink::WebURLLoaderFactoryForTest> factory);
 
-  void InheritLoaderFactoriesFrom(RenderFrameImpl& frame);
+  // Clones and returns `this` frame's blink::ChildURLLoaderFactoryBundle.
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> CloneLoaderFactories();
 
   url::Origin GetSecurityOriginOfTopFrame();
 
@@ -879,18 +880,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // committing a navigation, but in some cases (about:srcdoc, initial empty
   // document) it may be inherited from the parent or opener.
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle();
-
-  // Returns a mostly empty bundle, with a fallback that uses a process-wide,
-  // direct-network factory.
-  //
-  // TODO(lukasza): https://crbug.com/1114822: Remove once the fallback is no
-  // longer needed.
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-  GetLoaderFactoryBundleFallback();
-
-  // Clones and returns the `frame`'s blink::ChildURLLoaderFactoryBundle.
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle> CloneLoaderFactoriesFrom(
-      RenderFrameImpl& frame);
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,

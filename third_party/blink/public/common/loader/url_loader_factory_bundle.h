@@ -75,6 +75,8 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
     bypass_redirect_checks_ = bypass_redirect_checks;
   }
 
+  virtual bool IsTrackedChildPendingURLLoaderFactoryBundle() const;
+
  protected:
   // PendingSharedURLLoaderFactory implementation.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
@@ -124,7 +126,7 @@ class BLINK_COMMON_EXPORT URLLoaderFactoryBundle
   ~URLLoaderFactoryBundle() override;
 
   // Returns a factory which can be used to acquire a loader for |request|.
-  virtual network::mojom::URLLoaderFactory* GetFactory(
+  network::mojom::URLLoaderFactory* GetFactory(
       const network::ResourceRequest& request);
 
   template <typename TKey>

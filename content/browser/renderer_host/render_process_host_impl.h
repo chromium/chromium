@@ -896,16 +896,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // execute.
   void CancelProcessShutdownDelayForUnload();
 
-  // Creates a URLLoaderFactory that can be used by the renderer process,
-  // without binding it to a specific frame or an origin.
-  //
-  // TODO(kinuko, lukasza): https://crbug.com/1114822: Remove, once all
-  // URLLoaderFactories vended to a renderer process are associated with a
-  // specific origin and an execution context (e.g. a frame, a service worker or
-  // any other kind of worker).
-  void CreateURLLoaderFactoryForRendererProcess(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
-
   // Binds a TracedProcess interface in the renderer process. This is used to
   // communicate with the Tracing service.
   void BindTracedProcess(

@@ -44,8 +44,6 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
       SchemeMap pending_scheme_specific_factories,
       OriginMap pending_isolated_world_factories,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          direct_network_factory_remote,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_prefetch_loader_factory,
       bool bypass_redirect_checks);
   ~ChildPendingURLLoaderFactoryBundle() override;
@@ -60,59 +58,35 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
             {},       // pending_default_network_factory
             {},       // pending_scheme_specific_factories
             {},       // pending_isolated_world_factories
-            {},       // direct_network_factory_remote
             {},       // pending_prefetch_loader_factory
             false));  // bypass_redirect_checks
     return pending_bundle;
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>&
-  direct_network_factory_remote() {
-    return direct_network_factory_remote_;
-  }
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>&
   pending_prefetch_loader_factory() {
     return pending_prefetch_loader_factory_;
-  }
-
-  void MarkAsDeprecatedProcessWideFactory() {
-    is_deprecated_process_wide_factory_ = true;
-  }
-  bool is_deprecated_process_wide_factory() const {
-    return is_deprecated_process_wide_factory_;
   }
 
  protected:
   // PendingURLLoaderFactoryBundle overrides.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
-  bool is_deprecated_process_wide_factory_ = false;
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      direct_network_factory_remote_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_prefetch_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildPendingURLLoaderFactoryBundle);
 };
 
-// This class extends URLLoaderFactoryBundle to support a direct network loader
-// factory, which bypasses custom overrides such as appcache or service worker.
-// Besides, it also supports using callbacks to lazily initialize the direct
-// network loader factory.
+// This class extends URLLoaderFactoryBundle to support prefetch loader factory
+// and subresource overrides (the latter to support MimeHandlerViewGuest).
 class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
     : public blink::URLLoaderFactoryBundle {
  public:
-  using FactoryGetterCallback = base::OnceCallback<
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>()>;
-
   ChildURLLoaderFactoryBundle();
 
   explicit ChildURLLoaderFactoryBundle(
       std::unique_ptr<ChildPendingURLLoaderFactoryBundle> pending_factories);
-
-  ChildURLLoaderFactoryBundle(
-      FactoryGetterCallback direct_network_factory_getter);
 
   // URLLoaderFactoryBundle overrides.
   void CreateLoaderAndStart(
@@ -145,27 +119,14 @@ class BLINK_PLATFORM_EXPORT ChildURLLoaderFactoryBundle
 
   virtual bool IsHostChildURLLoaderFactoryBundle() const;
 
-  void MarkAsDeprecatedProcessWideFactory() {
-    is_deprecated_process_wide_factory_ = true;
-  }
-
  protected:
   ~ChildURLLoaderFactoryBundle() override;
 
-  // URLLoaderFactoryBundle overrides.
-  network::mojom::URLLoaderFactory* GetFactory(
-      const network::ResourceRequest& request) override;
-
  private:
-  void InitDirectNetworkFactoryIfNecessary();
   std::unique_ptr<network::PendingSharedURLLoaderFactory> CloneInternal(
       bool include_appcache);
 
-  FactoryGetterCallback direct_network_factory_getter_;
-  mojo::Remote<network::mojom::URLLoaderFactory> direct_network_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> prefetch_loader_factory_;
-
-  bool is_deprecated_process_wide_factory_ = false;
 
   std::map<GURL, mojom::TransferrableURLLoaderPtr> subresource_overrides_;
 };

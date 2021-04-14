@@ -67591,8 +67591,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     |request_initiator_origin_lock| doesn't apply.
   </int>
   <int value="1" label="NoLock">
-    |request_initiator_origin_lock| is missing - see https://crbug.com/1098938
-    and RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess.
+    |request_initiator_origin_lock| is missing - see https://crbug.com/1098938.
   </int>
   <int value="2" label="NoInitiator">|request_initiator| is missing.</int>
   <int value="3" label="CompatibleLock">

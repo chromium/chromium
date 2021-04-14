@@ -2417,16 +2417,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   associated_registry->AddInterface(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
-  // TODO(https://crbug.com/1114822):
-  // RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess is unused
-  // at this point and can be removed.  (It is probably prudent to wait with the
-  // removal until M90 reaches the Stable channel.)
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          &RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess,
-          weak_factory_.GetWeakPtr()));
-
   registry->AddInterface(
       base::BindRepeating(&BlobRegistryWrapper::Bind,
                           storage_partition_impl_->GetBlobRegistry(), GetID()));
@@ -2720,14 +2710,6 @@ void RenderProcessHostImpl::SetNetworkFactoryForTesting(
       << "It is not expected that this is called with non-null callback when "
       << "another overriding callback is already set.";
   GetCreateNetworkFactoryCallback() = create_network_factory_callback;
-}
-
-void RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CreateURLLoaderFactory(
-      std::move(receiver),
-      URLLoaderFactoryParamsHelper::CreateForRendererProcess(this));
 }
 
 void RenderProcessHostImpl::CreateURLLoaderFactory(

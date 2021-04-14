@@ -82,12 +82,6 @@ class URLLoaderFactoryParamsHelper {
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       base::StringPiece debug_tag);
 
-  // TODO(https://crbug.com/1114822): CreateForRendererProcess is unused and can
-  // be removed.  (It is probably prudent to wait with the removal until M90
-  // reaches the Stable channel.)
-  static network::mojom::URLLoaderFactoryParamsPtr CreateForRendererProcess(
-      RenderProcessHost* process);
-
  private:
   // Only static methods.
   URLLoaderFactoryParamsHelper() = delete;

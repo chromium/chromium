@@ -105,11 +105,11 @@ void OverrideFactoryParams(const Extension& extension,
 
 void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
     content::RenderFrameHost* frame,
-    std::vector<url::Origin> request_initiators,
+    const std::vector<url::Origin>& request_initiators,
     bool push_to_renderer_now) {
   DCHECK(!request_initiators.empty());
   frame->MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-      std::move(request_initiators), push_to_renderer_now);
+      request_initiators, push_to_renderer_now);
 }
 
 }  // namespace
@@ -139,8 +139,8 @@ void URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
     constexpr bool kPushToRendererNow = false;
 
     MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
-        navigation->GetRenderFrameHost(),
-        std::move(initiators_requiring_separate_factory), kPushToRendererNow);
+        navigation->GetRenderFrameHost(), initiators_requiring_separate_factory,
+        kPushToRendererNow);
   }
 }
 

@@ -513,6 +513,8 @@ void RenderViewTest::SetUp() {
       render_widget_host_->BindNewFrameWidgetInterfaces();
   widget_params->visual_properties = InitialVisualProperties();
   main_frame_params->widget_params = std::move(widget_params);
+  main_frame_params->subresource_loader_factories =
+      std::make_unique<blink::PendingURLLoaderFactoryBundle>();
 
   view_params->main_frame =
       mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
