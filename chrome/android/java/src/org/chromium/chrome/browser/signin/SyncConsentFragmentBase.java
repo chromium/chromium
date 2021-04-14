@@ -229,6 +229,7 @@ public abstract class SyncConsentFragmentBase
                 ? ProfileDataCache.createWithDefaultImageSize(
                         requireContext(), R.drawable.ic_account_child_20dp)
                 : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+        mProfileDataCache.addObserver(mProfileDataCacheObserver);
 
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
@@ -240,6 +241,7 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         dismissGmsErrorDialog();
         dismissGmsUpdatingDialog();
         if (mConfirmSyncDataStateMachine != null) {
@@ -500,7 +502,6 @@ public abstract class SyncConsentFragmentBase
     public void onResume() {
         super.onResume();
         mAccountManagerFacade.addObserver(mAccountsChangedObserver);
-        mProfileDataCache.addObserver(mProfileDataCacheObserver);
         triggerUpdateAccounts();
 
         mView.startAnimations();
@@ -509,7 +510,6 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         mAccountManagerFacade.removeObserver(mAccountsChangedObserver);
 
         mView.stopAnimations();
