@@ -27,10 +27,11 @@ promise_test(async t => {
   ];
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
-    assert_equals(result[i].event, expected[i].event, `event${i}`);
+    assert_equals(result[i].event, expected[i].event, `event[${i}]`);
     assert_equals(result[i].prerendering, expected[i].prerendering,
-       `prerendering${i}`);
+       `prerendering[${i}]`);
   }
+  bc.close();
 }, `the access to the Battery Status API should be deferred until the
    prerendered page is activated`);
 
