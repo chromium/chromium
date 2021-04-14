@@ -427,10 +427,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 };
 
 // Test that the bubble correctly treats dismissal due to deactivation.
-// TODO(https://crbug.com/1177315): This test is flaky. When the flake is fixed,
-// re-enable this test.
 TEST_F(ExtensionMessageBubbleTest,
-       DISABLED_BubbleDoesNotAcknowledgeExtensionOnDeactivationDismissal) {
+       BubbleDoesNotAcknowledgeExtensionOnDeactivationDismissal) {
   Init();
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("Alpha").Build();
