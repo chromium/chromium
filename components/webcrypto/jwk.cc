@@ -331,9 +331,10 @@ Status JwkReader::GetOptionalBool(const std::string& member_name,
   if (!dict_.Get(member_name, &value))
     return Status::Success();
 
-  if (!value->GetAsBoolean(result))
+  if (!value->is_bool())
     return Status::ErrorJwkMemberWrongType(member_name, "boolean");
 
+  *result = value->GetBool();
   *member_exists = true;
   return Status::Success();
 }

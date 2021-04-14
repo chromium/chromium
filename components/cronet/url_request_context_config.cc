@@ -659,12 +659,13 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
             preloaded_nel_headers_config->GetList());
       }
     } else if (it.key() == kDisableIPv6OnWifi) {
-      if (!it.value().GetAsBoolean(&disable_ipv6_on_wifi)) {
+      if (!it.value().is_bool()) {
         LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
                    << "\" is not a bool";
         effective_experimental_options->Remove(it.key(), nullptr);
         continue;
       }
+      disable_ipv6_on_wifi = it.value().GetBool();
     } else if (it.key() == kSSLKeyLogFile) {
       std::string ssl_key_log_file_string;
       if (it.value().GetAsString(&ssl_key_log_file_string)) {

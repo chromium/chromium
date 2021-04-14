@@ -71,10 +71,10 @@ bool InstallValue(const base::Value& value,
       return key.WriteValue(name.c_str(), L"") == ERROR_SUCCESS;
 
     case base::Value::Type::BOOLEAN: {
-      bool bool_value;
-      if (!value.GetAsBoolean(&bool_value))
+      if (!value.is_bool())
         return false;
-      return key.WriteValue(name.c_str(), bool_value ? 1 : 0) == ERROR_SUCCESS;
+      return key.WriteValue(name.c_str(), value.GetBool() ? 1 : 0) ==
+             ERROR_SUCCESS;
     }
 
     case base::Value::Type::INTEGER: {

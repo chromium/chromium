@@ -57,10 +57,7 @@ TEST(SyncPolicyHandlerTest, Disabled) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(prefs.GetValue(prefs::kSyncManaged, &value));
   ASSERT_TRUE(value);
-  bool sync_managed = false;
-  bool result = value->GetAsBoolean(&sync_managed);
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(sync_managed);
+  EXPECT_TRUE(value->GetBool());
 }
 
 TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {

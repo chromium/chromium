@@ -32,10 +32,10 @@ void InsecurePrivateNetworkPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  bool is_allowed = false;
-  if (value && value->GetAsBoolean(&is_allowed)) {
-    prefs->SetValue(prefs::kManagedDefaultInsecurePrivateNetworkSetting,
-                    base::Value(ConvertBooleanToContentSetting(is_allowed)));
+  if (value && value->is_bool()) {
+    prefs->SetValue(
+        prefs::kManagedDefaultInsecurePrivateNetworkSetting,
+        base::Value(ConvertBooleanToContentSetting(value->GetBool())));
   }
 }
 
