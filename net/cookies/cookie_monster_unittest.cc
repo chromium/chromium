@@ -4128,6 +4128,10 @@ void RecordCookieChanges(std::vector<CanonicalCookie>* out_cookies,
 }
 
 TEST_F(CookieMonsterNotificationTest, GlobalNotBroadcast) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kNoCookieChangeNotificationOnLoad);
+
   // Create a persistent store that will not synchronously satisfy the
   // loading requirement.
   scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
@@ -4176,10 +4180,6 @@ TEST_F(CookieMonsterNotificationTest, GlobalNotBroadcast) {
 // Tests that there are no changes emitted for cookie loading when the feature
 // kNoCookieChangeNotificationOnLoad is enabled.
 TEST_F(CookieMonsterNotificationTest, NoNotificationOnLoad) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kNoCookieChangeNotificationOnLoad);
-
   // Create a persistent store that will not synchronously satisfy the
   // loading requirement.
   scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);

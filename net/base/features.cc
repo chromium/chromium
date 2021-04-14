@@ -226,7 +226,7 @@ const base::Feature kSameSiteCookiesBugfix1166211{
     "SameSiteCookiesBugfix1166211", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNoCookieChangeNotificationOnLoad{
-    "NoCookieChangeNotificationOnLoad", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NoCookieChangeNotificationOnLoad", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::Feature kDocumentReporting{"DocumentReporting",
