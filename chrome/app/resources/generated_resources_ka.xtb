@@ -2190,6 +2190,7 @@
 <translation id="3406396172897554194">მოიძიეთ ენის ან შეყვანის მეთოდის სახელის მიხედვით</translation>
 <translation id="3406605057700382950">სანიშნეების ზოლის ჩ&amp;ვენება</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{ეს გაფართოება შეიძლება სახიფათო იყოს}other{ეს გაფართოებები შეიძლება სახიფათო იყოს}}</translation>
+<translation id="3408072735282270043">გააქტიურება, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">ამ მომხმარებლის ამოშლის შემდეგ, მასთან დაკავშირებული ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება. <ph name="USER_EMAIL" /> მაინც შეძლებს სისტემაში შესვლას მოგვიანებით.</translation>
 <translation id="3412265149091626468">მონიშნულ ობიექტზე გადახტომა</translation>
@@ -2812,6 +2813,7 @@
 <translation id="4056908315660577142">მიღწეულია მშობლის მიერ <ph name="APP_NAME" />-ის Chrome აპზე დაწესებული დროის ლიმიტი. ხვალ შეგიძლიათ <ph name="TIME_LIMIT" /> გამოიყენოთ ის.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">მაღაზიაში ნახვა</translation>
+<translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">დოკუმენტის შემოწმება</translation>
 <translation id="406070391919917862">ფონური პროგრამები</translation>
@@ -3349,6 +3351,7 @@
 <translation id="4682551433947286597">შესასვლელ ეკრანზე გამოჩნდება ფონის სურათი.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ნაგულისხმევი)</translation>
 <translation id="4684427112815847243">ყველაფრის სინქრონიზაცია</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> ცდილობს კამერაზე წვდომას. წვდომის დასაშვებად გადაიყვანეთ კონფიდენციალურობის გადამრთველი გამორთულ მდგომარეობაზე.</translation>
 <translation id="4687613760714619596">უცნობი მოწყობილობა (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ადგილობრივი ჟურნალის ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">აირჩიეთ დემო რეჟიმის პარამეტრები</translation>
@@ -3986,7 +3989,6 @@
 <translation id="5449551289610225147">პაროლი არასწორია</translation>
 <translation id="5449588825071916739">ყველა ჩანართის სანიშნეებში დამატება</translation>
 <translation id="5449716055534515760">ფან&amp;ჯრის დახურვა</translation>
-<translation id="5454005855577728171">წარწერის ბუშტი გადაადგილდა: <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% ჰორიზონტალურად, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% ვერტიკალურად</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
 <translation id="5457113250005438886">არასწორი</translation>
 <translation id="5457459357461771897">ფოტოების, მუსიკის და კომპიუტერის სხვა მედიის წაკითხვა და წაშლა</translation>
@@ -4334,7 +4336,6 @@
 <translation id="5841270259333717135">Ethernet-ის კონფიგურაცია</translation>
 <translation id="5842497610951477805">Bluetooth-ის ჩართვა</translation>
 <translation id="5843706793424741864">ფარენჰაიტი</translation>
-<translation id="584451707753263735">ნაჩვენებია ავტოსუბტიტრი, ფოკუსირების გადასაადგილებლადდააჭირეთ F6-ს</translation>
 <translation id="5844574845205796324">გასაცნობი ახალი კონტენტის შემოთავაზება</translation>
 <translation id="5846200638699387931">კავშირის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">განახლებებისა და აპების ინსტალაცია. გაგრძელებით თანახმა ხართ, ამ მოწყობილობამ ავტომატურად ჩამოტვირთოს და დააინსტალიროს Google-ის, თქვენი ოპერატორის და მოწყობილობის მწარმოებლის განახლებები/აპები (მათ შორის, მობილური ინტერნეტის მეშვეობით). ზოგიერთი ზემოაღნიშნული აპი შეიძლება გთავაზობდეთ კონტენტის აპიდან შეძენის შესაძლებლობას.</translation>
@@ -6194,6 +6195,7 @@
 <translation id="7915457674565721553">მშობლის მიერ კონტროლის დასაყენებლად დაუკავშირდით ინტერნეტს</translation>
 <translation id="7916588358273861731">მიმდინარეობს პროფილების სიის განახლება. ამას, შესაძლოა, 30 წამამდე დასჭირდეს.</translation>
 <translation id="7918257978052780342">რეგისტრაცია</translation>
+<translation id="7919123827536834358">ამ ენების ავტომატურად თარგმნა</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />წმ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის ნახვა</translation>
 <translation id="7920482456679570420">დაამატეთ სიტყვები, რომლებიც გსურთ, გამოტოვებული იყოს მართლწერის შემოწმებისას</translation>
@@ -6658,7 +6660,6 @@
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>
 <translation id="8454502708934796641">გსურთ, სთხოვოთ Google-ს, იპოვოს ფასდაკლებები თქვენ მიერ კალათებში დამატებულ პროდუქტებზე?</translation>
 <translation id="8455026683977728932">ADB ილუსტრაცია ვერ ჩაირთო</translation>
-<translation id="8456398879271637452">ნაჩვენებია ავტოსუბტიტრი, ფოკუსირების გადასაადგილებლადდააჭირეთ კლავიშთა კომბინაციას Ctrl + უკან ან Ctrl + წინ</translation>
 <translation id="8456512334795994339">იპოვეთ აპები სამსახურისთვის და გასართობად</translation>
 <translation id="845702320058262034">დაკავშირება ვერ მოხერხდა. დარწმუნდით, რომ თქვენს ტელეფონზე ჩართულია Bluetooth.</translation>
 <translation id="8457451314607652708">სანიშნეების იმპორტი</translation>
@@ -6687,6 +6688,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />-ის უცნობი მოწყობილობა</translation>
 <translation id="8481187309597259238">USB-ის ნებართვის დადასტურება</translation>
 <translation id="8481980314595922412">საცდელი ფუნქციები ჩართულია</translation>
+<translation id="848666842773560761">აპი ცდილობს კამერაზე წვდომას. წვდომის დასაშვებად გადაიყვანეთ კონფიდენციალურობის გადამრთველი გამორთულ მდგომარეობაზე.</translation>
 <translation id="8487678622945914333">მასშტაბის გადიდება</translation>
 <translation id="8489156414266187072">პერსონალური შემოთავაზებები ნაჩვენებია მხოლოდ თქვენს ანგარიშში</translation>
 <translation id="8490896350101740396">შემდეგი Kiosk აპები განახლდა: „<ph name="UPDATED_APPS" />“. განახლების პროცესის დასასრულებლად, გადატვირთეთ მოწყობილობა.</translation>
@@ -7204,7 +7206,6 @@
 <translation id="9037965129289936994">ორიგინალის ჩვენება</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{დაგრჩათ ერთი მცდელობა.}other{დაგრჩათ # მცდელობა.}}</translation>
 <translation id="9040661932550800571">გსურთ <ph name="ORIGIN" />-ის პაროლის განახლება?</translation>
-<translation id="9041049756004505730">ნაჩვენებია ავტოსუბტიტრი, ფოკუსირების გადასაადგილებლადდააჭირეთ კლავიშთა კომბინაციას ⌘ + Option + ზემოთ/ქვემოთ მიმართული ისარი</translation>
 <translation id="9041692268811217999">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="904224458472510106">ამ ოპერაციას ვერ გააუქმებთ</translation>
 <translation id="9042893549633094279">კონფიდენციალურობა და უსაფრთხოება</translation>
@@ -7287,7 +7288,6 @@
 <translation id="9128870381267983090">ქსელთან დაკავშირება</translation>
 <translation id="9130015405878219958">შეყვანილია არასწორი რეჟიმი.</translation>
 <translation id="9131487537093447019">Bluetooth მოწყობილობებიდან შეტყობინებების გაგზავნა და მიღება.</translation>
-<translation id="913700572893686595">Google Drive-იდან</translation>
 <translation id="9137013805542155359">ორიგინალის ჩვენება</translation>
 <translation id="9137157311132182254">სასურველი საძიებო სისტემა</translation>
 <translation id="9137248913990643158">ამ აპის გამოყენებამდე, გთხოვთ, გაუშვათ Chrome და შეხვიდეთ მასში.</translation>

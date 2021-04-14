@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox பயிற்சியை மூடு</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{திறந்த அடைப்புக்குறி}other{# திறந்த அடைப்புக்குறிகள்}}</translation>
+<translation id="270523456882008230">குறிப்பு: இதைச் செயல்படுத்த, ஒரு விரலால் இருமுறை தட்டவும்.</translation>
 <translation id="2705875883745373140">அழுத்தப்படவில்லை</translation>
 <translation id="2708078563826046398">பீச் பஃப்</translation>
 <translation id="2713444072780614174">வெள்ளை</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">உதவிக்குறிப்பு</translation>
 <translation id="2976476721782829799">திரையில் எங்கு வேண்டுமானாலும் செல்ல ஒரு விரலாலும் இழுக்கலாம். இது 'தொட்டு அறிக' அம்சம் எனப்படுகிறது. இந்தப் பாடத்தில் மீதமுள்ளவற்றை வாசிக்க விரலால் இழுக்கவும்.</translation>
 <translation id="297825089465017871">இரண்டு விரல்களை இடதுபுறமாக ஸ்வைப் செய்யவும்</translation>
+<translation id="2988364959384217951">குறிப்பு: இந்தப் பயிற்சியில் இருந்து வெளியேற விரும்பினால் இரு விரல்களால் வலதுபுறத்தில் இருந்து இடதுபுறம் ஸ்வைப் செய்யவும்.</translation>
 <translation id="2998131015536248178">முந்தைய எழுத்து</translation>
 <translation id="2999559350546931576">ஸ்ருதியைக் குறை</translation>
 <translation id="3009352964623081324">Search + O, அதன் பின்னர் S. குரல்களை நிறுவவும் நிர்வகிக்கவும் பிரத்தியேகமாக்கவும் இந்த ஷார்ட்கட்டைப் பயன்படுத்தலாம்.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox மெனுக்களைத் திறக்கும்</translation>
 <translation id="7799302833060027366">கணித உள்ளடக்கத்தை ஆராய்வதற்கு மேல், கீழ், இடது அல்லது வலது அம்புக்குறிகளை அழுத்தவும்</translation>
 <translation id="7800558923657349506">முடிவுரை</translation>
+<translation id="7801768143868631306">குறிப்பு: அடுத்தது/முந்தையதற்குச் செல்ல, ஒரு விரலால் இடது/வலதுபுறம் ஸ்வைப் செய்யவும்.</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7810781339813764006">அடுத்த குழு</translation>
 <translation id="7813616274030162878">ஸ்விட்ச் அணுகல் மெனு</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">எழுத்துரு: <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">தொடர் நிறுத்தற்குறி எதிரொலி</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">செயல்கள் உள்ளன. அவற்றைப் பார்க்க, Search+Ctrl+A விசைகளை அழுத்தவும்</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">மாற்றி விசைகள்</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>

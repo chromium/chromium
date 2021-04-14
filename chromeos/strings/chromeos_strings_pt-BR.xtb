@@ -366,6 +366,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
 <translation id="8928727111548978589">Falha - Sem papel</translation>
 <translation id="8930622219860340959">Rede sem fio</translation>

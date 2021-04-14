@@ -2191,6 +2191,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3406396172897554194">Search by language or input name</translation>
 <translation id="3406605057700382950">&amp;Show bookmarks bar</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{This extension may be dangerous}other{These extensions may be dangerous}}</translation>
+<translation id="3408072735282270043">Activate, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">All files and local data associated with this user will be permanently deleted once this user is removed. <ph name="USER_EMAIL" /> can still sign in later.</translation>
 <translation id="3412265149091626468">Jump to selection</translation>
@@ -3351,6 +3352,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4682551433947286597">Wallpapers appear on the sign-in screen.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sync everything</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="4687613760714619596">Unknown device (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Local log ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Choose your demo preferences</translation>
@@ -3988,7 +3990,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5449551289610225147">Invalid password</translation>
 <translation id="5449588825071916739">Bookmark All Tabs</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
-<translation id="5454005855577728171">Moved caption bubble to <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% across, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% down</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5457459357461771897">Read and delete photos, music and other media from your computer</translation>
@@ -4336,7 +4337,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5841270259333717135">Configure Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
-<translation id="584451707753263735">Live Caption visible; press F6 to cycle focus</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Install updates and apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
@@ -6196,6 +6196,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7915457674565721553">Connect to the Internet to set up parental controls</translation>
 <translation id="7916588358273861731">Refreshing profile list. This may take up to 30 seconds.</translation>
 <translation id="7918257978052780342">Enrol</translation>
+<translation id="7919123827536834358">Automatically translate these languages</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
@@ -6662,7 +6663,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8452135315243592079">Missing SIM card</translation>
 <translation id="8454502708934796641">Ask Google to find discounts on what you’ve added to your baskets?</translation>
 <translation id="8455026683977728932">Failed to enable ADB illustration</translation>
-<translation id="8456398879271637452">Live Caption visible, press Ctrl + Back or Ctrl + Forward to cycle focus</translation>
 <translation id="8456512334795994339">Find apps for work and play</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
@@ -6691,6 +6691,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirm USB Permission</translation>
 <translation id="8481980314595922412">Trial features are on</translation>
+<translation id="848666842773560761">An app is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
 <translation id="8490896350101740396">The following kiosk apps "<ph name="UPDATED_APPS" />" have been updated. Please reboot the device to complete the update process.</translation>
@@ -7208,7 +7209,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{You have one attempt remaining.}other{You have # attempts remaining.}}</translation>
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
-<translation id="9041049756004505730">Live Caption visible, press ⌘ + Option + up arrow or down arrow to cycle focus</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
@@ -7291,7 +7291,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9130015405878219958">Invalid mode entered.</translation>
 <translation id="9131487537093447019">Send messages to and receive messages from Bluetooth devices.</translation>
-<translation id="913700572893686595">From Google Drive</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9137157311132182254">Preferred search engine</translation>
 <translation id="9137248913990643158">Please start and sign in to Chrome before using this app.</translation>

@@ -2191,6 +2191,7 @@
 <translation id="3406396172897554194">言語または入力方法で検索</translation>
 <translation id="3406605057700382950">ブックマーク バーを表示(&amp;S)</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{この拡張機能は安全でない可能性があります}other{これらの拡張機能は安全でない可能性があります}}</translation>
+<translation id="3408072735282270043"><ph name="NETWORK_NAME" /> を有効にする</translation>
 <translation id="3409785640040772790">マップ</translation>
 <translation id="3410832398355316179">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。<ph name="USER_EMAIL" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3412265149091626468">選択部分へジャンプ</translation>
@@ -3351,6 +3352,7 @@
 <translation id="4682551433947286597">壁紙はログイン画面に表示されます。</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> がカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
@@ -3988,7 +3990,6 @@
 <translation id="5449551289610225147">パスワードが無効です</translation>
 <translation id="5449588825071916739">すべてのタブをブックマークに追加する</translation>
 <translation id="5449716055534515760">ウィンドウを閉じる(&amp;D)</translation>
-<translation id="5454005855577728171">字幕のふきだしが、左から <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%、上から <ph name="POSITION_ON_SCREEN_FROM_TOP" />% の位置に移動しました</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
@@ -4336,7 +4337,6 @@
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5843706793424741864">華氏</translation>
-<translation id="584451707753263735">自動字幕起こしが表示されています。F6 キーを押すと、フォーカスを順番に移動できます</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
@@ -6196,6 +6196,7 @@
 <translation id="7915457674565721553">保護者による使用制限を設定するにはインターネットに接続してください</translation>
 <translation id="7916588358273861731">プロファイル リストを更新しています。これには 30 秒ほどかかります。</translation>
 <translation id="7918257978052780342">登録</translation>
+<translation id="7919123827536834358">これらの言語を自動的に翻訳する</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を表示できます</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
@@ -6662,7 +6663,6 @@
 <translation id="8452135315243592079">SIM カードがありません</translation>
 <translation id="8454502708934796641">カートに追加した商品の割引情報を Google で取得するよう設定しますか？</translation>
 <translation id="8455026683977728932">ADB のイラストレーションを有効にできませんでした。</translation>
-<translation id="8456398879271637452">自動字幕起こしが表示されています。Ctrl+戻る、または Ctrl+次へを押すと、フォーカスを順番に移動できます</translation>
 <translation id="8456512334795994339">仕事や遊びに使えるおすすめのアプリ</translation>
 <translation id="845702320058262034">接続できません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="8457451314607652708">ブックマークをインポート</translation>
@@ -6691,6 +6691,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8481980314595922412">試用版機能はオンになっています</translation>
+<translation id="848666842773560761">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>
 <translation id="8490896350101740396">キオスクアプリ「<ph name="UPDATED_APPS" />」を更新しました。更新処理を完了するためにデバイスを再起動してください。</translation>
@@ -7208,7 +7209,6 @@
 <translation id="9037965129289936994">原文のページを表示</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{あと 1 回試行できます。}other{あと # 回試行できます。}}</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
-<translation id="9041049756004505730">自動字幕起こしが表示されています。⌘+option+上矢印または下矢印を押すと、フォーカスを順番に移動できます。</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
@@ -7291,7 +7291,6 @@
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
 <translation id="9131487537093447019">Bluetooth デバイスとのメッセージの送受信。</translation>
-<translation id="913700572893686595">Google ドライブから</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9137157311132182254">優先する検索エンジン</translation>
 <translation id="9137248913990643158">このアプリを使用するには、Chrome を起動してログインしてください。</translation>

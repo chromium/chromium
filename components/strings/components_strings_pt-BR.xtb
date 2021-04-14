@@ -1308,6 +1308,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5913377024445952699">Captura de tela pausada</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5919090499915321845">B10</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}}</translation>
 <translation id="5921185718311485855">ativado</translation>
 <translation id="5921639886840618607">Salvar cartão na Conta do Google?</translation>
 <translation id="5922853866070715753">Quase pronto</translation>
@@ -1567,6 +1568,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">Configurações de redimensionamento</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias.</translation>
 <translation id="7029809446516969842">Senhas</translation>
@@ -1904,6 +1906,7 @@ Mais detalhes:
 <translation id="825929999321470778">Mostrar todas as senhas salvas</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8262952874573525464">Costura na parte inferior</translation>
+<translation id="826298712171642726">Ativar o redimensionamento?</translation>
 <translation id="8265992338205884890">Dados visíveis</translation>
 <translation id="8267698848189296333">Fazendo login como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/Cópias reunidas</translation>

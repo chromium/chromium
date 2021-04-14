@@ -737,7 +737,7 @@
 <translation id="1778457539567749232">Marca com a no llegit</translation>
 <translation id="1779162884187776723">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1779468444204342338">Mínims</translation>
-<translation id="1779652936965200207">Introduïu aquesta contrasenya a "<ph name="DEVICE_NAME" />":</translation>
+<translation id="1779652936965200207">Introdueix aquesta clau d'accés a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Aplicació (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Tanca el grup</translation>
 <translation id="1781291988450150470">PIN actual</translation>
@@ -2190,6 +2190,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3406396172897554194">Cerca per idioma o per nom de l'entrada</translation>
 <translation id="3406605057700382950">&amp;Mostra la Barra d'adreces d'interès</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Aquesta extensió pot ser perillosa}other{Aquestes extensions poden ser perilloses}}</translation>
+<translation id="3408072735282270043">Activa, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi. <ph name="USER_EMAIL" /> pot iniciar la sessió més tard.</translation>
 <translation id="3412265149091626468">Ves directament a la selecció</translation>
@@ -3349,6 +3350,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4682551433947286597">Els fons de pantalla apareixen a la pantalla d'inici de sessió.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (opció predeterminada)</translation>
 <translation id="4684427112815847243">Sincronitza-ho tot</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> està provant d'accedir a la càmera. Desactiva l'interruptor de privadesa de la càmera per permetre-hi l'accés.</translation>
 <translation id="4687613760714619596">Dispositiu desconegut (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identificador del registre local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Tria les teves preferències de demostració</translation>
@@ -3987,7 +3989,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5449551289610225147">La contrasenya no és vàlida</translation>
 <translation id="5449588825071916739">Afegeix totes les pestanyes a les adreces d'interès</translation>
 <translation id="5449716055534515760">Tanca la &amp;finestra</translation>
-<translation id="5454005855577728171">El quadre dels subtítols s'ha mogut un <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% en horitzontal i un <ph name="POSITION_ON_SCREEN_FROM_TOP" />% cap avall</translation>
 <translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">No vàlides</translation>
 <translation id="5457459357461771897">Llegeix i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
@@ -4336,7 +4337,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Activa el Bluetooth</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
-<translation id="584451707753263735">Els subtítols instantanis estan visibles; prem F6 per canviar el focus</translation>
 <translation id="5844574845205796324">Suggereix contingut nou per explorar</translation>
 <translation id="5846200638699387931">Error de sintaxi de la relació: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Instal·la aplicacions i actualitzacions. En continuar, acceptes que aquest dispositiu també pugui baixar i instal·lar automàticament actualitzacions i aplicacions de Google, de l'operador i del fabricant del dispositiu, i que és possible que ho faci utilitzant dades mòbils. Pot ser que algunes d'aquestes aplicacions ofereixin compres des de l'aplicació.</translation>
@@ -6196,6 +6196,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7915457674565721553">Connecta't a Internet per configurar els controls parentals</translation>
 <translation id="7916588358273861731">S'està actualitzant la llista de perfils. Aquest procés pot tardar fins a 30 segons.</translation>
 <translation id="7918257978052780342">Inscriu</translation>
+<translation id="7919123827536834358">Tradueix automàticament aquests idiomes</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pot veure <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Afegeix paraules que vulguis que el corrector ortogràfic passi per alt</translation>
@@ -6662,7 +6663,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8452135315243592079">Falta la targeta SIM</translation>
 <translation id="8454502708934796641">Vols demanar a Google que cerqui descomptes per als articles que has afegit als carretons?</translation>
 <translation id="8455026683977728932">No s'ha pogut activar la il·lustració d'ADB</translation>
-<translation id="8456398879271637452">Els subtítols instantanis estan visibles; prem Ctrl+Enrere o Ctrl+Endavant per canviar el focus</translation>
 <translation id="8456512334795994339">Cerca aplicacions per treballar i jugar</translation>
 <translation id="845702320058262034">No es pot establir la connexió. Comprova que el Bluetooth del telèfon estigui activat.</translation>
 <translation id="8457451314607652708">Importa les adreces d'interès</translation>
@@ -6691,6 +6691,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8480869669560681089">Dispositiu desconegut de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirma el permís d'USB</translation>
 <translation id="8481980314595922412">Les funcions de prova estan activades</translation>
+<translation id="848666842773560761">Una aplicació està provant d'accedir a la càmera. Desactiva l'interruptor de privadesa de la càmera per permetre-hi l'accés.</translation>
 <translation id="8487678622945914333">Amplia</translation>
 <translation id="8489156414266187072">Els suggeriments personals només es mostren al teu compte</translation>
 <translation id="8490896350101740396">S'han actualitzat les aplicacions de Quiosc següents: <ph name="UPDATED_APPS" />. Reinicieu el dispositiu per completar el procés d'actualització.</translation>
@@ -7208,11 +7209,10 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Et queda un intent.}other{Et queden # intents.}}</translation>
 <translation id="9040661932550800571">Vols actualitzar la contrasenya per a <ph name="ORIGIN" />?</translation>
-<translation id="9041049756004505730">Els subtítols instantanis estan visibles; prem ⌘+Opció+fletxa amunt o fletxa avall per canviar el focus</translation>
 <translation id="9041692268811217999">L'administrador ha desactivat l'accés als fitxers locals de l'ordinador</translation>
 <translation id="904224458472510106">Aquesta operació no es pot desfer</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
-<translation id="904451693890288097">Introduïu la contrasenya per a "<ph name="DEVICE_NAME" />":</translation>
+<translation id="904451693890288097">Introdueix la clau d'accés per a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">S'ha produït un error en connectar amb la xarxa: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envia a Google l'adreça web de la pàgina que estàs provant de visitar</translation>
 <translation id="9046895021617826162">S'ha produït un error en la connexió</translation>
@@ -7291,7 +7291,6 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9128870381267983090">Connecta't a la xarxa</translation>
 <translation id="9130015405878219958">S'ha introduït un mode no vàlid.</translation>
 <translation id="9131487537093447019">Enviar missatges a dispositius Bluetooth i rebre'n</translation>
-<translation id="913700572893686595">De Google Drive</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
 <translation id="9137157311132182254">Motor de cerca preferit</translation>
 <translation id="9137248913990643158">Obre Chrome i inicia-hi la sessió abans d'utilitzar aquesta aplicació.</translation>

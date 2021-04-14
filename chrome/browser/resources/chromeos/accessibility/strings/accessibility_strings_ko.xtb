@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox 가이드 종료</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{여는 괄호}other{여는 괄호 #개}}</translation>
+<translation id="270523456882008230">힌트: 현재 항목을 활성화하려면 한 손가락으로 두 번 탭하세요.</translation>
 <translation id="2705875883745373140">누르지 않음</translation>
 <translation id="2708078563826046398">피치 퍼프</translation>
 <translation id="2713444072780614174">흰색</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">툴팁</translation>
 <translation id="2976476721782829799">또한 한 손가락으로 화면을 드래그하여 이동할 수 있습니다. 이를 터치하여 탐색이라고 부릅니다. 손가락으로 드래그하여 이 과정의 남은 내용을 읽어 보세요.</translation>
 <translation id="297825089465017871">손가락 두 개를 사용하여 왼쪽으로 스와이프</translation>
+<translation id="2988364959384217951">힌트: 이 튜토리얼을 종료하려면 두 손가락을 오른쪽에서 왼쪽으로 스와이프하세요.</translation>
 <translation id="2998131015536248178">이전 문자</translation>
 <translation id="2999559350546931576">음조 낮춤</translation>
 <translation id="3009352964623081324">검색 + O를 누른 후 S. 음성을 설치, 관리, 맞춤설정할 수 있습니다.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox 메뉴 열기</translation>
 <translation id="7799302833060027366">위, 아래, 왼쪽, 오른쪽 버튼을 눌러 수학 콘텐츠를 탐색하세요.</translation>
 <translation id="7800558923657349506">에필로그</translation>
+<translation id="7801768143868631306">힌트: 이동하려면 한 손가락을 왼쪽 또는 오른쪽으로 스와이프하세요.</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7810781339813764006">다음 그룹</translation>
 <translation id="7813616274030162878">스위치 제어 메뉴</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> 글꼴</translation>
 <translation id="8898516272131543774">순환 구두점 에코</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">작업을 사용할 수 있습니다. 검색+Ctrl+A를 눌러서 확인하세요.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">특수키</translation>
 <translation id="8943282376843390568">라임색</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Закрыть руководство по ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{открывающая круглая скобка}one{# открывающая круглая скобка}few{# открывающие круглые скобки}many{# открывающих круглых скобок}other{# open parens}}</translation>
+<translation id="270523456882008230">Подсказка. Чтобы активировать текущий элемент, нажмите на него два раза одним пальцем.</translation>
 <translation id="2705875883745373140">Не нажато</translation>
 <translation id="2708078563826046398">Воздушный персиковый</translation>
 <translation id="2713444072780614174">Белый</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Подсказка</translation>
 <translation id="2976476721782829799">По экрану можно перемещаться, двигая по нему пальцем. Эта функция называется "Изучение касанием". Попробуйте провести пальцем по экрану, чтобы прочитать остальную часть этого урока.</translation>
 <translation id="297825089465017871">Проведите двумя пальцами влево</translation>
+<translation id="2988364959384217951">Подсказка. Чтобы выйти из руководства, проведите двумя пальцами справа налево.</translation>
 <translation id="2998131015536248178">Перейти к предыдущему символу</translation>
 <translation id="2999559350546931576">Понизить тон</translation>
 <translation id="3009352964623081324">Поиск + O, затем S (используется для установки и настройки голосов, а также управления ими)</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">Открыть меню ChromeVox</translation>
 <translation id="7799302833060027366">Для работы с математическим контентом используйте клавиши со стрелками</translation>
 <translation id="7800558923657349506">Эпилог</translation>
+<translation id="7801768143868631306">Подсказка. Для перехода между элементами проведите одним пальцем влево или вправо.</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7810781339813764006">Перейти к следующей группе</translation>
 <translation id="7813616274030162878">Меню функции Switch Access</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">Шрифт <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Повторно озвучивать пунктуацию</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Доступны действия. Чтобы посмотреть их, нажмите Поиск + Ctrl + A.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Клавиши-модификаторы</translation>
 <translation id="8943282376843390568">Лаймовый</translation>

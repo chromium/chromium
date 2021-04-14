@@ -366,6 +366,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8881098542468797602">Test succeeded</translation>
 <translation id="8898840733695078011">Signal strength</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
+<translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930622219860340959">Wireless</translation>

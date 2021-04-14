@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox Dərsliyini Bağlayın</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{açıq mötərizə}other{# açıq mötərizə}}</translation>
+<translation id="270523456882008230">İpucu: Cari elementi aktivləşdirmək üçün bir barmağınızla iki dəfə toxunun.</translation>
 <translation id="2705875883745373140">Sıxılmayıb</translation>
 <translation id="2708078563826046398">Şaftalı Rəngi</translation>
 <translation id="2713444072780614174">Ağ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">İpucu</translation>
 <translation id="2976476721782829799">Bir barmağınızı ekranda çəkərək də hərəkət edə bilərsiniz. Buna "Toxunma ilə kəşf etmə" deyilir. Bu dərsin davamını oxumaq üçün barmağınızı çəkməyə çalışın.</translation>
 <translation id="297825089465017871">İki barmağınızla sola çəkin</translation>
+<translation id="2988364959384217951">İpucu: Bu təlimdən çıxmaq istəyirsinizsə iki barmağınızla sağdan sola sürüşdürün.</translation>
 <translation id="2998131015536248178">Öncəki Simvol</translation>
 <translation id="2999559350546931576">Səs tonunu azaldın</translation>
 <translation id="3009352964623081324">Axtarış + O, sonra S. Səsləri quraşdırmaq, idarə etmək və fərdiləşdirmək üçün istifadə edin.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox menyularını açın</translation>
 <translation id="7799302833060027366">Riyazi elementləri araşdırmaq üçün yuxarı, aşağı, sol və ya sağ düyməni basın</translation>
 <translation id="7800558923657349506">Epiloq</translation>
+<translation id="7801768143868631306">İpucu: Keçmək üçün bir barmaqla sola və ya sağa sürüşdürün.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Növbəti Qrup</translation>
 <translation id="7813616274030162878">Açar Giriş Menyusu</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Şrift <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Sikl punktsuasiya exosu</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Əlçatan fəaliyyətlər. Baxmaq üçün Axtarış+Ctrl+A düymələrinə basın</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Dəyişdirici Açarları</translation>
 <translation id="8943282376843390568">Yaşıl Limon</translation>

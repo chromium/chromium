@@ -242,6 +242,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2684412629217766642">ChromeVox ట్యుటోరియల్‌ను మూసివేస్తుంది</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{తెరిచిన కుండలీకరణ గుర్తు}other{# తెరిచిన కుండలీకరణ గుర్తులు}}</translation>
+<translation id="270523456882008230">సూచన: ప్రస్తుత ఐటెమ్‌ను యాక్టివేట్ చేయడానికి ఒక వేలితో రెండుసార్లు నొక్కండి.</translation>
 <translation id="2705875883745373140">నొక్కబడలేదు</translation>
 <translation id="2708078563826046398">వివర్ణ దొండపండు రంగు</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
@@ -286,6 +287,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2972205263822847197">సాధన చిట్కా</translation>
 <translation id="2976476721782829799">ఒక వేలును స్క్రీన్ అంతటా లాగడం ద్వారా మీరు అంతటా తిరగవచ్చు. దీన్నే తాకడం ద్వారా పరిశీలించడం అంటారు. ఈ పాఠంలోని మిగతా భాగాన్ని చదవడానికి స్క్రీన్ అంతటా మీ వేలును లాగండి.</translation>
 <translation id="297825089465017871">రెండు వేళ్లతో ఎడమవైపునకు స్వైప్ చేయండి</translation>
+<translation id="2988364959384217951">సూచన: మీరు ఈ ట్యుటోరియల్‌ను నిష్క్రమించాలనుకుంటే కుడి నుండి ఎడమ వైపునకు రెండు వేళ్లతో స్వైప్ చేయండి.</translation>
 <translation id="2998131015536248178">మునుపటి అక్షరం</translation>
 <translation id="2999559350546931576">స్వర స్థాయి తగ్గించండి</translation>
 <translation id="3009352964623081324">Search + O, తర్వాత S. వాయిస్‌లను ఇన్‌స్టాల్, మేనేజ్ చేయడానికి, అనుకూలీకరించడానికి ఉపయోగించండి.</translation>
@@ -942,6 +944,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7776293189010177726">ChromeVox మెనులను తెరుస్తుంది</translation>
 <translation id="7799302833060027366">గణితాన్ని అన్వేషించడానికి పైకి, కిందకు, ఎడమకు లేదా కుడి చిహ్నాల కీలను నొక్కండి</translation>
 <translation id="7800558923657349506">ఉపసంహారం</translation>
+<translation id="7801768143868631306">సూచన: నావిగేట్ చేయడానికి ఒక వేలుతో ఎడమవైపుకు లేదా కుడివైపుకు స్వైప్ చేయండి.</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7810781339813764006">తరువాత గ్రూప్</translation>
 <translation id="7813616274030162878">స్విచ్ యాక్సెస్ మెనూ</translation>
@@ -1081,6 +1084,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8897030325301866860">ఫాంట్ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">సైకిల్ విరామచిహ్న అనుకరణ</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">చర్యలు అందుబాటులో ఉన్నాయి. వీక్షించడానికి Search+Ctrl+A కీలను నొక్కండి</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">మాడిఫైయర్ కీలు</translation>
 <translation id="8943282376843390568">నిమ్మపండు రంగు</translation>

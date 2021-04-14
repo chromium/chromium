@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ปิดบทแนะนำ ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{วงเล็บเปิด}other{# วงเล็บเปิด}}</translation>
+<translation id="270523456882008230">คำแนะนำ: ใช้ 1 นิ้วแตะสองครั้งเพื่อเปิดใช้งานรายการปัจจุบัน</translation>
 <translation id="2705875883745373140">ไม่ได้กด</translation>
 <translation id="2708078563826046398">สีส้มพีชพัฟ</translation>
 <translation id="2713444072780614174">สีขาว</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">เคล็ดลับเครื่องมือ</translation>
 <translation id="2976476721782829799">คุณไปยังส่วนต่างๆ โดยลาก 1 นิ้วรอบๆ หน้าจอได้ด้วย วิธีนี้เรียกว่า "การแตะเพื่อสำรวจ" ลองลากนิ้วไปรอบๆ เพื่ออ่านเนื้อหาที่เหลือของบทเรียนนี้</translation>
 <translation id="297825089465017871">เลื่อน 2 นิ้วไปทางซ้าย</translation>
+<translation id="2988364959384217951">คำแนะนำ: ใช้ 2 นิ้วปัดจากขวาไปซ้ายหากต้องการออกจากบทแนะนำนี้</translation>
 <translation id="2998131015536248178">อักขระก่อนหน้า</translation>
 <translation id="2999559350546931576">ลดระดับเสียง</translation>
 <translation id="3009352964623081324">ค้นหา + O ตามด้วย S ใช้เพื่อติดตั้ง จัดการ และปรับแต่งเสียง</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">เปิดเมนู ChromeVox</translation>
 <translation id="7799302833060027366">กดขึ้น ลง ซ้าย หรือขวาเพื่อสำรวจคณิตศาสตร์</translation>
 <translation id="7800558923657349506">ปัจฉิมบท</translation>
+<translation id="7801768143868631306">คำแนะนำ: ใช้ 1 นิ้วปัดไปทางซ้ายหรือขวาเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7810781339813764006">กลุ่มถัดไป</translation>
 <translation id="7813616274030162878">เมนูการเข้าถึงด้วยสวิตช์</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">แบบอักษร <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">พูดรอบเครื่องหมายวรรคตอน</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">มีการดำเนินการที่ใช้ได้ กดค้นหา + Ctrl + A เพื่อดู</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">คีย์ตัวปรับแต่ง</translation>
 <translation id="8943282376843390568">เหลืองมะนาว</translation>

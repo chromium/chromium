@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
+<translation id="1715359911173058521">Terjadi masalah saat menghubungkan dengan pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
 <translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
@@ -216,6 +217,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="54609108002486618">Terkelola</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} kesempatan lagi}other{{0} kesempatan lagi}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Tidak dapat menyelesaikan pemindaian</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5916084858004523819">Terlarang</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
+<translation id="6037291330010597344">Pengumpan dokumen pemindai kosong. Tambahkan dokumen, lalu coba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identitas Anonim</translation>
 <translation id="604124094241169006">Otomatis</translation>
@@ -252,6 +255,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
+<translation id="6388847657025262518">Pengumpan dokumen pemindai macet. Periksa pengumpan, lalu coba lagi.</translation>
 <translation id="641081527798843608">Kecocokan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Lancar</translation>
@@ -273,6 +277,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
+<translation id="6910312834584889076">Penutup pemindai terbuka. Tutup penutup dan coba lagi.</translation>
 <translation id="6911383237894364323">Tidak dapat terhubung ke server media</translation>
 <translation id="6957231940976260713">Nama layanan</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
@@ -287,6 +292,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
+<translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7359657277149375382">Jenis file</translation>
@@ -360,6 +366,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
 <translation id="8930622219860340959">Nirkabel</translation>

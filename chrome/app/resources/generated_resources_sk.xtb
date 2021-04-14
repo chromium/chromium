@@ -2192,6 +2192,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3406396172897554194">Vyhľadávanie podľa jazyka alebo názvu vstupu</translation>
 <translation id="3406605057700382950">&amp;Zobraziť panel so záložkami</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie môže byť nebezpečné}few{Tieto rozšírenia môžu byť nebezpečné}many{Tieto rozšírenia môžu byť nebezpečné}other{Tieto rozšírenia môžu byť nebezpečné}}</translation>
+<translation id="3408072735282270043">Aktivovať <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3410832398355316179">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odstránení natrvalo vymazané. <ph name="USER_EMAIL" /> sa bude môcť stále prihlásiť neskôr.</translation>
 <translation id="3412265149091626468">Prejsť na výber</translation>
@@ -3352,6 +3353,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4682551433947286597">Tapety sa zobrazia na prihlasovacej obrazovke.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predvolené)</translation>
 <translation id="4684427112815847243">Synchronizovať všetko</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> sa snaží získať prístup k fotoaparátu. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
 <translation id="4687613760714619596">Neznáme zariadenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identifikátor miestneho denníka: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Výber predvolieb ukážky</translation>
@@ -3989,7 +3991,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5449588825071916739">Uložiť všetky karty ako záložky</translation>
 <translation id="5449716055534515760">Zavrieť o&amp;kno</translation>
-<translation id="5454005855577728171">Bublinu s prepisom ste presunuli <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % naprieč a <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % nadol</translation>
 <translation id="5454166040603940656">s poskytovateľom <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5457459357461771897">Čítať a odstraňovať fotky, hudbu a ďalšie médiá z tohto počítača</translation>
@@ -4337,7 +4338,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5841270259333717135">Konfigurácia ethernetu</translation>
 <translation id="5842497610951477805">Povolenie rozhrania Bluetooth</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
-<translation id="584451707753263735">Živý prepis je viditeľný, označenie prepnete klávesom F6</translation>
 <translation id="5844574845205796324">Navrhovať nový obsah na prieskum</translation>
 <translation id="5846200638699387931">Chyba syntaxe vzťahu: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Inštalácia aktualizácií a aplikácií. Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora a výrobcu zariadenia a v prípade potreby pri tom môže používať mobilné dáta. Niektoré z týchto aplikácií môžu ponúkať nákupy v aplikácii.</translation>
@@ -6197,6 +6197,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7915457674565721553">Ak chcete nastaviť rodičovskú kontrolu, pripojte sa k internetu</translation>
 <translation id="7916588358273861731">Obnovuje sa zoznam profilov. Môže to trvať až 30 sekúnd.</translation>
 <translation id="7918257978052780342">Zaregistrovať</translation>
+<translation id="7919123827536834358">Automaticky prekladať tieto jazyky</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> uvidí <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Pridajte slová, ktoré má kontrola pravopisu preskočiť</translation>
@@ -6662,7 +6663,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8452135315243592079">Chýba SIM karta</translation>
 <translation id="8454502708934796641">Chcete požiadať Google, aby hľadať zľavy na položky, ktoré ste si pridali do košíkov?</translation>
 <translation id="8455026683977728932">Nepodarilo sa aktivovať vytváranie obrázkov pomocou nástroja ADB</translation>
-<translation id="8456398879271637452">Živý prepis je viditeľný, označenie preneste klávesmi Ctrl + Späť alebo Ctrl + Ďalej</translation>
 <translation id="8456512334795994339">Vyhľadávanie aplikácií na prácu a zábavu</translation>
 <translation id="845702320058262034">Nedá sa pripojiť. Skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth.</translation>
 <translation id="8457451314607652708">Import záložiek</translation>
@@ -6691,6 +6691,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8480869669560681089">Neznáme zariadenie od spoločnosti <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdenie povolenia pre USB</translation>
 <translation id="8481980314595922412">Skúšobné funkcie sú zapnuté</translation>
+<translation id="848666842773560761">K fotoaparátu sa snaží získať prístup určitá aplikácia. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
 <translation id="8487678622945914333">Priblížiť</translation>
 <translation id="8489156414266187072">Osobné návrhy sa zobrazujú iba vo vašom účte</translation>
 <translation id="8490896350101740396">Aplikácie Kiosku (<ph name="UPDATED_APPS" />) boli aktualizované. Reštartujte zariadenie a dokončite tak proces aktualizácie.</translation>
@@ -7210,7 +7211,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9037965129289936994">Zobraziť originál</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Zostáva posledný pokus.}few{Zostávajú # pokusy.}many{You have # attempts remaining.}other{Zostáva # pokusov.}}</translation>
 <translation id="9040661932550800571">Aktualizovať heslo pre adresu <ph name="ORIGIN" />?</translation>
-<translation id="9041049756004505730">Živý prepis je viditeľný, označenie prepnete klávesmi ⌘ + Option + šípka nahor alebo nadol</translation>
 <translation id="9041692268811217999">Prístup k miestnym súborom vo vašom počítači zakázal správca</translation>
 <translation id="904224458472510106">Táto operácia sa nedá vrátiť späť</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
@@ -7293,7 +7293,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9128870381267983090">Pripojiť k sieti</translation>
 <translation id="9130015405878219958">Zadali ste neplatný režim.</translation>
 <translation id="9131487537093447019">Posielať správy zariadeniam Bluetooth a prijímať správy zo zariadení Bluetooth.</translation>
-<translation id="913700572893686595">Z Disku Google</translation>
 <translation id="9137013805542155359">Zobraziť originál</translation>
 <translation id="9137157311132182254">Preferovaný vyhľadávač</translation>
 <translation id="9137248913990643158">Začnite a prihláste sa do Chromu ešte predtým, ako použijete túto aplikáciu.</translation>

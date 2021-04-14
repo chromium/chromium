@@ -154,6 +154,7 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="120937472976628837">ファン情報を報告する</translation>
+<translation id="1214202898523114033">ポート 10080（有効期限: 2022 年 4 月 1 日）</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange（SXG）のサポートを有効にします</translation>
 <translation id="1219695476179627719">デバイスですでに新しいバージョンを実行している場合に、<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> で設定されているバージョンに戻すかどうかを指定します。
 
@@ -1027,6 +1028,7 @@
 このポリシーを設定した場合、ユーザーは値をオーバーライドできません。
 
 このポリシーを未設定のままにした場合、初期状態ではプライバシー スクリーンが無効になりますが、ユーザーは設定を変更できます。</translation>
+<translation id="2415715982424988916">使い方・ヒント（バージョン 91 以降でサポート）</translation>
 <translation id="241739814668386424"> このポリシーを無効にした場合、ユーザーは PCIe トンネリング経由で Thunderbolt/USB4 周辺機器を完全に接続することができません。
 
       このポリシーを有効にした場合、ユーザーは PCIe トンネリング経由で Thunderbolt/USB4 周辺機器を完全に接続することができます。
@@ -1311,6 +1313,11 @@
 <translation id="2757054304033424106">インストールが許可されている拡張機能/アプリのタイプ</translation>
 <translation id="2759224876420453487">マルチプロフィール セッションでのユーザーの動作を制御する</translation>
 <translation id="2761483219396643566">アイドル警告が表示されるまでの時間（バッテリー電源での実行時）</translation>
+<translation id="2764964245640818227"><ph name="PRODUCT_NAME" /> の PDF ビューアで PDF に注釈を追加できるかどうかを管理します。
+
+      このポリシーを設定しない場合や true に設定した場合は、PDF ビューアで PDF に注釈を追加できます。
+
+      このポリシーを false に設定した場合は、PDF ビューアで PDF に注釈を追加できません。</translation>
 <translation id="2769952903507981510">リモート アクセス ホストの必須のドメイン名を設定する</translation>
 <translation id="2772955711376920612">このポリシーを有効に設定して、<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> と <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> を設定した場合、デバイスが対応していれば電力ピークシフトが有効になります。電力ピークシフトの電力管理ポリシーは、ピーク使用時に交流電流の使用量を最小限に抑える省電力ポリシーです。各平日に、電力ピークシフト モードの開始時刻と終了時刻を設定できます。バッテリー残量が指定したしきい値を上回っている限り、この時間帯は、交流電流が接続されている場合でもデバイスの実行にはバッテリーが使用されます。指定した終了時刻を過ぎると、電源に接続されている場合、デバイスの実行には交流電流が使用されますが、バッテリーは充電されません。指定した開始時刻を過ぎると、デバイスは再び、交流電流を使って通常どおりに動作し、バッテリーが充電されます。
 
@@ -1517,6 +1524,7 @@
 
         このポリシーは、すでにリリース済みのポリシーには影響しません。</translation>
 <translation id="3016255526521614822"><ph name="PRODUCT_OS_NAME" /> のロック画面で使用できるメモ作成アプリをホワイトリスト登録する</translation>
+<translation id="3017578958356048910">PDF ビューアで PDF に注釈を追加できる</translation>
 <translation id="3020953534071988875">このポリシーを設定すると、<ph name="PRODUCT_NAME" /> のシークレット モードとゲストのプロフィールでアンビエント認証を許可または不許可にできます。
 
       アンビエント認証は、NTLM/Kerberos/Negotiate challenge/response スキームで明示的な認証情報が指定されていない場合に使用される、デフォルトの認証情報による HTTP 認証です。
@@ -1753,6 +1761,7 @@
 <translation id="332771718998993005"><ph name="PRODUCT_NAME" /> のレシーバーとして表示する名前を指定します。
 
           このポリシーが空でない文字列に設定されている場合は、その文字列が <ph name="PRODUCT_NAME" /> のレシーバー名として使用されます。それ以外の場合、レシーバー名にはデバイス名が設定されます。このポリシーが未設定の場合、レシーバー名にはデバイス名が設定され、デバイスの所有者（またはデバイスを管理するドメインのユーザー）はその名前を変更できます。なお、名前は 24 文字以内で指定する必要があります。</translation>
+<translation id="3329063005964041553">File Handling API の使用をブロックするウェブアプリを指定する</translation>
 <translation id="3339271789059866414">システム プロキシ サービスを利用できるようにするかどうかとシステム サービスのプロキシ認証情報を設定します。
       このポリシーが設定されていない場合、システム プロキシ サービスは利用できません。</translation>
 <translation id="3348799281602260763">有効にすると、WebRTC ピア接続が TLS/DTLS プロトコルのサポートが終了したバージョン（DTLS 1.0、TLS 1.0、TLS 1.1）にダウングレードされる可能性があります。
@@ -2426,6 +2435,9 @@
 <translation id="4325690621216251241">システム トレイにログアウト ボタンを追加する</translation>
 <translation id="4329095223358818804">クイック アンサーに選択したコンテンツへのアクセスを許可する</translation>
 <translation id="4330372709562934569">安全でないウェブサイトがリストに指定されている場合、そのウェブサイトからより限定されたプライベート ネットワーク エンドポイントへのリクエストは許可されます。</translation>
+<translation id="4331357743227845302">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で接続を許可する Bluetooth サービスを指定できます。
+
+このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> では特定の Bluetooth サービスへの接続のみをユーザーに許可します。ただし、リストが空の場合はあらゆるサービスの使用が許可されます。Bluetooth SIG で予約されている UUIDは、<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> または <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> の形式で指定できます。独自の UUID は <ph name="BLUETOOTH_CUSTOM_UUID" /> の形式で指定できます。UUID では大文字と小文字は区別されません。このポリシーを未設定のままにした場合、ユーザーはあらゆる Bluetooth サービスに接続できます。</translation>
 <translation id="4332177773549877617">Android アプリのインストール中に発生したイベントを記録する</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> では、検索プロバイダによってサポートされる文字エンコードを指定できます。エンコードは、UTF-8、GB2312、ISO-8859-1 などのコードページ名であり、指定された順序で適用されます。
 
@@ -2479,6 +2491,7 @@
 
       このポリシーが false の場合、OS のアップグレード後に初めてブラウザを起動したときにウェルカム ページは再表示されません。</translation>
 <translation id="4423597592074154136">プロキシ設定を手動で指定する</translation>
+<translation id="4427173305799125784">PDF ビューアで PDF に注釈を追加できない</translation>
 <translation id="4432762137771104529">セーフ ブラウジングの詳細レポートを有効にする</translation>
 <translation id="443454694385851356">以前の暗号化タイプ（安全ではありません）</translation>
 <translation id="443665821428652897">ブラウザのシャットダウンでサイトのデータを削除する（サポート終了予定）</translation>
@@ -2720,6 +2733,7 @@
 <translation id="4812270373673968774">このポリシーを [常に使用] に設定した場合、<ph name="PRODUCT_OS_NAME" /> シェルフが自動的に非表示になります。このポリシーを [使用しない] に設定した場合、シェルフが非表示になることがなくなります。このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、シェルフが自動的に非表示になるかどうかをユーザーが指定します。</translation>
 <translation id="4812714598405913256">DeviceMinimumVersion ポリシー用の自動更新の有効期限に関するメッセージを設定する</translation>
 <translation id="4816674326202173458">企業ユーザーがメイン ユーザーとしてもセカンダリ ユーザーとしても操作できるようにする（管理対象ユーザー以外のユーザーに対するデフォルトの動作）</translation>
+<translation id="4818228398115369966">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバス、Google ニュース、使い方・ヒントの機能を無効に設定する</translation>
 <translation id="4820432864264617413">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="4826326557828204741">バッテリー電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="482803100714220060">URL 全体を表示する</translation>
@@ -2920,6 +2934,7 @@
 
       このポリシーを true に設定するか、未設定のままにした場合、ユーザーは新しいタブページの背景をカスタイマイズできます。</translation>
 <translation id="5075190314377370852">このポリシーを True に設定した場合、ローカルにインストールされた CA 証明書によって正常に確認されたサーバー証明書に対し、<ph name="PRODUCT_NAME" /> は常に失効確認を行います。<ph name="PRODUCT_NAME" /> が失効のステータス情報を取得できない場合、<ph name="PRODUCT_NAME" /> ではその証明書は失効したものとして扱われます（強制エラー）。このポリシーを False に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は既存のオンライン失効確認設定を使用します。</translation>
+<translation id="5078623750797048009">PDF の注釈を有効にする</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
 <translation id="5087424855041813182">このポリシーでは、通知の表示を許可するサイトの URL パターンリストを指定できます。
@@ -2985,6 +3000,7 @@
 <translation id="5178479074002209469">このポリシーによりアップデートが必須となっている場合に、管理対象外のユーザー セッションで通知を表示してログアウトするかどうかを示すブール値のフラグです。</translation>
 <translation id="5182055907976889880"><ph name="PRODUCT_OS_NAME" /> で Google ドライブを設定します</translation>
 <translation id="5182483318861266793">シェルフを画面の右側に配置する</translation>
+<translation id="5189360528842591274">接続を許可する Bluetooth サービスのリストを指定する</translation>
 <translation id="5190426551516379357">このポリシーでは、YouTube で制限付きモードの下限を強制適用して、ユーザーがこれより緩い制限付きモードを選択できないようにします。このポリシーには次の値を設定できます。
 
       * 強: YouTube で制限付きモード「強」が常に有効になります。
@@ -2994,6 +3010,7 @@
       * オフまたは未設定: Chrome によって YouTube の制限付きモードは適用されません。ただし、YouTube ポリシーなどの外部ポリシーによって制限付きモードが適用される可能性があります。</translation>
 <translation id="519247340330463721">セーフ ブラウジングに関するポリシーを設定します。</translation>
 <translation id="5196520640744454600">ログイン画面で固定キーを有効にする</translation>
+<translation id="5196630732055960309">File Handling API の使用を許可するウェブアプリを指定する</translation>
 <translation id="5206454085187851382"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="5207543664699568887">Linux で <ph name="PRODUCT_NAME" /> がシステム通知を使用するかどうかを設定します。True に設定するか未設定のままにすると、<ph name="PRODUCT_NAME" /> はシステム通知を使用できます。False に設定すると、<ph name="PRODUCT_NAME" /> はシステム通知を使用しません。代わりに <ph name="PRODUCT_NAME" /> のメッセージ センターが使用されます。</translation>
 <translation id="5208675398826212411">このポリシーでは、DNS 傍受チェックを経由したイントラネット リダイレクトの処理方法を設定します。DNS 傍受チェックは、ブラウザが不明なホスト名をリダイレクトするプロキシの背後にあるかどうかを検出するものです。
@@ -3157,6 +3174,15 @@
       このポリシーは以前、Android で誤って有効になっていましたが、Android でこの機能がフルサポートされていたことはありません。</translation>
 <translation id="5390083518957894426">SAML ユーザーのロック画面でのオンライン再認証を有効にします</translation>
 <translation id="5391388690191341203">デバイスのローカル アカウントの自動ログイン</translation>
+<translation id="5391867362692016532">このポリシーでは、ファイル形式が関連付けられたプログラムを開くようユーザーに求めることを許可しないウェブアプリの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのウェブアプリで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      URL が <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> の URL パターンと一致しない場合は、<ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" />、ユーザーの個人設定の順に適用されます。
+
+      URL パターンは、<ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5393009997533871906">許可リストに登録されているプリンタのみをユーザーに表示する</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> を有効にする</translation>
 <translation id="5405289061476885481"><ph name="PRODUCT_OS_NAME" /> のログイン画面で選択可能にするキーボード配列を設定します。
@@ -3920,6 +3946,15 @@
 <translation id="6506486086262398387">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> のネットワーク ファイル共有の機能では、必要に応じて SMB 共有の認証に NTLM が使用されます。このポリシーを無効に設定した場合、SMB 共有の NTLM 認証は無効になります。
 
       このポリシーを未設定のままにした場合、デフォルトの動作は管理対象ユーザーに対して無効になり、それ以外のユーザーに対しては有効になります。</translation>
+<translation id="651012148496266279">このポリシーでは、<ph name="PRODUCT_NAME" /> に組み込まれている制限ポートのリストを回避するポートを指定できます。値には、発信接続を許可する 0 個以上のポートのカンマ区切りのリストを指定します。
+
+      ポートは、<ph name="PRODUCT_NAME" /> を経路としてさまざまなネットワークの脆弱性が悪用されるのを防ぐために制限されています。このポリシーを設定した場合、ネットワークが攻撃にさらされる可能性があります。このポリシーは、ブロックされたポートで実行されるサービスを標準ポート（ポート 80 または 443）に移行する際に、コード「ERR_UNSAFE_PORT」のエラーを一時的に解決するためのものです。
+
+      悪意のあるウェブサイトは、このポリシーの設定の有無と対象のポートを簡単に検出して標的型攻撃に使用することができます。
+
+      空の値を設定した場合や未設定のままにした場合は、すべての制限ポートがブロックされます。有効な値と無効な値が設定されている場合は、有効な値のみが適用されます。
+
+      このポリシーは「--explicitly-allowed-ports」コマンドライン オプションをオーバーライドします。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6518102411616460786">ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する</translation>
 <translation id="6520802717075138474">初回実行時にデフォルトのブラウザから検索エンジンをインポートする</translation>
@@ -4728,6 +4763,7 @@
       * PIN と指紋によるロック解除を許可する場合は、["PIN", "FINGERPRINT"] を使用します。
 
       このポリシーを設定しないか空白のリストに設定した場合、管理対象デバイスでロックのクイック解除モードは使用できません。</translation>
+<translation id="754176366378585605">File Handling API の使用を管理する</translation>
 <translation id="7543109906499122922">デバイスでバッテリーでの使用を開始する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="7547549430720182663">統合</translation>
 <translation id="7553535237300701827">このポリシーが設定されている場合、ログイン認証フローは設定の値に応じて次のいずれかになります。
@@ -5459,6 +5495,7 @@
           このポリシーを設定しない場合、ユーザー補助機能のショートカットはデフォルトで有効になります。</translation>
 <translation id="8524334245528364388">プリント サーバーのリストを記載した JSON ファイルの URL です。</translation>
 <translation id="8525526490824335042">Linux コンテナ</translation>
+<translation id="8528951285051082869">File Handling API を使用して、ファイル形式が関連付けられたプログラムを開くことをウェブアプリに許可しない</translation>
 <translation id="8537051350735478658">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> のアドレスバーで検索候補が有効になります。このポリシーを False に設定した場合、検索候補が無効になります。このポリシーを設定した場合、ユーザーは設定を変更できません。ポリシーを設定しない場合、検索候補は最初は有効ですが、ユーザーはいつでも無効にできます。</translation>
 <translation id="8543108307976719751">このパソコンへのリモート アクセス接続を許可しない</translation>
 <translation id="8544375438507658205"><ph name="PRODUCT_FRAME_NAME" /> のデフォルトの HTML レンダラ</translation>
@@ -5507,6 +5544,7 @@
       このポリシーを false に設定した場合は、どのタブも凍結されません。</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> のロック画面で許可されるメモアプリのリスト</translation>
+<translation id="8637566476051166626">明示的に許可するネットワーク ポートを指定する</translation>
 <translation id="8643838501942693770">サードパーティ Cookie を許可し、ユーザーはこの設定を変更できる</translation>
 <translation id="8650974590712548439">Windows レジストリでの Windows クライアントの場所:</translation>
 <translation id="8653085952260859632">メモリ情報を報告する</translation>
@@ -5540,6 +5578,15 @@
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスの Bluetooth に関する情報が報告されます。</translation>
+<translation id="8703378568562190813">このポリシーでは、ファイル形式が関連付けられたプログラムを開くことを許可するウェブアプリの URL パターンリストを指定できます。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのウェブアプリで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      URL が <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> の URL パターンと一致しない場合は、<ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" />、ユーザーの個人設定の順に適用されます。
+
+      URL パターンは、<ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="8703488928438047864">ボードの状態を報告する</translation>
 <translation id="8704831857353097849">無効なプラグインのリスト</translation>
 <translation id="8705895771006864851">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> に組み込みの翻訳ツールバーを表示し、右クリックのコンテキスト メニューに翻訳オプションを表示して、ユーザーが必要な場面で翻訳機能を使用できるようにします。このポリシーを False に設定した場合、組み込みの翻訳機能はすべて使用できなくなります。

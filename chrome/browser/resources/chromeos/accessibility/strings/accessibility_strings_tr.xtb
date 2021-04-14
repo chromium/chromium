@@ -241,6 +241,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2684412629217766642">ChromeVox Eğiticisi'ni kapat</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{aç parantez}other{# aç parantez}}</translation>
+<translation id="270523456882008230">İpucu: Geçerli öğeyi etkinleştirmek için bir parmağınızla ekrana iki kez dokunun.</translation>
 <translation id="2705875883745373140">Basılmadı</translation>
 <translation id="2708078563826046398">Şeftali</translation>
 <translation id="2713444072780614174">Beyaz</translation>
@@ -285,6 +286,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2972205263822847197">İpucu</translation>
 <translation id="2976476721782829799">Bir parmağınızı sürükleyerek de ekranda gezinebilirsiniz. Buna, dokunarak keşfetme denir. Bu dersin geri kalanını okumak için parmağınızı ekranda sürüklemeyi deneyin.</translation>
 <translation id="297825089465017871">İki parmağınızı sola kaydırın</translation>
+<translation id="2988364959384217951">İpucu: Bu eğiticiden çıkmak istiyorsanız iki parmağınızla sağdan sola kaydırın.</translation>
 <translation id="2998131015536248178">Önceki Karakter</translation>
 <translation id="2999559350546931576">Sesi kalınlaştır</translation>
 <translation id="3009352964623081324">Ara + O, ardından S. Sesleri yüklemek, yönetmek ve özelleştirmek için kullanın.</translation>
@@ -940,6 +942,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7776293189010177726">ChromeVox menülerini aç</translation>
 <translation id="7799302833060027366">Matematiği keşfetmek için yukarı, aşağı, sola veya sağa basın</translation>
 <translation id="7800558923657349506">Son söz</translation>
+<translation id="7801768143868631306">İpucu: Gezinmek için tek parmağınızla ekranı sola veya sağa kaydırın.</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7810781339813764006">Sonraki Grup</translation>
 <translation id="7813616274030162878">Anahtar Erişimi Menüsü</translation>
@@ -1079,6 +1082,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8897030325301866860">Yazı tipi <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Noktalama yansıtmayı döngüsel yap</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Kullanılabilir işlemler mevcut. Görüntülemek için Arama+Ctrl+A tuşlarına basın</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Değiştirici Tuşlar</translation>
 <translation id="8943282376843390568">Küf yeşili</translation>

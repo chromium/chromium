@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Cierra el tutorial de ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{paréntesis de apertura}other{# paréntesis de apertura}}</translation>
+<translation id="270523456882008230">Sugerencia: Para activar el elemento actual, tócalo dos veces con un dedo.</translation>
 <translation id="2705875883745373140">Sin pulsar</translation>
 <translation id="2708078563826046398">Melocotón</translation>
 <translation id="2713444072780614174">Blanco</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Sugerencia</translation>
 <translation id="2976476721782829799">También puedes desplazarte arrastrando un dedo por la pantalla. Esto se conoce como exploración táctil. Prueba a arrastrar el dedo por la pantalla para leer el resto de esta lección.</translation>
 <translation id="297825089465017871">Desliza dos dedos hacia la izquierda</translation>
+<translation id="2988364959384217951">Sugerencia: Si quieres salir de este tutorial, desliza dos dedos de derecha a izquierda.</translation>
 <translation id="2998131015536248178">Carácter anterior</translation>
 <translation id="2999559350546931576">Baja el tono</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, después, S. Se usa para instalar, gestionar y personalizar voces.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Abre los menús de ChromeVox</translation>
 <translation id="7799302833060027366">Pulsa las flechas hacia arriba, hacia abajo, hacia la izquierda y hacia la derecha para explorar operaciones matemáticas</translation>
 <translation id="7800558923657349506">Epílogo</translation>
+<translation id="7801768143868631306">Sugerencia: Para desplazarte, desliza el dedo hacia la izquierda o hacia la derecha.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7810781339813764006">Grupo siguiente</translation>
 <translation id="7813616274030162878">Menú de accesibilidad con interruptores</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Fuente <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Di ciclo de puntuación</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Acciones disponibles. Pulsa la tecla de búsqueda + Ctrl + A para verlas.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Teclas modificadoras</translation>
 <translation id="8943282376843390568">Lima</translation>

@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Handleiding van ChromeVox sluiten</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{haakje openen}other{# haakjes openen}}</translation>
+<translation id="270523456882008230">Hint: Dubbeltik met één vinger om het huidige item te activeren.</translation>
 <translation id="2705875883745373140">Niet ingedrukt</translation>
 <translation id="2708078563826046398">Perziksoesje</translation>
 <translation id="2713444072780614174">Wit</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Knopinfo</translation>
 <translation id="2976476721782829799">Je kunt ook bewegen door 1 vinger over het scherm te slepen. Dit noemen we verkennen via aanraking. Probeer je vinger zo over het scherm te slepen dat je de rest van deze les kunt lezen.</translation>
 <translation id="297825089465017871">Swipe met twee vingers naar links</translation>
+<translation id="2988364959384217951">Hint: Swipe met 2 vingers van rechts naar links als je deze tutorial wilt sluiten.</translation>
 <translation id="2998131015536248178">Vorig teken</translation>
 <translation id="2999559350546931576">Toonhoogte verlagen</translation>
 <translation id="3009352964623081324">Zoeken + O, dan S. Gebruik dit om stemmen te installeren, te beheren en aan te passen.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox-menu's openen</translation>
 <translation id="7799302833060027366">Druk op omhoog, omlaag, links of rechts om wiskundige content te verkennen</translation>
 <translation id="7800558923657349506">Epiloog</translation>
+<translation id="7801768143868631306">Hint: Swipe met één vinger van links naar rechts om te navigeren.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Volgende groep</translation>
 <translation id="7813616274030162878">Menu voor toegang via schakelaar</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">Lettertype <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Interpunctie-echo doorlopen</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Er zijn acties beschikbaar. Druk op Zoeken+Ctrl+A om ze te bekijken.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Aanpassingstoetsen</translation>
 <translation id="8943282376843390568">Limoengroen</translation>

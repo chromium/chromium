@@ -366,6 +366,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8898840733695078011">Signalstyrka</translation>
 <translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="8930622219860340959">Trådlöst</translation>

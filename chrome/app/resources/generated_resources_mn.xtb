@@ -2186,6 +2186,7 @@
 <translation id="3406396172897554194">Хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="3406605057700382950">&amp; Хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөл аюултай байж болзошгүй}other{Эдгээр өргөтгөл аюултай байж болзошгүй}}</translation>
+<translation id="3408072735282270043">Идэвхжүүлэх, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Газрын зураг</translation>
 <translation id="3410832398355316179">Энэ хэрэглэгчийг устгасан тохиолдолд холбоотой бүх файл болон дотоод өгөгдлийг нь бүрмөсөн устгана. <ph name="USER_EMAIL" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
 <translation id="3412265149091626468">Selection-д очих</translation>
@@ -2807,6 +2808,7 @@
 <translation id="4056908315660577142">Та <ph name="APP_NAME" /> Chrome апп дээр таны эцэг эхийн тохируулсан цагийн хязгаарт хүрсэн байна. Та түүнийг маргааш <ph name="TIME_LIMIT" />-н турш ашиглах боломжтой.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Дэлгүүрт харах</translation>
+<translation id="4057991113334098539">Идэвхжүүлж байна...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Бичиг баримтыг одоо шалга</translation>
 <translation id="406070391919917862">Үндсэн аппликейшнууд</translation>
@@ -3344,6 +3346,7 @@
 <translation id="4682551433947286597">Нэвтрэх дэлгэцэн дээр тохируулга хийгдсэн дэлгэцийн фон харагдана.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (өгөгдмөл)</translation>
 <translation id="4684427112815847243">Бүгдийг sync хийх</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" /> камерт хандахаар оролдож байна Хандалтыг зөвшөөрөхийн тулд камерын нууцлалын сэлгүүрийг унтраана уу.</translation>
 <translation id="4687613760714619596">Үл мэдэгдэх төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Дотоод логийн ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Өөрт тохирох демо тохируулгыг сонгоно уу</translation>
@@ -3981,7 +3984,6 @@
 <translation id="5449551289610225147">Буруу нууц үг</translation>
 <translation id="5449588825071916739">Бүх цонхнуудыг хадгалах</translation>
 <translation id="5449716055534515760">Цонхыг хаах</translation>
-<translation id="5454005855577728171">Тайлбарын бөмбөлгийг хөндлөнгөөр <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%, доош<ph name="POSITION_ON_SCREEN_FROM_TOP" />% зөөсөн</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5457459357461771897">Компьютероосоо зураг, хөгжим болон бусад медиаг уншуулах эсвэл устгах</translation>
@@ -4330,7 +4332,6 @@
 <translation id="5841270259333717135">Ethernet-г тохируулах</translation>
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
-<translation id="584451707753263735">Шууд тайлбар харагдана, фокусыг тааруулахын тулд F6 дээр дарна уу</translation>
 <translation id="5844574845205796324">Судлах шинэ контент санал болгох</translation>
 <translation id="5846200638699387931">Холбоосын дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Шинэчлэлт болон аппыг суулгана уу. Үргэлжлүүлснээр та энэ төхөөрөмж нь мөн мобайл дата ашиглан Google, таны оператор компани, таны төхөөрөмжийн үйлдвэрлэгчээс шинэчлэлт болон аппыг автоматаар татаж суулгаж болохыг зөвшөөрч байна. Эдгээр аппын зарим нь апликейшний худалдан авалтыг санал болгож болзошгүй.</translation>
@@ -6188,6 +6189,7 @@
 <translation id="7915457674565721553">Эцэг эхийн хяналтыг тохируулахын тулд интернэтэд холбогдоно уу</translation>
 <translation id="7916588358273861731">Профайлын жагсаалтыг сэргээж байна. Үүнд 30 секунд хүртэл хугацаа зарцуулж магадгүй.</translation>
 <translation id="7918257978052780342">Хамрагдах</translation>
+<translation id="7919123827536834358">Эдгээр хэлийг автоматаар орчуулах</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
 <translation id="7920482456679570420">Зөв бичгийн алдааг нь шалгахгүй байхыг хүсэж буй үгнүүдээ нэмнэ үү</translation>
@@ -6651,7 +6653,6 @@
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>
 <translation id="8454502708934796641">Google-с таны сагсандаа нэмсэн зүйлсэд хөнгөлөлт хайхыг хүсэх үү?</translation>
 <translation id="8455026683977728932">ADB зурагт тайлбарыг идэвхжүүлж чадсангүй</translation>
-<translation id="8456398879271637452">Шууд тайлбарыг харагдана, фокусыг тааруулахын тулд Ctrl + Буцах эсвэл Ctrl + Урагшлуулах дээр дарна уу</translation>
 <translation id="8456512334795994339">Ажиллах болон тоглоход зориулсан аппуудыг олох</translation>
 <translation id="845702320058262034">Холбогдож чадсангүй. Утасныхаа Bluetooth-г асаасан эсэхээ шалгана уу.</translation>
 <translation id="8457451314607652708">Хавчуургыг татаж авчрах</translation>
@@ -6680,6 +6681,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />-н үл мэдэгдэх төхөөрөмж</translation>
 <translation id="8481187309597259238">USB-н зөвшөөрлийг баталгаажуулах</translation>
 <translation id="8481980314595922412">Туршилтын онцлог асаалттай байна</translation>
+<translation id="848666842773560761">Апп камерт хандахаар оролдож байна. Хандалтыг зөвшөөрөхийн тулд камерын нууцлалын сэлгүүрийг унтраана уу.</translation>
 <translation id="8487678622945914333">Томруулж харах</translation>
 <translation id="8489156414266187072">Хувийн зөвлөмж зөвхөн таны бүртгэл дээр харагдана</translation>
 <translation id="8490896350101740396">Дараах киоск апп-ууд "<ph name="UPDATED_APPS" />" шинэчлэгдсэн байна. Шинэчлэх үйл явцыг дуусгахын тулд төхөөрөмжийг унтрааж асаах хэрэгтэй.</translation>
@@ -7195,7 +7197,6 @@
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Танд нэг оролдлого үлдлээ.}other{Танд # оролдлого үлдлээ.}}</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" />-н нууц үгийг шинэчлэх үү?</translation>
-<translation id="9041049756004505730">Шууд тайлбар харагдана, фокусыг тааруулахын тулд ⌘ + Сонголт + Дээш заасан сум эсвэл Доош заасан сум дээр дарна уу</translation>
 <translation id="9041692268811217999">Таны админ төхөөрөмжийн дотоод файлд хандах тохиргоог идэвхгүй болгосон</translation>
 <translation id="904224458472510106">Энэ үйлдлийг буцаах боломжгүй</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
@@ -7278,7 +7279,6 @@
 <translation id="9128870381267983090">Сүлжээнд холбогдох</translation>
 <translation id="9130015405878219958">Хүчин төгөлдөр бус горим оруулсан байна.</translation>
 <translation id="9131487537093447019">Bluethooth төмхөөрөмжид мэдээ илгээх болон мэдээ хүлээн авах.</translation>
-<translation id="913700572893686595">Google Драйваас</translation>
 <translation id="9137013805542155359">Эх хувийг харуулах</translation>
 <translation id="9137157311132182254">Сонгосон хайлтын систем</translation>
 <translation id="9137248913990643158">Энэ аппыг ашиглахын өмнө Chrome-г эхлүүлж, нэвтэрнэ үү.</translation>

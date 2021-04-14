@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">關閉 ChromeVox 教學課程</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{左括弧}other{# 個左括弧}}</translation>
+<translation id="270523456882008230">提示：用一根手指輕觸兩下即可啟用目前的項目。</translation>
 <translation id="2705875883745373140">未按下</translation>
 <translation id="2708078563826046398">粉撲桃色</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">工具提示</translation>
 <translation id="2976476721782829799">你也可以在螢幕上拖曳單指，藉此在各個部分間移動，這種方式稱為輕觸探索。現在就嘗試拖曳單指，閱讀這門課的剩餘內容吧！</translation>
 <translation id="297825089465017871">以雙指向左滑動</translation>
+<translation id="2988364959384217951">提示：如要結束此教學課程，請用兩指由右往左滑動。</translation>
 <translation id="2998131015536248178">上一個字元</translation>
 <translation id="2999559350546931576">降低音調</translation>
 <translation id="3009352964623081324">搜尋鍵 + O 鍵，然後按下 S 鍵，用途是安裝、管理及自訂語音。</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">開啟 ChromeVox 選單</translation>
 <translation id="7799302833060027366">按向上鍵、向下鍵、向左鍵或向右鍵即可探索數學內容</translation>
 <translation id="7800558923657349506">結語</translation>
+<translation id="7801768143868631306">提示：用一根手指向左或向右滑動即可瀏覽。</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7810781339813764006">下一個群組</translation>
 <translation id="7813616274030162878">開關功能選單</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> 字型</translation>
 <translation id="8898516272131543774">循環標點符號語音回應</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">可執行多項操作，按下搜尋鍵 + Ctrl + A 即可查看</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">輔助鍵</translation>
 <translation id="8943282376843390568">萊姆綠</translation>

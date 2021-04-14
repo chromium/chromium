@@ -366,6 +366,7 @@
 <translation id="8881098542468797602">Тестот успеа</translation>
 <translation id="8898840733695078011">Јачина на сигнал</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
 <translation id="8930622219860340959">Безжична</translation>

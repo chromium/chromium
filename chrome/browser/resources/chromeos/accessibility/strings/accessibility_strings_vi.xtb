@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Đóng hướng dẫn ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{dấu mở ngoặc}other{# dấu mở ngoặc}}</translation>
+<translation id="270523456882008230">Gợi ý: Dùng 1 ngón tay nhấn đúp để kích hoạt mục hiện tại.</translation>
 <translation id="2705875883745373140">Chưa nhấn</translation>
 <translation id="2708078563826046398">Màu cam đào</translation>
 <translation id="2713444072780614174">Trắng</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Mẹo sử dụng công cụ</translation>
 <translation id="2976476721782829799">Bạn cũng có di chuyển xung quanh bằng cách kéo một ngón tay xung quanh màn hình. Đây gọi là tính năng khám phá bằng cách chạm. Thử kéo ngón tay xung quanh để đọc phần còn lại của bài học này.</translation>
 <translation id="297825089465017871">Vuốt sang trái bằng hai ngón tay</translation>
+<translation id="2988364959384217951">Gợi ý: Dùng 2 ngón tay vuốt từ phải sang trái nếu bạn muốn thoát khỏi tài liệu hướng dẫn này.</translation>
 <translation id="2998131015536248178">Ký tự trước</translation>
 <translation id="2999559350546931576">Giảm độ cao</translation>
 <translation id="3009352964623081324">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn S. Dùng để cài đặt, quản lý và tùy chỉnh giọng nói.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Mở menu ChromeVox</translation>
 <translation id="7799302833060027366">Nhấn các phím mũi tên lên, xuống, trái hoặc phải để khám phá nội dung toán học</translation>
 <translation id="7800558923657349506">Lời kết</translation>
+<translation id="7801768143868631306">Gợi ý: Dùng 1 ngón tay vuốt sang trái hoặc sang phải để di chuyển.</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7810781339813764006">Nhóm tiếp theo</translation>
 <translation id="7813616274030162878">Menu Tiếp cận bằng công tắc</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Phông chữ <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Nói dấu câu theo chu trình</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Các thao tác bạn có thể thực hiện. Hãy nhấn tổ hợp phím Tìm kiếm+Ctrl+A để xem</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Phím bổ trợ</translation>
 <translation id="8943282376843390568">Vàng chanh</translation>

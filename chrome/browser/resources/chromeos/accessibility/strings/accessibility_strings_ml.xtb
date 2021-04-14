@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox ട്യൂട്ടോറിയൽ അടയ്‌ക്കുക</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ഓപ്പൺ പരാന്തിസിസ്}other{# ഓപ്പൺ പരാന്തിസിസുകൾ}}</translation>
+<translation id="270523456882008230">സൂചന: നിലവിലെ ഇനം സജീവമാക്കാൻ ഒരു വിരൽ ഉപയോഗിച്ച് ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="2705875883745373140">അമർത്താത്തത്</translation>
 <translation id="2708078563826046398">പീച്ച് പഫ്</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">ഉപകരണ നുറുങ്ങ്</translation>
 <translation id="2976476721782829799">സ്ക്രീനിലുടനീളം ഒരു വിരൽ നീക്കിക്കൊണ്ട് നിങ്ങൾക്ക് ചുറ്റും നീങ്ങാൻ കഴിയും. ഇതാണ് തൊട്ടറിയുക എന്ന് പറയുന്നത് ഈ പാഠത്തിന്റെ ബാക്കി ഭാഗങ്ങൾ വായിക്കാൻ നിങ്ങളുടെ വിരൽ സ്ക്രീനിലൂടെ നീക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="297825089465017871">രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തോട്ട് സ്വൈപ്പ് ചെയ്യുക</translation>
+<translation id="2988364959384217951">സൂചന: ഈ ട്യൂട്ടോറിയലിൽ നിന്ന് പുറത്ത് കടക്കണമെങ്കിൽ രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് വലത്ത് നിന്ന് ഇടത്തോട്ട് സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="2998131015536248178">മുമ്പത്തെ പ്രതീകം</translation>
 <translation id="2999559350546931576">പിച്ച് കുറയ്ക്കുക</translation>
 <translation id="3009352964623081324">Search + O, തുടർന്ന് S. ശബ്‌ദങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും മാനേജ് ചെയ്യാനും ഇഷ്ടാനുസൃതമാക്കാനും ഉപയോഗിക്കുക.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox മെനുകൾ തുറക്കുക</translation>
 <translation id="7799302833060027366">മാത്ത് അടുത്തറിയാൻ മുകളിലോട്ടോ താഴോട്ടോ ഇടത്തോട്ടോ വലത്തോട്ടോ അമർത്തുക</translation>
 <translation id="7800558923657349506">ഉപസംഹാരം</translation>
+<translation id="7801768143868631306">സൂചന: നാവിഗേറ്റ് ചെയ്യാൻ ഒരു വിരൽ ഉപയോഗിച്ച് ഇടത്തോട്ടോ വലത്തോട്ടോ സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="7805768142964895445">നില</translation>
 <translation id="7810781339813764006">അടുത്ത ഗ്രൂപ്പ്</translation>
 <translation id="7813616274030162878">ആക്‌സസ് മാറുക മെനു</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">ഫോണ്ട് <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">സൈക്കിൾ വിരാമചിഹ്ന എക്കൊ</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്. കാണാൻ തിരയൽ+Ctrl+A അമർത്തുക</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">മോഡിഫയർ കീകൾ</translation>
 <translation id="8943282376843390568">ചെറുനാരങ്ങയുടെ നിറം</translation>

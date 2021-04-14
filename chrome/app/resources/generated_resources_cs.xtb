@@ -2191,6 +2191,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3406396172897554194">Vyhledávat podle jazyka nebo názvu metody zadávání</translation>
 <translation id="3406605057700382950">&amp;Zobrazit lištu záložek</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Toto rozšíření může být nebezpečné}few{Tato rozšíření mohou být nebezpečná}many{Tato rozšíření mohou být nebezpečná}other{Tato rozšíření mohou být nebezpečná}}</translation>
+<translation id="3408072735282270043">Aktivovat, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3410832398355316179">Po odebrání tohoto uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena. <ph name="USER_EMAIL" /> se i nadále bude moci přihlásit.</translation>
 <translation id="3412265149091626468">Přejít na výběr</translation>
@@ -3350,6 +3351,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4682551433947286597">Tapety se zobrazí na přihlašovací obrazovce.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (výchozí)</translation>
 <translation id="4684427112815847243">Synchronizovat vše</translation>
+<translation id="4684471265911890182">Aplikace <ph name="APP_NAME" /> se pokouší použít kameru. Pokud chcete povolit přístup, vypněte ochranu soukromí kamery.</translation>
 <translation id="4687613760714619596">Neznámé zařízení (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Místní ID protokolu: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Zvolte předvolby ukázkového režimu</translation>
@@ -3987,7 +3989,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5449588825071916739">Přidat do záložek všechny karty</translation>
 <translation id="5449716055534515760">Zavřít okno</translation>
-<translation id="5454005855577728171">Bublina popisku byla posunuta o <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % podélně, o <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % dolů</translation>
 <translation id="5454166040603940656">(<ph name="PROVIDER" />)</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5457459357461771897">Číst a mazat fotografie, hudbu a další média z počítače</translation>
@@ -4335,7 +4336,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5841270259333717135">Nakonfigurovat ethernet</translation>
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
-<translation id="584451707753263735">Živý přepis je viditelný, stisknutím klávesy F6 posunete zaměření</translation>
 <translation id="5844574845205796324">Navrhovat nový obsah k objevování</translation>
 <translation id="5846200638699387931">Chyba syntaxe vztahu: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Instalace aktualizací a aplikací. Pokračováním vyjadřujete souhlas s tím, že toto zařízení může také automaticky stahovat a instalovat aktualizace a aplikace od společnosti Google, operátora a výrobce zařízení, a v případě potřeby k tomu smí používat mobilní datové připojení. Některé z těchto aplikací mohou nabízet nákupy v aplikaci.</translation>
@@ -6195,6 +6195,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>
 <translation id="7916588358273861731">Obnovování seznamu profilů. Tato operace může trvat až 30 sekund.</translation>
 <translation id="7918257978052780342">Zaregistrovat</translation>
+<translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> může číst soubor <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Přidat slova, která má kontrola pravopisu přeskakovat</translation>
@@ -6660,7 +6661,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8452135315243592079">Chybí SIM karta</translation>
 <translation id="8454502708934796641">Požádat Google o vyhledání slev na položky přidané do košíků?</translation>
 <translation id="8455026683977728932">Ilustraci ADB se nepodařilo aktivovat</translation>
-<translation id="8456398879271637452">Živý přepis je viditelný, stisknutím kláves Ctrl + Zpět nebo Ctrl + Vpřed posunete zaměření</translation>
 <translation id="8456512334795994339">Najděte aplikace pro práci i zábavu</translation>
 <translation id="845702320058262034">Nelze se připojit. Zkontrolujte, zda na telefonu máte zapnuté rozhraní Bluetooth.</translation>
 <translation id="8457451314607652708">Import záložek</translation>
@@ -6689,6 +6689,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8480869669560681089">Neznámé zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrzení oprávnění USB</translation>
 <translation id="8481980314595922412">Zkušební funkce jsou zapnuté</translation>
+<translation id="848666842773560761">Aplikace se pokouší použít kameru. Pokud chcete povolit přístup, vypněte ochranu soukromí kamery.</translation>
 <translation id="8487678622945914333">Přiblížit</translation>
 <translation id="8489156414266187072">Osobní návrhy jsou zobrazovány jen ve vašem účtu</translation>
 <translation id="8490896350101740396">Byly aktualizovány následující terminálové aplikace: <ph name="UPDATED_APPS" />. Chcete-li proces aktualizace dokončit, restartujte zařízení.</translation>
@@ -7208,7 +7209,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9037965129289936994">Zobrazit originál</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Zbývá ještě jeden pokus.}few{Zbývají vám # pokusy.}many{Zbývá vám # pokusu.}other{Zbývá vám # pokusů.}}</translation>
 <translation id="9040661932550800571">Aktualizovat heslo pro web <ph name="ORIGIN" />?</translation>
-<translation id="9041049756004505730">Živý přepis je viditelný, stisknutím kláves ⌘ + Option + šipka nahoru nebo šipka dolů posunete zaměření</translation>
 <translation id="9041692268811217999">Správce přístup k místním souborům v tomto počítači zakázal</translation>
 <translation id="904224458472510106">Tuto akci nelze vrátit zpět</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
@@ -7291,7 +7291,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9128870381267983090">Připojit k síti</translation>
 <translation id="9130015405878219958">Byl zadán neplatný režim.</translation>
 <translation id="9131487537093447019">Odesílání zpráv do zařízení Bluetooth a přijímání zpráv ze zařízení Bluetooth</translation>
-<translation id="913700572893686595">Z Disku Google</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>
 <translation id="9137157311132182254">Preferovaný vyhledávač</translation>
 <translation id="9137248913990643158">Chcete-li tuto aplikaci použít, přihlaste se do Chromu.</translation>

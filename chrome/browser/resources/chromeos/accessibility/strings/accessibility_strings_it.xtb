@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">Chiudi tutorial di ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parentesi tonda di apertura}other{# parentesi tonde di apertura}}</translation>
+<translation id="270523456882008230">Suggerimento: tocca due volte con un dito per attivare l'elemento corrente.</translation>
 <translation id="2705875883745373140">Non premuto</translation>
 <translation id="2708078563826046398">Pesca tenue</translation>
 <translation id="2713444072780614174">Bianco</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Descrizione comando</translation>
 <translation id="2976476721782829799">Puoi anche spostarti trascinando un dito sullo schermo. Questa funzionalità si chiama Esplora al tocco. Prova a trascinare il dito per leggere il resto di questa lezione.</translation>
 <translation id="297825089465017871">Scorri verso sinistra con due dita</translation>
+<translation id="2988364959384217951">Suggerimento: scorri da destra verso sinistra con due dita se vuoi uscire da questo tutorial.</translation>
 <translation id="2998131015536248178">Carattere precedente</translation>
 <translation id="2999559350546931576">Abbassa tono</translation>
 <translation id="3009352964623081324">Tasto per la ricerca + O, poi S. Usa questa scorciatoia per installare, gestire e personalizzare voci.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">Apri menu di ChromeVox</translation>
 <translation id="7799302833060027366">Premi i tasti su, giù, sinistra o destra per esaminare i contenuti matematici</translation>
 <translation id="7800558923657349506">Epilogo</translation>
+<translation id="7801768143868631306">Suggerimento: scorri verso sinistra o verso destra con un dito per spostarti.</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7810781339813764006">Gruppo successivo</translation>
 <translation id="7813616274030162878">Menu di Switch Access</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Carattere <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Imposta eco punteggiatura a rotazione</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Azioni disponibili. Premi il tasto per la ricerca + Ctrl + A per visualizzare.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Tasti di modifica</translation>
 <translation id="8943282376843390568">Giallo-verde</translation>

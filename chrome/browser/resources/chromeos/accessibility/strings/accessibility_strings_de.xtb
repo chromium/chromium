@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox-Anleitung schließen</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{runde Klammer auf}other{# runde Klammern auf}}</translation>
+<translation id="270523456882008230">Hinweis: Tippen Sie mit einem Finger doppelt, um das aktuelle Element zu aktivieren.</translation>
 <translation id="2705875883745373140">Nicht gedrückt</translation>
 <translation id="2708078563826046398">Pfirsich</translation>
 <translation id="2713444072780614174">Weiß</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Kurzinfo</translation>
 <translation id="2976476721782829799">Sie können auch einen Finger über den Bildschirm ziehen, um sich zu bewegen. Diese Option wird „Tippen &amp; Entdecken“ genannt. Probieren Sie es einfach aus: Ziehen Sie einen Finger über den Bildschirm, um den Rest dieser Lektion zu lesen.</translation>
 <translation id="297825089465017871">Mit zwei Fingern nach links wischen</translation>
+<translation id="2988364959384217951">Hinweis: Wenn Sie diese Anleitung schließen möchten, wischen Sie mit zwei Fingern von rechts nach links.</translation>
 <translation id="2998131015536248178">Vorheriges Zeichen</translation>
 <translation id="2999559350546931576">Tonhöhe verringern</translation>
 <translation id="3009352964623081324">Suchtaste + O, anschließend S. Zum Installieren, Verwalten und Personalisieren von Stimmen verwenden.</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox-Menüs öffnen</translation>
 <translation id="7799302833060027366">Drücken Sie den Aufwärts-, Abwärts-, Links- oder Rechtspfeil, um die mathematischen Inhalte anzusehen</translation>
 <translation id="7800558923657349506">Epilog</translation>
+<translation id="7801768143868631306">Hinweis: Wischen Sie mit einem Finger nach links oder rechts, um zwischen den Inhalten zu wechseln.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7810781339813764006">Nächste Gruppe</translation>
 <translation id="7813616274030162878">Menü für Schalterzugriff</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">Schriftart <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Satzzeichenecho wiederholen</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Aktionen verfügbar. Drücken Sie „Suchtaste + Strg + A“, um sie sich anzusehen.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Modifikatortasten</translation>
 <translation id="8943282376843390568">Limone</translation>

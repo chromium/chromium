@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox үйрөткүчүн жабуу</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ачык кашаа}other{# ачык кашаа}}</translation>
+<translation id="270523456882008230">Кеңеш: Учурдагы нерсени жандандыруу үчүн бир манжаңыз менен эки жолу басыңыз.</translation>
 <translation id="2705875883745373140">Басылган эмес</translation>
 <translation id="2708078563826046398">Ачык кызгылтым сары</translation>
 <translation id="2713444072780614174">Ак</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Курал кеңеши</translation>
 <translation id="2976476721782829799">Манжаңыз менен экранды сүрүп, ар кайсы элементтерге өтө аласыз. Бул аудиокөмөк деп аталат. Бул сабакты бүтүрүү үчүн манжаңызды жылдырып көрүңүз.</translation>
 <translation id="297825089465017871">Эки манжаңыз менен экранды солго сүрүңүз</translation>
+<translation id="2988364959384217951">Кыйытма: Бул үйрөткүчтөн чыгуу үчүн эки манжаңыз менен оңдон солго сүрүңүз.</translation>
 <translation id="2998131015536248178">Мурунку белги</translation>
 <translation id="2999559350546931576">Тонду төмөндөтүү</translation>
 <translation id="3009352964623081324">Search + O, анан S. Орнотуп, башкарып, үндөрдү жекелештирүү үчүн колдонуңуз</translation>
@@ -312,7 +314,7 @@
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Жыйналды</translation>
 <translation id="311015743332597320">Төрт манжаңыз менен экранды оңго сүрүңүз</translation>
-<translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн, Control+Alt+Z баскычтарын басыңыз.</translation>
+<translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн Control+Alt+Z баскычтарын басыңыз.</translation>
 <translation id="3115800313647508384">Экран өчүрүлсүнбү?</translation>
 <translation id="3131002934070407451">Сандарды төмөнкүдөй окуу:</translation>
 <translation id="3134461040845705080">окуу үчүн гана</translation>
@@ -361,7 +363,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{плюс}other{# плюс белгилери}}</translation>
 <translation id="338583716107319301">Ажыраткыч</translation>
 <translation id="3389259863310851658">Мурунку форма талаасы</translation>
-<translation id="3393605254399152980">Текстти окууну күйгүзүү үчүн, манжаңыз менен экранды сүрүңүз.</translation>
+<translation id="3393605254399152980">Текстти окууну күйгүзүү үчүн манжаңыз менен экранды сүрүңүз.</translation>
 <translation id="3406283310380167331">Көрсөтүү формаларынын тизмеси</translation>
 <translation id="3414400929511680526">Мала көк</translation>
 <translation id="3418936350470374046">Төмөндө уяча жок</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox менюларын ачуу</translation>
 <translation id="7799302833060027366">Математикалык мазмун менен иштөө үчүн жебелери бар баскычтарды басыңыз</translation>
 <translation id="7800558923657349506">Эпилог</translation>
+<translation id="7801768143868631306">Кыйытма: Өтүү үчүн экранды бир манжаңыз менен солго же оңго сүрүңүз.</translation>
 <translation id="7805768142964895445">Статусу</translation>
 <translation id="7810781339813764006">Кийинки топ</translation>
 <translation id="7813616274030162878">Switch Access функциясынын менюсу</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> ариби</translation>
 <translation id="8898516272131543774">Тыныш белгилеринин жаңырыгынын мерчими</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Аракеттер жеткиликтүү. Көрүү үчүн Издөө+Ctrl+A баскычтарын басыңыз</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Өзгөрткүч баскычтары</translation>
 <translation id="8943282376843390568">Ачык жашыл</translation>

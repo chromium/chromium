@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox оқулығын жабу</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ашық қарапайым жақша}other{# ашық қарапайым жақша}}</translation>
+<translation id="270523456882008230">Сөзкөмек: ағымдағы элементті іске қосу үшін бір саусақпен екі рет түртіңіз.</translation>
 <translation id="2705875883745373140">Басылмаған</translation>
 <translation id="2708078563826046398">Қызғылт сары</translation>
 <translation id="2713444072780614174">Ақ</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">Қалқымалы кеңес</translation>
 <translation id="2976476721782829799">Экран бетін бір саусақпен сүйреу арқылы да жылжуыңызға болады. Бұл "түртілген элементтерді дыбыстау" деп аталады. Осы сабақтың қалған бөлігін оқу үшін саусағыңызбен экран бетін сүйреп көріңіз.</translation>
 <translation id="297825089465017871">Екі саусағыңызбен солға сырғытыңыз</translation>
+<translation id="2988364959384217951">Сөзкөмек: осы оқулықтан шыққыңыз келсе, екі саусақпен оңнан солға сырғытыңыз.</translation>
 <translation id="2998131015536248178">Алдыңғы таңба</translation>
 <translation id="2999559350546931576">Қадамды азайту</translation>
 <translation id="3009352964623081324">Search + O, одан кейін S. Дауыстарды орнату, басқару және реттеу үшін пайдаланылады.</translation>
@@ -940,6 +942,7 @@
 <translation id="7776293189010177726">ChromeVox мәзірлерін ашу</translation>
 <translation id="7799302833060027366">Математикалық амалдарды орындау үшін жоғары, төмен, сол жақ немесе оң жақ көрсеткі пернелерін басыңыз.</translation>
 <translation id="7800558923657349506">Эпилог</translation>
+<translation id="7801768143868631306">Сөзкөмек: шолу үшін бір саусақпен солға немесе оңға сырғытыңыз.</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7810781339813764006">Келесі топ</translation>
 <translation id="7813616274030162878">Switch Access мәзірі</translation>
@@ -1014,7 +1017,7 @@
 <translation id="831207808878314375">Анықтама</translation>
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Ақшыл сары</translation>
-<translation id="8324974933005349667">Мәтінді дыбыстау параметрлерін жеке қажеттіліктерге бейімдеу</translation>
+<translation id="8324974933005349667">Мәтінді дыбыстау параметрлерін жекелендіру</translation>
 <translation id="8326783648485765113">Шөп реңкті жасыл</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{фунт}other{# фунт белгісі}}</translation>
 <translation id="8378855320830505539">Аймақ</translation>
@@ -1079,6 +1082,7 @@
 <translation id="8897030325301866860">Қаріп: <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Пунктуацияны қайталап дыбыстау</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Әрекеттер қолжетімді. Көру үшін Search+Ctrl+A пернелер тіркесімін басыңыз.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Өзгерткіш пернелер</translation>
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
