@@ -138,18 +138,15 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
   if (args) {
     for (base::DictionaryValue::Iterator it(*args); !it.IsAtEnd();
          it.Advance()) {
-      std::string str;
-      bool boolean = false;
-      int int_num = 0;
-      double double_num = 0.0;
-      if (it.value().GetAsString(&str)) {
-        arg_strings[it.key()] = str;
-      } else if (it.value().GetAsInteger(&int_num)) {
-        arg_numbers[it.key()] = static_cast<double>(int_num);
-      } else if (it.value().GetAsBoolean(&boolean)) {
-        arg_numbers[it.key()] = static_cast<double>(boolean ? 1 : 0);
-      } else if (it.value().GetAsDouble(&double_num)) {
-        arg_numbers[it.key()] = double_num;
+      if (it.value().is_string()) {
+        arg_strings[it.key()] = it.value().GetString();
+      } else if (it.value().is_int()) {
+        arg_numbers[it.key()] = static_cast<double>(it.value().GetInt());
+      } else if (it.value().is_bool()) {
+        arg_numbers[it.key()] =
+            static_cast<double>(it.value().GetBool() ? 1 : 0);
+      } else if (it.value().is_double()) {
+        arg_numbers[it.key()] = it.value().GetDouble();
       }
       // Record all arguments as values.
       arg_values[it.key()] = it.value().CreateDeepCopy();
