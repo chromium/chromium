@@ -11,10 +11,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/bucket_ranges.h"
@@ -73,17 +73,15 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   virtual HistogramBase::Count* CreateCountsStorageWhileLocked() = 0;
 
   HistogramBase::AtomicCount* counts() {
-    return reinterpret_cast<HistogramBase::AtomicCount*>(
-        subtle::Acquire_Load(&counts_));
+    return counts_.load(std::memory_order_acquire);
   }
 
   const HistogramBase::AtomicCount* counts() const {
-    return reinterpret_cast<HistogramBase::AtomicCount*>(
-        subtle::Acquire_Load(&counts_));
+    return counts_.load(std::memory_order_acquire);
   }
 
-  void set_counts(const HistogramBase::AtomicCount* counts) const {
-    subtle::Release_Store(&counts_, reinterpret_cast<uintptr_t>(counts));
+  void set_counts(HistogramBase::AtomicCount* counts) const {
+    counts_.store(counts, std::memory_order_release);
   }
 
   size_t counts_size() const { return bucket_ranges_->bucket_count(); }
@@ -94,8 +92,8 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   FRIEND_TEST_ALL_PREFIXES(SharedHistogramTest, CorruptSampleCounts);
 
   // |counts_| is actually a pointer to a HistogramBase::AtomicCount array but
-  // is held as an AtomicWord for concurrency reasons. When combined with the
-  // single_sample held in the metadata, there are four possible states:
+  // is held as an atomic pointer for concurrency reasons. When combined with
+  // the single_sample held in the metadata, there are four possible states:
   //   1) single_sample == zero, counts_ == null
   //   2) single_sample != zero, counts_ == null
   //   3) single_sample != zero, counts_ != null BUT IS EMPTY
@@ -104,7 +102,7 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   // must be moved to this storage. It is mutable because changing it doesn't
   // change the (const) data but must adapt if a non-const object causes the
   // storage to be allocated and updated.
-  mutable subtle::AtomicWord counts_ = 0;
+  mutable std::atomic<HistogramBase::AtomicCount*> counts_{nullptr};
 
   // Shares the same BucketRanges with Histogram object.
   const BucketRanges* const bucket_ranges_;

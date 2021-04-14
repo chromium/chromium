@@ -29,8 +29,8 @@ TraceCategory CategoryRegistry::categories_[kMaxCategories] = {
     INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(INTERNAL_TRACE_INIT_CATEGORY)};
 
 // static
-base::subtle::AtomicWord CategoryRegistry::category_index_ =
-    BuiltinCategories::Size();
+std::atomic<size_t> CategoryRegistry::category_index_{
+    BuiltinCategories::Size()};
 
 // static
 TraceCategory* const CategoryRegistry::kCategoryExhausted = &categories_[0];
@@ -68,7 +68,7 @@ TraceCategory* CategoryRegistry::GetCategoryByName(const char* category_name) {
       << "Category names may not contain double quote";
 
   // The categories_ is append only, avoid using a lock for the fast path.
-  size_t category_index = base::subtle::Acquire_Load(&category_index_);
+  size_t category_index = category_index_.load(std::memory_order_acquire);
 
   // Search for pre-existing category group.
   for (size_t i = 0; i < category_index; ++i) {
@@ -91,7 +91,7 @@ bool CategoryRegistry::GetOrCreateCategoryLocked(
     return false;
 
   // Create a new category.
-  size_t category_index = base::subtle::Acquire_Load(&category_index_);
+  size_t category_index = category_index_.load(std::memory_order_acquire);
   if (category_index >= kMaxCategories) {
     NOTREACHED() << "must increase kMaxCategories";
     *category = kCategoryExhausted;
@@ -111,7 +111,7 @@ bool CategoryRegistry::GetOrCreateCategoryLocked(
   category_initializer_fn(*category);
 
   // Update the max index now.
-  base::subtle::Release_Store(&category_index_, category_index + 1);
+  category_index_.store(category_index + 1, std::memory_order_release);
   return true;
 }
 
@@ -134,7 +134,7 @@ CategoryRegistry::Range CategoryRegistry::GetAllCategories() {
   // The |categories_| array is append only. We have to only guarantee to
   // not return an index to a category which is being initialized by
   // GetOrCreateCategoryByName().
-  size_t category_index = base::subtle::Acquire_Load(&category_index_);
+  size_t category_index = category_index_.load(std::memory_order_acquire);
   return CategoryRegistry::Range(&categories_[0], &categories_[category_index]);
 }
 

@@ -33,8 +33,9 @@
 namespace base {
 namespace trace_event {
 
-subtle::Atomic32 AllocationContextTracker::capture_mode_ =
-    static_cast<int32_t>(AllocationContextTracker::CaptureMode::DISABLED);
+std::atomic<AllocationContextTracker::CaptureMode>
+    AllocationContextTracker::capture_mode_{
+        AllocationContextTracker::CaptureMode::DISABLED};
 
 namespace {
 
@@ -115,7 +116,7 @@ void AllocationContextTracker::SetCurrentThreadName(const char* name) {
 void AllocationContextTracker::SetCaptureMode(CaptureMode mode) {
   // Release ordering ensures that when a thread observes |capture_mode_| to
   // be true through an acquire load, the TLS slot has been initialized.
-  subtle::Release_Store(&capture_mode_, static_cast<int32_t>(mode));
+  capture_mode_.store(mode, std::memory_order_release);
 }
 
 void AllocationContextTracker::PushPseudoStackFrame(
@@ -180,8 +181,7 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
   if (ignore_scope_depth_)
     return false;
 
-  CaptureMode mode = static_cast<CaptureMode>(
-      subtle::NoBarrier_Load(&capture_mode_));
+  CaptureMode mode = capture_mode_.load(std::memory_order_relaxed);
 
   auto* backtrace = std::begin(ctx->backtrace.frames);
   auto* backtrace_end = std::end(ctx->backtrace.frames);

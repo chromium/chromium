@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
@@ -161,7 +162,7 @@ class BASE_EXPORT HistogramBase {
   virtual uint64_t name_hash() const = 0;
 
   // Operations with Flags enum.
-  int32_t flags() const { return subtle::NoBarrier_Load(&flags_); }
+  int32_t flags() const { return flags_.load(std::memory_order_relaxed); }
   void SetFlags(int32_t flags);
   void ClearFlags(int32_t flags);
 
@@ -317,7 +318,7 @@ class BASE_EXPORT HistogramBase {
   const char* const histogram_name_;
 
   // Additional information about the histogram.
-  AtomicCount flags_;
+  std::atomic<uint32_t> flags_{0};
 
   DISALLOW_COPY_AND_ASSIGN(HistogramBase);
 };

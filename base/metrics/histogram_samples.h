@@ -112,7 +112,7 @@ class BASE_EXPORT HistogramSamples {
     // histogram types, there might be races during histogram accumulation
     // and snapshotting that we choose to accept. In this case, the tallies
     // might mismatch even when no memory corruption has happened.
-    HistogramBase::AtomicCount redundant_count;
+    HistogramBase::AtomicCount redundant_count{0};
 
     // A single histogram value and associated count. This allows histograms
     // that typically report only a single value to not require full storage

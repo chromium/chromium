@@ -5,7 +5,8 @@
 #ifndef BASE_TRACE_EVENT_CPUFREQ_MONITOR_ANDROID_H_
 #define BASE_TRACE_EVENT_CPUFREQ_MONITOR_ANDROID_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
@@ -84,7 +85,7 @@ class BASE_EXPORT CPUFreqMonitor : public TraceLog::EnabledStateObserver {
   // various tests.
   const scoped_refptr<SingleThreadTaskRunner>& GetOrCreateTaskRunner();
 
-  base::subtle::Atomic32 is_enabled_ = 0;
+  std::atomic<bool> is_enabled_{false};
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<CPUFreqMonitorDelegate> delegate_;
   base::WeakPtrFactory<CPUFreqMonitor> weak_ptr_factory_{this};

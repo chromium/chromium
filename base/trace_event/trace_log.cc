@@ -622,7 +622,7 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
   // buffer if we were not already recording.
   if (new_options != old_options ||
       (trace_config_.GetTraceBufferSizeInEvents() && !already_recording)) {
-    subtle::NoBarrier_Store(&trace_options_, new_options);
+    trace_options_.store(new_options, std::memory_order_relaxed);
     UseNextTraceBuffer();
   }
 

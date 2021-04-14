@@ -81,13 +81,11 @@ void HistogramBase::CheckName(const StringPiece& name) const {
 }
 
 void HistogramBase::SetFlags(int32_t flags) {
-  HistogramBase::Count old_flags = subtle::NoBarrier_Load(&flags_);
-  subtle::NoBarrier_Store(&flags_, old_flags | flags);
+  flags_.fetch_or(flags, std::memory_order_relaxed);
 }
 
 void HistogramBase::ClearFlags(int32_t flags) {
-  HistogramBase::Count old_flags = subtle::NoBarrier_Load(&flags_);
-  subtle::NoBarrier_Store(&flags_, old_flags & ~flags);
+  flags_.fetch_and(~flags, std::memory_order_relaxed);
 }
 
 void HistogramBase::AddScaled(Sample value, int count, int scale) {

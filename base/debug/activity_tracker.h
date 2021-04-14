@@ -11,17 +11,12 @@
 #ifndef BASE_DEBUG_ACTIVITY_TRACKER_H_
 #define BASE_DEBUG_ACTIVITY_TRACKER_H_
 
-// std::atomic is undesired due to performance issues when used as global
-// variables. There are no such instances here. This module uses the
-// PersistentMemoryAllocator which also uses std::atomic and is written
-// by the same author.
 #include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -934,8 +929,7 @@ class BASE_EXPORT GlobalActivityTracker {
 
   // Gets the global activity-tracker or null if none exists.
   static GlobalActivityTracker* Get() {
-    return reinterpret_cast<GlobalActivityTracker*>(
-        subtle::Acquire_Load(&g_tracker_));
+    return g_tracker_.load(std::memory_order_acquire);
   }
 
   // Sets the global activity-tracker for testing purposes.
@@ -1225,7 +1219,7 @@ class BASE_EXPORT GlobalActivityTracker {
   Lock modules_lock_;
 
   // The active global activity tracker.
-  static subtle::AtomicWord g_tracker_;
+  static std::atomic<GlobalActivityTracker*> g_tracker_;
 
   Lock global_tracker_lock_;
 

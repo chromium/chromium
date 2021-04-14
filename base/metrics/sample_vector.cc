@@ -279,9 +279,9 @@ void SampleVectorBase::MountCountsStorageAndMoveSingleSample() {
   // concurrent entry into the code below; access and updates to |counts_|
   // still requires atomic operations.
   static LazyInstance<Lock>::Leaky counts_lock = LAZY_INSTANCE_INITIALIZER;
-  if (subtle::NoBarrier_Load(&counts_) == 0) {
+  if (!counts_.load(std::memory_order_relaxed)) {
     AutoLock lock(counts_lock.Get());
-    if (subtle::NoBarrier_Load(&counts_) == 0) {
+    if (!counts_.load(std::memory_order_relaxed)) {
       // Create the actual counts storage while the above lock is acquired.
       HistogramBase::Count* counts = CreateCountsStorageWhileLocked();
       DCHECK(counts);

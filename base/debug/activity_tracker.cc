@@ -1087,9 +1087,8 @@ ThreadActivityTracker::CreateUserDataForActivity(
 // but that's best since PersistentMemoryAllocator objects (that underlie
 // GlobalActivityTracker objects) are explicitly forbidden from doing anything
 // essential at exit anyway due to the fact that they depend on data managed
-// elsewhere and which could be destructed first. An AtomicWord is used instead
-// of std::atomic because the latter can create global ctors and dtors.
-subtle::AtomicWord GlobalActivityTracker::g_tracker_ = 0;
+// elsewhere and which could be destructed first.
+std::atomic<GlobalActivityTracker*> GlobalActivityTracker::g_tracker_{nullptr};
 
 GlobalActivityTracker::ModuleInfo::ModuleInfo() = default;
 GlobalActivityTracker::ModuleInfo::ModuleInfo(ModuleInfo&& rhs) = default;
@@ -1256,7 +1255,7 @@ GlobalActivityTracker::ManagedActivityTracker::~ManagedActivityTracker() {
   // The global |g_tracker_| must point to the owner of this class since all
   // objects of this type must be destructed before |g_tracker_| can be changed
   // (something that only occurs in tests).
-  DCHECK(g_tracker_);
+  DCHECK(g_tracker_.load(std::memory_order_relaxed));
   GlobalActivityTracker::Get()->ReturnTrackerMemory(this);
 }
 
@@ -1330,9 +1329,8 @@ bool GlobalActivityTracker::CreateWithSharedMemory(
 // static
 void GlobalActivityTracker::SetForTesting(
     std::unique_ptr<GlobalActivityTracker> tracker) {
-  CHECK(!subtle::NoBarrier_Load(&g_tracker_));
-  subtle::Release_Store(&g_tracker_,
-                        reinterpret_cast<uintptr_t>(tracker.release()));
+  CHECK(!g_tracker_.load(std::memory_order_relaxed));
+  g_tracker_.store(tracker.release(), std::memory_order_release);
 }
 
 // static
@@ -1347,7 +1345,7 @@ GlobalActivityTracker::ReleaseForTesting() {
   tracker->ReleaseTrackerForCurrentThreadForTesting();
   DCHECK_EQ(0, tracker->thread_tracker_count_.load(std::memory_order_relaxed));
 
-  subtle::Release_Store(&g_tracker_, 0);
+  g_tracker_.store(nullptr, std::memory_order_release);
   return WrapUnique(tracker);
 }
 
@@ -1656,8 +1654,8 @@ GlobalActivityTracker::GlobalActivityTracker(
   DCHECK_NE(0, process_id_);
 
   // Ensure that there is no other global object and then make this one such.
-  DCHECK(!g_tracker_);
-  subtle::Release_Store(&g_tracker_, reinterpret_cast<uintptr_t>(this));
+  DCHECK(!g_tracker_.load(std::memory_order_relaxed));
+  g_tracker_.store(this, std::memory_order_release);
 
   // The data records must be iterable in order to be found by an analyzer.
   allocator_->MakeIterable(allocator_->GetAsReference(
@@ -1670,7 +1668,7 @@ GlobalActivityTracker::GlobalActivityTracker(
 GlobalActivityTracker::~GlobalActivityTracker() {
   DCHECK(Get() == nullptr || Get() == this);
   DCHECK_EQ(0, thread_tracker_count_.load(std::memory_order_relaxed));
-  subtle::Release_Store(&g_tracker_, 0);
+  g_tracker_.store(nullptr, std::memory_order_release);
 }
 
 void GlobalActivityTracker::ReturnTrackerMemory(
