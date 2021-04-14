@@ -23,24 +23,12 @@ import org.chromium.base.Callback;
  */
 public interface AccountManagerDelegate {
     /**
-     * Registers internal observers used for notifying {@link AccountsChangeObserver}. Must be
-     * invoked before calling {@link #addObserver}.
-     */
-    void registerObservers();
-
-    /**
-     * Adds an observer to get notified about accounts changes.
-     * @param observer the observer to add.
+     * Attaches the {@link AccountsChangeObserver} to the delegate and registers the
+     * accounts change receivers to listen to the accounts change broadcast from the
+     * system.
      */
     @MainThread
-    void addObserver(AccountsChangeObserver observer);
-
-    /**
-     * Removes an observer that was previously added using {@link #addObserver}.
-     * @param observer the observer to remove.
-     */
-    @MainThread
-    void removeObserver(AccountsChangeObserver observer);
+    void attachAccountsChangeObserver(AccountsChangeObserver observer);
 
     /**
      * Get all the accounts synchronously.

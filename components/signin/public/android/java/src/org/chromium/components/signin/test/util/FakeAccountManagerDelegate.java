@@ -10,11 +10,9 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
@@ -44,9 +42,11 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @GuardedBy("mLock")
     private final Set<AccountHolder> mAccounts = new LinkedHashSet<>();
-    private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
+    private AccountsChangeObserver mObserver;
 
-    public FakeAccountManagerDelegate() {}
+    public FakeAccountManagerDelegate() {
+        mObserver = null;
+    }
 
     @Nullable
     @Override
@@ -66,16 +66,8 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void registerObservers() {}
-
-    @Override
-    public void addObserver(AccountsChangeObserver observer) {
-        mObservers.addObserver(observer);
-    }
-
-    @Override
-    public void removeObserver(AccountsChangeObserver observer) {
-        mObservers.removeObserver(observer);
+    public void attachAccountsChangeObserver(AccountsChangeObserver observer) {
+        mObserver = observer;
     }
 
     @Override
@@ -97,7 +89,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             boolean added = mAccounts.add(accountHolder);
             assert added : "Account already added";
         }
-        ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
+        ThreadUtils.runOnUiThreadBlocking(mObserver::onAccountsChanged);
     }
 
     /**
@@ -108,7 +100,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             boolean removed = mAccounts.remove(accountHolder);
             assert removed : "Can't find account";
         }
-        ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
+        ThreadUtils.runOnUiThreadBlocking(mObserver::onAccountsChanged);
     }
 
     @Override
@@ -178,12 +170,5 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             }
         }
         return null;
-    }
-
-    @MainThread
-    private void fireOnAccountsChangedNotification() {
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
     }
 }

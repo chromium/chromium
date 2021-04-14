@@ -35,7 +35,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -50,41 +49,14 @@ import java.io.IOException;
  */
 public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     private final AccountManager mAccountManager;
-    private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
-    private boolean mRegisterObserversCalled;
+    private AccountsChangeObserver mObserver;
 
     private static final String TAG = "Auth";
 
     public SystemAccountManagerDelegate() {
         Context context = ContextUtils.getApplicationContext();
         mAccountManager = AccountManager.get(context);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void registerObservers() {
-        assert !mRegisterObserversCalled;
-
-        Context context = ContextUtils.getApplicationContext();
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(final Context context, final Intent intent) {
-                fireOnAccountsChangedNotification();
-            }
-        };
-        IntentFilter accountsChangedIntentFilter = new IntentFilter();
-        accountsChangedIntentFilter.addAction(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
-        context.registerReceiver(receiver, accountsChangedIntentFilter);
-
-        IntentFilter gmsPackageReplacedFilter = new IntentFilter();
-        gmsPackageReplacedFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        gmsPackageReplacedFilter.addDataScheme("package");
-        gmsPackageReplacedFilter.addDataPath(
-                "com.google.android.gms", PatternMatcher.PATTERN_PREFIX);
-
-        context.registerReceiver(receiver, gmsPackageReplacedFilter);
-
-        mRegisterObserversCalled = true;
+        mObserver = null;
     }
 
     protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
@@ -102,15 +74,28 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public void addObserver(AccountsChangeObserver observer) {
-        assert mRegisterObserversCalled : "Should call registerObservers first";
-        mObservers.addObserver(observer);
-    }
+    public void attachAccountsChangeObserver(AccountsChangeObserver observer) {
+        assert mObserver == null : "Another AccountsChangeObserver is already attached!";
 
-    @Override
-    public void removeObserver(AccountsChangeObserver observer) {
-        boolean success = mObservers.removeObserver(observer);
-        assert success : "Can't find observer";
+        mObserver = observer;
+        Context context = ContextUtils.getApplicationContext();
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                mObserver.onAccountsChanged();
+            }
+        };
+        IntentFilter accountsChangedIntentFilter = new IntentFilter();
+        accountsChangedIntentFilter.addAction(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
+        context.registerReceiver(receiver, accountsChangedIntentFilter);
+
+        IntentFilter gmsPackageReplacedFilter = new IntentFilter();
+        gmsPackageReplacedFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        gmsPackageReplacedFilter.addDataScheme("package");
+        gmsPackageReplacedFilter.addDataPath(
+                "com.google.android.gms", PatternMatcher.PATTERN_PREFIX);
+
+        context.registerReceiver(receiver, gmsPackageReplacedFilter);
     }
 
     @Override
@@ -276,11 +261,5 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                        "android.permission.MANAGE_ACCOUNTS", Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void fireOnAccountsChangedNotification() {
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
     }
 }

@@ -5,7 +5,6 @@
 package org.chromium.components.signin;
 
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -93,14 +92,6 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate =
                 new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
-    }
-
-    @Test
-    public void testRegisterObserversCalledInConstructor() {
-        FakeAccountManagerDelegate delegate = spy(new FakeAccountManagerDelegate());
-        verify(delegate, never()).registerObservers();
-        AccountManagerFacade accountManagerFacade = new AccountManagerFacadeImpl(delegate);
-        verify(delegate).registerObservers();
     }
 
     @Test

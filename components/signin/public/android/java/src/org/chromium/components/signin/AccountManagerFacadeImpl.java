@@ -83,8 +83,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
-        mDelegate.registerObservers();
-        mDelegate.addObserver(this::updateAccounts);
+        mDelegate.attachAccountsChangeObserver(this::updateAccounts);
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             subscribeToAppRestrictionChanges();
