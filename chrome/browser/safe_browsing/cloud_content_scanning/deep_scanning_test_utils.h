@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -93,6 +94,17 @@ class EventReportValidator {
                                 const std::string& expected_result,
                                 const std::string& expected_username);
 
+  void ExpectUnscannedFileEvents(
+      const std::string& expected_url,
+      const std::vector<const std::string>& expected_filenames,
+      const std::vector<const std::string>& expected_sha256s,
+      const std::string& expected_trigger,
+      const std::string& expected_reason,
+      const std::set<std::string>* expected_mimetypes,
+      int expected_content_size,
+      const std::string& expected_result,
+      const std::string& expected_username);
+
   void ExpectDangerousDownloadEvent(
       const std::string& expected_url,
       const std::string& expected_filename,
@@ -116,6 +128,7 @@ class EventReportValidator {
   void ValidateDlpRule(base::Value* value,
                        const enterprise_connectors::ContentAnalysisResponse::
                            Result::TriggeredRule& expected_rule);
+  void ValidateFilenameAndHash(base::Value* value);
   void ValidateField(base::Value* value,
                      const std::string& field_key,
                      const base::Optional<std::string>& expected_value);
@@ -130,8 +143,6 @@ class EventReportValidator {
 
   std::string event_key_;
   std::string url_;
-  std::string filename_;
-  std::string sha256_;
   std::string trigger_;
   base::Optional<enterprise_connectors::ContentAnalysisResponse::Result>
       dlp_verdict_ = base::nullopt;
@@ -141,6 +152,11 @@ class EventReportValidator {
   const std::set<std::string>* mimetypes_ = nullptr;
   base::Optional<std::string> result_ = base::nullopt;
   std::string username_;
+
+  // When multiple files generate events, we don't necessarily know in which
+  // order they will be reported. As such, we use a map to ensure all of them
+  // are called as expected.
+  base::flat_map<std::string, std::string> filenames_and_hashes_;
 
   base::RepeatingClosure done_closure_;
 };

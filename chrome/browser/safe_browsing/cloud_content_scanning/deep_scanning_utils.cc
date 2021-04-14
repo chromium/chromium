@@ -36,6 +36,8 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    // TODO(crbug.com/1191060): Update this string when the event is supported.
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
       unscanned_reason = "SERVICE_UNAVAILABLE";
       break;
     case BinaryUploadService::Result::FILE_ENCRYPTED:
@@ -324,6 +326,8 @@ std::string BinaryUploadServiceResultToString(
       return "FileEncrypted";
     case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
       return "DlpScanUnsupportedFileType";
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+      return "TooManyRequests";
   }
 }
 
