@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -83,6 +84,10 @@ struct AnalysisSettings {
   // Indicates if the scan is made at the profile level, or at the browser level
   // if false.
   bool per_profile = false;
+
+  // ClientMetadata to include in the scanning request(s). This is populated
+  // based on OnSecurityEvent and the affiliation state of the browser.
+  std::unique_ptr<ClientMetadata> client_metadata = nullptr;
 };
 
 struct ReportingSettings {

@@ -43,6 +43,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/system/fake_statistics_provider.h"
+#endif
+
 namespace safe_browsing {
 
 using ::testing::Return;
@@ -441,6 +445,11 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 
     SetOnSecurityEventReporting(profile_->GetPrefs(), true);
     EnableAllFeatures();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    fake_statistics_provider_.SetMachineStatistic(
+        chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
+#endif
   }
 
   void TearDown() override {
@@ -452,6 +461,9 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
  protected:
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+#endif
 };
 
 TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {

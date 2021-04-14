@@ -7,6 +7,8 @@
 
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -16,18 +18,110 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
+#include "device_management_backend.pb.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#endif
 
 namespace enterprise_connectors {
+
+namespace {
+
+const enterprise_management::PolicyData* GetProfilePolicyData(
+    Profile* profile) {
+  DCHECK(profile);
+  auto* manager =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      profile->GetUserCloudPolicyManagerChromeOS();
+#else
+      profile->GetUserCloudPolicyManager();
+#endif
+  if (manager && manager->core()->store() &&
+      manager->core()->store()->has_policy()) {
+    return manager->core()->store()->policy();
+  }
+  return nullptr;
+}
+
+void PopulateBrowserMetadata(bool include_device_info,
+                             ClientMetadata::Browser* browser_proto) {
+  base::FilePath browser_id;
+  if (base::PathService::Get(base::DIR_EXE, &browser_id))
+    browser_proto->set_browser_id(browser_id.AsUTF8Unsafe());
+  browser_proto->set_user_agent(embedder_support::GetUserAgent());
+  browser_proto->set_chrome_version(version_info::GetVersionNumber());
+  if (include_device_info)
+    browser_proto->set_machine_user(policy::GetOSUsername());
+}
+
+void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
+                            Profile* profile,
+                            ClientMetadata::Device* device_proto) {
+  if (!reporting_settings.per_profile)
+    device_proto->set_dm_token(reporting_settings.dm_token);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string client_id;
+  auto* manager = profile->GetUserCloudPolicyManagerChromeOS();
+  if (manager && manager->core() && manager->core()->client())
+    client_id = manager->core()->client()->client_id();
+#else
+  std::string client_id =
+      policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#endif
+  device_proto->set_client_id(client_id);
+  device_proto->set_os_version(policy::GetOSVersion());
+  device_proto->set_os_platform(policy::GetOSPlatform());
+  device_proto->set_name(policy::GetDeviceName());
+}
+
+void PopulateProfileMetadata(const ReportingSettings& reporting_settings,
+                             Profile* profile,
+                             ClientMetadata::Profile* profile_proto) {
+  if (reporting_settings.per_profile)
+    profile_proto->set_dm_token(reporting_settings.dm_token);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager) {
+    profile_proto->set_gaia_email(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
+  }
+  profile_proto->set_profile_path(profile->GetPath().AsUTF8Unsafe());
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (entry) {
+    profile_proto->set_profile_name(base::UTF16ToUTF8(entry->GetName()));
+  }
+  const enterprise_management::PolicyData* profile_policy =
+      GetProfilePolicyData(profile);
+  if (profile_policy) {
+    if (profile_policy->has_device_id())
+      profile_proto->set_client_id(profile_policy->device_id());
+  }
+}
+
+}  // namespace
 
 const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -179,6 +273,7 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   settings.value().dm_token = dm_token.value().value;
   settings.value().per_profile =
       dm_token.value().scope == policy::POLICY_SCOPE_USER;
+  settings.value().client_metadata = BuildClientMetadata();
 
   return settings;
 }
@@ -357,6 +452,29 @@ bool ConnectorsService::ConnectorsEnabled() const {
     return false;
 
   return !Profile::FromBrowserContext(context_)->IsOffTheRecord();
+}
+
+std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
+  // Check the reporting policy value to check if the analysis should include
+  // browser/device/profile information.
+  auto reporting_settings =
+      GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  if (!reporting_settings.has_value())
+    return nullptr;
+
+  bool include_device_info = !reporting_settings.value().per_profile;
+  Profile* profile = Profile::FromBrowserContext(context_);
+
+  auto metadata = std::make_unique<ClientMetadata>();
+  PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
+  if (include_device_info) {
+    PopulateDeviceMetadata(reporting_settings.value(), profile,
+                           metadata->mutable_device());
+  }
+  PopulateProfileMetadata(reporting_settings.value(), profile,
+                          metadata->mutable_profile());
+
+  return metadata;
 }
 
 // ---------------------------------------

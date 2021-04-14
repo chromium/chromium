@@ -601,6 +601,11 @@ void BinaryUploadService::Request::set_email(const std::string& email) {
   content_analysis_request_.mutable_request_data()->set_email(email);
 }
 
+void BinaryUploadService::Request::set_client_metadata(
+    enterprise_connectors::ClientMetadata metadata) {
+  *content_analysis_request_.mutable_client_metadata() = std::move(metadata);
+}
+
 enterprise_connectors::AnalysisConnector
 BinaryUploadService::Request::analysis_connector() {
   return content_analysis_request_.analysis_connector();

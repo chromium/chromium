@@ -159,6 +159,7 @@ class BinaryUploadService : public KeyedService {
     void set_filename(const std::string& filename);
     void set_digest(const std::string& digest);
     void clear_dlp_scan_request();
+    void set_client_metadata(enterprise_connectors::ClientMetadata metadata);
 
     // Methods for accessing the ContentAnalysisRequest.
     enterprise_connectors::AnalysisConnector analysis_connector();
