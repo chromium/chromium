@@ -29,10 +29,10 @@ void RestoreOnStartupPolicyHandler::ApplyPolicySettings(
   const base::Value* restore_on_startup_value =
       policies.GetValue(policy_name());
   if (restore_on_startup_value) {
-    int restore_on_startup;
-    if (!restore_on_startup_value->GetAsInteger(&restore_on_startup))
+    if (!restore_on_startup_value->is_int())
       return;
-    prefs->SetInteger(prefs::kRestoreOnStartup, restore_on_startup);
+    prefs->SetInteger(prefs::kRestoreOnStartup,
+                      restore_on_startup_value->GetInt());
   }
 }
 
@@ -45,9 +45,8 @@ bool RestoreOnStartupPolicyHandler::CheckPolicySettings(
   const base::Value* restore_policy = policies.GetValue(key::kRestoreOnStartup);
 
   if (restore_policy) {
-    int restore_value;
-    CHECK(restore_policy->GetAsInteger(&restore_value));  // Passed type check.
-    switch (restore_value) {
+    CHECK(restore_policy->is_int());  // Passed type check.
+    switch (restore_policy->GetInt()) {
       case 0:  // Deprecated kPrefValueHomePage.
         errors->AddError(policy_name(), IDS_POLICY_VALUE_DEPRECATED);
         break;
@@ -72,7 +71,7 @@ bool RestoreOnStartupPolicyHandler::CheckPolicySettings(
         break;
       default:
         errors->AddError(policy_name(), IDS_POLICY_OUT_OF_RANGE_ERROR,
-                         base::NumberToString(restore_value));
+                         base::NumberToString(restore_policy->GetInt()));
     }
   }
   return true;
