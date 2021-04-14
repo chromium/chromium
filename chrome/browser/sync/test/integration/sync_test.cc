@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -309,11 +310,6 @@ SyncTest::SyncTest(TestType test_type)
       server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
       num_clients_(-1) {
-  // TODO(crbug.com/1153297): This is a workaround to mitigate flakiness. Remove
-  // once the issue is resolved.
-  feature_list_.InitAndDisableFeature(
-      federated_learning::kFlocIdComputedEventLogging);
-
   sync_datatype_helper::AssociateWithTest(this);
   switch (test_type_) {
     case SINGLE_CLIENT: {
@@ -933,9 +929,11 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
         client->AwaitSyncSetupCompletion();
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
+        // TODO(crbug.com/1188034): remove the DCHECK.
         DCHECK(TestUsesSelfNotifications())
             << "We need that for the UpdatedProgressMarkerChecker";
-        UpdatedProgressMarkerChecker checker(GetSyncService(client_index));
+        client->AwaitSyncSetupCompletion();
+        CommittedAllNudgedChangesChecker checker(GetSyncService(client_index));
         checker.Wait();
         break;
     }

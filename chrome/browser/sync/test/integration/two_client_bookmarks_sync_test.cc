@@ -1962,32 +1962,38 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   for (size_t i = 0; i < 25; ++i) {
-    std::string title0 = IndexedURLTitle(i);
-    GURL url0 = GURL(IndexedURL(i));
+    const std::string title0 = IndexedURLTitle(i);
+    const GURL url0 = GURL(IndexedURL(i));
     ASSERT_NE(nullptr, AddURL(0, i, title0, url0));
-    std::string title1 = IndexedURLTitle(i + 50);
-    GURL url1 = GURL(IndexedURL(i + 50));
+
+    const std::string title1 = IndexedURLTitle(i + 50);
+    const GURL url1 = GURL(IndexedURL(i + 50));
     ASSERT_NE(nullptr, AddURL(1, i, title1, url1));
   }
   for (size_t i = 25; i < 30; ++i) {
-    std::string title0 = IndexedFolderName(i);
+    const std::string title0 = IndexedFolderName(i);
     const BookmarkNode* folder0 = AddFolder(0, i, title0);
     ASSERT_NE(nullptr, folder0);
-    std::string title1 = IndexedFolderName(i + 50);
+
+    const std::string title1 = IndexedFolderName(i + 50);
     const BookmarkNode* folder1 = AddFolder(1, i, title1);
     ASSERT_NE(nullptr, folder1);
     for (size_t j = 0; j < 5; ++j) {
-      std::string title0 = IndexedURLTitle(i + 5 * j);
-      GURL url0 = GURL(IndexedURL(i + 5 * j));
+      const std::string title0 = IndexedURLTitle(i + 5 * j);
+      const GURL url0 = GURL(IndexedURL(i + 5 * j));
       ASSERT_NE(nullptr, AddURL(0, folder0, j, title0, url0));
-      std::string title1 = IndexedURLTitle(i + 5 * j + 50);
-      GURL url1 = GURL(IndexedURL(i + 5 * j + 50));
+
+      const std::string title1 = IndexedURLTitle(i + 5 * j + 50);
+      const GURL url1 = GURL(IndexedURL(i + 5 * j + 50));
       ASSERT_NE(nullptr, AddURL(1, folder1, j, title1, url1));
     }
   }
+
+  // Generate several duplicate URLs which should match during bookmarks model
+  // merge.
   for (size_t i = 100; i < 125; ++i) {
-    std::string title = IndexedURLTitle(i);
-    GURL url = GURL(IndexedURL(i));
+    const std::string title = IndexedURLTitle(i);
+    const GURL url = GURL(IndexedURL(i));
     ASSERT_NE(nullptr, AddURL(0, title, url));
     ASSERT_NE(nullptr, AddURL(1, title, url));
   }
