@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -284,7 +285,7 @@ class WebAppInstallManagerTest : public WebAppTest {
     install_manager().InstallWebAppFromManifestWithFallback(
         web_contents(), /*force_shortcut_app=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        base::BindOnce(TestAcceptDialogCallback),
+        base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
               result.app_id = installed_app_id;

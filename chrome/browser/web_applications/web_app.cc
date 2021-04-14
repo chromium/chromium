@@ -321,9 +321,9 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, const base::Optional<T>& value) {
-  if (value.has_value())
-    return out << value;
+std::ostream& operator<<(std::ostream& out, const base::Optional<T>& optional) {
+  if (optional.has_value())
+    return out << optional.value();
   return out << "nullopt";
 }
 

@@ -24,7 +24,7 @@
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -112,7 +112,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
         .InstallWebAppFromManifestWithFallback(
             browser->tab_strip_model()->GetActiveWebContents(),
             /*force_shortcut_app=*/false, source,
-            base::BindOnce(TestAcceptDialogCallback),
+            base::BindOnce(test::TestAcceptDialogCallback),
             base::BindLambdaForTesting(
                 [&](const AppId& new_app_id, InstallResultCode code) {
                   EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
