@@ -170,6 +170,8 @@ crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/un
 crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Failure ]
 crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
 crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/unary_operator_* [ RetryOnFailure ]
+crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Failure ]
+crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperator/unary_operator_* [ Failure ]
 
 ####################
 # Win failures     #
