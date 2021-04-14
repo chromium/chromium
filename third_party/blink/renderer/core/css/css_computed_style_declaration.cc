@@ -410,11 +410,11 @@ CSSComputedStyleDeclaration::GetVariables() const {
       *style, StyledNode()->GetDocument().GetPropertyRegistry());
 }
 
-const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
-    const CSSPropertyName& property_name) const {
+void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
+    const CSSPropertyName* property_name) const {
   Node* styled_node = StyledNode();
   if (!styled_node)
-    return nullptr;
+    return;
 
   Document& document = styled_node->GetDocument();
 
@@ -427,10 +427,10 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
     // TODO(futhark@chromium.org): There is an open question what the computed
     // style should be in a display:none iframe. If the property we are querying
     // is not layout dependent, we will not update the iframe layout box here.
-    bool is_layout_dependent_property =
-        !property_name.IsCustomProperty() &&
-        CSSProperty::Get(property_name.Id()).IsLayoutDependentProperty();
-    if (is_layout_dependent_property ||
+    bool is_for_layout_dependent_property =
+        property_name && !property_name->IsCustomProperty() &&
+        CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
+    if (is_for_layout_dependent_property ||
         document.GetStyleEngine().HasViewportDependentMediaQueries()) {
       owner->GetDocument().UpdateStyleAndLayout(
           DocumentUpdateReason::kJavaScript);
@@ -441,32 +441,47 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   }
 
   document.UpdateStyleAndLayoutTreeForNode(styled_node);
+}
 
-  CSSPropertyRef ref(property_name, document);
+void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
+    const CSSProperty* property) const {
+  Node* styled_node = StyledNode();
+  if (!styled_node)
+    return;
+
+  bool is_for_layout_dependent_property =
+      property &&
+      property->IsLayoutDependent(ComputeComputedStyle(), StyledLayoutObject());
+
+  if (is_for_layout_dependent_property ||
+      InclusiveAncestorMayDependOnContainerQueries(styled_node)) {
+    styled_node->GetDocument().UpdateStyleAndLayoutForNode(
+        styled_node, DocumentUpdateReason::kJavaScript);
+  }
+}
+
+const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
+    const CSSPropertyName& property_name) const {
+  Node* styled_node = StyledNode();
+  if (!styled_node)
+    return nullptr;
+
+  UpdateStyleAndLayoutTreeIfNeeded(&property_name);
+
+  CSSPropertyRef ref(property_name, styled_node->GetDocument());
   if (!ref.IsValid())
     return nullptr;
   const CSSProperty& property_class = ref.GetProperty();
 
-  // The style recalc could have caused the styled node to be discarded or
-  // replaced if it was a PseudoElement so we need to update it.
-  styled_node = StyledNode();
-  LayoutObject* layout_object = StyledLayoutObject();
-  const ComputedStyle* style = ComputeComputedStyle();
+  UpdateStyleAndLayoutIfNeeded(&property_class);
 
-  if (property_class.IsLayoutDependent(style, layout_object) ||
-      InclusiveAncestorMayDependOnContainerQueries(styled_node)) {
-    document.UpdateStyleAndLayoutForNode(styled_node,
-                                         DocumentUpdateReason::kJavaScript);
-    styled_node = StyledNode();
-    style = ComputeComputedStyle();
-    layout_object = StyledLayoutObject();
-  }
+  const ComputedStyle* style = ComputeComputedStyle();
 
   if (!style)
     return nullptr;
 
   const CSSValue* value = property_class.CSSValueFromComputedStyle(
-      *style, layout_object, allow_visited_style_);
+      *style, StyledLayoutObject(), allow_visited_style_);
   if (value)
     return value;
 

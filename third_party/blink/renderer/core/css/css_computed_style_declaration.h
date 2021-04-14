@@ -85,6 +85,12 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   // being queried, if any.
   LayoutObject* StyledLayoutObject() const;
 
+  // If we are updating the style/layout-tree/layout with the intent to
+  // retrieve the computed value of a property, the appropriate
+  // property name/instance must be provided.
+  void UpdateStyleAndLayoutTreeIfNeeded(const CSSPropertyName*) const;
+  void UpdateStyleAndLayoutIfNeeded(const CSSProperty*) const;
+
   // CSSOM functions.
   CSSRule* parentRule() const override;
   const ComputedStyle* ComputeComputedStyle() const;
