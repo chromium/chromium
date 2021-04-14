@@ -22,6 +22,9 @@ const NetworkState* GetNetworkState(const std::string& network_id) {
       ->GetNetworkStateFromGuid(network_id);
 }
 
+// TODO(b:184776317): Use string from service_constants.h
+const char kErrorSimLocked[] = "sim-locked";
+
 }  // namespace
 
 namespace shill_error {
@@ -108,6 +111,9 @@ std::u16string GetShillErrorString(const std::string& error,
   }
   if (error == shill::kErrorNotAuthenticated) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_BAD_PASSPHRASE);
+  }
+  if (error == kErrorSimLocked) {
+    return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
   }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
