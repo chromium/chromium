@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -565,9 +566,15 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk) {
 
   decoder_buffer->set_timestamp(
       base::TimeDelta::FromMicroseconds(chunk.timestamp()));
-  // TODO(sandersd): Use kUnknownTimestamp instead of 0?
-  decoder_buffer->set_duration(
-      base::TimeDelta::FromMicroseconds(chunk.duration().value_or(0)));
+
+  if (chunk.duration()) {
+    // Clamp within bounds of our internal TimeDelta-based duration.
+    // See media/base/timestamp_constants.h
+    decoder_buffer->set_duration(base::TimeDelta::FromMicroseconds(
+        std::min(base::saturated_cast<int64_t>(chunk.duration().value()),
+                 std::numeric_limits<int64_t>::max() - 1)));
+  }
+
   decoder_buffer->set_is_key_frame(chunk.type() == "key");
 
   return decoder_buffer;
