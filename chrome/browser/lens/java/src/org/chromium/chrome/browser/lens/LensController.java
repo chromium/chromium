@@ -19,6 +19,21 @@ import org.chromium.ui.base.WindowAndroid;
  * A class which manages communication with the Lens SDK.
  */
 public class LensController {
+    private static LensController sInstance = new LensController();
+
+    private final LensControllerDelegate mDelegate;
+
+    /**
+     * @return The singleton instance of LensController.
+     */
+    public static LensController getInstance() {
+        return sInstance;
+    }
+
+    public LensController() {
+        mDelegate = new LensControllerDelegateImpl();
+    }
+
     /**
      * Whether the Lens SDK is available.
      * @return Whether the Lens SDK is available.

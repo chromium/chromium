@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextmenu;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
@@ -26,7 +25,7 @@ public class LensChipDelegate implements ChipDelegate {
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
             boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
             Callback<Integer> onChipClickedCallback, Callback<Integer> onChipShownCallback) {
-        mLensController = AppHooks.get().getLensController();
+        mLensController = LensController.getInstance();
         if (!mLensController.isQueryEnabled()) {
             return;
         }

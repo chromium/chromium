@@ -876,6 +876,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/image_fetcher:java",
     "//chrome/browser/incognito/interstitial/android:junit",
     "//chrome/browser/lens:java",
+    "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/test/android:junit",
