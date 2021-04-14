@@ -45,7 +45,6 @@ class RoundedOmniboxResultsFrame : public views::View {
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 #endif  // !USE_AURA
-  void OnThemeChanged() override;
 
  private:
   views::View* top_background_ = nullptr;

@@ -68,6 +68,10 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_FocusedBorderColor:
       return gfx::kGoogleBlue400;
 
+    // Bubble
+    case NativeTheme::kColorId_BubbleBorderShadowBase:
+      return SK_ColorBLACK;
+
     // Button
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue300;
@@ -164,7 +168,20 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_BubbleBorder:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_SeparatorColor, color_scheme);
-
+    case NativeTheme::kColorId_BubbleBorderShadowBase:
+      return gfx::kGoogleGrey800;
+    case NativeTheme::kColorId_BubbleBorderShadowLarge:
+      return SkColorSetA(
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_BubbleBorderShadowBase, color_scheme),
+          0x1A);
+    case NativeTheme::kColorId_BubbleBorderShadowSmall:
+      return SkColorSetA(
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_BubbleBorderShadowBase, color_scheme),
+          0x33);
+    case NativeTheme::kColorId_BubbleBorderWhenShadowPresent:
+      return SkColorSetA(SK_ColorBLACK, 0x26);
     // Button
     case NativeTheme::kColorId_ButtonColor:
       return base_theme->GetUnprocessedSystemColor(

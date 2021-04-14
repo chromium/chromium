@@ -284,19 +284,5 @@ void RoundedOmniboxResultsFrame::OnMouseEvent(ui::MouseEvent* event) {
 
 #endif  // !USE_AURA
 
-void RoundedOmniboxResultsFrame::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const SkColor background_color =
-      GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
-
-  // Use a darker shadow that's more visible on darker tints.
-  views::BubbleBorder* border =
-      static_cast<views::BubbleBorder*>(this->border());
-  border->set_md_shadow_color(color_utils::IsDark(background_color)
-                                  ? SK_ColorBLACK
-                                  : gfx::kGoogleGrey800);
-  SchedulePaint();
-}
-
 BEGIN_METADATA(RoundedOmniboxResultsFrame, views::View)
 END_METADATA

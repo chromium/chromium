@@ -72,7 +72,7 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
     base::Optional<int> elevation) {
   // Borders with custom shadow elevations do not draw the 1px border.
   if (elevation.has_value())
-    return -gfx::ShadowValue::GetMargin(GetShadowValues(elevation));
+    return -gfx::ShadowValue::GetMargin(GetShadowValues(nullptr, elevation));
 
   constexpr gfx::Insets blur(kShadowBlur + kBorderThicknessDip);
   constexpr gfx::Insets offset(-kShadowVerticalOffset, 0, kShadowVerticalOffset,
@@ -217,7 +217,7 @@ void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
                                  true /*doAntiAlias*/);
 
   DrawBorderAndShadow(std::move(r_rect), &cc::PaintCanvas::drawRRect, canvas,
-                      md_shadow_elevation_, md_shadow_color_);
+                      view.GetNativeTheme(), md_shadow_elevation_);
 }
 
 gfx::Insets BubbleBorder::GetInsets() const {
@@ -236,8 +236,15 @@ gfx::Size BubbleBorder::GetMinimumSize() const {
 
 // static
 const gfx::ShadowValues& BubbleBorder::GetShadowValues(
-    base::Optional<int> elevation,
-    SkColor color) {
+    const ui::NativeTheme* theme,
+    base::Optional<int> elevation) {
+  // If the theme does not exist the shadow values are being created in
+  // order to calculate Insets. In that case the color plays no role so set it
+  // to gfx::kPlaceholderColor.
+  SkColor color = theme ? theme->GetSystemColor(
+                              ui::NativeTheme::kColorId_BubbleBorderShadowBase)
+                        : gfx::kPlaceholderColor;
+
   // The shadows are always the same for any elevation and color combination, so
   // construct them once and cache.
   static base::NoDestructor<std::map<ShadowCacheKey, gfx::ShadowValues>>
@@ -254,8 +261,10 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
   } else {
     constexpr int kSmallShadowVerticalOffset = 2;
     constexpr int kSmallShadowBlur = 4;
-    SkColor kSmallShadowColor = SkColorSetA(color, 0x33);
-    SkColor kLargeShadowColor = SkColorSetA(color, 0x1A);
+    SkColor kSmallShadowColor = theme->GetSystemColor(
+        ui::NativeTheme::kColorId_BubbleBorderShadowSmall);
+    SkColor kLargeShadowColor = theme->GetSystemColor(
+        ui::NativeTheme::kColorId_BubbleBorderShadowLarge);
     // gfx::ShadowValue counts blur pixels both inside and outside the shape,
     // whereas these blur values only describe the outside portion, hence they
     // must be doubled.
@@ -273,23 +282,24 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
 
 // static
 const cc::PaintFlags& BubbleBorder::GetBorderAndShadowFlags(
-    base::Optional<int> elevation,
-    SkColor color) {
+    const ui::NativeTheme* theme,
+    base::Optional<int> elevation) {
   // The flags are always the same for any elevation and color combination, so
   // construct them once and cache.
   static base::NoDestructor<std::map<ShadowCacheKey, cc::PaintFlags>> flag_map;
-  ShadowCacheKey key(elevation.value_or(-1), color);
+  ShadowCacheKey key(
+      elevation.value_or(-1),
+      theme->GetSystemColor(ui::NativeTheme::kColorId_BubbleBorderShadowBase));
 
   if (flag_map->find(key) != flag_map->end())
     return flag_map->find(key)->second;
 
   cc::PaintFlags flags;
-  constexpr SkColor kBlurredBorderColor = SkColorSetA(SK_ColorBLACK, 0x26);
-  flags.setColor(kBlurredBorderColor);
+  flags.setColor(theme->GetSystemColor(
+      ui::NativeTheme::kColorId_BubbleBorderWhenShadowPresent));
   flags.setAntiAlias(true);
   flags.setLooper(
-      gfx::CreateShadowDrawLooper(GetShadowValues(elevation, color)));
-
+      gfx::CreateShadowDrawLooper(GetShadowValues(theme, elevation)));
   flag_map->insert({key, flags});
   return flag_map->find(key)->second;
 }

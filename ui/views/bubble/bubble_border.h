@@ -128,14 +128,15 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   // Draws a border and shadow based on |shadow_elevation| outside the |rect| on
   // |canvas|, using |draw| as the draw function. Templated so as to accept
-  // either SkRect or SkRRect.
+  // either SkRect or SkRRect. |theme| is passed into GetBorderAndShadowFlags to
+  // obtain the shadow color.
   template <typename T>
   static void DrawBorderAndShadow(
       T rect,
       void (cc::PaintCanvas::*draw)(const T&, const cc::PaintFlags&),
       gfx::Canvas* canvas,
-      base::Optional<int> shadow_elevation = base::nullopt,
-      SkColor shadow_base_color = SK_ColorBLACK) {
+      const ui::NativeTheme* theme,
+      base::Optional<int> shadow_elevation = base::nullopt) {
     // Borders with custom shadow elevations do not draw the 1px border.
     if (!shadow_elevation.has_value()) {
       // Provide a 1 px border outside the bounds.
@@ -146,7 +147,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
     }
 
     (canvas->sk_canvas()->*draw)(
-        rect, GetBorderAndShadowFlags(shadow_elevation, shadow_base_color));
+        rect, GetBorderAndShadowFlags(theme, shadow_elevation));
   }
 
   // Set the corner radius, enables Material Design.
@@ -184,11 +185,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
     md_shadow_elevation_ = shadow_elevation;
   }
 
-  // Sets the shadow color for MD shadows. Defaults to SK_ColorBLACK.
-  void set_md_shadow_color(SkColor shadow_color) {
-    md_shadow_color_ = shadow_color;
-  }
-
   // Set a flag to avoid the bubble's shadow overlapping the anchor.
   void set_avoid_shadow_overlap(bool value) { avoid_shadow_overlap_ = value; }
 
@@ -216,17 +212,21 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Returns the shadows based on |shadow_elevation| to use for painting the
   // border and shadow, and for getting insets. This is only used for MD
   // bubbles. A null |shadow_elevation| will yield the default BubbleBorder MD
-  // ShadowValues.
+  // ShadowValues. Gets the shadow colors from |theme|. |theme| may be null in
+  // the case where GetShadowValues is called from
+  // BubbleBorder::GetBorderAndShadowInsets which only uses the ShadowValue to
+  // calculate the insets.
   static const gfx::ShadowValues& GetShadowValues(
-      base::Optional<int> shadow_elevation = base::nullopt,
-      SkColor shadow_base_color = SK_ColorBLACK);
+      const ui::NativeTheme* theme,
+      base::Optional<int> shadow_elevation = base::nullopt);
 
   // Returns the paint flags to use for painting the border and shadow based on
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD PaintFlags.
+  // Gets the shadow colors from |theme|.
   static const cc::PaintFlags& GetBorderAndShadowFlags(
-      base::Optional<int> shadow_elevation = base::nullopt,
-      SkColor shadow_base_color = SK_ColorBLACK);
+      const ui::NativeTheme* theme,
+      base::Optional<int> shadow_elevation = base::nullopt);
 
   // The border and arrow stroke size used in image assets, in pixels.
   static constexpr int kStroke = 1;
@@ -255,8 +255,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   Shadow shadow_;
   // Elevation for the MD shadow.
   base::Optional<int> md_shadow_elevation_;
-  // Color for the MD shadow.
-  SkColor md_shadow_color_ = SK_ColorBLACK;
   SkColor background_color_;
   bool use_theme_background_color_;
   bool avoid_shadow_overlap_ = false;

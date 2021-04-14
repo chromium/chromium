@@ -38,6 +38,14 @@
   E(kColorAvatarIconIncognito, NativeTheme::kColorId_AvatarIconIncognito) \
   E(kColorBubbleBackground, NativeTheme::kColorId_BubbleBackground) \
   E(kColorBubbleBorder, NativeTheme::kColorId_BubbleBorder) \
+  E(kColorBubbleBorderShadowBase, \
+    NativeTheme::kColorId_BubbleBorderShadowBase) \
+  E(kColorBubbleBorderShadowLarge, \
+    NativeTheme::kColorId_BubbleBorderShadowLarge) \
+  E(kColorBubbleBorderShadowSmall, \
+    NativeTheme::kColorId_BubbleBorderShadowSmall) \
+  E(kColorBubbleBorderWhenShadowPresent, \
+    NativeTheme::kColorId_BubbleBorderWhenShadowPresent) \
   E(kColorBubbleFooterBackground, \
     NativeTheme::kColorId_BubbleFooterBackground) \
   E(kColorBubbleFooterBorder, NativeTheme::kColorId_BubbleFooterBorder) \

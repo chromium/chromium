@@ -21,6 +21,13 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorAvatarIconIncognito] = {kColorPrimaryForeground};
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};
   mixer[kColorBubbleBorder] = {kColorMidground};
+  mixer[kColorBubbleBorderShadowBase] = {dark_window ? SK_ColorBLACK
+                                                     : gfx::kGoogleGrey800};
+  mixer[kColorBubbleBorderShadowLarge] = {
+      SetAlpha(kColorBubbleBorderShadowBase, 0x1A)};
+  mixer[kColorBubbleBorderShadowSmall] = {
+      SetAlpha(kColorBubbleBorderShadowBase, 0x33)};
+  mixer[kColorBubbleBorderWhenShadowPresent] = {SetAlpha(SK_ColorBLACK, 0x26)};
   mixer[kColorBubbleFooterBackground] = {kColorSubtleEmphasisBackground};
   mixer[kColorBubbleFooterBorder] = {kColorMidground};
   mixer[kColorButtonBackground] = {kColorPrimaryBackground};

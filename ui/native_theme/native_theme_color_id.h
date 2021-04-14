@@ -156,6 +156,10 @@
   OP(kColorId_ThrobberWaitingColor),                                           \
   /* Colors for Bubble Border */                                               \
   OP(kColorId_BubbleBorder),                                                   \
+  OP(kColorId_BubbleBorderShadowBase),                                         \
+  OP(kColorId_BubbleBorderShadowLarge),                                        \
+  OP(kColorId_BubbleBorderShadowSmall),                                        \
+  OP(kColorId_BubbleBorderWhenShadowPresent),                                  \
   /* Colors for Footnote Container. */                                         \
   OP(kColorId_FootnoteContainerBorder),                                        \
   /* Colors for icons that alert, e.g. upgrade reminders. */                   \
