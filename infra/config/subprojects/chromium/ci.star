@@ -3585,7 +3585,7 @@ ci.fyi_builder(
         short_name = "dre",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
@@ -3619,7 +3619,7 @@ ci.fyi_builder(
         short_name = "rre",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
@@ -3637,7 +3637,7 @@ ci.fyi_builder(
         short_name = "rre",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
@@ -3655,7 +3655,7 @@ ci.fyi_builder(
         short_name = "rre",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
@@ -3672,7 +3672,7 @@ ci.fyi_builder(
         short_name = "rre",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-gvisor-shadow",
@@ -3688,7 +3688,7 @@ ci.fyi_builder(
         short_name = "dbg",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
@@ -3704,7 +3704,7 @@ ci.fyi_builder(
         short_name = "rel",
     ),
     triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
+        max_concurrent_invocations = 1,
     ),
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
