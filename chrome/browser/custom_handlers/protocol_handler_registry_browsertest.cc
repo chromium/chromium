@@ -116,11 +116,11 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
     ContextMenuEntryAppearsForHandledUrls) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      CreateContextMenu(GURL("http://www.google.com/")));
+      CreateContextMenu(GURL("https://www.google.com/")));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 
   AddProtocolHandler(std::string("web+search"),
-                     GURL("http://www.google.com/%s"));
+                     GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
@@ -133,11 +133,11 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
     UnregisterProtocolHandler) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
-      CreateContextMenu(GURL("http://www.google.com/")));
+      CreateContextMenu(GURL("https://www.google.com/")));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
 
   AddProtocolHandler(std::string("web+search"),
-                     GURL("http://www.google.com/%s"));
+                     GURL("https://www.google.com/%s"));
   GURL url("web+search:testing");
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
   menu.reset(CreateContextMenu(url));
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));
   RemoveProtocolHandler(std::string("web+search"),
-                        GURL("http://www.google.com/%s"));
+                        GURL("https://www.google.com/%s"));
   ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
   menu.reset(CreateContextMenu(url));
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKWITH));

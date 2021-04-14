@@ -2137,9 +2137,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
   base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
   base::Time yesterday = base::Time::Now() - base::TimeDelta::FromDays(1);
   registry->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler::CreateProtocolHandler("news", Origin1()));
+      ProtocolHandler::CreateProtocolHandler("news", Origin4()));
   registry->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("mailto", Origin1(), yesterday,
+      ProtocolHandler("mailto", Origin4(), yesterday,
                       blink::ProtocolHandlerSecurityLevel::kStrict));
   EXPECT_TRUE(registry->IsHandledProtocol("news"));
   EXPECT_TRUE(registry->IsHandledProtocol("mailto"));

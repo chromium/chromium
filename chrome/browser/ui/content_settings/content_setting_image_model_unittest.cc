@@ -154,7 +154,7 @@ TEST_F(ContentSettingImageModelTest, RPHUpdate) {
 
   chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
-          "mailto", GURL("http://www.google.com/")));
+          "mailto", GURL("https://www.google.com/")));
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
 }

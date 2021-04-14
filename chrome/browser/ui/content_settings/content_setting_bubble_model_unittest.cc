@@ -1028,11 +1028,11 @@ TEST_F(ContentSettingBubbleModelTest, FileURL) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
-  const GURL page_url("http://toplevel.example/");
+  const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
-          "mailto", GURL("http://www.toplevel.example/")));
+          "mailto", GURL("https://www.toplevel.example/")));
 
   ContentSettingRPHBubbleModel content_setting_bubble_model(
       NULL, web_contents(), NULL);
@@ -1053,13 +1053,13 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
       profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 
-  const GURL page_url("http://toplevel.example/");
+  const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(
           web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
-      "mailto", GURL("http://www.toplevel.example/"));
+      "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
 
   ContentSettingRPHBubbleModel content_setting_bubble_model(
@@ -1120,13 +1120,13 @@ TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
       profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 
-  const GURL page_url("http://toplevel.example/");
+  const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(
           web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
-      "mailto", GURL("http://www.toplevel.example/"));
+      "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
 
   ContentSettingRPHBubbleModel content_setting_bubble_model(
