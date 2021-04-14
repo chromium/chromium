@@ -59,6 +59,17 @@
     position: absolute;
     z-index: -2;
   }
+
+  .no-result {
+    color: var(--google-grey-600);
+    font-family: 'Google Sans';
+    left: 50%;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 </style>
 
 <cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
@@ -80,9 +91,10 @@
       </div>
     </template>
     <template is="dom-if" if="[[!results.length]]">
-      <div class="name">
-        No results
-      </div>
+      <div class="no-result">
+        <img src="no_results.svg">
+        No emoji found
+        </div>
     </template>
 
   </template>
