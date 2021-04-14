@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_utils.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +19,13 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
   ~PreinstalledWebAppUtilsTest() override = default;
 };
 
-TEST_F(PreinstalledWebAppUtilsTest, GetTranslatedName) {
+// https://crbug.com/1198780 tracks test failures on Linux and ChromeOS.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_GetTranslatedName DISABLED_GetTranslatedName
+#else
+#define MAYBE_GetTranslatedName GetTranslatedName
+#endif
+TEST_F(PreinstalledWebAppUtilsTest, MAYBE_GetTranslatedName) {
   std::string test_locale;
   constexpr Translation kTranslations[] = {
       {"en", "en"},
