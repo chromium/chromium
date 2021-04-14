@@ -483,7 +483,7 @@ def main():
     print('target_os section in your .gclient and running hooks, ')
     print('or pass --without-fuchsia.')
     print(
-        'https://chromium.googlesource.com/chromium/src/+/master/docs/fuchsia/build_instructions.md'
+        'https://chromium.googlesource.com/chromium/src/+/main/docs/fuchsia/build_instructions.md'
     )
     print('for general Fuchsia build instructions.')
     return 1
