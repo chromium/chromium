@@ -45,7 +45,7 @@ bool PrinterBasicInfo::operator==(const PrinterBasicInfo& other) const {
          is_default == other.is_default && options == other.options;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 
 AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
 
@@ -93,7 +93,7 @@ bool AdvancedCapability::operator==(const AdvancedCapability& other) const {
          values == other.values;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {

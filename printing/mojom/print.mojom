@@ -5,8 +5,9 @@
 module printing.mojom;
 
 // Print job color mode values.
+[Stable, Extensible]
 enum ColorModel {
-  kUnknownColorModel,
+  [Default] kUnknownColorModel,
   kGray,
   kColor,
   kCMYK,
@@ -41,8 +42,9 @@ enum ColorModel {
 };
 
 // Print job duplex mode values.
+[Stable, Extensible]
 enum DuplexMode {
-  kUnknownDuplexMode = -1,
+  [Default] kUnknownDuplexMode = -1,
   kSimplex,
   kLongEdge,
   kShortEdge,

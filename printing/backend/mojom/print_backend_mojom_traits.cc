@@ -39,7 +39,7 @@ struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 template <>
 struct less<::printing::AdvancedCapability> {
   bool operator()(const ::printing::AdvancedCapability& lhs,
@@ -49,7 +49,7 @@ struct less<::printing::AdvancedCapability> {
     return lhs.display_name < rhs.display_name;
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace std
 
@@ -115,7 +115,7 @@ bool StructTraits<printing::mojom::PaperDataView,
          data.ReadVendorId(&out->vendor_id) && data.ReadSizeUm(&out->size_um);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // static
 printing::mojom::AdvancedCapabilityType
 EnumTraits<printing::mojom::AdvancedCapabilityType,
@@ -177,7 +177,7 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
          data.ReadDefaultValue(&out->default_value) &&
          data.ReadValues(&out->values);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 // static
 bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
@@ -201,11 +201,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   out->pin_supported = data.pin_supported();
   if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities))
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   // Extra validity checks.
 
@@ -248,7 +248,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   DuplicateChecker<printing::AdvancedCapability>
       advanced_capabilities_dup_checker;
   if (advanced_capabilities_dup_checker.HasDuplicates(
@@ -256,7 +256,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   return true;
 }
