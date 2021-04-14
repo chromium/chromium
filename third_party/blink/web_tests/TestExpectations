@@ -6001,7 +6001,6 @@ crbug.com/1088475 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/proces
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvas-zero-size-readback.html [ Pass Crash ]
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRect.html [ Pass Failure ]
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRectPartial.html [ Pass Failure ]
-crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Pass Failure ]
 
 # Sheriff 2020-06-03
 crbug.com/1007228 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen-and-move-to-iframe-manual.html [ Pass Failure ]
