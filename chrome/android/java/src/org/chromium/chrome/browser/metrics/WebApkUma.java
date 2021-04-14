@@ -288,6 +288,11 @@ public class WebApkUma {
         RecordHistogram.recordBooleanHistogram("WebApk.Navigation.InScope", isNavigationInScope);
     }
 
+    /** Records number of unique origins for WebAPKs in WebappRegistry */
+    public static void recordWebApksCount(int count) {
+        RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.Origins", count);
+    }
+
     /**
      * Log necessary disk usage and cache size UMAs when WebAPK installation fails.
      */

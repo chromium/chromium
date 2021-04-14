@@ -23,6 +23,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilter;
 import org.chromium.chrome.browser.browsing_data.UrlFilterBridge;
+import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.embedder_support.util.Origin;
@@ -415,6 +416,7 @@ public class WebappRegistry {
     private void initStorages(String idToInitialize) {
         Set<String> webapps = mPreferences.getStringSet(KEY_WEBAPP_SET, Collections.emptySet());
         boolean initAll = (idToInitialize == null || idToInitialize.isEmpty());
+        boolean initializing = initAll && !mIsInitialized;
 
         if (initAll && !mIsInitialized) {
             mTrustedWebActivityPermissionStore.initStorage();
@@ -440,17 +442,21 @@ public class WebappRegistry {
             }
         }
 
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { initStoragesOnUiThread(initedStorages); });
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> { initStoragesOnUiThread(initedStorages, initializing); });
     }
 
-    private void initStoragesOnUiThread(List<Pair<String, WebappDataStorage>> initedStorages) {
+    private void initStoragesOnUiThread(
+            List<Pair<String, WebappDataStorage>> initedStorages, boolean isInitalizing) {
         ThreadUtils.assertOnUiThread();
 
         for (Pair<String, WebappDataStorage> initedStorage : initedStorages) {
             if (!mStorages.containsKey(initedStorage.first)) {
                 mStorages.put(initedStorage.first, initedStorage.second);
             }
+        }
+        if (isInitalizing) {
+            WebApkUma.recordWebApksCount(getOriginsWithWebApk().size());
         }
     }
 }
