@@ -19,25 +19,28 @@ function getHelper(key, defaultValue) {
 
 /**
  * @param {string} key
- * @return {!Object} The object in storage or an empty object {} if not found.
+ * @param {!Object=} defaultValue
+ * @return {!Object} The object in storage or defaultValue if not found.
  */
-export function getObject(key) {
-  return assertInstanceof(getHelper(key, {}), Object);
+export function getObject(key, defaultValue = {}) {
+  return assertInstanceof(getHelper(key, defaultValue), Object);
 }
 
 /**
  * @param {string} key
- * @return {string} The string in storage or an empty string "" if not found.
+ * @param {string=} defaultValue
+ * @return {string} The string in storage or defaultValue if not found.
  */
-export function getString(key) {
-  return assertString(getHelper(key, ''));
+export function getString(key, defaultValue = '') {
+  return assertString(getHelper(key, defaultValue));
 }
 /**
  * @param {string} key
- * @return {boolean} The boolean in storage or false if not found.
+ * @param {boolean=} defaultValue
+ * @return {boolean} The boolean in storage or defaultValue if not found.
  */
-export function getBool(key) {
-  return assertBoolean(getHelper(key, false));
+export function getBool(key, defaultValue = false) {
+  return assertBoolean(getHelper(key, defaultValue));
 }
 
 /**

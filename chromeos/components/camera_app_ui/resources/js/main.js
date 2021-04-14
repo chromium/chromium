@@ -195,7 +195,8 @@ export class App {
       });
       if (element.dataset['key'] !== undefined) {
         // Restore the previously saved state on startup.
-        const value = localStorage.getBool(element.dataset['key']);
+        const value =
+            localStorage.getBool(element.dataset['key'], element.checked);
         util.toggleChecked(element, value);
       }
     });
