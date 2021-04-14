@@ -1699,6 +1699,11 @@ public class StartSurfaceTest {
         // When show_last_active_tab_only is enabled, we need to enter the tab switcher first to
         // initialize the secondary task surface which shows the TabSelectionEditor dialog.
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
+        if (isInstantReturn()) {
+            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
+            // omnibox.
+            return;
+        }
         TabUiTestHelper.enterTabSwitcher(cta);
         waitForView(withId(R.id.secondary_tasks_surface_view));
         List<Tab> tabs =
