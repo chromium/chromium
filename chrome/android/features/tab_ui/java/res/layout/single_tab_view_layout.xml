@@ -10,8 +10,8 @@
     android:id="@+id/single_tab_view"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="14dp"
+    android:layout_marginEnd="14dp"
     android:layout_marginTop="4dp"
     android:background="@drawable/single_tab_background"
     android:orientation="horizontal">
