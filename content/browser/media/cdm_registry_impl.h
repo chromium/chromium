@@ -28,9 +28,13 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
 
  private:
   friend class CdmRegistryImplTest;
+  friend class KeySystemSupportTest;
 
   CdmRegistryImpl();
   ~CdmRegistryImpl() override;
+
+  // Resets `this` to a clean state for testing.
+  void ResetForTesting();
 
   std::vector<CdmInfo> cdms_;
 

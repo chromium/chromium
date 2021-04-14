@@ -4067,9 +4067,6 @@ test("unit_tests") {
       "../browser/notifications/win/fake_notification_image_retainer.h",
       "../browser/ui/views/try_chrome_dialog_win/button_layout_unittest.cc",
     ]
-    if (enable_widevine) {
-      sources += [ "../browser/media/widevine_hardware_caps_win_unittest.cc" ]
-    }
   }
 
   if (is_android) {

@@ -51,7 +51,8 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& file_system_id,
           CdmCapability capability,
           const std::string& supported_key_system,
-          bool supports_sub_key_systems);
+          bool supports_sub_key_systems,
+          bool use_hw_secure_codecs);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
@@ -84,6 +85,13 @@ struct CONTENT_EXPORT CdmInfo {
   // For example, com.example.somekeysystem.a and com.example.somekeysystem.b
   // are both sub key systems of com.example.somekeysystem.
   bool supports_sub_key_systems;
+
+  // Whether this CdmInfo is for the hardware secure pipeline. Even for the
+  // same `key_system`, the software and hardware secure pipeline (specified as
+  // `robustness` in EME) could be supported by different CDMs, or having
+  // different CDM capabilities. Therefore, we use this flag to differentiate
+  // between the software and hardware secure pipelines.
+  bool use_hw_secure_codecs;
 };
 
 }  // namespace content

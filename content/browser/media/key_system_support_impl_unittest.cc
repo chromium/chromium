@@ -9,13 +9,16 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/token.h"
+#include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,19 +56,28 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
 #define EXPECT_SESSION_TYPES(...) \
   EXPECT_STL_EQ(capability_->session_types, __VA_ARGS__)
 
+#define EXPECT_HW_SECURE_VIDEO_CODECS(...) \
+  EXPECT_STL_EQ(capability_->hw_secure_video_codecs, __VA_ARGS__)
+
+#define EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(...) \
+  EXPECT_STL_EQ(capability_->hw_secure_encryption_schemes, __VA_ARGS__)
+
 }  // namespace
 
 class KeySystemSupportTest : public testing::Test {
  protected:
   void SetUp() final {
     DVLOG(1) << __func__;
+    // As `CdmRegistry::GetInstance()` is a static, explicitly reset
+    // `CdmRegistry` so each test starts with a clean state.
+    static_cast<CdmRegistryImpl*>(CdmRegistry::GetInstance())
+        ->ResetForTesting();
+
     KeySystemSupportImpl::Create(
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
-  // TODO(xhwang): Add tests for hardware secure video codecs and encryption
-  // schemes.
-  CdmCapability GetTestCdmCapability() {
+  CdmCapability TestCdmCapability() {
     return CdmCapability(
         {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
@@ -74,63 +86,83 @@ class KeySystemSupportTest : public testing::Test {
 
   // Registers |key_system| with |capability|. All other values for CdmInfo have
   // some default value as they're not returned by IsKeySystemSupported().
-  void Register(const std::string& key_system, CdmCapability capability) {
+  void Register(const std::string& key_system,
+                bool use_hw_secure_codecs,
+                CdmCapability capability) {
     DVLOG(1) << __func__;
 
     CdmRegistry::GetInstance()->RegisterCdm(
         CdmInfo(key_system, kTestCdmGuid, base::Version(kVersion),
                 base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
-                std::move(capability), key_system, false));
+                std::move(capability), key_system,
+                /*supports_sub_key_systems=*/false, use_hw_secure_codecs));
   }
 
   // Determines if |key_system| is registered. If it is, updates |codecs_|
   // and |persistent_|.
   bool IsSupported(const std::string& key_system) {
     DVLOG(1) << __func__;
-    bool is_available = false;
-    key_system_support_->IsKeySystemSupported(key_system, &is_available,
+    bool is_supported = false;
+    key_system_support_->IsKeySystemSupported(key_system, &is_supported,
                                               &capability_);
-    return is_available;
+    return is_supported;
   }
 
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   BrowserTaskEnvironment task_environment_;
 
   // Updated by IsSupported().
   media::mojom::KeySystemCapabilityPtr capability_;
 };
 
-// Note that as CdmRegistry::GetInstance() is a static, it is shared between
-// tests. So use unique key system names in each test below to avoid
-// interactions between the tests.
-
 TEST_F(KeySystemSupportTest, NoKeySystems) {
-  EXPECT_FALSE(IsSupported("KeySystem1"));
+  EXPECT_FALSE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_);
 }
 
-TEST_F(KeySystemSupportTest, OneKeySystem) {
-  Register("KeySystem2", GetTestCdmCapability());
+TEST_F(KeySystemSupportTest, SoftwareSecureCapability) {
+  Register("KeySystem", /*use_hw_secure_codecs=*/false, TestCdmCapability());
 
-  EXPECT_TRUE(IsSupported("KeySystem2"));
+  EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
                        CdmSessionType::kPersistentLicense);
 }
 
-TEST_F(KeySystemSupportTest, MultipleKeySystems) {
-  Register("KeySystem3", GetTestCdmCapability());
-  Register("KeySystem4", GetTestCdmCapability());
+TEST_F(KeySystemSupportTest,
+       HardwareSecureCapability_HardwareSecureDecryptionDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
+  Register("KeySystem", /*use_hw_secure_codecs=*/true, TestCdmCapability());
 
-  EXPECT_TRUE(IsSupported("KeySystem3"));
-  EXPECT_TRUE(IsSupported("KeySystem4"));
+  EXPECT_FALSE(IsSupported("KeySystem"));
+}
+
+TEST_F(KeySystemSupportTest, HardwareSecureCapability) {
+  scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+  Register("KeySystem", /*use_hw_secure_codecs=*/true, TestCdmCapability());
+
+  EXPECT_TRUE(IsSupported("KeySystem"));
+  EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_HW_SECURE_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc,
+                                      EncryptionScheme::kCbcs);
+  // TODO(xhwang): Support hardware secure session types.
+  EXPECT_TRUE(capability_->session_types.empty());
+}
+
+TEST_F(KeySystemSupportTest, MultipleKeySystems) {
+  Register("KeySystem1", /*use_hw_secure_codecs=*/false, TestCdmCapability());
+  Register("KeySystem2", /*use_hw_secure_codecs=*/false, TestCdmCapability());
+
+  EXPECT_TRUE(IsSupported("KeySystem1"));
+  EXPECT_TRUE(IsSupported("KeySystem2"));
 }
 
 TEST_F(KeySystemSupportTest, MissingKeySystem) {
-  Register("KeySystem5", GetTestCdmCapability());
+  Register("KeySystem", /*use_hw_secure_codecs=*/false, TestCdmCapability());
 
-  EXPECT_FALSE(IsSupported("KeySystem6"));
+  EXPECT_FALSE(IsSupported("KeySystem1"));
   EXPECT_FALSE(capability_);
 }
 

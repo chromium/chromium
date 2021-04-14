@@ -219,7 +219,7 @@ static bool IsPotentiallySupportedKeySystem(const std::string& key_system) {
 
   // Chromecast defines behaviors for Cast clients within its reverse domain.
   const char kChromecastRoot[] = "com.chromecast";
-  if (IsChildKeySystemOf(key_system, kChromecastRoot))
+  if (IsSubKeySystemOf(key_system, kChromecastRoot))
     return true;
 
   // Implementations that do not have a specification or appropriate glue code

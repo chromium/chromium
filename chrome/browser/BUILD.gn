@@ -5878,19 +5878,6 @@ static_library("browser") {
           "//third_party/widevine/cdm:headers",
         ]
       }
-      if (is_win) {
-        sources += [
-          "media/widevine_hardware_caps.h",
-          "media/widevine_hardware_caps_win.cc",
-        ]
-        libs += [ "d3d11.lib" ]
-      }
-      if (use_chromeos_protected_media) {
-        sources += [
-          "media/widevine_hardware_caps.h",
-          "media/widevine_hardware_caps_chromeos.cc",
-        ]
-      }
     }
 
     if (enable_cdm_storage_id) {

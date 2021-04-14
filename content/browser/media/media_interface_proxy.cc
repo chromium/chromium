@@ -490,9 +490,10 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
                                     const media::CdmConfig& cdm_config,
                                     CreateCdmCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  DVLOG(1) << __func__ << ": key_system=" << key_system;
+
+  // Handle `use_hw_secure_codecs` cases first.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon) &&
       cdm_config.use_hw_secure_codecs &&
       cdm_config.allow_distinctive_identifier) {
@@ -509,10 +510,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
     }
   }
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
-#endif  // USE_CHROMEOS_PROTECTED_MEDIA
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
-  DVLOG(1) << __func__ << ": this=" << this << " key_system=" << key_system;
+#elif defined(OS_WIN)
   if (ShouldUseMediaFoundationServiceForCdm(key_system, cdm_config)) {
     // TODO(xhwang): Refactor CdmInfo to provide the CDM path here.
     auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
@@ -520,7 +518,10 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       factory->CreateCdm(key_system, cdm_config, std::move(callback));
     return;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  // Fallback to use CdmFactory even if `use_hw_secure_codecs` is true.
   auto* factory = GetCdmFactory(key_system);
 #elif BUILDFLAG(ENABLE_CAST_RENDERER)
   // CDM service lives together with renderer service if cast renderer is
@@ -531,7 +532,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 #else
   // CDM service lives together with audio/video decoder service.
   auto* factory = media_interface_factory_ptr_->Get();
-#endif
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   if (!factory) {
     std::move(callback).Run(mojo::NullRemote(), nullptr,
@@ -621,14 +622,15 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
     const std::string& key_system) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::unique_ptr<CdmInfo> cdm_info =
-      KeySystemSupportImpl::GetCdmInfoForKeySystem(key_system);
+  // CdmService only supports software secure codecs.
+  std::unique_ptr<CdmInfo> cdm_info = KeySystemSupportImpl::GetCdmInfo(
+      key_system, /*use_hw_secure_codecs=*/false);
   if (!cdm_info) {
     NOTREACHED() << "No valid CdmInfo for " << key_system;
     return nullptr;
   }
   if (cdm_info->path.empty()) {
-    NOTREACHED() << "CDM path for " << key_system << " is empty.";
+    NOTREACHED() << "CDM path for " << key_system << " is empty";
     return nullptr;
   }
   if (!CdmStorageImpl::IsValidCdmFileSystemId(cdm_info->file_system_id)) {

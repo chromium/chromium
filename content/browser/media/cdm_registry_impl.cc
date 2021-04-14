@@ -44,4 +44,8 @@ const std::vector<CdmInfo>& CdmRegistryImpl::GetAllRegisteredCdms() {
   return cdms_;
 }
 
+void CdmRegistryImpl::ResetForTesting() {
+  cdms_.clear();
+}
+
 }  // namespace media

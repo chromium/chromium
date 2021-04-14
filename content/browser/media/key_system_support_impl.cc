@@ -35,6 +35,12 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
                             available);
 }
 
+bool MatchKeySystem(const CdmInfo& cdm_info, const std::string& key_system) {
+  return cdm_info.supported_key_system == key_system ||
+         (cdm_info.supports_sub_key_systems &&
+          media::IsSubKeySystemOf(key_system, cdm_info.supported_key_system));
+}
+
 template <typename T>
 std::vector<T> SetToVector(const base::flat_set<T>& s) {
   return std::vector<T>(s.begin(), s.end());
@@ -79,7 +85,30 @@ bool IsHardwareSecureCodecsOverriddenFromCommandLine(
   return true;
 }
 
-void GetHardwareSecureDecryptionCaps(
+bool GetSoftwareSecureCapabilities(
+    const std::string& key_system,
+    std::vector<media::VideoCodec>* video_codecs,
+    std::vector<media::EncryptionScheme>* encryption_schemes,
+    std::vector<media::CdmSessionType>* session_types) {
+  DCHECK(video_codecs->empty());
+  DCHECK(encryption_schemes->empty());
+
+  auto cdm_info = KeySystemSupportImpl::GetCdmInfo(
+      key_system, /*use_hw_secure_codecs=*/false);
+  if (!cdm_info) {
+    SendCdmAvailableUMA(key_system, false);
+    return false;
+  }
+
+  SendCdmAvailableUMA(key_system, true);
+
+  *video_codecs = cdm_info->capability.video_codecs;
+  *encryption_schemes = SetToVector(cdm_info->capability.encryption_schemes);
+  *session_types = SetToVector(cdm_info->capability.session_types);
+  return true;
+}
+
+bool GetHardwareSecureCapabilities(
     const std::string& key_system,
     std::vector<media::VideoCodec>* video_codecs,
     std::vector<media::EncryptionScheme>* encryption_schemes) {
@@ -92,7 +121,7 @@ void GetHardwareSecureDecryptionCaps(
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
-    return;
+    return false;
   }
 #endif
 
@@ -100,7 +129,7 @@ void GetHardwareSecureDecryptionCaps(
   if (IsHardwareSecureCodecsOverriddenFromCommandLine(video_codecs,
                                                       encryption_schemes)) {
     DVLOG(1) << "Hardware secure codecs overridden from command line";
-    return;
+    return true;
   }
 
   // Hardware secure video codecs need hardware video decoder support.
@@ -112,22 +141,18 @@ void GetHardwareSecureDecryptionCaps(
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
     DVLOG(1) << "Hardware secure codecs not supported because accelerated "
                 "video decode disabled";
-    return;
+    return false;
   }
 
-#if !BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-  DVLOG(1) << "Hardware secure codecs not supported because mojo video "
-              "decode was disabled at buildtime";
-#else
-  base::flat_set<media::VideoCodec> video_codec_set;
-  base::flat_set<media::EncryptionScheme> encryption_scheme_set;
+  auto cdm_info = KeySystemSupportImpl::GetCdmInfo(
+      key_system, /*use_hw_secure_codecs=*/true);
+  if (!cdm_info)
+    return false;
 
-  GetContentClient()->browser()->GetHardwareSecureDecryptionCaps(
-      key_system, &video_codec_set, &encryption_scheme_set);
-
-  *video_codecs = SetToVector(video_codec_set);
-  *encryption_schemes = SetToVector(encryption_scheme_set);
-#endif
+  // TODO(xhwang): Also populate supported session types.
+  *video_codecs = cdm_info->capability.video_codecs;
+  *encryption_schemes = SetToVector(cdm_info->capability.encryption_schemes);
+  return true;
 }
 
 }  // namespace
@@ -142,13 +167,13 @@ void KeySystemSupportImpl::Create(
 }
 
 // static
-std::unique_ptr<CdmInfo> KeySystemSupportImpl::GetCdmInfoForKeySystem(
-    const std::string& key_system) {
+std::unique_ptr<CdmInfo> KeySystemSupportImpl::GetCdmInfo(
+    const std::string& key_system,
+    bool use_hw_secure_codecs) {
   DVLOG(2) << __func__ << ": key_system = " << key_system;
   for (const auto& cdm : CdmRegistry::GetInstance()->GetAllRegisteredCdms()) {
-    if (cdm.supported_key_system == key_system ||
-        (cdm.supports_sub_key_systems &&
-         media::IsChildKeySystemOf(key_system, cdm.supported_key_system))) {
+    if (cdm.use_hw_secure_codecs == use_hw_secure_codecs &&
+        MatchKeySystem(cdm, key_system)) {
       return std::make_unique<CdmInfo>(cdm);
     }
   }
@@ -165,26 +190,18 @@ void KeySystemSupportImpl::IsKeySystemSupported(
     IsKeySystemSupportedCallback callback) {
   DVLOG(3) << __func__ << ": key_system = " << key_system;
 
-  auto cdm_info = GetCdmInfoForKeySystem(key_system);
-  if (!cdm_info) {
-    SendCdmAvailableUMA(key_system, false);
+  auto capability = media::mojom::KeySystemCapability::New();
+  bool sw_secure_supported = GetSoftwareSecureCapabilities(
+      key_system, &capability->video_codecs, &capability->encryption_schemes,
+      &capability->session_types);
+  bool hw_secure_supported = GetHardwareSecureCapabilities(
+      key_system, &capability->hw_secure_video_codecs,
+      &capability->hw_secure_encryption_schemes);
+
+  if (!sw_secure_supported && !hw_secure_supported) {
     std::move(callback).Run(false, nullptr);
     return;
   }
-
-  SendCdmAvailableUMA(key_system, true);
-
-  // Supported codecs and encryption schemes.
-  auto capability = media::mojom::KeySystemCapability::New();
-  capability->video_codecs = cdm_info->capability.video_codecs;
-  capability->encryption_schemes =
-      SetToVector(cdm_info->capability.encryption_schemes);
-
-  GetHardwareSecureDecryptionCaps(key_system,
-                                  &capability->hw_secure_video_codecs,
-                                  &capability->hw_secure_encryption_schemes);
-
-  capability->session_types = SetToVector(cdm_info->capability.session_types);
 
   std::move(callback).Run(true, std::move(capability));
 }

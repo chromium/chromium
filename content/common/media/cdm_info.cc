@@ -29,7 +29,8 @@ CdmInfo::CdmInfo(const std::string& name,
                  const std::string& file_system_id,
                  CdmCapability capability,
                  const std::string& supported_key_system,
-                 bool supports_sub_key_systems)
+                 bool supports_sub_key_systems,
+                 bool use_hw_secure_codecs)
     : name(name),
       guid(guid),
       version(version),
@@ -37,7 +38,8 @@ CdmInfo::CdmInfo(const std::string& name,
       file_system_id(file_system_id),
       capability(std::move(capability)),
       supported_key_system(supported_key_system),
-      supports_sub_key_systems(supports_sub_key_systems) {
+      supports_sub_key_systems(supports_sub_key_systems),
+      use_hw_secure_codecs(use_hw_secure_codecs) {
   DCHECK(!capability.encryption_schemes.empty());
 }
 

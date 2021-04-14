@@ -74,7 +74,8 @@ class CdmRegistryImplTest : public testing::Test {
         CdmCapability(
             {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
             {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense}),
-        kTestKeySystem, /*supports_sub_key_systems=*/true);
+        kTestKeySystem, /*supports_sub_key_systems=*/true,
+        /*use_hw_secure_codecs=*/false);
   }
 
   void Register(CdmInfo cdm_info) {
@@ -118,6 +119,7 @@ TEST_F(CdmRegistryImplTest, Register) {
                        CdmSessionType::kPersistentLicense);
   EXPECT_EQ(kTestKeySystem, cdm.supported_key_system);
   EXPECT_TRUE(cdm.supports_sub_key_systems);
+  EXPECT_FALSE(cdm.use_hw_secure_codecs);
 }
 
 TEST_F(CdmRegistryImplTest, ReRegister) {

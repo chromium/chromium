@@ -18,12 +18,13 @@
 #include "media/cdm/cdm_paths.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if BUILDFLAG(ENABLE_WIDEVINE)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/cdm/common/cdm_manifest.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 // TODO(crbug.com/663554): Needed for WIDEVINE_CDM_VERSION_STRING. Support
 // component updated CDM on all desktop platforms and remove this.
 // This file is In SHARED_INTERMEDIATE_DIR.
@@ -31,11 +32,12 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS))
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 namespace {
 
+#if BUILDFLAG(ENABLE_WIDEVINE)
 #if (BUILDFLAG(BUNDLE_WIDEVINE_CDM) ||            \
      BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)) && \
     (defined(OS_LINUX) || defined(OS_CHROMEOS))
@@ -48,7 +50,7 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
   return std::make_unique<content::CdmInfo>(
       kWidevineCdmDisplayName, kWidevineCdmGuid, version, cdm_library_path,
       kWidevineCdmFileSystemId, std::move(capability), kWidevineKeySystem,
-      false);
+      /*supports_sub_key_systems=*/false, /*use_hw_secure_codecs=*/false);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -174,8 +176,8 @@ content::CdmInfo* GetComponentUpdatedWidevine() {
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) && (defined(OS_LINUX) ||
         // defined(OS_CHROMEOS))
 
-#if BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
-void AddWidevine(std::vector<content::CdmInfo>* cdms) {
+void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // The Widevine CDM on Linux needs to be registered (and loaded) before the
   // zygote is locked down. The CDM can be found from the version bundled with
   // Chrome (if BUNDLE_WIDEVINE_CDM = true) and/or the version downloaded by
@@ -213,9 +215,43 @@ void AddWidevine(std::vector<content::CdmInfo>* cdms) {
   } else {
     VLOG(1) << "Widevine enabled but no library found";
   }
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
-#endif  // BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS))
+
+void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  content::CdmCapability capability;
+
+  // We currently support VP9, H264 and HEVC.
+  capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  capability.video_codecs.push_back(media::VideoCodec::kCodecH264);
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  capability.video_codecs.push_back(media::VideoCodec::kCodecHEVC);
+#endif
+
+  // Both encryption schemes are supported on ChromeOS.
+  capability.encryption_schemes.insert(media::EncryptionScheme::kCenc);
+  capability.encryption_schemes.insert(media::EncryptionScheme::kCbcs);
+
+  // TODO(xhwang): Add supported session types.
+  // TODO(xhwang): Specify kChromeOsCdmFileSystemId here and update
+  // MediaInterfaceProxy to use it.
+
+  cdms->push_back(content::CdmInfo(
+      kWidevineCdmDisplayName, /*guid=*/base::Token(), base::Version(),
+      base::FilePath(), /*file_system_id=*/"", std::move(capability),
+      kWidevineKeySystem, /*supports_sub_key_systems=*/false,
+      /*use_hw_secure_codecs=*/true));
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+}
+
+void AddWidevine(std::vector<content::CdmInfo>* cdms) {
+  AddSoftwareSecureWidevine(cdms);
+  AddHardwareSecureWidevine(cdms);
+}
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
@@ -223,37 +259,41 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::FilePath clear_key_cdm_path =
       command_line->GetSwitchValuePath(switches::kClearKeyCdmPathForTesting);
-  if (!clear_key_cdm_path.empty() && base::PathExists(clear_key_cdm_path)) {
-    // TODO(crbug.com/764480): Remove these after we have a central place for
-    // External Clear Key (ECK) related information.
-    // Normal External Clear Key key system.
-    const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
-    // A variant of ECK key system that has a different GUID.
-    const char kExternalClearKeyDifferentGuidTestKeySystem[] =
-        "org.chromium.externalclearkey.differentguid";
+  if (clear_key_cdm_path.empty() || !base::PathExists(clear_key_cdm_path))
+    return;
 
-    // Supported codecs are hard-coded in ExternalClearKeyProperties.
-    content::CdmCapability capability(
-        {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
-        {media::CdmSessionType::kTemporary,
-         media::CdmSessionType::kPersistentLicense});
+  // TODO(crbug.com/764480): Remove these after we have a central place for
+  // External Clear Key (ECK) related information.
+  // Normal External Clear Key key system.
+  const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
+  // A variant of ECK key system that has a different GUID.
+  const char kExternalClearKeyDifferentGuidTestKeySystem[] =
+      "org.chromium.externalclearkey.differentguid";
 
-    // Register kExternalClearKeyDifferentGuidTestKeySystem first separately.
-    // Otherwise, it'll be treated as a sub-key-system of normal
-    // kExternalClearKeyKeySystem. See MultipleCdmTypes test in
-    // ECKEncryptedMediaTest.
-    cdms->push_back(content::CdmInfo(
-        media::kClearKeyCdmDisplayName, media::kClearKeyCdmDifferentGuid,
-        base::Version("0.1.0.0"), clear_key_cdm_path,
-        media::kClearKeyCdmFileSystemId, capability,
-        kExternalClearKeyDifferentGuidTestKeySystem, false));
+  // Supported codecs are hard-coded in ExternalClearKeyProperties.
+  content::CdmCapability capability(
+      {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
+      {media::CdmSessionType::kTemporary,
+       media::CdmSessionType::kPersistentLicense});
 
-    cdms->push_back(
-        content::CdmInfo(media::kClearKeyCdmDisplayName,
-                         media::kClearKeyCdmGuid, base::Version("0.1.0.0"),
-                         clear_key_cdm_path, media::kClearKeyCdmFileSystemId,
-                         capability, kExternalClearKeyKeySystem, true));
-  }
+  // Register kExternalClearKeyDifferentGuidTestKeySystem first separately.
+  // Otherwise, it'll be treated as a sub-key-system of normal
+  // kExternalClearKeyKeySystem. See MultipleCdmTypes test in
+  // ECKEncryptedMediaTest.
+  cdms->push_back(content::CdmInfo(media::kClearKeyCdmDisplayName,
+                                   media::kClearKeyCdmDifferentGuid,
+                                   base::Version("0.1.0.0"), clear_key_cdm_path,
+                                   media::kClearKeyCdmFileSystemId, capability,
+                                   kExternalClearKeyDifferentGuidTestKeySystem,
+                                   /*supports_sub_key_systems=*/false,
+                                   /*use_hw_secure_codecs=*/false));
+
+  cdms->push_back(content::CdmInfo(
+      media::kClearKeyCdmDisplayName, media::kClearKeyCdmGuid,
+      base::Version("0.1.0.0"), clear_key_cdm_path,
+      media::kClearKeyCdmFileSystemId, capability, kExternalClearKeyKeySystem,
+      /*supports_sub_key_systems=*/true,
+      /*use_hw_secure_codecs=*/false));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -264,7 +304,7 @@ void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
   DCHECK(cdms);
   DCHECK(cdms->empty());
 
-#if BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if BUILDFLAG(ENABLE_WIDEVINE)
   AddWidevine(cdms);
 #endif
 
