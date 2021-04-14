@@ -63,8 +63,7 @@ enum URLRequestReferrerPolicy {
   kNoReferrer
 };
 
-// Options that may only be set on URLRequests passed to a URLLoaderFactory
-// created with |is_trusted| set to true.
+// See documentation at `URLRequest.trusted_params`.
 struct TrustedUrlRequestParams {
   // If non-empty, this value will be used to set the SiteForCookies and
   // NetworkIsolationKey used by the network request.
@@ -398,7 +397,36 @@ struct URLRequest {
   // Spec: https://wicg.github.io/origin-policy/
   bool obey_origin_policy;
 
-  // Setting these from an untrusted URLLoader will cause the request to fail.
+  // Params intended to be set by a trusted requestor which sends the request
+  // to a trusted URLLoaderFactory. Note that the main implementation of
+  // URLLoaderFactory is the one created in the network service via
+  // NetworkContext.CreateURLLoaderFactory(), and the trusted concept is
+  // specified for that one, and is not specified for implementations outside
+  // the network service. In more detail:
+  // * The parameters are intended to be used and consumed in the network
+  //   service only when the request is sent to a trusted URLLoaderFactory.
+  // * Whether a URLLoaderFactory in the network service is trusted or not is
+  //   determined when it is created by calling
+  //   `NetworkContext.CreateURLLoaderFactory`. The caller (i.e., the browser
+  //   process) is expected to set `URLLoaderFactoryParams.is_trusted` to true
+  //   when it wants to create a trusted URLLoaderFactory.
+  // * Note that NetworkContext should never be exposed to a process other than
+  //   the one that created the network service, i.e., the browser process
+  //   (other than in tests).
+  // * The trusted process (i.e., the browser process) is responsible for
+  //   setting the `is_trusted` flag to true only for the URLLoaderFactories
+  //   used exclusively by the trusted process.
+  // * In the network service, CorsUrlLoaderFactory is the C++ implementation
+  //   that is created by CreateURLLoaderFactory, and therefore it has a
+  //   trusted bit which is true when it's the instance used by the browser
+  //   process to make requests.
+  // * CorsUrlLoaderFactory instances without the trusted bit set fail requests
+  //   with `trusted_params` set.
+  // * URLLoaderFactory implementations outside the network service should
+  //   generally not use `trusted_params`, unless it is guaranteed that the
+  //   requestor can be trusted to set this security-sensitive information.
+  //   Typically this means that the requestor is the browser process or lives
+  //   in the same process as the factory.
   TrustedUrlRequestParams? trusted_params;
 
   // Set for recursive prefetch requests originating from cross-origin

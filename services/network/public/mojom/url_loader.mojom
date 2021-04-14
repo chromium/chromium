@@ -46,17 +46,19 @@ interface URLLoader {
   // If the associated request has |auto_follow_redirects| set to false, then
   // upon receiving an URLResponse with a non-NULL |redirect_url| field,
   // |FollowRedirect| may be called to load the URL indicated by the redirect.
+  //
   // |removed_headers| can be used to remove existing headers for the redirect.
   // This parameter is before |modified_headers| since removing headers is
-  // applied first in the URLLoader::FollowRedirect().  |modified_headers| can
-  // be used to add or override existing headers for the redirect.
-  // |modified_cors_exempt_headers| can be used to modify |cors_exempt_headers|
-  // in the URLRequest. See NetworkContextParams::cors_exempt_header_list
-  // and URLRequest::cors_exempt_headers for details.
-  // If |new_url| is specified, then the request will be made to
-  // it instead of the redirected URL.
-  // Note: it has to be in the same origin as the redirected URL, and this is
-  // only supported when the network service is enabled.
+  // applied first in the URLLoader::FollowRedirect().
+  //
+  // |modified_headers| can be used to add or override existing headers for the
+  // redirect. |modified_cors_exempt_headers| can be used to modify
+  // |cors_exempt_headers| in the URLRequest. See
+  // NetworkContextParams::cors_exempt_header_list and
+  // URLRequest::cors_exempt_headers for details.
+  //
+  // If |new_url| is specified, then the request will be made to it instead of
+  // the redirected URL. |new_url| must be same-origin to the redirected URL.
   FollowRedirect(array<string> removed_headers,
                  network.mojom.HttpRequestHeaders modified_headers,
                  network.mojom.HttpRequestHeaders modified_cors_exempt_headers,
@@ -124,11 +126,23 @@ interface URLLoaderClient {
 
   // Called when the loader starts loading response body. This is called after
   // OnReceiveResponse is called.
+  //
+  // The loader is expected to close its end of the pipe after finishing
+  // writing the body, so that the client knows when it is done reading.
   OnStartLoadingResponseBody(handle<data_pipe_consumer> body);
 
   // Called when the loading completes. No notification will be dispatched for
   // this client after this message arrives. |status| has its |ssl_info| field
   // set only when |kURLLoadOptionsSendSSLInfoForCertificateError| was set.
+  //
+  // The loader should only call this after it has finished the load or
+  // errored, as the client could potentially close the Mojo connection upon
+  // receiving this which may delete the loader. For example, if it passed a
+  // data pipe to OnStartLoadingResponseBody(), the loader should only call
+  // OnComplete() after it has finished writing to the data pipe (or errored).
+  // Note that the client might not have finished reading the body by the time
+  // it receives this message, and only knows it is done when the data pipe is
+  // closed.
   OnComplete(URLLoaderCompletionStatus status);
 };
 

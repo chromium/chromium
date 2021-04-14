@@ -200,7 +200,6 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
     int net_error = net::ERR_IO_PENDING;
     PreviewsState previews_state = PreviewsTypes::PREVIEWS_UNSPECIFIED;
 
-    // For mojo loading.
     std::unique_ptr<ThrottlingURLLoader> url_loader;
     std::unique_ptr<MojoURLLoaderClient> url_loader_client;
 
