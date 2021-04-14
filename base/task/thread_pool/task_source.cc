@@ -33,8 +33,6 @@ TaskSource::Transaction::~Transaction() {
 }
 
 void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
-  if (FeatureList::IsEnabled(kAllTasksUserBlocking))
-    return;
   task_source_->traits_.UpdatePriority(priority);
   task_source_->priority_racy_.store(task_source_->traits_.priority(),
                                      std::memory_order_relaxed);

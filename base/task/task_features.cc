@@ -8,9 +8,6 @@
 
 namespace base {
 
-const Feature kAllTasksUserBlocking{"AllTasksUserBlocking",
-                                    FEATURE_DISABLED_BY_DEFAULT};
-
 const Feature kNoDetachBelowInitialCapacity = {
     "NoDetachBelowInitialCapacity", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -67,6 +67,12 @@ bool HasDisableBestEffortTasksSwitch() {
 // internal edge case.
 bool g_synchronous_thread_start_for_testing = false;
 
+// Verifies that |traits| do not have properties that are banned in ThreadPool.
+void AssertNoExtensionInTraits(const base::TaskTraits& traits) {
+  DCHECK_EQ(traits.extension_id(),
+            TaskTraitsExtensionStorage::kInvalidExtensionId);
+}
+
 }  // namespace
 
 ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label)
@@ -128,11 +134,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   // unless the max number of foreground threads is lower.
   const int max_best_effort_tasks =
       std::min(kMaxBestEffortTasks, init_params.max_num_foreground_threads);
-
-  // This is set in Start() and not in the constructor because variation params
-  // are usually not ready when ThreadPoolImpl is instantiated in a process.
-  if (FeatureList::IsEnabled(kAllTasksUserBlocking))
-    all_tasks_user_blocking_.Set();
 
 #if HAS_NATIVE_THREAD_POOL()
   if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
@@ -263,47 +264,49 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
                                      const TaskTraits& traits,
                                      OnceClosure task,
                                      TimeDelta delay) {
+  AssertNoExtensionInTraits(traits);
   // Post |task| as part of a one-off single-task Sequence.
-  const TaskTraits new_traits = VerifyAndAjustIncomingTraits(traits);
   return PostTaskWithSequence(
       Task(from_here, std::move(task), delay),
-      MakeRefCounted<Sequence>(new_traits, nullptr,
+      MakeRefCounted<Sequence>(traits, nullptr,
                                TaskSourceExecutionMode::kParallel));
 }
 
 scoped_refptr<TaskRunner> ThreadPoolImpl::CreateTaskRunner(
     const TaskTraits& traits) {
-  const TaskTraits new_traits = VerifyAndAjustIncomingTraits(traits);
-  return MakeRefCounted<PooledParallelTaskRunner>(new_traits, this);
+  AssertNoExtensionInTraits(traits);
+  return MakeRefCounted<PooledParallelTaskRunner>(traits, this);
 }
 
 scoped_refptr<SequencedTaskRunner> ThreadPoolImpl::CreateSequencedTaskRunner(
     const TaskTraits& traits) {
-  const TaskTraits new_traits = VerifyAndAjustIncomingTraits(traits);
-  return MakeRefCounted<PooledSequencedTaskRunner>(new_traits, this);
+  AssertNoExtensionInTraits(traits);
+  return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
 }
 
 scoped_refptr<SingleThreadTaskRunner>
 ThreadPoolImpl::CreateSingleThreadTaskRunner(
     const TaskTraits& traits,
     SingleThreadTaskRunnerThreadMode thread_mode) {
+  AssertNoExtensionInTraits(traits);
   return single_thread_task_runner_manager_.CreateSingleThreadTaskRunner(
-      VerifyAndAjustIncomingTraits(traits), thread_mode);
+      traits, thread_mode);
 }
 
 #if defined(OS_WIN)
 scoped_refptr<SingleThreadTaskRunner> ThreadPoolImpl::CreateCOMSTATaskRunner(
     const TaskTraits& traits,
     SingleThreadTaskRunnerThreadMode thread_mode) {
-  return single_thread_task_runner_manager_.CreateCOMSTATaskRunner(
-      VerifyAndAjustIncomingTraits(traits), thread_mode);
+  AssertNoExtensionInTraits(traits);
+  return single_thread_task_runner_manager_.CreateCOMSTATaskRunner(traits,
+                                                                   thread_mode);
 }
 #endif  // defined(OS_WIN)
 
 scoped_refptr<UpdateableSequencedTaskRunner>
 ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
-  const TaskTraits new_traits = VerifyAndAjustIncomingTraits(traits);
-  return MakeRefCounted<PooledSequencedTaskRunner>(new_traits, this);
+  AssertNoExtensionInTraits(traits);
+  return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
 }
 
 Optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting() const {
@@ -571,16 +574,6 @@ void ThreadPoolImpl::UpdateCanRunPolicy() {
   if (background_thread_group_)
     background_thread_group_->DidUpdateCanRunPolicy();
   single_thread_task_runner_manager_.DidUpdateCanRunPolicy();
-}
-
-TaskTraits ThreadPoolImpl::VerifyAndAjustIncomingTraits(
-    TaskTraits traits) const {
-  DCHECK_EQ(traits.extension_id(),
-            TaskTraitsExtensionStorage::kInvalidExtensionId)
-      << "Extension traits cannot be used with the ThreadPool API.";
-  if (all_tasks_user_blocking_.IsSet())
-    traits.UpdatePriority(TaskPriority::USER_BLOCKING);
-  return traits;
 }
 
 }  // namespace internal

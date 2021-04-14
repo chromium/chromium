@@ -13,8 +13,6 @@ namespace base {
 
 struct Feature;
 
-extern const BASE_EXPORT Feature kAllTasksUserBlocking;
-
 // Under this feature, unused threads in ThreadGroup are only detached
 // if the total number of threads in the pool is above the initial capacity.
 extern const BASE_EXPORT Feature kNoDetachBelowInitialCapacity;
