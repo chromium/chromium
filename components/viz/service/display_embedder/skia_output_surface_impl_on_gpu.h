@@ -52,7 +52,7 @@ namespace gpu {
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
 class SyncPointClientState;
-}
+}  // namespace gpu
 
 namespace ui {
 #if defined(USE_OZONE)
@@ -112,7 +112,7 @@ class SkiaOutputSurfaceImplOnGpu
     return shared_gpu_deps_->command_buffer_id();
   }
 
-  const OutputSurface::Capabilities capabilities() const {
+  const OutputSurface::Capabilities& capabilities() const {
     return output_device_->capabilities();
   }
   const base::WeakPtr<SkiaOutputSurfaceImplOnGpu>& weak_ptr() const {

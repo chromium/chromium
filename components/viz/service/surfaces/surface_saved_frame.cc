@@ -167,7 +167,7 @@ base::Optional<SurfaceSavedFrame::FrameResult> SurfaceSavedFrame::TakeResult() {
 }
 
 void SurfaceSavedFrame::CompleteSavedFrameForTesting(
-    base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback) {
+    ReleaseCallback release_callback) {
   frame_result_.emplace();
   frame_result_->root_result.mailbox = gpu::Mailbox::GenerateForSharedImage();
   frame_result_->root_result.release_callback =

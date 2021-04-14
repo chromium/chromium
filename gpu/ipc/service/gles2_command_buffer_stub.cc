@@ -74,7 +74,7 @@ GLES2CommandBufferStub::GLES2CommandBufferStub(
                         route_id),
       gles2_decoder_(nullptr) {}
 
-GLES2CommandBufferStub::~GLES2CommandBufferStub() {}
+GLES2CommandBufferStub::~GLES2CommandBufferStub() = default;
 
 gpu::ContextResult GLES2CommandBufferStub::Initialize(
     CommandBufferStub* share_command_buffer_stub,

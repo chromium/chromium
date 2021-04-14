@@ -748,7 +748,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
 SkiaRenderer::~SkiaRenderer() = default;
 
 bool SkiaRenderer::CanPartialSwap() {
-    return output_surface_->capabilities().supports_post_sub_buffer;
+  return output_surface_->capabilities().supports_post_sub_buffer;
 }
 
 void SkiaRenderer::BeginDrawingFrame() {

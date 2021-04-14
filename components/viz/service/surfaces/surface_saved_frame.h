@@ -78,8 +78,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   base::Optional<FrameResult> TakeResult() WARN_UNUSED_RESULT;
 
   // For testing functionality that ensures that we have a valid frame.
-  void CompleteSavedFrameForTesting(
-      base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback);
+  void CompleteSavedFrameForTesting(ReleaseCallback release_callback);
 
  private:
   enum class ResultType { kRoot, kShared };
