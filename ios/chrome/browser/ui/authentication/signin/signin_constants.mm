@@ -19,6 +19,12 @@ NSString* const kMoreAccessibilityIdentifier = @"kMoreAccessibilityIdentifier";
 
 @implementation SigninCompletionInfo
 
++ (instancetype)signinCompletionInfoWithIdentity:(ChromeIdentity*)identity {
+  return [[SigninCompletionInfo alloc]
+            initWithIdentity:identity
+      signinCompletionAction:SigninCompletionActionNone];
+}
+
 - (instancetype)initWithIdentity:(ChromeIdentity*)identity
           signinCompletionAction:
               (SigninCompletionAction)signinCompletionAction {
@@ -28,6 +34,14 @@ NSString* const kMoreAccessibilityIdentifier = @"kMoreAccessibilityIdentifier";
     _signinCompletionAction = signinCompletionAction;
   }
   return self;
+}
+
+- (void)setCompletionURL:(GURL)completionURL {
+  if (_completionURL == completionURL)
+    return;
+  DCHECK(completionURL.is_valid());
+  DCHECK(_signinCompletionAction == SigninCompletionActionOpenCompletionURL);
+  _completionURL = completionURL;
 }
 
 @end

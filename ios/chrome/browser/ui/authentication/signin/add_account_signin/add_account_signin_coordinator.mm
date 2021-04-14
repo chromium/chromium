@@ -87,7 +87,7 @@ using signin_metrics::PromoAction;
     // When interrupting |self.userSigninCoordinator|,
     // |self.userSigninCoordinator.signinCompletion| is called. This callback
     // is in charge to call |[self runCompletionCallbackWithSigninResult:
-    // identity:showAdvancedSettingsSignin:].
+    // completionInfo:].
     [self.userSigninCoordinator interruptWithAction:action
                                          completion:completion];
     return;
@@ -222,19 +222,19 @@ using signin_metrics::PromoAction;
   // |identity| is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
-  [self runCompletionCallbackWithSigninResult:signinResult
-                                     identity:identity
-                   showAdvancedSettingsSignin:NO];
+  SigninCompletionInfo* completionInfo = nil;
   if (self.openAccountCreationURL) {
-    // The user asked to create a new account.
-    DCHECK_EQ(SigninCoordinatorResultCanceledByUser, signinResult);
-    id<ApplicationCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:net::GURLWithNSURL(
-                                     self.openAccountCreationURL)];
-    [handler closeSettingsUIAndOpenURL:command];
+    completionInfo = [[SigninCompletionInfo alloc]
+              initWithIdentity:identity
+        signinCompletionAction:SigninCompletionActionOpenCompletionURL];
+    completionInfo.completionURL =
+        net::GURLWithNSURL(self.openAccountCreationURL);
+  } else {
+    completionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   }
+  [self runCompletionCallbackWithSigninResult:signinResult
+                               completionInfo:completionInfo];
 }
 
 // Presents the user consent screen with |identity| pre-selected.

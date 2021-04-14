@@ -204,7 +204,7 @@ using l10n_util::GetNSString;
 }
 
 // Does the cleanup once the view has been dismissed, calls the metrics and
-// calls |runCompletionCallbackWithSigninResult:identity:| to finish the
+// calls |runCompletionCallbackWithSigninResult:completionInfo:| to finish the
 // sign-in.
 - (void)finishedWithSigninResult:(SigninCoordinatorResult)signinResult {
   DCHECK(self.advancedSettingsSigninNavigationController);
@@ -225,9 +225,10 @@ using l10n_util::GetNSString;
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   ChromeIdentity* identity = authService->GetAuthenticatedIdentity();
+  SigninCompletionInfo* completionInfo =
+      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult
-                                     identity:identity
-                   showAdvancedSettingsSignin:NO];
+                               completionInfo:completionInfo];
 }
 
 - (void)showCancelConfirmationAlert {

@@ -2620,13 +2620,36 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
   __weak SceneController* weakSelf = self;
   self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo*) {
-        [weakSelf.signinCoordinator stop];
-        weakSelf.signinCoordinator = nil;
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+        if (!weakSelf)
+          return;
+        __typeof(self) strongSelf = weakSelf;
+        [strongSelf.signinCoordinator stop];
+        strongSelf.signinCoordinator = nil;
         uiBlocker.reset();
 
         if (completion) {
           completion(result == SigninCoordinatorResultSuccess);
+        }
+
+        switch (info.signinCompletionAction) {
+          case SigninCompletionActionNone:
+            DCHECK(!info.completionURL.is_valid());
+            break;
+          case SigninCompletionActionShowAdvancedSettingsSignin:
+            // Case only for first run.
+            NOTREACHED();
+            break;
+          case SigninCompletionActionOpenCompletionURL: {
+            DCHECK(info.completionURL.is_valid());
+            id<ApplicationCommands> handler = HandlerForProtocol(
+                strongSelf.currentInterface.browser->GetCommandDispatcher(),
+                ApplicationCommands);
+            OpenNewTabCommand* command =
+                [OpenNewTabCommand commandWithURLFromChrome:info.completionURL];
+            [handler closeSettingsUIAndOpenURL:command];
+            break;
+          }
         }
       };
 

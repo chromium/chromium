@@ -83,9 +83,10 @@
 // Calls the sign-in completion block.
 - (void)finishedWithResult:(SigninCoordinatorResult)signinResult
                   identity:(ChromeIdentity*)identity {
+  SigninCompletionInfo* completionInfo =
+      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult
-                                     identity:identity
-                   showAdvancedSettingsSignin:NO];
+                               completionInfo:completionInfo];
 }
 
 #pragma mark - SwipeGesture

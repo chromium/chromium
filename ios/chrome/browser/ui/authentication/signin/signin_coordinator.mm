@@ -131,9 +131,8 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  // -[SigninCoordinator runCompletionCallbackWithSigninResult:identity:
-  // showAdvancedSettingsSignin:] has to be called by the subclass before
-  // the coordinator is deallocated.
+  // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
+  // has to be called by the subclass before the coordinator is deallocated.
   DCHECK(!self.signinCompletion);
 }
 
@@ -152,8 +151,8 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
-  // -[SigninCoordinator runCompletionCallbackWithSigninResult:identity:
-  // showAdvancedSettingsSignin:] has to be called by the subclass before
+  // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
+  // has to be called by the subclass before
   // -[SigninCoordinator stop] is called.
   DCHECK(!self.signinCompletion);
 }
@@ -168,15 +167,7 @@ using signin_metrics::PromoAction;
 
 - (void)runCompletionCallbackWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                                     identity:(ChromeIdentity*)identity
-                   showAdvancedSettingsSignin:(BOOL)showAdvancedSettingsSignin {
-  SigninCompletionAction signinCompletionAction =
-      showAdvancedSettingsSignin
-          ? SigninCompletionActionShowAdvancedSettingsSignin
-          : SigninCompletionActionNone;
-  SigninCompletionInfo* signinCompletionInfo =
-      [[SigninCompletionInfo alloc] initWithIdentity:identity
-                              signinCompletionAction:signinCompletionAction];
+                               completionInfo:completionInfo {
   // If |self.signinCompletion| is nil, this method has been probably called
   // twice.
   DCHECK(self.signinCompletion);
@@ -184,7 +175,7 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // |self.signinCompletion| needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(signinResult, signinCompletionInfo);
+  signinCompletion(signinResult, completionInfo);
 }
 
 @end
