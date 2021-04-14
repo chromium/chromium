@@ -317,6 +317,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
         case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
+        case PSimUIState.ALREADY_ACTIVATED:
           this.fire('exit-cellular-setup');
           break;
         case PSimUIState.TIMEOUT_START_ACTIVATION:
