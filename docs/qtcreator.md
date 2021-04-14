@@ -140,4 +140,4 @@ See
 https://chromium.googlesource.com/chromium/src/+/master/docs/linux/debugging.md
 
 macOS :
-https://dev.chromium.org/developers/how-tos/debugging-on-os-x
+https://chromium.googlesource.com/chromium/src/+/main/docs/mac/debugging.md

@@ -45,3 +45,13 @@ so:
 
 Adjust the `--start` (and potentially add an `--end` date/time in the same
 format) to limit the amount of output.
+
+## Breaking on Sandbox Violations
+
+In order to determine what is causing a sandbox violation, it can be helpful to
+use the `send-signal` action on a sandbox rule, like so:
+
+    (deny file-write (path "/foo/bar") (with send-signal SIGSTOP))
+
+That will cause the process to stop until a debugger is attached or *SIGCONT* is
+sent to the process.
