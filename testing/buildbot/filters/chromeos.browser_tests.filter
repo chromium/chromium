@@ -16,3 +16,7 @@
 # TODO(crbug.com/977749): Enable this.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/0
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/1
+
+# TODO(crbug.com/1190837): Disable FilesApp TabIndex tests: temporary disable
+# so we can try roll this change into the LTS (long term support) bot.
+-TabIndex/FilesAppBrowserTest*
