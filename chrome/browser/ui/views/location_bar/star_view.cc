@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/location_bar/star_menu_model.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,6 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -78,6 +80,18 @@ StarView::StarView(CommandUpdater* command_updater,
 }
 
 StarView::~StarView() {}
+
+void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
+  if (key == kHasInProductHelpPromoKey) {
+    views::InkDropState next_state;
+    if (GetProperty(kHasInProductHelpPromoKey) || GetVisible()) {
+      next_state = views::InkDropState::ACTIVATED;
+    } else {
+      next_state = views::InkDropState::DEACTIVATED;
+    }
+    GetInkDrop()->AnimateToState(next_state);
+  }
+}
 
 void StarView::UpdateImpl() {
   SetVisible(browser_defaults::bookmarks_enabled &&

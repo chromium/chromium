@@ -34,6 +34,9 @@ class StarView : public PageActionIconView,
   StarView& operator=(const StarView&) = delete;
   ~StarView() override;
 
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
+
   StarMenuModel* menu_model_for_test() { return menu_model_.get(); }
   views::MenuRunner* menu_runner_for_test() { return menu_runner_.get(); }
 
