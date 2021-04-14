@@ -15,7 +15,7 @@ option optimize_for = LITE_RUNTIME;
 package remoting.protocol;
 
 // Represents a message being sent on the control channel.
-// Next ID: 16
+// Next ID: 15
 message ControlMessage {
   optional ClipboardEvent clipboard_event = 1;
   optional ClientResolution client_resolution = 2;
@@ -31,7 +31,6 @@ message ControlMessage {
   optional KeyboardLayout keyboard_layout = 12;
   optional TransportInfo transport_info = 13;
   optional PeerConnectionParameters peer_connection_parameters = 14;
-  optional OpenUrlRequest open_url_request = 15;
 }
 
 // Defines an event message on the event channel.

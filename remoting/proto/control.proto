@@ -194,9 +194,3 @@ message PeerConnectionParameters {
   // switching to a different codec), without needing a full reconnection.
   optional bool request_sdp_restart = 4;
 }
-
-// Next ID: 2
-message OpenUrlRequest {
-  // The URL to be opened on the client, requested by the host.
-  optional string url = 1;
-}
