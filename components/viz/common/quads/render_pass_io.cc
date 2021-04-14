@@ -879,6 +879,53 @@ bool DrawQuadResourcesFromList(const base::Value& list,
   return true;
 }
 
+base::Value SurfaceIdToDict(const SurfaceId& id) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("client_id", id.frame_sink_id().client_id());
+  dict.SetIntKey("sink_id", id.frame_sink_id().sink_id());
+  dict.SetIntKey("parent_seq", id.local_surface_id().parent_sequence_number());
+  dict.SetIntKey("child_seq", id.local_surface_id().child_sequence_number());
+
+  // |embed_token_| doesn't need to be saved as long as a consistent token is
+  // used when deserializing.
+  return dict;
+}
+
+base::Optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
+  base::Optional<int> client_id = dict.FindIntKey("client_id");
+  base::Optional<int> sink_id = dict.FindIntKey("sink_id");
+  base::Optional<int> parent_seq = dict.FindIntKey("parent_seq");
+  base::Optional<int> child_seq = dict.FindIntKey("child_seq");
+  if (!client_id || !sink_id || !parent_seq || !child_seq)
+    return base::nullopt;
+
+  base::UnguessableToken token = base::UnguessableToken::Deserialize(1, 1);
+  return SurfaceId(FrameSinkId(*client_id, *sink_id),
+                   LocalSurfaceId(*parent_seq, *child_seq, token));
+}
+
+base::Value SurfaceRangeToDict(const SurfaceRange& range) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  if (range.start().has_value())
+    dict.SetKey("start", SurfaceIdToDict(*(range.start())));
+  dict.SetKey("end", SurfaceIdToDict(range.end()));
+  return dict;
+}
+
+base::Optional<SurfaceRange> SurfaceRangeFromDict(const base::Value& dict) {
+  const base::Value* start_dict = dict.FindDictKey("start");
+  const base::Value* end_dict = dict.FindDictKey("end");
+  if (!end_dict)
+    return base::nullopt;
+  base::Optional<SurfaceId> start =
+      start_dict ? SurfaceIdFromDict(*start_dict) : base::nullopt;
+  base::Optional<SurfaceId> end = SurfaceIdFromDict(*end_dict);
+  if (!end || (start_dict && !start))
+    return base::nullopt;
+
+  return SurfaceRange(start, *end);
+}
+
 int GetSharedQuadStateIndex(const SharedQuadStateList& shared_quad_state_list,
                             const SharedQuadState* shared_quad_state) {
   for (auto iter = shared_quad_state_list.begin();
@@ -1112,6 +1159,19 @@ int StringToProtectedVideoType(const std::string& str) {
 }
 #undef MAP_STRING_TO_VIDEO_TYPE
 
+void SurfaceDrawQuadToDict(const SurfaceDrawQuad* draw_quad,
+                           base::Value* dict) {
+  DCHECK(draw_quad);
+  DCHECK(dict);
+  dict->SetKey("surface_range", SurfaceRangeToDict(draw_quad->surface_range));
+  dict->SetIntKey("default_background_color",
+                  bit_cast<int>(draw_quad->default_background_color));
+  dict->SetBoolKey("stretch_content",
+                   draw_quad->stretch_content_to_fill_bounds);
+  dict->SetBoolKey("is_reflection", draw_quad->is_reflection);
+  dict->SetBoolKey("allow_merge", draw_quad->allow_merge);
+}
+
 void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
                            base::Value* dict) {
   DCHECK(draw_quad);
@@ -1191,12 +1251,12 @@ base::Value DrawQuadToDict(const DrawQuad* draw_quad,
                                 CompositorRenderPassDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSolidColor, SolidColorDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kStreamVideoContent, StreamVideoDrawQuad)
+    WRITE_DRAW_QUAD_TYPE_FIELDS(kSurfaceContent, SurfaceDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTextureContent, TextureDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTiledContent, TileDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kYuvVideoContent, YUVVideoDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kVideoHole, VideoHoleDrawQuad)
     UNEXPECTED_DRAW_QUAD_TYPE(kPictureContent)
-    UNEXPECTED_DRAW_QUAD_TYPE(kSurfaceContent)
     default:
       break;
   }
@@ -1320,6 +1380,34 @@ bool StreamVideoDrawQuadFromDict(const base::Value& dict,
                     common.needs_blending, resource_id,
                     t_overlay_resource_size_in_pixels, t_uv_top_left,
                     t_uv_bottom_right);
+  return true;
+}
+
+bool SurfaceDrawQuadFromDict(const base::Value& dict,
+                             const DrawQuadCommon& common,
+                             SurfaceDrawQuad* draw_quad) {
+  DCHECK(draw_quad);
+  if (!dict.is_dict())
+    return false;
+
+  const base::Value* surface_range_dict = dict.FindDictKey("surface_range");
+  if (!surface_range_dict)
+    return false;
+  base::Optional<SurfaceRange> surface_range =
+      SurfaceRangeFromDict(*surface_range_dict);
+  base::Optional<int> default_background_color =
+      dict.FindIntKey("default_background_color");
+  base::Optional<bool> stretch_content = dict.FindBoolKey("stretch_content");
+  base::Optional<bool> is_reflection = dict.FindBoolKey("is_reflection");
+  base::Optional<bool> allow_merge = dict.FindBoolKey("allow_merge");
+  if (!surface_range || !default_background_color || !stretch_content ||
+      !is_reflection || !allow_merge)
+    return false;
+
+  draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
+                    common.needs_blending, *surface_range,
+                    bit_cast<SkColor>(*default_background_color),
+                    *stretch_content, *is_reflection, *allow_merge);
   return true;
 }
 
@@ -1538,12 +1626,12 @@ bool QuadListFromList(const base::Value& list,
       GET_QUAD_FROM_DICT(kCompositorRenderPass, CompositorRenderPassDrawQuad)
       GET_QUAD_FROM_DICT(kSolidColor, SolidColorDrawQuad)
       GET_QUAD_FROM_DICT(kStreamVideoContent, StreamVideoDrawQuad)
+      GET_QUAD_FROM_DICT(kSurfaceContent, SurfaceDrawQuad)
       GET_QUAD_FROM_DICT(kTextureContent, TextureDrawQuad)
       GET_QUAD_FROM_DICT(kTiledContent, TileDrawQuad)
       GET_QUAD_FROM_DICT(kYuvVideoContent, YUVVideoDrawQuad)
       GET_QUAD_FROM_DICT(kVideoHole, VideoHoleDrawQuad)
       UNEXPECTED_DRAW_QUAD_TYPE(kPictureContent)
-      UNEXPECTED_DRAW_QUAD_TYPE(kSurfaceContent)
       default:
         break;
     }

@@ -14,6 +14,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
+#include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -26,6 +27,11 @@ struct HDRMetadata;
 
 namespace viz {
 namespace {
+
+constexpr SurfaceId kSurfaceId1(FrameSinkId(1, 1),
+                                LocalSurfaceId(1, 1, base::UnguessableToken()));
+constexpr SurfaceId kSurfaceId2(FrameSinkId(2, 2),
+                                LocalSurfaceId(2, 2, base::UnguessableToken()));
 
 TEST(RenderPassIOTest, Default) {
   auto render_pass0 = CompositorRenderPass::Create();
@@ -186,6 +192,8 @@ TEST(RenderPassIOTest, QuadList) {
       DrawQuad::Material::kTextureContent,
       DrawQuad::Material::kCompositorRenderPass,
       DrawQuad::Material::kTiledContent,
+      DrawQuad::Material::kSurfaceContent,
+      DrawQuad::Material::kSurfaceContent,
   };
   auto render_pass0 = CompositorRenderPass::Create();
   {
@@ -282,6 +290,26 @@ TEST(RenderPassIOTest, QuadList) {
                    gfx::Rect(0, 0, 256, 512), gfx::Rect(2, 2, 250, 500), true,
                    ResourceId(512u), gfx::RectF(0.0f, 0.0f, 0.9f, 0.8f),
                    gfx::Size(256, 512), true, true, true);
+      ++quad_count;
+    }
+    {
+      // 8. SurfaceDrawQuad
+      SurfaceDrawQuad* quad =
+          render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
+                   gfx::Rect(0, 0, 512, 256), gfx::Rect(2, 2, 500, 250), true,
+                   SurfaceRange(kSurfaceId1, kSurfaceId2), SK_ColorWHITE, false,
+                   false, true);
+      ++quad_count;
+    }
+    {
+      // 9. SurfaceDrawQuad with no starting SurfaceId
+      SurfaceDrawQuad* quad =
+          render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
+                   gfx::Rect(10, 10, 512, 256), gfx::Rect(12, 12, 500, 250),
+                   true, SurfaceRange(base::nullopt, kSurfaceId1),
+                   SK_ColorBLACK, true, true, false);
       ++quad_count;
     }
     DCHECK_EQ(kSharedQuadStateCount, sqs_index + 1);
