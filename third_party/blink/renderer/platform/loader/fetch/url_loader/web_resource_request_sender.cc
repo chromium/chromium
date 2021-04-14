@@ -442,7 +442,13 @@ void WebResourceRequestSender::OnReceivedResponse(
       response_head->load_timing.request_start;
   // Now that response_start has been set, we can properly set the TimeTicks in
   // the URLResponseHead.
-  ToLocalURLResponseHead(*request_info_, *response_head);
+  base::TimeTicks remote_response_start =
+      ToLocalURLResponseHead(*request_info_, *response_head);
+  if (!remote_response_start.is_null()) {
+    UMA_HISTOGRAM_TIMES(
+        "Blink.ResourceRequest.ResponseDelay",
+        request_info_->local_response_start - remote_response_start);
+  }
   request_info_->load_timing_info = response_head->load_timing;
   if (delegate_) {
     scoped_refptr<WebRequestPeer> new_peer = delegate_->OnReceivedResponse(
@@ -498,7 +504,13 @@ void WebResourceRequestSender::OnReceivedRedirect(
       RedirectRequiresLoaderRestart(request_info_->response_url,
                                     redirect_info.new_url);
 
-  ToLocalURLResponseHead(*request_info_, *response_head);
+  base::TimeTicks remote_response_start =
+      ToLocalURLResponseHead(*request_info_, *response_head);
+  if (!remote_response_start.is_null()) {
+    UMA_HISTOGRAM_TIMES(
+        "Blink.ResourceRequest.RedirectDelay",
+        request_info_->local_response_start - remote_response_start);
+  }
   std::vector<std::string> removed_headers;
   if (request_info_->peer->OnReceivedRedirect(
           redirect_info, response_head.Clone(), &removed_headers)) {
@@ -575,6 +587,18 @@ void WebResourceRequestSender::OnRequestComplete(
                      request_info_->load_timing_info.request_start,
                  base::TimeTicks::Now());
   }
+
+  const net::LoadTimingInfo& timing_info = request_info_->load_timing_info;
+  if (!timing_info.request_start.is_null()) {
+    UMA_HISTOGRAM_TIMES(
+        "Blink.ResourceRequest.StartDelay",
+        timing_info.request_start - request_info_->local_request_start);
+  }
+  if (!renderer_status.completion_time.is_null()) {
+    UMA_HISTOGRAM_TIMES(
+        "Blink.ResourceRequest.CompletionDelay",
+        base::TimeTicks::Now() - renderer_status.completion_time);
+  }
   // The request ID will be removed from our pending list in the destructor.
   // Normally, dispatching this message causes the reference-counted request to
   // die immediately.
@@ -584,22 +608,23 @@ void WebResourceRequestSender::OnRequestComplete(
   peer->OnCompletedRequest(renderer_status);
 }
 
-void WebResourceRequestSender::ToLocalURLResponseHead(
+base::TimeTicks WebResourceRequestSender::ToLocalURLResponseHead(
     const PendingRequestInfo& request_info,
     network::mojom::URLResponseHead& response_head) const {
+  base::TimeTicks remote_response_start = response_head.response_start;
   if (base::TimeTicks::IsConsistentAcrossProcesses() ||
       request_info.local_request_start.is_null() ||
       request_info.local_response_start.is_null() ||
       response_head.request_start.is_null() ||
-      response_head.response_start.is_null() ||
+      remote_response_start.is_null() ||
       response_head.load_timing.request_start.is_null()) {
-    return;
+    return remote_response_start;
   }
   InterProcessTimeTicksConverter converter(
       LocalTimeTicks::FromTimeTicks(request_info.local_request_start),
       LocalTimeTicks::FromTimeTicks(request_info.local_response_start),
       RemoteTimeTicks::FromTimeTicks(response_head.request_start),
-      RemoteTimeTicks::FromTimeTicks(response_head.response_start));
+      RemoteTimeTicks::FromTimeTicks(remote_response_start));
 
   net::LoadTimingInfo* load_timing = &response_head.load_timing;
   RemoteToLocalTimeTicks(converter, &load_timing->request_start);
@@ -622,6 +647,8 @@ void WebResourceRequestSender::ToLocalURLResponseHead(
   RemoteToLocalTimeTicks(converter, &load_timing->service_worker_fetch_start);
   RemoteToLocalTimeTicks(converter,
                          &load_timing->service_worker_respond_with_settled);
+  RemoteToLocalTimeTicks(converter, &remote_response_start);
+  return remote_response_start;
 }
 
 }  // namespace blink
