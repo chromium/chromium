@@ -7,12 +7,15 @@
 #        Run `python update_css_ranking.py <ranking_file> <ranking_api_link>`
 #        to update the ranking from <ranking_api_link> API to <ranking_file>
 
-import urllib2
 import json
 import sys
 import cluster
 import json5_generator
 import math
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 CSS_RANKING_API = "http://www.chromestatus.com/data/csspopularity"
 CSS_RANKING_FILE = "../../core/css/css_properties_ranking.json5"
@@ -36,7 +39,7 @@ def update_css_ranking(css_ranking_file, css_ranking_api):
         css_ranking_api: url to CSS ranking api
 
     """
-    css_ranking = json.loads(urllib2.urlopen(css_ranking_api).read())
+    css_ranking = json.loads(urlopen(css_ranking_api).read())
     css_ranking_content = {"properties": {}, "data": []}
     css_ranking_content["data"] = [
         property_["property_name"] for property_ in sorted(
@@ -89,9 +92,8 @@ def produce_partition_rule(config_file, css_ranking_api):
         css_ranking_api: url to CSS ranking api
 
     """
-    css_ranking = sorted(
-        json.loads(urllib2.urlopen(css_ranking_api).read()),
-        key=lambda x: -x["day_percentage"])
+    css_ranking = sorted(json.loads(urlopen(css_ranking_api).read()),
+                         key=lambda x: -x["day_percentage"])
     total_css_properties = len(css_ranking)
     css_ranking_dictionary = dict(
         [(x["property_name"], x["day_percentage"] * 100) for x in css_ranking])
