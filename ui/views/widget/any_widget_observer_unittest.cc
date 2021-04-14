@@ -109,6 +109,14 @@ TEST_F(NamedWidgetShownWaiterTest, ShownBeforeWait) {
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
 }
 
+TEST_F(NamedWidgetShownWaiterTest, ShownInactive) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "TestWidget");
+  WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
+  w0->ShowInactive();
+  EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
+}
+
 TEST_F(NamedWidgetShownWaiterTest, OtherWidgetShown) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TestWidget");
