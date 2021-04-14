@@ -355,6 +355,9 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   GURL script_url = extension->GetResourceURL(
       BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
   blink::mojom::ServiceWorkerRegistrationOptions option;
+  if (BackgroundInfo::GetBackgroundServiceWorkerType(extension) ==
+      BackgroundServiceWorkerType::kModule)
+    option.type = blink::mojom::ScriptType::kModule;
   option.scope = extension->url();
   util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
       ->GetServiceWorkerContext()

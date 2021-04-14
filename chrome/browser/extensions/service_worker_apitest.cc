@@ -379,6 +379,36 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, NonRootDirectory) {
             std::u16string(u"Service worker registration failed"));
 }
 
+// Tests that a module service worker with static import can successfully be
+// registered.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       ModuleServiceWorkerWithStaticImport) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/"
+                       "module_service_worker_static_import"))
+      << message_;
+}
+
+// Tests that registering a module service worker with dynamic import fails.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       ModuleServiceWorkerWithDynamicImport) {
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  constexpr size_t kErrorsExpected = 1u;
+  ErrorObserver observer(kErrorsExpected, error_console);
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("service_worker/worker_based_background/"
+                                 "module_service_worker_dynamic_import"));
+
+  observer.WaitForErrors();
+  const ErrorList& error_list =
+      error_console->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(kErrorsExpected, error_list.size());
+  ASSERT_EQ(error_list[0]->message(),
+            std::u16string(u"Service worker registration failed"));
+}
+
 // Tests chrome.runtime.onInstalled fires for extension service workers.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
   ASSERT_TRUE(RunExtensionTest(

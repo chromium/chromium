@@ -17,6 +17,11 @@
 
 namespace extensions {
 
+enum class BackgroundServiceWorkerType {
+  kClassic,
+  kModule,
+};
+
 class BackgroundInfo : public Extension::ManifestData {
  public:
   BackgroundInfo();
@@ -26,6 +31,8 @@ class BackgroundInfo : public Extension::ManifestData {
   static const std::vector<std::string>& GetBackgroundScripts(
       const Extension* extension);
   static const std::string& GetBackgroundServiceWorkerScript(
+      const Extension* extension);
+  static BackgroundServiceWorkerType GetBackgroundServiceWorkerType(
       const Extension* extension);
   static bool HasBackgroundPage(const Extension* extension);
   static bool HasPersistentBackgroundPage(const Extension* extension);
@@ -75,6 +82,9 @@ class BackgroundInfo : public Extension::ManifestData {
 
   // Optional service worker based background script.
   base::Optional<std::string> background_service_worker_script_;
+
+  // Optional service worker based background type.
+  base::Optional<BackgroundServiceWorkerType> background_service_worker_type_;
 
   // True if the background page should stay loaded forever; false if it should
   // load on-demand (when it needs to handle an event). Defaults to true.

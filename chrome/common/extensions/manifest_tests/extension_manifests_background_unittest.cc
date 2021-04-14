@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -278,6 +279,61 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
         base::test::ParseJson(kManifestBackgroundPersistent);
     LoadAndExpectSuccess(
         ManifestData(std::move(manifest_value), "no background"));
+  }
+}
+
+TEST_F(ExtensionManifestBackgroundTest, ModuleServiceWorker) {
+  auto get_manifest = [](const char* background_value) {
+    constexpr char kManifestStub[] =
+        R"({
+           "name": "MV3 Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { %s }
+         })";
+    std::string manifest_str =
+        base::StringPrintf(kManifestStub, background_value);
+    return base::test::ParseJson(manifest_str);
+  };
+
+  {
+    constexpr char kWorkerTypeClassic[] =
+        R"("service_worker": "worker.js", "type": "classic")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(ManifestData(
+        get_manifest(kWorkerTypeClassic), "classic service worker")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kClassic, service_worker_type);
+  }
+  {
+    constexpr char kWorkerTypeModule[] =
+        R"("service_worker": "worker.js", "type": "module")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(ManifestData(
+        get_manifest(kWorkerTypeModule), "module service worker")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kModule, service_worker_type);
+  }
+  {
+    constexpr char kWorkerTypeInvalid[] =
+        R"("service_worker": "worker.js", "type": "invalid")";
+    LoadAndExpectError(ManifestData(get_manifest(kWorkerTypeInvalid), ""),
+                       "Invalid value for 'background.type'.");
+  }
+  {
+    // An extension with no background.type key present should still be allowed.
+    constexpr char kWorkerTypeModule[] = R"("service_worker": "worker.js")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
+        ManifestData(get_manifest(kWorkerTypeModule), "no background.type")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kClassic, service_worker_type);
   }
 }
 
