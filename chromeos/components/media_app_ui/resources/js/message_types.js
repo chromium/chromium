@@ -23,7 +23,6 @@ const Message = {
   RENAME_FILE: 'rename-file',
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',
-  SAVE_COPY: 'save-copy'
 };
 
 /**
@@ -126,12 +125,11 @@ let RenameFileResponse;
 /**
  * Message sent by the unprivileged context to the privileged context requesting
  * for the user to be prompted with a save file dialog. Once the user selects a
- * location a new file handle is created and a unique token to that file
- * will be returned. This token can be then used with saveCopy(). The file
- * extension on `suggestedName` and the provided `mimeType` are used to inform
- * the save as dialog what file should be created. Once the native filesystem
- * api allows, this save as dialog will additionally have the filename input be
- * pre-filled with `suggestedName`.
+ * location a new file handle is created and a unique token to that file will be
+ * returned. The file extension on `suggestedName` and the provided `mimeType`
+ * are used to inform the save as dialog what file should be created. Once the
+ * native filesystem api allows, this save as dialog will additionally have the
+ * filename input be pre-filled with `suggestedName`.
  * @typedef {{suggestedName: string, mimeType: string}}
  */
 let RequestSaveFileMessage;
