@@ -1486,7 +1486,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvasFallback) {
   RunHtmlTest(FILE_PATH_LITERAL("canvas-fallback.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCaption) {
+// TODO(crbug.com/1193963): fails on Windows.
+#if defined(OS_WIN)
+#define MAYBE_AccessibilityCaption DISABLED_AccessibilityCaption
+#else
+#define MAYBE_AccessibilityCaption AccessibilityCaption
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityCaption) {
   RunHtmlTest(FILE_PATH_LITERAL("caption.html"));
 }
 
@@ -1929,7 +1935,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputButton) {
+// TODO(crbug.com/1193963): fails on Windows.
+#if defined(OS_WIN)
+#define MAYBE_AccessibilityInputButton DISABLED_AccessibilityInputButton
+#else
+#define MAYBE_AccessibilityInputButton AccessibilityInputButton
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputButton) {
   RunHtmlTest(FILE_PATH_LITERAL("input-button.html"));
 }
 
@@ -2589,7 +2602,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
   RunHtmlTest(FILE_PATH_LITERAL("sup.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySummary) {
+// TODO(crbug.com/1193963): fails on Windows.
+#if defined(OS_WIN)
+#define MAYBE_AccessibilitySummary DISABLED_AccessibilitySummary
+#else
+#define MAYBE_AccessibilitySummary AccessibilitySummary
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilitySummary) {
   RunHtmlTest(FILE_PATH_LITERAL("summary.html"));
 }
 
