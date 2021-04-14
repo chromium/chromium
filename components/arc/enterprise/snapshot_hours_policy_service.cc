@@ -128,25 +128,21 @@ void SnapshotHoursPolicyService::EnableSnapshots() {
 }
 
 void SnapshotHoursPolicyService::UpdateTimer() {
-  auto current_time = policy::WeeklyTime::GetCurrentGmtWeeklyTime(
-      base::DefaultClock::GetInstance());
-  for (const auto& interval : intervals_) {
-    if (interval.Contains(current_time)) {
-      auto remaining_timer_duration =
-          current_time.GetDurationTo(interval.end());
-      SetEndTime(base::Time::Now() + remaining_timer_duration);
-      StartTimer(remaining_timer_duration);
-      return;
-    }
-  }
-  StartTimer(policy::weekly_time_utils::GetDeltaTillNextTimeInterval(
-      current_time, intervals_));
-  SetEndTime(base::Time());
+  namespace wtu = ::policy::weekly_time_utils;
+  const base::Time now = base::Time::Now();
+  const bool in_interval = wtu::Contains(now, intervals_);
+  const base::Optional<base::Time> update_time =
+      wtu::GetNextEventTime(now, intervals_);
+
+  SetEndTime(in_interval ? update_time.value() : base::Time{});
+  if (update_time)
+    StartTimer(update_time.value());
+  else
+    StopTimer();
 }
 
-void SnapshotHoursPolicyService::StartTimer(base::TimeDelta delay) {
-  DCHECK_GT(delay, base::TimeDelta());
-  timer_.Start(FROM_HERE, base::DefaultClock::GetInstance()->Now() + delay,
+void SnapshotHoursPolicyService::StartTimer(const base::Time& update_time) {
+  timer_.Start(FROM_HERE, update_time,
                base::BindOnce(&SnapshotHoursPolicyService::UpdateTimer,
                               weak_ptr_factory_.GetWeakPtr()));
 }
