@@ -862,7 +862,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       capture_time +=
           base::TimeDelta::FromMicroseconds(capture_time_100ns / 10.0);
     }
-    if (capture_time < last_capture_time_) {
+    if (capture_time <= last_capture_time_) {
       // Latest |capture_time_100ns| can't be trusted. Ensure a monotonic time-
       // stamp sequence by adding one microsecond to the latest timestamp.
       capture_time = last_capture_time_ + base::TimeDelta::FromMicroseconds(1);
