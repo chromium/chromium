@@ -201,6 +201,7 @@ source_set("chromeos") {
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
     "//chromeos/dbus/resourced",
+    "//chromeos/dbus/rmad",
     "//chromeos/dbus/services:services",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/session_manager:login_manager_proto",

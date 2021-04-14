@@ -1,0 +1,121 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/dbus/rmad/rmad_client.h"
+
+#include "base/bind.h"
+#include "base/logging.h"
+#include "chromeos/dbus/rmad/fake_rmad_client.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
+
+namespace chromeos {
+
+namespace {
+RmadClient* g_instance = nullptr;
+}  // namespace
+
+class RmadClientImpl : public RmadClient {
+ public:
+  void Init(dbus::Bus* bus);
+  void GetCurrentState(
+      DBusMethodCallback<rmad::GetCurrentStateReply> callback) override;
+
+  RmadClientImpl() = default;
+  RmadClientImpl(const RmadClientImpl&) = delete;
+  RmadClientImpl& operator=(const RmadClientImpl&) = delete;
+  ~RmadClientImpl() override = default;
+
+ private:
+  void OnGetCurrentStateMethod(
+      DBusMethodCallback<rmad::GetCurrentStateReply> callback,
+      dbus::Response* response);
+
+  dbus::ObjectProxy* rmad_proxy_ = nullptr;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<RmadClientImpl> weak_ptr_factory_{this};
+};
+
+void RmadClientImpl::Init(dbus::Bus* bus) {
+  rmad_proxy_ = bus->GetObjectProxy(rmad::kRmadServiceName,
+                                    dbus::ObjectPath(rmad::kRmadServicePath));
+}
+
+void RmadClientImpl::GetCurrentState(
+    DBusMethodCallback<rmad::GetCurrentStateReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kGetCurrentStateMethod);
+  dbus::MessageWriter writer(&method_call);
+  // Create the empty request proto.
+  rmad::GetCurrentStateRequest protobuf_request;
+  if (!writer.AppendProtoAsArrayOfBytes(protobuf_request)) {
+    LOG(ERROR) << "Error constructing message for "
+               << rmad::kGetCurrentStateMethod;
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnGetCurrentStateMethod,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::OnGetCurrentStateMethod(
+    DBusMethodCallback<rmad::GetCurrentStateReply> callback,
+    dbus::Response* response) {
+  if (!response) {
+    LOG(ERROR) << "Error calling " << rmad::kGetCurrentStateMethod;
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
+  dbus::MessageReader reader(response);
+  rmad::GetCurrentStateReply response_proto;
+  if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+    LOG(ERROR) << "Unable to decode " << rmad::kGetCurrentStateMethod
+               << " response";
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(response_proto);
+}
+
+RmadClient::RmadClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+RmadClient::~RmadClient() {
+  CHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
+
+// static
+void RmadClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new RmadClientImpl())->Init(bus);
+}
+
+// static
+void RmadClient::InitializeFake() {
+  new FakeRmadClient();
+}
+
+// static
+void RmadClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+// static
+RmadClient* RmadClient::Get() {
+  return g_instance;
+}
+
+}  // namespace chromeos

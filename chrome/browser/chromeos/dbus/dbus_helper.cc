@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -35,6 +36,7 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
@@ -107,6 +109,9 @@ void InitializeDBus() {
   InitializeDBusClient<PermissionBrokerClient>(bus);
   InitializeDBusClient<PowerManagerClient>(bus);
   InitializeDBusClient<ResourcedClient>(bus);
+  if (ash::features::IsShimlessRMAFlowEnabled()) {
+    InitializeDBusClient<RmadClient>(bus);
+  }
   InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -155,6 +160,9 @@ void ShutdownDBus() {
   SystemClockClient::Shutdown();
   SessionManagerClient::Shutdown();
   ResourcedClient::Shutdown();
+  if (ash::features::IsShimlessRMAFlowEnabled()) {
+    RmadClient::Shutdown();
+  }
   PowerManagerClient::Shutdown();
   PermissionBrokerClient::Shutdown();
   PciguardClient::Shutdown();
