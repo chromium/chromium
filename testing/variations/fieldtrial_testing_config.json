@@ -1372,6 +1372,21 @@
             ]
         }
     ],
+    "ChimeAndroidSDK": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ChimeAndroidSDK",
+                    "enable_features": [
+                        "UseChimeAndroidSdk"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeCleanupDistribution": [
         {
             "platforms": [
