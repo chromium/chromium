@@ -340,15 +340,6 @@ TEST_F(PlatformSharedMemoryRegionTest,
   EXPECT_FALSE(check(region2, Mode::kReadOnly));
 }
 
-// Tests that attempts to map beyond the bounds of the underlying shared memory
-// object will fail.
-TEST_F(PlatformSharedMemoryRegionTest, OversizedMappingFails) {
-  auto region = PlatformSharedMemoryRegion::CreateUnsafe(kRegionSize);
-  void* memory;
-  size_t mapped_size;
-  EXPECT_FALSE(region.MapAt(0, kRegionSize * 2, &memory, &mapped_size));
-}
-
 // Tests that it's impossible to create read-only platform shared memory region.
 TEST_F(PlatformSharedMemoryRegionTest, CreateReadOnlyRegionDeathTest) {
 #ifdef OFFICIAL_BUILD

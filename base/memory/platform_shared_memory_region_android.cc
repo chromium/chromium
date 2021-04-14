@@ -138,16 +138,6 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
 }
 
 // static
-bool PlatformSharedMemoryRegion::Unmap(void* memory, size_t mapped_size) {
-  if (munmap(memory, mapped_size) < 0) {
-    DPLOG(ERROR) << "munmap";
-    return false;
-  }
-
-  return true;
-}
-
-// static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
   if (size == 0) {
