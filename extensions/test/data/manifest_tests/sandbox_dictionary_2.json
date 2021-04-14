@@ -6,6 +6,6 @@
     "pages": ["test"]
   },
   "content_security_policy" : {
-    "extension_pages" : "script-src; object-src;"
+    "extension_pages" : "script-src; object-src; style-src http://localhost;"
   }
 }

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,9 +32,6 @@ namespace {
 const char kDefaultContentSecurityPolicy[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
-
-// The default secure CSP to be used in order to prevent remote scripts.
-const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
 
 const char kDefaultSandboxedPageContentSecurityPolicy[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
@@ -93,6 +92,9 @@ const base::Value* GetManifestPath(const Extension* extension,
 
 const char* GetDefaultExtensionPagesCSP(Extension* extension,
                                         bool secure_only) {
+  // The default secure CSP used to mitigate against remotely hosted code.
+  static const char kDefaultSecureCSP[] =
+      "script-src 'self'; style-src 'self'; object-src 'self';";
   if (secure_only)
     return kDefaultSecureCSP;
 
@@ -120,10 +122,12 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 // static
 const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
   if (extension.manifest_version() >= 3) {
+    const char kDefaultMV3IsolatedWorldCSP[] =
+        "script-src 'self'; object-src 'self';";
     // The isolated world will use its own CSP which blocks remotely hosted
     // code.
     static const base::NoDestructor<std::string> default_isolated_world_csp(
-        kDefaultSecureCSP);
+        kDefaultMV3IsolatedWorldCSP);
     return default_isolated_world_csp.get();
   }
 
@@ -241,17 +245,19 @@ bool CSPHandler::ParseExtensionPagesCSP(
     return false;
   }
 
+  std::vector<InstallWarning> warnings;
   if (secure_only) {
-    if (!csp_validator::DoesCSPDisallowRemoteCode(content_security_policy_str,
-                                                  manifest_key, error)) {
+    if (!csp_validator::DoesCSPDisallowRemoteCode(
+            content_security_policy_str, manifest_key, error, warnings)) {
       return false;
     }
+
+    extension->AddInstallWarnings(std::move(warnings));
     SetExtensionPagesCSP(extension, manifest_key, secure_only,
                          content_security_policy_str);
     return true;
   }
 
-  std::vector<InstallWarning> warnings;
   std::string sanitized_content_security_policy = SanitizeContentSecurityPolicy(
       content_security_policy_str, manifest_key.as_string(),
       GetValidatorOptions(extension), &warnings);
@@ -297,16 +303,19 @@ bool CSPHandler::SetExtensionPagesCSP(Extension* extension,
                                       base::StringPiece manifest_key,
                                       bool secure_only,
                                       std::string content_security_policy) {
+#if DCHECK_IS_ON()
   if (secure_only) {
     std::u16string error;
-    DCHECK(csp_validator::DoesCSPDisallowRemoteCode(content_security_policy,
-                                                    manifest_key, &error));
+    std::vector<InstallWarning> install_warnings;
+    CHECK(csp_validator::DoesCSPDisallowRemoteCode(
+        content_security_policy, manifest_key, &error, install_warnings));
   } else {
-    DCHECK_EQ(content_security_policy,
-              SanitizeContentSecurityPolicy(
-                  content_security_policy, manifest_key.as_string(),
-                  GetValidatorOptions(extension), nullptr));
+    CHECK_EQ(content_security_policy,
+             SanitizeContentSecurityPolicy(
+                 content_security_policy, manifest_key.as_string(),
+                 GetValidatorOptions(extension), nullptr));
   }
+#endif  // DCHECK_IS_ON()
 
   extension->SetManifestData(
       keys::kContentSecurityPolicy,

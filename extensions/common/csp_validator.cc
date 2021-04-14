@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -40,6 +41,7 @@ const char kObjectSrc[] = "object-src";
 const char kFrameSrc[] = "frame-src";
 const char kChildSrc[] = "child-src";
 const char kWorkerSrc[] = "worker-src";
+const char kStyleSrc[] = "style-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
 
@@ -236,7 +238,7 @@ std::string GetSecureDirectiveValues(
     std::string source_lower = base::ToLowerASCII(source_literal);
     bool is_secure_csp_token = false;
 
-    // We might need to relax this whitelist over time.
+    // We might need to relax this allowlist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
         source_lower == "'wasm-eval'" || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
@@ -622,7 +624,8 @@ bool ContentSecurityPolicyIsSandboxed(
 
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               std::u16string* error) {
+                               std::u16string* error,
+                               std::vector<InstallWarning>& warnings) {
   DCHECK(error);
 
   struct DirectiveMapping {
@@ -635,13 +638,12 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   DirectiveMapping script_src_mapping({DirectiveStatus({kScriptSrc})});
   DirectiveMapping object_src_mapping({DirectiveStatus({kObjectSrc})});
   DirectiveMapping worker_src_mapping({DirectiveStatus({kWorkerSrc})});
+  DirectiveMapping style_src_mapping({DirectiveStatus({kStyleSrc})});
   DirectiveMapping default_src_mapping({DirectiveStatus({kDefaultSrc})});
 
   DirectiveMapping* directive_mappings[] = {
-      &script_src_mapping,
-      &object_src_mapping,
-      &worker_src_mapping,
-      &default_src_mapping,
+      &script_src_mapping, &object_src_mapping,  &worker_src_mapping,
+      &style_src_mapping,  &default_src_mapping,
   };
 
   // Populate |directive_mappings|.
@@ -676,6 +678,9 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
 
   // "object-src" fallbacks to "default-src".
   fallback_if_necessary(&object_src_mapping, default_src_mapping);
+
+  // "style-src" fallbacks to "default-src".
+  fallback_if_necessary(&style_src_mapping, default_src_mapping);
 
   // "worker-src" fallbacks to "script-src", which might itself fallback to
   // "default-src".
@@ -719,8 +724,23 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
       continue;
     }
 
-    if (!is_secure_directive(*mapping, error))
+    std::u16string insecure_directive_error_or_warning;
+    if (!is_secure_directive(*mapping, &insecure_directive_error_or_warning)) {
+      // TODO(crbug.com/1016997): Special accommodation for "style-src": Allow
+      // extensions to not specify a safe value for "style-src" till M93 but
+      // raise an install warning.
+      if (mapping == &style_src_mapping) {
+        std::string warning =
+            base::UTF16ToASCII(insecure_directive_error_or_warning);
+        warning += " This will cause an error beginning M93.";
+        warnings.push_back(
+            InstallWarning(std::move(warning), manifest_key.as_string()));
+        continue;
+      }
+
+      *error = std::move(insecure_directive_error_or_warning);
       return false;
+    }
 
     DCHECK(mapping->directive);
     secure_directives.insert(mapping->directive);

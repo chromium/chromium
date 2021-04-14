@@ -14,34 +14,31 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::csp_validator::ContentSecurityPolicyIsLegal;
-using extensions::csp_validator::GetEffectiveSandoxedPageCSP;
-using extensions::csp_validator::SanitizeContentSecurityPolicy;
-using extensions::csp_validator::ContentSecurityPolicyIsSandboxed;
-using extensions::csp_validator::OPTIONS_NONE;
-using extensions::csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;
-using extensions::csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
-using extensions::ErrorUtils;
-using extensions::InstallWarning;
-using extensions::Manifest;
-
+namespace extensions {
 namespace {
+
+using csp_validator::ContentSecurityPolicyIsLegal;
+using csp_validator::ContentSecurityPolicyIsSandboxed;
+using csp_validator::CSPParser;
+using csp_validator::GetEffectiveSandoxedPageCSP;
+using csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
+using csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;
+using csp_validator::OPTIONS_NONE;
+using csp_validator::SanitizeContentSecurityPolicy;
 
 std::string InsecureValueWarning(
     const std::string& directive,
     const std::string& value,
-    const std::string& manifest_key =
-        extensions::manifest_keys::kContentSecurityPolicy) {
+    const std::string& manifest_key = manifest_keys::kContentSecurityPolicy) {
   return ErrorUtils::FormatErrorMessage(
-      extensions::manifest_errors::kInvalidCSPInsecureValueIgnored,
-      manifest_key, value, directive);
+      manifest_errors::kInvalidCSPInsecureValueIgnored, manifest_key, value,
+      directive);
 }
 
 std::string MissingSecureSrcWarning(const std::string& manifest_key,
                                     const std::string& directive) {
   return ErrorUtils::FormatErrorMessage(
-      extensions::manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,
-      directive);
+      manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key, directive);
 }
 
 bool CSPEquals(const std::string& csp1, const std::string& csp2) {
@@ -62,15 +59,14 @@ struct SanitizedCSPResult {
 SanitizedCSPResult SanitizeCSP(const std::string& policy, int options) {
   SanitizedCSPResult result;
   result.csp = SanitizeContentSecurityPolicy(
-      policy, extensions::manifest_keys::kContentSecurityPolicy, options,
-      &result.warnings);
+      policy, manifest_keys::kContentSecurityPolicy, options, &result.warnings);
   return result;
 }
 
 SanitizedCSPResult SanitizeSandboxPageCSP(const std::string& policy) {
   SanitizedCSPResult result;
   result.csp = GetEffectiveSandoxedPageCSP(
-      policy, extensions::manifest_keys::kSandboxedPagesCSP, &result.warnings);
+      policy, manifest_keys::kSandboxedPagesCSP, &result.warnings);
   return result;
 }
 
@@ -157,8 +153,8 @@ TEST(ExtensionCSPValidator, IsLegal) {
 
 TEST(ExtensionCSPValidator, IsSecure) {
   auto missing_secure_src_warning = [](const std::string& directive) {
-    return MissingSecureSrcWarning(
-        extensions::manifest_keys::kContentSecurityPolicy, directive);
+    return MissingSecureSrcWarning(manifest_keys::kContentSecurityPolicy,
+                                   directive);
   };
 
   EXPECT_TRUE(CheckCSP(SanitizeCSP(std::string(), OPTIONS_ALLOW_UNSAFE_EVAL),
@@ -477,7 +473,7 @@ TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {
   auto insecure_value_warning = [](const std::string& directive,
                                    const std::string& value) {
     return InsecureValueWarning(directive, value,
-                                extensions::manifest_keys::kSandboxedPagesCSP);
+                                manifest_keys::kSandboxedPagesCSP);
   };
 
   EXPECT_TRUE(CheckCSP(
@@ -539,7 +535,6 @@ TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {
       insecure_value_warning("child-src", "http://foo.com")));
 }
 
-namespace extensions {
 namespace csp_validator {
 
 void PrintTo(const CSPParser::Directive& directive, ::std::ostream* os) {
@@ -550,10 +545,9 @@ void PrintTo(const CSPParser::Directive& directive, ::std::ostream* os) {
 }
 
 }  // namespace csp_validator
-}  // namespace extensions
 
 TEST(ExtensionCSPValidator, ParseCSP) {
-  using CSPParser = extensions::csp_validator::CSPParser;
+  using CSPParser = csp_validator::CSPParser;
   using DirectiveList = CSPParser::DirectiveList;
 
   struct TestCase {
@@ -600,8 +594,8 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
   auto insecure_value_error = [kManifestKey](const std::string& directive,
                                              const std::string& value) {
     return ErrorUtils::FormatErrorMessage(
-        extensions::manifest_errors::kInvalidCSPInsecureValueError,
-        kManifestKey, value, directive);
+        manifest_errors::kInvalidCSPInsecureValueError, kManifestKey, value,
+        directive);
   };
 
   auto missing_secure_src_error = [kManifestKey](const std::string& directive) {
@@ -611,9 +605,10 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
   struct {
     const char* policy;
     std::string expected_error;  // Empty if no error expected.
+    std::string expected_warning;  // Empty if no warning expected.
   } test_cases[] = {
       {"frame-src google.com; default-src yahoo.com; script-src 'self'; "
-       "worker-src; object-src http://localhost:80 'none'",
+       "worker-src; object-src http://localhost:80 'none'; style-src 'self'",
        ""},
       {"worker-src http://localhost google.com; script-src; object-src 'self'",
        insecure_value_error("worker-src", "google.com")},
@@ -627,16 +622,35 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
       {"script-src; worker-src 'self'; default-src google.com",
        insecure_value_error("object-src", "google.com")},
       // "worker-src" falls back to "script-src".
-      {"script-src 'self'; object-src 'none'; default-src google.com", ""},
+      {"script-src 'self'; object-src 'none'; style-src 'none'; default-src "
+       "google.com",
+       ""},
       {"script-src 'unsafe-eval'; worker-src; default-src;",
-       insecure_value_error("script-src", "'unsafe-eval'")}};
+       insecure_value_error("script-src", "'unsafe-eval'")},
+      {"script-src; object-src; style-src 'self';"},
+      {"script-src; object-src; style-src google.com;", "",
+       "'dummy_key': Insecure CSP value \"google.com\" in directive "
+       "'style-src'. This will cause an error beginning M93."},
+      {"script-src; object-src;", "",
+       "'dummy_key': CSP directive 'style-src' must be specified (either "
+       "explicitly, or implicitly via 'default-src') and must allow only "
+       "secure resources. This will cause an error beginning M93."}};
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.policy);
     std::u16string error;
-    bool result = extensions::csp_validator::DoesCSPDisallowRemoteCode(
-        test_case.policy, kManifestKey, &error);
+    std::vector<InstallWarning> warnings;
+    bool result = csp_validator::DoesCSPDisallowRemoteCode(
+        test_case.policy, kManifestKey, &error, warnings);
     EXPECT_EQ(test_case.expected_error.empty(), result);
     EXPECT_EQ(base::ASCIIToUTF16(test_case.expected_error), error);
+    EXPECT_EQ(test_case.expected_warning.empty(), warnings.empty());
+    if (!warnings.empty()) {
+      EXPECT_EQ(1u, warnings.size());
+      EXPECT_EQ(test_case.expected_warning, warnings[0].message);
+      EXPECT_EQ(kManifestKey, warnings[0].key);
+    }
   }
 }
+
+}  // namespace extensions
