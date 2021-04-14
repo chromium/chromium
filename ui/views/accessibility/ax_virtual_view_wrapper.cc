@@ -38,12 +38,6 @@ void AXVirtualViewWrapper::GetChildren(
 
 void AXVirtualViewWrapper::Serialize(ui::AXNodeData* out_node_data) {
   *out_node_data = virtual_view_->GetData();
-  View* owner_view = virtual_view_->GetOwnerView();
-  if (owner_view && owner_view->GetWidget()) {
-    gfx::Point offset;
-    View::ConvertPointToScreen(owner_view, &offset);
-    out_node_data->relative_bounds.bounds.Offset(offset.x(), offset.y());
-  }
 }
 
 ui::AXNodeID AXVirtualViewWrapper::GetUniqueId() const {

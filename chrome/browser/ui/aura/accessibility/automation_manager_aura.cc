@@ -27,7 +27,6 @@
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
-#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -73,8 +72,7 @@ void AutomationManagerAura::Enable() {
   }
 #endif
 
-  if (!automation_event_router_observer_.IsObserving() &&
-      !automation_event_router_interface_) {
+  if (!automation_event_router_observer_.IsObserving()) {
     automation_event_router_observer_.Observe(
         extensions::AutomationEventRouter::GetInstance());
   }
@@ -104,21 +102,6 @@ void AutomationManagerAura::OnViewEvent(views::View* view,
     return;
 
   views::AXAuraObjWrapper* obj = cache_->GetOrCreate(view);
-  if (!obj)
-    return;
-
-  PostEvent(obj->GetUniqueId(), event_type);
-}
-
-void AutomationManagerAura::OnVirtualViewEvent(
-    views::AXVirtualView* virtual_view,
-    ax::mojom::Event event_type) {
-  CHECK(virtual_view);
-
-  if (!enabled_)
-    return;
-
-  views::AXAuraObjWrapper* obj = virtual_view->GetOrCreateWrapper(cache_.get());
   if (!obj)
     return;
 

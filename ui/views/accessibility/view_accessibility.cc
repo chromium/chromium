@@ -458,7 +458,8 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
 }
 
 void ViewAccessibility::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
-  // Used for unit testing.
+  // On certain platforms, e.g. Chrome OS, we don't create any
+  // AXPlatformDelegates, so the base method in this file would be called.
   if (accessibility_events_callback_)
     accessibility_events_callback_.Run(nullptr, event_type);
 }
