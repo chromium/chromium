@@ -31,8 +31,7 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
     if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
       return;
     }
-    process_host->IncrementKeepAliveRefCount(
-        RenderProcessHost::KeepAliveSource::KEEP_ALIVE_HANDLE_FACTORY);
+    process_host->IncrementKeepAliveRefCount();
   }
   ~KeepAliveHandleImpl() override {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
@@ -40,8 +39,7 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
     if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
       return;
     }
-    process_host->DecrementKeepAliveRefCount(
-        RenderProcessHost::KeepAliveSource::KEEP_ALIVE_HANDLE_FACTORY);
+    process_host->DecrementKeepAliveRefCount();
   }
 
   KeepAliveHandleImpl(const KeepAliveHandleImpl&) = delete;

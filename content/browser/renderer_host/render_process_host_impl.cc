@@ -2149,7 +2149,7 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
 void RenderProcessHostImpl::CancelProcessShutdownDelayForUnload() {
   if (IsKeepAliveRefCountDisabled())
     return;
-  DecrementKeepAliveRefCount(KeepAliveSource::KEEP_ALIVE_SUBFRAME_UNLOAD);
+  DecrementKeepAliveRefCount();
 }
 
 void RenderProcessHostImpl::DelayProcessShutdownForUnload(
@@ -2158,7 +2158,7 @@ void RenderProcessHostImpl::DelayProcessShutdownForUnload(
   if (IsKeepAliveRefCountDisabled() || deleting_soon_ || fast_shutdown_started_)
     return;
 
-  IncrementKeepAliveRefCount(KeepAliveSource::KEEP_ALIVE_SUBFRAME_UNLOAD);
+  IncrementKeepAliveRefCount();
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
@@ -2665,21 +2665,19 @@ bool RenderProcessHostImpl::IsProcessBackgrounded() {
   return priority_.is_background();
 }
 
-void RenderProcessHostImpl::IncrementKeepAliveRefCount(KeepAliveSource source) {
+void RenderProcessHostImpl::IncrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!is_keep_alive_ref_count_disabled_);
   ++keep_alive_ref_count_;
-  keep_alive_sources_ += base::StringPrintf("%d+", static_cast<int>(source));
   if (keep_alive_ref_count_ == 1)
     GetRendererInterface()->SetSchedulerKeepActive(true);
 }
 
-void RenderProcessHostImpl::DecrementKeepAliveRefCount(KeepAliveSource source) {
+void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!is_keep_alive_ref_count_disabled_);
   DCHECK_GT(keep_alive_ref_count_, 0U);
   --keep_alive_ref_count_;
-  keep_alive_sources_ += base::StringPrintf("%d-", static_cast<int>(source));
   if (keep_alive_ref_count_ == 0) {
     Cleanup();
     GetRendererInterface()->SetSchedulerKeepActive(false);
