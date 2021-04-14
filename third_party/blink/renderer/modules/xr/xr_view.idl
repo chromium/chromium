@@ -24,4 +24,7 @@ enum XREye {
   readonly attribute boolean isFirstPersonObserver;
 
   [RuntimeEnabled=WebXRViewportScale] void requestViewportScale(double? scale);
+
+  [RuntimeEnabled=WebXRCameraAccess, SameObject]
+  readonly attribute XRCamera? camera;
 };

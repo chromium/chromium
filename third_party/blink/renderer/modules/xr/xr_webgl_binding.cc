@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
+#include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
@@ -146,29 +147,58 @@ WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
   return texture;
 }
 
-WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
-  // Verify that frame is currently active.
+WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
+                                             ExceptionState& exception_state) {
+  XRFrame* frame = camera->Frame();
+  DCHECK(frame);
+
+  XRSession* session = frame->session();
+  DCHECK(session);
+
+  if (!session->IsFeatureEnabled(
+          device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
+    DVLOG(2) << __func__ << ": raw camera access is not enabled on a session";
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        XRSession::kRawCameraAccessFeatureNotSupported);
+    return nullptr;
+  }
+
   if (!frame->IsActive()) {
+    DVLOG(2) << __func__ << ": frame is not active";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kInactiveFrame);
     return nullptr;
   }
 
-  if (frame != view->frame()) {
+  if (!frame->IsAnimationFrame()) {
+    DVLOG(2) << __func__ << ": frame is not animating";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kNonAnimationFrame);
     return nullptr;
   }
 
-  XRWebGLLayer* base_layer = view->session()->renderState()->baseLayer();
+  if (session_ != session) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Camera comes from a different session than this binding");
+    return nullptr;
+  }
+
+  XRWebGLLayer* base_layer = session->renderState()->baseLayer();
   DCHECK(base_layer);
 
   base::Optional<gpu::MailboxHolder> camera_image_mailbox_holder =
       base_layer->CameraImageMailboxHolder();
 
   if (!camera_image_mailbox_holder) {
+    DVLOG(3) << __func__ << ": camera image mailbox holder is not set";
     return nullptr;
   }
 
   GLuint texture_id = base_layer->CameraImageTextureId();
 
-  // This resource is owned by the renderer, and is freed OnFrameEnd();
+  // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
   WebGLUnownedTexture* texture = MakeGarbageCollected<WebGLUnownedTexture>(
       webgl_context_, texture_id, GL_TEXTURE_2D);
   return texture;

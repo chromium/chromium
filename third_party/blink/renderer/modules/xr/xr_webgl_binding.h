@@ -15,7 +15,7 @@ namespace blink {
 class ExceptionState;
 class WebGLRenderingContextBase;
 class WebGLTexture;
-class XRFrame;
+class XRCamera;
 class XRLightProbe;
 class XRSession;
 class XRView;
@@ -35,7 +35,9 @@ class XRWebGLBinding final : public ScriptWrappable {
   XRSession* session() const { return session_; }
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
-  WebGLTexture* getCameraImage(XRFrame*, XRView*);
+
+  WebGLTexture* getCameraImage(XRCamera* camera,
+                               ExceptionState& exception_state);
 
   XRWebGLDepthInformation* getDepthInformation(XRView* view,
                                                ExceptionState& exception_state);

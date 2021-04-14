@@ -10706,6 +10706,11 @@ interface XRCPUDepthInformation : XRDepthInformation
     getter data
     method constructor
     method getDepthInMeters
+interface XRCamera
+    attribute @@toStringTag
+    getter height
+    getter width
+    method constructor
 interface XRDOMOverlayState
     attribute @@toStringTag
     getter type
@@ -10931,6 +10936,7 @@ interface XRTransientInputHitTestSource
     method constructor
 interface XRView
     attribute @@toStringTag
+    getter camera
     getter eye
     getter isFirstPersonObserver
     getter projectionMatrix
@@ -10940,7 +10946,6 @@ interface XRView
     method requestViewportScale
 interface XRViewerPose : XRPose
     attribute @@toStringTag
-    getter cameraViews
     getter views
     method constructor
 interface XRViewport

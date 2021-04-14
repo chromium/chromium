@@ -60,13 +60,13 @@ enum XRSessionFeature {
 
   DOM_OVERLAY = 6,
   HIT_TEST = 7,
-  LIGHT_ESTIMATION = 8, // Experimental feature.
+  LIGHT_ESTIMATION = 8,
   ANCHORS = 9,
-  CAMERA_ACCESS = 10, // Experimental feature.
-  PLANE_DETECTION = 11, // Experimental feature.
-  DEPTH = 12, // Experimental feature.
-  IMAGE_TRACKING = 13, // Experimental feature.
-  HAND_INPUT = 14, // Experimental feature.
+  CAMERA_ACCESS = 10,
+  PLANE_DETECTION = 11,
+  DEPTH = 12,
+  IMAGE_TRACKING = 13,
+  HAND_INPUT = 14,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -775,6 +775,7 @@ struct XRFrameData {
   // across the process boundary for immersive-ar sessions. This assumes that
   // there exists a single camera.
   gpu.mojom.MailboxHolder? camera_image_buffer_holder;
+  gfx.mojom.Size? camera_image_size;
 
   // Depth data (if the device supports it and the environment integration is
   // enabled). This assumes that depth information is provided from a single

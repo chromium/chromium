@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class XRCamera;
 class XRFrame;
 class XRSession;
 class XRViewData;
@@ -37,6 +38,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   XRSession* session() const;
   DOMFloat32Array* projectionMatrix() const;
   XRRigidTransform* transform() const;
+  XRCamera* camera() const;
 
   // isFirstPersonObserver is only true for views that composed with a video
   // feed that is not directly displayed on the viewer device. Primarily this is
