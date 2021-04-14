@@ -16,6 +16,7 @@ class CSSParserContext;
 class CSSParserTokenStream;
 class CSSParserObserver;
 class CSSSelectorList;
+class Node;
 class StyleSheetContents;
 
 // FIXME: We should consider building CSSSelectors directly instead of using

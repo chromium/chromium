@@ -293,6 +293,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   friend class VisualRectMappingTest;
 
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
   // Use a type specific arena for LayoutObject
   template <typename T>
   static void* AllocateObject(size_t size) {
@@ -303,6 +304,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         state, size, BlinkGC::kLayoutObjectArenaIndex,
         GCInfoTrait<GCInfoFoldedType<LayoutObject>>::Index(), type_name);
   }
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
   // Anonymous objects should pass the document as their node, and they will
   // then automatically be marked as anonymous in the constructor.
