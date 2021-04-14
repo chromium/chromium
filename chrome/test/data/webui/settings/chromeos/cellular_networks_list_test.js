@@ -13,7 +13,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 // #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // clang-format on
 
@@ -87,6 +87,7 @@ suite('CellularNetworksList', function() {
   }
 
   test('Tether, cellular and eSIM profiles', async () => {
+    eSimManagerRemote.addEuiccForTest(2);
     init();
     browserProxy.setInstantTetheringStateForTest(
         settings.MultiDeviceFeatureState.ENABLED_BY_USER);
@@ -109,8 +110,6 @@ suite('CellularNetworksList', function() {
       OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
       OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether2'),
     ]);
-
-    eSimManagerRemote.addEuiccForTest(2);
     addPSimSlot();
 
     await flushAsync();
@@ -134,7 +133,6 @@ suite('CellularNetworksList', function() {
       async () => {
         eSimManagerRemote.addEuiccForTest(0);
         init();
-
         await flushAsync();
         const esimNoNetworkAnchor =
             cellularNetworkList.$$('#eSimNoNetworkFound')
@@ -154,6 +152,7 @@ suite('CellularNetworksList', function() {
   test('Show EID and QR code popup', async () => {
     eSimManagerRemote.addEuiccForTest(1);
     init();
+    await flushAsync();
     let eidPopup = cellularNetworkList.$$('.eid-popup');
     assertFalse(!!eidPopup);
     const eidPopupBtn = cellularNetworkList.$$('#eidPopupButton');
@@ -264,4 +263,66 @@ suite('CellularNetworksList', function() {
             showErrorToastEvent.detail,
             cellularNetworkList.i18n('eSimNoConnectionErrorToast'));
       });
+
+  test('Fire show cellular setup event on add cellular clicked', async () => {
+    eSimManagerRemote.addEuiccForTest(1);
+    init();
+    const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular_esim1');
+    eSimNetwork1.typeProperties.cellular.eid =
+        '11111111111111111111111111111111';
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular1'),
+      eSimNetwork1,
+    ]);
+    cellularNetworkList.cellularDeviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
+    };
+    cellularNetworkList.globalPolicy = {
+      allowOnlyPolicyNetworksToConnect: true,
+    };
+    await flushAsync();
+
+    // When policy is enabled add cellular button should not be shown.
+    let addESimButton = cellularNetworkList.$$('#addESimButton');
+    assertFalse(!!addESimButton);
+
+    cellularNetworkList.globalPolicy = {
+      allowOnlyPolicyNetworksToConnect: false,
+    };
+
+    await flushAsync();
+    addESimButton = cellularNetworkList.$$('#addESimButton');
+    assertTrue(!!addESimButton);
+    assertFalse(addESimButton.disabled);
+
+    // When device is inhibited add cellular button should be disabled.
+    cellularNetworkList.cellularDeviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile
+    };
+    await flushAsync();
+    assertTrue(!!addESimButton);
+    assertTrue(addESimButton.disabled);
+
+    // Device is not inhibited and policy is also false add cellular button
+    // should be enabled
+    cellularNetworkList.cellularDeviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
+    };
+    await flushAsync();
+    assertTrue(!!addESimButton);
+    assertFalse(addESimButton.disabled);
+
+    const showCellularSetupPromise =
+        test_util.eventToPromise('show-cellular-setup', cellularNetworkList);
+    addESimButton.click();
+    await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
+  });
 });

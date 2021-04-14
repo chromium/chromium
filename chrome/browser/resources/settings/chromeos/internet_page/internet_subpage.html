@@ -108,17 +108,6 @@
           [[getOffOnString_(deviceState,
             '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
         </div>
-        <template is="dom-if"
-            if="[[showAddCellularButton_(deviceState, globalPolicy)]]">
-          <!-- The add button in this row is only shown for Mobile networks. -->
-          <cr-icon-button class="icon-add-cellular add-button"
-              aria-label="$i18n{internetAddCellular}" id="addCellularButton"
-              disabled="[[isDeviceInhibited_(deviceState,
-                deviceState.inhibitReason)]]"
-              tabindex$="[[tabindex]]" on-click="onAddCellularButtonTap_"
-              deep-link-focus-id$="[[Setting.kCellularAddNetwork]]">
-          </cr-icon-button>
-        </template>
         <!-- The add button in this row is only shown for WiFi networks. -->
         <cr-icon-button class="icon-add-wifi add-button" id="addWifiButton"
             hidden$="[[!showAddWifiButton_(deviceState, globalPolicy)]]"
@@ -188,6 +177,7 @@
               on-selected="onNetworkSelected_"
               cellular-device-state="[[deviceState]]"
               tether-device-state="[[tetherDeviceState]]"
+              global-policy="[[globalPolicy]]"
               is-connected-to-non-cellular-network="[isConnectedToNonCellularNetwork]]">
           </cellular-networks-list>
         </template>

@@ -202,31 +202,42 @@ Polymer({
    * @return {boolean}
    */
   beforeDeepLinkAttempt(settingId) {
-    if (settingId !== chromeos.settings.mojom.Setting.kInstantTetheringOnOff) {
-      // Continue with deep linking attempt.
-      return true;
+    if (settingId === chromeos.settings.mojom.Setting.kCellularAddNetwork) {
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        const deepLinkElement =
+            this.$$('cellular-networks-list').getAddEsimButton();
+        if (!deepLinkElement || deepLinkElement.hidden) {
+          console.warn(`Element with deep link id ${settingId} not focusable.`);
+          return;
+        }
+        this.showDeepLinkElement(deepLinkElement);
+      });
+      return false;
     }
 
-    // Wait for element to load.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      // If both Cellular and Instant Tethering are enabled, we show a special
-      // toggle for Instant Tethering. If it exists, deep link to it.
-      const tetherEnabled = this.$$('#tetherEnabledButton');
-      if (tetherEnabled) {
-        this.showDeepLinkElement(tetherEnabled);
-        return;
-      }
-      // Otherwise, the device does not support Cellular and Instant Tethering
-      // on/off is controlled by the top-level "Mobile data" toggle instead.
-      const deviceEnabled = this.$$('#deviceEnabledButton');
-      if (deviceEnabled) {
-        this.showDeepLinkElement(deviceEnabled);
-        return;
-      }
-      console.warn(`Element with deep link id ${settingId} not focusable.`);
-    });
-    // Stop deep link attempt since we completed it manually.
-    return false;
+    if (settingId === chromeos.settings.mojom.Setting.kInstantTetheringOnOff) {
+      // Wait for element to load.
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        // If both Cellular and Instant Tethering are enabled, we show a special
+        // toggle for Instant Tethering. If it exists, deep link to it.
+        const tetherEnabled = this.$$('#tetherEnabledButton');
+        if (tetherEnabled) {
+          this.showDeepLinkElement(tetherEnabled);
+          return;
+        }
+        // Otherwise, the device does not support Cellular and Instant Tethering
+        // on/off is controlled by the top-level "Mobile data" toggle instead.
+        const deviceEnabled = this.$$('#deviceEnabledButton');
+        if (deviceEnabled) {
+          this.showDeepLinkElement(deviceEnabled);
+          return;
+        }
+        console.warn(`Element with deep link id ${settingId} not focusable.`);
+      });
+      // Stop deep link attempt since we completed it manually.
+      return false;
+    }
+    return true;
   },
 
   /**
@@ -625,23 +636,6 @@ Polymer({
     return this.allowAddConnection_(deviceState, globalPolicy);
   },
 
-  /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
-   * @param {!mojom.GlobalPolicy} globalPolicy
-   * @return {boolean}
-   * @private
-   */
-  showAddCellularButton_(deviceState, globalPolicy) {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
-
-    if (!deviceState || deviceState.type !== mojom.NetworkType.kCellular) {
-      return false;
-    }
-    return this.allowAddConnection_(deviceState, globalPolicy);
-  },
-
   /** @private */
   onAddWifiButtonTap_() {
     assert(this.deviceState, 'Device state is falsey - Wifi expected.');
@@ -656,14 +650,6 @@ Polymer({
     const type = this.deviceState.type;
     assert(type === mojom.NetworkType.kVPN, 'VPN type expected.');
     this.fire('show-config', {type: OncMojo.getNetworkTypeString(type)});
-  },
-
-  /** @private */
-  onAddCellularButtonTap_() {
-    assert(this.deviceState, 'Device state is falsey - Cellular expected.');
-    const type = this.deviceState.type;
-    assert(type === mojom.NetworkType.kCellular, 'Cellular type expected.');
-    this.fire('show-cellular-setup');
   },
 
   /**
