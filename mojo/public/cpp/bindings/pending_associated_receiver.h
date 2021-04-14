@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
@@ -90,8 +91,8 @@ class PendingAssociatedReceiver {
     handle_.ResetWithReason(custom_reason, description);
   }
 
-  PendingAssociatedRemote<Interface> InitWithNewEndpointAndPassRemote()
-      WARN_UNUSED_RESULT;
+  REINITIALIZES_AFTER_MOVE PendingAssociatedRemote<Interface>
+  InitWithNewEndpointAndPassRemote() WARN_UNUSED_RESULT;
 
   // Associates this endpoint with a dedicated message pipe. This allows the
   // entangled AssociatedReceiver/AssociatedRemote endpoints to be used without

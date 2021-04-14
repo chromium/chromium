@@ -136,7 +136,8 @@ class PendingReceiver {
   // Creates a new message pipe, retaining one end in the PendingReceiver
   // (making it valid) and returning the other end as its entangled
   // PendingRemote. May only be called on an invalid PendingReceiver.
-  PendingRemote<Interface> InitWithNewPipeAndPassRemote() WARN_UNUSED_RESULT;
+  REINITIALIZES_AFTER_MOVE PendingRemote<Interface>
+  InitWithNewPipeAndPassRemote() WARN_UNUSED_RESULT;
 
   // For internal Mojo use only.
   internal::PendingReceiverState* internal_state() { return &state_; }
