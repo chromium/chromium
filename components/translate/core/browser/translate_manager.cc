@@ -746,9 +746,9 @@ void TranslateManager::RecordTranslateEvent(int event_type) {
       event_type, translate_driver_->GetUkmSourceId(), translate_event_.get());
 }
 
-bool TranslateManager::ShouldOverrideDecision(int event_type) {
-  return translate_ranker_->ShouldOverrideDecision(
-      event_type, translate_driver_->GetUkmSourceId(), translate_event_.get());
+bool TranslateManager::ShouldOverrideMatchesPreviousLanguageDecision() {
+  return translate_ranker_->ShouldOverrideMatchesPreviousLanguageDecision(
+      translate_driver_->GetUkmSourceId(), translate_event_.get());
 }
 
 bool TranslateManager::ShouldSuppressBubbleUI(
@@ -759,23 +759,10 @@ bool TranslateManager::ShouldSuppressBubbleUI(
   // continue offering translation after the user navigates
   // to another page.
   if (!language_state_.HasLanguageChanged() &&
-      !ShouldOverrideDecision(
-          metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE)) {
+      !ShouldOverrideMatchesPreviousLanguageDecision()) {
     TranslateBrowserMetrics::ReportInitiationStatus(
         TranslateBrowserMetrics::
             INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE);
-    return true;
-  }
-
-  // Suppress the UI if the user denied translation for this language
-  // too often.
-  if (!triggered_from_menu &&
-      translate_client_->GetTranslatePrefs()->IsTooOftenDenied(
-          source_language) &&
-      !ShouldOverrideDecision(
-          metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST)) {
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED);
     return true;
   }
 

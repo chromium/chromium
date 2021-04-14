@@ -108,8 +108,7 @@ class TranslateRankerImpl : public TranslateRanker {
       int event_type,
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) override;
-  bool ShouldOverrideDecision(
-      int event_type,
+  bool ShouldOverrideMatchesPreviousLanguageDecision(
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) override;
 

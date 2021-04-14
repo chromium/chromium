@@ -24,7 +24,6 @@ class PrefService;
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 }  // namespace base
 
 namespace user_prefs {
@@ -70,35 +69,6 @@ constexpr int kNeverTranslateShortcutMinimumDenials = 3;
 #endif
 
 class TranslateAcceptLanguages;
-
-// Allows updating denial times for a specific language while maintaining the
-// maximum list size and ensuring PrefObservers are notified of change values.
-class DenialTimeUpdate {
- public:
-  DenialTimeUpdate(PrefService* prefs,
-                   base::StringPiece language,
-                   size_t max_denial_count);
-  ~DenialTimeUpdate();
-
-  // Gets the list of timestamps when translation was denied. Guaranteed to
-  // be non-null, potentially inserts a new listvalue into the dictionary if
-  // necessary.
-  base::ListValue* GetDenialTimes();
-
-  // Gets the oldest denial time on record. Will return base::Time::max() if
-  // no denial time has been recorded yet.
-  base::Time GetOldestDenialTime();
-
-  // Records a new denial time. Does not ensure ordering of denial times - it is
-  // up to the user to ensure times are in monotonic order.
-  void AddDenialTime(base::Time denial_time);
-
- private:
-  DictionaryPrefUpdate denial_time_dict_update_;
-  std::string language_;
-  size_t max_denial_count_;
-  base::ListValue* time_list_;  // Weak, owned by the containing prefs service.
-};
 
 // This class holds various info about a language, that are related to Translate
 // Preferences and Language Settings.
@@ -309,15 +279,6 @@ class TranslatePrefs {
   bool GetExplicitLanguageAskPromptShown() const;
   void SetExplicitLanguageAskPromptShown(bool shown);
 #endif
-
-  // Update the last time on closing the Translate UI without translation.
-  void UpdateLastDeniedTime(base::StringPiece language);
-
-  // Returns true if translation is denied too often.
-  bool IsTooOftenDenied(base::StringPiece language) const;
-
-  // Resets the prefs of denial state. Only used internally for diagnostics.
-  void ResetDenialState();
 
   // Gets the full (policy-forced and user selected) language list from language
   // settings.

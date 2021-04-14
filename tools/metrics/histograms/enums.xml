@@ -77927,7 +77927,7 @@ Full version information for the fingerprint enum values:
   <int value="11" label="Disabled by Key"/>
   <int value="12" label="Language in ULP"/>
   <int value="13" label="Aborted by translate ranker"/>
-  <int value="14" label="Aborted by too often denied rule"/>
+  <int value="14" label="[Deprecated] Aborted by too often denied rule"/>
   <int value="15" label="Aborted by matches previous language"/>
   <int value="16" label="Decision made to create infobar on Android"/>
   <int value="17" label="Show omnibar icon to the user"/>

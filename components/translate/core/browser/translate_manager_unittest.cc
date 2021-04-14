@@ -116,7 +116,8 @@ using ::testing::ElementsAre;
 // The constructor of this class is used to register preferences before
 // TranslatePrefs gets created.
 struct ProfilePrefRegistration {
-  ProfilePrefRegistration(sync_preferences::TestingPrefServiceSyncable* prefs) {
+  explicit ProfilePrefRegistration(
+      sync_preferences::TestingPrefServiceSyncable* prefs) {
     language::LanguagePrefs::RegisterProfilePrefs(prefs->registry());
     prefs->SetString(accept_languages_prefs, std::string());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -169,14 +170,6 @@ class TranslateManagerTest : public ::testing::Test {
         has_language_changed ? "en" : "de", true);
     EXPECT_EQ(has_language_changed,
               translate_manager_->GetLanguageState()->HasLanguageChanged());
-  }
-
-  void SetLanguageTooOftenDenied(const std::string& language) {
-    translate_prefs_.UpdateLastDeniedTime(language);
-    translate_prefs_.UpdateLastDeniedTime(language);
-
-    EXPECT_TRUE(translate_prefs_.IsTooOftenDenied(language));
-    EXPECT_FALSE(translate_prefs_.IsTooOftenDenied("other_language"));
   }
 
   void InitTranslateEvent(const std::string& src_lang,
@@ -855,24 +848,26 @@ TEST_F(TranslateManagerTest, TestRecordTranslateEvent) {
       ::metrics::TranslateEventProto::USER_ACCEPT);
 }
 
-TEST_F(TranslateManagerTest, TestShouldOverrideDecision) {
+TEST_F(TranslateManagerTest,
+       TestShouldOverrideMatchesPreviousLanguageDecision) {
   PrepareTranslateManager();
-  const int kEventType = 1;
   EXPECT_CALL(
       mock_translate_ranker_,
-      ShouldOverrideDecision(
-          kEventType, _,
+      ShouldOverrideMatchesPreviousLanguageDecision(
+          _,
           Pointee(EqualsTranslateEventProto(::metrics::TranslateEventProto()))))
       .WillOnce(Return(false));
-  EXPECT_FALSE(translate_manager_->ShouldOverrideDecision(kEventType));
+  EXPECT_FALSE(
+      translate_manager_->ShouldOverrideMatchesPreviousLanguageDecision());
 
   EXPECT_CALL(
       mock_translate_ranker_,
-      ShouldOverrideDecision(
-          kEventType, _,
+      ShouldOverrideMatchesPreviousLanguageDecision(
+          _,
           Pointee(EqualsTranslateEventProto(::metrics::TranslateEventProto()))))
       .WillOnce(Return(true));
-  EXPECT_TRUE(translate_manager_->ShouldOverrideDecision(kEventType));
+  EXPECT_TRUE(
+      translate_manager_->ShouldOverrideMatchesPreviousLanguageDecision());
 }
 
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Default) {
@@ -887,10 +882,8 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Default) {
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_HasLanguageChangedFalse) {
   PrepareTranslateManager();
   SetHasLanguageChanged(false);
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideDecision(
-          ::metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, _, _))
+  EXPECT_CALL(mock_translate_ranker_,
+              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
       .WillOnce(Return(false));
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
@@ -898,7 +891,8 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_HasLanguageChangedFalse) {
       kInitiationStatusName,
       metrics::INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE, 1);
 
-  EXPECT_CALL(mock_translate_ranker_, ShouldOverrideDecision(_, _, _))
+  EXPECT_CALL(mock_translate_ranker_,
+              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
       .WillOnce(Return(false));
 
   EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI(true, "en"));
@@ -907,41 +901,13 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_HasLanguageChangedFalse) {
       metrics::INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE, 2);
 }
 
-TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_IsTooOftenDenied) {
-  PrepareTranslateManager();
-  SetHasLanguageChanged(true);
-  SetLanguageTooOftenDenied("en");
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideDecision(
-          ::metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-          _, _))
-      .WillOnce(Return(false));
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(false, "de"));
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(true, "en"));
-  histogram_tester.ExpectUniqueSample(
-      kInitiationStatusName,
-      metrics::INITIATION_STATUS_ABORTED_BY_TOO_OFTEN_DENIED, 1);
-}
-
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Override) {
   PrepareTranslateManager();
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideDecision(
-          ::metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, _, _))
-      .WillOnce(Return(true));
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideDecision(
-          ::metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-          _, _))
+  EXPECT_CALL(mock_translate_ranker_,
+              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
       .WillOnce(Return(true));
   SetHasLanguageChanged(false);
-  SetLanguageTooOftenDenied("en");
   EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
 }

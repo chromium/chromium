@@ -528,26 +528,27 @@ TEST_F(TranslateRankerImplTest, EnableLoggingClearsCache) {
   EXPECT_EQ(0U, flushed_events.size());
 }
 
-TEST_F(TranslateRankerImplTest, ShouldOverrideDecision_OverrideDisabled) {
+TEST_F(TranslateRankerImplTest,
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideDisabled) {
   InitFeatures({}, {kTranslateRankerPreviousLanguageMatchesOverride});
   std::unique_ptr<translate::TranslateRankerImpl> ranker =
       GetRankerForTest(0.0f);
   ranker->EnableLogging(true);
-  const int kEventType = 12;
   metrics::TranslateEventProto translate_event = CreateDefaultTranslateEvent();
 
-  EXPECT_FALSE(ranker->ShouldOverrideDecision(kEventType, kUkmSourceId0,
-                                              &translate_event));
+  EXPECT_FALSE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
+      kUkmSourceId0, &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
   EXPECT_EQ(1U, flushed_events.size());
   ASSERT_EQ(translate_event.source_language(),
             flushed_events[0].source_language());
-  ASSERT_EQ(kEventType, flushed_events[0].event_type());
+  ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
+            flushed_events[0].event_type());
 }
 
-TEST_F(TranslateRankerImplTest, ShouldOverrideDecision) {
+TEST_F(TranslateRankerImplTest, ShouldOverrideMatchesPreviousLanguageDecision) {
   InitFeatures({}, {kTranslateRankerQuery, kTranslateRankerEnforcement,
                     kTranslateRankerPreviousLanguageMatchesOverride});
   std::unique_ptr<translate::TranslateRankerImpl> ranker =
@@ -566,21 +567,15 @@ TEST_F(TranslateRankerImplTest, ShouldOverrideDecision) {
   // response.
   EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
       &translate_event, &mock_translate_metrics_logger));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_FALSE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
-  EXPECT_FALSE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, kUkmSourceId0,
-      &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
-  // When an ShouldOverrideDecision returns false, the event is finalized and is
-  // expected to be in the next flush.
+  // When ShouldOverrideMatchesPreviousLanguageDecision returns false, the event
+  // is finalized and is expected to be in the next flush.
   EXPECT_EQ(1U, flushed_events.size());
-  ASSERT_EQ(1, translate_event.decision_overrides_size());
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-            translate_event.decision_overrides(0));
+  ASSERT_EQ(0, translate_event.decision_overrides_size());
   ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             translate_event.event_type());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -588,7 +583,7 @@ TEST_F(TranslateRankerImplTest, ShouldOverrideDecision) {
 }
 
 TEST_F(TranslateRankerImplTest,
-       ShouldOverrideDecision_PreviousLanguageMatchesOverrideEnabled) {
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideEnabled) {
   InitFeatures({kTranslateRankerPreviousLanguageMatchesOverride},
                {kTranslateRankerQuery, kTranslateRankerEnforcement});
   std::unique_ptr<translate::TranslateRankerImpl> ranker =
@@ -607,21 +602,15 @@ TEST_F(TranslateRankerImplTest,
   // response.
   EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
       &translate_event, &mock_translate_metrics_logger));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, kUkmSourceId0,
-      &translate_event));
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_TRUE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
 
   std::vector<metrics::TranslateEventProto> flushed_events;
   ranker->FlushTranslateEvents(&flushed_events);
   EXPECT_EQ(0U, flushed_events.size());
-  ASSERT_EQ(2, translate_event.decision_overrides_size());
+  ASSERT_EQ(1, translate_event.decision_overrides_size());
   ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             translate_event.decision_overrides(0));
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
-            translate_event.decision_overrides(1));
   ASSERT_EQ(metrics::TranslateEventProto::UNKNOWN,
             translate_event.event_type());
   EXPECT_EQ(metrics::TranslateEventProto::NOT_QUERIED,
@@ -629,7 +618,7 @@ TEST_F(TranslateRankerImplTest,
 }
 
 TEST_F(TranslateRankerImplTest,
-       ShouldOverrideDecision_OverrideAndQueryEnabled) {
+       ShouldOverrideMatchesPreviousLanguageDecision_OverrideAndQueryEnabled) {
   InitFeatures(
       {kTranslateRankerPreviousLanguageMatchesOverride, kTranslateRankerQuery},
       {kTranslateRankerEnforcement});
@@ -650,9 +639,7 @@ TEST_F(TranslateRankerImplTest,
   // does not suppress the UI.
   EXPECT_TRUE(GetRankerForTest(0.99f)->ShouldOfferTranslation(
       &translate_event, &mock_translate_metrics_logger));
-
-  EXPECT_TRUE(ranker->ShouldOverrideDecision(
-      metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  EXPECT_TRUE(ranker->ShouldOverrideMatchesPreviousLanguageDecision(
       kUkmSourceId0, &translate_event));
   ranker->RecordTranslateEvent(
       metrics::TranslateEventProto::USER_NEVER_TRANSLATE_LANGUAGE,
@@ -662,7 +649,7 @@ TEST_F(TranslateRankerImplTest,
 
   EXPECT_EQ(1U, flushed_events.size());
   ASSERT_EQ(1, flushed_events[0].decision_overrides_size());
-  ASSERT_EQ(metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_AUTO_BLACKLIST,
+  ASSERT_EQ(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE,
             flushed_events[0].decision_overrides(0));
   ASSERT_EQ(metrics::TranslateEventProto::USER_NEVER_TRANSLATE_LANGUAGE,
             flushed_events[0].event_type());

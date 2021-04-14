@@ -52,9 +52,8 @@ class MockTranslateRanker : public TranslateRanker {
                void(int event_type,
                     ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
-  MOCK_METHOD3(ShouldOverrideDecision,
-               bool(int event_type,
-                    ukm::SourceId ukm_source_id,
+  MOCK_METHOD2(ShouldOverrideMatchesPreviousLanguageDecision,
+               bool(ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
 
  private:

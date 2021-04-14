@@ -214,10 +214,9 @@ class TranslateManager {
       const std::string& page_language_code,
       const std::string& target_language_code);
 
-  // Returns true if the decision should be overridden and logs the event
-  // appropriately. |event_type| must be one of the
-  // values defined by metrics::TranslateEventProto::EventType.
-  bool ShouldOverrideDecision(int event_type);
+  // Returns true if the MATCHES_PREVIOUS_LANGUAGE decision should be overridden
+  // and logs the event appropriately.
+  bool ShouldOverrideMatchesPreviousLanguageDecision();
 
   // Returns true if the BubbleUI should be suppressed.
   bool ShouldSuppressBubbleUI(bool triggered_from_menu,

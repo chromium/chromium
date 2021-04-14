@@ -183,7 +183,7 @@ TranslateUIDelegate::TranslateUIDelegate(
   }
 }
 
-TranslateUIDelegate::~TranslateUIDelegate() {}
+TranslateUIDelegate::~TranslateUIDelegate() = default;
 
 void TranslateUIDelegate::MaybeSetContentLanguages() {
   std::string locale =
@@ -341,7 +341,6 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
     if (explicitly_closed) {
       prefs_->ResetTranslationAcceptedCount(language);
       prefs_->IncrementTranslationDeniedCount(language);
-      prefs_->UpdateLastDeniedTime(language);
     } else {
       prefs_->IncrementTranslationIgnoredCount(language);
     }

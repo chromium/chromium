@@ -59,8 +59,7 @@ void TranslateInternalsHandler::GetLanguages(base::DictionaryValue* dict) {
   std::vector<std::string> language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
 
-  for (auto it = language_codes.begin(); it != language_codes.end(); ++it) {
-    const std::string& lang_code = *it;
+  for (auto& lang_code : language_codes) {
     std::u16string lang_name =
         l10n_util::GetDisplayNameForLocale(lang_code, app_locale, false);
     dict->SetString(lang_code, lang_name);
@@ -188,8 +187,6 @@ void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
     if (!args->GetString(2, &to))
       return;
     translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
-  } else if (pref_name == "too_often_denied") {
-    translate_prefs->ResetDenialState();
   } else {
     return;
   }
@@ -249,8 +246,6 @@ void TranslateInternalsHandler::SendPrefsToJs() {
       translate::TranslatePrefs::kPrefTranslateDeniedCount,
       translate::TranslatePrefs::kPrefTranslateIgnoredCount,
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,
-      translate::TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage,
-      translate::TranslatePrefs::kPrefTranslateTooOftenDeniedForLanguage,
       language::prefs::kAcceptLanguages,
   };
   for (const char* key : keys) {

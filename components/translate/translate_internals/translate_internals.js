@@ -226,16 +226,10 @@ function onPrefsUpdated(detail) {
     });
   }
 
-  let p = $('prefs-too-often-denied');
-  p.classList.toggle(
-      'prefs-setting-disabled', !detail['translate_too_often_denied']);
-  p.appendChild(createDismissingButton(
-      chrome.send.bind(null, 'removePrefItem', ['too_often_denied'])));
-
   if ('translate_recent_target' in detail) {
     const recentTarget = detail['translate_recent_target'];
 
-    p = $('recent-override');
+    const p = $('recent-override');
 
     p.innerHTML = emptyHTML();
 
@@ -244,7 +238,7 @@ function onPrefsUpdated(detail) {
     });
   }
 
-  p = document.querySelector('#prefs-dump p');
+  const p = document.querySelector('#prefs-dump p');
   const content = JSON.stringify(detail, null, 2);
   p.textContent = content;
 }

@@ -38,8 +38,6 @@ using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
-const char kTestLanguage[] = "en";
-
 }  // namespace
 
 namespace translate {
@@ -76,16 +74,6 @@ class TranslatePrefsTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kOfferTranslateEnabled, true,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
-
-  void SetLastDeniedTime(const std::string& language, base::Time time) {
-    DenialTimeUpdate update(&prefs_, language, 2);
-    update.AddDenialTime(time);
-  }
-
-  base::Time GetLastDeniedTime(const std::string& language) {
-    DenialTimeUpdate update(&prefs_, language, 2);
-    return update.GetOldestDenialTime();
   }
 
   void ExpectBlockedLanguageListContent(
@@ -142,124 +130,6 @@ class TranslatePrefsTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(TranslatePrefsTest, UpdateLastDeniedTime) {
-  // Test that denials with more than 24 hours difference between them do not
-  // block the language.
-  translate_prefs_->ResetDenialState();
-  SetLastDeniedTime(kTestLanguage, two_days_ago_);
-  ASSERT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  base::Time last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // Ensure the first use simply writes the update time.
-  translate_prefs_->ResetDenialState();
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // If it's denied again within the 24 hour period, language should be
-  // permanently denied.
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_TRUE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // If the language is already permanently denied, don't bother updating the
-  // last_denied time.
-  ASSERT_TRUE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-  SetLastDeniedTime(kTestLanguage, two_days_ago_);
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_EQ(last_denied, two_days_ago_);
-}
-
-// Test that the default value for non-existing entries is base::Time::Null().
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_DefaultTimeIsNull) {
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  EXPECT_TRUE(update.GetOldestDenialTime().is_null());
-}
-
-// Test that non-existing entries automatically create a ListValue.
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_ForceListExistence) {
-  DictionaryPrefUpdate dict_update(
-      &prefs_, TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage);
-  base::DictionaryValue* denial_dict = dict_update.Get();
-  EXPECT_TRUE(denial_dict);
-
-  base::ListValue* list_value = nullptr;
-  bool has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_FALSE(has_list);
-
-  // Calling GetDenialTimes will force creation of a properly populated list.
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  base::ListValue* time_list = update.GetDenialTimes();
-  EXPECT_TRUE(time_list);
-  EXPECT_EQ(0U, time_list->GetSize());
-}
-
-// Test that an existing update time record (which is a double in a dict)
-// is automatically migrated to a list of update times instead.
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_Migrate) {
-  translate_prefs_->ResetDenialState();
-  DictionaryPrefUpdate dict_update(
-      &prefs_, TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage);
-  base::DictionaryValue* denial_dict = dict_update.Get();
-  EXPECT_TRUE(denial_dict);
-  denial_dict->SetDouble(kTestLanguage, two_days_ago_.ToJsTime());
-
-  base::ListValue* list_value = nullptr;
-  bool has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_FALSE(has_list);
-
-  // Calling GetDenialTimes will force creation of a properly populated list.
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  base::ListValue* time_list = update.GetDenialTimes();
-  EXPECT_TRUE(time_list);
-
-  has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_TRUE(has_list);
-  EXPECT_EQ(time_list, list_value);
-  EXPECT_EQ(1U, time_list->GetSize());
-  EXPECT_EQ(two_days_ago_, update.GetOldestDenialTime());
-}
-
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_SlidingWindow) {
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 4);
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(5));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(4));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(3));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(4));
-
-  update.AddDenialTime(now_);
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(3));
-
-  update.AddDenialTime(now_);
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(2));
-}
 
 // Test that GetLanguageInfoList() returns the correct list of languages based
 // on the given locale.
