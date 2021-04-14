@@ -62,7 +62,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
                     ? x11::KeyEvent::Press
                     : x11::KeyEvent::Release,
       .detail = static_cast<x11::KeyCode>(keymap_key.keycode),
-      .time = static_cast<x11::Time>(gdk_event_get_time(gdk_event)),
+      .time = static_cast<x11::Time>(gtk::GdkEventGetTime(gdk_event)),
       .root = ui::GetX11RootWindow(),
       .event = static_cast<x11::Window>(
           gdk_x11_surface_get_xid(gdk_event_get_surface(gdk_event))),
@@ -88,7 +88,7 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
   // case.  ibus-gtk is used through gtk-immodule to support IMEs.
 
   auto event_type = gtk::GtkCheckVersion(4)
-                        ? gdk_event_get_event_type(gdk_event)
+                        ? gtk::GdkEventGetEventType(gdk_event)
                         : *reinterpret_cast<GdkEventType*>(gdk_event);
   switch (event_type) {
     case GDK_KEY_PRESS:

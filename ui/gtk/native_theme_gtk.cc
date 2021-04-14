@@ -108,8 +108,7 @@ NativeThemeGtk::NativeThemeGtk() {
 
     // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private,
     // so we need to initialize it indirectly.
-    auto model =
-        TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
+    auto model = TakeGObject(GTK_TREE_MODEL(GtkTreeStoreNew(G_TYPE_STRING)));
     auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
   }
 

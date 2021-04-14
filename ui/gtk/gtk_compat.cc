@@ -319,4 +319,37 @@ ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
           theme, icon, size, scale, direction, flags));
 }
 
+DISABLE_CFI_ICALL
+GtkWidget* GtkFileChooserDialogNew(const gchar* title,
+                                   GtkWindow* parent,
+                                   GtkFileChooserAction action,
+                                   const gchar* first_button_text,
+                                   GtkResponseType first_response,
+                                   const gchar* second_button_text,
+                                   GtkResponseType second_response) {
+  static void* create = DlSym(GetLibGtk(), "gtk_file_chooser_dialog_new");
+  return DlCast<GtkWidget*(const gchar*, GtkWindow*, GtkFileChooserAction,
+                           const gchar*, ...)>(create)(
+      title, parent, action, first_button_text, first_response,
+      second_button_text, second_response, nullptr);
+}
+
+DISABLE_CFI_ICALL
+GtkTreeStore* GtkTreeStoreNew(GType type) {
+  static void* create = DlSym(GetLibGtk(), "gtk_tree_store_new");
+  return DlCast<GtkTreeStore*(gint, ...)>(create)(1, type);
+}
+
+DISABLE_CFI_ICALL
+GdkEventType GdkEventGetEventType(GdkEvent* event) {
+  static void* get = DlSym(GetLibGtk(), "gdk_event_get_event_type");
+  return DlCast<GdkEventType(GdkEvent*)>(get)(event);
+}
+
+DISABLE_CFI_ICALL
+guint32 GdkEventGetTime(GdkEvent* event) {
+  static void* get = DlSym(GetLibGtk(), "gdk_event_get_time");
+  return DlCast<guint32(GdkEvent*)>(get)(event);
+}
+
 }  // namespace gtk

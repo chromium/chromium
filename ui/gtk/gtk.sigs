@@ -185,3 +185,4 @@ void gtk_widget_set_size_request(GtkWidget* widget, gint width, gint height);
 void gtk_widget_set_state_flags(GtkWidget* widget, GtkStateFlags flags, gboolean clear);
 void gtk_widget_show(GtkWidget* widget);
 void gtk_window_set_modal(GtkWindow* window, gboolean modal);
+void gtk_print_settings_set_printer(GtkPrintSettings* settings, const gchar* printer);

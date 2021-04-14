@@ -395,9 +395,9 @@ GtkWidget* SelectFileDialogImplGTK::CreateFileOpenHelper(
     const std::string& title,
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
-  GtkWidget* dialog = gtk_file_chooser_dialog_new(
+  GtkWidget* dialog = GtkFileChooserDialogNew(
       title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
-      GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT, nullptr);
+      GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
@@ -434,10 +434,10 @@ GtkWidget* SelectFileDialogImplGTK::CreateSelectFolderDialog(
                 IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)
           : GetOpenLabel();
 
-  GtkWidget* dialog = gtk_file_chooser_dialog_new(
+  GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
-      GTK_RESPONSE_ACCEPT, nullptr);
+      GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
   if (type == SELECT_UPLOAD_FOLDER || type == SELECT_EXISTING_FOLDER)
@@ -498,10 +498,10 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
       !title.empty() ? title
                      : l10n_util::GetStringUTF8(IDS_SAVE_AS_DIALOG_TITLE);
 
-  GtkWidget* dialog = gtk_file_chooser_dialog_new(
+  GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, GetSaveLabel(),
-      GTK_RESPONSE_ACCEPT, nullptr);
+      GTK_RESPONSE_ACCEPT);
   SetGtkTransientForAura(dialog, parent);
 
   AddFilters(GTK_FILE_CHOOSER(dialog));
