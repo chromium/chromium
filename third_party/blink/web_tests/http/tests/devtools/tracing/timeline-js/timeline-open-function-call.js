@@ -62,6 +62,6 @@
   PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   const event = PerformanceTestRunner.mainTrackEvents().find(
       e => e.name === TimelineModel.TimelineModel.RecordType.FunctionCall);
-  TestRunner.addResult(`${event.startTime} ${event.endTime}`);
+  TestRunner.addResult(`${event.name} ${event.startTime}`);
   TestRunner.completeTest();
 })();
