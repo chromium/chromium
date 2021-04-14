@@ -40,7 +40,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       const GURL& request_url,
       bool overridable,
       int64_t navigation_id,
-      base::OnceCallback<void(bool)> callback,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
   ~IOSSSLErrorHandler() override;
 
@@ -63,7 +62,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       const GURL& request_url,
       bool overridable,
       int64_t navigation_id,
-      base::OnceCallback<void(bool)> callback,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
 
   // Begins captive portal detection to determine which interstitial should be
@@ -100,10 +98,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   const bool overridable_ = false;
   // The id of the navigation.
   const int64_t navigation_id_ = 0;
-  // The callback to run after the user is done interacting with this
-  // interstitial. |proceed| will be true if the user wants to procced with the
-  // page load of |request_url_|, false otherwise.
-  base::OnceCallback<void(bool proceed)> callback_;
   // The callback to run for showing a committed interstitial.
   base::OnceCallback<void(NSString*)> blocking_page_callback_;
   // A timer to display the SSL interstitial if the captive portal detection

@@ -14,7 +14,6 @@
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/security/web_interstitial_impl.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -69,25 +68,6 @@ id<GREYMatcher> WebViewScrollView(WebState* web_state) {
 
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                               descriptionBlock:describe];
-}
-
-id<GREYMatcher> Interstitial(WebState* web_state) {
-  GREYMatchesBlock matches = ^BOOL(WKWebView* view) {
-    web::WebInterstitialImpl* interstitial =
-        static_cast<web::WebInterstitialImpl*>(web_state->GetWebInterstitial());
-    return interstitial &&
-           [view isDescendantOfView:interstitial->GetContentView()];
-  };
-
-  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:@"interstitial displayed"];
-  };
-
-  return grey_allOf(
-      WebViewInWebState(web_state),
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe],
-      nil);
 }
 
 }  // namespace web

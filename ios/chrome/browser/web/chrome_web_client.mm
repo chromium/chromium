@@ -373,7 +373,6 @@ void ChromeWebClient::PrepareErrorPage(
     std::move(error_html_callback)
         .Run(GetLegacyTLSErrorPageHTML(web_state, navigation_id));
   } else if (info.has_value()) {
-    base::OnceCallback<void(bool)> proceed_callback;
     base::OnceCallback<void(NSString*)> blocking_page_callback =
         base::BindOnce(^(NSString* blocking_page_html) {
           error_html = blocking_page_html;
@@ -382,7 +381,7 @@ void ChromeWebClient::PrepareErrorPage(
     IOSSSLErrorHandler::HandleSSLError(
         web_state, net::MapCertStatusToNetError(info.value().cert_status),
         info.value(), url, info.value().is_fatal_cert_error, navigation_id,
-        std::move(proceed_callback), std::move(blocking_page_callback));
+        std::move(blocking_page_callback));
   } else {
     std::move(error_html_callback)
         .Run(GetErrorPage(url, error, is_post, is_off_the_record));

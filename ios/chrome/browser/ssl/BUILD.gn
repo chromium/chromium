@@ -46,10 +46,7 @@ source_set("ssl") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "ios_captive_portal_blocking_page_unittest.mm",
-    "ios_ssl_error_handler_unittest.mm",
-  ]
+  sources = [ "ios_ssl_error_handler_unittest.mm" ]
   deps = [
     ":ssl",
     "//base/test:test_support",

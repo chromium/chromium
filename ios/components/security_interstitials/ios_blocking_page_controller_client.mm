@@ -11,7 +11,6 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
-#include "ios/web/public/security/web_interstitial.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -28,7 +27,6 @@ IOSBlockingPageControllerClient::IOSBlockingPageControllerClient(
     const std::string& app_locale)
     : security_interstitials::ControllerClient(std::move(metrics_helper)),
       web_state_(web_state),
-      web_interstitial_(nullptr),
       app_locale_(app_locale),
       weak_factory_(this) {
   web_state_->AddObserver(this);
@@ -38,11 +36,6 @@ IOSBlockingPageControllerClient::~IOSBlockingPageControllerClient() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
   }
-}
-
-void IOSBlockingPageControllerClient::SetWebInterstitial(
-    web::WebInterstitial* web_interstitial) {
-  web_interstitial_ = web_interstitial;
 }
 
 void IOSBlockingPageControllerClient::WebStateDestroyed(
@@ -87,8 +80,7 @@ void IOSBlockingPageControllerClient::GoBackAfterNavigationCommitted() {
 }
 
 void IOSBlockingPageControllerClient::Proceed() {
-  DCHECK(web_interstitial_);
-  web_interstitial_->Proceed();
+  NOTREACHED();
 }
 
 void IOSBlockingPageControllerClient::Reload() {

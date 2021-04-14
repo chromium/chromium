@@ -41,8 +41,6 @@ class LookalikeUrlBlockingPage
                            bool user_is_interacting,
                            web::WebFrame* sender_frame) override;
 
-  void AfterShow() override;
-
   web::WebState* web_state_ = nullptr;
   std::unique_ptr<LookalikeUrlControllerClient> controller_;
   // The URL suggested to the user as the safe URL. Can be empty, in which case

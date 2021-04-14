@@ -164,8 +164,6 @@ void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
   error_ui_->PopulateStringsForHtml(load_time_data);
 }
 
-void SafeBrowsingBlockingPage::AfterShow() {}
-
 #pragma mark - SafeBrowsingBlockingPage::SafeBrowsingControllerClient
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::

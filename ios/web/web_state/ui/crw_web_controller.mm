@@ -356,7 +356,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       // it is enabled again.
       [_containerView addGestureRecognizer:[self touchTrackingRecognizer]];
     } else {
-      self.webStateImpl->ClearTransientContent();
       if (_touchTrackingRecognizer) {
         [_containerView removeGestureRecognizer:_touchTrackingRecognizer];
         _touchTrackingRecognizer.touchTrackingDelegate = nil;

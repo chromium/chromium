@@ -554,7 +554,6 @@ void NavigationManagerImpl::GoToIndex(int index,
   if (!GetTransientItem()) {
     delegate_->RecordPageStateInNavigationItem();
   }
-  delegate_->ClearTransientContent();
   delegate_->ClearDialogs();
 
   if (!web_view_cache_.IsAttachedToWebView()) {
@@ -691,7 +690,6 @@ void NavigationManagerImpl::LoadURLWithParams(
   }
 
   DCHECK(!(params.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK));
-  delegate_->ClearTransientContent();
   delegate_->ClearDialogs();
   delegate_->RecordPageStateInNavigationItem();
 
