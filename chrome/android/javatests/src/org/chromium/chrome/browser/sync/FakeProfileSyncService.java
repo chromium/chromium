@@ -128,11 +128,16 @@ public class FakeProfileSyncService extends ProfileSyncService {
 
     @Override
     public boolean requiresClientUpgrade() {
+        ThreadUtils.assertOnUiThread();
         return mRequiresClientUpgrade;
     }
 
+    @AnyThread
     public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
-        mRequiresClientUpgrade = requiresClientUpgrade;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mRequiresClientUpgrade = requiresClientUpgrade;
+            syncStateChanged();
+        });
     }
 
     public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {

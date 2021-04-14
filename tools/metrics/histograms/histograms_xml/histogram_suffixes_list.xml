@@ -18762,6 +18762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="SyncErrorInfoBarType" separator=".">
   <suffix name="AuthError" label="Auth error."/>
+  <suffix name="ClientOutOfDate" label="Client out of date."/>
   <suffix name="PassphraseRequired" label="Passphrase required."/>
   <suffix name="SyncSetupIncomplete" label="Sync setup incomplete."/>
   <affected-histogram name="Signin.SyncErrorInfoBar"/>

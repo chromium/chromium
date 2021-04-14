@@ -49,13 +49,15 @@ public class SyncErrorInfoBar
             TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
 
     @IntDef({SyncErrorInfoBarType.NOT_SHOWN, SyncErrorInfoBarType.AUTH_ERROR,
-            SyncErrorInfoBarType.PASSPHRASE_REQUIRED, SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE})
+            SyncErrorInfoBarType.PASSPHRASE_REQUIRED, SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE,
+            SyncErrorInfoBarType.CLIENT_OUT_OF_DATE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface SyncErrorInfoBarType {
         int NOT_SHOWN = -1;
         int AUTH_ERROR = 0;
         int PASSPHRASE_REQUIRED = 1;
         int SYNC_SETUP_INCOMPLETE = 2;
+        int CLIENT_OUT_OF_DATE = 3;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -175,6 +177,8 @@ public class SyncErrorInfoBar
                 return SyncErrorInfoBarType.PASSPHRASE_REQUIRED;
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE;
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return SyncErrorInfoBarType.CLIENT_OUT_OF_DATE;
             default:
                 return SyncErrorInfoBarType.NOT_SHOWN;
         }
@@ -192,6 +196,9 @@ public class SyncErrorInfoBar
                 break;
             case SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE:
                 name += "SyncSetupIncomplete";
+                break;
+            case SyncErrorInfoBarType.CLIENT_OUT_OF_DATE:
+                name += "ClientOutOfDate";
                 break;
             default:
                 assert false;
