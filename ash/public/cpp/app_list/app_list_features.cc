@@ -48,7 +48,7 @@ const base::Feature kEnableAggregatedMlSearchRanking{
 const base::Feature kNewDragSpecInLauncher{"NewDragSpecInLauncher",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableOmniboxRichEntities{
-    "EnableOmniboxRichEntities", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableOmniboxRichEntities", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableLauncherSearchNormalization{
     "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
