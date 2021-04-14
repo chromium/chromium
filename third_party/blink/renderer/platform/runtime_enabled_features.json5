@@ -2002,6 +2002,10 @@
       status: "stable",
     },
     {
+      name: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
+      status: "experimental",
+    },
+    {
       name: "TimerThrottlingForBackgroundTabs",
       status: "stable",
     },

@@ -383,6 +383,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kTargetBlankImpliesNoOpener},
           {"TextFragmentColorChange",
            blink::features::kTextFragmentColorChange},
+          {"ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
+           blink::features::
+               kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", features::kUserAgentClientHint},
           {"WebAppWindowControlsOverlay",

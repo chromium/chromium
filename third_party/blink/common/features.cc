@@ -919,5 +919,11 @@ const base::Feature kBlockCrossOriginTopNavigationToDiffentScheme{
 // Enables a Web API for websites to access admin-provided configuration.
 const base::Feature kManagedConfiguration{"ManagedConfiguration",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Causes all cross-origin iframes, both same-process and out-of-process, to
+// have their rendering throttled on display:none or zero-area.
+const base::Feature kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes{
+    "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
