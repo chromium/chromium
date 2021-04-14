@@ -1273,7 +1273,8 @@ void CanvasRenderingContext2D::addHitRegion(const HitRegionOptions* options,
   hit_region_path.Transform(GetState().GetAffineTransform());
 
   if (GetState().HasClip()) {
-    hit_region_path.IntersectPath(GetState().GetCurrentClipPath());
+    hit_region_path =
+        GetState().IntersectPathWithClip(hit_region_path.GetSkPath());
     if (hit_region_path.IsEmpty()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                         "The specified path has no pixels.");

@@ -205,8 +205,6 @@ class PLATFORM_EXPORT Path {
   // argument.
   bool UnionPath(const Path& other);
 
-  bool IntersectPath(const Path& other);
-
  private:
   void AddEllipse(const FloatPoint&,
                   float radius_x,

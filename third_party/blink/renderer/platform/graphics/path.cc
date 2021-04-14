@@ -523,10 +523,6 @@ bool Path::UnionPath(const Path& other) {
   return Op(path_, other.path_, kUnion_SkPathOp, &path_);
 }
 
-bool Path::IntersectPath(const Path& other) {
-  return Op(path_, other.path_, kIntersect_SkPathOp, &path_);
-}
-
 bool EllipseIsRenderable(float start_angle, float end_angle) {
   return (std::abs(end_angle - start_angle) < kTwoPiFloat) ||
          WebCoreFloatNearlyEqual(std::abs(end_angle - start_angle),

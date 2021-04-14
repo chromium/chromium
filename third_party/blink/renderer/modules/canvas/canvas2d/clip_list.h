@@ -27,7 +27,7 @@ class ClipList {
 
   void ClipPath(const SkPath&, AntiAliasingMode, const SkMatrix&);
   void Playback(cc::PaintCanvas*) const;
-  const SkPath& GetCurrentClipPath() const;
+  SkPath IntersectPathWithClip(const SkPath& path) const;
 
  private:
   struct ClipOp {
@@ -43,7 +43,6 @@ class ClipList {
   static const size_t kCInlineClipOpCapacity = 4;
 
   WTF::Vector<ClipOp, kCInlineClipOpCapacity> clip_list_;
-  SkPath current_clip_path_;
 };
 
 }  // namespace blink

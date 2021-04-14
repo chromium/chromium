@@ -79,8 +79,8 @@ class CanvasRenderingContext2DState final
   void PlaybackClips(cc::PaintCanvas* canvas) const {
     clip_list_.Playback(canvas);
   }
-  const SkPath& GetCurrentClipPath() const {
-    return clip_list_.GetCurrentClipPath();
+  SkPath IntersectPathWithClip(const SkPath& path) const {
+    return clip_list_.IntersectPathWithClip(path);
   }
 
   void SetFont(const FontDescription&, FontSelector*);
