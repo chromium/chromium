@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -1069,70 +1067,6 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   EXPECT_EQ(extension_a, GetActionIdAtIndex(0u, incognito_model));
   EXPECT_EQ(extension_b, GetActionIdAtIndex(1u, incognito_model));
   EXPECT_EQ(1u, incognito_model->visible_icon_count());
-}
-
-// Test that hiding actions on the toolbar results in sending them to the
-// overflow menu.
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarActionsVisibility) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kExtensionsToolbarMenu);
-
-  Init();
-
-  // We choose to use all types of extensions here, since the misnamed
-  // BrowserActionVisibility is now for toolbar visibility.
-  ASSERT_TRUE(AddActionExtensions());
-
-  // For readability, alias extensions A B C.
-  const extensions::Extension* extension_a = browser_action();
-  const extensions::Extension* extension_b = page_action();
-  const extensions::Extension* extension_c = no_action();
-
-  // Sanity check: Order should start as A, B, C, with all three visible.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
-  EXPECT_EQ(extension_a->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_b->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_c->id(), GetActionIdAtIndex(2u));
-
-  toolbar_model()->SetActionVisibility(extension_b->id(), false);
-
-  // Thus, the order should be A, C, B, with B in the overflow.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_a->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_c->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_b->id(), GetActionIdAtIndex(2u));
-
-  // Hiding an extension's action should result in it being sent to the overflow
-  // as well, but as the _first_ extension in the overflow.
-  toolbar_model()->SetActionVisibility(extension_a->id(), false);
-  // Thus, the order should be C, A, B, with A and B in the overflow.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_c->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_b->id(), GetActionIdAtIndex(2u));
-
-  // Resetting A's visibility to true should send it back to the visible icons
-  // (and should grow visible icons by 1), but it should be added to the end of
-  // the visible icon list (not to its original position).
-  toolbar_model()->SetActionVisibility(extension_a->id(), true);
-  // So order is C, A, B, with only B in the overflow.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_c->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_b->id(), GetActionIdAtIndex(2u));
-
-  // Resetting B to be visible should make the order C, A, B, with no
-  // overflow.
-  toolbar_model()->SetActionVisibility(extension_b->id(), true);
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
-  EXPECT_EQ(extension_c->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_b->id(), GetActionIdAtIndex(2u));
 }
 
 // Test that observers receive no Added notifications until after the
