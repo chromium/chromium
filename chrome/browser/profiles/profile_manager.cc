@@ -1545,7 +1545,10 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
 #if defined(OS_ANDROID)
   AndroidProfileSessionDurationsServiceFactory::GetForProfile(profile);
-#else
+#elif BUILDFLAG(IS_CHROMEOS_ASH)  // !OS_ANDROID && IS_CHROMEOS_ASH
+  if (!chromeos::ProfileHelper::IsSigninProfile(profile))
+    captions::CaptionControllerFactory::GetForProfile(profile)->Init();
+#else                             // !OS_ANDROID && !IS_CHROMEOS_ASH
   captions::CaptionControllerFactory::GetForProfile(profile)->Init();
 #endif
 

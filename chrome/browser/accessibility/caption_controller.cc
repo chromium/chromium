@@ -13,7 +13,6 @@
 #include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/accessibility/caption_util.h"
 #include "chrome/browser/accessibility/soda_installer.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
@@ -69,13 +68,6 @@ void CaptionController::Init() {
   // Hidden behind a feature flag.
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Return early if current profile is a signin profile (as opposed to a user
-  // profile).
-  if (ash::ProfileHelper::IsSigninProfile(profile_))
-    return;
-#endif
 
   base::UmaHistogramBoolean(
       "Accessibility.LiveCaption.UseSodaForLiveCaption",
