@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.webauthn;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -116,6 +118,12 @@ public class CableAuthenticatorModuleProvider extends Fragment {
             Cablev2AuthenticatorModule.getImpl().onCloudMessage(
                     event, networkContext, registration, ACTIVITY_CLASS_NAME, secret);
         });
+    }
+
+    @CalledByNative
+    public static boolean canDeviceSupportCable() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && BluetoothAdapter.getDefaultAdapter() != null;
     }
 
     @NativeMethods
