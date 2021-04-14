@@ -509,10 +509,6 @@ bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
                                    std::string* result) WARN_UNUSED_RESULT;
 
 // Same as above but the script executed without user gesture.
-bool ExecuteScriptWithoutUserGestureAndExtractDouble(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    double* result) WARN_UNUSED_RESULT;
 bool ExecuteScriptWithoutUserGestureAndExtractInt(
     const ToRenderFrameHost& adapter,
     const std::string& script,

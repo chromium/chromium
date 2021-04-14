@@ -3002,26 +3002,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   waiter->Wait();
 
   // Tap in the middle of the button.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var submitRect = document.getElementById('button')"
-      ".getBoundingClientRect();"));
-  double y;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractDouble(
-      RenderFrameHost(),
-      "window.domAutomationController.send((submitRect.top +"
-      "submitRect.bottom) / 2);",
-      &y));
-  double x;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractDouble(
-      RenderFrameHost(),
-      "window.domAutomationController.send((submitRect.left + submitRect.right)"
-      "/ 2);",
-      &x));
-  content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
-      blink::WebMouseEvent::Button::kLeft,
-      gfx::Point(static_cast<int>(x), static_cast<int>(y)));
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "button");
   waiter2->Wait();
 
   // LCP is collected only at the end of the page lifecycle. Navigate to flush.

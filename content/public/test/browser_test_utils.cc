@@ -1370,17 +1370,6 @@ bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
          value && value->GetAsString(result);
 }
 
-bool ExecuteScriptWithoutUserGestureAndExtractDouble(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    double* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, false,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsDouble(result);
-}
-
 bool ExecuteScriptWithoutUserGestureAndExtractInt(
     const ToRenderFrameHost& adapter,
     const std::string& script,
