@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "base/base_paths_fuchsia.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -149,9 +150,13 @@ const SandboxConfig* GetConfigForSandboxType(SandboxType type) {
 }
 
 // Services that are passed to all processes.
-constexpr base::span<const char* const> kDefaultServices = base::make_span(
-    (const char* const[]){fuchsia::intl::PropertyProvider::Name_,
-                          fuchsia::logger::LogSink::Name_});
+constexpr auto kDefaultServices = base::make_span((const char* const[]) {
+// DebugData service is needed only for profiling.
+#if BUILDFLAG(CLANG_PROFILING)
+  "fuchsia.debugdata.DebugData",
+#endif
+      fuchsia::intl::PropertyProvider::Name_, fuchsia::logger::LogSink::Name_
+});
 
 }  // namespace
 
