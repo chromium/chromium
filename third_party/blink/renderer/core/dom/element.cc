@@ -941,6 +941,9 @@ base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
                : html_names::kAriaLabelledbyAttr;
   }
 
+  if (!hasAttribute(attr))
+    return base::nullopt;
+
   String attribute_value = getAttribute(attr).GetString();
   Vector<String> tokens;
   attribute_value = attribute_value.SimplifyWhiteSpace();
@@ -954,8 +957,6 @@ base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
     if (candidate)
       result_elements.push_back(candidate);
   }
-  if (result_elements.IsEmpty())
-    return base::nullopt;
 
   return result_elements;
 }

@@ -246,8 +246,8 @@ enum ShadowCascadeOrder { kShadowCascadeNone, kShadowCascade };
 
 using DocumentClassFlags = unsigned char;
 
-// A map of IDL attribute name to Element value, for one particular element.
-// For example,
+// A map of IDL attribute name to Element list value, for one particular
+// element. For example,
 //   el1.ariaActiveDescendant = el2
 // would add the following pair to the ExplicitlySetAttrElementMap for el1:
 //   ("ariaActiveDescendant", el2)

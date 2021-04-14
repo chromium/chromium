@@ -264,8 +264,8 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
   UpdateReverseRelations(owner, owned_id_vector);
 
   // We first check if the element has an explicitly set aria-owns association.
-  // Explicitly set elements are validated on setting time (that they are in a
-  // valid scope etc). The content attribute can contain ids that are not
+  // Explicitly set elements are validated when they are read (that they are in
+  // a valid scope etc). The content attribute can contain ids that are not
   // legally ownable.
   HeapVector<Member<AXObject>> owned_children;
   if (element && element->HasExplicitlySetAttrAssociatedElements(
