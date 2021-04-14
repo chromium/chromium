@@ -475,6 +475,7 @@ _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('blink_perf.shadow_dom'),
 ])
 
 

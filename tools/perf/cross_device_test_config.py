@@ -64,6 +64,7 @@ TARGET_DEVICES = {
     'linux-perf-calibration': {
         'speedometer2': {
             'Speedometer2': 28,
-        }
+        },
+        'blink_perf.shadow_dom': 31
     }
 }

@@ -1,6 +1,9 @@
 {
     "0": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -8,6 +11,9 @@
     },
     "1": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -15,6 +21,9 @@
     },
     "2": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -22,6 +31,9 @@
     },
     "3": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -29,6 +41,9 @@
     },
     "4": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -36,6 +51,9 @@
     },
     "5": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -43,6 +61,9 @@
     },
     "6": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -50,6 +71,9 @@
     },
     "7": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -57,6 +81,9 @@
     },
     "8": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -64,6 +91,9 @@
     },
     "9": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -71,6 +101,9 @@
     },
     "10": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -78,6 +111,9 @@
     },
     "11": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -85,6 +121,9 @@
     },
     "12": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -92,6 +131,9 @@
     },
     "13": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -99,6 +141,9 @@
     },
     "14": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -106,6 +151,9 @@
     },
     "15": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -113,6 +161,9 @@
     },
     "16": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -120,6 +171,9 @@
     },
     "17": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -127,6 +181,9 @@
     },
     "18": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -134,6 +191,9 @@
     },
     "19": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -141,6 +201,9 @@
     },
     "20": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -148,6 +211,9 @@
     },
     "21": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -155,6 +221,9 @@
     },
     "22": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -162,6 +231,9 @@
     },
     "23": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -169,6 +241,9 @@
     },
     "24": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -176,6 +251,9 @@
     },
     "25": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -183,6 +261,9 @@
     },
     "26": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
@@ -190,44 +271,47 @@
     },
     "27": {
         "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 1,
-        "predicted_min_shard_time": 63.0,
+        "num_stories": 1120,
+        "predicted_min_shard_time": 138.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 63.0,
+        "predicted_max_shard_time": 138.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 63.0,
-        "shard #1": 63.0,
-        "shard #2": 63.0,
-        "shard #3": 63.0,
-        "shard #4": 63.0,
-        "shard #5": 63.0,
-        "shard #6": 63.0,
-        "shard #7": 63.0,
-        "shard #8": 63.0,
-        "shard #9": 63.0,
-        "shard #10": 63.0,
-        "shard #11": 63.0,
-        "shard #12": 63.0,
-        "shard #13": 63.0,
-        "shard #14": 63.0,
-        "shard #15": 63.0,
-        "shard #16": 63.0,
-        "shard #17": 63.0,
-        "shard #18": 63.0,
-        "shard #19": 63.0,
-        "shard #20": 63.0,
-        "shard #21": 63.0,
-        "shard #22": 63.0,
-        "shard #23": 63.0,
-        "shard #24": 63.0,
-        "shard #25": 63.0,
-        "shard #26": 63.0,
-        "shard #27": 63.0
+        "shard #0": 138.0,
+        "shard #1": 138.0,
+        "shard #2": 138.0,
+        "shard #3": 138.0,
+        "shard #4": 138.0,
+        "shard #5": 138.0,
+        "shard #6": 138.0,
+        "shard #7": 138.0,
+        "shard #8": 138.0,
+        "shard #9": 138.0,
+        "shard #10": 138.0,
+        "shard #11": 138.0,
+        "shard #12": 138.0,
+        "shard #13": 138.0,
+        "shard #14": 138.0,
+        "shard #15": 138.0,
+        "shard #16": 138.0,
+        "shard #17": 138.0,
+        "shard #18": 138.0,
+        "shard #19": 138.0,
+        "shard #20": 138.0,
+        "shard #21": 138.0,
+        "shard #22": 138.0,
+        "shard #23": 138.0,
+        "shard #24": 138.0,
+        "shard #25": 138.0,
+        "shard #26": 138.0,
+        "shard #27": 138.0
     }
 }
