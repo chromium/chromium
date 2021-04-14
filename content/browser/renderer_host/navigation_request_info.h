@@ -34,7 +34,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool are_ancestors_secure,
       int frame_tree_node_id,
       bool report_raw_headers,
-      bool is_prerendering,
       bool upgrade_if_insecure,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           blob_url_loader_factory,
@@ -68,8 +67,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const int frame_tree_node_id;
 
   const bool report_raw_headers;
-
-  const bool is_prerendering;
 
   // If set to true, any HTTP redirects of this request will be upgraded to
   // HTTPS. This only applies for subframe navigations.

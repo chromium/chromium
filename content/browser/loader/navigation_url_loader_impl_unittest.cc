@@ -208,7 +208,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
                 net::SiteForCookies::FromUrl(url)),
             is_main_frame, false /* are_ancestors_secure */,
             FrameTreeNode::kFrameTreeNodeInvalidId /* frame_tree_node_id */,
-            false /* report_raw_headers */, false /* is_prerenering */,
+            false /* report_raw_headers */,
             upgrade_if_insecure /* upgrade_if_insecure */,
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,

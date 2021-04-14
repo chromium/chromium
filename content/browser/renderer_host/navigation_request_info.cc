@@ -14,7 +14,6 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool are_ancestors_secure,
     int frame_tree_node_id,
     bool report_raw_headers,
-    bool is_prerendering,
     bool upgrade_if_insecure,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         blob_url_loader_factory,
@@ -32,7 +31,6 @@ NavigationRequestInfo::NavigationRequestInfo(
       are_ancestors_secure(are_ancestors_secure),
       frame_tree_node_id(frame_tree_node_id),
       report_raw_headers(report_raw_headers),
-      is_prerendering(is_prerendering),
       upgrade_if_insecure(upgrade_if_insecure),
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
       devtools_navigation_token(devtools_navigation_token),

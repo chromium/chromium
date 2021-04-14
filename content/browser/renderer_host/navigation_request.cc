@@ -3450,8 +3450,6 @@ void NavigationRequest::OnStartChecksComplete(
           frame_tree_node_->IsMainFrame(),
           IsSecureFrame(frame_tree_node_->parent()),
           frame_tree_node_->frame_tree_node_id(), report_raw_headers,
-          navigating_frame_host->GetVisibilityState() ==
-              PageVisibilityState::kHiddenButPainting,
           upgrade_if_insecure_,
           blob_url_loader_factory_ ? blob_url_loader_factory_->Clone()
                                    : nullptr,
