@@ -31,12 +31,10 @@ void GuestModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // Disable guest mode by default if force signin is enabled.
   const base::Value* browser_signin_value =
       policies.GetValue(key::kBrowserSignin);
-  int int_browser_signin_value;
   bool is_browser_signin_policy_set =
-      (browser_signin_value &&
-       browser_signin_value->GetAsInteger(&int_browser_signin_value));
+      (browser_signin_value && browser_signin_value->is_int());
   if (is_browser_signin_policy_set &&
-      static_cast<BrowserSigninMode>(int_browser_signin_value) ==
+      static_cast<BrowserSigninMode>(browser_signin_value->GetInt()) ==
           BrowserSigninMode::kForced) {
     prefs->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
     return;
