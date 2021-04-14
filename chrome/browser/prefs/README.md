@@ -53,14 +53,19 @@ Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
 ## Deleting an old pref
-Deleted prefs are left in a delete-self state for 1 year in an attempt to avoid
-leaving unused text in JSON files storing User Prefs. To avoid leaving a bunch
-of TODOs and pinging owners to cleanup, you will be asked to follow-up your CL
-with another CL that removes 1+ year old deletions; someone else will cleanup
-after you in 1 year.
+Deleted prefs should be left in a delete-self state for 1 year in an attempt to
+avoid leaving unused text in JSON files storing User Prefs. To avoid leaving a
+bunch of TODOs and pinging owners to cleanup, you will be asked to follow-up
+your CL with another CL that removes 1+ year old deletions; someone else will
+cleanup after you in 1 year.
+
+0. If the pref is also a policy, you will need to mark it deprecated as
+   described in
+   [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/master/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+   Deleting the pref logic (steps below) will need to wait a few milestones.
 
 1. Move the pref name declaration to the anonymous namespace of
-   chrome/browser/prefs/browser_prefs.cc
+   [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/prefs/browser_prefs.cc)
 1. Move registration code into `RegisterProfilePrefsForMigration()` or
    `RegisterLocalStatePrefsForMigration()` as appropriate.
 1. If the old registration code had the `SYNCABLE_PREF` flag, remove it now
@@ -69,8 +74,8 @@ after you in 1 year.
    `MigrateObsoleteLocalStatePrefs()` as appropriate, with today's date
    (MM/YYYY) in a comment.
 1. Delete the old code.
-1. In a follow-up CL, delete any 1+ year old `ClearPref()` calls; someone else
-   will clean up after you in 1 year.
+1. In a follow-up CL, delete any 1+ year old `ClearPref()` calls in
+   browser_prefs.cc; someone else will clean up after you in 1 year.
 
 ## Migrating a pref
 Instead of merely deleting a pref you might want to run migration code from an
@@ -81,3 +86,29 @@ invoked as part of initializing each `Profile`. In both cases this is before
 each `PrefService` is query-able by the rest of //chrome, your code can
 therefore assume the migration has taken place if it's accessing the
 `PrefService` via an initialized `BrowserProcess` or `Profile`.
+
+As per [deleting an old pref](#deleting-an-old-pref), if the old pref is also a
+policy, you will need to mark it deprecated for a few milestones first as
+described in
+[add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/master/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+
+Migration code will want to read the old pref using
+`base::PrefService::GetUserPrefValue()` (as opposed to
+`base::PrefService::Get*()`). This will ensure that the user configured value is
+migrated instead of a value from a higher-priority PrefStore like the one
+containing Managed Prefs. It also covers a second case: If no explicit value is
+set in any PrefStore, GetValue() returns the default value. You don't want to
+write that to the target location of your migration as that would prevent future
+changes to default or recommended prefs from taking effect.
+
+If non-User PrefStores need to keep supporting the old pref for a grace period,
+you will need to either:
+1. Support both for the grace period (like policies above). In which case you
+   should still migrate the User Prefs as described above but keep reading the
+   old pref name in your code if a higher-priority store is setting the old
+   value
+   (`!base::PrefService::FindPreference(old_pref_name)->IsUserModifiable()`); or
+2. Make sure that relevant PrefStores automatically map the old pref name to the
+   new pref name. There are ad-hoc examples of this in the codebase but this is
+   generally trickier. If you do add/find a generic way of doing this, please
+   augment this documentation :).
