@@ -524,9 +524,10 @@ void MediaControlsImpl::InitializeControls() {
   timeline_ = MakeGarbageCollected<MediaControlTimelineElement>(*this);
   mute_button_ = MakeGarbageCollected<MediaControlMuteButtonElement>(*this);
 
-  volume_slider_ = MakeGarbageCollected<MediaControlVolumeSliderElement>(*this);
   volume_control_container_ =
       MakeGarbageCollected<MediaControlVolumeControlContainerElement>(*this);
+  volume_slider_ = MakeGarbageCollected<MediaControlVolumeSliderElement>(
+      *this, volume_control_container_.Get());
   if (PreferHiddenVolumeControls(GetDocument()))
     volume_slider_->SetIsWanted(false);
 
