@@ -13,19 +13,28 @@ foreach(file, input_ts_files) {
   ts_source_inputs += [ "src/$file" ]
 }
 
+js_outputs = []
+foreach(ts_file, input_ts_files) {
+  js_file = string_replace(ts_file, ".ts", ".js")
+  js_node_file = string_replace(js_file, "src/", "src-node/")
+
+  js_outputs += [ "$target_gen_dir/$js_file" ]
+
+  if (js_node_file != "src-node/common/runtime/wpt.js" &&
+      js_node_file != "src-node/common/runtime/standalone.js" &&
+      js_node_file != "src-node/common/runtime/helper/test_worker.js") {
+    js_outputs += [ "$target_gen_dir/$js_node_file" ]
+  }
+}
+
 action("compile_src") {
   script = "scripts/compile_src.py"
 
   inputs = [ "//third_party/node/node_modules/typescript/lib/tsc.js" ] +
            ts_source_inputs
 
-  outputs = [ "$target_gen_dir/node/tools/gen_listings.js" ]
-  foreach(ts_file, input_ts_files) {
-    js_file = string_replace(ts_file, ".ts", ".js")
-    outputs += [ "$target_gen_dir/$js_file" ]
-  }
-
-  data = outputs
+  outputs = js_outputs
+  data = js_outputs
 
   args = [ rebase_path("$target_gen_dir", root_build_dir) ]
 }

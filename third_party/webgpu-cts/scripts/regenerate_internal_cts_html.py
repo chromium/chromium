@@ -13,6 +13,8 @@ import sys
 third_party_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from compile_src import compile_src_for_node
+
 
 def generate_internal_cts_html():
     split_list_fd, split_list_fname = tempfile.mkstemp()
@@ -50,29 +52,17 @@ def generate_internal_cts_html():
                 split_list_out.write('%s\n' % test)
 
         print('WebGPU CTS: Transpiling tools...')
-        cmd = [
-            '../scripts/tsc_ignore_errors.py',
-            '--project',
-            'node.tsconfig.json',
-            '--outDir',
-            js_out_dir,
-            '--noEmit',
-            'false',
-            '--noEmitOnError',
-            'false',
-            '--declaration',
-            'false',
-            '--sourceMap',
-            'false',
-        ]
-        process = subprocess.Popen(cmd,
-                                   cwd=os.path.join(third_party_dir,
-                                                    'webgpu-cts', 'src'))
-        process.communicate()
+        compile_src_for_node(js_out_dir)
+
+        old_sys_path = sys.path
+        try:
+            sys.path = old_sys_path + [os.path.join(third_party_dir, 'node')]
+            from node import RunNode
+        finally:
+            sys.path = old_sys_path
 
         print('WebGPU CTS: Generating cts.html contents...')
         cmd = [
-            os.path.join(third_party_dir, 'node', 'node.py'),
             os.path.join(js_out_dir,
                          'common/tools/gen_wpt_cts_html.js'), cts_html_fname,
             os.path.join(third_party_dir, 'blink', 'web_tests', 'webgpu',
@@ -81,8 +71,7 @@ def generate_internal_cts_html():
                          'argsprefixes.txt'), split_list_fname,
             'wpt_internal/webgpu/cts.html', 'webgpu'
         ]
-        process = subprocess.Popen(cmd)
-        process.communicate()
+        print(RunNode(cmd))
 
         with open(cts_html_fname) as f:
             return f.read()
