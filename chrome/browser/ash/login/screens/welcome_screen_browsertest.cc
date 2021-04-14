@@ -176,10 +176,11 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenElements) {
 }
 
 // This is a minimal possible test for OOBE. It is used as reference test
-// for measurements during OOBE speedup work.
-// TODO(crbug.com/1058022): Remove after speedup work.
+// for measurements during OOBE speedup work. Also verifies OOBE.WebUI.LoadTime
+// metric.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, OobeStartupTime) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  histogram_tester_.ExpectTotalCount("OOBE.WebUI.LoadTime.FirstRun", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenNext) {

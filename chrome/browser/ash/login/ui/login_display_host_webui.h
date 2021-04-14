@@ -16,6 +16,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -261,6 +263,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // True if we need to play startup sound when audio device becomes available.
   bool need_to_play_startup_sound_ = false;
+
+  // Measures OOBE WebUI load time.
+  base::Optional<base::ElapsedTimer> oobe_load_timer_;
 
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 

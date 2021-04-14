@@ -21,7 +21,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -573,8 +573,10 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
 
   VLOG(1) << "Login WebUI >> wizard";
 
-  if (!login_window_)
+  if (!login_window_) {
+    oobe_load_timer_ = base::ElapsedTimer();
     LoadURL(GURL(kOobeURL));
+  }
 
   DVLOG(1) << "Starting wizard, first_screen: " << first_screen;
   oobe_progress_bar_visible_ = !StartupUtils::IsDeviceRegistered();
@@ -848,6 +850,12 @@ void LoginDisplayHostWebUI::ShowWebUI() {
   login_view_->GetWebContents()->Focus();
   login_view_->SetStatusAreaVisible(status_area_saved_visibility_);
   login_view_->OnPostponedShow();
+
+  if (oobe_load_timer_.has_value()) {
+    base::UmaHistogramTimes("OOBE.WebUI.LoadTime.FirstRun",
+                            oobe_load_timer_->Elapsed());
+    oobe_load_timer_.reset();
+  }
 }
 
 void LoginDisplayHostWebUI::InitLoginWindowAndView() {
@@ -1046,8 +1054,8 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
 
   const base::TimeDelta time_since_login_prompt_visible =
       base::TimeTicks::Now() - login_prompt_visible_time_;
-  UMA_HISTOGRAM_TIMES("Accessibility.OOBEStartupSoundDelay",
-                      time_since_login_prompt_visible);
+  base::UmaHistogramTimes("Accessibility.OOBEStartupSoundDelay",
+                          time_since_login_prompt_visible);
 
   // Don't try to play startup sound if login prompt has been already visible
   // for a long time.
@@ -1215,7 +1223,8 @@ class WebUIToViewsSwitchMetricsReporter : public content::NotificationObserver {
                const content::NotificationDetails& details) override {
     DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
               OobeUI::kGaiaSigninDisplay);
-    UMA_HISTOGRAM_TIMES("OOBE.WebUIToViewsSwitch.Duration", timer_.Elapsed());
+    base::UmaHistogramTimes("OOBE.WebUIToViewsSwitch.Duration",
+                            timer_.Elapsed());
     registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
                       content::NotificationService::AllSources());
     base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
