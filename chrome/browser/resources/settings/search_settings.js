@@ -4,11 +4,11 @@
 
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.m.js';
-import {findAncestor} from 'chrome://resources/js/util.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
+import {findAncestor} from 'chrome://resources/js/util.m.js';
+import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
   /**

@@ -12,7 +12,7 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.m.js';
+import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';

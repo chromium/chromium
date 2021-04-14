@@ -53,7 +53,6 @@ generate_grd("build_grdp") {
       "i18n_behavior.html",
       "list_property_update_behavior.html",
       "polymer.html",
-      "search_highlight_utils.html",
       "web_ui_listener_behavior.html",
     ]
   }

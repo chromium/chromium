@@ -10,7 +10,7 @@ import 'chrome://resources/cr_components/managed_footnote/managed_footnote.m.js'
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/js/search_highlight_utils.m.js';
+import 'chrome://resources/js/search_highlight_utils.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../about_page/about_page.js';
 import '../basic_page/basic_page.js';

@@ -53,6 +53,7 @@ preprocess_if_expr("preprocess_src") {
     "parse_html_subset.js",
     "plural_string_proxy.js",
     "promise_resolver.js",
+    "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
     "util.js",
@@ -69,7 +70,6 @@ preprocess_if_expr("preprocess_src") {
       "i18n_behavior.js",
       "list_property_update_behavior.js",
       "polymer_config.js",
-      "search_highlight_utils.js",
       "web_ui_listener_behavior.js",
     ]
   }
@@ -103,7 +103,6 @@ preprocess_if_expr("preprocess_generated") {
     in_files += [
       "i18n_behavior.m.js",
       "list_property_update_behavior.m.js",
-      "search_highlight_utils.m.js",
       "web_ui_listener_behavior.m.js",
     ]
   }
@@ -131,7 +130,6 @@ js_type_check("js_resources") {
     ":load_time_data",
     ":parse_html_subset",
     ":promise_resolver",
-    ":search_highlight_utils",
     ":util",
     ":web_ui_listener_behavior",
     ":webui_resource_test",
@@ -159,13 +157,6 @@ js_library("cr") {
 }
 
 js_library("event_tracker") {
-}
-
-js_library("search_highlight_utils") {
-  deps = [
-    ":assert",
-    ":cr",
-  ]
 }
 
 js_library("icon") {
@@ -237,7 +228,6 @@ js_modulizer("modulize_local") {
     "load_time_data.js",
     "parse_html_subset.js",
     "promise_resolver.js",
-    "search_highlight_utils.js",
     "util.js",
     "web_ui_listener_behavior.js",
   ]
@@ -268,7 +258,7 @@ js_type_check("js_resources_modules") {
     ":parse_html_subset.m",
     ":plural_string_proxy",
     ":promise_resolver.m",
-    ":search_highlight_utils.m",
+    ":search_highlight_utils",
     ":util.m",
     ":web_ui_listener_behavior.m",
   ]
@@ -345,11 +335,8 @@ js_library("promise_resolver.m") {
   extra_deps = [ ":modulize_local" ]
 }
 
-js_library("search_highlight_utils.m") {
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/search_highlight_utils.m.js" ]
+js_library("search_highlight_utils") {
   deps = [ ":assert.m" ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("util.m") {

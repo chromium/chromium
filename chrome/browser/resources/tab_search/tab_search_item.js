@@ -11,7 +11,7 @@ import './strings.m.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
+import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ariaLabel, TabData, TabItemType} from './tab_data.js';
