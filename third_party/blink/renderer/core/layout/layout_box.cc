@@ -7340,6 +7340,16 @@ void LayoutBox::RecalcFragmentsVisualOverflow() {
     DCHECK(fragment.CanUseFragmentsForInkOverflow());
     fragment.GetMutableForPainting().RecalcInkOverflow();
   }
+  // If |this| is an anonymous fieldset wrapper, the rendered legend is a child
+  // of |this| in the box tree, but it is a child of the fieldset container in
+  // the fragment tree. Make sure it is recalculated.
+  if (UNLIKELY(IsAnonymous() && HasSelfPaintingLayer())) {
+    const auto* parent = DynamicTo<LayoutBlock>(Parent());
+    if (parent && parent->IsLayoutNGFieldset()) {
+      if (LayoutBox* legend = LayoutFieldset::FindInFlowLegend(*parent))
+        legend->RecalcFragmentsVisualOverflow();
+    }
+  }
   CopyVisualOverflowFromFragmentsRecursively();
 }
 

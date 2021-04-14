@@ -119,7 +119,9 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   PhysicalRect OverflowClipRect(const PhysicalOffset&,
                                 OverlayScrollbarClipBehavior) const override;
 
+#if DCHECK_IS_ON()
   void AddVisualEffectOverflow() final;
+#endif
 
   bool VisualRectRespectsVisibility() const override {
     NOT_DESTROYED();
