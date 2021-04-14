@@ -317,6 +317,9 @@
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_TEXT_COPIED">
         Text copied
       </message>
+      <message desc="Label for expert mode option: show camera pan/tilt/zoom options." name="IDS_EXPERT_SHOW_PTZ_OPTIONS">
+        Show pan tilt zoom options
+      </message>
       <message desc="Label for tilt up camera preview" name="IDS_TILT_UP_BUTTON">
         Tilt up
       </message>

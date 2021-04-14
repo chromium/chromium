@@ -363,14 +363,17 @@ export class Camera extends View {
   }
 
   /**
+   * @suppress {uselessCode} For skip highlighting PTZ button code.
    * @private
    */
   initOpenPTZPanel_() {
     this.openPTZPanel_.addEventListener('click', () => {
       nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
-      highlight(false);
     });
 
+    // Skip highlight effect on R91 release.
+    return;
+    /* eslint-disable no-unreachable */
     // Highlight effect for PTZ button.
     const highlight = (enabled) => {
       this.ptzToast_.classList.toggle('hidden', !enabled);
@@ -399,6 +402,7 @@ export class Camera extends View {
       this.ptzToast_.style.left = `${right + 20}px`;
       highlight(true);
     });
+    /* eslint-enabled no-unreachable */
   }
 
   /**

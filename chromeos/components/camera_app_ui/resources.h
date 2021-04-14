@@ -64,6 +64,7 @@ const struct {
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},
     {"expert_print_performance_logs", IDS_EXPERT_PRINT_PERFORMANCE_LOGS},
     {"expert_scan_barcode", IDS_EXPERT_SCAN_BARCODE},
+    {"expert_show_ptz_options", IDS_EXPERT_SHOW_PTZ_OPTIONS},
     {"expert_custom_video_parameters", IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS},
     {"tilt_up_button", IDS_TILT_UP_BUTTON},
     {"pan_right_button", IDS_PAN_RIGHT_BUTTON},
