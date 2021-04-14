@@ -983,8 +983,14 @@ void MetricsWebContentsObserver::OnBrowserFeatureUsage(
     content::RenderFrameHost* render_frame_host,
     const mojom::PageLoadFeatures& new_features) {
   // Since this call is coming directly from the browser, it should not pass us
-  // data from frames that have already been navigated away from.
-  DCHECK(render_frame_host->GetMainFrame()->IsCurrent());
+  // data from frames that have already been navigated away from. However, this
+  // could be false if this is called for the page that is prerendering with
+  // MPArch. Therefore, ignore navigations not happening in the primary
+  // FrameTree. Using IsCurrent as a proxy for "is in primary FrameTree".
+  // TODO(https://crbug.com/1190112): Add proper support for prerendering when
+  // there are better content APIs.
+  if (!render_frame_host->GetMainFrame()->IsCurrent())
+    return;
 
   if (!committed_load_) {
     RecordInternalError(ERR_BROWSER_USAGE_WITH_NO_RELEVANT_LOAD);
