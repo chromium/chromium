@@ -703,14 +703,6 @@ void ArcSettingsServiceImpl::SyncTimeZone() const {
 }
 
 void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
-  const PrefService::Preference* pref = registrar_.prefs()->FindPreference(
-      ::prefs::kResolveTimezoneByGeolocationMethod);
-  DCHECK(pref);
-  int setTimeZoneByGeolocation =
-      static_cast<int>(chromeos::system::TimeZoneResolverManager::
-                           TimeZoneResolveMethod::DISABLED);
-  bool value_exists = pref->GetValue()->GetAsInteger(&setTimeZoneByGeolocation);
-  DCHECK(value_exists);
   base::DictionaryValue extras;
   extras.SetBoolean("autoTimeZone",
                     chromeos::system::TimeZoneResolverManager::
