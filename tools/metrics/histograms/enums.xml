@@ -45652,6 +45652,7 @@ from previous Chrome versions.
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
+  <int value="-656743717" label="HelpAppDiscoverTab:enabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
@@ -48492,6 +48493,7 @@ from previous Chrome versions.
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>
   <int value="1924192543" label="ProactiveTabFreezeAndDiscard:enabled"/>
+  <int value="1924326113" label="HelpAppDiscoverTab:disabled"/>
   <int value="1924773264" label="WakeOnWifiAllowed:disabled"/>
   <int value="1925213304" label="FillingAcrossAffiliatedWebsites:enabled"/>
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>

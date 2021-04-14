@@ -96,6 +96,9 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
           chromeos::features::kHelpAppSearchServiceIntegration) &&
           base::FeatureList::IsEnabled(
               chromeos::features::kEnableLocalSearchService));
+  source->AddBoolean(
+      "HelpAppDiscoverTab",
+      base::FeatureList::IsEnabled(chromeos::features::kHelpAppDiscoverTab));
 
   Profile* profile = Profile::FromWebUI(web_ui_);
   PrefService* pref_service = profile->GetPrefs();

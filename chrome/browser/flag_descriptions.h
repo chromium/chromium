@@ -2608,6 +2608,9 @@ extern const char kFsNosymfollowDescription[];
 extern const char kFullRestoreName[];
 extern const char kFullRestoreDescription[];
 
+extern const char kHelpAppDiscoverTabName[];
+extern const char kHelpAppDiscoverTabDescription[];
+
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 

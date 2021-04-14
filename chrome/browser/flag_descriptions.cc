@@ -4498,6 +4498,11 @@ const char kFsNosymfollowDescription[] =
 const char kFullRestoreName[] = "Full restore";
 const char kFullRestoreDescription[] = "Chrome OS full restore";
 
+const char kHelpAppDiscoverTabName[] = "Help App Discover Tab";
+const char kHelpAppDiscoverTabDescription[] =
+    "Enables the Discover tab in the help app. Even if the feature is enabled, "
+    "internal app logic might decide not to show the tab.";
+
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";

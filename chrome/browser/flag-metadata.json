@@ -3133,6 +3133,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "help-app-discover-tab",
+    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "help-app-launcher-search",
     "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
     "expiry_milestone": 97
