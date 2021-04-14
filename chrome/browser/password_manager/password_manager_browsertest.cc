@@ -1336,25 +1336,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   NavigateToFile("/password/form_and_link.html");
 
-  // Get the position of the 'submit' button.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var submitRect = document.getElementById('input_submit_button')"
-      ".getBoundingClientRect();"));
-
-  int top;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(), "window.domAutomationController.send(submitRect.top);",
-      &top));
-  int left;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send(submitRect.left);", &left));
-
   NavigationObserver submit_observer(WebContents());
   // Submit the form via a tap on the submit button.
-  content::SimulateTapDownAt(WebContents(), gfx::Point(left + 1, top + 1));
-  content::SimulateTapAt(WebContents(), gfx::Point(left + 1, top + 1));
+  content::SimulateMouseClickOrTapElementWithId(WebContents(),
+                                                "input_submit_button");
   submit_observer.Wait();
   std::string query = WebContents()->GetURL().query();
   EXPECT_THAT(query, testing::HasSubstr("random_secret"));
@@ -2036,29 +2021,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   driver->GetPasswordAutofillManager()->set_autofill_client(
       observing_autofill_client);
 
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var usernameRect = document.getElementById('username_field')"
-      ".getBoundingClientRect();"));
-
   // Trigger in page navigation.
   std::string in_page_navigate = "location.hash = '#blah';";
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       in_page_navigate));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), in_page_navigate,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Click on the username field to display the popup.
-  int top;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send(usernameRect.top);", &top));
-  int left;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send(usernameRect.left);", &left));
-
-  content::SimulateMouseClickAt(WebContents(), 0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(left + 1, top + 1));
+  content::SimulateMouseClickOrTapElementWithId(WebContents(),
+                                                "username_field");
   // Make sure the popup would be shown.
   observing_autofill_client->WaitForAutofillPopup();
 }
@@ -2246,25 +2216,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Simulate the user interaction in the iframe which should trigger autofill.
   // Click in the middle of the frame to avoid the border.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var iframeRect = document.getElementById("
-      "'iframe').getBoundingClientRect();"));
-  int y;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.top +"
-      "iframeRect.bottom) / 2);",
-      &y));
-  int x;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.left + iframeRect.right)"
-      "/ 2);",
-      &x));
-
-  content::SimulateMouseClickAt(
-      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+  content::SimulateMouseClickOrTapElementWithId(WebContents(), "iframe");
 
   std::string username_field;
   std::string password_field;
@@ -2329,25 +2281,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Simulate the user interaction in the iframe which should trigger autofill.
   // Click in the middle of the frame to avoid the border.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var iframeRect = document.getElementById("
-      "'iframe').getBoundingClientRect();"));
-  int y;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.top +"
-      "iframeRect.bottom) / 2);",
-      &y));
-  int x;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.left + iframeRect.right)"
-      "/ 2);",
-      &x));
-
-  content::SimulateMouseClickAt(
-      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+  content::SimulateMouseClickOrTapElementWithId(WebContents(), "iframe");
 
   // Verify username is not autofilled
   std::string empty_username;
@@ -2392,23 +2326,20 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Simulate the user interaction in the iframe which should trigger autofill.
   // Click in the middle of the username to avoid the border.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
+  ASSERT_TRUE(content::ExecJs(
       RenderFrameHost(),
       "var usernameRect = document.getElementById("
       "'iframe').contentDocument.getElementById('username_field')"
-      ".getBoundingClientRect();"));
-  int y = 0;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send(usernameRect.top + "
-      "usernameRect.bottom);",
-      &y));
-  int x = 0;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send(usernameRect.left + "
-      "usernameRect.right);",
-      &x));
+      ".getBoundingClientRect();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  int y = content::EvalJs(RenderFrameHost(),
+                          "usernameRect.top + usernameRect.bottom;",
+                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+              .ExtractInt();
+  int x = content::EvalJs(RenderFrameHost(),
+                          "usernameRect.left + usernameRect.right;",
+                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+              .ExtractInt();
 
   content::SimulateMouseClickAt(WebContents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
@@ -3510,24 +3441,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Simulate user interaction in the iframe which normally triggers
   // autofill. Click in the middle of the frame to avoid the border.
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "var iframeRect = "
-      "    document.getElementById('iframe').getBoundingClientRect();"));
-  int x;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send("
-      "    parseInt((iframeRect.left + iframeRect.right) / 2));",
-      &x));
-  int y;
-  EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(),
-      "window.domAutomationController.send("
-      "    parseInt((iframeRect.top + iframeRect.bottom) / 2));",
-      &y));
-  content::SimulateMouseClickAt(
-      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+  content::SimulateMouseClickOrTapElementWithId(WebContents(), "iframe");
 
   // Verify password is not autofilled.  Blink has a timer for 0.3 seconds
   // before it updates the browser with the new dynamic form, so wait long
