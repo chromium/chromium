@@ -655,7 +655,9 @@ Polymer({
       this.onUnlockButtonClick_();
     } else if (this.item && this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
-    } else if (this.isPSimPendingActivationNetwork_) {
+    } else if (
+        this.isPSimPendingActivationNetwork_ ||
+        this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_) {
       this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
