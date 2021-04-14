@@ -84,6 +84,8 @@ void LaunchTerminal(Profile* profile,
                     const ContainerId& container_id,
                     const std::string& cwd,
                     const std::vector<std::string>& terminal_args) {
+  crostini::RecordAppLaunchHistogram(
+      crostini::CrostiniAppLaunchAppType::kTerminal);
   GURL vsh_in_crosh_url =
       GenerateVshInCroshUrl(profile, container_id, cwd, terminal_args);
   auto params = web_app::CreateSystemWebAppLaunchParams(

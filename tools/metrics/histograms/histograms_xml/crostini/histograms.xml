@@ -53,6 +53,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.AppLaunchResult.{Variant}" enum="CrostiniResult"
+    expires_after="2022-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>The result of attempting to launch {Variant}.</summary>
+  <token key="Variant">
+    <variant name="Registered" summary="a registered GUI app"/>
+    <variant name="Terminal" summary="the Crostini Terminal"/>
+    <variant name="Unknown" summary="an unknown/unregistered app"/>
+  </token>
+</histogram>
+
 <histogram name="Crostini.AppsInstalledAtLogin" units="apps"
     expires_after="2022-01-06">
   <owner>clumptini@google.com</owner>

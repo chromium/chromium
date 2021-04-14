@@ -15597,6 +15597,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="60" label="MOUNT_CONTAINER_TIMED_OUT"/>
   <int value="61" label="UNKNOWN_STATE_TIMED_OUT"/>
   <int value="62" label="NEED_UPDATE"/>
+  <int value="63" label="SHARE_PATHS_FAILED"/>
+  <int value="64" label="UNREGISTERED_APPLICATION"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

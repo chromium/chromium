@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "components/version_info/version_info.h"
@@ -53,6 +54,8 @@ CrostiniStartupStatus::~CrostiniStartupStatus() = default;
 
 void CrostiniStartupStatus::OnCrostiniRestarted(
     crostini::CrostiniResult result) {
+  crostini::RecordAppLaunchResultHistogram(
+      crostini::CrostiniAppLaunchAppType::kTerminal, result);
   if (result != crostini::CrostiniResult::SUCCESS) {
     PrintAfterStage(
         kColor1RedBright,
@@ -86,7 +89,6 @@ void CrostiniStartupStatus::ShowProgressAtInterval() {
 }
 
 void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
-  stage_ = stage;
   stage_index_ = static_cast<int>(stage) + 1;
   if (!verbose_) {
     return;

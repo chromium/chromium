@@ -75,48 +75,36 @@ namespace {
 
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";
 constexpr char kCrostiniAppLaunchResultHistogram[] = "Crostini.AppLaunchResult";
+constexpr char kCrostiniAppLaunchResultHistogramTerminal[] =
+    "Crostini.AppLaunchResult.Terminal";
+constexpr char kCrostiniAppLaunchResultHistogramRegistered[] =
+    "Crostini.AppLaunchResult.Registered";
+constexpr char kCrostiniAppLaunchResultHistogramUnknown[] =
+    "Crostini.AppLaunchResult.Unknown";
 constexpr char kCrostiniAppNamePrefix[] = "_crostini_";
 constexpr int64_t kDelayBeforeSpinnerMs = 400;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class CrostiniAppLaunchAppType {
-  // An app which isn't in the CrostiniAppRegistry. This shouldn't happen.
-  kUnknownApp = 0,
-
-  // The main terminal app.
-  kTerminal = 1,
-
-  // An app for which there is something in the CrostiniAppRegistry.
-  kRegisteredApp = 2,
-
-  kCount
-};
-
-void RecordAppLaunchHistogram(CrostiniAppLaunchAppType app_type) {
-  base::UmaHistogramEnumeration(kCrostiniAppLaunchHistogram, app_type,
-                                CrostiniAppLaunchAppType::kCount);
-}
-
-void RecordAppLaunchResultHistogram(crostini::CrostiniResult reason) {
-  base::UmaHistogramEnumeration(kCrostiniAppLaunchResultHistogram, reason);
-}
 
 void OnApplicationLaunched(const std::string& app_id,
                            crostini::CrostiniSuccessCallback callback,
                            const crostini::CrostiniResult failure_result,
                            bool success,
                            const std::string& failure_reason) {
-  RecordAppLaunchResultHistogram(success ? crostini::CrostiniResult::SUCCESS
-                                         : failure_result);
+  CrostiniAppLaunchAppType type = CrostiniAppLaunchAppType::kRegisteredApp;
+  CrostiniResult result = success ? CrostiniResult::SUCCESS : failure_result;
+  if (app_id == kCrostiniTerminalSystemAppId) {
+    // Terminal usually takes care of its own metrics, but if we're recording
+    // the result here we need to also record the launch.
+    type = CrostiniAppLaunchAppType::kTerminal;
+    RecordAppLaunchHistogram(type);
+  }
+  RecordAppLaunchResultHistogram(type, result);
   std::move(callback).Run(success, failure_reason);
 }
 
-void OnLaunchFailed(
-    const std::string& app_id,
-    crostini::CrostiniSuccessCallback callback,
-    const std::string& failure_reason,
-    crostini::CrostiniResult result = crostini::CrostiniResult::UNKNOWN_ERROR) {
+void OnLaunchFailed(const std::string& app_id,
+                    crostini::CrostiniSuccessCallback callback,
+                    const std::string& failure_reason,
+                    crostini::CrostiniResult result) {
   // Remove the spinner and icon. Controller doesn't exist in tests.
   // TODO(timloh): Consider also displaying a notification for failure.
   if (auto* chrome_controller = ChromeLauncherController::instance()) {
@@ -138,7 +126,8 @@ void OnSharePathForLaunchApplication(
   if (!success) {
     return OnLaunchFailed(
         app_id, std::move(callback),
-        "failed to share paths to launch " + app_id + ":" + failure_reason);
+        "failed to share paths to launch " + app_id + ":" + failure_reason,
+        CrostiniResult::SHARE_PATHS_FAILED);
   }
   const crostini::ContainerId container_id(registration.VmName(),
                                            registration.ContainerName());
@@ -146,8 +135,7 @@ void OnSharePathForLaunchApplication(
     // Use first file as 'cwd'.
     std::string cwd = !args.empty() ? args[0] : "";
     LaunchTerminal(profile, display_id, container_id, cwd);
-    return OnApplicationLaunched(app_id, std::move(callback),
-                                 crostini::CrostiniResult::SUCCESS, true, "");
+    return std::move(callback).Run(true, "");
   }
   crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerApplication(
       container_id, registration.DesktopFileId(), args, registration.IsScaled(),
@@ -195,7 +183,8 @@ void LaunchApplication(
             profile, url, &path)) {
       return OnLaunchFailed(
           app_id, std::move(callback),
-          "Cannot share file with crostini: " + url.DebugString());
+          "Cannot share file with crostini: " + url.DebugString(),
+          CrostiniResult::SHARE_PATHS_FAILED);
     }
     if (url.mount_filesystem_id() !=
             file_manager::util::GetCrostiniMountPointName(profile) &&
@@ -336,14 +325,12 @@ void LaunchCrostiniAppImpl(
     }
 
     if (!requires_share) {
-      RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kTerminal);
       LaunchTerminal(profile, display_id, container_id, cwd.value());
-      RecordAppLaunchResultHistogram(crostini::CrostiniResult::SUCCESS);
       return std::move(callback).Run(true, "");
     }
+  } else {
+    RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kRegisteredApp);
   }
-
-  RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kRegisteredApp);
 
   // Update the last launched time and Termina version.
   registry_service->AppLaunched(app_id);
@@ -408,6 +395,8 @@ void LaunchCrostiniApp(Profile* profile,
       registry_service->GetRegistration(app_id);
   if (!registration) {
     RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kUnknownApp);
+    RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType::kUnknownApp,
+                                   CrostiniResult::UNREGISTERED_APPLICATION);
     return std::move(callback).Run(
         false, "LaunchCrostiniApp called with an unknown app_id: " + app_id);
   }
@@ -583,6 +572,32 @@ bool IsCrostiniWindow(const aura::Window* window) {
   // counting in usage metrics.
   return window->GetProperty(aura::client::kAppType) ==
          static_cast<int>(ash::AppType::CROSTINI_APP);
+}
+
+void RecordAppLaunchHistogram(CrostiniAppLaunchAppType app_type) {
+  base::UmaHistogramEnumeration(kCrostiniAppLaunchHistogram, app_type);
+}
+
+void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
+                                    crostini::CrostiniResult reason) {
+  // We record one histogram for everything, so we have data continuity as
+  // that's the metric we had first, and we also break results down by launch
+  // type.
+  base::UmaHistogramEnumeration(kCrostiniAppLaunchResultHistogram, reason);
+  switch (type) {
+    case CrostiniAppLaunchAppType::kTerminal:
+      base::UmaHistogramEnumeration(kCrostiniAppLaunchResultHistogramTerminal,
+                                    reason);
+      break;
+    case CrostiniAppLaunchAppType::kRegisteredApp:
+      base::UmaHistogramEnumeration(kCrostiniAppLaunchResultHistogramRegistered,
+                                    reason);
+      break;
+    case CrostiniAppLaunchAppType::kUnknownApp:
+      base::UmaHistogramEnumeration(kCrostiniAppLaunchResultHistogramUnknown,
+                                    reason);
+      break;
+  }
 }
 
 }  // namespace crostini
