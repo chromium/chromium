@@ -432,11 +432,12 @@ const char kClipboardFilenamesName[] = "Clipboard filenames";
 const char kClipboardFilenamesDescription[] =
     "Support reading files in clipboard DataTransfer";
 
-const char kClearCrossBrowsingContextGroupMainFrameNameName[] =
-    "Clear window name in top-level cross-browsing-context-group navigation";
-const char kClearCrossBrowsingContextGroupMainFrameNameDescription[] =
-    "Clear the preserved window.name when it's a top-level navigation that "
-    "swaps browsing context group.";
+const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
+    "Clear window name in top-level cross-site cross-browsing-context-group "
+    "navigation";
+const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
+    "Clear the preserved window.name property when it's a top-level cross-site "
+    "navigation that swaps BrowsingContextGroup.";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kChromeTipsInMainMenuName[] =

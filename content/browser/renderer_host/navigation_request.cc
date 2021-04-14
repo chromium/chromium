@@ -5023,9 +5023,9 @@ void NavigationRequest::DidCommitNavigation(
   // empty name on the browser side.
   bool should_clear_browsing_instance_name =
       coop_status().require_browsing_instance_swap() ||
-      (commit_params().is_cross_browsing_instance &&
+      (commit_params().is_cross_site_cross_browsing_context_group &&
        base::FeatureList::IsEnabled(
-           features::kClearCrossBrowsingContextGroupMainFrameName));
+           features::kClearCrossSiteCrossBrowsingContextGroupWindowName));
 
   if (should_clear_browsing_instance_name) {
     std::string name, unique_name;

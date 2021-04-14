@@ -305,7 +305,7 @@ struct SameSizeAsDocumentLoader
   const Vector<String> force_enabled_origin_trials;
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
-  bool is_cross_browsing_context_group_navigation;
+  bool is_cross_site_cross_browsing_context_group;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -408,8 +408,8 @@ DocumentLoader::DocumentLoader(
       force_enabled_origin_trials_(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
       origin_agent_cluster_(params_->origin_agent_cluster),
-      is_cross_browsing_context_group_navigation_(
-          params_->is_cross_browsing_context_group_navigation) {
+      is_cross_site_cross_browsing_context_group_(
+          params_->is_cross_site_cross_browsing_context_group) {
   DCHECK(frame_);
 
   // See `archive_` attribute documentation.
@@ -529,8 +529,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->web_bundle_physical_url = web_bundle_physical_url_;
   params->web_bundle_claimed_url = web_bundle_claimed_url_;
   params->document_ukm_source_id = ukm_source_id_;
-  params->is_cross_browsing_context_group_navigation =
-      is_cross_browsing_context_group_navigation_;
+  params->is_cross_site_cross_browsing_context_group =
+      is_cross_site_cross_browsing_context_group_;
   params->has_text_fragment_token = has_text_fragment_token_;
   params->previews_state = previews_state_;
   // Origin trials must still work on the cloned document.
@@ -2173,16 +2173,14 @@ void DocumentLoader::CommitNavigation() {
     frame_->Tree().ExperimentalSetNulledName();
   }
 
-  bool should_clear_cross_browsing_context_group_window_name =
-      previous_window && frame_->IsMainFrame() && !frame_->Loader().Opener() &&
-      is_cross_browsing_context_group_navigation_;
-  if (should_clear_cross_browsing_context_group_window_name) {
-    // TODO(shuuran): CrossBrowsingContextGroupSetNulledName will just
+  bool should_clear_cross_site_cross_browsing_context_group_window_name =
+      previous_window && frame_->IsMainFrame() &&
+      is_cross_site_cross_browsing_context_group_;
+  if (should_clear_cross_site_cross_browsing_context_group_window_name) {
+    // TODO(shuuran): CrossSiteCrossBrowsingContextGroupSetNulledName will just
     // record the fact that the name would be nulled and if the name is accessed
-    // after we will fire a UseCounter. If we decide to move forward with
-    // this change, we'd actually clean the name here.
-    // frame_->tree().setName(g_null_atom);
-    frame_->Tree().CrossBrowsingContextGroupSetNulledName();
+    // after we will fire a UseCounter.
+    frame_->Tree().CrossSiteCrossBrowsingContextGroupSetNulledName();
   }
 
   // MHTML archive's URL is usually a local file. However the main resource

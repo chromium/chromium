@@ -49,7 +49,7 @@ class CORE_EXPORT FrameTree final {
   };
 
   // TODO(shuuran): remove this once we have gathered the data
-  void CrossBrowsingContextGroupSetNulledName();
+  void CrossSiteCrossBrowsingContextGroupSetNulledName();
 
   void SetName(const AtomicString&, ReplicationPolicy = kDoNotReplicate);
 
@@ -107,7 +107,7 @@ class CORE_EXPORT FrameTree final {
   bool experimental_set_nulled_name_;
 
   // TODO(shuuran): remove this once we have gathered the data
-  bool cross_browsing_context_group_set_nulled_name_;
+  bool cross_site_cross_browsing_context_group_set_nulled_name_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameTree);
 };

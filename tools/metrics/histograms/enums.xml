@@ -45001,6 +45001,8 @@ from previous Chrome versions.
   <int value="-1232629319" label="ResamplingScrollEvents:disabled"/>
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
+  <int value="-1229114522"
+      label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
   <int value="-1228546373"
       label="UseLookalikesForNavigationSuggestions:enabled"/>
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
@@ -46119,8 +46121,6 @@ from previous Chrome versions.
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
-  <int value="-216532115"
-      label="ClearCrossBrowsingContextGroupMainFrameName:enabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
@@ -47093,6 +47093,8 @@ from previous Chrome versions.
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>
+  <int value="659871291"
+      label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
   <int value="662331859" label="ConversionMeasurement:enabled"/>
@@ -48115,8 +48117,6 @@ from previous Chrome versions.
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1581002467" label="enable-explicit-dma-fences"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>
-  <int value="1583950482"
-      label="ClearCrossBrowsingContextGroupMainFrameName:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
   <int value="1584425198" label="NtpModules:enabled"/>
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>

@@ -460,8 +460,8 @@ struct CommitNavigationParams {
   // further narrowed down by permissions policy.
   array<network.mojom.WebClientHintsType> enabled_client_hints;
 
-  // Whether this is a cross browsing instance navigation.
-  bool is_cross_browsing_instance = false;
+  // Whether this is a cross-site navigation that swaps BrowsingContextGroups.
+  bool is_cross_site_cross_browsing_context_group = false;
 
   // Should only be set to a valid value for main-frame same-site navigations
   // where we did a proactive BrowsingInstance swap and we're reusing the old

@@ -882,15 +882,13 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
 
   bool is_same_site = render_frame_host_->IsNavigationSameSite(
       request->GetUrlInfo(), GetCoopCoepCrossOriginIsolationInfo(request));
-  // Same-site navigations could swap BrowsingInstance as well. But we only want
-  // to clear window.name on cross-site cross-BrowsingInstance main frame
-  // navigations.
-  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#resetBCName.
-  //
-  // TODO(https://crbug.com/1188676): Update the name of the function and
-  // related plumbing for clearing window.name.
-  if (!is_same_site && frame_tree_node_->IsMainFrame()) {
-    request->set_is_cross_browsing_instance(
+  if (frame_tree_node_->IsMainFrame()) {
+    // Same-site navigations could swap BrowsingInstance as well. But we only
+    // want to clear window.name on cross-site cross-BrowsingInstance main frame
+    // navigations.
+    // https://html.spec.whatwg.org/multipage/browsing-the-web.html#resetBCName.
+    request->set_is_cross_site_cross_browsing_context_group(
+        !is_same_site &&
         !dest_site_instance->IsRelatedSiteInstance(current_site_instance));
   }
 

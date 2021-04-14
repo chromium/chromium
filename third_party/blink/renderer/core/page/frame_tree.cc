@@ -67,7 +67,7 @@ const AtomicString& FrameTree::GetName() const {
     }
   }
 
-  if (cross_browsing_context_group_set_nulled_name_) {
+  if (cross_site_cross_browsing_context_group_set_nulled_name_) {
     auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
     if (frame && frame->IsMainFrame() && !name_.IsEmpty()) {
       UseCounter::Count(
@@ -85,8 +85,8 @@ void FrameTree::ExperimentalSetNulledName() {
 }
 
 // TODO(shuuran): remove this once we have gathered the data
-void FrameTree::CrossBrowsingContextGroupSetNulledName() {
-  cross_browsing_context_group_set_nulled_name_ = true;
+void FrameTree::CrossSiteCrossBrowsingContextGroupSetNulledName() {
+  cross_site_cross_browsing_context_group_set_nulled_name_ = true;
 }
 
 void FrameTree::SetName(const AtomicString& name,
@@ -112,7 +112,7 @@ void FrameTree::SetName(const AtomicString& name,
   auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
   if (frame && frame->IsMainFrame() && !name.IsEmpty()) {
     // TODO(shuuran): remove this once we have gathered the data
-    cross_browsing_context_group_set_nulled_name_ = false;
+    cross_site_cross_browsing_context_group_set_nulled_name_ = false;
   }
   name_ = name;
 }

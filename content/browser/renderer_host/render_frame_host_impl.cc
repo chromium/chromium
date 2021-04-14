@@ -2434,12 +2434,11 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   bool should_clear_browsing_instance_name =
       navigation_request &&
       (navigation_request->coop_status().require_browsing_instance_swap() ||
-       (navigation_request->commit_params().is_cross_browsing_instance &&
+       (navigation_request->commit_params()
+            .is_cross_site_cross_browsing_context_group &&
         base::FeatureList::IsEnabled(
-            features::kClearCrossBrowsingContextGroupMainFrameName)));
+            features::kClearCrossSiteCrossBrowsingContextGroupWindowName)));
 
-  // TODO(https://crbug.com/1188676): Update the field and flag name for
-  // clearing window.name on cross-site cross-BrowsingInstance navigations.
   if (should_clear_browsing_instance_name) {
     params->replication_state->name = "";
     // The "swaps" only affect main frames, that have an empty unique name.

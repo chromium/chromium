@@ -376,8 +376,10 @@ class CONTENT_EXPORT NavigationRequest
     common_params_->navigation_start = time;
   }
 
-  void set_is_cross_browsing_instance(bool is_cross_browsing_instance) {
-    commit_params_->is_cross_browsing_instance = is_cross_browsing_instance;
+  void set_is_cross_site_cross_browsing_context_group(
+      bool is_cross_site_cross_browsing_context_group) {
+    commit_params_->is_cross_site_cross_browsing_context_group =
+        is_cross_site_cross_browsing_context_group;
   }
 
   NavigationURLLoader* loader_for_testing() const { return loader_.get(); }

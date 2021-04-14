@@ -150,10 +150,10 @@ const base::Feature kCanvas2DImageChromium {
 #endif
 };
 
-// Clear the frame name for the top-level cross-browsing-context-group
-// navigation.
-const base::Feature kClearCrossBrowsingContextGroupMainFrameName{
-    "ClearCrossBrowsingContextGroupMainFrameName",
+// Clear the window.name property for the top-level cross-site navigations that
+// swap BrowsingContextGroups(BrowsingInstances).
+const base::Feature kClearCrossSiteCrossBrowsingContextGroupWindowName{
+    "ClearCrossSiteCrossBrowsingContextGroupWindowName",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCapabilityDelegationPaymentRequest{

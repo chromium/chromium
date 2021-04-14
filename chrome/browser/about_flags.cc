@@ -7055,12 +7055,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRestrictedWebApisDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableRestrictedWebApis)},
 
-    {"clear-cross-browsing-context-group-main-frame-name",
-     flag_descriptions::kClearCrossBrowsingContextGroupMainFrameNameName,
-     flag_descriptions::kClearCrossBrowsingContextGroupMainFrameNameDescription,
+    {"clear-cross-site-cross-browsing-context-group-window-name",
+     flag_descriptions::kClearCrossSiteCrossBrowsingContextGroupWindowNameName,
+     flag_descriptions::
+         kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         features::kClearCrossBrowsingContextGroupMainFrameName)},
+         features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
 
     {"sync-compromised-credentials",
      flag_descriptions::kSyncingCompromisedCredentialsName,

@@ -9050,7 +9050,7 @@ class RenderFrameHostManagerClearWindowNameTest
  public:
   RenderFrameHostManagerClearWindowNameTest() {
     feature_list_.InitAndEnableFeature(
-        features::kClearCrossBrowsingContextGroupMainFrameName);
+        features::kClearCrossSiteCrossBrowsingContextGroupWindowName);
   }
   ~RenderFrameHostManagerClearWindowNameTest() override = default;
 
@@ -9116,7 +9116,7 @@ class ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest
  public:
   ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest() {
     feature_list_.InitAndEnableFeature(
-        features::kClearCrossBrowsingContextGroupMainFrameName);
+        features::kClearCrossSiteCrossBrowsingContextGroupWindowName);
   }
   ~ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest() override =
       default;

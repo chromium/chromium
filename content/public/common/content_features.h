@@ -41,7 +41,7 @@ CONTENT_EXPORT extern const base::Feature kCacheInlineScriptCode;
 CONTENT_EXPORT extern const base::Feature kCanvas2DImageChromium;
 CONTENT_EXPORT extern const base::Feature kCapabilityDelegationPaymentRequest;
 CONTENT_EXPORT extern const base::Feature
-    kClearCrossBrowsingContextGroupMainFrameName;
+    kClearCrossSiteCrossBrowsingContextGroupWindowName;
 CONTENT_EXPORT extern const base::Feature kClickPointerEvent;
 CONTENT_EXPORT extern const base::Feature kCompositeBGColorAnimation;
 CONTENT_EXPORT extern const base::Feature kCodeCacheDeletionWithoutFilter;

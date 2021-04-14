@@ -259,8 +259,9 @@ extern const char kClipboardFilenamesDescription[];
 extern const char kConditionalTabStripAndroidName[];
 extern const char kConditionalTabStripAndroidDescription[];
 
-extern const char kClearCrossBrowsingContextGroupMainFrameNameName[];
-extern const char kClearCrossBrowsingContextGroupMainFrameNameDescription[];
+extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
+extern const char
+    kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kChromeTipsInMainMenuName[];
