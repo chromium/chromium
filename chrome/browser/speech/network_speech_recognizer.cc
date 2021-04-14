@@ -24,6 +24,7 @@
 #include "content/public/common/child_process_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
+#include "ui/accessibility/accessibility_switches.h"
 
 // Length of timeout to cancel recognition if there's no speech heard.
 static const int kNoSpeechTimeoutInSeconds = 5;
@@ -148,12 +149,16 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   if (session_ != kInvalidSessionId)
     StopOnIOThread();
 
+  // Don't filter profanities if flag is enabled for experimental listening.
+  // This would match desired OnDeviceSpeechRecognizer behavior.
+  bool filter_profanities =
+      !switches::IsExperimentalAccessibilityDictationListeningEnabled();
   content::SpeechRecognitionSessionConfig config;
   config.language = locale_;
   config.continuous = true;
   config.interim_results = true;
   config.max_hypotheses = 1;
-  config.filter_profanities = true;
+  config.filter_profanities = filter_profanities;
   config.accept_language = accept_language_;
   if (!shared_url_loader_factory_) {
     DCHECK(pending_shared_url_loader_factory_);
