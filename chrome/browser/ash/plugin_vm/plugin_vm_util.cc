@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -38,19 +39,9 @@ const char kChromeOSBaseDirectoryDisplayText[] = "Network \u203a ChromeOS";
 
 namespace {
 
-std::string& GetFakeLicenseKey() {
+static std::string& MutableFakeLicenseKey() {
   static base::NoDestructor<std::string> license_key;
   return *license_key;
-}
-
-base::RepeatingClosureList& GetFakeLicenceKeyListeners() {
-  static base::NoDestructor<base::RepeatingClosureList> instance;
-  return *instance;
-}
-
-std::string& GetFakeUserId() {
-  static base::NoDestructor<std::string> user_id;
-  return *user_id;
 }
 
 }  // namespace
@@ -70,17 +61,6 @@ bool IsPluginVmAppWindow(const aura::Window* window) {
   return *app_id == "org.chromium.plugin_vm_ui";
 }
 
-std::string GetPluginVmLicenseKey() {
-  if (FakeLicenseKeyIsSet())
-    return GetFakeLicenseKey();
-  std::string plugin_vm_license_key;
-  if (!ash::CrosSettings::Get()->GetString(chromeos::kPluginVmLicenseKey,
-                                           &plugin_vm_license_key)) {
-    return std::string();
-  }
-  return plugin_vm_license_key;
-}
-
 std::string GetPluginVmUserIdForProfile(const Profile* profile) {
   DCHECK(profile);
   return profile->GetPrefs()->GetString(plugin_vm::prefs::kPluginVmUserId);
@@ -95,19 +75,17 @@ void SetFakePluginVmPolicy(Profile* profile,
   base::DictionaryValue* dict = update.Get();
   dict->SetPath("url", base::Value(image_url));
   dict->SetPath("hash", base::Value(image_hash));
+  MutableFakeLicenseKey() = license_key;
+  plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)
+      ->SkipLicenseCheckForTesting();  // IN-TEST
+}
 
-  GetFakeLicenseKey() = license_key;
-
-  GetFakeLicenceKeyListeners().Notify();
-  GetFakeUserId() = "FAKE_USER_ID";
+std::string GetFakeLicenseKey() {
+  return MutableFakeLicenseKey();
 }
 
 bool FakeLicenseKeyIsSet() {
-  return !GetFakeLicenseKey().empty();
-}
-
-bool FakeUserIdIsSet() {
-  return !GetFakeUserId().empty();
+  return !MutableFakeLicenseKey().empty();
 }
 
 void RemoveDriveDownloadDirectoryIfExists() {
@@ -173,13 +151,6 @@ PluginVmPolicySubscription::PluginVmPolicySubscription(
                           base::Unretained(this)));
   device_allowed_subscription_ = cros_settings->AddSettingsObserver(
       chromeos::kPluginVmAllowed,
-      base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
-                          base::Unretained(this)));
-  license_subscription_ = cros_settings->AddSettingsObserver(
-      chromeos::kPluginVmLicenseKey,
-      base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
-                          base::Unretained(this)));
-  fake_license_subscription_ = GetFakeLicenceKeyListeners().Add(
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
                           base::Unretained(this)));
 

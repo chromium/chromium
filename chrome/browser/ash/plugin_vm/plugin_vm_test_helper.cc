@@ -28,7 +28,6 @@ namespace plugin_vm {
 namespace {
 
 const char kDiskImageImportCommandUuid[] = "3922722bd7394acf85bf4d5a330d4a47";
-const char kPluginVmLicenseKey[] = "LICENSE_KEY";
 const char kDomain[] = "example.com";
 const char kDeviceId[] = "device_id";
 
@@ -138,10 +137,10 @@ PluginVmTestHelper::~PluginVmTestHelper() = default;
 void PluginVmTestHelper::SetPolicyRequirementsToAllowPluginVm() {
   testing_profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmAllowed,
                                            true);
+  testing_profile_->GetPrefs()->SetString(plugin_vm::prefs::kPluginVmUserId,
+                                          "fake-id");
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
       chromeos::kPluginVmAllowed, true);
-  testing_profile_->ScopedCrosSettingsTestHelper()->SetString(
-      chromeos::kPluginVmLicenseKey, kPluginVmLicenseKey);
 }
 
 void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {

@@ -68,24 +68,23 @@ void ShowPluginVmInstallerView(Profile* profile);
 // the Plugin VM installer.
 bool IsPluginVmAppWindow(const aura::Window* window);
 
-// Retrieves the license key to be used for Plugin VM. If
-// none is set this will return an empty string.
-std::string GetPluginVmLicenseKey();
-
 // Retrieves the User Id to be used for Plugin VM. If none is set this will
 // return an empty string.
 std::string GetPluginVmUserIdForProfile(const Profile* profile);
 
-// Sets fake policy values and enables Plugin VM for testing. These set global
-// state so this should be called with empty strings on tear down.
-// TODO(crbug.com/1025136): Remove this once Tast supports setting test
-// policies.
+// Sets fake policy values and enables Plugin VM for tast tests. Device license
+// keys are no longer supported in policy, but for testing purposes this key
+// will still be used by the PluginVmService. This function also makes the
+// installer skip its license check.
+// This sets global state, not per-profile state.
+// TODO(crbug.com/1025136): Set policy directly from tast instead of using a
+// test helper function.
 void SetFakePluginVmPolicy(Profile* profile,
                            const std::string& image_path,
                            const std::string& image_hash,
                            const std::string& license_key);
 bool FakeLicenseKeyIsSet();
-bool FakeUserIdIsSet();
+std::string GetFakeLicenseKey();
 
 // Used to clean up the Plugin VM Drive download directory if it did not get
 // removed when it should have, perhaps due to a crash.
@@ -120,7 +119,6 @@ class PluginVmPolicySubscription {
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::CallbackListSubscription device_allowed_subscription_;
-  base::CallbackListSubscription license_subscription_;
   base::CallbackListSubscription fake_license_subscription_;
 };
 

@@ -102,6 +102,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     auto* installer = plugin_vm::PluginVmInstallerFactory::GetForProfile(
         browser()->profile());
     installer->SetFreeDiskSpaceForTesting(installer->RequiredFreeDiskSpace());
+    installer->SkipLicenseCheckForTesting();
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
@@ -165,8 +166,6 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     // Device policies.
     scoped_testing_cros_settings_.device_settings()->Set(
         chromeos::kPluginVmAllowed, base::Value(true));
-    scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kPluginVmLicenseKey, base::Value("LICENSE_KEY"));
   }
 
   void SetUserWithAffiliation() {
