@@ -22,8 +22,8 @@ namespace chromeos {
 
 CellularESimUninstallHandler::UninstallRequest::UninstallRequest(
     const std::string& iccid,
-    const dbus::ObjectPath& esim_profile_path,
-    const dbus::ObjectPath& euicc_path,
+    const base::Optional<dbus::ObjectPath>& esim_profile_path,
+    const base::Optional<dbus::ObjectPath>& euicc_path,
     UninstallRequestCallback callback)
     : iccid(iccid),
       esim_profile_path(esim_profile_path),
@@ -70,8 +70,8 @@ void CellularESimUninstallHandler::ProcessUninstallRequest() {
   }
 
   curr_request_network_state_ = nullptr;
-  NET_LOG(DEBUG) << "Starting Uninstall Request profile_path="
-                 << uninstall_requests_.front()->esim_profile_path.value();
+  NET_LOG(DEBUG) << "Starting Uninstall Request iccid="
+                 << uninstall_requests_.front()->iccid;
   TransitionToUninstallState(UninstallState::kDisconnectingNetwork);
 }
 
@@ -122,7 +122,8 @@ void CellularESimUninstallHandler::AttemptNetworkDisconnectIfRequired() {
     return;
   }
 
-  if (curr_request_network_state_->IsConnectedState()) {
+  if (!curr_request_network_state_->IsNonShillCellularNetwork() &&
+      curr_request_network_state_->IsConnectedState()) {
     network_connection_handler_->DisconnectNetwork(
         curr_request_network_state_->path(),
         base::BindOnce(
@@ -158,7 +159,7 @@ void CellularESimUninstallHandler::OnShillInhibit(
 
 void CellularESimUninstallHandler::AttemptRequestInstalledProfiles() {
   cellular_esim_profile_handler_->RefreshProfileList(
-      uninstall_requests_.front()->euicc_path,
+      *uninstall_requests_.front()->euicc_path,
       base::BindOnce(&CellularESimUninstallHandler::OnRefreshProfileListResult,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(uninstall_requests_.front()->inhibit_lock));
@@ -178,7 +179,7 @@ void CellularESimUninstallHandler::OnRefreshProfileListResult(
 
 void CellularESimUninstallHandler::AttemptDisableProfileIfRequired() {
   const dbus::ObjectPath& esim_profile_path =
-      uninstall_requests_.front()->esim_profile_path;
+      *uninstall_requests_.front()->esim_profile_path;
   HermesProfileClient::Properties* esim_profile_properties =
       HermesProfileClient::Get()->GetProperties(esim_profile_path);
 
@@ -206,8 +207,8 @@ void CellularESimUninstallHandler::AttemptDisableProfileIfRequired() {
 
 void CellularESimUninstallHandler::AttemptUninstallProfile() {
   HermesEuiccClient::Get()->UninstallProfile(
-      uninstall_requests_.front()->euicc_path,
-      uninstall_requests_.front()->esim_profile_path,
+      *uninstall_requests_.front()->euicc_path,
+      *uninstall_requests_.front()->esim_profile_path,
       base::BindOnce(&CellularESimUninstallHandler::
                          TransitionUninstallStateOnHermesSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -216,6 +217,14 @@ void CellularESimUninstallHandler::AttemptUninstallProfile() {
 
 void CellularESimUninstallHandler::AttemptRemoveShillService() {
   DCHECK(curr_request_network_state_);
+  // Return success immediately for non-shill eSIM cellular networks since we
+  // don't know the actual shill service path. This stub non-shill service will
+  // be removed automatically when the eSIM profile list updates.
+  if (curr_request_network_state_->IsNonShillCellularNetwork()) {
+    TransitionToUninstallState(UninstallState::kSuccess);
+    return;
+  }
+
   network_configuration_handler_->RemoveConfiguration(
       curr_request_network_state_->path(), base::nullopt,
       base::BindOnce(&CellularESimUninstallHandler::TransitionToUninstallState,
