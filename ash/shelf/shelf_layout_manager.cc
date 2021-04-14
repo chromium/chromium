@@ -1100,10 +1100,14 @@ void ShelfLayoutManager::OnSessionStateChanged(
     return;
   }
 
-  // Force the shelf to layout for alignment (bottom if locked, restore the
-  // previous alignment otherwise).
-  if (was_locked != state_.IsScreenLocked())
+  // Force the shelf to layout for alignment (bottom if locked, otherwise
+  // restore the previous alignment). Also layout if the user logs in (see
+  // https://crbug.com/1097464).
+  if (was_locked != state_.IsScreenLocked() || state_.IsActiveSessionState()) {
     UpdateShelfVisibilityAfterLoginUIChange();
+    UpdateContextualNudges();
+    return;
+  }
 
   CalculateTargetBoundsAndUpdateWorkArea();
   UpdateBoundsAndOpacity(animate);

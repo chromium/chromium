@@ -21,11 +21,13 @@
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -4090,6 +4092,35 @@ TEST_F(ShelfLayoutManagerTest, ShelfBackgroundOpaqueAfetrAppListUpdate) {
             primary_shelf_widget->GetBackgroundType());
   EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
             secondary_shelf_widget->GetBackgroundType());
+}
+
+using NoSessionShelfLayoutManagerTest = NoSessionAshTestBase;
+
+// Tests that shelf visibility is updated on login. (See
+// https://crbug.com/1097464)
+TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
+  UpdateDisplay("1000x800");
+  constexpr char kUser[] = "user1@test.com";
+  const AccountId kUserAccount = AccountId::FromUserEmail(kUser);
+
+  // Setup autohide shelf pref.
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  SetShelfAutoHideBehaviorPref(pref_service.get(),
+                               WindowTreeHostManager::GetPrimaryDisplayId(),
+                               ShelfAutoHideBehavior::kAlways);
+  GetSessionControllerClient()->SetUserPrefService(kUserAccount,
+                                                   std::move(pref_service));
+
+  // Create a window that covers the full height of the display.
+  constexpr int kExpectedWindowHeight = 800;
+  auto window = CreateTestWindow(gfx::Rect(400, kExpectedWindowHeight));
+
+  // Simulate login.
+  SimulateUserLogin(kUser);
+
+  // The window should be the same height.
+  EXPECT_EQ(kExpectedWindowHeight, window->bounds().height());
 }
 
 // Test base for unit test related to shelf dimming.

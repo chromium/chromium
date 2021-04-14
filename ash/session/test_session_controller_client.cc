@@ -192,8 +192,10 @@ void TestSessionControllerClient::SetUserPrefService(
     std::unique_ptr<PrefService> pref_service) {
   DCHECK(!controller_->GetUserPrefServiceForUser(account_id));
   prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
-  controller_->OnProfilePrefServiceInitialized(
-      account_id, prefs_provider_->GetUserPrefs(account_id));
+  if (controller_->IsActiveUserSessionStarted()) {
+    controller_->OnProfilePrefServiceInitialized(
+        account_id, prefs_provider_->GetUserPrefs(account_id));
+  }
 }
 
 void TestSessionControllerClient::RequestLockScreen() {
