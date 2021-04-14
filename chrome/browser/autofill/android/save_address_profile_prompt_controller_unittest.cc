@@ -32,7 +32,7 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
     auto prompt_view = std::make_unique<MockSaveAddressProfilePromptView>();
     prompt_view_ = prompt_view.get();
     controller_ = std::make_unique<SaveAddressProfilePromptController>(
-        std::move(prompt_view), profile_, save_address_profile_callback_.Get(),
+        std::move(prompt_view), profile_, decision_callback_.Get(),
         dismissal_callback_.Get());
     ON_CALL(*prompt_view_, Show(controller_.get()))
         .WillByDefault(testing::Return(true));
@@ -43,7 +43,7 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   MockSaveAddressProfilePromptView* prompt_view_;
   AutofillProfile profile_ = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
-      save_address_profile_callback_;
+      decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
   std::unique_ptr<SaveAddressProfilePromptController> controller_;
 };
@@ -67,7 +67,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(
-      save_address_profile_callback_,
+      decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
           profile_));
   controller_->OnAccepted();
@@ -78,7 +78,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(
-      save_address_profile_callback_,
+      decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
           profile_));
   controller_->OnDeclined();
@@ -96,10 +96,19 @@ TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldInvokeSaveCallbackWhenControllerDiesWithoutInteraction) {
   controller_->DisplayPrompt();
 
-  EXPECT_CALL(save_address_profile_callback_,
+  EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
                   profile_));
   controller_.reset();
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnProfileData) {
+  EXPECT_EQ(
+      u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium CA "
+      u"91111\nUnited States",
+      controller_->GetAddress());
+  EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
+  EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
 }
 
 }  // namespace autofill

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/android/autofill/save_address_profile_prompt_view_android.h"
 
+#include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/SaveAddressProfilePrompt_jni.h"
 #include "chrome/browser/autofill/android/save_address_profile_prompt_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -43,10 +44,16 @@ bool SaveAddressProfilePromptViewAndroid::Show(
   if (!java_controller)
     return false;
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> address =
+      base::android::ConvertUTF16ToJavaString(env, controller->GetAddress());
+  ScopedJavaLocalRef<jstring> email =
+      base::android::ConvertUTF16ToJavaString(env, controller->GetEmail());
+  ScopedJavaLocalRef<jstring> phone = base::android::ConvertUTF16ToJavaString(
+      env, controller->GetPhoneNumber());
   java_object_.Reset(Java_SaveAddressProfilePrompt_show(
-      base::android::AttachCurrentThread(),
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      java_controller));
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      java_controller, address, email, phone));
   return !!java_object_;
 }
 

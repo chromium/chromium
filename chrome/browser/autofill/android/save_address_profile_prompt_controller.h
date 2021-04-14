@@ -43,6 +43,10 @@ class SaveAddressProfilePromptController {
   // it was closed without interaction).
   void OnPromptDismissed();
 
+  std::u16string GetAddress();
+  std::u16string GetEmail();
+  std::u16string GetPhoneNumber();
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   void OnUserAccepted(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj);

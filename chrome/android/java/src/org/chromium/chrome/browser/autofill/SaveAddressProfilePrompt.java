@@ -5,7 +5,12 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -32,10 +37,18 @@ public class SaveAddressProfilePrompt {
      * Save prompt to confirm saving an address profile imported from a form submission.
      */
     public SaveAddressProfilePrompt(SaveAddressProfilePromptController controller,
-            ModalDialogManager modalDialogManager, Resources resources) {
+            ModalDialogManager modalDialogManager, Context context, String address, String email,
+            String phone) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
+        showTextIfNotEmpty(dialogView.findViewById(R.id.address), address);
+        showTextIfNotEmpty(dialogView.findViewById(R.id.email), email);
+        showTextIfNotEmpty(dialogView.findViewById(R.id.phone), phone);
+
+        Resources resources = context.getResources();
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER,
@@ -48,7 +61,8 @@ public class SaveAddressProfilePrompt {
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.no_thanks)
                         // TODO(crbug.com/1167061): Revisit whether the dialog should be modal.
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogView);
         mDialogModel = builder.build();
     }
 
@@ -69,14 +83,15 @@ public class SaveAddressProfilePrompt {
      */
     @CalledByNative
     @Nullable
-    private static SaveAddressProfilePrompt show(
-            WindowAndroid windowAndroid, SaveAddressProfilePromptController controller) {
+    private static SaveAddressProfilePrompt show(WindowAndroid windowAndroid,
+            SaveAddressProfilePromptController controller, String address, String email,
+            String phone) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
         SaveAddressProfilePrompt prompt = new SaveAddressProfilePrompt(
-                controller, modalDialogManager, activity.getResources());
+                controller, modalDialogManager, activity, address, email, phone);
         prompt.show();
         return prompt;
     }
@@ -102,5 +117,14 @@ public class SaveAddressProfilePrompt {
                 break;
         }
         mController.onPromptDismissed();
+    }
+
+    private void showTextIfNotEmpty(TextView textView, String text) {
+        if (TextUtils.isEmpty(text)) {
+            textView.setVisibility(View.GONE);
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        }
     }
 }
