@@ -7,7 +7,6 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
-import("//build/util/generate_wrapper.gni")
 
 assert(is_chromeos_ash || is_chromeos_lacros)
 
@@ -203,105 +202,29 @@ template("generate_runner_script") {
     }
   }
 
-  generate_wrapper(target_name) {
-    executable = "//build/chromeos/test_runner.py"
-    wrapper_script = generated_script
-    executable_args = []
-
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(target_name) {
     if (defined(runtime_deps_file)) {
       write_runtime_deps = runtime_deps_file
     }
+    script = "//build/chromeos/create_test_runner_script.py"
 
-    # Build executable_args for the three different test types: GTest, Tast,
-    # and host-side commands (eg telemetry).
-    if (defined(test_exe)) {
-      executable_args += [
-        "gtest",
-        "--test-exe",
-        test_exe,
-      ]
-      if (defined(runtime_deps_file)) {
-        executable_args += [
-          "--runtime-deps-path",
-          rebase_path(runtime_deps_file, root_build_dir),
-        ]
-      }
-    } else if (is_tast) {
-      # When --tast-tests is specified, test_runner.py will call
-      # local_test_runner on the VM to run the set of tests.
-      executable_args += [
-        "tast",
-        "--suite-name",
-        target_name,
-      ]
-      if (defined(tast_attr_expr)) {
-        executable_args += [
-          "--attr-expr",
-          tast_attr_expr,
-        ]
-      } else {
-        foreach(test, tast_tests) {
-          executable_args += [
-            "-t",
-            test,
-          ]
-        }
-      }
-      if (defined(tast_vars)) {
-        foreach(var, tast_vars) {
-          executable_args += [
-            "--tast-var",
-            var,
-          ]
-        }
-      }
-    } else {
-      executable_args += [ "host-cmd" ]
+    outputs = [ generated_script ]
 
-      if (deploy_chrome) {
-        executable_args += [ "--deploy-chrome" ]
-      }
-    }
-    executable_args += [
-      "--cros-cache",
-      "build/cros_cache/",
-      "--board",
-      cros_board,
-      "--path-to-outdir",
-      rebase_path(root_out_dir, "//"),
-      "-v",
-    ]
-
-    if (cros_is_vm) {
-      executable_args += [ "--use-vm" ]
-    } else {
-      executable_args += [ "--flash" ]
-    }
-
-    # If we have public Chromium builds, use public Chromium OS images when
-    # flashing the test device.
-    if (!is_chrome_branded) {
-      executable_args += [ "--public-image" ]
-    }
-
-    if (deploy_lacros) {
-      executable_args += [ "--deploy-lacros" ]
-    }
-
-    # executable_args should be finished, now build the data and deps lists.
     deps = [ "//testing/buildbot/filters:chromeos_filters" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
+
     data = [
       "//.vpython",
-      "//.vpython3",
 
       # We use android test-runner's results libs to construct gtest output
       # json.
       "//build/android/pylib/__init__.py",
       "//build/android/pylib/base/",
       "//build/android/pylib/results/",
+      generated_script,
       "//build/chromeos/",
 
       # Needed for various SDK components used below.
@@ -313,13 +236,47 @@ template("generate_runner_script") {
       "//chromeos/CHROMEOS_LKGM",
       "//third_party/chromite/",
     ]
+
     if (defined(invoker.data)) {
       data += invoker.data
     }
 
     data_deps = [ "//testing:test_scripts_shared" ]
+
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
+    }
+
+    # Required arguments used at build time by the runner script generator.
+    args = [
+      "--script-output-path",
+      rebase_path(generated_script, root_build_dir),
+      "--cros-cache",
+      rebase_path("//build/cros_cache/", root_build_dir),
+      "--board",
+      cros_board,
+      "--output-directory",
+      rebase_path(root_out_dir, root_build_dir),
+    ]
+
+    if (cros_is_vm) {
+      args += [ "--use-vm" ]
+    } else {
+      args += [ "--flash" ]
+    }
+
+    # If we have public Chromium builds, use public Chromium OS images when
+    # flashing the test device.
+    if (!is_chrome_branded) {
+      args += [ "--public-image" ]
+    }
+
+    if (deploy_chrome) {
+      args += [ "--deploy-chrome" ]
+    }
+
+    if (deploy_lacros) {
+      args += [ "--deploy-lacros" ]
     }
 
     # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
@@ -337,6 +294,50 @@ template("generate_runner_script") {
         # the VM. This is done by using binutils in the toolchain. So add the
         # toolchain to the data.
         data += _toolchain_sdk_items
+      }
+    }
+
+    # When --test-exe is specified, test_runner.py will push the exe to the VM
+    # and execute it. Otherwise it wraps a host-side command and just takes care
+    # launching & tearing-down the VM.
+    if (defined(test_exe)) {
+      args += [
+        "--test-exe",
+        test_exe,
+      ]
+      if (defined(runtime_deps_file)) {
+        args += [
+          "--runtime-deps-path",
+          rebase_path(runtime_deps_file, root_build_dir),
+        ]
+      }
+    } else if (is_tast) {
+      # When --tast-tests is specified, test_runner.py will call
+      # local_test_runner on the VM to run the set of tests.
+      args += [
+        "--suite-name",
+        target_name,
+      ]
+      if (defined(tast_attr_expr)) {
+        args += [
+          "--tast-attr-expr",
+          tast_attr_expr,
+        ]
+      } else {
+        foreach(test, tast_tests) {
+          args += [
+            "--tast-tests",
+            test,
+          ]
+        }
+      }
+      if (defined(tast_vars)) {
+        foreach(var, tast_vars) {
+          args += [
+            "--tast-var",
+            var,
+          ]
+        }
       }
     }
   }
