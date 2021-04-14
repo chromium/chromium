@@ -26,6 +26,7 @@
 #include "components/autofill/ios/browser/autofill_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/security_state/ios/security_state_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -39,6 +40,7 @@
 #include "ios/chrome/browser/autofill/strike_database_factory.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/passwords/password_tab_helper.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -385,6 +387,11 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
   password_manager_->ProcessAutofillPredictions(/*driver=*/nullptr, forms);
+  auto* generationHelper =
+      PasswordTabHelper::FromWebState(web_state_)->GetGenerationHelper();
+  if (generationHelper) {
+    generationHelper->ProcessPasswordRequirements(forms);
+  }
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewField(
