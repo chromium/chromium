@@ -5430,6 +5430,23 @@
             ]
         }
     ],
+    "ProfileSwitchIPH": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_ProfileSwitch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtoDBSharedMigration": [
         {
             "platforms": [
