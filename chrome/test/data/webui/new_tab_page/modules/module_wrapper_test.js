@@ -42,8 +42,8 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     windowProxy.setResultFor('now', 123);
 
     // Act.
-    moduleWrapper.descriptor = {
-      id: 'foo',
+    moduleWrapper.module = {
+      descriptor: {id: 'foo'},
       element: moduleElement,
     };
     await detectedImpression;
@@ -60,13 +60,13 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
 
   test('descriptor can only be set once', () => {
     const moduleElement = document.createElement('div');
-    moduleWrapper.descriptor = {
-      id: 'foo',
+    moduleWrapper.module = {
+      descriptor: {id: 'foo'},
       element: moduleElement,
     };
     assertThrows(() => {
-      moduleWrapper.descriptor = {
-        id: 'foo',
+      moduleWrapper.module = {
+        descriptor: {id: 'foo'},
         element: moduleElement,
       };
     });
@@ -75,8 +75,8 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
   test('receiving usage events records usage', () => {
     // Arrange.
     const moduleElement = document.createElement('div');
-    moduleWrapper.descriptor = {
-      id: 'foo',
+    moduleWrapper.module = {
+      descriptor: {id: 'foo'},
       element: moduleElement,
     };
 

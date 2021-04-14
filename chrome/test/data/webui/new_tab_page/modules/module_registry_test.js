@@ -76,9 +76,9 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     // Assert.
     assertEquals(1, handler.getCallCount('updateDisabledModules'));
     assertEquals(2, modules.length);
-    assertEquals('foo', modules[0].id);
+    assertEquals('foo', modules[0].descriptor.id);
     assertDeepEquals(fooModule, modules[0].element);
-    assertEquals('baz', modules[1].id);
+    assertEquals('baz', modules[1].descriptor.id);
     assertDeepEquals(bazModule, modules[1].element);
     assertEquals(2, metrics.count('NewTabPage.Modules.Loaded'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Loaded', 5));
