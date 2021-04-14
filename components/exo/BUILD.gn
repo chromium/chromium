@@ -133,6 +133,8 @@ static_library("exo") {
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
+      "//components/fullscreen_control",
+      "//components/strings",
       "//ui/base",
       "//ui/events/ozone/layout",
     ]
@@ -170,8 +172,6 @@ static_library("exo") {
       "toast_surface.cc",
       "toast_surface.h",
       "toast_surface_manager.h",
-      "ui_lock_bubble.cc",
-      "ui_lock_bubble.h",
       "ui_lock_controller.cc",
       "ui_lock_controller.h",
       "wm_helper_chromeos.cc",

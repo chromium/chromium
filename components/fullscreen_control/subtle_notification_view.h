@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
+#ifndef COMPONENTS_FULLSCREEN_CONTROL_SUBTLE_NOTIFICATION_VIEW_H_
+#define COMPONENTS_FULLSCREEN_CONTROL_SUBTLE_NOTIFICATION_VIEW_H_
 
 #include <memory>
 #include <string>
@@ -48,4 +48,4 @@ class SubtleNotificationView : public views::View {
   InstructionView* instruction_view_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
+#endif  // COMPONENTS_FULLSCREEN_CONTROL_SUBTLE_NOTIFICATION_VIEW_H_

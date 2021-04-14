@@ -17,17 +17,42 @@
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
-#include "components/exo/ui_lock_bubble.h"
 #include "components/exo/wm_helper.h"
+#include "components/fullscreen_control/subtle_notification_view.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
-constexpr auto kEscHoldMessageDuration = base::TimeDelta::FromSeconds(4);
+// The Esc hold bubble shows a message to press and hold Esc to exit fullscreen.
+// The bubble will hide after a 4s timeout and will not display again for that
+// window even if it toggles fullscreen.
+
+// Duration to show the 'Press and hold Esc' bubble.
+constexpr auto kEscNotifyBubbleDuration = base::TimeDelta::FromSeconds(4);
+// Position of Esc notify bubble from top of screen.
+const int kEscNotifyBubbleTopPx = 45;
+
+// Create and position Esc notify bubble.
+views::Widget* CreateEscNotifyBubble(aura::Window* parent) {
+  auto content_view = std::make_unique<SubtleNotificationView>();
+  std::u16string accelerator = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
+  content_view->UpdateContent(l10n_util::GetStringFUTF16(
+      IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN, accelerator));
+  gfx::Size size = content_view->GetPreferredSize();
+  views::Widget* popup = SubtleNotificationView::CreatePopupWidget(
+      parent, std::move(content_view));
+  popup->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);
+  int x = (parent->bounds().width() - size.width()) / 2;
+  popup->SetBounds(gfx::Rect(gfx::Point(x, kEscNotifyBubbleTopPx), size));
+  return popup;
+}
 
 // Shows 'Press and hold ESC to exit fullscreen' message.
 class EscHoldNotifier : public ash::WindowStateObserver {
@@ -42,58 +67,55 @@ class EscHoldNotifier : public ash::WindowStateObserver {
   EscHoldNotifier(const EscHoldNotifier&) = delete;
   EscHoldNotifier& operator=(const EscHoldNotifier&) = delete;
 
-  ~EscHoldNotifier() override { CloseBubble(); }
+  ~EscHoldNotifier() override { CloseEscNotifyBubble(); }
 
-  views::Widget* bubble() { return bubble_; }
+  views::Widget* esc_notify_bubble() { return esc_notify_bubble_; }
 
  private:
   // Overridden from ash::WindowStateObserver:
-  void OnPreWindowStateTypeChange(ash::WindowState* window_state,
-                                  chromeos::WindowStateType old_type) override {
-  }
   void OnPostWindowStateTypeChange(
       ash::WindowState* window_state,
       chromeos::WindowStateType old_type) override {
     if (window_state->IsFullscreen()) {
       ShowBubble(window_state->window());
     } else {
-      CloseBubble();
+      CloseEscNotifyBubble();
     }
   }
 
   void ShowBubble(aura::Window* window) {
-    // Only show message once per window.
-    if (has_been_shown_)
+    // Only show Esc notify bubble once per window.
+    if (esc_notify_bubble_shown_)
       return;
 
-    views::Widget* widget =
-        views::Widget::GetTopLevelWidgetForNativeView(window);
-    if (!widget)
-      return;
-    bubble_ = exo::UILockBubbleView::DisplayBubble(widget->GetContentsView());
+    if (!esc_notify_bubble_)
+      esc_notify_bubble_ = CreateEscNotifyBubble(window);
+    esc_notify_bubble_->Show();
 
-    // Close bubble after 4s.
-    close_timer_.Start(
-        FROM_HERE, kEscHoldMessageDuration,
-        base::BindOnce(&EscHoldNotifier::CloseBubble, base::Unretained(this),
+    // Close Esc notify bubble after 4s.
+    esc_notify_bubble_timer_.Start(
+        FROM_HERE, kEscNotifyBubbleDuration,
+        base::BindOnce(&EscHoldNotifier::CloseEscNotifyBubble,
+                       base::Unretained(this),
                        /*closed_by_timer=*/true));
   }
 
-  void CloseBubble(bool closed_by_timer = false) {
-    if (bubble_) {
-      bubble_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-      bubble_ = nullptr;
-      // Message is only shown once as long as it shows for the full 4s.
+  void CloseEscNotifyBubble(bool closed_by_timer = false) {
+    if (esc_notify_bubble_) {
+      esc_notify_bubble_->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+      esc_notify_bubble_ = nullptr;
+      // Esc notify bubble is not reshown after it is closed by the timer.
       if (closed_by_timer) {
-        has_been_shown_ = true;
+        esc_notify_bubble_shown_ = true;
         window_state_observation_.Reset();
       }
     }
   }
 
-  views::Widget* bubble_ = nullptr;
-  bool has_been_shown_ = false;
-  base::OneShotTimer close_timer_;
+  views::Widget* esc_notify_bubble_ = nullptr;
+  bool esc_notify_bubble_shown_ = false;
+  base::OneShotTimer esc_notify_bubble_timer_;
   base::ScopedObservation<ash::WindowState, ash::WindowStateObserver>
       window_state_observation_{this};
 };
@@ -165,7 +187,7 @@ void UILockController::OnSurfaceFocused(Surface* gained_focus) {
 }
 
 bool UILockController::IsBubbleVisibleForTesting(aura::Window* window) {
-  return window->GetProperty(kEscHoldNotifierKey)->bubble();
+  return window->GetProperty(kEscHoldNotifierKey)->esc_notify_bubble();
 }
 
 namespace {

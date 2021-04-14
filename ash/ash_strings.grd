@@ -191,9 +191,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LEARN_MORE" desc="Text of Learn more links.">
         Learn more
       </message>
-      <message name="IDS_EXO_UI_LOCK_NOTIFICATION_BUBBLE_MESSAGE" desc="The text string prompting users on how to exit non-immersive fullscreen mode.">
-        Press and hold [Esc] to exit full screen
-      </message>
 
       <!-- Status tray items -->
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of the status tray and the information on it.">

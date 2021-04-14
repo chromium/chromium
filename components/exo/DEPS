@@ -4,6 +4,8 @@ include_rules = [
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/ui/base",
   "+chromeos/ui/frame",
+  "+components/fullscreen_control",
+  "+components/strings",
   "+components/viz/common",
   "+components/viz/host",
   "+device/gamepad",
