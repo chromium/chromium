@@ -146,6 +146,15 @@
       "use_libfuzzer": true
     }
   },
+  "Linux Builder (deps-cache) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Linux Builder (goma cache silo)": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
@@ -258,6 +267,15 @@
       "is_debug": true,
       "is_tsan": true,
       "symbol_level": 1,
+      "use_rbe": true
+    }
+  },
+  "TSAN Release (deps-cache) (reclient)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
       "use_rbe": true
     }
   },

@@ -6,6 +6,19 @@
       "chromium_builder_asan"
     ]
   },
+  "Linux Builder (deps-cache) (reclient)": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "isolate_profile_data": true,
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      }
+    ]
+  },
   "Linux Builder (goma cache silo)": {
     "additional_compile_targets": [
       "all"
@@ -457,6 +470,11 @@
     ]
   },
   "TSAN Debug (reclient)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
+  "TSAN Release (deps-cache) (reclient)": {
     "additional_compile_targets": [
       "chromium_builder_asan"
     ]
