@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/daily_event.h"
 
@@ -19,6 +20,7 @@ constexpr base::TimeDelta kCheckDailyEventInternal =
 
 constexpr char kDailySamplePrefPrefix[] = "feature_usage.daily_sample.";
 constexpr char kFeatureUsageMetricPrefix[] = "ChromeOS.FeatureUsage.";
+constexpr char kFeatureUsetimeMetricPostfix[] = ".Usetime";
 
 std::string FeatureToPref(const std::string& feature_name) {
   return kDailySamplePrefPrefix + feature_name;
@@ -96,6 +98,11 @@ void FeatureUsageMetrics::RegisterPref(PrefRegistrySimple* registry,
 void FeatureUsageMetrics::RecordUsage(bool success) const {
   Event e = success ? Event::kUsedWithSuccess : Event::kUsedWithFailure;
   base::UmaHistogramEnumeration(histogram_name_, e);
+}
+
+void FeatureUsageMetrics::RecordUsetime(base::TimeDelta usetime) const {
+  base::UmaHistogramLongTimes100(histogram_name_ + kFeatureUsetimeMetricPostfix,
+                                 usetime);
 }
 
 void FeatureUsageMetrics::ReportDailyMetrics() const {

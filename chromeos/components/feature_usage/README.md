@@ -20,6 +20,7 @@ The following events are reported by the component (for details see
 * Has the user enabled the feature for the device?
 * Successful attempt to use the feature.
 * Failed attempt to use the feature.
+* Record the usage time of the feature.
 
 The first two are reported once per day. To correctly track 1-, 7-, 28-days
 users. The feature usage component encapsulates this logic.
@@ -97,6 +98,9 @@ attempt. Success indicates whether or not the attempt to use was successful.
 Your feature might not have failed attempts. In that case always call with
 `success=true`.
 
+Call `feature_usage_metrics_->RecordUsetime(base::TimeDelta usetime);` with
+however long the user spends using the feature, if applicable.
+
 ### Testing
 Use `base::HistogramTester` to verify attempt events are reported.
 
@@ -111,4 +115,9 @@ histogram_tester.ExpectBucketCount(
 histogram_tester.ExpectBucketCount(
     "ChromeOS.FeatureUsage.YouFeature",
     static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSuccess), 1);
+  ...
+// Emulate the amount of time |usetime| (base::TimeDelta) using the feature.
+histogram_tester_->ExpectTimeBucketCount(
+  "ChromeOS.FeatureUsage.YouFeature.Usetime", usetime, 1);
+
 ```

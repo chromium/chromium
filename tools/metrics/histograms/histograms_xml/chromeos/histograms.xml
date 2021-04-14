@@ -548,6 +548,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
+<histogram name="ChromeOS.FeatureUsage.{FeatureName}.Usetime" units="ms"
+    expires_after="2022-01-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the duration of time (ms) a given {FeatureName} feature was used.
+  </summary>
+  <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
+</histogram>
+
 <histogram name="ChromeOS.GAIA.AuthenticatorContentWindowNull" enum="Boolean"
     expires_after="M85">
   <obsolete>

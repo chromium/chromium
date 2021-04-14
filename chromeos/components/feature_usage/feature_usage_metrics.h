@@ -70,6 +70,10 @@ class FeatureUsageMetrics {
   // be called with `false`.
   void RecordUsage(bool success) const;
 
+  // `RecordUsetime` should be called with the duration of time that the
+  // feature is used. All |usetime|s of the feature will be aggregated together.
+  void RecordUsetime(base::TimeDelta usetime) const;
+
   static void RegisterPref(PrefRegistrySimple* registry,
                            const std::string& feature_name);
 

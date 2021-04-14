@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_observer.h"
@@ -273,13 +274,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   base::Optional<CellularUsage> last_psim_cellular_usage_;
 
   // Tracks the last time the PSim network's cellular usage changed.
-  base::Optional<base::Time> last_psim_usage_change_timestamp_;
+  base::Optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
 
   // Tracks the last ESim cellular network usage state.
   base::Optional<CellularUsage> last_esim_cellular_usage_;
 
   // Tracks the last time the ESim network's cellular usage changed.
-  base::Optional<base::Time> last_esim_usage_change_timestamp_;
+  base::Optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
 
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;

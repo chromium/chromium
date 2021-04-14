@@ -158,6 +158,11 @@ class ESimFeatureUsageMetrics
     feature_usage_metrics_->RecordUsage(success);
   }
 
+  // Should be called after an ESim network is disconnected from.
+  void RecordUsetime(base::TimeDelta usetime) const {
+    feature_usage_metrics_->RecordUsetime(usetime);
+  }
+
  private:
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
@@ -663,13 +668,12 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
       UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.Usage.Count", usage);
       if (last_psim_cellular_usage_ ==
           CellularUsage::kConnectedAndOnlyNetwork) {
-        UMA_HISTOGRAM_LONG_TIMES(
-            "Network.Cellular.PSim.Usage.Duration",
-            base::Time::Now() - *last_psim_usage_change_timestamp_);
+        UMA_HISTOGRAM_LONG_TIMES("Network.Cellular.PSim.Usage.Duration",
+                                 psim_usage_elapsed_timer_->Elapsed());
       }
     }
 
-    last_psim_usage_change_timestamp_ = base::Time::Now();
+    psim_usage_elapsed_timer_ = base::ElapsedTimer();
     last_psim_cellular_usage_ = usage;
   }
 
@@ -678,13 +682,17 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
       UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.Usage.Count", usage);
       if (last_esim_cellular_usage_ ==
           CellularUsage::kConnectedAndOnlyNetwork) {
-        UMA_HISTOGRAM_LONG_TIMES(
-            "Network.Cellular.ESim.Usage.Duration",
-            base::Time::Now() - *last_esim_usage_change_timestamp_);
+        const base::TimeDelta usage_duration =
+            esim_usage_elapsed_timer_->Elapsed();
+
+        UMA_HISTOGRAM_LONG_TIMES("Network.Cellular.ESim.Usage.Duration",
+                                 usage_duration);
+        if (esim_feature_usage_metrics_.get())
+          esim_feature_usage_metrics_->RecordUsetime(usage_duration);
       }
     }
 
-    last_esim_usage_change_timestamp_ = base::Time::Now();
+    esim_usage_elapsed_timer_ = base::ElapsedTimer();
     last_esim_cellular_usage_ = usage;
   }
 }

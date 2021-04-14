@@ -4,6 +4,7 @@
 
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 
+#include "base/logging.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -17,6 +18,7 @@ namespace {
 
 const char kTestFeature[] = "TestFeature";
 const char kTestMetric[] = "ChromeOS.FeatureUsage.TestFeature";
+const char kTestUsetimeMetric[] = "ChromeOS.FeatureUsage.TestFeature.Usetime";
 
 }  // namespace
 
@@ -63,6 +65,12 @@ TEST_F(FeatureUsageMetricsTest, RecordUsageWithFailure) {
   histogram_tester_->ExpectBucketCount(
       kTestMetric,
       static_cast<int>(FeatureUsageMetrics::Event::kUsedWithFailure), 1);
+}
+
+TEST_F(FeatureUsageMetricsTest, RecordUsetime) {
+  const base::TimeDelta kUsetime = base::TimeDelta::FromSeconds(10);
+  feature_usage_metrics_->RecordUsetime(kUsetime);
+  histogram_tester_->ExpectTimeBucketCount(kTestUsetimeMetric, kUsetime, 1);
 }
 
 TEST_F(FeatureUsageMetricsTest, DailyMetricsTest) {
