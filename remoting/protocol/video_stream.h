@@ -9,7 +9,6 @@
 
 #include <cstdint>
 
-#include "base/callback_forward.h"
 #include "remoting/protocol/input_event_timestamps.h"
 
 namespace webrtc {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"

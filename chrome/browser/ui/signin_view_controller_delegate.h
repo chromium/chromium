@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 
-#include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 

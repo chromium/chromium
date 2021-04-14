@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"

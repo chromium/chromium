@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DRIVE_FILE_ERRORS_H_
 #define COMPONENTS_DRIVE_FILE_ERRORS_H_
 
-#include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "google_apis/drive/drive_api_error_codes.h"
 

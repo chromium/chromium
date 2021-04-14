@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/sequenced_task_runner.h"

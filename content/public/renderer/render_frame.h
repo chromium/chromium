@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"

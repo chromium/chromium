@@ -11,7 +11,6 @@
 #include <map>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"

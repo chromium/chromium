@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_RECOVERY_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_RECOVERY_COMPONENT_INSTALLER_H_
 
-#include "base/callback_forward.h"
 
 class PrefRegistrySimple;
 class PrefService;

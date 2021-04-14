@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"

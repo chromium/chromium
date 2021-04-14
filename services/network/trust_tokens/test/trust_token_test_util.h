@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_string_value_serializer.h"

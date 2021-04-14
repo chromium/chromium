@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {

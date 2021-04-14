@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 
 class Profile;

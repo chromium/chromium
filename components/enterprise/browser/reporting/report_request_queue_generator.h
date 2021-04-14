@@ -8,7 +8,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"

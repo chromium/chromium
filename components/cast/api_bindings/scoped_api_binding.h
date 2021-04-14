@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"

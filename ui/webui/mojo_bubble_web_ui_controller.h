@@ -5,7 +5,6 @@
 #ifndef UI_WEBUI_MOJO_BUBBLE_WEB_UI_CONTROLLER_H_
 #define UI_WEBUI_MOJO_BUBBLE_WEB_UI_CONTROLLER_H_
 
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 

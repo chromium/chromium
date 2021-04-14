@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/net/cast_transport_defines.h"

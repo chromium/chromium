@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "chrome/browser/net/nss_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 

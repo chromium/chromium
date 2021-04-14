@@ -6,7 +6,6 @@
 #define ASH_WM_WINDOW_DIMMER_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

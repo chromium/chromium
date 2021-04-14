@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chromecast/device/bluetooth/le/mock_le_scan_manager.h"

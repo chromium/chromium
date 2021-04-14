@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/braille_display_private.h"
 

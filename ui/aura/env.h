@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"

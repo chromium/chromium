@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"

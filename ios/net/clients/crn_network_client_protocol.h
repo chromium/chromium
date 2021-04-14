@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/callback_forward.h"
 #include "base/strings/string_util.h"
 
 namespace net {

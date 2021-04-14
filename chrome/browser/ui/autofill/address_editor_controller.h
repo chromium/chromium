@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 

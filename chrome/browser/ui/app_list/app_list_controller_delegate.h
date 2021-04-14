@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"

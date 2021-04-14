@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_VIEW_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"

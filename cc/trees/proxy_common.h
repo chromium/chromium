@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

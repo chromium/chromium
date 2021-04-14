@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/optional.h"

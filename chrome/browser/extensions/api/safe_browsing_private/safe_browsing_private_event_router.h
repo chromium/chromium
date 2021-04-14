@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

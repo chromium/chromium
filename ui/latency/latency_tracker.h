@@ -5,7 +5,6 @@
 #ifndef UI_LATENCY_LATENCY_TRACKER_H_
 #define UI_LATENCY_LATENCY_TRACKER_H_
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "ui/latency/latency_info.h"
 

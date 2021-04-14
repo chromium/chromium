@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_DOWNLOAD_ARCHIVE_MANAGER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_DOWNLOAD_ARCHIVE_MANAGER_H_
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/archive_manager.h"

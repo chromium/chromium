@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/containers/mru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
