@@ -255,7 +255,10 @@ void ImageDecoderCore::AppendData(size_t data_size,
   } else {
     DCHECK_EQ(data_size, 0u);
   }
-  decoder_->SetData(stream_buffer_, data_complete_);
+
+  // We may not have a decoder if Clear() was called while data arrives.
+  if (decoder_)
+    decoder_->SetData(stream_buffer_, data_complete_);
 }
 
 void ImageDecoderCore::Clear() {

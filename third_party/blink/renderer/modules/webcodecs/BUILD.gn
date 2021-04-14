@@ -109,6 +109,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
