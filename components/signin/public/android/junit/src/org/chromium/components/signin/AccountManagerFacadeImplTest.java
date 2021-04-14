@@ -4,17 +4,20 @@
 
 package org.chromium.components.signin;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.Manifest;
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.UserManager;
+
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,66 +27,72 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowAccountManager;
+import org.robolectric.shadows.ShadowUserManager;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
-import org.chromium.testing.local.CustomShadowUserManager;
+import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Robolectric tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, CustomShadowUserManager.class})
+@Config(shadows = {CustomShadowAsyncTask.class, ShadowUserManager.class,
+                ShadowChromiumPlayServicesAvailability.class, ShadowAccountManager.class})
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
 
-    private CustomShadowUserManager mShadowUserManager;
-    private FakeAccountManagerDelegate mDelegate;
-    private AccountManagerFacade mFacade;
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final GrantPermissionRule mGrantPermissionRule =
+            GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS);
 
     @Mock
     private UmaRecorder mUmaRecorderMock;
 
+    @Mock
+    private AccountsChangeObserver mObserverMock;
+
+    @Mock
+    private ChildAccountStatusListener mChildAccountStatusListenerMock;
+
+    private final Context mContext = RuntimeEnvironment.application;
+    private ShadowUserManager mShadowUserManager;
+    private ShadowAccountManager mShadowAccountManager;
+    private FakeAccountManagerDelegate mDelegate;
+    private AccountManagerFacade mFacade;
+
+    // Prefer to use the facade with the real system delegate instead of the fake delegate
+    // to test the facade more thoroughly
+    private AccountManagerFacade mFacadeWithSystemDelegate;
+
     @Before
     public void setUp() {
+        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(true);
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
-        Context context = RuntimeEnvironment.application;
-        UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-        mShadowUserManager = (CustomShadowUserManager) shadowOf(userManager);
+        mShadowUserManager =
+                shadowOf((UserManager) mContext.getSystemService(Context.USER_SERVICE));
+        mShadowAccountManager = shadowOf(AccountManager.get(mContext));
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mDelegate = new FakeAccountManagerDelegate();
         mFacade = new AccountManagerFacadeImpl(mDelegate);
-    }
 
-    private void setAccountRestrictionPatterns(String... patterns) {
-        Bundle restrictions = new Bundle();
-        restrictions.putStringArray(
-                AccountManagerFacadeImpl.ACCOUNT_RESTRICTION_PATTERNS_KEY, patterns);
-        mShadowUserManager.setApplicationRestrictions(
-                RuntimeEnvironment.application.getPackageName(), restrictions);
-        RuntimeEnvironment.application.sendBroadcast(
-                new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
-    }
-
-    private void clearAccountRestrictionPatterns() {
-        mShadowUserManager.setApplicationRestrictions(
-                RuntimeEnvironment.application.getPackageName(), new Bundle());
-        RuntimeEnvironment.application.sendBroadcast(
-                new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+        mFacadeWithSystemDelegate =
+                new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
     }
 
     @Test
@@ -95,16 +104,21 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    public void testAccountsChangerObservationInitialization() {
+        mFacadeWithSystemDelegate.addObserver(mObserverMock);
+        verify(mObserverMock, never()).onAccountsChanged();
+
+        mContext.sendBroadcast(new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION));
+
+        verify(mObserverMock).onAccountsChanged();
+    }
+
+    @Test
     public void testCountOfAccountLoggedAfterAccountsFetched() {
         addTestAccount("test@gmail.com");
+
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
-        CallbackHelper callbackHelper = new CallbackHelper();
-        facade.tryGetGoogleAccounts(accounts -> callbackHelper.notifyCalled());
-        try {
-            callbackHelper.waitForFirst();
-        } catch (TimeoutException e) {
-            throw new RuntimeException("Timed out waiting for callback", e);
-        }
+
         verify(mUmaRecorderMock)
                 .recordLinearHistogram("Signin.AndroidNumberOfDeviceAccounts", 1, 1, 50, 51);
     }
@@ -207,9 +221,19 @@ public class AccountManagerFacadeImplTest {
 
         removeTestAccount(account3);
         Assert.assertEquals(List.of(account2), mFacade.getGoogleAccounts());
+    }
 
-        clearAccountRestrictionPatterns();
-        Assert.assertEquals(List.of(account, account2), mFacade.getGoogleAccounts());
+    @Test
+    public void testGetAccountsWithAccountPatternsCleared() {
+        final Account account1 = addTestAccount("test1@gmail.com");
+        final Account account2 = addTestAccount("testexample2@example.com");
+        setAccountRestrictionPatterns("*@example.com");
+        Assert.assertEquals(List.of(account2), mFacade.tryGetGoogleAccounts());
+
+        mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), new Bundle());
+        mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+
+        Assert.assertEquals(List.of(account1, account2), mFacade.tryGetGoogleAccounts());
     }
 
     @Test
@@ -220,20 +244,54 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCheckChildAccount() {
-        Account testAccount = addTestAccount("test@gmail.com");
-        Account ucaAccount = addTestAccount(
+    public void testCheckChildAccountForRegularChild() {
+        final Account account = setFeaturesForAccount(
                 "uca@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
-        Account usmAccount = addTestAccount(
-                "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
-        Account bothAccount = addTestAccount("uca_usm@gmail.com",
-                AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY,
-                AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
 
-        assertChildAccountStatus(testAccount, ChildAccountStatus.NOT_CHILD);
-        assertChildAccountStatus(ucaAccount, ChildAccountStatus.REGULAR_CHILD);
-        assertChildAccountStatus(usmAccount, ChildAccountStatus.USM_CHILD);
-        assertChildAccountStatus(bothAccount, ChildAccountStatus.REGULAR_CHILD);
+        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
+    }
+
+    @Test
+    public void testCheckChildAccountForUSMChild() {
+        final Account account = setFeaturesForAccount(
+                "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
+
+        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.USM_CHILD);
+    }
+
+    @Test
+    public void testCheckChildAccountForRegularUSMChild() {
+        final Account account = setFeaturesForAccount("usm_uca@gmail.com",
+                AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY,
+                AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
+
+        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
+    }
+
+    @Test
+    public void testCheckChildAccountForAdult() {
+        final Account account = setFeaturesForAccount("adult@gmail.com");
+
+        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
+    }
+
+    @Test
+    public void testGetAccessToken() throws AuthException {
+        final Account account = AccountUtils.createAccountFromName("test@gmail.com");
+        final AccessTokenData originalToken =
+                mFacadeWithSystemDelegate.getAccessToken(account, TEST_TOKEN_SCOPE);
+
+        Assert.assertEquals("The same token should be returned.",
+                mFacadeWithSystemDelegate.getAccessToken(account, TEST_TOKEN_SCOPE).getToken(),
+                originalToken.getToken());
     }
 
     @Test
@@ -243,7 +301,9 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals("The same token should be returned before invalidating the token.",
                 mFacade.getAccessToken(account, TEST_TOKEN_SCOPE).getToken(),
                 originalToken.getToken());
+
         mFacade.invalidateAccessToken(originalToken.getToken());
+
         final AccessTokenData newToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
         Assert.assertNotEquals(
                 "A different token should be returned since the original token is invalidated.",
@@ -255,20 +315,27 @@ public class AccountManagerFacadeImplTest {
         AccountManagerFacadeProvider.getInstance();
     }
 
-    private Account addTestAccount(String accountEmail, String... features) {
-        AccountHolder holder = AccountHolder.createFromEmailAndFeatures(accountEmail, features);
+    private Account setFeaturesForAccount(String email, String... features) {
+        final Account account = AccountUtils.createAccountFromName(email);
+        mShadowAccountManager.setFeatures(account, features);
+        return account;
+    }
+
+    private void setAccountRestrictionPatterns(String... patterns) {
+        Bundle restrictions = new Bundle();
+        restrictions.putStringArray(
+                AccountManagerFacadeImpl.ACCOUNT_RESTRICTION_PATTERNS_KEY, patterns);
+        mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), restrictions);
+        mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+    }
+
+    private Account addTestAccount(String accountEmail) {
+        final AccountHolder holder = AccountHolder.createFromEmail(accountEmail);
         mDelegate.addAccount(holder);
-        Assert.assertFalse(((AccountManagerFacadeImpl) mFacade).isUpdatePending().get());
         return holder.getAccount();
     }
 
     private void removeTestAccount(Account account) {
         mDelegate.removeAccount(AccountHolder.createFromAccount(account));
-    }
-
-    private void assertChildAccountStatus(Account account, @ChildAccountStatus.Status int status) {
-        ChildAccountStatusListener listenerMock = mock(ChildAccountStatusListener.class);
-        mFacade.checkChildAccountStatus(account, listenerMock);
-        verify(listenerMock).onStatusReady(status);
     }
 }

@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -133,7 +132,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     @Override
     public AccessTokenData getAuthToken(Account account, String authTokenScope)
             throws AuthException {
-        assert !ThreadUtils.runningOnUiThread();
+        ThreadUtils.assertOnBackgroundThread();
         assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);
         try {
             return new AccessTokenData(GoogleAuthUtil.getTokenWithNotification(
@@ -152,8 +151,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public void invalidateAuthToken(String authToken) throws AuthException {
         try {
             GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
-        } catch (GooglePlayServicesAvailabilityException ex) {
-            throw new AuthException(AuthException.NONTRANSIENT, ex);
         } catch (GoogleAuthException ex) {
             throw new AuthException(AuthException.NONTRANSIENT, ex);
         } catch (IOException ex) {
