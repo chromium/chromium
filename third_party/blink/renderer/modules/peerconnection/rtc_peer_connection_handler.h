@@ -287,10 +287,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
     return force_encoded_video_insertable_streams_;
   }
 
-  bool enable_rtp_data_channel() const {
-    return configuration_.enable_rtp_data_channel;
-  }
-
  protected:
   // Constructor to be used for constructing mocks only.
   explicit RTCPeerConnectionHandler(

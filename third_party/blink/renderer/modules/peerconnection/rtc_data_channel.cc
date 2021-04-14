@@ -243,7 +243,6 @@ RTCDataChannel::RTCDataChannel(
       buffered_amount_(0U),
       stopped_(false),
       closed_from_owner_(false),
-      is_rtp_data_channel_(peer_connection_handler->enable_rtp_data_channel()),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
@@ -642,12 +641,8 @@ bool RTCDataChannel::SendRawData(const char* data, size_t length) {
 }
 
 bool RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
-  // RTP data channels return false on failure to send. SCTP data channels
-  // queue the packet on failure and always return true, so Send can be
-  // called asynchronously for them.
-  if (is_rtp_data_channel_) {
-    return channel()->Send(data_buffer);
-  }
+  // SCTP data channels queue the packet on failure and always return true, so
+  // Send can be called asynchronously for them.
   PostCrossThreadTask(*signaling_thread_.get(), FROM_HERE,
                       CrossThreadBindOnce(&SendOnSignalingThread, channel(),
                                           std::move(data_buffer)));
