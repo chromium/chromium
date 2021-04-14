@@ -6466,31 +6466,31 @@
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
-        'enum': [ 1, 2 ],
+        'enum': [ 2, 3 ],
       },
       'items': [
-        {
-          'name': 'AllowFileHandling',
-          'value': 1,
-          'caption': '''Grant web apps access to file types''',
-        },
         {
           'name': 'BlockFileHandling',
           'value': 2,
           'caption': '''Do not allow any web app to access file types via the File Handling API''',
         },
+        {
+          'name': 'AskFileHandling',
+          'value': 3,
+          'caption': '''Allow web apps to ask the user to grant access to file types via the File Handling API''',
+        },
       ],
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'example_value': 1,
+      'example_value': 2,
       'default': None,
       'id': 845,
       'caption': '''Control use of the File Handling API''',
       'tags': ['website-sharing'],
-      'desc': '''Setting the policy to 1 lets web apps access file types. Setting the policy to 2 denies access to file types.
+      'desc': '''Setting the policy to <ph name="ASK_FILE_HANDLING">AskFileHandling</ph> lets web apps ask for access to file types via the File Handling API. Setting the policy to <ph name="BLOCK_FILE_HANDLING">BlockFileHandling</ph> denies access to file types.
 
       Leaving it unset lets web apps ask for access, but users can change this setting.''',
     },
@@ -6502,7 +6502,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6529,7 +6529,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:91-', 'chrome.*:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
