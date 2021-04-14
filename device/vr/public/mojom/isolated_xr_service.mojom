@@ -71,6 +71,12 @@ struct XRRuntimeSessionResult {
   // to validate and/or manipulate this data before passing it on as part of
   // brokering the session request.
   XRSession session;
+
+  // If the session is handling its own compositing in a way that exposes a
+  // FrameSinkId, it should be set here. This allows for Tab/Screen Capture to
+  // to capture this FrameSinkId, and thus the XrSession, rather than only the
+  // FrameSinkId of the main contents of the WebContents.
+  viz.mojom.FrameSinkId? frame_sink_id;
 };
 
 // An XRRuntime may live in the browser process or a utility process.  The

@@ -11,7 +11,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/browser/xr/service/browser_xr_runtime_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
@@ -338,6 +340,17 @@ void VRServiceImpl::OnImmersiveSessionCreated(
       session_metrics_recorder =
           GetSessionMetricsHelper()->StartImmersiveSession(*(request.options),
                                                            enabled_features);
+
+  // If the session specified a FrameSinkId that means that it is handling its
+  // own compositing in a way that we should notify the WebContents about.
+  if (session_result->frame_sink_id) {
+    if (session_result->frame_sink_id->is_valid()) {
+      static_cast<WebContentsImpl*>(GetWebContents())
+          ->OnXrHasRenderTarget(*session_result->frame_sink_id);
+    } else {
+      DLOG(ERROR) << __func__ << " frame_sink_id was specified but was invalid";
+    }
+  }
 
   OnSessionCreated(std::move(request), std::move(session_result->session),
                    std::move(session_metrics_recorder));
@@ -677,6 +690,11 @@ void VRServiceImpl::OnMakeXrCompatibleComplete(
 
 void VRServiceImpl::OnExitPresent() {
   DVLOG(2) << __func__;
+
+  // Clear any XrRenderTarget that may have been set.
+  viz::FrameSinkId default_frame_sink_id;
+  static_cast<WebContentsImpl*>(GetWebContents())
+      ->OnXrHasRenderTarget(default_frame_sink_id);
 
   GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
 

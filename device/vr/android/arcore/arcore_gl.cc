@@ -106,9 +106,11 @@ ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
 
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-    base::Optional<device::mojom::XRDepthConfig> depth_configuration)
+    base::Optional<device::mojom::XRDepthConfig> depth_configuration,
+    viz::FrameSinkId frame_sink_id)
     : enabled_features(enabled_features),
-      depth_configuration(depth_configuration) {}
+      depth_configuration(depth_configuration),
+      frame_sink_id(frame_sink_id) {}
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     ArCoreGlInitializeResult&& other) = default;
 ArCoreGlInitializeResult::~ArCoreGlInitializeResult() = default;
@@ -336,8 +338,12 @@ void ArCoreGl::OnInitialized() {
 
   is_initialized_ = true;
   webxr_->NotifyMailboxBridgeReady();
+  viz::FrameSinkId frame_sink_id =
+      ar_compositor_ ? ar_compositor_->FrameSinkId() : viz::FrameSinkId();
+
   std::move(initialized_callback_)
-      .Run(ArCoreGlInitializeResult(enabled_features_, depth_configuration_));
+      .Run(ArCoreGlInitializeResult(enabled_features_, depth_configuration_,
+                                    frame_sink_id));
 }
 
 void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,

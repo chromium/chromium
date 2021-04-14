@@ -72,10 +72,12 @@ using ArCoreGlCreateSessionCallback =
 struct ArCoreGlInitializeResult {
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
   base::Optional<device::mojom::XRDepthConfig> depth_configuration;
+  viz::FrameSinkId frame_sink_id;
 
   ArCoreGlInitializeResult(
       std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-      base::Optional<device::mojom::XRDepthConfig> depth_configuration);
+      base::Optional<device::mojom::XRDepthConfig> depth_configuration,
+      viz::FrameSinkId frame_sink_id);
   ArCoreGlInitializeResult(ArCoreGlInitializeResult&& other);
   ~ArCoreGlInitializeResult();
 };
@@ -260,6 +262,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   std::unique_ptr<ArCore> arcore_;
   std::unique_ptr<ArImageTransport> ar_image_transport_;
 
+  // Where possible, we should use the ArCompositor to integrate with viz,
+  // rather than our own custom compositing logic.
   std::unique_ptr<ArCompositorFrameSink> ar_compositor_;
   const bool use_ar_compositor_;
 

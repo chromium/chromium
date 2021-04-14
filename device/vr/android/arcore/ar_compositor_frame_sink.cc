@@ -75,6 +75,12 @@ bool ArCompositorFrameSink::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
 }
 
+viz::FrameSinkId ArCompositorFrameSink::FrameSinkId() {
+  if (!is_initialized_)
+    return {};
+  return xr_frame_sink_client_->FrameSinkId();
+}
+
 void ArCompositorFrameSink::Initialize(
     gpu::SurfaceHandle surface_handle,
     ui::WindowAndroid* root_window,

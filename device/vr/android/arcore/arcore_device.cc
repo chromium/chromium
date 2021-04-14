@@ -320,6 +320,10 @@ void ArCoreDevice::OnCreateSessionCallback(
   session_result->controller =
       std::move(create_session_result.session_controller);
 
+  if (initialize_result.frame_sink_id.is_valid()) {
+    session_result->frame_sink_id = initialize_result.frame_sink_id;
+  }
+
   session_result->session = mojom::XRSession::New();
   auto* session = session_result->session.get();
 
@@ -395,7 +399,8 @@ void ArCoreDevice::RequestArCoreGlInitialization(
   // Since the GL is already initialized, we already have session_state_ that we
   // can pass along.
   OnArCoreGlInitializationComplete(ArCoreGlInitializeResult(
-      session_state_->enabled_features_, session_state_->depth_configuration_));
+      session_state_->enabled_features_, session_state_->depth_configuration_,
+      session_state_->frame_sink_id_));
 }
 
 void ArCoreDevice::OnArCoreGlInitializationComplete(
@@ -412,6 +417,8 @@ void ArCoreDevice::OnArCoreGlInitializationComplete(
         arcore_initialization_result->enabled_features;
     session_state_->depth_configuration_ =
         arcore_initialization_result->depth_configuration;
+    session_state_->frame_sink_id_ =
+        arcore_initialization_result->frame_sink_id;
   } else {
     session_state_->enabled_features_ = {};
     session_state_->depth_configuration_ = base::nullopt;

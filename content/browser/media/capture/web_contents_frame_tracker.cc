@@ -55,10 +55,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   }
 
   viz::FrameSinkId GetFrameSinkIdForCapture() override {
-    if (auto* view = GetCurrentView()) {
-      return view->GetFrameSinkId();
-    }
-    return {};
+    return static_cast<WebContentsImpl*>(contents_)->GetCaptureFrameSinkId();
   }
 
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
@@ -173,6 +170,10 @@ void WebContentsFrameTracker::RenderFrameHostChanged(
 void WebContentsFrameTracker::WebContentsDestroyed() {
   is_capturing_ = false;
   Observe(nullptr);
+  OnPossibleTargetChange();
+}
+
+void WebContentsFrameTracker::CaptureTargetChanged() {
   OnPossibleTargetChange();
 }
 

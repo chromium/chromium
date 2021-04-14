@@ -41,6 +41,7 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
       base::OnceClosure on_initialized) override;
   void SurfaceDestroyed() override;
   base::Optional<viz::SurfaceId> GetDOMSurface() override;
+  viz::FrameSinkId FrameSinkId() override;
 
  private:
   bool IsOnUiThread() const;

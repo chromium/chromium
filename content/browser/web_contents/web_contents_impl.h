@@ -1235,6 +1235,21 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // the preference cache is empty.
   const blink::web_pref::WebPreferences ComputeWebPreferences();
 
+  // Certain WebXr modes integrate with Viz as a compositor directly, and thus
+  // have their own FrameSinkId that typically renders fullscreen, obscuring
+  // the WebContents. This allows those WebXr modes to notify us if that
+  // is occurring. When it has finished, this method may be called again with an
+  // Invalid FrameSinkId to indicate such. Note that other fullscreen modes,
+  // e.g. Fullscreen videos, are largely controlled by the renderer process and
+  // as such are still parented under the existing FrameSinkId.
+  void OnXrHasRenderTarget(const viz::FrameSinkId& frame_sink_id);
+
+  // Because something else may be rendering as the primary contents of this
+  // WebContents rather than the RenderHostView, targets that wish to capture
+  // the contents of this WebContents should query for the FrameSinkId of the
+  // base compositor here.
+  viz::FrameSinkId GetCaptureFrameSinkId();
+
   void set_show_popup_menu_callback_for_testing(
       base::OnceCallback<void(const gfx::Rect&)> callback) {
     show_poup_menu_callback_ = std::move(callback);
@@ -2133,6 +2148,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   int suppress_unresponsive_renderer_count_ = 0;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
+
+  viz::FrameSinkId xr_render_target_;
 
   base::OnceCallback<void(const gfx::Rect&)> show_poup_menu_callback_;
 

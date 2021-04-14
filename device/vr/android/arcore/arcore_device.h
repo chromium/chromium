@@ -162,6 +162,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     base::Optional<device::mojom::XRDepthConfig> depth_configuration_;
 
     std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
+
+    viz::FrameSinkId frame_sink_id_;
   };
 
   // This object is reset to initial values when ending a session. This helps

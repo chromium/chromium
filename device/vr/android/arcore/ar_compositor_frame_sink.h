@@ -85,6 +85,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
 
   bool IsInitialized() { return is_initialized_; }
   bool CanIssueBeginFrame() { return can_issue_new_begin_frame_; }
+  viz::FrameSinkId FrameSinkId();
 
   void Initialize(gpu::SurfaceHandle surface_handle,
                   ui::WindowAndroid* root_window,

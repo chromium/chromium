@@ -83,6 +83,7 @@ class CONTENT_EXPORT WebContentsFrameTracker
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) final;
   void WebContentsDestroyed() final;
+  void CaptureTargetChanged() final;
 
   void SetWebContentsAndContextFromRoutingId(const GlobalFrameRoutingId& id);
 

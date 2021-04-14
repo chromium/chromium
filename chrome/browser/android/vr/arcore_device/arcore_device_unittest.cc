@@ -250,6 +250,7 @@ class StubXrFrameSinkClient : public XrFrameSinkClient {
   base::Optional<viz::SurfaceId> GetDOMSurface() override {
     return base::nullopt;
   }
+  viz::FrameSinkId FrameSinkId() override { return {}; }
 
  private:
   std::unique_ptr<StubCompositorFrameSink> compositor_frame_sink_;

@@ -8160,6 +8160,26 @@ void WebContentsImpl::ExitPictureInPicture() {
     delegate_->ExitPictureInPicture();
 }
 
+void WebContentsImpl::OnXrHasRenderTarget(
+    const viz::FrameSinkId& frame_sink_id) {
+  xr_render_target_ = frame_sink_id;
+  observers_.NotifyObservers(&WebContentsObserver::CaptureTargetChanged);
+}
+
+viz::FrameSinkId WebContentsImpl::GetCaptureFrameSinkId() {
+  if (xr_render_target_.is_valid())
+    return xr_render_target_;
+
+  RenderWidgetHostView* host_view = GetRenderWidgetHostView();
+  if (!host_view) {
+    return {};
+  }
+
+  RenderWidgetHostViewBase* base_view =
+      static_cast<RenderWidgetHostViewBase*>(host_view);
+  return base_view->GetFrameSinkId();
+}
+
 #if defined(OS_ANDROID)
 void WebContentsImpl::NotifyFindMatchRectsReply(
     int version,

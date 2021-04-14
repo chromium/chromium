@@ -209,6 +209,8 @@ struct XRSessionDeviceConfig {
 // information about the device it is connected to, such as focus and blur
 // events, changes to view or stage parameters, or exit present calls initiated
 // by the device.
+// This struct is created in the device process, then manipulated in the browser
+// process before being handed off to the renderer process.
 struct XRSession {
   pending_remote<XRFrameDataProvider> data_provider;
   // TODO(http://crbug.com/842025) Move where the client_receiver gets set to the

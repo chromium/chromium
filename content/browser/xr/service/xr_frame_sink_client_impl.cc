@@ -64,6 +64,10 @@ base::Optional<viz::SurfaceId> XrFrameSinkClientImpl::GetDOMSurface() {
   return dom_surface_id_;
 }
 
+viz::FrameSinkId XrFrameSinkClientImpl::FrameSinkId() {
+  return root_frame_sink_id_;
+}
+
 void XrFrameSinkClientImpl::InitializeRootCompositorFrameSink(
     viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
     device::DomOverlaySetup dom_setup,
