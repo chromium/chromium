@@ -253,9 +253,11 @@ void MdTextButton::UpdateBackgroundColor() {
 }
 
 void MdTextButton::UpdateColors() {
-  UpdateTextColor();
-  UpdateBackgroundColor();
-  SchedulePaint();
+  if (GetWidget()) {
+    UpdateTextColor();
+    UpdateBackgroundColor();
+    SchedulePaint();
+  }
 }
 
 BEGIN_METADATA(MdTextButton, LabelButton)
