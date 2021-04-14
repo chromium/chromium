@@ -590,8 +590,16 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
   if (!context)
     return;
 
-  output_cb_->InvokeAndReportException(
-      nullptr, Traits::MakeOutput(std::move(output), context));
+  auto output_or_error = Traits::MakeOutput(std::move(output), context);
+
+  if (output_or_error.has_error()) {
+    Shutdown(logger_->MakeException("Error creating output from decoded data",
+                                    std::move(output_or_error).error()));
+    return;
+  }
+
+  output_cb_->InvokeAndReportException(nullptr,
+                                       std::move(output_or_error).value());
 }
 
 template <typename Traits>

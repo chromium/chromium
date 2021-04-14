@@ -19,9 +19,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
+#include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 #include <memory>
@@ -90,9 +92,31 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
-AudioDecoderTraits::OutputType* AudioDecoderTraits::MakeOutput(
+media::StatusOr<AudioDecoderTraits::OutputType*> AudioDecoderTraits::MakeOutput(
     scoped_refptr<MediaOutputType> output,
     ExecutionContext* context) {
+  if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
+          output->sample_rate())) {
+    return media::Status(
+        media::StatusCode::kInvalidArgument,
+        String::Format("Invalid decoded audio output sample rate. Got %u, "
+                       "which is outside [%f, %f]",
+                       output->sample_rate(),
+                       blink::audio_utilities::MinAudioBufferSampleRate(),
+                       blink::audio_utilities::MaxAudioBufferSampleRate())
+            .Ascii());
+  }
+
+  if (static_cast<uint32_t>(output->channel_count()) >
+      BaseAudioContext::MaxNumberOfChannels()) {
+    return media::Status(media::StatusCode::kInvalidArgument,
+                         String::Format("Invalid decoded audio output channel "
+                                        "count. Got %u, which exceeds %u",
+                                        output->channel_count(),
+                                        BaseAudioContext::MaxNumberOfChannels())
+                             .Ascii());
+  }
+
   return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
       std::move(output));
 }
