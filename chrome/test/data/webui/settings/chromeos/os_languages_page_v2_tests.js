@@ -432,6 +432,26 @@ suite('languages page', () => {
     let cancelButton;
     let actionButton;
 
+    /**
+     * Returns the list items in the dialog.
+     * @return {!Array<!Element>}
+     */
+    function getListItems() {
+      // If an element (the <iron-list> in this case) is hidden in Polymer,
+      // Polymer will intelligently not update the DOM of the hidden element
+      // to prevent DOM updates that the user can't see. However, this means
+      // that when the <iron-list> is hidden (due to no results), the list
+      // items still exist in the DOM.
+      // This function should return the *visible* items that the user can
+      // select, so if the <iron-list> is hidden we should return an empty
+      // list instead.
+      const dialogEl = dialog.$.dialog;
+      if (dialogEl.querySelector('iron-list').hidden) {
+        return [];
+      }
+      return [...dialogEl.querySelectorAll('.list-item:not([hidden])')];
+    }
+
     setup(() => {
       assertFalse(
           !!languagesPage.$$('os-settings-change-device-language-dialog'));
@@ -525,40 +545,24 @@ suite('languages page', () => {
     test('searches languages', function() {
       const searchInput = dialog.$$('cr-search-field');
 
-      const getItems = function() {
-        // If an element (the <iron-list> in this case) is hidden in Polymer,
-        // Polymer will intelligently not update the DOM of the hidden element
-        // to prevent DOM updates that the user can't see. However, this means
-        // that when the <iron-list> is hidden (due to no results), the list
-        // items still exist in the DOM.
-        // This function should return the *visible* items that the user can
-        // select, so if the <iron-list> is hidden we should return an empty
-        // list instead.
-        const dialogEl = dialog.$.dialog;
-        if (dialogEl.querySelector('iron-list').hidden) {
-          return [];
-        }
-        return dialogEl.querySelectorAll('.list-item:not([hidden])');
-      };
-
       // Expecting a few languages to be displayed when no query exists.
-      assertGE(getItems().length, 1);
+      assertGE(getListItems().length, 1);
 
       // Issue query that matches the |displayedName| in lowercase.
       searchInput.setValue('greek');
       Polymer.dom.flush();
-      assertEquals(1, getItems().length);
-      assertTrue(getItems()[0].textContent.includes('Greek'));
+      assertEquals(1, getListItems().length);
+      assertTrue(getListItems()[0].textContent.includes('Greek'));
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('Ελληνικά');
       Polymer.dom.flush();
-      assertEquals(1, getItems().length);
+      assertEquals(1, getListItems().length);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
       Polymer.dom.flush();
-      assertEquals(0, getItems().length);
+      assertEquals(0, getListItems().length);
     });
 
     test('has escape key behavior working correctly', function() {
@@ -575,6 +579,29 @@ suite('languages page', () => {
       searchInput.setValue('');
       MockInteractions.keyDownOn(searchInput, 19, [], 'Escape');
       assertFalse(dialog.$.dialog.open);
+    });
+
+    test('languages are sorted on native display name', function() {
+      // See https://crbug.com/1184064 for more details.
+      // We can't test whether the order is *deterministic* w.r.t. device
+      // language, as changing device language is not possible in a test, so we
+      // do the next best thing and check if it's sorted on native display name.
+
+      /**
+       * @param {string} text
+       * @return {string}
+       */
+      function getNativeDisplayName(text) {
+        return text.includes(' - ') ? text.split(' - ')[1] : text;
+      }
+
+      const items = getListItems();
+      const nativeDisplayNames =
+          items.map(item => getNativeDisplayName(item.textContent.trim()));
+
+      const sortedNativeDisplayNames =
+          [...nativeDisplayNames].sort((a, b) => a.localeCompare(b, 'en'));
+      assertDeepEquals(nativeDisplayNames, sortedNativeDisplayNames);
     });
   });
 

@@ -67,18 +67,27 @@ Polymer({
    * @private
    */
   getPossibleDeviceLanguages_() {
-    return this.languages.supported.filter(language => {
-      if (!language.supportsUI || language.isProhibitedLanguage ||
-          language.code === this.languages.prospectiveUILanguage) {
-        return false;
-      }
+    return this.languages.supported
+        .filter(language => {
+          if (!language.supportsUI || language.isProhibitedLanguage ||
+              language.code === this.languages.prospectiveUILanguage) {
+            return false;
+          }
 
-      return !this.lowercaseQueryString_ ||
-          language.displayName.toLowerCase().includes(
-              this.lowercaseQueryString_) ||
-          language.nativeDisplayName.toLowerCase().includes(
-              this.lowercaseQueryString_);
-    });
+          return !this.lowercaseQueryString_ ||
+              language.displayName.toLowerCase().includes(
+                  this.lowercaseQueryString_) ||
+              language.nativeDisplayName.toLowerCase().includes(
+                  this.lowercaseQueryString_);
+        })
+        .sort((a, b) => {
+          // Sort by native display name so the order of languages is
+          // deterministic in case the user selects the wrong language.
+          // We need to manually specify a locale in localeCompare for
+          // determinism (as changing language may change sort order if a locale
+          // is not manually specified).
+          return a.nativeDisplayName.localeCompare(b.nativeDisplayName, 'en');
+        });
   },
 
   /**
