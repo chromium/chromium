@@ -5094,15 +5094,6 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
-    name = "linux-no-base-tracing-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "nbt",
-    ),
-    main_console_view = "main",
-)
-
-ci.linux_builder(
     name = "linux-ozone-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
