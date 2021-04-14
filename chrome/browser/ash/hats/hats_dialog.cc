@@ -30,7 +30,7 @@
 using content::WebContents;
 using content::WebUIMessageHandler;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -189,4 +189,4 @@ ui::WebDialogDelegate::FrameKind HatsDialog::GetWebDialogFrameKind() const {
   return ui::WebDialogDelegate::FrameKind::kDialog;
 }
 
-}  // namespace chromeos
+}  // namespace ash

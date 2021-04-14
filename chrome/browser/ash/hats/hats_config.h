@@ -11,7 +11,7 @@ namespace base {
 struct Feature;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 struct HatsConfig {
   HatsConfig(const base::Feature& feature,
@@ -41,6 +41,11 @@ struct HatsConfig {
 extern const HatsConfig kHatsGeneralSurvey;
 extern const HatsConfig kHatsOnboardingSurvey;
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::kHatsGeneralSurvey;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_CONFIG_H_

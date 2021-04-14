@@ -12,7 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 // These values should match the param key values in the finch config file.
 // static
@@ -158,4 +158,4 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   device_is_selected_for_cycle_ = is_selected;
 }
 
-}  // namespace chromeos
+}  // namespace ash

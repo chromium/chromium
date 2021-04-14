@@ -35,4 +35,9 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/network moved to ash.
+namespace ash {
+using ::chromeos::MockNetworkPortalDetector;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_PORTAL_DETECTOR_MOCK_NETWORK_PORTAL_DETECTOR_H_

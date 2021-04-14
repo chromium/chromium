@@ -7,11 +7,11 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr int kMinDaysThreshold = 0;  // HaTS Onboarding Experience is immediate
-}
+}  // namespace
 
 HatsConfig::HatsConfig(const base::Feature& feature,
                        const base::TimeDelta& hatsNewDeviceThreshold,
@@ -39,4 +39,4 @@ const HatsConfig kHatsOnboardingSurvey = {
     prefs::kHatsOnboardingSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
 
-}  // namespace chromeos
+}  // namespace ash

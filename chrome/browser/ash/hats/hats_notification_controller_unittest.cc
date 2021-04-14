@@ -32,7 +32,7 @@ using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
  public:
@@ -221,4 +221,4 @@ TEST_F(HatsNotificationControllerTest,
       HatsNotificationController::kNotificationId, false);
 }
 
-}  // namespace chromeos
+}  // namespace ash

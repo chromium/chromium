@@ -80,7 +80,7 @@ bool IsTestingEnabled() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 const char HatsNotificationController::kNotificationId[] = "hats_notification";
@@ -254,4 +254,4 @@ void HatsNotificationController::UpdateLastInteractionTime() {
                          base::Time::Now().ToInternalValue());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -14,7 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 struct HatsConfig;
 
 // Provides an API for HatsNotificationController to retrieve processed
@@ -97,6 +97,6 @@ class HatsFinchHelper {
   const HatsConfig& hats_config_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_FINCH_HELPER_H_

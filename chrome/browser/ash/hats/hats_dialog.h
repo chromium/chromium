@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 struct HatsConfig;
 
 // Happiness tracking survey dialog. Sometimes appears after login to ask the
@@ -55,6 +55,6 @@ class HatsDialog : public ui::WebDialogDelegate {
   DISALLOW_COPY_AND_ASSIGN(HatsDialog);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_DIALOG_H_

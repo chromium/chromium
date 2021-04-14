@@ -14,12 +14,12 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
 class Profile;
 class NetworkState;
 
-namespace chromeos {
+namespace ash {
 struct HatsConfig;
 class HatsDialog;
 
@@ -93,6 +93,11 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   DISALLOW_COPY_AND_ASSIGN(HatsNotificationController);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::HatsNotificationController;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_

@@ -18,7 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 constexpr char kValidTriggerId[] = "1gksUIDXA0jBnuK8T6R0NfspWBvA";
 }  // namespace
@@ -173,4 +173,4 @@ TEST_F(HatsFinchHelperTest, ResetHats) {
             initial_timestamp);
 }
 
-}  // namespace chromeos
+}  // namespace ash

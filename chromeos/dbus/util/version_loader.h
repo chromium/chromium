@@ -49,4 +49,13 @@ bool IsRollback(const std::string& current_version,
 }  // namespace version_loader
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+namespace version_loader {
+using ::chromeos::version_loader::GetFirmware;
+using ::chromeos::version_loader::GetVersion;
+using ::chromeos::version_loader::VERSION_FULL;
+}  // namespace version_loader
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_UTIL_VERSION_LOADER_H_
