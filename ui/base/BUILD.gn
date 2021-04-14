@@ -418,6 +418,10 @@ component("base") {
 
   defines = [ "IS_UI_BASE_IMPL" ]
 
+  if (enable_pseudolocales) {
+    defines += [ "ENABLE_PSEUDOLOCALES" ]
+  }
+
   public_deps = [
     ":buildflags",
     ":features",

@@ -55,10 +55,13 @@
 namespace {
 
 static const char* const kAcceptLanguageList[] = {
-    "af",              // Afrikaans
-    "am",              // Amharic
-    "an",              // Aragonese
-    "ar",              // Arabic
+    "af",  // Afrikaans
+    "am",  // Amharic
+    "an",  // Aragonese
+    "ar",  // Arabic
+#if defined(ENABLE_PSEUDOLOCALES)
+    "ar-XB",           // RTL Pseudolocale
+#endif                 // defined(ENABLE_PSEUDOLOCALES)
     "as",              // Assamese
     "ast",             // Asturian
     "az",              // Azerbaijani
@@ -89,8 +92,11 @@ static const char* const kAcceptLanguageList[] = {
     "en-IN",           // English (India)
     "en-NZ",           // English (New Zealand)
     "en-US",           // English (US)
-    "en-ZA",           // English (South Africa)
-    "eo",              // Esperanto
+#if defined(ENABLE_PSEUDOLOCALES)
+    "en-XA",  // Long strings Pseudolocale
+#endif        // defined(ENABLE_PSEUDOLOCALES)
+    "en-ZA",  // English (South Africa)
+    "eo",     // Esperanto
     // TODO(jungshik) : Do we want to list all es-Foo for Latin-American
     // Spanish speaking countries?
     "es",      // Spanish
@@ -609,6 +615,15 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
     locale_code = "ro-MD";
 
   std::u16string display_name;
+
+#if defined(ENABLE_PSEUDOLOCALES)
+  if (locale_code == "en-XA") {
+    return u"Long strings pseudolocale (en-XA)";
+  } else if (locale_code == "ar-XB") {
+    return u"RTL pseudolocale (ar-XB)";
+  }
+#endif  // defined(ENABLE_PSEUDOLOCALES)
+
 #if defined(OS_IOS)
   // Use the Foundation API to get the localized display name, removing the need
   // for the ICU data file to include this data.
