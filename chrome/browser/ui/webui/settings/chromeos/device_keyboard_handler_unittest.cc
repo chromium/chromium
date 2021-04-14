@@ -73,7 +73,7 @@ class KeyboardHandlerTest : public testing::Test {
           {"showCapsLock", has_caps_lock_out},
           {"showExternalMetaKey", has_external_meta_key_out},
           {"showAppleCommandKey", has_apple_command_key_out},
-          {"hasInternalKeyboard", has_internal_search_out},
+          {"hasLauncherKey", has_internal_search_out},
           {"hasAssistantKey", has_assistant_key_out},
       };
 
@@ -133,17 +133,17 @@ class KeyboardHandlerTest : public testing::Test {
   }
 
   // Returns true if the last keys-changed message reported that the device has
-  // an internal keyboard and hence an internal Search key remap option.
+  // an Launcher key remap option. This applies only to ChromeOS keyboards.
   // A failure is added if a message wasn't found.
-  bool HasInternalSearchKey() {
-    bool has_internal_search_key = false;
+  bool HasLauncherKey() {
+    bool has_launcher_key = false;
     bool ignored = false;
     if (!GetLastShowKeysChangedMessage(&ignored, &ignored, &ignored,
-                                       &has_internal_search_key, &ignored)) {
+                                       &has_launcher_key, &ignored)) {
       ADD_FAILURE() << "Didn't get " << KeyboardHandler::kShowKeysChangedName;
       return false;
     }
-    return has_internal_search_key;
+    return has_launcher_key;
   }
 
   // Returns true if the last keys-changed message reported that the device has
@@ -173,7 +173,7 @@ TEST_F(KeyboardHandlerTest, DefaultKeys) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       chromeos::switches::kHasChromeOSKeyboard);
   handler_test_api_.Initialize();
-  EXPECT_FALSE(HasInternalSearchKey());
+  EXPECT_FALSE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -184,7 +184,7 @@ TEST_F(KeyboardHandlerTest, NonChromeOSKeyboard) {
   // If kHasChromeOSKeyboard isn't passed, we should assume there's a Caps Lock
   // key.
   handler_test_api_.Initialize();
-  EXPECT_FALSE(HasInternalSearchKey());
+  EXPECT_FALSE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -255,7 +255,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       chromeos::switches::kHasChromeOSKeyboard);
   device_data_manager_test_api_.SetKeyboardDevices({internal_kbd});
   handler_test_api_.Initialize();
-  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_TRUE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -265,7 +265,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Caps Lock and Meta keys now.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::InputDevice>{internal_kbd, external_generic_kbd});
-  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_TRUE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -275,7 +275,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // see neither CapsLock not meta keys.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::InputDevice>{internal_kbd, external_chromeos_kbd});
-  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_TRUE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -285,7 +285,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // see neither CapsLock not meta keys.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::InputDevice>{external_bt_chromeos_kbd});
-  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_TRUE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -295,7 +295,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // the command key.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::InputDevice>{internal_kbd, external_apple_kbd});
-  EXPECT_TRUE(HasInternalSearchKey());
+  EXPECT_TRUE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_TRUE(HasAppleCommandKey());
@@ -305,7 +305,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // same time.
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::InputDevice>{external_generic_kbd, external_apple_kbd});
-  EXPECT_FALSE(HasInternalSearchKey());
+  EXPECT_FALSE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());
   EXPECT_TRUE(HasAppleCommandKey());
@@ -318,7 +318,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   device_data_manager_test_api_.SetKeyboardDevices(std::vector<ui::InputDevice>{
       {6, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",
        external_generic_kbd.sys_path, 0x046d, 0xc31c, 0x0111}});
-  EXPECT_FALSE(HasInternalSearchKey());
+  EXPECT_FALSE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());
@@ -326,7 +326,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
 
   // Disconnect the external keyboard and check that the key goes away.
   device_data_manager_test_api_.SetKeyboardDevices({});
-  EXPECT_FALSE(HasInternalSearchKey());
+  EXPECT_FALSE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
   EXPECT_FALSE(HasAppleCommandKey());

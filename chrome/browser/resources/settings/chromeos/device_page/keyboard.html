@@ -18,8 +18,8 @@
 <dom-module id="settings-keyboard">
   <template>
     <style include="settings-shared"></style>
-    <template is="dom-if" if="[[hasInternalKeyboard_]]">
-      <div class="settings-box first" id="internalSearchKey">
+    <template is="dom-if" if="[[hasLauncherKey_]]">
+      <div class="settings-box first" id="launcherKey">
         <div class="start" aria-hidden="true">$i18n{keyboardKeySearch}</div>
         <settings-dropdown-menu label="$i18n{keyboardKeySearch}"
             pref="{{prefs.settings.language.xkb_remap_search_key_to}}"
@@ -76,10 +76,10 @@
     <template is="dom-if" if="[[showExternalMetaKey_]]">
       <div class="settings-box" id="externalMetaKey">
         <div class="start" aria-hidden="true">
-          [[getExternalMetaKeyLabel_(hasInternalKeyboard_)]]
+          [[getExternalMetaKeyLabel_(hasLauncherKey_)]]
         </div>
         <settings-dropdown-menu
-            label="[[getExternalMetaKeyLabel_(hasInternalKeyboard_)]]"
+            label="[[getExternalMetaKeyLabel_(hasLauncherKey_)]]"
             pref="{{prefs.settings.language.remap_external_meta_key_to}}"
             menu-options="[[keyMapTargets_]]">
         </settings-dropdown-menu>
@@ -88,10 +88,10 @@
     <template is="dom-if" if="[[showAppleCommandKey_]]">
       <div class="settings-box" id="externalCommandKey">
         <div class="start" aria-hidden="true">
-          [[getExternalCommandKeyLabel_(hasInternalKeyboard_)]]
+          [[getExternalCommandKeyLabel_(hasLauncherKey_)]]
         </div>
         <settings-dropdown-menu
-            label="[[getExternalCommandKeyLabel_(hasInternalKeyboard_)]]"
+            label="[[getExternalCommandKeyLabel_(hasLauncherKey_)]]"
             pref="{{prefs.settings.language.remap_external_command_key_to}}"
             menu-options="[[keyMapTargets_]]">
         </settings-dropdown-menu>

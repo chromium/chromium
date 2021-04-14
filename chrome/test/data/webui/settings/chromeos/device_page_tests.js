@@ -878,12 +878,12 @@ cr.define('device_page_tests', function() {
           'showCapsLock': false,
           'showExternalMetaKey': false,
           'showAppleCommandKey': false,
-          'hasInternalKeyboard': false,
+          'hasLauncherKey': false,
           'hasAssistantKey': false,
         };
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectFalse(!!keyboardPage.$$('#internalSearchKey'));
+        expectFalse(!!keyboardPage.$$('#launcherKey'));
         expectFalse(!!keyboardPage.$$('#capsLockKey'));
         expectFalse(!!keyboardPage.$$('#externalMetaKey'));
         expectFalse(!!keyboardPage.$$('#externalCommandKey'));
@@ -893,7 +893,7 @@ cr.define('device_page_tests', function() {
         keyboardParams['showCapsLock'] = true;
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectFalse(!!keyboardPage.$$('#internalSearchKey'));
+        expectFalse(!!keyboardPage.$$('#launcherKey'));
         expectTrue(!!keyboardPage.$$('#capsLockKey'));
         expectFalse(!!keyboardPage.$$('#externalMetaKey'));
         expectFalse(!!keyboardPage.$$('#externalCommandKey'));
@@ -903,7 +903,7 @@ cr.define('device_page_tests', function() {
         keyboardParams['showExternalMetaKey'] = true;
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectFalse(!!keyboardPage.$$('#internalSearchKey'));
+        expectFalse(!!keyboardPage.$$('#launcherKey'));
         expectTrue(!!keyboardPage.$$('#capsLockKey'));
         expectTrue(!!keyboardPage.$$('#externalMetaKey'));
         expectFalse(!!keyboardPage.$$('#externalCommandKey'));
@@ -913,17 +913,17 @@ cr.define('device_page_tests', function() {
         keyboardParams['showAppleCommandKey'] = true;
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectFalse(!!keyboardPage.$$('#internalSearchKey'));
+        expectFalse(!!keyboardPage.$$('#launcherKey'));
         expectTrue(!!keyboardPage.$$('#capsLockKey'));
         expectTrue(!!keyboardPage.$$('#externalMetaKey'));
         expectTrue(!!keyboardPage.$$('#externalCommandKey'));
         expectFalse(!!keyboardPage.$$('#assistantKey'));
 
         // Add an internal keyboard.
-        keyboardParams['hasInternalKeyboard'] = true;
+        keyboardParams['hasLauncherKey'] = true;
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectTrue(!!keyboardPage.$$('#internalSearchKey'));
+        expectTrue(!!keyboardPage.$$('#launcherKey'));
         expectTrue(!!keyboardPage.$$('#capsLockKey'));
         expectTrue(!!keyboardPage.$$('#externalMetaKey'));
         expectTrue(!!keyboardPage.$$('#externalCommandKey'));
@@ -933,7 +933,7 @@ cr.define('device_page_tests', function() {
         keyboardParams['hasAssistantKey'] = true;
         cr.webUIListenerCallback('show-keys-changed', keyboardParams);
         Polymer.dom.flush();
-        expectTrue(!!keyboardPage.$$('#internalSearchKey'));
+        expectTrue(!!keyboardPage.$$('#launcherKey'));
         expectTrue(!!keyboardPage.$$('#capsLockKey'));
         expectTrue(!!keyboardPage.$$('#externalMetaKey'));
         expectTrue(!!keyboardPage.$$('#externalCommandKey'));

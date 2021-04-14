@@ -44,8 +44,12 @@ cr.define('settings', function() {
       /** @private Whether to show Caps Lock options. */
       showCapsLock_: Boolean,
 
-      /** @private Whether this device has an internal keyboard. */
-      hasInternalKeyboard_: Boolean,
+      /**
+       * @private
+       * Whether this device has a ChromeOS launcher key. Applies only to
+       * ChromeOS keyboards, internal or external.
+       */
+      hasLauncherKey_: Boolean,
 
       /** @private Whether this device has an Assistant key on keyboard. */
       hasAssistantKey_: Boolean,
@@ -184,7 +188,7 @@ cr.define('settings', function() {
      * @private
      */
     onShowKeysChange_(keyboardParams) {
-      this.hasInternalKeyboard_ = keyboardParams['hasInternalKeyboard'];
+      this.hasLauncherKey_ = keyboardParams['hasLauncherKey'];
       this.hasAssistantKey_ = keyboardParams['hasAssistantKey'];
       this.showCapsLock_ = keyboardParams['showCapsLock'];
       this.showExternalMetaKey_ = keyboardParams['showExternalMetaKey'];
@@ -205,16 +209,15 @@ cr.define('settings', function() {
     },
 
     /** @private */
-    getExternalMetaKeyLabel_(hasInternalKeyboard) {
+    getExternalMetaKeyLabel_(hasLauncherKey) {
       return loadTimeData.getString(
-          hasInternalKeyboard ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
+          hasLauncherKey ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
     },
 
     /** @private */
-    getExternalCommandKeyLabel_(hasInternalKeyboard) {
+    getExternalCommandKeyLabel_(hasLauncherKey) {
       return loadTimeData.getString(
-          hasInternalKeyboard ? 'keyboardKeyExternalCommand' :
-                                'keyboardKeyCommand');
+          hasLauncherKey ? 'keyboardKeyExternalCommand' : 'keyboardKeyCommand');
     },
   });
 
