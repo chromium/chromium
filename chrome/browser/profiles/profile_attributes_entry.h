@@ -47,10 +47,6 @@ class ProfileAttributesEntry {
   ProfileAttributesEntry& operator=(const ProfileAttributesEntry&) = delete;
   virtual ~ProfileAttributesEntry() = default;
 
-  // Returns whether the profile name is the concatenation of the Gaia name and
-  // of the local profile name.
-  static bool ShouldConcatenateGaiaAndProfileName();
-
   // Gets the name of the profile to be displayed in the User Menu. The name can
   // be the GAIA name, local profile name or a combination of them.
   std::u16string GetName() const;
