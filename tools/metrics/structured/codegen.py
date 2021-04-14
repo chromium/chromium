@@ -132,15 +132,7 @@ class Template:
     project_code = ''.join(
         self._stamp_project(file_info, p) for p in self.model.projects)
 
-    project_names = sorted([p.name for p in self.model.projects])
-    project_hashes_list = [
-        'UINT64_C({})'.format(Util.hash_name(n)) for n in project_names
-    ]
-    project_hashes_literal = '{' + ', '.join(project_hashes_list) + '}'
-
-    return self.file_template.format(file=file_info,
-                                     project_code=project_code,
-                                     project_hashes=project_hashes_literal)
+    return self.file_template.format(file=file_info, project_code=project_code)
 
   def _stamp_project(self, file_info, project):
     project_info = ProjectInfo(project)

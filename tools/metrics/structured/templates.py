@@ -20,8 +20,6 @@ namespace metrics {{
 namespace structured {{
 namespace events {{
 
-constexpr uint64_t kProjectNameHashes[] = {project_hashes};
-
 {project_code}
 
 }}  // namespace events
