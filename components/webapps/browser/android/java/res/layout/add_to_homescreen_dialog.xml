@@ -57,6 +57,7 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxHeight="128dp"
             android:textAppearance="@style/TextAppearance.AddToHomeScreenWebAppName" />
 
         <!-- The origin of the web app, displayed for security purposes. -->

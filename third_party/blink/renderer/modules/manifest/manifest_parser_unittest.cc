@@ -170,6 +170,14 @@ TEST_F(ManifestParserTest, NameParseRules) {
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
   }
+
+  // Test stripping out of \t \r and \n.
+  {
+    auto& manifest = ParseManifest("{ \"name\": \"abc\\t\\r\\ndef\" }");
+    ASSERT_EQ(manifest->name, "abcdef");
+    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 }
 
 TEST_F(ManifestParserTest, DescriptionParseRules) {
@@ -240,6 +248,14 @@ TEST_F(ManifestParserTest, ShortNameParseRules) {
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'short_name' ignored, type string expected.",
               errors()[0]);
+  }
+
+  // Test stripping out of \t \r and \n.
+  {
+    auto& manifest = ParseManifest("{ \"short_name\": \"abc\\t\\r\\ndef\" }");
+    ASSERT_EQ(manifest->short_name, "abcdef");
+    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
   }
 }
 
