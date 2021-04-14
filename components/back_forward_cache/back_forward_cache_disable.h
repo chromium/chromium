@@ -28,6 +28,9 @@ enum class DisabledReasonId : content::BackForwardCache::DisabledReasonType {
   kOfflinePage = 8,
   kChromePasswordManagerClient_BindCredentialManager = 9,
   kPermissionRequestManager = 10,
+  // Modal dialog such as form resubmittion or http password dialog is shown for
+  // the page.
+  kModalDialog = 11,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.

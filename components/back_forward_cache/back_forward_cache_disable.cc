@@ -29,6 +29,8 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "ChromePasswordManagerClient::BindCredentialManager";
     case DisabledReasonId::kPermissionRequestManager:
       return "PermissionRequestManager";
+    case DisabledReasonId::kModalDialog:
+      return "ModalDialog";
     default:
       return "Unknown (default)";
   }

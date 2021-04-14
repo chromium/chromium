@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -131,6 +133,18 @@ void WebContentsModalDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
     return;
+
+  if (!child_dialogs_.empty()) {
+    // Disable BFCache for the page which had any modal dialog open.
+    // This prevents the page which has print, confirm form resubmission, http
+    // password dialogs, etc. to go in to BFCache. We can't simply dismiss the
+    // dialogs in the case, since they are requesting meaningful input from the
+    // user that affects the loading or display of the content.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kModalDialog));
+  }
 
   // Close constrained windows if necessary.
   if (!net::registry_controlled_domains::SameDomainOrHost(

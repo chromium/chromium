@@ -27,6 +27,7 @@ component("web_modal") {
   ]
 
   deps = [
+    "//components/back_forward_cache",
     "//net",
     "//skia",
     "//ui/gfx/geometry",
