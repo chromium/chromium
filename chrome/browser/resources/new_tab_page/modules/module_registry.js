@@ -4,6 +4,7 @@
 
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {ModuleDescriptor} from './module_descriptor.js';
+import {descriptors} from './module_descriptors.js';
 
 /**
  * @fileoverview The module registry holds the descriptors of NTP modules and
@@ -16,7 +17,7 @@ let instance = null;
 export class ModuleRegistry {
   /** @return {!ModuleRegistry} */
   static getInstance() {
-    return instance || (instance = new ModuleRegistry());
+    return instance || (instance = new ModuleRegistry(descriptors));
   }
 
   /** @param {ModuleRegistry} newInstance */
@@ -24,23 +25,18 @@ export class ModuleRegistry {
     instance = newInstance;
   }
 
-  constructor() {
+  /**
+   * Creates a registry populated with a list of descriptors
+   * @param {!Array<!ModuleDescriptor>} descriptors
+   */
+  constructor(descriptors) {
     /** @private {!Array<!ModuleDescriptor>} */
-    this.descriptors_ = [];
+    this.descriptors_ = descriptors;
   }
 
   /** @return {!Array<!ModuleDescriptor>} */
   getDescriptors() {
     return this.descriptors_;
-  }
-
-  /**
-   * Registers modules via their descriptors.
-   * @param {!Array<!ModuleDescriptor>} descriptors
-   */
-  registerModules(descriptors) {
-    /** @type {!Array<!ModuleDescriptor>} */
-    this.descriptors_ = descriptors;
   }
 
   /**

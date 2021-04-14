@@ -16,13 +16,14 @@ js_library("module_descriptor") {
   ]
 }
 
-js_library("modules") {
+js_library("module_descriptors") {
   deps = [
-    ":module_registry",
+    ":module_descriptor",
     "..:i18n_setup",
     "cart:module",
     "drive:module",
     "task_module:module",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   if (!is_official_build) {
     deps += [ "dummy:module" ]
@@ -49,6 +50,7 @@ js_library("module_header") {
 js_library("module_registry") {
   deps = [
     ":module_descriptor",
+    ":module_descriptors",
     "..:new_tab_page_proxy",
   ]
 }
@@ -98,7 +100,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "module_descriptor.js",
-    "modules.js",
+    "module_descriptors.js",
     "module_registry.js",
     "task_module/task_module_handler_proxy.js",
     "cart/chrome_cart_proxy.js",
