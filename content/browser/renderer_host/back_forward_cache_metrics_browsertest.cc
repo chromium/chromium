@@ -188,54 +188,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, UKM) {
                                    UkmEntry{id9, {{last_navigation_id, id1}}}));
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
-                       NavigatedToTheMostRecentEntry) {
-  ukm::TestAutoSetUkmRecorder recorder;
-
-  const GURL url1(
-      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
-  const GURL url2(embedded_test_server()->GetURL("/title1.html"));
-  const char kChildFrameId[] = "child0";
-
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  EXPECT_TRUE(
-      NavigateIframeToURL(shell()->web_contents(), kChildFrameId, url2));
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-
-  {
-    // We are waiting for two navigations here: main frame and subframe.
-    TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
-    shell()->GoBackOrForward(-2);
-    navigation_observer.WaitForNavigationFinished();
-  }
-
-  {
-    TestNavigationObserver navigation_observer(shell()->web_contents());
-    shell()->GoBackOrForward(1);
-    navigation_observer.WaitForNavigationFinished();
-  }
-
-  {
-    TestNavigationObserver navigation_observer(shell()->web_contents());
-    shell()->GoBackOrForward(1);
-    navigation_observer.WaitForNavigationFinished();
-  }
-  // The navigation entries are:
-  // [url1(subframe), url1(url2), *url2].
-
-  std::string navigated_to_last_entry =
-      "NavigatedToTheMostRecentEntryForDocument";
-
-  // The first back navigation goes to the url1(subframe) entry, while the last
-  // active entry for that document was url1(url2).
-  // The second back/forward navigation is a subframe one and should be ignored.
-  // The last one navigates to the actual entry.
-  EXPECT_THAT(
-      recorder.GetMetrics("HistoryNavigation", {navigated_to_last_entry}),
-      testing::ElementsAre(UkmMetrics{{navigated_to_last_entry, false}},
-                           UkmMetrics{{navigated_to_last_entry, true}}));
-}
-
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
   ukm::TestAutoSetUkmRecorder recorder;
 

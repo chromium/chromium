@@ -121,10 +121,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "postMessage from service worker";
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
       return "frame already in the cache when service worker host was added";
-    case Reason::kRenderFrameHostReused_SameSite:
-      return "RenderFrameHost is reused for a same-site navigation";
-    case Reason::kRenderFrameHostReused_CrossSite:
-      return "RenderFrameHost is reused for a cross-site navigation";
     case Reason::kNotMostRecentNavigationEntry:
       return "navigation entry is not the most recent one for this document";
     case Reason::kServiceWorkerClaim:
@@ -158,6 +154,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Network requests' datapipe has been passed to ScriptStreamer";
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
       return "Network requests' datapipe has been passed as bytes consumer";
+    case Reason::kBrowsingInstanceNotSwapped:
+      return "Browsing instance is not swapped";
   }
 }
 
@@ -171,14 +169,6 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
   not_stored_reasons_.set(static_cast<size_t>(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures));
   blocklisted_features_ |= features;
-}
-
-void BackForwardCacheCanStoreDocumentResult::NoDueToRelatedActiveContents(
-    base::Optional<ShouldSwapBrowsingInstance>
-        browsing_instance_not_swapped_reason) {
-  not_stored_reasons_.set(static_cast<size_t>(
-      BackForwardCacheMetrics::NotRestoredReason::kRelatedActiveContentsExist));
-  browsing_instance_not_swapped_reason_ = browsing_instance_not_swapped_reason;
 }
 
 void BackForwardCacheCanStoreDocumentResult::
@@ -195,10 +185,6 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_stored_reasons_ |= other.not_stored_reasons();
   blocklisted_features_ |= other.blocklisted_features();
-  if (!browsing_instance_not_swapped_reason_) {
-    browsing_instance_not_swapped_reason_ =
-        other.browsing_instance_not_swapped_reason();
-  }
   for (const BackForwardCache::DisabledReason& reason :
        other.disabled_reasons()) {
     disabled_reasons_.insert(reason);

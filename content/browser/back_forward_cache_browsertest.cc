@@ -2744,7 +2744,9 @@ IN_PROC_BROWSER_TEST_F(
     ExpectNotRestored(
         {BackForwardCacheMetrics::NotRestoredReason::
              kRelatedActiveContentsExist,
-         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+         BackForwardCacheMetrics::NotRestoredReason::
+             kBrowsingInstanceNotSwapped},
         {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
          blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
@@ -2766,10 +2768,13 @@ IN_PROC_BROWSER_TEST_F(
   } else {
     // Non-sticky reasons are not recorded here.
     ExpectNotRestored(
-        {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
-         BackForwardCacheMetrics::NotRestoredReason::
-             kRenderFrameHostReused_CrossSite},
-        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+        {
+            BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+            BackForwardCacheMetrics::NotRestoredReason::
+                kBrowsingInstanceNotSwapped,
+        },
+        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
         FROM_HERE);
   }
 }
@@ -2817,10 +2822,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Non-sticky reasons are not recorded here.
   ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::
-           kRenderFrameHostReused_SameSite,
-       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+      {
+          BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+          BackForwardCacheMetrics::NotRestoredReason::
+              kBrowsingInstanceNotSwapped,
+      },
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
       FROM_HERE);
 }
 
@@ -5494,11 +5502,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   delete_rfh_a2.WaitUntilDeleted();
 
   ExpectNotRestored(
-      {
-          BackForwardCacheMetrics::NotRestoredReason::
-              kRenderFrameHostReused_SameSite,
-      },
-      {}, {}, {}, FROM_HERE);
+      {BackForwardCacheMetrics::NotRestoredReason::kBrowsingInstanceNotSwapped},
+      {}, {ShouldSwapBrowsingInstance::kNo_SameSiteNavigation}, {}, FROM_HERE);
 
   // 5) Go to A2.
   web_contents()->GetController().GoForward();
@@ -9867,6 +9872,201 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kNavigationCancelledWhileRestoring},
                     {}, {}, {}, FROM_HERE);
+}
+
+// Check that about:blank is not cached.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AboutBlankWillNotBeCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to about:blank.
+  GURL blank_url(url::kAboutBlankURL);
+  EXPECT_TRUE(NavigateToURL(shell(), blank_url));
+
+  // 2) Navigate to a.com.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 3) Navigate back to about:blank.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // This about:blank document does not have a SiteInstance and then loading a
+  // page on it doesn't swap the browsing instance.
+  ExpectNotRestored(
+      {
+          BackForwardCacheMetrics::NotRestoredReason::
+              kBrowsingInstanceNotSwapped,
+      },
+      {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, FROM_HERE);
+}
+
+// Check that the page is not cached when navigating to about:blank.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       NavigatingToAboutBlankPreventsCaching) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a.com,
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 2) Navigate to about:blank.
+  GURL blank_url(url::kAboutBlankURL);
+  EXPECT_TRUE(NavigateToURL(shell(), blank_url));
+
+  // 3) Navigate back to a.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // about:blank doesn't have a scheme http or https, and then this navigation
+  // doesn't swapt the browsing instance.
+  ExpectNotRestored(
+      {
+          BackForwardCacheMetrics::NotRestoredReason::
+              kBrowsingInstanceNotSwapped,
+      },
+      {},
+      {ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS},
+      {}, FROM_HERE);
+}
+
+// Check that browsing instances are not swapped when a navigation redirects
+// toward the last committed URL and the reasons are recorded correctly.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, RedirectToSelf) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigationControllerImpl& controller = web_contents()->GetController();
+
+  // 1) Navigate to a.com/empty.html.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // 2) Navigate to the same page by redirection.
+  GURL url_a2(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect-301?" + url_a.spec()));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a2, url_a));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_b->GetSiteInstance()));
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // 3) Navigate back to the previous page.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // TODO(crbug.com/1198030): Investigate whether these navigation results are
+  // expected.
+
+  ExpectNotRestored(
+      {
+          BackForwardCacheMetrics::NotRestoredReason::
+              kBrowsingInstanceNotSwapped,
+      },
+      {}, {ShouldSwapBrowsingInstance::kNo_SameUrlNavigation}, {}, FROM_HERE);
+}
+
+// Check that the response 204 No Content doesn't affect back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NoContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigationControllerImpl& controller = web_contents()->GetController();
+
+  // 1) Navigate to a.com.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // 2) Navigate to b.com
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_b, controller.GetLastCommittedEntry()->GetURL());
+
+  // 3) Navigate to c.com with 204 No Content, then the URL will still be b.com.
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/echo?status=204"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_c, url_b));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_b, controller.GetLastCommittedEntry()->GetURL());
+
+  // 4) Navigate back to a.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  ExpectRestored(FROM_HERE);
+}
+
+// Check that reloading doesn't affect the back-forward cache usage.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ReloadDoesntAffectCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigationControllerImpl& controller = web_contents()->GetController();
+
+  // 1) Navigate to a.com.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // 2) Navigate to b.com.
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_b, controller.GetLastCommittedEntry()->GetURL());
+
+  // 3) Go back to a.com and reload.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  ExpectRestored(FROM_HERE);
+
+  // 4) Reload the tab.
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // By reloading the tab, ShouldSwapBrowsingInstance::
+  // kNo_AlreadyHasMatchingBrowsingInstance is set once. This should be reset
+  // when the navigation 4)'s commit finishes and should not prevent putting the
+  // page into the back-forward cache.
+  //
+  // Note that SetBrowsingInstanceNotSwappedReason might not be called for every
+  // navigation because we might not get to this point for some navigations,
+  // e.g. if the navigation uses a pre-existing RenderFrameHost and SiteInstance
+  // for navigation.
+  //
+  // TODO(crbug.com/1176061): Tie BrowsingInstanceNotSwappedReason to
+  // NavigationRequest instead and move the SetBrowsingInstanceNotSwappedReason
+  // call for navigations to happen at commit time instead.
+
+  // 5) Go forward to b.com and reload.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_b, controller.GetLastCommittedEntry()->GetURL());
+
+  // The page loaded at B) is correctly cached and restored. Reloading doesn't
+  // affect the cache usage.
+  ExpectRestored(FROM_HERE);
+
+  // 6) Go back to a.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
+
+  // The page loaded at 3) is correctly cached and restored. Reloading doesn't
+  // affect the cache usage.
+  ExpectRestored(FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithFileSystemAPISupported

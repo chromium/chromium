@@ -1786,10 +1786,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   bool should_swap =
       (should_swap_result == ShouldSwapBrowsingInstance::kYes_ForceSwap) ||
       proactive_swap;
-  if (!should_swap) {
-    render_frame_host_->set_browsing_instance_not_swapped_reason(
-        should_swap_result);
+  if (frame_tree_node_->IsMainFrame()) {
+    if (BackForwardCacheMetrics* back_forward_cache_metrics =
+            render_frame_host_->GetBackForwardCacheMetrics()) {
+      back_forward_cache_metrics->SetBrowsingInstanceSwapResult(
+          should_swap_result);
+    }
   }
+
   SiteInstanceDescriptor new_instance_descriptor = DetermineSiteInstanceForURL(
       dest_url_info, cross_origin_isolated_info, source_instance,
       current_instance, dest_instance, transition, is_failure, dest_is_restore,

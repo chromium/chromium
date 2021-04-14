@@ -47,7 +47,6 @@
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/buildflags.h"
@@ -1719,19 +1718,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // enumerations.
   const std::string& GetMediaDeviceIDSaltBase() const {
     return media_device_id_salt_base_;
-  }
-
-  // Returns the reason why the BrowsingInstance wasn't swapped for the last
-  // navigation inside this frame.
-  // TODO(crbug.com/1026101): Remove after the investigation.
-  base::Optional<ShouldSwapBrowsingInstance>
-  browsing_instance_not_swapped_reason() const {
-    return browsing_instance_not_swapped_reason_;
-  }
-
-  void set_browsing_instance_not_swapped_reason(
-      ShouldSwapBrowsingInstance reason) {
-    browsing_instance_not_swapped_reason_ = reason;
   }
 
   // Returns the parent RenderFrameHost, potentially going through nested
@@ -3488,12 +3474,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       service_worker_container_hosts_;
   // Keeps the track of the latest ServiceWorkerContainerHost.
   base::WeakPtr<ServiceWorkerContainerHost> last_committed_service_worker_host_;
-
-  // The reason why the last attempted navigation in the frame didn't use a new
-  // BrowsingInstance.
-  // TODO(crbug.com/1026101): Remove after the investigation.
-  base::Optional<ShouldSwapBrowsingInstance>
-      browsing_instance_not_swapped_reason_;
 
   // The portals owned by this frame. |Portal::owner_render_frame_host_| points
   // back to |this|.

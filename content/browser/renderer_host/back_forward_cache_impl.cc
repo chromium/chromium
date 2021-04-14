@@ -484,8 +484,8 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
             expected_related_active_contents_count);
   if (rfh->GetSiteInstance()->GetRelatedActiveContentsCount() >
       expected_related_active_contents_count) {
-    result.NoDueToRelatedActiveContents(
-        rfh->browsing_instance_not_swapped_reason());
+    result.No(BackForwardCacheMetrics::NotRestoredReason::
+                  kRelatedActiveContentsExist);
   }
 
   // Only store documents that have successful http status code.

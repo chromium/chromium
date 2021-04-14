@@ -36,8 +36,6 @@ class BackForwardCacheCanStoreDocumentResult {
 
   void No(BackForwardCacheMetrics::NotRestoredReason reason);
   void NoDueToFeatures(uint64_t features);
-  void NoDueToRelatedActiveContents(base::Optional<ShouldSwapBrowsingInstance>
-                                        browsing_instance_not_swapped_reason);
 
   // TODO(hajimehoshi): Replace the arbitrary strings with base::Location /
   // FROM_HERE for privacy reasons.
@@ -51,10 +49,7 @@ class BackForwardCacheCanStoreDocumentResult {
     return not_stored_reasons_;
   }
   uint64_t blocklisted_features() const { return blocklisted_features_; }
-  base::Optional<ShouldSwapBrowsingInstance>
-  browsing_instance_not_swapped_reason() const {
-    return browsing_instance_not_swapped_reason_;
-  }
+
   const std::set<BackForwardCache::DisabledReason>& disabled_reasons() const {
     return disabled_reasons_;
   }
@@ -67,8 +62,6 @@ class BackForwardCacheCanStoreDocumentResult {
 
   NotStoredReasons not_stored_reasons_;
   uint64_t blocklisted_features_ = 0;
-  base::Optional<ShouldSwapBrowsingInstance>
-      browsing_instance_not_swapped_reason_;
   std::set<BackForwardCache::DisabledReason> disabled_reasons_;
 };
 
