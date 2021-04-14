@@ -83,7 +83,12 @@ void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(
   if (!ignore_network_state && !default_network)
     return;
   const std::string country_code = base::CountryCodeForCurrentTimezone();
-  CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
+  if (IsJavascriptAllowed()) {
+    CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
+  } else {
+    LOG(ERROR) << "Silently dropping MaybeLoadPlayStoreToS request.";
+  }
 }
 
 void ArcTermsOfServiceScreenHandler::OnCurrentScreenChanged(
@@ -296,6 +301,7 @@ void ArcTermsOfServiceScreenHandler::Bind(ArcTermsOfServiceScreen* screen) {
 }
 
 void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
+  // TODO(crbug.com/1180291) - Clean up work. Fix this logic.
   if (network_time_zone_observing_)
     return;
 
