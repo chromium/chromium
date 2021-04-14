@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_info;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
+import static org.chromium.components.permissions.PermissionDialogDelegate.getRequestTypeEnumSize;
 
 import android.Manifest;
 import android.content.Context;
@@ -80,56 +81,56 @@ public class PageInfoDiscoverabilityTest {
      */
     public static class RequestTypeTestParams implements ParameterProvider {
         @Override
-        public Iterable<ParameterSet> getParameters() {
+        public List<ParameterSet> getParameters() {
             List<ParameterSet> parameters = new ArrayList<>();
             // ParameterSet = {ContentSettingsType, isInSiteSettings}
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.ACCESSIBILITY_EVENTS, false)
-                                   .name("RequestType.kAccessibilityEvents"));
+                                   .name("RequestType.kAccessibilityEvents")
+                                   .value(ContentSettingsType.ACCESSIBILITY_EVENTS, false));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.AR, true)
-                                   .name("RequestType.kArSession"));
+                                   .name("RequestType.kArSession")
+                                   .value(ContentSettingsType.AR, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.MEDIASTREAM_CAMERA, true)
-                                   .name("RequestType.kCameraStream"));
+                                   .name("RequestType.kCameraStream")
+                                   .value(ContentSettingsType.MEDIASTREAM_CAMERA, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.CLIPBOARD_READ_WRITE, true)
-                                   .name("RequestType.kClipboard"));
+                                   .name("RequestType.kClipboard")
+                                   .value(ContentSettingsType.CLIPBOARD_READ_WRITE, true));
             // No associated ContentSettingsType
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.DEFAULT, false)
-                                   .name("RequestType.kDiskQuota"));
+                                   .name("RequestType.kDiskQuota")
+                                   .value(ContentSettingsType.DEFAULT, false));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.GEOLOCATION, true)
-                                   .name("RequestType.kGeolocation"));
+                                   .name("RequestType.kGeolocation")
+                                   .value(ContentSettingsType.GEOLOCATION, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.IDLE_DETECTION, true)
-                                   .name("RequestType.kIdleDetection"));
+                                   .name("RequestType.kIdleDetection")
+                                   .value(ContentSettingsType.IDLE_DETECTION, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.MEDIASTREAM_MIC, true)
-                                   .name("RequestType.kMicStream"));
+                                   .name("RequestType.kMicStream")
+                                   .value(ContentSettingsType.MEDIASTREAM_MIC, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.MIDI_SYSEX, true)
-                                   .name("RequestType.kMidiSysex"));
+                                   .name("RequestType.kMidiSysex")
+                                   .value(ContentSettingsType.MIDI_SYSEX, true));
             // No associated ContentSettingsType
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.DEFAULT, false)
-                                   .name("RequestType.kMultipleDownloads"));
+                                   .name("RequestType.kMultipleDownloads")
+                                   .value(ContentSettingsType.DEFAULT, false));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.NFC, true)
-                                   .name("RequestType.kNfcDevice"));
+                                   .name("RequestType.kNfcDevice")
+                                   .value(ContentSettingsType.NFC, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.NOTIFICATIONS, true)
-                                   .name("RequestType.kNotifications"));
+                                   .name("RequestType.kNotifications")
+                                   .value(ContentSettingsType.NOTIFICATIONS, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, true)
-                                   .name("RequestType.kProtectedMediaIdentifier"));
+                                   .name("RequestType.kProtectedMediaIdentifier")
+                                   .value(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, true));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.STORAGE_ACCESS, false)
-                                   .name("RequestType.kStorageAccess"));
+                                   .name("RequestType.kStorageAccess")
+                                   .value(ContentSettingsType.STORAGE_ACCESS, false));
             parameters.add(new ParameterSet()
-                                   .value(ContentSettingsType.VR, true)
-                                   .name("RequestType.kVrSession"));
+                                   .name("RequestType.kVrSession")
+                                   .value(ContentSettingsType.VR, true));
 
             return parameters;
         }
@@ -257,6 +258,15 @@ public class PageInfoDiscoverabilityTest {
                 0 /* missingPermissionPromptTextId */);
 
         Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"PageInfoDiscoverability"})
+    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    public void testPermissionRequestTypeEnumSize() {
+        Assert.assertEquals(
+                new RequestTypeTestParams().getParameters().size(), getRequestTypeEnumSize());
     }
 
     @Test

@@ -124,4 +124,8 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
   DismissDialog();
 }
 
+static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
+  return static_cast<int>(RequestType::kMaxValue) + 1;
+}
+
 }  // namespace permissions
