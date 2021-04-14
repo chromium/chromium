@@ -147,7 +147,14 @@ ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (!widget)
     return nullptr;
-  return static_cast<ShellSurfaceBase*>(widget->widget_delegate());
+  ShellSurfaceBase* shell_surface_base =
+      static_cast<ShellSurfaceBase*>(widget->widget_delegate());
+  // We can obtain widget from native window, but not |shell_surface_base|.
+  // This means we are in the process of destroying this surface so we should
+  // return nullptr.
+  if (!shell_surface_base || !shell_surface_base->GetWidget())
+    return nullptr;
+  return shell_surface_base;
 }
 
 Surface* GetTargetSurfaceForLocatedEvent(
