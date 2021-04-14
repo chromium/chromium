@@ -402,6 +402,12 @@ void RecordNearbyShareEstablishConnectionMetrics(
       "Nearby.Share.Connection.EstablishOutgoingConnectionStatus", status);
 }
 
+void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
+    base::TimeDelta time) {
+  base::UmaHistogramTimes(
+      "Nearby.Share.TimeFromInitiateSendToRemoteDeviceNotification", time);
+}
+
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,

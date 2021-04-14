@@ -21,6 +21,9 @@ void RecordNearbyShareEstablishConnectionMetrics(
     bool cancelled,
     base::TimeDelta time_to_connect);
 
+void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
+    base::TimeDelta time);
+
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
