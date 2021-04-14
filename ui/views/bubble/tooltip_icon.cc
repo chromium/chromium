@@ -21,9 +21,7 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       tooltip_icon_size_(tooltip_icon_size),
       mouse_inside_(false),
       bubble_(nullptr),
-      preferred_width_(0) {
-  SetDrawAsHovered(false);
-}
+      preferred_width_(0) {}
 
 TooltipIcon::~TooltipIcon() {
   for (auto& observer : observers_)
@@ -56,6 +54,11 @@ void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {
 void TooltipIcon::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTooltip;
   node_data->SetName(tooltip_);
+}
+
+void TooltipIcon::OnThemeChanged() {
+  ImageView::OnThemeChanged();
+  SetDrawAsHovered(false);
 }
 
 void TooltipIcon::MouseMovedOutOfHost() {
