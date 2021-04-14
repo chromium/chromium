@@ -591,6 +591,21 @@ void LocalDOMWindow::CountUseOnlyInCrossOriginIframe(
     CountUse(feature);
 }
 
+void LocalDOMWindow::CountUseOnlyInCrossSiteIframe(
+    mojom::blink::WebFeature feature) {
+  if (!GetFrame())
+    return;
+
+  if (top()->GetFrame() &&
+      !top()
+           ->GetFrame()
+           ->GetSecurityContext()
+           ->GetSecurityOrigin()
+           ->IsSameSiteWith(GetSecurityContext().GetSecurityOrigin())) {
+    CountUse(feature);
+  }
+}
+
 bool LocalDOMWindow::HasInsecureContextInAncestors() {
   for (Frame* parent = GetFrame()->Tree().Parent(); parent;
        parent = parent->Tree().Parent()) {
