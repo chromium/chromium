@@ -275,6 +275,12 @@ NetworkMetricsProvider::GetWifiPHYLayerProtocol() const {
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_G;
     case net::WIFI_PHY_LAYER_PROTOCOL_N:
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_N;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AC:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AC;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AD:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AD;
+    case net::WIFI_PHY_LAYER_PROTOCOL_AX:
+      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AX;
     case net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
   }

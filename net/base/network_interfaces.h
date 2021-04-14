@@ -108,7 +108,13 @@ enum WifiPHYLayerProtocol {
   // 802.11n, HT rates.
   WIFI_PHY_LAYER_PROTOCOL_N,
   // Unclassified mode or failure to identify.
-  WIFI_PHY_LAYER_PROTOCOL_UNKNOWN
+  WIFI_PHY_LAYER_PROTOCOL_UNKNOWN,
+  // 802.11ac
+  WIFI_PHY_LAYER_PROTOCOL_AC,
+  // 802.11ad
+  WIFI_PHY_LAYER_PROTOCOL_AD,
+  // 802.11ax
+  WIFI_PHY_LAYER_PROTOCOL_AX
 };
 
 // Characterize the PHY mode of the currently associated access point.

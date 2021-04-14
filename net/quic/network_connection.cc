@@ -63,6 +63,18 @@ void NetworkConnection::OnConnectionTypeChanged(
       // 802.11n, HT rates.
       connection_description_ = "CONNECTION_WIFI_802.11n";
       break;
+    case WIFI_PHY_LAYER_PROTOCOL_AC:
+      // 802.11ac
+      connection_description_ = "CONNECTION_WIFI_802.11ac";
+      break;
+    case WIFI_PHY_LAYER_PROTOCOL_AD:
+      // 802.11ad
+      connection_description_ = "CONNECTION_WIFI_802.11ad";
+      break;
+    case WIFI_PHY_LAYER_PROTOCOL_AX:
+      // 802.11ax
+      connection_description_ = "CONNECTION_WIFI_802.11ax";
+      break;
     case WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
       // Unclassified mode or failure to identify.
       break;
