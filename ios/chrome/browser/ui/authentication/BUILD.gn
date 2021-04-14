@@ -5,7 +5,10 @@
 import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "authentication_flow.h",
     "authentication_flow.mm",

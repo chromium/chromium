@@ -5,7 +5,10 @@
 import("//ios/web/js_compile.gni")
 
 component("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
 
   deps = [
     "//base",

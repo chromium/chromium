@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("side_swipe") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",

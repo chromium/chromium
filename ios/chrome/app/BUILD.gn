@@ -184,7 +184,10 @@ source_set("safe_mode_app_state_agent") {
 }
 
 source_set("app_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "chrome_overlay_window.h",
     "chrome_overlay_window.mm",

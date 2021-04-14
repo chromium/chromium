@@ -150,7 +150,10 @@ source_set("app_state_header") {
 }
 
 source_set("application_delegate_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   public_deps = [ ":app_state_header" ]
   sources = [
     "app_state.mm",

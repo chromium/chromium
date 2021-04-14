@@ -196,6 +196,11 @@ config("ios_shared_library_flags") {
   ]
 }
 
+config("disable_implicit_retain_self_warning") {
+  cflags_objc = [ "-Wno-implicit-retain-self" ]
+  cflags_objcc = cflags_objc
+}
+
 config("xctest_config") {
   framework_dirs = [ "$ios_sdk_platform_path/Developer/Library/Frameworks" ]
 

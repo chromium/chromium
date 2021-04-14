@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("history") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "history_coordinator.h",
     "history_coordinator.mm",
@@ -52,7 +55,10 @@ source_set("constants") {
 }
 
 source_set("history_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "history_consumer.h",
     "history_entries_status_item.h",

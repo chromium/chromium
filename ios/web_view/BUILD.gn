@@ -328,6 +328,7 @@ source_set("web_view_sources") {
   configs += [
     ":config",
     "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
   ]
 }
 

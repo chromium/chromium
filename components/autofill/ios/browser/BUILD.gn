@@ -5,7 +5,10 @@
 import("//ios/web/js_compile.gni")
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "autofill_agent.h",
     "autofill_agent.mm",
@@ -64,7 +67,10 @@ js_compile_bundle("autofill_js") {
 
 source_set("test_support") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "credit_card_save_manager_test_observer_bridge.h",
     "credit_card_save_manager_test_observer_bridge.mm",

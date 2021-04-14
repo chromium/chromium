@@ -117,7 +117,10 @@ source_set("common_source_set") {
     "//remoting/ios/facade",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
 }
 
 source_set("app_source_set") {

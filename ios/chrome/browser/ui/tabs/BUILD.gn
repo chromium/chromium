@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:disable_implicit_retain_self_warning",
+  ]
   sources = [
     "background_tab_animation_view.h",
     "background_tab_animation_view.mm",
