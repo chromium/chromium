@@ -23,11 +23,32 @@ OutputFormatTree = class {
   }
 
   /**
+   * @param {string|!OutputFormatTree} format
+   * @return {!Array<!OutputFormatTree>}
+   */
+  static parseFormat(format) {
+    let formatTrees = [];
+    // Hacky way to support args.
+    if (typeof (format) === 'string') {
+      format = format.replace(/([,:])\s+/gm, '$1');
+      const words = format.split(' ');
+      // Ignore empty strings.
+      words.filter(word => !!word);
+
+      formatTrees = words.map(word => OutputFormatTree.buildFromString_(word));
+    } else if (format) {
+      formatTrees = [format];
+    }
+    return formatTrees;
+  }
+
+  /**
    * Parses the token containing a custom function and returns a tree.
    * @param {string} inputStr
    * @return {!OutputFormatTree}
+   * @private
    */
-  static buildFromString(inputStr) {
+  static buildFromString_(inputStr) {
     const root = new OutputFormatTree();
     let currentNode = root;
     let index = 0;

@@ -669,25 +669,11 @@ Output = class {
    */
   format_(params) {
     const node = params['node'];
-    let format = params['outputFormat'];
+    const formatTrees = OutputFormatTree.parseFormat(params['outputFormat']);
     const buff = params['outputBuffer'];
     const ruleStr = params['outputRuleString'];
     const prevNode = params['opt_prevNode'];
     let speechProps = params['opt_speechProps'];
-
-    let formatTrees = [];
-
-    // Hacky way to support args.
-    if (typeof (format) === 'string') {
-      format = format.replace(/([,:])\s+/gm, '$1');
-      const words = format.split(' ');
-      // Ignore empty strings.
-      words.filter(word => !!word);
-
-      formatTrees = words.map(word => OutputFormatTree.buildFromString(word));
-    } else {
-      formatTrees = format ? [format] : [];
-    }
 
     formatTrees.forEach(function(tree) {
       // Obtain the operator token.
