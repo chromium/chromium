@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
