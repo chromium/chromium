@@ -206,12 +206,6 @@ void CopyConstraintsIntoRtcConfiguration(
     configuration->set_suspend_below_min_bitrate(the_value);
   }
 
-  if (!GetConstraintValueAsBoolean(
-          constraints,
-          &MediaTrackConstraintSetPlatform::enable_rtp_data_channels,
-          &configuration->enable_rtp_data_channel)) {
-    configuration->enable_rtp_data_channel = false;
-  }
   int rate;
   if (GetConstraintValueAsInteger(
           constraints,
