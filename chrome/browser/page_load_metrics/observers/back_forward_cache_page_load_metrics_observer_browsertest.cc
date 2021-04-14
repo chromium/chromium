@@ -582,4 +582,12 @@ return score;
                           "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
                           "SlidingWindow.Duration1000ms",
                           2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
+      2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+      "AfterBackForwardCacheRestore.SessionWindowByInputs.Gap1000ms.Max5000ms",
+      2);
 }

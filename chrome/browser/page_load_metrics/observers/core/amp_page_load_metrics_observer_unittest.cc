@@ -513,6 +513,14 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "SessionWindowByInputs."
       "Gap1000ms.Max5000ms",
       25);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
+      "Subframe.SessionWindow.Gap1000ms.Max5000ms",
+      4, 1);
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
+      "Subframe.SessionWindowByInputs.Gap1000ms.Max5000ms",
+      3, 1);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
+#include "base/metrics/histogram_functions.h"
 
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -232,26 +233,42 @@ void BackForwardCachePageLoadMetricsObserver::
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               RESET);
-  builder
-      .SetAverageCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap5000ms_maxMax_average_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms_Max5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration1000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.sliding_windows_duration1000ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration300ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data.sliding_windows_duration300ms_max_cls))
-      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindowByInputs_Gap1000ms_Max5000ms(
-          page_load_metrics::LayoutShiftUkmValue(
-              normalized_cls_data
-                  .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+  if (!normalized_cls_data.data_tainted) {
+    builder
+        .SetAverageCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap5000ms_maxMax_average_cls))
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap1000ms_max5000ms_max_cls))
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.sliding_windows_duration1000ms_max_cls))
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration300ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.sliding_windows_duration300ms_max_cls))
+        .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindowByInputs_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+    base::UmaHistogramCounts100(
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
+        page_load_metrics::LayoutShiftUmaValue(
+            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
+    base::UmaHistogramCounts100(
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "AfterBackForwardCacheRestore.SessionWindowByInputs.Gap1000ms."
+        "Max5000ms",
+        page_load_metrics::LayoutShiftUmaValue(
+            normalized_cls_data
+                .session_windows_by_inputs_gap1000ms_max5000ms_max_cls));
+  }
 
   builder.Record(ukm::UkmRecorder::Get());
 
