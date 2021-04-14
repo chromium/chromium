@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -121,11 +122,13 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
       return false;
   }
 
+  RelocatablePosition relocatable_start(start);
   Position end_position = ReplaceSelectedTextInNode(text);
   if (end_position.IsNull())
     return false;
 
-  SetEndingSelectionWithoutValidation(start, end_position);
+  SetEndingSelectionWithoutValidation(relocatable_start.GetPosition(),
+                                      end_position);
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder()
           .Collapse(EndingVisibleSelection().End())
