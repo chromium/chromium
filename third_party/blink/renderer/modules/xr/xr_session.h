@@ -86,8 +86,6 @@ class XRSession final
       "Plane detection feature is not supported by the session.";
   static constexpr char kDepthSensingFeatureNotSupported[] =
       "Depth sensing feature is not supported by the session.";
-  static constexpr char kRawCameraAccessFeatureNotSupported[] =
-      "Raw camera access feature is not supported by the session.";
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
   // MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed as
@@ -140,7 +138,6 @@ class XRSession final
   XRAnchorSet* TrackedAnchors() const;
 
   bool immersive() const;
-  device::mojom::blink::XRSessionMode mode() const { return mode_; }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEnd)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(select, kSelect)
@@ -379,10 +376,6 @@ class XRSession final
   HeapVector<Member<XRImageTrackingResult>> ImageTrackingResults(
       ExceptionState&);
 
-  const base::Optional<gfx::Size>& CameraImageSize() const {
-    return camera_image_size_;
-  }
-
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -551,10 +544,6 @@ class XRSession final
 
   Member<XRPlaneManager> plane_manager_;
   Member<XRDepthManager> depth_manager_;
-
-  // Populated iff the raw camera feature has been enabled and the session
-  // received a frame from the device that contained the camera image.
-  base::Optional<gfx::Size> camera_image_size_;
 
   uint32_t view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;

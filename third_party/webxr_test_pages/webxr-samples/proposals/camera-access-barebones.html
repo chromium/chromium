@@ -52,7 +52,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       <p>Click 'Enter AR' to see content</p>
     </main>
     <script type="module">
-        import * as mat4 from "../js/third-party/gl-matrix/mat4.js"
+        import * as mat4 from "../js/third-party/gl-matrix/mat4.js" 
 
         // XR globals.
         let xrButton = document.getElementById('xr-button');
@@ -182,12 +182,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                     gl.viewport(viewport.x, viewport.y,
                                 viewport.width, viewport.height);
 
-                    if (view.camera) {
-                      // Update camera image texture.
-                      let texture = glBinding.getCameraImage(view.camera);
-                      // Render cube with camera image texture on each face.
-                      drawScene(gl, programInfo, buffers, texture, rotationSpeed, view);
-                    }
+                    // Update camera image texture.
+                    texture = glBinding.getCameraImage(frame, view);
+
+                    // Render cube with camera image texture on each face.
+                    drawScene(gl, programInfo, buffers, texture, rotationSpeed, view);
                 }
             }
         }
@@ -603,6 +602,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
           // Tell WebGL to use our program when drawing
+
           gl.useProgram(programInfo.program);
 
           // Set the shader uniforms
@@ -668,7 +668,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           return shaderProgram;
         }
 
-        // Creates a shader of the given type, uploads the source and
+        // creates a shader of the given type, uploads the source and
         // compiles it.
         //
         function loadShader(gl, type, source) {

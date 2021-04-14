@@ -2314,8 +2314,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_anchor_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_bounded_reference_space.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_bounded_reference_space.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_camera.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_camera.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_cpu_depth_information.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_cpu_depth_information.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_information.cc",

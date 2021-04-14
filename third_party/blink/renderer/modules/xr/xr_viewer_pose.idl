@@ -9,4 +9,5 @@
     RuntimeEnabled=WebXR
 ] interface XRViewerPose : XRPose {
   [SameObject, SaveSameObject] readonly attribute FrozenArray<XRView> views;
+  [RuntimeEnabled=WebXRCameraAccess, SameObject, SaveSameObject] readonly attribute FrozenArray<XRView> cameraViews;
 };

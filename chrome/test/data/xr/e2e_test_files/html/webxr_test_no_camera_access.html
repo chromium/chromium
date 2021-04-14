@@ -1,0 +1,47 @@
+<!--
+Tests that AR camera access returns empty GLTexture if feature is not requested.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      setup({single_test: true});
+
+      let numPosesFound = 0;
+      let cameraImageTexture = null;
+
+      function stepConfirmCameraTextureIsNull() {
+        const webglCanvas = document.getElementById('webgl-canvas');
+        const gl = webglCanvas.getContext('webgl', {
+                xrCompatible: true
+            });
+        const sessionInfo = sessionInfos[sessionTypes.AR];
+        const referenceSpace = sessionInfo.currentRefSpace;
+
+        onARFrameCallback = (session, frame) => {
+          const pose = frame.getViewerPose(referenceSpace);
+          if (pose) {
+              for (let view of pose.cameraViews) {
+                const glBinding = new XRWebGLBinding(session, gl);
+                cameraImageTexture = glBinding.getCameraImage(frame, view);
+                assert_equals(cameraImageTexture, null, "XRWebGLBinding.getCameraImage(...) did not return a null texture.");
+              }
+              numPosesFound++;
+          }
+
+          if (numPosesFound > 10) {
+            onARFrameCallback = null;
+            done();
+          }
+        };
+      }
+    </script>
+  </body>
+</html>
