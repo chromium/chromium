@@ -13,8 +13,10 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {Route, Router} from '../router.js';
-import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
+import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 /**
@@ -53,7 +55,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [WebUIListenerBehavior, I18nBehavior],
+  behaviors: [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
 
   properties: {
     /** @type {!Array<!CategoryListItem>} */
@@ -65,6 +67,13 @@ Polymer({
       observer: 'focusConfigChanged_',
     },
   },
+
+  observers: [
+    // The prefs object is only populated for the instance of this element
+    // which contains the notifications link row, avoiding non-actionable
+    // firing of the observer.
+    'updateNotificationsLabel_(prefs.generated.notification.*)'
+  ],
 
   /** @type {?SiteSettingsPrefsBrowserProxy} */
   browserProxy: null,
@@ -153,6 +162,12 @@ Polymer({
       return Promise.resolve();
     }
 
+    if (category === ContentSettingsTypes.NOTIFICATIONS) {
+      // Updates to the notifications label are handled by a preference
+      // observer.
+      return Promise.resolve();
+    }
+
     return this.browserProxy_.getDefaultValueForContentType(category).then(
         defaultValue => {
           this.updateDefaultValueLabel_(category, defaultValue.setting);
@@ -193,6 +208,35 @@ Polymer({
   updateCookiesLabel_(label) {
     const index = this.$$('dom-repeat').indexForElement(this.$$('#cookies'));
     this.set(`categoryList.${index}.subLabel`, label);
+  },
+
+  /**
+   * Update the notifications link row label when the notifications setting
+   * description changes.
+   * @private
+   */
+  updateNotificationsLabel_() {
+    const redesignEnabled =
+        loadTimeData.getBoolean('enableContentSettingsRedesign');
+
+    const state = this.getPref('generated.notification').value;
+    const index = this.categoryList.map(e => e.id).indexOf(
+        ContentSettingsTypes.NOTIFICATIONS);
+
+    // updateNotificationsLabel_ should only be called for the
+    // site-settings-list instance which contains notifications.
+    assert(index !== -1);
+
+    let label = redesignEnabled ? 'siteSettingsNotificationsBlocked' :
+                                  'siteSettingsBlocked';
+    if (state === NotificationSetting.ASK) {
+      label = redesignEnabled ? 'siteSettingsNotificationsAllowed' :
+                                'siteSettingsAskBeforeSending';
+    } else if (state === NotificationSetting.QUIETER_MESSAGING) {
+      label = redesignEnabled ? 'siteSettingsNotificationsPartial' :
+                                'siteSettingsAskBeforeSending';
+    }
+    this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   },
 
   /**

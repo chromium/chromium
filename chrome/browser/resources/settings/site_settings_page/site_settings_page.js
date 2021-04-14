@@ -400,6 +400,14 @@ Polymer({
 
   properties: {
     /**
+     * Preferences state.
+     */
+    prefs: {
+      type: Object,
+      notify: true,
+    },
+
+    /**
      * @private {{
      *   all: (!Array<!CategoryListItem>|undefined),
      *   permissionsBasic: (!Array<!CategoryListItem>|undefined),
