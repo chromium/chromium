@@ -954,6 +954,49 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   dumper->PartitionDumpTotals(partition_name, &stats);
 }
 
+template <>
+void* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
+    uint16_t bucket_index,
+    size_t* slot_size) {
+  auto* tcache = internal::ThreadCache::Get();
+  if (internal::ThreadCache::IsTombstone(tcache) ||
+      thread_caches_being_constructed_.load(std::memory_order_relaxed)) {
+    // Two cases:
+    // 1. Thread is being terminated, don't try to use the thread cache, and
+    //    don't try to resurrect it.
+    // 2. Someone, somewhere is currently allocating a thread cache. This may
+    //    be us, in which case we are re-entering and should not create a thread
+    //    cache. If it is not us, then this merely delays thread cache
+    //    construction a bit, which is not an issue.
+    return nullptr;
+  }
+
+  // There is no per-thread ThreadCache allocated here yet, and this partition
+  // has a thread cache, allocate a new one.
+  //
+  // The thread cache allocation itself will not reenter here, as it sidesteps
+  // the thread cache by using placement new and |RawAlloc()|. However,
+  // internally to libc, allocations may happen to create a new TLS
+  // variable. This would end up here again, which is not what we want (and
+  // likely is not supported by libc).
+  //
+  // To avoid this sort of reentrancy, increase the count of thread caches that
+  // are currently allocating a thread cache.
+  //
+  // Note that there is no deadlock or data inconsistency concern, since we do
+  // not hold the lock, and has such haven't touched any internal data.
+  int before =
+      thread_caches_being_constructed_.fetch_add(1, std::memory_order_relaxed);
+  PA_CHECK(before < std::numeric_limits<int>::max());
+  tcache = internal::ThreadCache::Create(this);
+  thread_caches_being_constructed_.fetch_sub(1, std::memory_order_relaxed);
+
+  // Cache is created empty, but at least this will trigger batch fill, which
+  // may be useful, and we are already in a slow path anyway (first small
+  // allocation of this thread).
+  return tcache->GetFromCache(bucket_index, slot_size);
+}
+
 template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;
 template struct BASE_EXPORT PartitionRoot<internal::NotThreadSafe>;
 

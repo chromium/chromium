@@ -513,6 +513,7 @@ struct BASE_EXPORT PartitionRoot {
   void DecommitEmptySlotSpans() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void RawFreeLocked(void* slot_start)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void* MaybeInitThreadCacheAndAlloc(uint16_t bucket_index, size_t* slot_size);
 
   friend class internal::ThreadCache;
 };
@@ -1267,46 +1268,12 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // the thread cache.
   if (thread_safe && LIKELY(with_thread_cache)) {
     auto* tcache = internal::ThreadCache::Get();
-    if (UNLIKELY(!internal::ThreadCache::IsValid(tcache))) {
-      if (internal::ThreadCache::IsTombstone(tcache) ||
-          thread_caches_being_constructed_.load(std::memory_order_relaxed)) {
-        // Two cases:
-        // 1. Thread is being terminated, don't try to use the thread cache, and
-        //    don't try to resurrect it.
-        // 2. Someone, somewhere is currently allocating a thread cache.  This
-        //    may be us, in which case we are re-entering and should not create
-        //    a thread cache. If it is not us, then this merely delays thread
-        //    cache construction a bit, which is not an issue.
-      } else {
-        // There is no per-thread ThreadCache allocated here yet, and this
-        // partition has a thread cache, allocate a new one.
-        //
-        // The thread cache allocation itself will not reenter here, as it
-        // sidesteps the thread cache by using placement new and
-        // |RawAlloc()|. However, internally to libc, allocations may happen to
-        // create a new TLS variable. This would end up here again, which is not
-        // what we want (and likely is not supported by libc).
-        //
-        // To avoid this sort of reentrancy, increase the count of thread caches
-        // that are currently allocating a thread cache.
-        //
-        // Note that there is no deadlock or data inconsistency concern, since
-        // we do not hold the lock, and has such haven't touched any internal
-        // data.
-        int before = thread_caches_being_constructed_.fetch_add(
-            1, std::memory_order_relaxed);
-        PA_CHECK(before < std::numeric_limits<int>::max());
-        tcache = internal::ThreadCache::Create(this);
-        thread_caches_being_constructed_.fetch_sub(1,
-                                                   std::memory_order_relaxed);
-
-        // Cache is created empty, but at least this will trigger batch fill,
-        // which may be useful, and we are already in a slow path anyway (first
-        // small allocation of this thread).
-        slot_start = tcache->GetFromCache(bucket_index, &slot_size);
-      }
-    } else {
+    // LIKELY: Typically always true, except for the very first allocation of
+    // this thread.
+    if (LIKELY(internal::ThreadCache::IsValid(tcache))) {
       slot_start = tcache->GetFromCache(bucket_index, &slot_size);
+    } else {
+      slot_start = MaybeInitThreadCacheAndAlloc(bucket_index, &slot_size);
     }
 
     // LIKELY: median hit rate in the thread cache is 95%, from metrics.
