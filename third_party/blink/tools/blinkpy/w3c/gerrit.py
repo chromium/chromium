@@ -67,7 +67,7 @@ class GerritAPI(object):
 
     def query_cl(self, change_id, query_options=QUERY_OPTIONS):
         """Queries a commit information from Gerrit."""
-        path = '/changes/chromium%2Fsrc~master~{}?{}'.format(
+        path = '/changes/chromium%2Fsrc~main~{}?{}'.format(
             change_id, query_options)
         try:
             cl_data = self.get(path, return_none_on_404=True)
@@ -81,7 +81,7 @@ class GerritAPI(object):
         return cl
 
     def query_exportable_open_cls(self, limit=500):
-        path = ('/changes/?q=project:\"chromium/src\"+branch:master+is:open+'
+        path = ('/changes/?q=project:\"chromium/src\"+branch:main+is:open+'
                 '-is:wip&{}&n={}').format(QUERY_OPTIONS, limit)
         # The underlying host.web.get_binary() automatically retries until it
         # times out, at which point NetworkTimeout is raised.

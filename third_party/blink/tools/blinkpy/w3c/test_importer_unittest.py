@@ -140,7 +140,7 @@ class TestImporterTest(LoggingTestCase):
             'INFO: If the rubber-stamper bot rejects the CL, you either need '
             'to modify the benign file patterns, or manually CR+1 and land the '
             'import yourself if it touches code files. See https://chromium.'
-            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
             'appengine/rubber-stamper/README.md\n',
             'INFO: Update completed.\n',
         ])
@@ -207,7 +207,7 @@ class TestImporterTest(LoggingTestCase):
             'INFO: If the rubber-stamper bot rejects the CL, you either need '
             'to modify the benign file patterns, or manually CR+1 and land the '
             'import yourself if it touches code files. See https://chromium.'
-            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
             'appengine/rubber-stamper/README.md\n',
             'ERROR: Cannot submit CL; aborting.\n',
         ])
@@ -296,7 +296,7 @@ class TestImporterTest(LoggingTestCase):
             'INFO: If the rubber-stamper bot rejects the CL, you either need '
             'to modify the benign file patterns, or manually CR+1 and land the '
             'import yourself if it touches code files. See https://chromium.'
-            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
             'appengine/rubber-stamper/README.md\n',
             'ERROR: Cannot submit CL; aborting.\n',
             'ERROR: CL is already merged; treating as success.\n',
@@ -422,7 +422,7 @@ class TestImporterTest(LoggingTestCase):
             'a few new failures, please fix the failures by adding new\n'
             'lines to TestExpectations rather than reverting. See:\n'
             'https://chromium.googlesource.com'
-            '/chromium/src/+/master/docs/testing/web_platform_tests.md\n\n'
+            '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
             'NOAUTOREVERT=true\n'
             'No-Export: true\n'
             'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'

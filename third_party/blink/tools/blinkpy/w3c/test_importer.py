@@ -112,7 +112,7 @@ class TestImporter(object):
                          'script may fail with a network error when making '
                          'an API request to GitHub.')
             _log.warning('See https://chromium.googlesource.com/chromium/src'
-                         '/+/master/docs/testing/web_platform_tests.md'
+                         '/+/main/docs/testing/web_platform_tests.md'
                          '#GitHub-credentials for instructions on how to set '
                          'your credentials up.')
         self.wpt_github = self.wpt_github or WPTGitHub(self.host, gh_user,
@@ -281,7 +281,7 @@ class TestImporter(object):
             'If the rubber-stamper bot rejects the CL, you either need to '
             'modify the benign file patterns, or manually CR+1 and land the '
             'import yourself if it touches code files. See https://chromium.'
-            'googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/'
+            'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
             'appengine/rubber-stamper/README.md')
 
         # `--send-mail` is required to take the CL out of WIP mode.
@@ -357,7 +357,7 @@ class TestImporter(object):
             return False
         # TODO(robertma): Add a method in Git to query a range of commits.
         local_commits = self.chromium_git.run(
-            ['log', '--oneline', 'origin/master..HEAD'])
+            ['log', '--oneline', 'origin/main..HEAD'])
         if local_commits:
             _log.warning('Checkout has local commits before import.')
         return True
@@ -559,7 +559,7 @@ class TestImporter(object):
             'a few new failures, please fix the failures by adding new\n'
             'lines to TestExpectations rather than reverting. See:\n'
             'https://chromium.googlesource.com'
-            '/chromium/src/+/master/docs/testing/web_platform_tests.md\n\n')
+            '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n')
 
         if directory_owners:
             description += self._format_directory_owners(

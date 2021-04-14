@@ -34,7 +34,7 @@ class TestExporter(object):
         self.surface_failures_to_gerrit = False
 
     def main(self, argv=None):
-        """Creates PRs for in-flight CLs and merges changes that land on master.
+        """Creates PRs for in-flight CLs and merges changes that land on main.
 
         Returns:
             A boolean: True if success, False if there were any patch failures.
@@ -55,7 +55,7 @@ class TestExporter(object):
             _log.error('You must provide your GitHub credentials for this '
                        'script to work.')
             _log.error('See https://chromium.googlesource.com/chromium/src'
-                       '/+/master/docs/testing/web_platform_tests.md'
+                       '/+/main/docs/testing/web_platform_tests.md'
                        '#GitHub-credentials for instructions on how to set '
                        'your credentials up.')
             return False
@@ -335,7 +335,7 @@ class TestExporter(object):
                 'on GitHub if the required GitHub checks pass; otherwise, '
                 'ecosystem-infra@ team will triage the failures and may contact you.\n\n'
                 'WPT Export docs:\n'
-                'https://chromium.googlesource.com/chromium/src/+/master'
+                'https://chromium.googlesource.com/chromium/src/+/main'
                 '/docs/testing/web_platform_tests.md#Automatic-export-process'
             ).format(pr_url='%spull/%d' % (WPT_GH_URL, pr_number)))
 
@@ -350,7 +350,7 @@ class TestExporter(object):
         The commit can be either landed or in-flight. The exportable portion of
         the patch is extracted and applied to a new branch in the local WPT
         repo, whose name is determined by pr_branch_name (if the branch already
-        exists, it will be recreated from master). The branch is then pushed to
+        exists, it will be recreated from main). The branch is then pushed to
         WPT on GitHub, from which a PR is created or updated.
 
         Args:
