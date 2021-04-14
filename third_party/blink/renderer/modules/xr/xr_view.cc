@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 
 #include "base/numerics/ranges.h"
+#include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
+#include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 
@@ -162,6 +164,30 @@ base::Optional<double> XRView::recommendedViewportScale() const {
 
 void XRView::requestViewportScale(base::Optional<double> scale) {
   view_data_->requestViewportScale(scale);
+}
+
+XRCamera* XRView::camera() const {
+  const bool camera_access_enabled = frame_->session()->IsFeatureEnabled(
+      device::mojom::XRSessionFeature::CAMERA_ACCESS);
+  const bool is_immersive_ar_session =
+      frame_->session()->mode() ==
+      device::mojom::blink::XRSessionMode::kImmersiveAr;
+
+  if (camera_access_enabled && is_immersive_ar_session) {
+    // The feature is enabled and we're in immersive-ar session, so let's return
+    // a camera object if the camera image was received in the current frame.
+    // Note: currently our only implementation of AR sessions is provided by
+    // ARCore device, which should *not* return a frame data with camera image
+    // that is not set in case the raw camera access is enabled, so we could
+    // DCHECK that the camera image size has value. Since there may be other AR
+    // devices that implement raw camera access via a different mechanism that's
+    // not neccessarily frame-aligned, a DCHECK here would affect them.
+    if (frame_->session()->CameraImageSize().has_value()) {
+      return MakeGarbageCollected<XRCamera>(frame_);
+    }
+  }
+
+  return nullptr;
 }
 
 void XRView::Trace(Visitor* visitor) const {

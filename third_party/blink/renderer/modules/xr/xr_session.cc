@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/xr/type_converters.h"
 #include "third_party/blink/renderer/modules/xr/xr_anchor_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_bounded_reference_space.h"
+#include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_canvas_input_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
@@ -244,6 +245,7 @@ constexpr char XRSession::kNoSpaceSpecified[];
 constexpr char XRSession::kAnchorsFeatureNotSupported[];
 constexpr char XRSession::kPlanesFeatureNotSupported[];
 constexpr char XRSession::kDepthSensingFeatureNotSupported[];
+constexpr char XRSession::kRawCameraAccessFeatureNotSupported[];
 
 class XRSession::XRSessionResizeObserverDelegate final
     : public ResizeObserver::Delegate {
@@ -1758,6 +1760,16 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     if (world_light_probe_ && light_data) {
       world_light_probe_->ProcessLightEstimationData(light_data, timestamp);
     }
+
+    camera_image_size_ = base::nullopt;
+    if (frame_data->camera_image_size.has_value()) {
+      DCHECK(frame_data->camera_image_buffer_holder.has_value());
+
+      // Let's store the camera image size. The texture ID will be filled out on
+      // the XRWebGLLayer by the session once the frame starts
+      // (in XRSession::OnFrame()).
+      camera_image_size_ = frame_data->camera_image_size;
+    }
   } else {
     plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
@@ -1772,6 +1784,8 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     if (world_light_probe_) {
       world_light_probe_->ProcessLightEstimationData(nullptr, timestamp);
     }
+
+    camera_image_size_ = base::nullopt;
   }
 }
 

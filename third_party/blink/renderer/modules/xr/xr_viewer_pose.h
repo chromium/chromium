@@ -24,15 +24,11 @@ class XRViewerPose final : public XRPose {
   ~XRViewerPose() override = default;
 
   const HeapVector<Member<XRView>>& views() const { return views_; }
-  const HeapVector<Member<XRView>>& cameraViews() const {
-    return camera_views_;
-  }
 
   void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<XRView>> views_;
-  HeapVector<Member<XRView>> camera_views_;
 };
 
 }  // namespace blink

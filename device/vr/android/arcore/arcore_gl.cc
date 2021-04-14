@@ -684,6 +684,7 @@ void ArCoreGl::GetFrameData(
 
     if (IsFeatureEnabled(device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
       frame_data->camera_image_buffer_holder = camera_image_buffer_holder;
+      frame_data->camera_image_size = camera_image_size_;
     }
   }
 
