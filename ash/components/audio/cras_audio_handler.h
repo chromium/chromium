@@ -179,6 +179,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Returns true if audio output is muted for a device.
   bool IsOutputMutedForDevice(uint64_t device_id);
 
+  // Returns true if audio output is muted for the system by policy.
+  bool IsOutputMutedByPolicy();
+
   // Returns true if audio input is muted.
   bool IsInputMuted();
 

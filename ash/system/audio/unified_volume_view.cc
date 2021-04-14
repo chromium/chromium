@@ -257,6 +257,7 @@ void UnifiedVolumeView::Update(bool by_user) {
   slider()->SetRenderingStyle(
       is_muted ? views::Slider::RenderingStyle::kMinimalStyle
                : views::Slider::RenderingStyle::kDefaultStyle);
+  slider()->SetEnabled(!CrasAudioHandler::Get()->IsOutputMutedByPolicy());
 
   // The button should be gray when muted and colored otherwise.
   button()->SetToggled(!is_muted);
