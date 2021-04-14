@@ -489,9 +489,9 @@ const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
 const base::Feature kMediaAppDisplayExif{"MediaAppDisplayExif",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether Pdf files loading ink is enabled in the ChromeOS media app.
-const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// Whether PDF files are opened by default in the ChromeOS media app.
+const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Whether to show the new Video controls UI in the ChromeOS media app.
 const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",

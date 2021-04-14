@@ -4635,9 +4635,9 @@ const char kMediaAppDisplayExifName[] = "Media App Display Exif";
 const char kMediaAppDisplayExifDescription[] =
     "Enables displaying EXIF metadata in chrome://media-app";
 
-const char kMediaAppPdfInInkName[] = "Media App Pdf in Ink";
-const char kMediaAppPdfInInkDescription[] =
-    "Enables loading PDFs into Ink in chrome://media-app";
+const char kMediaAppHandlesPdfName[] = "Media App Handles PDF";
+const char kMediaAppHandlesPdfDescription[] =
+    "Enables opening PDF files by default in chrome://media-app";
 
 const char kMediaAppVideoName[] = "Media App Handles Video";
 const char kMediaAppVideoDescription[] =

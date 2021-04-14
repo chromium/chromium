@@ -214,7 +214,7 @@ extern const base::Feature kMediaAppAnnotation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppDisplayExif;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kMediaAppPdfInInk;
+extern const base::Feature kMediaAppHandlesPdf;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppVideoControls;
 COMPONENT_EXPORT(ASH_CONSTANTS)

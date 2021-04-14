@@ -146,9 +146,10 @@ class FileTasksBrowserTestBase
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
  public:
   FileTasksBrowserTest() {
-    // Enable Media App Video support.
+    // Enable Media App Video, but no PDF support.
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kVideoPlayerAppHidden}, {});
+        {chromeos::features::kVideoPlayerAppHidden},
+        {ash::features::kMediaAppHandlesPdf});
   }
 
  private:
@@ -161,6 +162,18 @@ class FileTasksBrowserTestNoVideo : public FileTasksBrowserTestBase {
     // Disable Media App video support.
     scoped_feature_list_.InitWithFeatures(
         {}, {chromeos::features::kVideoPlayerAppHidden});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FileTasksBrowserTestWithPdf : public FileTasksBrowserTestBase {
+ public:
+  FileTasksBrowserTestWithPdf() {
+    // Enable Media App PDF support.
+    scoped_feature_list_.InitWithFeatures({ash::features::kMediaAppHandlesPdf},
+                                          {});
   }
 
  private:
@@ -221,6 +234,12 @@ constexpr Expectation kVideoExpectations[] = {
     {"ogv", kMediaAppId},
     {"ogx", kMediaAppId, "video/ogg"},
     {"webm", kMediaAppId}};
+
+// PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
+constexpr Expectation kDefaultPdfExpectations[] = {{"pdf", kFileManagerAppId}};
+
+// PDF handler expectations when |kMediaAppHandlesPdf| is on.
+constexpr Expectation kMediaAppPdfExpectations[] = {{"pdf", kMediaAppId}};
 
 }  // namespace
 
@@ -323,25 +342,32 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
   expectations.insert(expectations.end(),
                       std::begin(kAudioDeprecatedExpectations),
                       std::end(kAudioDeprecatedExpectations));
+  expectations.insert(expectations.end(), std::begin(kDefaultPdfExpectations),
+                      std::end(kDefaultPdfExpectations));
 
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
-// Tests the default handlers with the Media App installed, but Video support
-// disabled.
+// Tests the default handlers that are different with Video support enabled.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations(std::begin(kVideoExpectations),
                                         std::end(kVideoExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
-// Tests the default handlers with the Media App installed, but Video support
-// disabled.
+// Tests the default handlers that are different with Video support disabled.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestNoVideo,
                        VideoHandlerChangeDetector) {
   std::vector<Expectation> expectations(
       std::begin(kVideoDeprecatedExpectations),
       std::end(kVideoDeprecatedExpectations));
+  TestExpectationsAgainstDefaultTasks(expectations);
+}
+
+// Tests the default handlers that are different with PDF support enabled.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithPdf, PdfHandlerChangeDetector) {
+  std::vector<Expectation> expectations(std::begin(kMediaAppPdfExpectations),
+                                        std::end(kMediaAppPdfExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
@@ -440,6 +466,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FileTasksBrowserTestNoVideo,
+                         ::testing::Values(TestProfileType::kRegular,
+                                           TestProfileType::kIncognito,
+                                           TestProfileType::kGuest),
+                         TestProfileTypeToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileTasksBrowserTestWithPdf,
                          ::testing::Values(TestProfileType::kRegular,
                                            TestProfileType::kIncognito,
                                            TestProfileType::kGuest),

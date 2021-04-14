@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -60,9 +61,17 @@ using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
 // Converts the kFileHandlers constexpr into the std::map needed to populate the
 // web app manifest's `accept` property.
 AcceptMap MakeHandlerAccept() {
+  // Add PDF to |kFileHandlers| conditionally on flag.
+  std::vector<std::tuple<const char*, const char*>> fileHandlers;
+  fileHandlers.insert(fileHandlers.end(), std::begin(kFileHandlers),
+                      std::end(kFileHandlers));
+  if (base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf)) {
+    fileHandlers.push_back({"application/pdf", ".pdf"});
+  }
+
   AcceptMap result;
   const std::u16string separator = u",";
-  for (const auto& handler : kFileHandlers) {
+  for (const auto& handler : fileHandlers) {
     result[base::ASCIIToUTF16(std::get<0>(handler))] =
         base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);

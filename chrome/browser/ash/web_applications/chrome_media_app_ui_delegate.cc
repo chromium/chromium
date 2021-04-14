@@ -47,7 +47,7 @@ void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
       "displayExif",
       base::FeatureList::IsEnabled(chromeos::features::kMediaAppDisplayExif));
   source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
-                                     chromeos::features::kMediaAppPdfInInk));
+                                     chromeos::features::kMediaAppHandlesPdf));
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
