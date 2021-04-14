@@ -100,10 +100,9 @@ std::unique_ptr<DecoderInterface> VaapiVideoDecoder::Create(
 }
 
 // static
-SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs(
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
+SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs() {
   return ConvertFromSupportedProfiles(
-      VaapiWrapper::GetSupportedDecodeProfiles(workarounds),
+      VaapiWrapper::GetSupportedDecodeProfiles(),
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
       true /* allow_encrypted */);
 #else

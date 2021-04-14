@@ -3701,6 +3701,18 @@
       "features": [
         "check_ycbcr_studio_g22_left_p709_for_nv12_support"
       ]
+    },
+    {
+      "id": 373,
+      "cr_bugs": [1198714],
+      "description": "VP9 Profile 2 HW decoding on Qualcomm SC7180 is broken",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "disable_accelerated_vp9_profile2_decode"
+      ]
     }
   ]
 }

@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/sequenced_task_runner.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
@@ -27,12 +29,34 @@ namespace media {
 SupportedVideoDecoderConfigs ChromeosVideoDecoderFactory::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
 #if BUILDFLAG(USE_VAAPI)
-  return VaapiVideoDecoder::GetSupportedConfigs(workarounds);
+  auto configs = VaapiVideoDecoder::GetSupportedConfigs();
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  return V4L2VideoDecoder::GetSupportedConfigs();
+  auto configs = V4L2VideoDecoder::GetSupportedConfigs();
 #endif
-}
 
+  if (workarounds.disable_accelerated_vp8_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP8PROFILE_MIN &&
+             config.profile_max <= VP8PROFILE_MAX;
+    });
+  }
+
+  if (workarounds.disable_accelerated_vp9_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP9PROFILE_PROFILE0 &&
+             config.profile_max <= VP9PROFILE_PROFILE0;
+    });
+  }
+
+  if (workarounds.disable_accelerated_vp9_profile2_decode) {
+    base::EraseIf(configs, [](const auto& config) {
+      return config.profile_min >= VP9PROFILE_PROFILE2 &&
+             config.profile_max <= VP9PROFILE_PROFILE2;
+    });
+  }
+
+  return configs;
+}
 // static
 std::unique_ptr<VideoDecoder> ChromeosVideoDecoderFactory::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,

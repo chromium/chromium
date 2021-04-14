@@ -40,10 +40,6 @@ namespace gl {
 class GLImage;
 }
 
-namespace gpu {
-class GpuDriverBugWorkarounds;
-}
-
 namespace media {
 
 class AcceleratedVideoDecoder;
@@ -92,8 +88,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
       const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
       override;
 
-  static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles(
-      const gpu::GpuDriverBugWorkarounds& workarounds);
+  static VideoDecodeAccelerator::SupportedProfiles GetSupportedProfiles();
 
   // DecodeSurfaceHandler implementation.
   scoped_refptr<VASurface> CreateSurface() override;

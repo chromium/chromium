@@ -59,7 +59,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
 #elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #if BUILDFLAG(USE_VAAPI)
   capabilities.supported_profiles =
-      VaapiVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
+      VaapiVideoDecodeAccelerator::GetSupportedProfiles();
 #elif BUILDFLAG(USE_V4L2_CODEC)
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
       V4L2VideoDecodeAccelerator::GetSupportedProfiles(),

@@ -26,7 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
 #include "build/chromeos_buildflags.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
@@ -196,8 +195,7 @@ TEST_F(VaapiTest, VerifyNoVAProfileH264Baseline) {
 TEST_F(VaapiTest, GetSupportedDecodeProfiles) {
   const auto va_info = RetrieveVAInfoOutput();
 
-  for (const auto& profile : VaapiWrapper::GetSupportedDecodeProfiles(
-           gpu::GpuDriverBugWorkarounds())) {
+  for (const auto& profile : VaapiWrapper::GetSupportedDecodeProfiles()) {
     const auto va_profile = ConvertToVAProfile(profile.profile);
     ASSERT_TRUE(va_profile.has_value());
 

@@ -51,7 +51,6 @@
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
 
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/minigbm/src/external/i915_drm.h"
@@ -1433,23 +1432,13 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
 
 // static
 VideoDecodeAccelerator::SupportedProfiles
-VaapiWrapper::GetSupportedDecodeProfiles(
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
+VaapiWrapper::GetSupportedDecodeProfiles() {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
   for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
     const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
     const VAProfile va_profile = media_to_va_profile_map_entry.second;
     DCHECK(va_profile != VAProfileNone);
-
-    if (media_profile == VP8PROFILE_ANY &&
-        workarounds.disable_accelerated_vp8_decode) {
-      continue;
-    }
-    if (media_profile == VP9PROFILE_PROFILE2 &&
-        workarounds.disable_accelerated_vp9_profile2_decode) {
-      continue;
-    }
 
     const VASupportedProfiles::ProfileInfo* profile_info =
         VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
