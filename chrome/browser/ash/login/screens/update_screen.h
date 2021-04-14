@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -221,9 +221,8 @@ class UpdateScreen : public BaseScreen,
   base::CallbackListSubscription accessibility_subscription_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
-  std::unique_ptr<
-      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>
-      power_manager_subscription_;
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_subscription_{this};
 
   base::WeakPtrFactory<UpdateScreen> weak_factory_{this};
 

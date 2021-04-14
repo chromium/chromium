@@ -251,7 +251,7 @@ EncryptionMigrationScreen::EncryptionMigrationScreen(
 
 EncryptionMigrationScreen::~EncryptionMigrationScreen() {
   userdataauth_observer_.reset();
-  power_manager_observer_.reset();
+  power_manager_observation_.Reset();
   if (view_)
     view_->SetDelegate(nullptr);
 }
@@ -303,9 +303,7 @@ void EncryptionMigrationScreen::SetupInitialView() {
     StartMigration();
     return;
   }
-  power_manager_observer_ = std::make_unique<
-      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>(this);
-  power_manager_observer_->Add(PowerManagerClient::Get());
+  power_manager_observation_.Observe(PowerManagerClient::Get());
   CheckAvailableStorage();
 }
 

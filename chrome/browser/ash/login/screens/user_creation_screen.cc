@@ -84,9 +84,7 @@ void UserCreationScreen::ShowImpl() {
   if (!view_)
     return;
 
-  scoped_observer_ = std::make_unique<
-      ScopedObserver<NetworkStateInformer, NetworkStateInformerObserver>>(this);
-  scoped_observer_->Add(network_state_informer_.get());
+  scoped_observation_.Observe(network_state_informer_.get());
 
   ash::LoginScreen::Get()->SetIsFirstSigninStep(true);
 
@@ -103,7 +101,7 @@ void UserCreationScreen::ShowImpl() {
 }
 
 void UserCreationScreen::HideImpl() {
-  scoped_observer_.reset();
+  scoped_observation_.Reset();
   error_screen_visible_ = false;
   error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
   error_screen_->Hide();

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
@@ -67,9 +67,8 @@ class UserCreationScreen
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
-  std::unique_ptr<
-      ScopedObserver<NetworkStateInformer, NetworkStateInformerObserver>>
-      scoped_observer_;
+  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
+      scoped_observation_{this};
 
   ErrorScreen* error_screen_ = nullptr;
 

@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
@@ -164,9 +163,8 @@ class EncryptionMigrationScreen : public BaseScreen,
       base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
       userdataauth_observer_;
 
-  std::unique_ptr<
-      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>
-      power_manager_observer_;
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_observation_{this};
 
   base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};
 
