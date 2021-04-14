@@ -75,7 +75,7 @@ suite('CellularSetupButtonBarTest', function() {
   });
 
   test('individual buttons are hidden', function() {
-    setStateForAllButtons(undefined);
+    setStateForAllButtons(cellularSetup.ButtonState.HIDDEN);
     assertTrue(isButtonHidden(buttonBar.$$('#backward')));
     assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
     assertTrue(isButtonHidden(buttonBar.$$('#forward')));
@@ -93,6 +93,8 @@ suite('CellularSetupButtonBarTest', function() {
   test('default focus is on first button if rest are hidden', function() {
     buttonBar.buttonState = {
       backward: cellularSetup.ButtonState.ENABLED,
+      cancel: cellularSetup.ButtonState.HIDDEN,
+      forward: cellularSetup.ButtonState.HIDDEN,
     };
     buttonBar.focusDefaultButton();
 
