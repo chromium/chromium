@@ -97,6 +97,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer);
 
+  // Notifies all observers for all optimization targets that |Shutdown()| has
+  // been called on |OptimizationGuideKeyedService|.
+  void NotifyObserversOfShutdown();
+
   // Determine if the navigation matches the criteria for
   // |optimization_target|. Return kUnknown if a PredictionModel for the
   // optimization target is not registered and kModelNotAvailableOnClient if the

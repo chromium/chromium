@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"

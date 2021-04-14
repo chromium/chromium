@@ -215,13 +215,15 @@ TEST_F(OptimizationTargetModelExecutorTest,
           run_loop.get()),
       std::vector<float>{1, 1, 1});
   run_loop->Run();
+  EXPECT_EQ(0U, model_executor()->run_count());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       0);
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
+
+  // The run count UMA is not recorded until shutdown.
+  model_executor()->OnShutdown();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.RunCount." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -262,13 +264,15 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
           run_loop.get()),
       input);
   run_loop->Run();
+  EXPECT_EQ(1U, model_executor()->run_count());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       1);
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
+
+  // The run count UMA is not recorded until shutdown.
+  model_executor()->OnShutdown();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.RunCount." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -304,6 +308,7 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteTwiceWithLoadedModel) {
       input);
   run_loop->Run();
 
+  EXPECT_EQ(1U, model_executor()->run_count());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -323,6 +328,7 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteTwiceWithLoadedModel) {
       input);
   run_loop->Run();
 
+  EXPECT_EQ(2U, model_executor()->run_count());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -334,8 +340,8 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteTwiceWithLoadedModel) {
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       1);
 
-  // The run count histogram is only recorded on destruction.
-  ResetModelExecutor();
+  // The run count UMA is not recorded until shutdown.
+  model_executor()->OnShutdown();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.RunCount." +
           optimization_guide::GetStringNameForOptimizationTarget(

@@ -90,10 +90,6 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
                                                     model_metadata, this);
   }
   ~OptimizationTargetModelExecutor() override {
-    base::UmaHistogramCounts100(
-        "OptimizationGuide.ModelExecutor.RunCount." +
-            GetStringNameForOptimizationTarget(optimization_target_),
-        run_count_);
     decider_->RemoveObserverForOptimizationTargetModel(optimization_target_,
                                                        this);
   }
@@ -119,6 +115,12 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   }
 
   // OptimizationTargetModelObserver:
+  void OnShutdown() override {
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.ModelExecutor.RunCount." +
+            GetStringNameForOptimizationTarget(optimization_target_),
+        run_count());
+  }
   void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
                           const base::Optional<proto::Any>& model_metadata,
                           const base::FilePath& file_path) override {
@@ -143,6 +145,8 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
             base::IgnoreResult(&OptimizationTargetModelExecutor::LoadModelFile),
             base::Unretained(this)));
   }
+
+  size_t run_count() const { return run_count_; }
 
   // Returns whether a model is currently loaded.
   bool HasLoadedModel() const { return loaded_model_ != nullptr; }

@@ -168,6 +168,8 @@ class FakeOptimizationTargetModelObserver
         std::make_pair(model_metadata, file_path);
   }
 
+  void OnShutdown() override { on_shutdown_called_ = true; }
+
   base::Optional<std::pair<base::Optional<proto::Any>, base::FilePath>>
   last_received_model_for_target(
       proto::OptimizationTarget optimization_target) {
@@ -177,13 +179,19 @@ class FakeOptimizationTargetModelObserver
     return model_it->second;
   }
 
+  bool on_shutdown_called() const { return on_shutdown_called_; }
+
   // Resets the state of the observer.
-  void Reset() { last_received_models_.clear(); }
+  void Reset() {
+    last_received_models_.clear();
+    on_shutdown_called_ = false;
+  }
 
  private:
   base::flat_map<proto::OptimizationTarget,
                  std::pair<base::Optional<proto::Any>, base::FilePath>>
       last_received_models_;
+  bool on_shutdown_called_ = false;
 };
 
 class FakePredictionModelDownloadManager
@@ -1099,12 +1107,12 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
   prediction_manager()->UpdatePredictionModelsForTesting(
       get_models_response.get());
 
-    TestPredictionModel* stored_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_TRUE(stored_prediction_model);
-    EXPECT_EQ(3, stored_prediction_model->GetVersion());
+  TestPredictionModel* stored_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_TRUE(stored_prediction_model);
+  EXPECT_EQ(3, stored_prediction_model->GetVersion());
   histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
                                      true, 2);
 }
@@ -1147,6 +1155,19 @@ TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
       false, 1);
+}
+
+TEST_F(PredictionManagerTest, NotifyShutdown) {
+  CreatePredictionManager();
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/base::nullopt, &observer);
+
+  EXPECT_FALSE(observer.on_shutdown_called());
+  prediction_manager()->NotifyObserversOfShutdown();
+  EXPECT_TRUE(observer.on_shutdown_called());
 }
 
 TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
@@ -1333,11 +1354,11 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
   prediction_manager()->UpdatePredictionModelsForTesting(
       get_models_response.get());
 
-    TestPredictionModel* test_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_FALSE(test_prediction_model);
+  TestPredictionModel* test_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_FALSE(test_prediction_model);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);

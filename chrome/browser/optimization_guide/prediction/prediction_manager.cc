@@ -341,6 +341,14 @@ void PredictionManager::RemoveObserverForOptimizationTargetModel(
   observers_it->second.RemoveObserver(observer);
 }
 
+void PredictionManager::NotifyObserversOfShutdown() {
+  for (const auto& observers : registered_observers_for_optimization_targets_) {
+    for (auto& observer : observers.second) {
+      observer.OnShutdown();
+    }
+  }
+}
+
 base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
     content::NavigationHandle* navigation_handle,
     const base::flat_set<std::string>& model_features) {

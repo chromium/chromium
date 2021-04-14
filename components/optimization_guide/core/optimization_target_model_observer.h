@@ -27,6 +27,10 @@ class OptimizationTargetModelObserver : public base::CheckedObserver {
       proto::OptimizationTarget optimization_target,
       const base::Optional<proto::Any>& model_metadata,
       const base::FilePath& file_path) = 0;
+
+  // Called on browser shutdown to allow for any last minute actions (such as
+  // metrics recording).
+  virtual void OnShutdown() {}
 };
 
 }  // namespace optimization_guide
