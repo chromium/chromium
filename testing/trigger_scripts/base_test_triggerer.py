@@ -228,10 +228,15 @@ class BaseTestTriggerer(object):
     ret = subprocess.call([SWARMING_GO] + _convert_to_go_swarming_args(args))
     result_json = self.read_json_from_temp_file(json_path)
 
-    tasks = {
-      task['request']['task_id']: task['request']
-      for task  in result_json['tasks']
-    }
+    tasks = {}
+    for task in result_json['tasks']:
+      k = task['request']['task_id']
+      tasks[k] = task['request']
+      invocation = task.get(
+          'task_result', {}).get('resultdb_info', {}).get('invocation')
+      if invocation:
+        tasks[k]['invocation'] = invocation
+
     for k, v in tasks.items():
       v['shard_index'] = shard_index
       merged_json['tasks'][k + ':%d:%d' % (shard_index, shards)] = v
