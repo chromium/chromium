@@ -61,8 +61,14 @@ class CORE_EXPORT ScrollbarTheme {
 
   ScrollbarPart HitTestRootFramePosition(const Scrollbar&, const IntPoint&);
 
-  virtual int ScrollbarThickness(float scale_from_dip) { return 0; }
-  virtual int ScrollbarMargin(float scale_from_dip) const { return 0; }
+  virtual int ScrollbarThickness(float scale_from_dip,
+                                 EScrollbarWidth scrollbar_width) {
+    return 0;
+  }
+  virtual int ScrollbarMargin(float scale_from_dip,
+                              EScrollbarWidth scrollbar_width) const {
+    return 0;
+  }
 
   virtual bool IsSolidColor() const { return false; }
   virtual bool UsesOverlayScrollbars() const { return false; }

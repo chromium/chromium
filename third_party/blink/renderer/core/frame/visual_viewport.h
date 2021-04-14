@@ -285,6 +285,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void EnqueueScrollEvent();
   void EnqueueResizeEvent();
 
+  EScrollbarWidth CSSScrollbarWidth() const;
   int ScrollbarThickness() const;
   void UpdateScrollbarLayer(ScrollbarOrientation);
 

@@ -20,7 +20,11 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
   bool UsesNinePatchThumbResource() const override { return false; }
 
  protected:
-  ScrollbarThemeOverlayMobile(int thumb_thickness, int scrollbar_margin, Color);
+  ScrollbarThemeOverlayMobile(int thumb_thickness_default,
+                              int scrollbar_margin_default,
+                              int thumb_thickness_thin,
+                              int scrollbar_margin_thin,
+                              Color);
 
   ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override {
     NOTREACHED();

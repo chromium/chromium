@@ -797,7 +797,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool UsesOverlayScrollbars() const {
     NOT_DESTROYED();
-    if (StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar))
+    if (StyleRef().HasCustomScrollbarStyle())
       return false;
     if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
       return true;

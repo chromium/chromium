@@ -2125,7 +2125,7 @@ void Document::PropagateStyleToViewport() {
                                        overflow_style->OverscrollBehaviorY())));
       }
 
-      if (overflow_style->HasPseudoElementStyle(kPseudoIdScrollbar))
+      if (overflow_style->HasCustomScrollbarStyle())
         update_scrollbar_style = true;
     }
 

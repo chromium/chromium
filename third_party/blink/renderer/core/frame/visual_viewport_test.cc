@@ -2360,8 +2360,8 @@ TEST_P(VisualViewportTest, EnsureEffectNodeForScrollbars) {
   ASSERT_TRUE(horizontal_scrollbar);
 
   auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
-  int scrollbar_thickness =
-      theme.ScrollbarThickness(visual_viewport.ScaleFromDIP());
+  int scrollbar_thickness = theme.ScrollbarThickness(
+      visual_viewport.ScaleFromDIP(), EScrollbarWidth::kAuto);
 
   EXPECT_EQ(vertical_scrollbar->effect_tree_index(),
             vertical_scrollbar->layer_tree_host()

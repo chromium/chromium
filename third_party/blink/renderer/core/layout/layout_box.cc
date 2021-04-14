@@ -391,7 +391,8 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
       Document& document = box.GetDocument();
       float scale_from_dip =
           chrome_client.WindowToViewportScalar(document.GetFrame(), 1.0f);
-      return theme.ScrollbarThickness(scale_from_dip);
+      return theme.ScrollbarThickness(scale_from_dip,
+                                      box.StyleRef().ScrollbarWidth());
     }
   }
 }

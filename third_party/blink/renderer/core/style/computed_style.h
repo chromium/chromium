@@ -851,6 +851,12 @@ class ComputedStyle final : public GarbageCollected<ComputedStyle>,
     return ScrollbarGutter() & kScrollbarGutterForce;
   }
 
+  // ignore non-standard ::-webkit-scrollbar when standard properties are in use
+  bool HasCustomScrollbarStyle() const {
+    return HasPseudoElementStyle(kPseudoIdScrollbar) &&
+           ScrollbarWidth() == EScrollbarWidth::kAuto;
+  }
+
   // shape-image-threshold (aka -webkit-shape-image-threshold)
   void SetShapeImageThreshold(float shape_image_threshold) {
     float clamped_shape_image_threshold =

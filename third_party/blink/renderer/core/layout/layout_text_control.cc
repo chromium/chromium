@@ -92,7 +92,8 @@ void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
 int LayoutTextControl::ScrollbarThickness(const LayoutBox& box) {
   const Page& page = *box.GetDocument().GetPage();
   return page.GetScrollbarTheme().ScrollbarThickness(
-      page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f));
+      page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f),
+      box.StyleRef().ScrollbarWidth());
 }
 
 void LayoutTextControl::HitInnerEditorElement(

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL scrollbar-width: none should have no scrollbar assert_equals: expected 100 but got 85
-PASS scrollbar-width: thin should have scrollbar no wider than auto
-Harness: the test ran to completion.
-

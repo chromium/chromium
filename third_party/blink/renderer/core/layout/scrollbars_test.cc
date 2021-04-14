@@ -57,6 +57,8 @@ class StubWebThemeEngine : public WebThemeEngine {
     style->fade_out_duration = base::TimeDelta();
     style->thumb_thickness = 3;
     style->scrollbar_margin = 0;
+    style->thumb_thickness_thin = 2;
+    style->scrollbar_margin_thin = 0;
     style->color = SkColorSetARGB(128, 64, 64, 64);
   }
   static constexpr int kMinimumHorizontalLength = 51;
@@ -1771,8 +1773,9 @@ TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
 
   int max_thumb_position = WebView().MainFrameViewWidget()->Size().height() -
                            StubWebThemeEngine::kMinimumVerticalLength;
-  max_thumb_position -=
-      scrollbar->GetTheme().ScrollbarMargin(scrollbar->ScaleFromDIP()) * 2;
+  max_thumb_position -= scrollbar->GetTheme().ScrollbarMargin(
+                            scrollbar->ScaleFromDIP(), EScrollbarWidth::kAuto) *
+                        2;
 
   EXPECT_EQ(max_thumb_position,
             scrollbar->GetTheme().ThumbPosition(*scrollbar));

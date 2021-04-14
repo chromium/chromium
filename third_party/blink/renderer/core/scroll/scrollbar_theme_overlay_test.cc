@@ -22,7 +22,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   NiceMock<MockScrollableArea>* mock_scrollable_area =
       MakeGarbageCollected<NiceMock<MockScrollableArea>>(
           ScrollOffset(100, 100));
-  ScrollbarThemeOverlay theme(14, 0);
+  ScrollbarThemeOverlay theme(14, 0, 14, 0);
 
   Scrollbar* vertical_scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, &theme);

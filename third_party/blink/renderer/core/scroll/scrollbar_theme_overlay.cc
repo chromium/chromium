@@ -44,14 +44,23 @@ ScrollbarThemeOverlay& ScrollbarThemeOverlay::GetInstance() {
            ->ThemeEngine()
            ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
            .width(),
+       0,
+       Platform::Current()
+           ->ThemeEngine()
+           ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
+           .width(),
        0));
   return theme;
 }
 
-ScrollbarThemeOverlay::ScrollbarThemeOverlay(int thumb_thickness_dip,
-                                             int scrollbar_margin_dip)
-    : thumb_thickness_dip_(thumb_thickness_dip),
-      scrollbar_margin_dip_(scrollbar_margin_dip) {}
+ScrollbarThemeOverlay::ScrollbarThemeOverlay(int thumb_thickness_default_dip,
+                                             int scrollbar_margin_default_dip,
+                                             int thumb_thickness_thin_dip,
+                                             int scrollbar_margin_thin_dip)
+    : thumb_thickness_default_dip_(thumb_thickness_default_dip),
+      scrollbar_margin_default_dip_(scrollbar_margin_default_dip),
+      thumb_thickness_thin_dip_(thumb_thickness_thin_dip),
+      scrollbar_margin_thin_dip_(scrollbar_margin_thin_dip) {}
 
 bool ScrollbarThemeOverlay::ShouldRepaintAllPartsOnInvalidation() const {
   return false;
@@ -64,12 +73,21 @@ ScrollbarPart ScrollbarThemeOverlay::PartsToInvalidateOnThumbPositionChange(
   return kNoPart;
 }
 
-int ScrollbarThemeOverlay::ScrollbarThickness(float scale_from_dip) {
-  return ThumbThickness(scale_from_dip) + ScrollbarMargin(scale_from_dip);
+int ScrollbarThemeOverlay::ScrollbarThickness(float scale_from_dip,
+                                              EScrollbarWidth scrollbar_width) {
+  return ThumbThickness(scale_from_dip, scrollbar_width) +
+         ScrollbarMargin(scale_from_dip, scrollbar_width);
 }
 
-int ScrollbarThemeOverlay::ScrollbarMargin(float scale_from_dip) const {
-  return scrollbar_margin_dip_ * scale_from_dip;
+int ScrollbarThemeOverlay::ScrollbarMargin(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
+  if (scrollbar_width == EScrollbarWidth::kNone)
+    return 0;
+  else if (scrollbar_width == EScrollbarWidth::kThin)
+    return scrollbar_margin_thin_dip_ * scale_from_dip;
+  else
+    return scrollbar_margin_default_dip_ * scale_from_dip;
 }
 
 bool ScrollbarThemeOverlay::UsesOverlayScrollbars() const {
@@ -104,6 +122,17 @@ int ScrollbarThemeOverlay::ThumbLength(const Scrollbar& scrollbar) {
   return length;
 }
 
+int ScrollbarThemeOverlay::ThumbThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
+  if (scrollbar_width == EScrollbarWidth::kNone)
+    return 0;
+  else if (scrollbar_width == EScrollbarWidth::kThin)
+    return thumb_thickness_thin_dip_ * scale_from_dip;
+  else
+    return thumb_thickness_default_dip_ * scale_from_dip;
+}
+
 bool ScrollbarThemeOverlay::HasThumb(const Scrollbar& scrollbar) {
   return true;
 }
@@ -118,21 +147,23 @@ IntRect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
 
 IntRect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
   IntRect rect = scrollbar.FrameRect();
+  EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
   if (scrollbar.Orientation() == kHorizontalScrollbar)
-    rect.InflateX(-ScrollbarMargin(scrollbar.ScaleFromDIP()));
+    rect.InflateX(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
   else
-    rect.InflateY(-ScrollbarMargin(scrollbar.ScaleFromDIP()));
+    rect.InflateY(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
   return rect;
 }
 
 IntRect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
   IntRect rect = ScrollbarTheme::ThumbRect(scrollbar);
+  EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    rect.SetHeight(ThumbThickness(scrollbar.ScaleFromDIP()));
+    rect.SetHeight(ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar_width));
   } else {
     if (scrollbar.IsLeftSideVerticalScrollbar())
-      rect.Move(ScrollbarMargin(scrollbar.ScaleFromDIP()), 0);
-    rect.SetWidth(ThumbThickness(scrollbar.ScaleFromDIP()));
+      rect.Move(ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width), 0);
+    rect.SetWidth(ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar_width));
   }
   return rect;
 }

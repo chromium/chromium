@@ -29,6 +29,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -193,6 +194,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   float EffectiveZoom() const;
   bool ContainerIsRightToLeft() const;
+
+  // scrollbar-width CSS property
+  EScrollbarWidth CSSScrollbarWidth() const;
 
   // The Element that supplies our style information. If the scrollbar is
   // for a document, this is either the <body> or <html> element. Otherwise, it

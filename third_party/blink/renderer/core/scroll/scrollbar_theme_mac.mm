@@ -187,10 +187,16 @@ ScrollbarPart ScrollbarThemeMac::PartsToInvalidateOnThumbPositionChange(
 void ScrollbarThemeMac::RegisterScrollbar(Scrollbar& scrollbar) {
   GetScrollbarSet().insert(&scrollbar);
 
+  NSControlSize size;
+  if (scrollbar.CSSScrollbarWidth() == EScrollbarWidth::kThin)
+    size = NSSmallControlSize;
+  else
+    size = NSRegularControlSize;
+
   bool is_horizontal = scrollbar.Orientation() == kHorizontalScrollbar;
   base::scoped_nsobject<ScrollbarPainter> scrollbar_painter([[NSClassFromString(
       @"NSScrollerImp") scrollerImpWithStyle:RecommendedScrollerStyle()
-                                 controlSize:NSRegularControlSize
+                                 controlSize:size
                                   horizontal:is_horizontal
                         replacingScrollerImp:nil] retain]);
   base::scoped_nsobject<BlinkScrollbarObserver> observer(
@@ -415,10 +421,20 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     context.EndLayer();
 }
 
-int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip) {
+int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip,
+                                          EScrollbarWidth scrollbar_width) {
+  if (scrollbar_width == EScrollbarWidth::kNone)
+    return 0;
+
+  NSControlSize size;
+  if (scrollbar_width == EScrollbarWidth::kThin)
+    size = NSSmallControlSize;
+  else
+    size = NSRegularControlSize;
+
   ScrollbarPainter scrollbar_painter = [NSClassFromString(@"NSScrollerImp")
       scrollerImpWithStyle:RecommendedScrollerStyle()
-               controlSize:NSRegularControlSize
+               controlSize:size
                 horizontal:NO
       replacingScrollerImp:nil];
   BOOL was_expanded = NO;

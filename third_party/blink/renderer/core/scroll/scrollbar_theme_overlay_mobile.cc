@@ -39,14 +39,22 @@ ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
   DEFINE_STATIC_LOCAL(
       ScrollbarThemeOverlayMobile, theme,
       (ScrollbarStyle().thumb_thickness, ScrollbarStyle().scrollbar_margin,
-       ScrollbarStyle().color));
+       ScrollbarStyle().thumb_thickness_thin,
+       ScrollbarStyle().scrollbar_margin_thin, ScrollbarStyle().color));
   return theme;
 }
 
-ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(int thumb_thickness,
-                                                         int scrollbar_margin,
-                                                         Color color)
-    : ScrollbarThemeOverlay(thumb_thickness, scrollbar_margin), color_(color) {}
+ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(
+    int thumb_thickness_default,
+    int scrollbar_margin_default,
+    int thumb_thickness_thin,
+    int scrollbar_margin_thin,
+    Color color)
+    : ScrollbarThemeOverlay(thumb_thickness_default,
+                            scrollbar_margin_default,
+                            thumb_thickness_thin,
+                            scrollbar_margin_thin),
+      color_(color) {}
 
 void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                                              const Scrollbar& scrollbar,

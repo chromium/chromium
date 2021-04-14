@@ -71,7 +71,8 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {
   theme_.RegisterScrollbar(*this);
-  int thickness = theme_.ScrollbarThickness(ScaleFromDIP());
+  int thickness =
+      theme_.ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
   frame_rect_ = IntRect(0, 0, thickness, thickness);
   current_pos_ = ScrollableAreaCurrentPos();
 }
@@ -699,7 +700,7 @@ int Scrollbar::ScrollbarThickness() const {
   int thickness = Orientation() == kHorizontalScrollbar ? Height() : Width();
   if (!thickness || IsCustomScrollbar())
     return thickness;
-  return theme_.ScrollbarThickness(ScaleFromDIP());
+  return theme_.ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
 }
 
 bool Scrollbar::IsSolidColor() const {
@@ -828,6 +829,12 @@ bool Scrollbar::ContainerIsRightToLeft() const {
     return IsRtl(dir);
   }
   return false;
+}
+
+EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
+  if (style_source_ && style_source_->GetLayoutObject())
+    return style_source_->GetLayoutObject()->Style()->ScrollbarWidth();
+  return EScrollbarWidth::kAuto;
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {

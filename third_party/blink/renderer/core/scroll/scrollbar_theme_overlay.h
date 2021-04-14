@@ -45,16 +45,17 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
       float old_position,
       float new_position) const override;
 
-  int ScrollbarThickness(float scale_from_dip) override;
-  int ScrollbarMargin(float scale_from_dip) const override;
+  int ScrollbarThickness(float scale_from_dip,
+                         EScrollbarWidth scrollbar_width) override;
+  int ScrollbarMargin(float scale_from_dip,
+                      EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
   int ThumbLength(const Scrollbar&) override;
-  int ThumbThickness(float scale_from_dip) const {
-    return thumb_thickness_dip_ * scale_from_dip;
-  }
+  int ThumbThickness(float scale_from_dip,
+                     EScrollbarWidth scrollbar_width) const;
 
   bool NativeThemeHasButtons() override { return false; }
   bool HasThumb(const Scrollbar&) override;
@@ -75,13 +76,18 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
  protected:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeOverlayTest, PaintInvalidation);
 
-  ScrollbarThemeOverlay(int thumb_thickness_dip, int scrollbar_margin_dip);
+  ScrollbarThemeOverlay(int thumb_thickness_default_dip,
+                        int scrollbar_margin_default_dip,
+                        int thumb_thickness_thin_dip,
+                        int scrollbar_margin_thin_dip);
 
   ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override;
 
  private:
-  int thumb_thickness_dip_;
-  int scrollbar_margin_dip_;
+  int thumb_thickness_default_dip_;
+  int scrollbar_margin_default_dip_;
+  int thumb_thickness_thin_dip_;
+  int scrollbar_margin_thin_dip_;
 };
 
 }  // namespace blink

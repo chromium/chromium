@@ -43,7 +43,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
   // non-composited scrollbars have the same appearance for tests using mock
   // overlay scrollbars.
   ScrollbarThemeOverlayMock()
-      : ScrollbarThemeOverlayMobile(3, 4, Color(128, 128, 128, 128)) {}
+      : ScrollbarThemeOverlayMobile(3, 4, 3, 4, Color(128, 128, 128, 128)) {}
 
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override {
     return delay_;
@@ -62,7 +62,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
   }
 
   int MinimumThumbLength(const Scrollbar& scrollbar) override {
-    return ThumbThickness(scrollbar.ScaleFromDIP());
+    return ThumbThickness(scrollbar.ScaleFromDIP(), EScrollbarWidth::kAuto);
   }
 
  private:

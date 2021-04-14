@@ -1354,6 +1354,8 @@ crbug.com/829028 virtual/container-queries/wpt_internal/css/css-contain/multicol
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
+# Incorrect native scrollbar repaint
+crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-width-paint-001.html [ Failure ]
 
 
 # ====== CSS Infinity and NaN ======

@@ -73,7 +73,8 @@ class PLATFORM_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
       float old_position,
       float new_position) const override;
   void UpdateEnabledState(const Scrollbar&) override;
-  int ScrollbarThickness(float scale_from_dip) override;
+  int ScrollbarThickness(float scale_from_dip,
+                         EScrollbarWidth scrollbar_width) override;
   bool UsesOverlayScrollbars() const override;
   void UpdateScrollbarOverlayColorTheme(const Scrollbar&) override;
 

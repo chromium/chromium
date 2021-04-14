@@ -38,7 +38,8 @@ namespace blink {
 
 class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
  public:
-  int ScrollbarThickness(float scale_from_dip) override;
+  int ScrollbarThickness(float scale_from_dip,
+                         EScrollbarWidth scrollbar_width) override;
 
  protected:
   bool NativeThemeHasButtons() override { return true; }

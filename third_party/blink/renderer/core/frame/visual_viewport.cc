@@ -624,9 +624,18 @@ void VisualViewport::InitializeScrollbars() {
     frame->View()->VisualViewportScrollbarsChanged();
 }
 
+EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
+  if (LocalFrame* main_frame = LocalMainFrame()) {
+    if (Document* main_document = main_frame->GetDocument())
+      return main_document->GetLayoutView()->StyleRef().ScrollbarWidth();
+  }
+
+  return EScrollbarWidth::kAuto;
+}
+
 int VisualViewport::ScrollbarThickness() const {
   return ScrollbarThemeOverlayMobile::GetInstance().ScrollbarThickness(
-      ScaleFromDIP());
+      ScaleFromDIP(), CSSScrollbarWidth());
 }
 
 void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
@@ -636,8 +645,8 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
   if (!scrollbar_layer) {
     auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
     float scale = ScaleFromDIP();
-    int thumb_thickness = theme.ThumbThickness(scale);
-    int scrollbar_margin = theme.ScrollbarMargin(scale);
+    int thumb_thickness = theme.ThumbThickness(scale, CSSScrollbarWidth());
+    int scrollbar_margin = theme.ScrollbarMargin(scale, CSSScrollbarWidth());
     cc::ScrollbarOrientation cc_orientation =
         orientation == kHorizontalScrollbar
             ? cc::ScrollbarOrientation::HORIZONTAL
