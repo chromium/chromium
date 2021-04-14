@@ -201,8 +201,18 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // Parse the test html file and parse special directives, usually
   // beginning with an '@' and inside an HTML comment, that control how the
   // test is run and how the results are interpreted.
-  std::vector<std::string> lines = base::SplitString(
-      html_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> lines;
+
+  size_t scenario_start = html_contents.find("<!--");
+  size_t scenario_end = html_contents.find("-->", scenario_start);
+  if (scenario_start != std::string::npos &&
+      scenario_end != std::string::npos) {
+    auto start = html_contents.begin() + scenario_start;
+    auto end = start + (scenario_end - scenario_start);
+    lines = base::SplitString(base::MakeStringPiece(start, end), "\n",
+                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+
   scenario_ = test_helper_.ParseScenario(lines, DefaultFilters());
 
   // Get the test URL.

@@ -115,9 +115,11 @@ specific filters.
 
 ## Directives
 
-Directives allow you to control a test flow and test output. They can appear
-anywhere but typically they're in an HTML comment block (or PDF comment block
-in case of PDF tests), and must be one per line.
+Directives allow you to control test flow and test output. The directives are
+defined inside the first comment block in the test's input file, one directive
+per line. For example, in the case of an HTML file the directives are located in
+between `<!--` and `-->`, in the case of a PDF file the directives are
+preceding by `%` character designating a comment.
 
 Certain directives are platform dependent. If so, then such directives are
 prefixed by a platform name:
