@@ -57,7 +57,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     private static final String GOOGLE_ACCOUNT = "Google Account";
     private static final String OTHER_ACTIVITY = "other forms of browsing history";
-    private static final String SIGNED_IN_DEVICES = "signed-in devices";
+    private static final String SYNCED_DEVICES = "synced devices";
 
     private StubProfileSyncService mStubProfileSyncService;
 
@@ -122,7 +122,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
             assertThat(cookiesSummary, not(containsString(GOOGLE_ACCOUNT)));
             assertThat(historySummary, not(containsString(OTHER_ACTIVITY)));
-            assertThat(historySummary, not(containsString(SIGNED_IN_DEVICES)));
+            assertThat(historySummary, not(containsString(SYNCED_DEVICES)));
         });
     }
 
@@ -151,7 +151,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
             assertThat(cookiesSummary, containsString(GOOGLE_ACCOUNT));
             assertThat(historySummary, containsString(OTHER_ACTIVITY));
-            assertThat(historySummary, not(containsString(SIGNED_IN_DEVICES)));
+            assertThat(historySummary, not(containsString(SYNCED_DEVICES)));
         });
     }
 
@@ -180,7 +180,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
             assertThat(cookiesSummary, containsString(GOOGLE_ACCOUNT));
             assertThat(historySummary, containsString(OTHER_ACTIVITY));
-            assertThat(historySummary, containsString(SIGNED_IN_DEVICES));
+            assertThat(historySummary, containsString(SYNCED_DEVICES));
         });
     }
 }
