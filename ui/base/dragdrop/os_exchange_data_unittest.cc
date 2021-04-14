@@ -196,10 +196,10 @@ TEST_F(OSExchangeDataTest, TestFilenames) {
 TEST_F(OSExchangeDataTest, TestHTML) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  std::u16string html = base::ASCIIToUTF16(
-      "<HTML>\n<BODY>\n"
-      "<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
-      "</BODY>\n</HTML>");
+  std::u16string html =
+      u"<HTML>\n<BODY>\n"
+      u"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
+      u"</BODY>\n</HTML>";
   data.SetHtml(html, url);
 
   OSExchangeData copy(

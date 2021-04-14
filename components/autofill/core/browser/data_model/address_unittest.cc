@@ -429,30 +429,34 @@ TEST_P(AddressTest, GetStreetAddress) {
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(ASCIIToUTF16("123 Example Ave.\n"
-                         "Apt. 42"),
-            address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
-  EXPECT_EQ(ASCIIToUTF16("123 Example Ave.\n"
-                         "Apt. 42"),
-            address.GetInfo(type, "en-US"));
+  EXPECT_EQ(
+      u"123 Example Ave.\n"
+      u"Apt. 42",
+      address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(
+      u"123 Example Ave.\n"
+      u"Apt. 42",
+      address.GetInfo(type, "en-US"));
 
   // A wild third line appears.
   address.SetRawInfo(ADDRESS_HOME_LINE3, u"Living room couch");
   EXPECT_EQ(u"Living room couch", address.GetRawInfo(ADDRESS_HOME_LINE3));
-  EXPECT_EQ(ASCIIToUTF16("123 Example Ave.\n"
-                         "Apt. 42\n"
-                         "Living room couch"),
-            address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(
+      u"123 Example Ave.\n"
+      u"Apt. 42\n"
+      u"Living room couch",
+      address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 
   // The second line vanishes.
   address.SetRawInfo(ADDRESS_HOME_LINE2, std::u16string());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(ASCIIToUTF16("123 Example Ave.\n"
-                         "\n"
-                         "Living room couch"),
-            address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(
+      u"123 Example Ave.\n"
+      u"\n"
+      u"Living room couch",
+      address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Verifies that overwriting an address with N lines with one that has fewer
@@ -477,10 +481,10 @@ TEST_P(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
 TEST_P(AddressTest, SetRawStreetAddress) {
   const std::u16string empty_street_address;
   const std::u16string short_street_address = u"456 Nowhere Ln.";
-  const std::u16string long_street_address = ASCIIToUTF16(
-      "123 Example Ave.\n"
-      "Apt. 42\n"
-      "(The one with the blue door)");
+  const std::u16string long_street_address =
+      u"123 Example Ave.\n"
+      u"Apt. 42\n"
+      u"(The one with the blue door)";
 
   Address address;
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
@@ -507,10 +511,10 @@ TEST_P(AddressTest, SetRawStreetAddress) {
 // Street addresses should be set properly.
 TEST_P(AddressTest, SetStreetAddress) {
   const std::u16string empty_street_address;
-  const std::u16string multi_line_street_address = ASCIIToUTF16(
-      "789 Fancy Pkwy.\n"
-      "Unit 3.14\n"
-      "Box 9");
+  const std::u16string multi_line_street_address =
+      u"789 Fancy Pkwy.\n"
+      u"Unit 3.14\n"
+      u"Box 9";
   const std::u16string single_line_street_address = u"123 Main, Apt 7";
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
@@ -561,9 +565,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
   // Attempting to set an address with interior blank lines should fail, and
   // clear out the previously stored address.
   EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
-                               ASCIIToUTF16("Address line 1\n"
-                                            "\n"
-                                            "Address line 3"),
+                               u"Address line 1\n"
+                               u"\n"
+                               u"Address line 3",
                                "en-US"));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
@@ -584,9 +588,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
   // Attempting to set an address with leading blank lines should fail, and
   // clear out the previously stored address.
   EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
-                               ASCIIToUTF16("\n"
-                                            "Address line 2"
-                                            "Address line 3"),
+                               u"\n"
+                               u"Address line 2"
+                               u"Address line 3",
                                "en-US"));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
@@ -607,9 +611,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
   // Attempting to set an address with leading blank lines should fail, and
   // clear out the previously stored address.
   EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
-                               ASCIIToUTF16("Address line 1"
-                                            "Address line 2"
-                                            "\n"),
+                               u"Address line 1"
+                               u"Address line 2"
+                               u"\n",
                                "en-US"));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));

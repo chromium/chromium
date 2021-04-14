@@ -35,7 +35,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
-using base::ASCIIToUTF16;
 using testing::_;
 using testing::Eq;
 using testing::Field;
@@ -449,8 +448,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values;
 
@@ -490,8 +489,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("input_123");
-  auto test_prefix = ASCIIToUTF16("");
+  std::u16string test_name = u"input_123";
+  std::u16string test_prefix;
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
@@ -523,8 +522,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("addressline_1");
-  auto test_prefix = ASCIIToUTF16("");
+  std::u16string test_name = u"addressline_1";
+  std::u16string test_prefix;
   int mocked_db_query_id = 100;
 
   std::vector<AutofillEntry> expected_values;
@@ -559,8 +558,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
       GetAutofillEntry(test_name, u"SomePrefixOne")};
@@ -599,8 +598,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
       GetAutofillEntry(test_name, u"SomePrefixOne")};
@@ -639,8 +638,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
       GetAutofillEntry(test_name, test_prefix)};
@@ -678,8 +677,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values = {
       GetAutofillEntry(test_name, u"someprefix")};
@@ -718,10 +717,10 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
-  auto test_value = ASCIIToUTF16("SomePrefixOne");
-  auto other_test_value = ASCIIToUTF16("SomePrefixOne");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
+  std::u16string test_value = u"SomePrefixOne";
+  std::u16string other_test_value = u"SomePrefixOne";
   int days_since_last_use = 10;
 
   std::vector<AutofillEntry> expected_values = {
@@ -772,8 +771,8 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values_first = {
       GetAutofillEntry(test_name, u"SomePrefixOne")};
@@ -841,8 +840,8 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   std::vector<AutofillEntry> expected_values_first = {
       GetAutofillEntry(test_name, u"SomePrefixOne")};
@@ -901,8 +900,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
 TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_CancelOne_ReturnOne) {
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   // Initialize variables for the first handler, which is the one that will be
   // cancelled.
@@ -1068,8 +1067,8 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
   int test_query_id_first = 2;
   int test_query_id_second = 3;
-  auto test_name = ASCIIToUTF16("Some Field Name");
-  auto test_prefix = ASCIIToUTF16("SomePrefix");
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
 
   EXPECT_CALL(*web_data_service_,
               GetFormValuesForElementName(test_name, test_prefix, _,

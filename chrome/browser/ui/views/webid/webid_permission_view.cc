@@ -57,7 +57,7 @@ std::unique_ptr<views::View> CreateInitialMessage(
   view->AddChildView(CreateImage(IDR_WEBID_SIGN_IN));
 
   // TODO(majidvp): Use a localized string. http://crbug.com/1141125
-  auto message1 = base::ASCIIToUTF16("Sign In with $1.");
+  std::u16string message1 = u"Sign In with $1.";
   std::u16string primary_text =
       base::ReplaceStringPlaceholders(message1, {idp_hostname}, nullptr);
   auto primary_label = std::make_unique<views::StyledLabel>();
@@ -65,8 +65,8 @@ std::unique_ptr<views::View> CreateInitialMessage(
   primary_label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   view->AddChildView(std::move(primary_label));
 
-  auto message2 = base::ASCIIToUTF16(
-      "By signing in with $1,\nthey will know you visited $2.");
+  std::u16string message2 =
+      u"By signing in with $1,\nthey will know you visited $2.";
   std::vector<std::u16string> subst;
   subst.push_back(idp_hostname);
   subst.push_back(rp_hostname);
@@ -106,17 +106,17 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
   view->AddChildView(CreateImage(IDR_WEBID_GLOBAL_ID_RISK));
 
   // TODO(majidvp): Use a localized string. http://crbug.com/1141125
-  auto primary_text =
-      base::ASCIIToUTF16("You might be sharing identifying information.");
+  std::u16string primary_text =
+      u"You might be sharing identifying information.";
 
   auto primary_label = std::make_unique<views::StyledLabel>();
   primary_label->SetText(primary_text);
   primary_label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   view->AddChildView(std::move(primary_label));
 
-  auto message2 = base::ASCIIToUTF16(
-      "$1 could use your name and email provided by\n$2 to identify or track "
-      "you across the web.");
+  std::u16string message2 =
+      u"$1 could use your name and email provided by\n$2 to identify or track "
+      u"you across the web.";
 
   std::vector<std::u16string> subst;
   subst.push_back(rp_hostname);

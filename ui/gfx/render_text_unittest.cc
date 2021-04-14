@@ -6094,10 +6094,8 @@ TEST_F(RenderTextTest, Multiline_ZeroWidthChars) {
   render_text->SetMultiline(true);
   render_text->SetWordWrapBehavior(WRAP_LONG_WORDS);
 
-  const char16_t kZeroWidthSpace = {0x200B};
-  const std::u16string text(ASCIIToUTF16("test") + kZeroWidthSpace +
-                            ASCIIToUTF16("\n") + kZeroWidthSpace +
-                            ASCIIToUTF16("test."));
+  // U+200B is Zero Width Space.
+  const std::u16string text = u"test\u200B\n\u200Btest.";
   const int kTestWidth = GetStringWidth(u"test", render_text->font_list());
   const Range char_ranges[3] = {Range(0, 6), Range(6, 11), Range(11, 12)};
 
@@ -6162,8 +6160,8 @@ TEST_F(RenderTextTest, Multiline_GetLineContainingCaret) {
   render_text->SetMultiline(true);
   render_text->SetVerticalAlignment(ALIGN_TOP);
 
-  for (auto text : {ASCIIToUTF16("\n123 456 789\n\n123"),
-                    UTF8ToUTF16("\nשנב גקכ עין\n\nחלך")}) {
+  for (const char16_t* text :
+       {u"\n123 456 789\n\n123", u"\nשנב גקכ עין\n\nחלך"}) {
     for (const auto& sample : cases) {
       SCOPED_TRACE(testing::Message()
                    << "Testing " << (text[1] == '1' ? "LTR" : "RTL")

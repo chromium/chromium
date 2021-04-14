@@ -651,8 +651,8 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_StateObject) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_DocumentState) {
   ExplodedPageState state;
-  state.top.document_state.push_back(base::ASCIIToUTF16(
-      "\n\r?% WebKit serialized form state version 8 \n\r=&"));
+  state.top.document_state.push_back(
+      u"\n\r?% WebKit serialized form state version 8 \n\r=&");
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("document_state", 26, &saved_state);

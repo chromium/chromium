@@ -64,8 +64,8 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_b, base::size(expected_starts_b),
                              actual_starts_b));
 
-  std::u16string string_c(base::ASCIIToUTF16(
-      " funky%20string-with=@strange   sequences, intended(to exceed)"));
+  std::u16string string_c(
+      u" funky%20string-with=@strange   sequences, intended(to exceed)");
   WordStarts actual_starts_c;
   string_vec = String16VectorFromString16(string_c, false, &actual_starts_c);
   ASSERT_EQ(8U, string_vec.size());

@@ -97,11 +97,11 @@ TEST_F(LanguageDetectionUtilTest, WellKnownWrongConfiguration) {
 // LanguageDetectionUtil due to disagreement between meta tag and CLD.
 TEST_F(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
   base::HistogramTester histogram_tester;
-  std::u16string contents = base::ASCIIToUTF16(
-      "<html><head><meta http-equiv='Content-Language' content='ja'></head>"
-      "<body>This is a page apparently written in English. Even though "
-      "content-language is provided, the value will be ignored if the value "
-      "is suspicious.</body></html>");
+  std::u16string contents =
+      u"<html><head><meta http-equiv='Content-Language' content='ja'></head>"
+      u"<body>This is a page apparently written in English. Even though "
+      u"content-language is provided, the value will be ignored if the value "
+      u"is suspicious.</body></html>";
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score = 0.0;
@@ -120,11 +120,11 @@ TEST_F(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
 // agreed by CLD.
 TEST_F(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
   base::HistogramTester histogram_tester;
-  std::u16string contents = base::ASCIIToUTF16(
-      "<html><head><meta http-equiv='Content-Language' content='en-US'></head>"
-      "<body>This is a page apparently written in English. Even though "
-      "content-language is provided, the value will be ignored if the value "
-      "is suspicious.</body></html>");
+  std::u16string contents =
+      u"<html><head><meta http-equiv='Content-Language' content='en-US'></head>"
+      u"<body>This is a page apparently written in English. Even though "
+      u"content-language is provided, the value will be ignored if the value "
+      u"is suspicious.</body></html>";
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score = 0.0;
@@ -144,11 +144,11 @@ TEST_F(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
 // meta tag.
 TEST_F(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
   base::HistogramTester histogram_tester;
-  std::u16string contents = base::ASCIIToUTF16(
-      "<html><head><meta http-equiv='Content-Language' content='utf-8'></head>"
-      "<body>This is a page apparently written in English. Even though "
-      "content-language is provided, the value will be ignored and CLD's"
-      " language will be adopted if the value is invalid.</body></html>");
+  std::u16string contents =
+      u"<html><head><meta http-equiv='Content-Language' content='utf-8'></head>"
+      u"<body>This is a page apparently written in English. Even though "
+      u"content-language is provided, the value will be ignored and CLD's"
+      u" language will be adopted if the value is invalid.</body></html>";
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score = 0.0;
@@ -167,11 +167,11 @@ TEST_F(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
 // because of valid html lang attribute.
 TEST_F(LanguageDetectionUtilTest, AdoptHtmlLang) {
   base::HistogramTester histogram_tester;
-  std::u16string contents = base::ASCIIToUTF16(
-      "<html lang='en'><head><meta http-equiv='Content-Language' content='ja'>"
-      "</head><body>This is a page apparently written in English. Even though "
-      "content-language is provided, the value will be ignored if the value "
-      "is suspicious.</body></html>");
+  std::u16string contents =
+      u"<html lang='en'><head><meta http-equiv='Content-Language' content='ja'>"
+      u"</head><body>This is a page apparently written in English. Even though "
+      u"content-language is provided, the value will be ignored if the value "
+      u"is suspicious.</body></html>";
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score = 0.0;

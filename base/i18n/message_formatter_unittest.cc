@@ -48,11 +48,11 @@ void AppendFormattedDateTime(const std::unique_ptr<icu::DateFormat>& df,
 }  // namespace
 
 TEST_F(MessageFormatterTest, PluralNamedArgs) {
-  const std::u16string pattern = ASCIIToUTF16(
-      "{num_people, plural, "
-      "=0 {I met nobody in {place}.}"
-      "=1 {I met a person in {place}.}"
-      "other {I met # people in {place}.}}");
+  const std::u16string pattern =
+      u"{num_people, plural, "
+      u"=0 {I met nobody in {place}.}"
+      u"=1 {I met a person in {place}.}"
+      u"other {I met # people in {place}.}}";
 
   std::string result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
       pattern, "num_people", 0, "place", "Paris"));
@@ -66,13 +66,13 @@ TEST_F(MessageFormatterTest, PluralNamedArgs) {
 }
 
 TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
-  const std::u16string pattern = ASCIIToUTF16(
-      "{num_people, plural, offset:1 "
-      "=0 {I met nobody in {place}.}"
-      "=1 {I met {person} in {place}.}"
-      "=2 {I met {person} and one other person in {place}.}"
-      "=13 {I met {person} and a dozen other people in {place}.}"
-      "other {I met {person} and # other people in {place}.}}");
+  const std::u16string pattern =
+      u"{num_people, plural, offset:1 "
+      u"=0 {I met nobody in {place}.}"
+      u"=1 {I met {person} in {place}.}"
+      u"=2 {I met {person} and one other person in {place}.}"
+      u"=13 {I met {person} and a dozen other people in {place}.}"
+      u"other {I met {person} and # other people in {place}.}}";
 
   std::string result = UTF16ToASCII(MessageFormatter::FormatWithNamedArgs(
       pattern, "num_people", 0, "place", "Paris"));
@@ -96,11 +96,11 @@ TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgs) {
-  const std::u16string pattern = ASCIIToUTF16(
-      "{1, plural, "
-      "=1 {The cert for {0} expired yesterday.}"
-      "=7 {The cert for {0} expired a week ago.}"
-      "other {The cert for {0} expired # days ago.}}");
+  const std::u16string pattern =
+      u"{1, plural, "
+      u"=1 {The cert for {0} expired yesterday.}"
+      u"=7 {The cert for {0} expired a week ago.}"
+      u"other {The cert for {0} expired # days ago.}}";
 
   std::string result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
       pattern, "example.com", 1));
@@ -114,10 +114,10 @@ TEST_F(MessageFormatterTest, PluralNumberedArgs) {
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
-  const std::u16string pattern = ASCIIToUTF16(
-      "{1, plural, "
-      "=1 {The cert for {0} expired yesterday. Today is {2,date,full}}"
-      "other {The cert for {0} expired # days ago. Today is {2,date,full}}}");
+  const std::u16string pattern =
+      u"{1, plural, "
+      u"=1 {The cert for {0} expired yesterday. Today is {2,date,full}}"
+      u"other {The cert for {0} expired # days ago. Today is {2,date,full}}}";
 
   base::Time now = base::Time::Now();
   using icu::DateFormat;
@@ -138,10 +138,10 @@ TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
 
 TEST_F(MessageFormatterTest, DateTimeAndNumber) {
   // Note that using 'mph' for all locales is not a good i18n practice.
-  const std::u16string pattern = ASCIIToUTF16(
-      "At {0,time, short} on {0,date, medium}, "
-      "there was {1} at building {2,number,integer}. "
-      "The speed of the wind was {3,number,###.#} mph.");
+  const std::u16string pattern =
+      u"At {0,time, short} on {0,date, medium}, "
+      u"there was {1} at building {2,number,integer}. "
+      u"The speed of the wind was {3,number,###.#} mph.";
 
   using icu::DateFormat;
   std::unique_ptr<DateFormat> tf(
@@ -162,11 +162,11 @@ TEST_F(MessageFormatterTest, DateTimeAndNumber) {
 }
 
 TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
-  const std::u16string pattern = ASCIIToUTF16(
-      "{0, select,"
-      "single {Select a file to upload.}"
-      "multiple {Select files to upload.}"
-      "other {UNUSED}}");
+  const std::u16string pattern =
+      u"{0, select,"
+      u"single {Select a file to upload.}"
+      u"multiple {Select files to upload.}"
+      u"other {UNUSED}}";
 
   std::string result = UTF16ToASCII(MessageFormatter::FormatWithNumberedArgs(
       pattern, "single"));

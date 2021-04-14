@@ -1321,26 +1321,23 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // We now modify the values.
     // This will be ignored, the string will be sanitized into an empty string.
     control_elements[0].SetValue(WebString::FromUTF16(
-        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("     ")));
+        std::u16string(1, base::i18n::kLeftToRightMark) + u"     "));
 
     // This will be considered as a value entered by the user.
-    control_elements[1].SetValue(WebString::FromUTF16(ASCIIToUTF16("Earp")));
+    control_elements[1].SetValue(WebString::FromUTF16(u"Earp"));
     control_elements[1].SetUserHasEditedTheFieldForTest();
 
     // This will be ignored, the string will be sanitized into an empty string.
-    control_elements[2].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("(___)-___-____")));
+    control_elements[2].SetValue(WebString::FromUTF16(u"(___)-___-____"));
 
     // This will be ignored, the string will be sanitized into an empty string.
-    control_elements[3].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("____-____-____-____")));
+    control_elements[3].SetValue(WebString::FromUTF16(u"____-____-____-____"));
 
     // This will be ignored, because it's injected by the website and not the
     // user.
-    control_elements[4].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("Enter your city..")));
+    control_elements[4].SetValue(WebString::FromUTF16(u"Enter your city.."));
 
-    control_elements[5].SetValue(WebString::FromUTF16(ASCIIToUTF16("AK")));
+    control_elements[5].SetValue(WebString::FromUTF16(u"AK"));
     control_elements[5].SetUserHasEditedTheFieldForTest();
 
     // Find the form that contains the input element.
@@ -1504,12 +1501,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // These will be ignored, because it's (case insensitively) equal to the
     // placeholder.
     control_elements[0].SetValue(WebString::FromUTF16(
-        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("first name")));
-    control_elements[1].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("LAST NAME")));
+        std::u16string(1, base::i18n::kLeftToRightMark) + u"first name"));
+    control_elements[1].SetValue(WebString::FromUTF16(u"LAST NAME"));
     // This will be considered.
-    control_elements[2].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("john@smith.com")));
+    control_elements[2].SetValue(WebString::FromUTF16(u"john@smith.com"));
     // Find the form that contains the input element.
     FormData form;
     FormFieldData field;
@@ -1621,12 +1616,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, control_elements.size());
     // We now modify the values.
     // This will be ignored.
-    control_elements[0].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("____-____-____-____")));
+    control_elements[0].SetValue(WebString::FromUTF16(u"____-____-____-____"));
     // This will be ignored.
-    control_elements[1].SetValue(WebString::FromUTF16(ASCIIToUTF16("____/__")));
-    control_elements[2].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("John Smith")));
+    control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
+    control_elements[2].SetValue(WebString::FromUTF16(u"John Smith"));
     control_elements[2].SetUserHasEditedTheFieldForTest();
 
     // Find the form that contains the input element.
@@ -1739,12 +1732,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ASSERT_EQ(3U, control_elements.size());
     // We now modify the values.
     // This will be ignored.
-    control_elements[0].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("____-____-____-____")));
+    control_elements[0].SetValue(WebString::FromUTF16(u"____-____-____-____"));
     // This will be ignored.
-    control_elements[1].SetValue(WebString::FromUTF16(ASCIIToUTF16("____/__")));
-    control_elements[2].SetValue(
-        WebString::FromUTF16(ASCIIToUTF16("john smith")));
+    control_elements[1].SetValue(WebString::FromUTF16(u"____/__"));
+    control_elements[2].SetValue(WebString::FromUTF16(u"john smith"));
     control_elements[2].SetUserHasEditedTheFieldForTest();
 
     // Sometimes the JS modifies the value entered by the user.
@@ -2598,8 +2589,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   FormFieldData result_with_value;
   WebFormControlElementToFormField(element, nullptr, EXTRACT_VALUE,
                                    &result_with_value);
-  expected.value = ASCIIToUTF16("This element's value\n"
-                                "spans multiple lines.");
+  expected.value =
+      u"This element's value\n"
+      u"spans multiple lines.";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
 }
 

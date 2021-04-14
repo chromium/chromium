@@ -157,12 +157,13 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest,
   BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
-  EXPECT_EQ(base::ASCIIToUTF16("'O', 'n', 'e', ',', ' ', 't', 'w', 'o', "
-                               "',', ' ', 't', 'h', 'r', 'e', 'e', '!'"),
-            TraverseNodeAtGranularity(para, GRANULARITY_CHARACTER));
   EXPECT_EQ(
-      base::ASCIIToUTF16("'S', 'e', 'v', 'e', 'n', ',', ' ', 'e', 'i', 'g', "
-                         "'h', 't', ',', ' ', 'n', 'i', 'n', 'e', '!'"),
+      u"'O', 'n', 'e', ',', ' ', 't', 'w', 'o', "
+      u"',', ' ', 't', 'h', 'r', 'e', 'e', '!'",
+      TraverseNodeAtGranularity(para, GRANULARITY_CHARACTER));
+  EXPECT_EQ(
+      u"'S', 'e', 'v', 'e', 'n', ',', ' ', 'e', 'i', 'g', "
+      u"'h', 't', ',', ' ', 'n', 'i', 'n', 'e', '!'",
       TraverseNodeAtGranularity(button, GRANULARITY_CHARACTER));
 }
 

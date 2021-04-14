@@ -156,10 +156,8 @@ std::u16string ExtensionMessageBubbleController::GetExtensionListForDisplay() {
     extension_list.push_back(delegate_->GetOverflowText(
         base::NumberToString16(old_size - kMaxExtensionsToShow)));
   }
-  const char16_t bullet_point = u'•';
-  std::u16string prefix = bullet_point + base::ASCIIToUTF16(" ");
   for (std::u16string& str : extension_list)
-    str.insert(0, prefix);
+    str.insert(0, u"• ");
   return base::JoinString(extension_list, u"\n");
 }
 

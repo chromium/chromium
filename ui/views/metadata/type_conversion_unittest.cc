@@ -84,16 +84,14 @@ TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
   shadow_values.emplace_back(gfx::Vector2d(9, 8), .76,
                              SkColorSetARGB(20, 0, 64, 255));
 
-  EXPECT_EQ(
-      metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
-      base::ASCIIToUTF16(
-          "[ (1,2),0.30,rgba(255,0,0,128); (9,8),0.76,rgba(0,64,255,20) ]"));
+  EXPECT_EQ(metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
+            u"[ (1,2),0.30,rgba(255,0,0,128); (9,8),0.76,rgba(0,64,255,20) ]");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
   base::Optional<gfx::ShadowValues> opt_result =
-      metadata::TypeConverter<gfx::ShadowValues>::FromString(base::ASCIIToUTF16(
-          "[ (6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059) ]"));
+      metadata::TypeConverter<gfx::ShadowValues>::FromString(
+          u"[ (6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059) ]");
 
   EXPECT_EQ(opt_result.has_value(), true);
   gfx::ShadowValues result = opt_result.value();
@@ -173,9 +171,9 @@ TEST_F(TypeConversionTest, TestConversion_SkColorConversions) {
 TEST_F(TypeConversionTest, TestConversion_ColorParserTest) {
   using converter = metadata::SkColorConverter;
   std::u16string color;
-  const std::u16string source = base::ASCIIToUTF16(
-      "rgb(0, 128, 192), hsl(90, 100%, 30%), rgba(128, 128, 128, 0.5), "
-      "hsla(240, 100%, 50%, 0.5)");
+  const std::u16string source =
+      u"rgb(0, 128, 192), hsl(90, 100%, 30%), rgba(128, 128, 128, 0.5), "
+      u"hsla(240, 100%, 50%, 0.5)";
   auto start_pos = source.cbegin();
   EXPECT_TRUE(
       converter::GetNextColor(start_pos, source.cend(), color, start_pos));

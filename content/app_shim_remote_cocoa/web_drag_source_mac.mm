@@ -92,8 +92,8 @@ using content::DropData;
 - (void)lazyWriteToPasteboard:(NSPasteboard*)pboard forType:(NSString*)type {
   // NSHTMLPboardType requires the character set to be declared. Otherwise, it
   // assumes US-ASCII. Awesome.
-  const std::u16string kHtmlHeader = base::ASCIIToUTF16(
-      "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">");
+  static constexpr char16_t kHtmlHeader[] =
+      u"<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">";
 
   // Be extra paranoid; avoid crashing.
   if (!_dropData) {

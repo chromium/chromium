@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/hash/md5.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,8 +57,8 @@ std::string EscapeQueryStringValue(const std::string& str) {
 std::string TranslateQuery(const std::string& original_query) {
   // In order to handle non-ascii white spaces correctly, convert to UTF16.
   std::u16string query = base::UTF8ToUTF16(original_query);
-  const std::u16string kDelimiter(base::kWhitespaceUTF16 +
-                                  base::ASCIIToUTF16("\""));
+  const std::u16string kDelimiter =
+      base::StrCat({base::kWhitespaceUTF16, u"\""});
 
   std::string result;
   for (size_t index = query.find_first_not_of(base::kWhitespaceUTF16);

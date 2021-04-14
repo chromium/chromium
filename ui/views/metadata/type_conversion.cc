@@ -557,14 +557,13 @@ TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseRgbString(
   // Declare a constant string here for use below since it might trigger an
   // ASAN error due to the stack temp going out of scope before the call to
   // RgbaPiecesToSkColor.
-  static const auto opaque_alpha = base::ASCIIToUTF16("1.0");
   std::u16string pruned_string;
   base::RemoveChars(rgb_string, u"()rgba", &pruned_string);
   auto values = base::SplitStringPiece(
       pruned_string, u", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   // if it was just an rgb string, add the 1.0 alpha
   if (values.size() == 3)
-    values.push_back(opaque_alpha);
+    values.push_back(u"1.0");
   return RgbaPiecesToSkColor(values, 0);
 }
 
@@ -660,6 +659,6 @@ DEFINE_ENUM_CONVERTERS(
     {views::BubbleBorder::Arrow::FLOAT, u"FLOAT"})
 
 #define OP(enum_name) \
-  { ui::NativeTheme::enum_name, base::ASCIIToUTF16(#enum_name) }
+  { ui::NativeTheme::enum_name, u## #enum_name }
 DEFINE_ENUM_CONVERTERS(ui::NativeTheme::ColorId, NATIVE_THEME_COLOR_IDS)
 #undef OP

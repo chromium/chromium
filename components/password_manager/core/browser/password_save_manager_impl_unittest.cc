@@ -29,7 +29,6 @@ using autofill::FormFieldData;
 using autofill::FormStructure;
 using autofill::PasswordFormFillData;
 using autofill::mojom::SubmissionIndicatorEvent;
-using base::ASCIIToUTF16;
 using base::TestMockTimeTaskRunner;
 using testing::_;
 using testing::AllOf;
@@ -953,7 +952,7 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGeneratedPasswordEmptyStore) {
   // Check that when the generated password is edited, then it's presaved.
   form_with_generated_password.password_value += u"1";
   EXPECT_CALL(*mock_form_saver(),
-              UpdateReplace(_, IsEmpty(), ASCIIToUTF16(""),
+              UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                             FormHasUniqueKey(form_with_generated_password)))
       .WillOnce(SaveArg<0>(&saved_form));
 
@@ -986,7 +985,7 @@ TEST_P(PasswordSaveManagerImplTest, PresaveGenerated_ModifiedUsername) {
   // Check that when the username is edited, then it's presaved.
   form_with_generated_password.username_value += u"1";
 
-  EXPECT_CALL(*mock_form_saver(), UpdateReplace(_, IsEmpty(), ASCIIToUTF16(""),
+  EXPECT_CALL(*mock_form_saver(), UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                                                 FormHasUniqueKey(saved_form)))
       .WillOnce(SaveArg<0>(&saved_form));
 

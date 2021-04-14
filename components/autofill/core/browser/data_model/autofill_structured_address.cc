@@ -156,25 +156,22 @@ std::u16string StreetAddress::GetBestFormatString() const {
   }
 
   if (country_code == "DE") {
-    return base::ASCIIToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR;, ;. Stock}${ADDRESS_HOME_APT_NUM;, ;. Wohnung}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR;, ;. Stock}${ADDRESS_HOME_APT_NUM;, ;. "
+           u"Wohnung}";
   }
 
   if (country_code == "MX") {
-    return base::ASCIIToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR; - Piso ;}${ADDRESS_HOME_APT_NUM; - ;}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR; - Piso ;}${ADDRESS_HOME_APT_NUM; - ;}";
   }
   if (country_code == "ES") {
-    return base::UTF8ToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}";
   }
   // Use the format for US/UK as the default.
-  return base::ASCIIToUTF16(
-      "${ADDRESS_HOME_HOUSE_NUMBER} ${ADDRESS_HOME_STREET_NAME} "
-      "${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }");
+  return u"${ADDRESS_HOME_HOUSE_NUMBER} ${ADDRESS_HOME_STREET_NAME} "
+         u"${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }";
 }
 
 void StreetAddress::UnsetValue() {

@@ -8,6 +8,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -45,7 +46,7 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
     factory_ = std::make_unique<HttpAuthHandlerNTLM::Factory>();
     factory_->set_http_auth_preferences(http_auth_preferences_.get());
     creds_ = AuthCredentials(
-        ntlm::test::kNtlmDomain + base::ASCIIToUTF16("\\") + ntlm::test::kUser,
+        base::StrCat({ntlm::test::kNtlmDomain, u"\\", ntlm::test::kUser}),
         ntlm::test::kPassword);
   }
 
