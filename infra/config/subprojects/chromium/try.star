@@ -680,15 +680,6 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
-    name = "linux_angle_ozone_rel_ng",
-)
-
-try_.chromium_angle_builder(
-    name = "linux-ozone-angle-try",
-    executable = "recipe:angle_chromium_trybot",
-)
-
-try_.chromium_angle_builder(
     name = "mac-angle-chromium-try",
     cores = None,
     os = os.MAC_ANY,

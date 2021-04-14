@@ -1432,16 +1432,6 @@
           'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
-      'linux-ozone-angle-builder': {},
-      'linux-ozone-angle-intel': {
-        'os_type': 'linux',
-        'mixins': [
-          'linux_intel_hd_530',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_gtests',
-        },
-      },
       'mac-angle-amd': {
         'os_type': 'mac',
         'mixins': [
@@ -4210,7 +4200,6 @@
       },
       'GPU FYI Linux Builder' : {},
       'GPU FYI Linux Builder (dbg)' : {},
-      'GPU FYI Linux Ozone Builder' : {},
       'GPU FYI Linux dEQP Builder' : {},
       'GPU FYI Mac Builder' : {},
       'GPU FYI Mac Builder (dbg)' : {},
@@ -4296,16 +4285,6 @@
           # (tab_capture_end2end_tests) either.
           'gtest_tests': 'gpu_fyi_linux_debug_gtests',
           'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
-        },
-      },
-      'Linux FYI Ozone (Intel)': {
-        'os_type': 'linux',
-        'mixins': [
-          'linux_intel_hd_530',
-        ],
-        # This bot runs only a few tests so far.
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_gtests',
         },
       },
       'Linux FYI Release (AMD RX 5500 XT)': {

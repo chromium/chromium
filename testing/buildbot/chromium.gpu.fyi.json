@@ -7336,7 +7336,6 @@
   },
   "GPU FYI Linux Builder": {},
   "GPU FYI Linux Builder (dbg)": {},
-  "GPU FYI Linux Ozone Builder": {},
   "GPU FYI Linux dEQP Builder": {},
   "GPU FYI Mac Builder": {},
   "GPU FYI Mac Builder (dbg)": {},
@@ -9886,62 +9885,6 @@
       }
     ],
     "isolated_scripts": []
-  },
-  "Linux FYI Ozone (Intel)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode",
-          "--max-processes=4"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:1912",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
-          "angle_unittests"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:1912",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
-        "use_isolated_scripts_api": true
-      }
-    ]
   },
   "Linux FYI Release (AMD RX 5500 XT)": {
     "gtest_tests": [

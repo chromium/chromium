@@ -151,7 +151,6 @@
       'ios-angle-builder': 'angle_specific_release_trybot_ios',
       'linux-angle-builder': 'angle_specific_release_trybot',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot',
-      'linux-ozone-angle-builder': 'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot',
       'mac-angle-builder': 'angle_specific_release_trybot',
       'mac-angle-chromium-builder': 'gpu_tests_release_trybot_deterministic_mac',
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot',
@@ -474,7 +473,6 @@
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot',
-      'GPU FYI Linux Ozone Builder': 'angle_ozone_linux_system_gbm_libdrm_release_trybot',
       'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
       'GPU FYI Linux dEQP Builder': 'angle_deqp_release_trybot',
       'GPU FYI Mac Builder': 'gpu_fyi_tests_release_trybot',
@@ -870,10 +868,8 @@
       'ios-angle-try-intel': 'angle_specific_release_trybot_ios',
       'linux-angle-rel': 'gpu_fyi_tests_release_trybot',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot',
-      'linux_angle_ozone_rel_ng': 'angle_ozone_linux_system_gbm_libdrm_release_trybot',
       'linux_angle_deqp_rel_ng': 'angle_deqp_release_trybot',
       'linux-angle-try': 'angle_specific_release_trybot',
-      'linux-ozone-angle-try': 'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot_deterministic_mac',
       'mac-angle-try': 'angle_specific_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
@@ -1547,10 +1543,6 @@
       'angle_deqp_tests', 'shared_release_trybot', 'x86',
     ],
 
-    'angle_ozone_linux_system_gbm_libdrm_release_trybot': [
-      'angle_tests', 'ozone_linux', 'ozone_linux_non_x11', 'system_gbm_libdrm', 'release_trybot',
-    ],
-
     'angle_specific_android_vulkan_ndk_release_trybot': [
       'angle_specific_tests', 'android_without_codecs', 'vulkan_ndk',
       'shared_release_trybot',
@@ -1569,11 +1561,6 @@
     'angle_specific_no_trace_android_release_trybot_arm64': [
       'angle_specific_no_trace_tests', 'android_without_codecs',
       'shared_release_trybot', 'arm64',
-    ],
-
-    'angle_specific_ozone_linux_system_gbm_libdrm_release_trybot': [
-      'angle_specific_tests', 'ozone_linux', 'ozone_linux_non_x11',
-      'system_gbm_libdrm', 'shared_release_trybot',
     ],
 
     'angle_specific_release_trybot': [
@@ -2856,11 +2843,6 @@
       'gn_args': 'build_angle_gles1_conform_tests=true',
     },
 
-    'angle_tests': {
-      'mixins': ['angle_trace_perf_tests', 'gpu_tests',
-                 'internal_gles_conform_tests'],
-    },
-
     'angle_specific_tests': {
       'mixins': ['angle_gles1_conform_tests', 'angle_deqp_tests',
                  'angle_trace_perf_tests', 'disable_nacl'],
@@ -3511,10 +3493,6 @@
 
     'strip_absolute_paths_from_debug_symbols': {
       'gn_args': 'strip_absolute_paths_from_debug_symbols=true'
-    },
-
-    'system_gbm_libdrm': {
-      'gn_args': 'use_system_libdrm=true use_system_minigbm=true ozone_platform_gbm=true',
     },
 
     'thin_lto': {

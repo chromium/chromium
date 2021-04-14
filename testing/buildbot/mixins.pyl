@@ -475,15 +475,6 @@
       },
     },
   },
-  'linux_intel_hd_530': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:1912',
-        'os': 'Ubuntu',
-        'pool': 'chromium.tests.gpu',
-      }
-    }
-  },
   'linux_intel_hd_630_experimental': {
     # Similar to stable, but with a newer Mesa version.
     'swarming': {

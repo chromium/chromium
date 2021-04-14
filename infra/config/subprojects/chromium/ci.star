@@ -134,13 +134,12 @@ consoles.console_view(
 consoles.console_view(
     name = "chromium.angle",
     ordering = {
-        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "LinuxOzone", "Mac", "iOS", "Windows", "Perf"],
+        None: ["Android", "AndroidVk", "Fuchsia", "Linux", "Mac", "iOS", "Windows", "Perf"],
         "*builder*": ["Builder"],
         "Android": "*builder*",
         "AndroidVk": "*builder*",
         "Fuchsia": "*builder*",
         "Linux": "*builder*",
-        "LinuxOzone": "*builder*",
         "Mac": "*builder*",
         "iOS": "*builder*",
         "Windows": "*builder*",
@@ -1199,23 +1198,6 @@ ci.angle_thin_tester(
         short_name = "x64",
     ),
     triggered_by = ["linux-angle-chromium-builder"],
-)
-
-ci.angle_linux_builder(
-    name = "linux-ozone-angle-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "LinuxOzone|Builder|ANGLE",
-        short_name = "x64",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "linux-ozone-angle-intel",
-    console_view_entry = consoles.console_view_entry(
-        category = "LinuxOzone|Intel|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["linux-ozone-angle-builder"],
 )
 
 ci.angle_mac_builder(
@@ -4387,14 +4369,6 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_linux_builder(
-    name = "GPU FYI Linux Ozone Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Builder",
-        short_name = "ozn",
-    ),
-)
-
-ci.gpu_fyi_linux_builder(
     name = "GPU FYI Linux dEQP Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
@@ -4502,15 +4476,6 @@ ci.gpu_fyi_thin_tester(
         short_name = "exp",
     ),
     triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Linux FYI Ozone (Intel)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "ozn",
-    ),
-    triggered_by = ["GPU FYI Linux Ozone Builder"],
 )
 
 ci.gpu_fyi_thin_tester(
