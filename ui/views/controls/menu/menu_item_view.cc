@@ -1139,8 +1139,7 @@ void MenuItemView::PaintMinorIconAndText(
   }
 
   if (!minor_icon.empty()) {
-    const gfx::ImageSkia image =
-        minor_icon.GetImageSkia(GetMinorIconColor(style));
+    const gfx::ImageSkia image = minor_icon.GetImageSkia(GetNativeTheme());
 
     int image_x = GetMirroredRect(minor_text_bounds).right() -
                   render_text->GetContentWidth() -
@@ -1439,12 +1438,6 @@ bool MenuItemView::HasChecksOrRadioButtons() const {
   return std::any_of(
       menu_items.cbegin(), menu_items.cend(),
       [](const auto* item) { return item->HasChecksOrRadioButtons(); });
-}
-
-SkColor MenuItemView::GetMinorIconColor(
-    const MenuDelegate::LabelStyle& default_style) const {
-  return minor_icon_color_override_ ? *minor_icon_color_override_
-                                    : default_style.foreground;
 }
 
 BEGIN_METADATA(MenuItemView, View)

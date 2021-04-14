@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "components/arc/compat_mode/resize_util.h"
@@ -47,6 +48,9 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
   if (currentMode) {
     auto* item = root_view_->GetMenuItemByID(*currentMode);
     item->SetSelected(true);
+    item->SetMinorIcon(
+        ui::ThemedVectorIcon(&ash::kHollowCheckCircleIcon,
+                             ui::NativeTheme::kColorId_ProminentButtonColor));
   }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -72,21 +76,24 @@ ResizeToggleMenu::~ResizeToggleMenu() {
 std::unique_ptr<ui::SimpleMenuModel> ResizeToggleMenu::MakeMenuModel() {
   auto model = std::make_unique<ui::SimpleMenuModel>(this);
 
-  model->AddItemWithStringId(CommandId::kResizePhone,
-                             IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+  model->AddItemWithStringIdAndIcon(
+      CommandId::kResizePhone, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE,
+      ui::ImageModel::FromVectorIcon(ash::kSystemMenuPhoneIcon));
 
-  model->AddItemWithStringId(CommandId::kResizeTablet,
-                             IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+  model->AddItemWithStringIdAndIcon(
+      CommandId::kResizeTablet, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET,
+      ui::ImageModel::FromVectorIcon(ash::kSystemMenuTabletIcon));
 
-  model->AddItemWithStringId(CommandId::kResizeDesktop,
-                             IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP);
+  model->AddItemWithStringIdAndIcon(
+      CommandId::kResizeDesktop, IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_DESKTOP,
+      ui::ImageModel::FromVectorIcon(ash::kSystemMenuComputerIcon));
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
 
-  model->AddItemWithStringId(
+  model->AddItemWithStringIdAndIcon(
       CommandId::kOpenSettings,
-      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS);
-
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS,
+      ui::ImageModel::FromVectorIcon(ash::kSystemMenuSettingsIcon));
   return model;
 }
 
