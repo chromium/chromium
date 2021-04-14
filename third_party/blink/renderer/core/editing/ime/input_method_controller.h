@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/editing/ime/ime_text_span.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -148,6 +149,8 @@ class CORE_EXPORT InputMethodController final
   CachedTextInputInfo& GetCachedTextInputInfoForTesting() {
     return cached_text_input_info_;
   }
+
+  DOMNodeId NodeIdOfFocusedElement() const;
 
  private:
   friend class InputMethodControllerTest;

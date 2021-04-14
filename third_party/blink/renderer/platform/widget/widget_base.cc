@@ -888,6 +888,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
       (selection_bounds && frame_selection_bounds_ != selection_bounds)) {
     ui::mojom::blink::TextInputStatePtr params =
         ui::mojom::blink::TextInputState::New();
+    params->node_id = new_info.node_id;
     params->type = new_type;
     params->mode = new_mode;
     params->action = new_info.action;

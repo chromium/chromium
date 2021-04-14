@@ -580,6 +580,9 @@ WebTextInputMode EditContext::GetInputModeOfEditContext() const {
 WebTextInputInfo EditContext::TextInputInfo() {
   WebTextInputInfo info;
   // Fetch all the text input info from edit context.
+  // TODO(crbug.com/1197325): Change this to refer to the "view" part of the
+  // EditContext once the EditContext spec adds this feature.
+  info.node_id = GetInputMethodController().NodeIdOfFocusedElement();
   info.action = GetEditContextEnterKeyHint();
   info.input_mode = GetInputModeOfEditContext();
   info.type = TextInputType();

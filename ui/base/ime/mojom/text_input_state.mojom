@@ -19,6 +19,10 @@ struct ImeTextSpanInfo {
 
 // This structure represents the current editing state.
 struct TextInputState {
+  // Identifier for the currently focused input field, or 0 if there is no
+  // focus. This identifier is unique for nodes within the same document.
+  int32 node_id = 0;
+
   // Type of the input field.
   ui.mojom.TextInputType type = ui.mojom.TextInputType.NONE;
 

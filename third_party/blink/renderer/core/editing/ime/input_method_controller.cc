@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
@@ -1541,6 +1542,7 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (!element)
     return info;
 
+  info.node_id = NodeIdOfFocusedElement();
   info.action = InputActionOfFocusedElement();
   info.input_mode = InputModeOfFocusedElement();
   info.virtual_keyboard_policy = VirtualKeyboardPolicyOfFocusedElement();
@@ -1724,6 +1726,10 @@ void InputMethodController::SetVirtualKeyboardVisibilityRequest(
        GetActiveEditContext()->IsVirtualKeyboardPolicyManual())) {
     last_vk_visibility_request_ = vk_visibility_request;
   }  // else we don't change the last VK visibility request.
+}
+
+DOMNodeId InputMethodController::NodeIdOfFocusedElement() const {
+  return DOMNodeIds::IdForNode(GetDocument().FocusedElement());
 }
 
 WebTextInputType InputMethodController::TextInputType() const {

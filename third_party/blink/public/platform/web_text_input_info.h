@@ -38,6 +38,10 @@
 namespace blink {
 
 struct WebTextInputInfo {
+  // Identifier for the currently focused input field, or 0 if there is no
+  // focus. This identifier is unique for nodes within the same document.
+  int node_id = 0;
+
   WebTextInputType type = kWebTextInputTypeNone;
 
   // Bitfield of WebTextInputFlags values.
