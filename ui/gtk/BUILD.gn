@@ -31,6 +31,7 @@ generate_stubs("gtk_stubs") {
   deps = [
     ":gtk_types",
     "//build/config/linux/gtk",
+    "//build/config/linux/gtk:gtkprint",
   ]
   logging_function = "LogNoop()"
   logging_include = "ui/gtk/log_noop.h"
@@ -45,9 +46,12 @@ source_set("gtk_compat") {
     ":gtk_stubs",
     ":gtk_types",
     "//base",
-    "//build/config/linux/gtk",
     "//ui/base",
     "//ui/gfx",
+  ]
+  public_deps = [
+    "//build/config/linux/gtk",
+    "//build/config/linux/gtk:gtkprint",
   ]
 }
 
@@ -162,6 +166,9 @@ test("gtk_unittests") {
 
     # Required so that including gtk_util.h can resolve <gtk/gtk.h>.
     "//build/config/linux/gtk",
+
+    # Required so that including gtk_util.h can resolve <gtk/gtkunixprint.h>.
+    "//build/config/linux/gtk:gtkprint",
     "//testing/gtest",
     "//ui/base:features",
     "//ui/native_theme",

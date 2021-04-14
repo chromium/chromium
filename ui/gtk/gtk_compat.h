@@ -9,6 +9,7 @@
 #include <gdk/gdk.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include <gtk/gtkunixprint.h>
 
 #include <string>
 #include <vector>

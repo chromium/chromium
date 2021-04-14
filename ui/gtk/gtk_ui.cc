@@ -293,12 +293,12 @@ GtkUi::GtkUi(ui::GtkUiDelegate* delegate) : delegate_(delegate) {
   DCHECK(!g_gtk_ui);
   g_gtk_ui = this;
 
+  CHECK(LoadGtk());
+
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
       {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
       {ActionSource::kRightClick, Action::kMenu}};
-
-  CHECK(LoadGtk());
 
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
