@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   WebApplicationInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
-  info.description = base::UTF8ToUTF16("Test description");
+  info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
   const web_app::AppId installed_app_id =
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   WebApplicationInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
-  info.description = base::UTF8ToUTF16("Test description");
+  info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
   const web_app::AppId installed_app_id =

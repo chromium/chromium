@@ -110,7 +110,7 @@ TEST(TokenizedStringTest, TokenizeWords) {
     EXPECT_EQ(u"wi-fi{3,8} abc@gmail.com{9,22}", GetContent(token_words));
   }
   {
-    std::u16string text(base::UTF8ToUTF16("Hello?! \t \b   World! "));
+    std::u16string text(u"Hello?! \t \b   World! ");
     TokenizedString token_words(text, TokenizedString::Mode::kWords);
     EXPECT_EQ(u"hello{0,5} world{14,19}", GetContent(token_words));
   }

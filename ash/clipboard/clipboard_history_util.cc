@@ -111,9 +111,8 @@ void GetSplitFileSystemData(const ui::ClipboardData& data,
   }
 
   // Split sources into a list.
-  *source_list =
-      base::SplitStringPiece(*sources, base::UTF8ToUTF16("\n"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  *source_list = base::SplitStringPiece(*sources, u"\n", base::TRIM_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
 }
 
 size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {

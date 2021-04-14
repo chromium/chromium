@@ -136,7 +136,7 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
 
   if (interaction_status_description_id != -1) {
     title_utf16 = base::StrCat(
-        {title_utf16, base::UTF8ToUTF16("\n"),
+        {title_utf16, u"\n",
          l10n_util::GetStringUTF16(interaction_status_description_id)});
   }
 

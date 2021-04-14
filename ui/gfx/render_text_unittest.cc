@@ -792,7 +792,7 @@ TEST_F(RenderTextTest, ApplyStyles) {
 
   // Styles mid-grapheme should work. Style of first character of the grapheme
   // is used.
-  render_text->SetText(UTF8ToUTF16("0\u0915\u093f1\u0915\u093f2"));
+  render_text->SetText(u"0\u0915\u093f1\u0915\u093f2");
   render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, Range(2, 5));
   EXPECT_TRUE(test_api()->styles()[TEXT_STYLE_UNDERLINE].EqualsForTesting(
       {{0, false}, {2, true}, {5, false}}));
@@ -821,7 +821,7 @@ TEST_F(RenderTextTest, ApplyStyleSurrogatePair) {
 
 TEST_F(RenderTextTest, ApplyStyleGrapheme) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("\u0065\u0301"));
+  render_text->SetText(u"\u0065\u0301");
   render_text->ApplyStyle(TEXT_STYLE_ITALIC, true, gfx::Range(1, 2));
   render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, gfx::Range(0, 1));
   Draw();
@@ -832,7 +832,7 @@ TEST_F(RenderTextTest, ApplyStyleGrapheme) {
 
 TEST_F(RenderTextTest, ApplyStyleMultipleGraphemes) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("xx\u0065\u0301x"));
+  render_text->SetText(u"xx\u0065\u0301x");
   // Apply the style in the middle of a grapheme.
   gfx::Range range(1, 3);
   render_text->ApplyStyle(TEXT_STYLE_ITALIC, true, range);
@@ -927,7 +927,7 @@ TEST_F(RenderTextTest, ApplyColorArabicDiacritics) {
   // Render an Arabic character with two diacritics. The color should be taken
   // from the base character.
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("\u0628\u0651\u0650"));
+  render_text->SetText(u"\u0628\u0651\u0650");
   render_text->ApplyColor(SK_ColorGREEN, Range(0, 1));
   render_text->ApplyColor(SK_ColorBLACK, Range(1, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(2, 3));
@@ -943,14 +943,14 @@ TEST_F(RenderTextTest, ApplyColorArabicLigature) {
 
   // Render the isolated form of the first glyph.
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("\u0628"));
+  render_text->SetText(u"\u0628");
   Draw();
   ASSERT_EQ(1u, text_log().size());
   ASSERT_EQ(1u, text_log()[0].glyphs().size());
   uint16_t isolated_first_glyph = text_log()[0].glyphs()[0];
 
   // Render a pair of glyphs (initial form and final form).
-  render_text->SetText(UTF8ToUTF16("\u0628\u0645"));
+  render_text->SetText(u"\u0628\u0645");
   Draw();
   ASSERT_EQ(1u, text_log().size());
   ASSERT_LE(2u, text_log()[0].glyphs().size());
@@ -1098,7 +1098,7 @@ TEST_F(RenderTextTest, SelectWithTranslucentBackground) {
 
 TEST_F(RenderTextTest, SelectRangeColoredGrapheme) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("x\u0065\u0301y"));
+  render_text->SetText(u"x\u0065\u0301y");
   render_text->SetColor(SK_ColorBLACK);
   render_text->set_selection_color(SK_ColorGREEN);
   render_text->set_focused(true);
@@ -1161,7 +1161,7 @@ TEST_F(RenderTextTest, SetCompositionRangeColored) {
 
 TEST_F(RenderTextTest, SetCompositionRangeColoredGrapheme) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("x\u0065\u0301y"));
+  render_text->SetText(u"x\u0065\u0301y");
 
   render_text->SetCompositionRange(Range(0, 1));
   Draw();
@@ -1399,7 +1399,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
   render_text->Draw(canvas());
 
   // Emoji codepoints are replaced by bullets (e.g. "\u2022\u2022").
-  EXPECT_EQ(UTF8ToUTF16("\u2022\u2022"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022\u2022", render_text->GetDisplayText());
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(0U));
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(1U));
   EXPECT_EQ(1U, test_api()->TextIndexToDisplayIndex(2U));
@@ -1417,7 +1417,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
   render_text->Draw(canvas());
 
   // Emoji codepoints are replaced by bullets (e.g. "\u2022\u2022").
-  EXPECT_EQ(UTF8ToUTF16("\u2022\u2022"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022\u2022", render_text->GetDisplayText());
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(0U));
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(1U));
   EXPECT_EQ(1U, test_api()->TextIndexToDisplayIndex(2U));
@@ -2527,7 +2527,7 @@ TEST_F(RenderTextTest, MultilineElideBiDi) {
   RenderText* render_text = GetRenderText();
   SetGlyphWidth(5);
 
-  std::u16string input_text(UTF8ToUTF16("אa\nbcdבגדהefg\nhו"));
+  std::u16string input_text(u"אa\nbcdבגדהefg\nhו");
   render_text->SetText(input_text);
   render_text->SetCursorEnabled(false);
   render_text->SetMultiline(true);
@@ -2537,7 +2537,7 @@ TEST_F(RenderTextTest, MultilineElideBiDi) {
   test_api()->EnsureLayout();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            UTF8ToUTF16("אa\nbcdבג") + std::u16string(kEllipsisUTF16));
+            u"אa\nbcdבג" + std::u16string(kEllipsisUTF16));
   EXPECT_EQ(render_text->GetNumLines(), 2U);
 }
 
@@ -2691,13 +2691,13 @@ TEST_F(RenderTextTest, TruncatedObscuredTextWithGraphemes) {
   EXPECT_EQ(GetObscuredString(3), render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(0);
-  EXPECT_EQ(UTF8ToUTF16("e\u0301\u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"e\u0301\u2026", render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(2);
-  EXPECT_EQ(UTF8ToUTF16("\u2022\u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022\u2026", render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(7);
-  EXPECT_EQ(UTF8ToUTF16("\u2022\u2022\u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022\u2022\u2026", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, TruncatedCursorMovementLTR) {
@@ -2731,7 +2731,7 @@ TEST_F(RenderTextTest, TruncatedCursorMovementLTR) {
 TEST_F(RenderTextTest, TruncatedCursorMovementRTL) {
   RenderText* render_text = GetRenderText();
   render_text->set_truncate_length(2);
-  render_text->SetText(UTF8ToUTF16("\u05d0\u05d1\u05d2\u05d3"));
+  render_text->SetText(u"\u05d0\u05d1\u05d2\u05d3");
 
   EXPECT_EQ(SelectionModel(0, CURSOR_BACKWARD), render_text->selection_model());
   render_text->MoveCursor(LINE_BREAK, CURSOR_LEFT, SELECTION_NONE);
@@ -3253,18 +3253,18 @@ TEST_F(RenderTextTest, GetTextDirectionInvalidation) {
   render_text->SetText(u"a");
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, render_text->GetTextDirection());
 
-  render_text->SetText(UTF8ToUTF16("\u05d0"));
+  render_text->SetText(u"\u05d0");
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, render_text->GetTextDirection());
 
   // The codepoints u+2026 (ellipsis) has no strong direction.
-  render_text->SetText(UTF8ToUTF16("\u2026"));
+  render_text->SetText(u"\u2026");
   EXPECT_EQ(original_text_direction, render_text->GetTextDirection());
   render_text->AppendText(u"a");
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, render_text->GetTextDirection());
 
-  render_text->SetText(UTF8ToUTF16("\u2026"));
+  render_text->SetText(u"\u2026");
   EXPECT_EQ(original_text_direction, render_text->GetTextDirection());
-  render_text->AppendText(UTF8ToUTF16("\u05d0"));
+  render_text->AppendText(u"\u05d0");
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, render_text->GetTextDirection());
 }
 
@@ -3278,18 +3278,18 @@ TEST_F(RenderTextTest, GetDisplayTextDirectionInvalidation) {
   render_text->SetText(u"a");
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, render_text->GetDisplayTextDirection());
 
-  render_text->SetText(UTF8ToUTF16("\u05d0"));
+  render_text->SetText(u"\u05d0");
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, render_text->GetDisplayTextDirection());
 
   // The codepoints u+2026 (ellipsis) has no strong direction.
-  render_text->SetText(UTF8ToUTF16("\u2026"));
+  render_text->SetText(u"\u2026");
   EXPECT_EQ(original_text_direction, render_text->GetDisplayTextDirection());
   render_text->AppendText(u"a");
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, render_text->GetDisplayTextDirection());
 
-  render_text->SetText(UTF8ToUTF16("\u2026"));
+  render_text->SetText(u"\u2026");
   EXPECT_EQ(original_text_direction, render_text->GetDisplayTextDirection());
-  render_text->AppendText(UTF8ToUTF16("\u05d0"));
+  render_text->AppendText(u"\u05d0");
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, render_text->GetDisplayTextDirection());
 }
 
@@ -3298,13 +3298,13 @@ TEST_F(RenderTextTest, GetTextDirectionWithDifferentDirection) {
   RenderText* render_text = GetRenderText();
   ASSERT_EQ(render_text->directionality_mode(), DIRECTIONALITY_FROM_TEXT);
   render_text->SetWhitespaceElision(false);
-  render_text->SetText(UTF8ToUTF16("123\u0638xyz"));
+  render_text->SetText(u"123\u0638xyz");
   render_text->SetElideBehavior(ELIDE_HEAD);
   render_text->SetDisplayRect(Rect(25, 100));
 
   // The elided text is an ellipsis with neutral directionality, and a 'z' with
   // a strong LTR directionality.
-  EXPECT_EQ(UTF8ToUTF16("\u2026z"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2026z", render_text->GetDisplayText());
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, render_text->GetTextDirection());
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, render_text->GetDisplayTextDirection());
 }
@@ -3314,7 +3314,7 @@ TEST_F(RenderTextTest, DirectionalityInvalidation) {
   ASSERT_EQ(render_text->directionality_mode(), DIRECTIONALITY_FROM_TEXT);
 
   // The codepoints u+2026 (ellipsis) has weak directionality.
-  render_text->SetText(UTF8ToUTF16("\u2026"));
+  render_text->SetText(u"\u2026");
   const base::i18n::TextDirection original_text_direction =
       render_text->GetTextDirection();
 
@@ -3553,7 +3553,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInLtr) {
 TEST_F(RenderTextTest, MoveCursorLeftRightInLtrRtl) {
   RenderText* render_text = GetRenderText();
   // LTR-RTL
-  render_text->SetText(UTF8ToUTF16("abc\u05d0\u05d1\u05d2"));
+  render_text->SetText(u"abc\u05d0\u05d1\u05d2");
   // The last one is the expected END position.
   std::vector<SelectionModel> expected;
   expected.push_back(SelectionModel(0, CURSOR_BACKWARD));
@@ -3581,7 +3581,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInLtrRtl) {
 TEST_F(RenderTextTest, MoveCursorLeftRightInLtrRtlLtr) {
   RenderText* render_text = GetRenderText();
   // LTR-RTL-LTR.
-  render_text->SetText(UTF8ToUTF16("a\u05d1b"));
+  render_text->SetText(u"a\u05d1b");
   std::vector<SelectionModel> expected;
   expected.push_back(SelectionModel(0, CURSOR_BACKWARD));
   expected.push_back(SelectionModel(1, CURSOR_BACKWARD));
@@ -3602,7 +3602,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInLtrRtlLtr) {
 TEST_F(RenderTextTest, MoveCursorLeftRightInRtl) {
   RenderText* render_text = GetRenderText();
   // Pure RTL.
-  render_text->SetText(UTF8ToUTF16("\u05d0\u05d1\u05d2"));
+  render_text->SetText(u"\u05d0\u05d1\u05d2");
   render_text->MoveCursor(LINE_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   std::vector<SelectionModel> expected;
 
@@ -3626,7 +3626,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInRtl) {
 TEST_F(RenderTextTest, MoveCursorLeftRightInRtlLtr) {
   RenderText* render_text = GetRenderText();
   // RTL-LTR
-  render_text->SetText(UTF8ToUTF16("\u05d0\u05d1\u05d2abc"));
+  render_text->SetText(u"\u05d0\u05d1\u05d2abc");
   render_text->MoveCursor(LINE_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   std::vector<SelectionModel> expected;
   expected.push_back(SelectionModel(0, CURSOR_BACKWARD));
@@ -3654,7 +3654,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInRtlLtr) {
 TEST_F(RenderTextTest, MoveCursorLeftRightInRtlLtrRtl) {
   RenderText* render_text = GetRenderText();
   // RTL-LTR-RTL.
-  render_text->SetText(UTF8ToUTF16("\u05d0a\u05d1"));
+  render_text->SetText(u"\u05d0a\u05d1");
   render_text->MoveCursor(LINE_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   std::vector<SelectionModel> expected;
   expected.push_back(SelectionModel(0, CURSOR_BACKWARD));
@@ -3675,7 +3675,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRightInRtlLtrRtl) {
 
 TEST_F(RenderTextTest, MoveCursorLeftRight_ComplexScript) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("\u0915\u093f\u0915\u094d\u0915"));
+  render_text->SetText(u"\u0915\u093f\u0915\u094d\u0915");
   EXPECT_EQ(0U, render_text->cursor_position());
   render_text->MoveCursor(CHARACTER_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   EXPECT_EQ(2U, render_text->cursor_position());
@@ -3718,7 +3718,7 @@ TEST_F(RenderTextTest, MoveCursorLeftRight_MeiryoUILigatures) {
 
 TEST_F(RenderTextTest, GraphemeIterator) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("a\u0065\u0301b"));
+  render_text->SetText(u"a\u0065\u0301b");
 
   internal::GraphemeIterator iterator =
       render_text->GetGraphemeIteratorAtTextIndex(0);
@@ -3763,7 +3763,7 @@ TEST_F(RenderTextTest, GraphemeIterator) {
   iterator = render_text->GetGraphemeIteratorAtDisplayTextIndex(3);
   EXPECT_EQ(3U, render_text->GetDisplayTextIndex(iterator));
 
-  render_text->SetText(UTF8ToUTF16("e\u0301b"));
+  render_text->SetText(u"e\u0301b");
   render_text->SetObscured(true);
   iterator = render_text->GetGraphemeIteratorAtDisplayTextIndex(0);
   EXPECT_EQ(0U, render_text->GetTextIndex(iterator));
@@ -3789,7 +3789,7 @@ TEST_F(RenderTextTest, GraphemeIterator) {
   EXPECT_EQ(3U, render_text->GetTextIndex(iterator));
   EXPECT_EQ(2U, render_text->GetDisplayTextIndex(iterator));
 
-  render_text->SetText(UTF8ToUTF16("\U0001F468\u200D\u2708\uFE0Fx"));
+  render_text->SetText(u"\U0001F468\u200D\u2708\uFE0Fx");
   render_text->SetObscured(true);
   iterator = render_text->GetGraphemeIteratorAtDisplayTextIndex(0);
   EXPECT_EQ(0U, render_text->GetTextIndex(iterator));
@@ -3857,10 +3857,10 @@ TEST_F(RenderTextTest, GraphemeBoundaries) {
 
 TEST_F(RenderTextTest, GraphemePositions) {
   // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, and LTR कि.
-  const std::u16string kText1 = UTF8ToUTF16("\u0915\u093fabc\u0915\u093f");
+  const std::u16string kText1 = u"\u0915\u093fabc\u0915\u093f";
 
   // LTR ab, LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR cd.
-  const std::u16string kText2 = UTF8ToUTF16("ab\u0915\u093fcd");
+  const std::u16string kText2 = u"ab\u0915\u093fcd";
 
   // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
   // Windows requires wide strings for \Unnnnnnnn universal character names.
@@ -3924,8 +3924,8 @@ TEST_F(RenderTextTest, GraphemePositions) {
 
 TEST_F(RenderTextTest, MidGraphemeSelectionBounds) {
   // Test that selection bounds may be set amid multi-character graphemes.
-  const std::u16string kHindi = UTF8ToUTF16("\u0915\u093f");
-  const std::u16string kThai = UTF8ToUTF16("\u0e08\u0e33");
+  const std::u16string kHindi = u"\u0915\u093f";
+  const std::u16string kThai = u"\u0e08\u0e33";
   const std::u16string cases[] = {kHindi, kThai};
 
   RenderText* render_text = GetRenderText();
@@ -4014,9 +4014,9 @@ TEST_F(RenderTextTest, FindCursorPosition_GraphemeBoundaries) {
     std::set<size_t> expected_cursor_positions;
   } cases[] = {
       // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, LTR कि.
-      {UTF8ToUTF16("\u0915\u093fabc\u0915\u093f"), {0, 2, 3, 4, 5, 7}},
+      {u"\u0915\u093fabc\u0915\u093f", {0, 2, 3, 4, 5, 7}},
       // LTR ab, LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR cd.
-      {UTF8ToUTF16("ab\u0915\u093fcd"), {0, 1, 2, 4, 5, 6}},
+      {u"ab\u0915\u093fcd", {0, 1, 2, 4, 5, 6}},
       // LTR ab, surrogate pair composed of two 16 bit characters, LTR cd.
       // Windows requires wide strings for \Unnnnnnnn universal character names.
       {u"ab\U0001D11Ecd", {0, 1, 2, 4, 5, 6}}};
@@ -4039,13 +4039,13 @@ TEST_F(RenderTextTest, EdgeSelectionModels) {
   // Simple Latin text.
   const std::u16string kLatin = u"abc";
   // LTR कि (DEVANAGARI KA with VOWEL I).
-  const std::u16string kLTRGrapheme = UTF8ToUTF16("\u0915\u093f");
+  const std::u16string kLTRGrapheme = u"\u0915\u093f";
   // LTR कि (DEVANAGARI KA with VOWEL I), LTR a, LTR कि.
-  const std::u16string kHindiLatin = UTF8ToUTF16("\u0915\u093fa\u0915\u093f");
+  const std::u16string kHindiLatin = u"\u0915\u093fa\u0915\u093f";
   // RTL נָ (Hebrew letter NUN and point QAMATS).
-  const std::u16string kRTLGrapheme = UTF8ToUTF16("\u05e0\u05b8");
+  const std::u16string kRTLGrapheme = u"\u05e0\u05b8";
   // RTL נָ (Hebrew letter NUN and point QAMATS), LTR a, RTL נָ.
-  const std::u16string kHebrewLatin = UTF8ToUTF16("\u05e0\u05b8a\u05e0\u05b8");
+  const std::u16string kHebrewLatin = u"\u05e0\u05b8a\u05e0\u05b8";
 
   struct {
     std::u16string text;
@@ -4106,7 +4106,7 @@ TEST_F(RenderTextTest, SelectAll) {
 
 TEST_F(RenderTextTest, MoveCursorLeftRightWithSelection) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(UTF8ToUTF16("abc\u05d0\u05d1\u05d2"));
+  render_text->SetText(u"abc\u05d0\u05d1\u05d2");
   // Left arrow on select ranging (6, 4).
   render_text->MoveCursor(LINE_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   EXPECT_EQ(Range(6), render_text->selection());
@@ -4383,7 +4383,7 @@ TEST_F(RenderTextTest, MAYBE_MoveLeftRightByWordInBidiText) {
 TEST_F(RenderTextTest, MoveLeftRightByWordInBidiText_TestEndOfText) {
   RenderText* render_text = GetRenderText();
 
-  render_text->SetText(UTF8ToUTF16("ab\u05E1"));
+  render_text->SetText(u"ab\u05E1");
   // Moving the cursor by word from "abC|" to the left should return "|abC".
   // But since end of text is always treated as a word break, it returns
   // position "ab|C".
@@ -4397,7 +4397,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInBidiText_TestEndOfText) {
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   EXPECT_EQ(SelectionModel(3, CURSOR_FORWARD), render_text->selection_model());
 
-  render_text->SetText(UTF8ToUTF16("\u05E1\u05E2a"));
+  render_text->SetText(u"\u05E1\u05E2a");
   // For logical text "BCa", moving the cursor by word from "aCB|" to the left
   // returns "|aCB".
   render_text->MoveCursor(LINE_BREAK, CURSOR_RIGHT, SELECTION_NONE);
@@ -4460,7 +4460,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInThaiText) {
 TEST_F(RenderTextTest, MoveLeftRightByWordInChineseText) {
   RenderText* render_text = GetRenderText();
   // zh-Hans-CN: 我们去公园玩, broken to 我们|去|公园|玩.
-  render_text->SetText(UTF8ToUTF16("\u6211\u4EEC\u53BB\u516C\u56ED\u73A9"));
+  render_text->SetText(u"\u6211\u4EEC\u53BB\u516C\u56ED\u73A9");
   render_text->MoveCursor(LINE_BREAK, CURSOR_LEFT, SELECTION_NONE);
   EXPECT_EQ(0U, render_text->cursor_position());
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
@@ -5022,10 +5022,10 @@ TEST_F(RenderTextTest, StringSizeBoldWidth) {
 
 TEST_F(RenderTextTest, StringSizeHeight) {
   std::u16string cases[] = {
-      u"Hello World!",              // English
-      UTF8ToUTF16("\u6328\u62f6"),  // Japanese 挨拶 (characters press & near)
-      UTF8ToUTF16("\u0915\u093f"),  // Hindi कि (letter KA with vowel I)
-      UTF8ToUTF16("\u05e0\u05b8"),  // Hebrew נָ (letter NUN and point QAMATS)
+      u"Hello World!",  // English
+      u"\u6328\u62f6",  // Japanese 挨拶 (characters press & near)
+      u"\u0915\u093f",  // Hindi कि (letter KA with vowel I)
+      u"\u05e0\u05b8",  // Hebrew נָ (letter NUN and point QAMATS)
   };
 
   const FontList default_font_list;
@@ -5342,25 +5342,25 @@ TEST_F(RenderTextTest, SameFontForParentheses) {
       {u"Hello World(a)Hello World"},
 
       // Japanese(English)
-      {UTF8ToUTF16("\u6328\u62f6(a)")},
+      {u"\u6328\u62f6(a)"},
       // Japanese(English)Japanese
-      {UTF8ToUTF16("\u6328\u62f6(a)\u6328\u62f6")},
+      {u"\u6328\u62f6(a)\u6328\u62f6"},
       // English(Japanese)English
-      {UTF8ToUTF16("Hello World(\u6328\u62f6)Hello World")},
+      {u"Hello World(\u6328\u62f6)Hello World"},
 
       // Hindi(English)
-      {UTF8ToUTF16("\u0915\u093f(a)")},
+      {u"\u0915\u093f(a)"},
       // Hindi(English)Hindi
-      {UTF8ToUTF16("\u0915\u093f(a)\u0915\u093f")},
+      {u"\u0915\u093f(a)\u0915\u093f"},
       // English(Hindi)English
-      {UTF8ToUTF16("Hello World(\u0915\u093f)Hello World")},
+      {u"Hello World(\u0915\u093f)Hello World"},
 
       // Hebrew(English)
-      {UTF8ToUTF16("\u05e0\u05b8(a)")},
+      {u"\u05e0\u05b8(a)"},
       // Hebrew(English)Hebrew
-      {UTF8ToUTF16("\u05e0\u05b8(a)\u05e0\u05b8")},
+      {u"\u05e0\u05b8(a)\u05e0\u05b8"},
       // English(Hebrew)English
-      {UTF8ToUTF16("Hello World(\u05e0\u05b8)Hello World")},
+      {u"Hello World(\u05e0\u05b8)Hello World"},
   };
 
   RenderText* render_text = GetRenderText();
@@ -6211,8 +6211,8 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
 
   // The generic control characters should have been replaced by the replacement
   // codepoints.
-  render_text->SetText(UTF8ToUTF16("\u008f\u0080"));
-  EXPECT_EQ(UTF8ToUTF16("\ufffd\ufffd"), render_text->GetDisplayText());
+  render_text->SetText(u"\u008f\u0080");
+  EXPECT_EQ(u"\ufffd\ufffd", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
@@ -6221,13 +6221,12 @@ TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
 
   // The private use characters should have been replaced. If the code point is
   // a surrogate pair, it needs to be replaced by two characters.
-  EXPECT_EQ(UTF8ToUTF16("xx\ufffd\ufffda\ufffdz"),
-            render_text->GetDisplayText());
+  EXPECT_EQ(u"xx\ufffd\ufffda\ufffdz", render_text->GetDisplayText());
 
   // The private use characters from Area-B must be replaced. The rewrite step
   // replaced 2 characters by 1 character.
   render_text->SetText(u"x\U00100000\U00100001\U00100002");
-  EXPECT_EQ(UTF8ToUTF16("x\ufffd\ufffd\ufffd"), render_text->GetDisplayText());
+  EXPECT_EQ(u"x\ufffd\ufffd\ufffd", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
@@ -6235,9 +6234,9 @@ TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\uf8ff");
 #if defined(OS_APPLE)
-  EXPECT_EQ(UTF8ToUTF16("\uf8ff"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\uf8ff", render_text->GetDisplayText());
 #else
-  EXPECT_EQ(UTF8ToUTF16("\ufffd"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\ufffd", render_text->GetDisplayText());
 #endif
 }
 
@@ -6245,7 +6244,7 @@ TEST_F(RenderTextTest, InvalidSurrogateCharacterReplacement) {
   // Text with invalid surrogates (surrogates low 0xDC00 and high 0xD800).
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\xDC00\xD800");
-  EXPECT_EQ(UTF8ToUTF16("\ufffd\ufffd"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\ufffd\ufffd", render_text->GetDisplayText());
 }
 
 // Make sure the horizontal positions of runs in a line (left-to-right for
@@ -6440,7 +6439,7 @@ TEST_F(RenderTextTest, HarfBuzz_SubglyphGraphemePartition) {
 
 TEST_F(RenderTextTest, HarfBuzz_RunDirection) {
   RenderTextHarfBuzz* render_text = GetRenderText();
-  const std::u16string mixed = UTF8ToUTF16("\u05D0\u05D11234\u05D2\u05D3abc");
+  const std::u16string mixed = u"\u05D0\u05D11234\u05D2\u05D3abc";
   render_text->SetText(mixed);
 
   // Get the run list for both display directions.
@@ -6482,11 +6481,11 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByUnicodeBlocks) {
   RenderTextHarfBuzz* render_text = GetRenderText();
 
   // The ▶ (U+25B6) "play character" should break runs. http://crbug.com/278913
-  render_text->SetText(UTF8ToUTF16("x\u25B6y"));
+  render_text->SetText(u"x\u25B6y");
   EXPECT_EQ(ToString16Vec({"x", "▶", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1][2]", GetRunListStructureString());
 
-  render_text->SetText(UTF8ToUTF16("x \u25B6 y"));
+  render_text->SetText(u"x \u25B6 y");
   EXPECT_EQ(ToString16Vec({"x", " ", "▶", " ", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1][2][3][4]", GetRunListStructureString());
 }
@@ -6546,7 +6545,7 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmojiVariationSelectors) {
   // ☎ (U+260E BLACK TELEPHONE) and U+FE0F (a variation selector) combine to
   // form (on some platforms), ☎️, a red (or blue) telephone. The run can
   // not break between the codepoints, or the incorrect glyph will be chosen.
-  render_text->SetText(UTF8ToUTF16("z\u260E\uFE0Fy"));
+  render_text->SetText(u"z\u260E\uFE0Fy");
   render_text->SetDisplayRect(Rect(1000, 50));
   EXPECT_EQ(ToString16Vec({"z", "☎\uFE0F", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1->2][3]", GetRunListStructureString());
@@ -6588,7 +6587,7 @@ TEST_F(RenderTextTest, HarfBuzz_OrphanedVariationSelector) {
 
   // It should never happen in normal usage, but a variation selector can appear
   // by itself. In this case, it can form its own text run, with no glyphs.
-  render_text->SetText(UTF8ToUTF16("\uFE0F"));
+  render_text->SetText(u"\uFE0F");
   EXPECT_EQ(ToString16Vec({"\uFE0F"}), GetRunListStrings());
   EXPECT_EQ("[0]", GetRunListStructureString());
   CheckBoundsForCursorPositions();
@@ -6604,7 +6603,7 @@ TEST_F(RenderTextTest, HarfBuzz_AsciiVariationSelector) {
   // A variation selector doesn't have to appear with Emoji. It will probably
   // cause the typesetter to render tofu in this case, but it should not break
   // a text run.
-  render_text->SetText(UTF8ToUTF16("z\uFE0Fy"));
+  render_text->SetText(u"z\uFE0Fy");
   EXPECT_EQ(ToString16Vec({"z\uFE0Fy"}), GetRunListStrings());
   EXPECT_EQ("[0->2]", GetRunListStructureString());
   CheckBoundsForCursorPositions();
@@ -6615,7 +6614,7 @@ TEST_F(RenderTextTest, HarfBuzz_LeadingVariationSelector) {
 
   // When a variation selector appears either side of an emoji, ensure the one
   // after is in the same run.
-  render_text->SetText(UTF8ToUTF16("\uFE0F\u260E\uFE0Fy"));
+  render_text->SetText(u"\uFE0F\u260E\uFE0Fy");
   EXPECT_EQ(ToString16Vec({"\uFE0F", "☎\uFE0F", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1->2][3]", GetRunListStructureString());
   CheckBoundsForCursorPositions();
@@ -6628,7 +6627,7 @@ TEST_F(RenderTextTest, HarfBuzz_TrailingVariationSelector) {
   // merged into the emoji run. Usually there should be no effect. That's
   // ultimately up to the typeface but, however it choses, cursor and glyph
   // positions should behave.
-  render_text->SetText(UTF8ToUTF16("z\u260E\uFE0F\uFE0Fy"));
+  render_text->SetText(u"z\u260E\uFE0F\uFE0Fy");
   EXPECT_EQ(ToString16Vec({"z", "☎\uFE0F\uFE0F", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1->3][4]", GetRunListStructureString());
   CheckBoundsForCursorPositions();
@@ -6639,7 +6638,7 @@ TEST_F(RenderTextTest, HarfBuzz_MultipleVariationSelectorEmoji) {
 
   // Two emoji with variation selectors appearing in a correct sequence should
   // be in the same run.
-  render_text->SetText(UTF8ToUTF16("z\u260E\uFE0F\u260E\uFE0Fy"));
+  render_text->SetText(u"z\u260E\uFE0F\u260E\uFE0Fy");
   EXPECT_EQ(ToString16Vec({"z", "☎\uFE0F☎\uFE0F", "y"}), GetRunListStrings());
   EXPECT_EQ("[0][1->4][5]", GetRunListStructureString());
   CheckBoundsForCursorPositions();
@@ -6711,8 +6710,7 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
   //   3) u+1F308 u+20E0 u+20E0  (Segoe UI Symbol)
   // The three runs are shape in the same group but are mapped with three
   // different fonts.
-  render_text->SetText(
-      UTF8ToUTF16(u8"\U0001F3F3\U0000FE0F\U00000020\U0001F308\U000020E0"));
+  render_text->SetText(u"\U0001F3F3\U0000FE0F\U00000020\U0001F308\U000020E0");
   std::vector<std::u16string> expected;
   expected.push_back(u"\U0001F3F3\U0000FE0F");
   expected.push_back(u" ");
@@ -6779,7 +6777,7 @@ TEST_F(RenderTextTest, HarfBuzz_EmptyRun) {
 // actual size. See http://crbug.com/470073
 TEST_F(RenderTextTest, HarfBuzz_WordWidthWithDiacritics) {
   RenderTextHarfBuzz* render_text = GetRenderText();
-  const std::u16string kWord = UTF8ToUTF16("\u0906\u092A\u0915\u0947 ");
+  const std::u16string kWord = u"\u0906\u092A\u0915\u0947 ";
   render_text->SetText(kWord);
   const SizeF text_size = render_text->GetStringSizeF();
 
@@ -6826,7 +6824,7 @@ TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
   // falling back to some other font that's present on the system.
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetFontList(font_list);
-  render_text->SetText(UTF8ToUTF16("\u2295"));
+  render_text->SetText(u"\u2295");
   const std::vector<FontSpan> spans = GetFontSpans();
   ASSERT_EQ(static_cast<size_t>(1), spans.size());
   EXPECT_EQ(kSymbolFontName, spans[0].first.GetFontName());
@@ -6843,7 +6841,7 @@ TEST_F(RenderTextTest, HarfBuzz_UnicodeFallback) {
   render_text->SetFontList(FontList("Arial, 12px"));
 
   // An invalid Unicode character that somehow yields Korean character "han".
-  render_text->SetText(UTF8ToUTF16("\ud55c"));
+  render_text->SetText(u"\ud55c");
   const internal::TextRunList* run_list = GetHarfBuzzRunList();
   ASSERT_EQ(1U, run_list->size());
   EXPECT_EQ(0U, run_list->runs()[0]->CountMissingGlyphs());
@@ -7161,12 +7159,12 @@ TEST_F(RenderTextTest, CJKFontWithLocale) {
 TEST_F(RenderTextTest, SameFontAccrossIgnorableCodepoints) {
   RenderText* render_text = GetRenderText();
 
-  render_text->SetText(UTF8ToUTF16("\u060F"));
+  render_text->SetText(u"\u060F");
   const std::vector<FontSpan> spans1 = GetFontSpans();
   ASSERT_EQ(1u, spans1.size());
   Font font1 = spans1[0].first;
 
-  render_text->SetText(UTF8ToUTF16("\u060F\u200C\u060F"));
+  render_text->SetText(u"\u060F\u200C\u060F");
   const std::vector<FontSpan> spans2 = GetFontSpans();
   ASSERT_EQ(1u, spans2.size());
   Font font2 = spans2[0].first;
@@ -7547,7 +7545,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
   // TODO(crbug.com/1111044): this shouldn't be necessary once RenderText keeps
   // float precision through GetCursorBounds().
   SetGlyphWidth(5);
-  const std::u16string rtl = UTF8ToUTF16(" \u0634\u0632  \u0634");
+  const std::u16string rtl = u" \u0634\u0632  \u0634";
   const int kWordOneStartIndex = 1;
   const int kWordTwoStartIndex = 5;
 
@@ -7564,7 +7562,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
 
   // Create expected decorated text instance.
   DecoratedText expected_word_1;
-  expected_word_1.text = UTF8ToUTF16("\u0634\u0632");
+  expected_word_1.text = u"\u0634\u0632";
   // Attributes for characters at logical indices 1 and 2.
   expected_word_1.attributes.push_back(CreateRangedAttribute(
       font_spans, 0, kWordOneStartIndex, Font::Weight::NORMAL, ITALIC_MASK));
@@ -7576,7 +7574,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
       SelectionModel(kWordOneStartIndex + 1, CURSOR_FORWARD), false);
 
   DecoratedText expected_word_2;
-  expected_word_2.text = UTF8ToUTF16("\u0634");
+  expected_word_2.text = u"\u0634";
   // Attributes for character at logical index |kWordTwoStartIndex|.
   expected_word_2.attributes.push_back(CreateRangedAttribute(
       font_spans, 0, kWordTwoStartIndex, Font::Weight::NORMAL, UNDERLINE_MASK));

@@ -40,8 +40,8 @@ TEST_P(PaymentsCurrencyFormatterTest, IsValidCurrencyFormat) {
 
   // Convenience so the test cases can use regular spaces.
   const std::u16string kSpace(u" ");
-  const std::u16string kNonBreakingSpace(base::UTF8ToUTF16(u8"\u00a0"));
-  const std::u16string kNarrowNonBreakingSpace(base::UTF8ToUTF16(u8"\u202f"));
+  const std::u16string kNonBreakingSpace(u"\u00a0");
+  const std::u16string kNarrowNonBreakingSpace(u"\u202f");
   base::ReplaceChars(actual_output, kNonBreakingSpace, kSpace, &actual_output);
   base::ReplaceChars(actual_output, kNarrowNonBreakingSpace, kSpace,
                      &actual_output);

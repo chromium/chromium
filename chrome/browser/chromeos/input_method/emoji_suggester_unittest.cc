@@ -147,7 +147,7 @@ TEST_F(EmojiSuggesterTest, SuggestWhenStringEndsWithSpaceAndIsUppercase) {
 }
 
 TEST_F(EmojiSuggesterTest, DoNotSuggestWhenStringEndsWithNewLine) {
-  EXPECT_FALSE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy\n")));
+  EXPECT_FALSE(emoji_suggester_->Suggest(u"happy\n"));
 }
 
 TEST_F(EmojiSuggesterTest, DoNotSuggestWhenStringDoesNotEndWithSpace) {

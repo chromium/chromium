@@ -535,8 +535,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FragmentUnescapedForDisplay) {
 
   EXPECT_EQ(view->GetText(),
             OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover()
-                ? base::UTF8ToUTF16("http://example.com/#\u2603")
-                : base::UTF8ToUTF16("example.com/#\u2603"));
+                ? u"http://example.com/#\u2603"
+                : u"example.com/#\u2603");
 }
 
 // Ensure that when the user navigates between suggestions, that the accessible

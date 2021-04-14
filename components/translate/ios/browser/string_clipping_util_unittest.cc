@@ -11,8 +11,7 @@
 
 // Tests that a regular sentence is clipped correctly.
 TEST(StringByClippingLastWordTest, ClipRegularSentence) {
-  const std::u16string kInput =
-      base::UTF8ToUTF16("\nSome text here and there.");
+  const std::u16string kInput = u"\nSome text here and there.";
   EXPECT_EQ(kInput, GetStringByClippingLastWord(kInput, 100));
 }
 

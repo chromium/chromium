@@ -125,9 +125,8 @@ TEST_F(PolicyMapTest, AddMessage_Error) {
   EXPECT_EQ(u"1234", entry1->GetLocalizedMessages(
                          PolicyMap::MessageType::kError, lookup));
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError, 5678);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kError, lookup));
 
   // Add second entry to make sure errors are added individually.
   SetPolicy(&map, kTestPolicyName2, base::Value(0));
@@ -135,17 +134,15 @@ TEST_F(PolicyMapTest, AddMessage_Error) {
   // Test adding Error message with placeholder replacement (one arg)
   map.AddMessage(kTestPolicyName2, PolicyMap::MessageType::kError,
                  IDS_POLICY_MIGRATED_OLD_POLICY, {u"SomeNewPolicy"});
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kError, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("This policy is deprecated. You should use the "
                         "SomeNewPolicy policy instead."),
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
   map.AddMessage(kTestPolicyName2, PolicyMap::MessageType::kError, 1357);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kError, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                         "the SomeNewPolicy policy instead."),
@@ -183,9 +180,8 @@ TEST_F(PolicyMapTest, AddMessage_Warning) {
   EXPECT_EQ(u"1234", entry1->GetLocalizedMessages(
                          PolicyMap::MessageType::kWarning, lookup));
   entry1->AddMessage(PolicyMap::MessageType::kWarning, 5678);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kWarning, lookup));
 
   // Add second entry to make sure warnings are added individually.
   SetPolicy(&map, kTestPolicyName2, base::Value(0));
@@ -193,17 +189,15 @@ TEST_F(PolicyMapTest, AddMessage_Warning) {
   // Test adding Warning message with placeholder replacement (one arg)
   entry2->AddMessage(PolicyMap::MessageType::kWarning,
                      IDS_POLICY_MIGRATED_OLD_POLICY, {u"SomeNewPolicy"});
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kWarning, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("This policy is deprecated. You should use the "
                         "SomeNewPolicy policy instead."),
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
   entry2->AddMessage(PolicyMap::MessageType::kWarning, 1357);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kWarning, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                         "the SomeNewPolicy policy instead."),
@@ -241,9 +235,8 @@ TEST_F(PolicyMapTest, AddMessage_Info) {
   EXPECT_EQ(u"1234", entry1->GetLocalizedMessages(PolicyMap::MessageType::kInfo,
                                                   lookup));
   entry1->AddMessage(PolicyMap::MessageType::kInfo, 5678);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kInfo, lookup));
 
   // Add second entry to make sure messages are added individually.
   SetPolicy(&map, kTestPolicyName2, base::Value(0));
@@ -251,17 +244,15 @@ TEST_F(PolicyMapTest, AddMessage_Info) {
   // Test adding Info message with placeholder replacement (one arg)
   entry2->AddMessage(PolicyMap::MessageType::kInfo,
                      IDS_POLICY_MIGRATED_OLD_POLICY, {u"SomeNewPolicy"});
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kInfo, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("This policy is deprecated. You should use the "
                         "SomeNewPolicy policy instead."),
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
   entry2->AddMessage(PolicyMap::MessageType::kInfo, 1357);
-  EXPECT_EQ(
-      base::UTF8ToUTF16("1234\n5678"),
-      entry1->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
+  EXPECT_EQ(u"1234\n5678", entry1->GetLocalizedMessages(
+                               PolicyMap::MessageType::kInfo, lookup));
   EXPECT_EQ(
       base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                         "the SomeNewPolicy policy instead."),

@@ -28,11 +28,11 @@ namespace {
 web_app::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
   auto app_info = std::make_unique<WebApplicationInfo>();
-  app_info->title = base::UTF8ToUTF16("Test app");
+  app_info->title = u"Test app";
   app_info->start_url = example_url;
   app_info->scope = example_url;
   blink::Manifest::ProtocolHandler protocol_handler;
-  protocol_handler.protocol = base::UTF8ToUTF16("web+test");
+  protocol_handler.protocol = u"web+test";
   protocol_handler.url = GURL("http://example.org/?uri=%s");
   app_info->protocol_handlers.push_back(std::move(protocol_handler));
   return web_app::InstallWebApp(profile, std::move(app_info));

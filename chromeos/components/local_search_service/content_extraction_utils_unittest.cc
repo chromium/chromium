@@ -116,7 +116,7 @@ TEST(ContentExtractionUtilsTest, NormalizerTest) {
             u"cac dau cau da duoc loai bo thanh cong");
 
   // Test hyphens removed.
-  EXPECT_EQ(Normalizer(base::UTF8ToUTF16(u8"wi\u2015fi----"), true), u"wifi");
+  EXPECT_EQ(Normalizer(u"wi\u2015fi----", true), u"wifi");
 
   // Keep hyphen.
   EXPECT_EQ(Normalizer(u"wi-fi", false), u"wi-fi");

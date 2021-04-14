@@ -11,7 +11,7 @@
 
 TEST(TailoredWordBreakIterator, BreakWord) {
   std::u16string underscore(u"_");
-  std::u16string str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
+  std::u16string str(u"_foo_bar!_\npouet_boom");
   TailoredWordBreakIterator iter(str, TailoredWordBreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -34,7 +34,7 @@ TEST(TailoredWordBreakIterator, BreakWord) {
   EXPECT_EQ(underscore, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"pouet", iter.GetString());

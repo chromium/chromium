@@ -56,8 +56,7 @@ bool IsMeaningfulFieldName(const std::u16string& name) {
     return true;
   }
   return !MatchesPattern(
-      name,
-      base::UTF8ToUTF16("^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$"));
+      name, u"^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$");
 }
 
 }  // namespace

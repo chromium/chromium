@@ -251,7 +251,7 @@ std::u16string GetConnectionRequestNotificationMessage(
     std::u16string token = l10n_util::GetStringFUTF16(
         IDS_NEARBY_SECURE_CONNECTION_ID,
         base::UTF8ToUTF16(*transfer_metadata.token()));
-    message = base::StrCat({message, base::UTF8ToUTF16("\n"), token});
+    message = base::StrCat({message, u"\n", token});
   }
 
   return message;

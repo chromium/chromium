@@ -472,10 +472,9 @@ TEST_P(AutofillProfileComparatorTest, Compare) {
   EXPECT_TRUE(
       comparator_.Compare(u"Mid\x2013Island\x2003 Plaza", u"mid island plaza",
                           AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("1600 amphitheatre pkwy \n App. 2"),
-                          u"1600 amphitheatre pkwy app 2",
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"1600 amphitheatre pkwy \n App. 2", u"1600 amphitheatre pkwy app 2",
+      AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(comparator_.Compare(
       u"まéÖä정", u"まeoa정", AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(comparator_.Compare(
@@ -507,9 +506,9 @@ TEST_P(AutofillProfileComparatorTest, NormalizeForComparison) {
             comparator_.NormalizeForComparison(u"Mid\x2013Island\x2003 Plaza"));
 
   // Newline character removed.
-  EXPECT_EQ(u"1600 amphitheatre pkwy app 2",
-            comparator_.NormalizeForComparison(
-                UTF8ToUTF16("1600 amphitheatre pkwy \n App. 2")));
+  EXPECT_EQ(
+      u"1600 amphitheatre pkwy app 2",
+      comparator_.NormalizeForComparison(u"1600 amphitheatre pkwy \n App. 2"));
 
   // Diacritics removed.
   EXPECT_EQ(u"まeoa정", comparator_.NormalizeForComparison(u"まéÖä정"));

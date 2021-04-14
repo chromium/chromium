@@ -619,7 +619,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
 
   if (with_token) {
     expected_message = base::StrCat(
-        {expected_message, base::UTF8ToUTF16("\n"),
+        {expected_message, u"\n",
          l10n_util::GetStringFUTF16(IDS_NEARBY_SECURE_CONNECTION_ID,
                                     base::UTF8ToUTF16(token))});
   }

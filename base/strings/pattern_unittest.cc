@@ -38,7 +38,7 @@ TEST(StringUtilTest, MatchPatternTest) {
 
   // Test UTF16 character matching.
   EXPECT_TRUE(MatchPattern(u"www.google.com", u"*.com"));
-  EXPECT_TRUE(MatchPattern(u"Hello*1234", UTF8ToUTF16("He??o\\*1*")));
+  EXPECT_TRUE(MatchPattern(u"Hello*1234", u"He??o\\*1*"));
 
   // Some test cases that might cause naive implementations to exhibit
   // exponential run time or fail.

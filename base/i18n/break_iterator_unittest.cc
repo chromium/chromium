@@ -31,7 +31,7 @@ TEST(BreakIteratorTest, BreakWordEmpty) {
 
 TEST(BreakIteratorTest, BreakWord) {
   std::u16string space(u" ");
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string str(u" foo bar! \npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -54,7 +54,7 @@ TEST(BreakIteratorTest, BreakWord) {
   EXPECT_EQ(space, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"pouet", iter.GetString());
@@ -252,7 +252,7 @@ TEST(BreakIteratorTest, BreakSpaceEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakSpace) {
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string str(u" foo bar! \npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -263,7 +263,7 @@ TEST(BreakIteratorTest, BreakSpace) {
   EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
+  EXPECT_EQ(u"bar! \n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"pouet ", iter.GetString());
@@ -277,7 +277,7 @@ TEST(BreakIteratorTest, BreakSpace) {
 }
 
 TEST(BreakIteratorTest, BreakSpaceSP) {
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom "));
+  std::u16string str(u" foo bar! \npouet boom ");
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -288,7 +288,7 @@ TEST(BreakIteratorTest, BreakSpaceSP) {
   EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
+  EXPECT_EQ(u"bar! \n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"pouet ", iter.GetString());
@@ -354,8 +354,8 @@ TEST(BreakIteratorTest, BreakLineEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakLine) {
-  std::u16string nl(UTF8ToUTF16("\n"));
-  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom"));
+  std::u16string nl(u"\n");
+  std::u16string str(u"\nfoo bar!\n\npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -363,7 +363,7 @@ TEST(BreakIteratorTest, BreakLine) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
@@ -377,7 +377,7 @@ TEST(BreakIteratorTest, BreakLine) {
 }
 
 TEST(BreakIteratorTest, BreakSentence) {
-  std::u16string nl(UTF8ToUTF16("\n"));
+  std::u16string nl(u"\n");
   std::u16string str(UTF8ToUTF16(
       "\nFoo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
   BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
@@ -387,16 +387,16 @@ TEST(BreakIteratorTest, BreakSentence) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("Foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"Foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("One sentence.\n"), iter.GetString());
+  EXPECT_EQ(u"One sentence.\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("\tAnother sentence?"), iter.GetString());
+  EXPECT_EQ(u"\tAnother sentence?", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"One more thing", iter.GetString());
@@ -426,8 +426,8 @@ TEST(BreakIteratorTest, IsSentenceBoundary) {
 }
 
 TEST(BreakIteratorTest, BreakLineNL) {
-  std::u16string nl(UTF8ToUTF16("\n"));
-  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom\n"));
+  std::u16string nl(u"\n");
+  std::u16string str(u"\nfoo bar!\n\npouet boom\n");
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -435,13 +435,13 @@ TEST(BreakIteratorTest, BreakLineNL) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet boom\n"), iter.GetString());
+  EXPECT_EQ(u"pouet boom\n", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
@@ -615,7 +615,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds "Can".

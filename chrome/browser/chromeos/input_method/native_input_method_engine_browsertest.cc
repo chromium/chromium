@@ -279,11 +279,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   // Expect to commit 'Á '.
   ASSERT_EQ(text_input_client.composition_history().size(), 2U);
   EXPECT_EQ(text_input_client.composition_history()[0].text, u"A");
-  EXPECT_EQ(text_input_client.composition_history()[1].text,
-            base::UTF8ToUTF16(u8"\u00c1"));
+  EXPECT_EQ(text_input_client.composition_history()[1].text, u"\u00c1");
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0],
-            base::UTF8ToUTF16(u8"\u00c1 "));
+  EXPECT_EQ(text_input_client.insert_text_history()[0], u"\u00c1 ");
 
   SetFocus(nullptr);
 }
@@ -327,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SwitchActiveController) {
   // Expect to commit 'ش'.
   ASSERT_EQ(text_input_client.composition_history().size(), 0U);
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0],
-            base::UTF8ToUTF16(u8"ش"));
+  EXPECT_EQ(text_input_client.insert_text_history()[0], u"ش");
 
   SetFocus(nullptr);
 }

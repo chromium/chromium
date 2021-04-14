@@ -158,7 +158,7 @@ TEST(AddressRewriterTest, IN) {
   EXPECT_EQ(in.Rewrite(u"cross-road"), in.Rewrite(u"xrd"));
   EXPECT_EQ(in.Rewrite(u"j & k"), in.Rewrite(u"j&k"));
   EXPECT_EQ(in.Rewrite(u"i.n.d.i.a"), in.Rewrite(u"india"));
-  EXPECT_NE(in.Rewrite(UTF8ToUTF16("i\\_n\\_d\\_i\\_a")), in.Rewrite(u"india"));
+  EXPECT_NE(in.Rewrite(u"i\\_n\\_d\\_i\\_a"), in.Rewrite(u"india"));
 }
 
 TEST(AddressRewriterTest, IT) {

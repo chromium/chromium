@@ -742,7 +742,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
 #if defined(OS_ANDROID)
         identity_status_description_android_ +=
-            UTF8ToUTF16("\n\n") +
+            u"\n\n" +
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_SECURITY_TAB_DEPRECATED_SIGNATURE_ALGORITHM);
 #endif
@@ -757,7 +757,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       site_identity_status_ = SITE_IDENTITY_STATUS_ERROR;
     }
 #if defined(OS_ANDROID)
-    const std::u16string bullet = UTF8ToUTF16("\n • ");
+    const std::u16string bullet = u"\n • ";
     std::vector<ssl_errors::ErrorInfo> errors;
     ssl_errors::ErrorInfo::GetErrorsForCertStatus(
         certificate_, visible_security_state.cert_status, url, &errors);

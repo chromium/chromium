@@ -26,7 +26,7 @@ const std::u16string GetLocalizedString(
     const std::map<int, base::Optional<std::vector<std::u16string>>>&
         localized_string_ids) {
   std::u16string result = std::u16string();
-  std::u16string line_feed = base::UTF8ToUTF16("\n");
+  std::u16string line_feed = u"\n";
   for (const auto& string_pairs : localized_string_ids) {
     if (string_pairs.second)
       result += l10n_util::GetStringFUTF16(

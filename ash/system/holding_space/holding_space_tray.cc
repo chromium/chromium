@@ -109,9 +109,9 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
   HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
 
   std::vector<base::FilePath> result;
-  for (const base::StringPiece16& file_system_source : base::SplitStringPiece(
-           file_system_sources, base::UTF8ToUTF16("\n"), base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
+  for (const base::StringPiece16& file_system_source :
+       base::SplitStringPiece(file_system_sources, u"\n", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath file_path =
         client->CrackFileSystemUrl(GURL(file_system_source));
     if (!file_path.empty())
