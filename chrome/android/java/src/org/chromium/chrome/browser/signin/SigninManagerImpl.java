@@ -113,7 +113,7 @@ class SigninManagerImpl
                 ExternalAuthUtils.getInstance());
 
         identityManager.addObserver(signinManager);
-        AccountInfoService.init(identityManager);
+        AccountInfoService.init(identityManager, accountTrackerService);
         accountTrackerService.addObserver(signinManager);
 
         identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(

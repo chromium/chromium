@@ -8,6 +8,8 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
+import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.AccountInfo;
 
 /**
@@ -30,18 +32,22 @@ public final class AccountInfoService implements IdentityManager.Observer {
     private static AccountInfoService sInstance;
 
     private final IdentityManager mIdentityManager;
+    private final AccountTrackerService mAccountTrackerService;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private AccountInfoService(IdentityManager identityManager) {
+    private AccountInfoService(
+            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
         mIdentityManager = identityManager;
+        mAccountTrackerService = accountTrackerService;
     }
 
     /**
      * Initializes the singleton object.
      */
-    public static void init(IdentityManager identityManager) {
+    public static void init(
+            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
         synchronized (LOCK) {
-            sInstance = new AccountInfoService(identityManager);
+            sInstance = new AccountInfoService(identityManager, accountTrackerService);
             identityManager.addObserver(sInstance);
         }
     }
@@ -73,11 +79,17 @@ public final class AccountInfoService implements IdentityManager.Observer {
     }
 
     /**
-     * Gets the corresponding {@link AccountInfo} of the given account email.
+     * Gets the corresponding {@link AccountInfo} of the given account email asynchronously.
      */
-    public AccountInfo getAccountInfoByEmail(String email) {
-        return mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                email);
+    public Promise<AccountInfo> getAccountInfoByEmailAsync(String email) {
+        final Promise<AccountInfo> accountInfoPromise = new Promise<>();
+        mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            accountInfoPromise.fulfill(
+                    mIdentityManager
+                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                    email));
+        });
+        return accountInfoPromise;
     }
 
     /**

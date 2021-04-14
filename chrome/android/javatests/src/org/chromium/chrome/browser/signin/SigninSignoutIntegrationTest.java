@@ -128,7 +128,7 @@ public class SigninSignoutIntegrationTest {
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
-        CriteriaHelper.pollUiThread(this::assertSignedIn);
+        CriteriaHelper.pollUiThread(mSigninManager.getIdentityManager()::hasPrimaryAccount);
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(() -> {

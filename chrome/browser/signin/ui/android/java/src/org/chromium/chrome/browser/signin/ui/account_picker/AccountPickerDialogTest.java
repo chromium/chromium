@@ -35,6 +35,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -64,6 +65,9 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
             new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Mock
+    private AccountTrackerService mAccountTrackerServiceMock;
+
+    @Mock
     private IdentityManager mIdentityManagerMock;
 
     @Mock
@@ -80,7 +84,7 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         initMocks(this);
-        AccountInfoService.init(mIdentityManagerMock);
+        AccountInfoService.init(mIdentityManagerMock, mAccountTrackerServiceMock);
         addAccount(mAccountName1, mFullName1);
         addAccount(mAccountName2, "");
         TestThreadUtils.runOnUiThreadBlocking(() -> {

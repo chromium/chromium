@@ -203,8 +203,11 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         Bitmap avatar = profileData.getAvatar();
         if (avatar == null) {
             // If the avatar is null, try to fetch the monogram from IdentityManager
-            final AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(email);
-            avatar = accountInfo != null ? accountInfo.getAccountImage() : null;
+            mAccountInfoService.getAccountInfoByEmailAsync(email).then(accountInfo -> {
+                updateCacheAndNotifyObservers(email,
+                        accountInfo != null ? accountInfo.getAccountImage() : null,
+                        profileData.getFullName(), profileData.getGivenName());
+            });
         }
         updateCacheAndNotifyObservers(
                 email, avatar, profileData.getFullName(), profileData.getGivenName());
@@ -221,7 +224,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
      */
     @Override
     public void onAccountInfoUpdated(AccountInfo accountInfo) {
-        if (accountInfo.hasDisplayableInfo()) {
+        if (accountInfo != null && accountInfo.hasDisplayableInfo()) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName());
         }
@@ -230,10 +233,8 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private void populateCache() {
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
             for (Account account : accounts) {
-                AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(account.name);
-                if (accountInfo != null) {
-                    onAccountInfoUpdated(accountInfo);
-                }
+                mAccountInfoService.getAccountInfoByEmailAsync(account.name)
+                        .then(this::onAccountInfoUpdated);
             }
         });
     }

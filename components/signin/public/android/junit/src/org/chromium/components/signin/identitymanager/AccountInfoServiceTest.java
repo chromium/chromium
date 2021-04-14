@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 
@@ -37,6 +38,9 @@ public class AccountInfoServiceTest {
     private IdentityManager mIdentityManagerMock;
 
     @Mock
+    private AccountTrackerService mAccountTrackerServiceMock;
+
+    @Mock
     private AccountInfoService.Observer mObserverMock;
 
     private final AccountInfo mAccountInfoWithAvatar =
@@ -47,7 +51,7 @@ public class AccountInfoServiceTest {
 
     @Before
     public void setUp() {
-        AccountInfoService.init(mIdentityManagerMock);
+        AccountInfoService.init(mIdentityManagerMock, mAccountTrackerServiceMock);
         mService = AccountInfoService.get();
     }
 

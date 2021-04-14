@@ -53,7 +53,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.GmsAvailabilityException;
 import org.chromium.components.signin.GmsJustUpdatedException;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -412,13 +411,9 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
-        // Ensure that the AccountTrackerService has a fully up to date GAIA id <-> email mapping,
-        // as this is needed for the previous account check.
-        IdentityServicesProvider.get()
-                .getAccountTrackerService(Profile.getLastUsedRegularProfile())
-                .seedAccountsIfNeeded(() -> {
-                    final CoreAccountInfo accountInfo =
-                            AccountInfoService.get().getAccountInfoByEmail(mSelectedAccountName);
+        AccountInfoService.get()
+                .getAccountInfoByEmailAsync(mSelectedAccountName)
+                .then(accountInfo -> {
                     assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";
                     mConsentTextTracker.recordConsent(accountInfo.getId(),
                             ConsentAuditorFeature.CHROME_SYNC, (TextView) confirmationView, mView);
