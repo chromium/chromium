@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
+#ifndef COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
+#define COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
 
 #include "base/callback.h"
 #include "ui/views/controls/button/button.h"
@@ -32,4 +32,4 @@ class FullscreenControlView : public views::View {
   views::Button* exit_fullscreen_button_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
+#endif  // COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_

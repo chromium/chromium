@@ -190,6 +190,7 @@ test("components_unittests") {
 
   if (toolkit_views) {
     deps += [
+      "//components/fullscreen_control:unit_tests",
       "//components/media_message_center:unit_tests",
       "//components/ui_devtools:unit_tests",
     ]

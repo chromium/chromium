@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_popup.h"
+#include "components/fullscreen_control/fullscreen_control_popup.h"
 
 #include <memory>
 
 #include "base/bind.h"
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_view.h"
+#include "components/fullscreen_control/fullscreen_control_view.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/widget/widget.h"
 

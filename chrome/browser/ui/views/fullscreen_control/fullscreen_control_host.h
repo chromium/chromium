@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_popup.h"
+#include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "ui/events/event_observer.h"
 
 class BrowserView;

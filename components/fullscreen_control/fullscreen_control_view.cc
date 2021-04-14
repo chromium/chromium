@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_view.h"
+#include "components/fullscreen_control/fullscreen_control_view.h"
 
 #include <memory>
 
 #include "base/callback.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"

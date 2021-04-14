@@ -6184,8 +6184,6 @@ test("unit_tests") {
       "../browser/ui/views/frame/test_with_browser_view.cc",
       "../browser/ui/views/frame/test_with_browser_view.h",
       "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
-      "../browser/ui/views/fullscreen_control/fullscreen_control_popup_unittest.cc",
-      "../browser/ui/views/fullscreen_control/fullscreen_control_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_container_impl_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_list_view_unittest.cc",

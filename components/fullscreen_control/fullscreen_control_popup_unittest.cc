@@ -12,7 +12,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_popup.h"
+#include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_test.h"

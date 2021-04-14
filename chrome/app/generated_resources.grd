@@ -3429,11 +3429,6 @@ are declared in tools/grit/grit_rule.gni.
         Empty Cache and Hard Reload
       </message>
 
-      <!-- Fullscreen mode -->
-      <message name="IDS_EXIT_FULLSCREEN_MODE" desc="Clickable message displayed on entering full screen mode. Clicking on the link exits full screen mode.">
-        Exit full screen
-      </message>
-
       <!-- Tab sharing infobar -->
       <message name="IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL" desc="Text displayed on an infobar when current tab is being shared.">
        Sharing this tab to <ph name="APP_NAME">$1<ex>meet.google.com</ex></ph>
