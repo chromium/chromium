@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -230,6 +232,11 @@ base::Optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
       if (it != entries_.end()) {
         entries_.erase(it);
         batch->DeleteData(change->storage_key());
+        if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
+          // Don't apply deletes to the local device.
+          NET_LOG(EVENT) << "Ignoring delete request from sync server.";
+          continue;
+        }
         synced_network_updater_->RemoveNetwork(
             NetworkIdentifier::DeserializeFromString(change->storage_key()));
       } else {
@@ -533,6 +540,10 @@ void WifiConfigurationBridge::OnNetworkConfiguredDelayComplete(
 void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
+  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
+    return;
+  }
+
   base::Optional<NetworkIdentifier> id =
       local_network_collector_->GetNetworkIdentifierFromGuid(guid);
   if (!id) {
@@ -547,6 +558,10 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
 void WifiConfigurationBridge::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& network_guid) {
+  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
+    return;
+  }
+
   if (!pending_deletes_.contains(network_guid)) {
     NET_LOG(EVENT) << "Configuration " << network_guid
                    << " removed with no matching saved metadata.";
@@ -564,6 +579,9 @@ void WifiConfigurationBridge::OnConfigurationRemoved(
 
 void WifiConfigurationBridge::RemoveNetworkFromSync(
     const std::string& storage_key) {
+  if (!base::FeatureList::IsEnabled(features::kWifiSyncAllowDeletes)) {
+    return;
+  }
   if (!entries_.contains(storage_key)) {
     return;  // Network is not synced.
   }
