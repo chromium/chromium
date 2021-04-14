@@ -131,7 +131,6 @@ void ChromeWebViewPermissionHelperDelegate::OnPointerLockPermissionResponse(
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
-    int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
     base::OnceCallback<void(bool)> callback) {
@@ -145,67 +144,35 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
   WebViewPermissionHelper::PermissionResponseCallback permission_callback =
       base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
                          OnGeolocationPermissionResponse,
-                     weak_factory_.GetWeakPtr(), bridge_id, user_gesture,
+                     weak_factory_.GetWeakPtr(), user_gesture,
                      base::BindOnce(&CallbackWrapper, std::move(callback)));
-  int request_id = web_view_permission_helper()->RequestPermission(
+  web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_GEOLOCATION, request_info,
       std::move(permission_callback), false /* allowed_by_default */);
-  bridge_id_to_request_id_map_[bridge_id] = request_id;
 }
 
 void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
-    int bridge_id,
     bool user_gesture,
     base::OnceCallback<void(ContentSetting)> callback,
     bool allow,
     const std::string& user_input) {
   // The <webview> embedder has allowed the permission. We now need to make sure
   // that the embedder has geolocation permission.
-  RemoveBridgeID(bridge_id);
-
   if (!allow || !web_view_guest()->attached()) {
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
-  content::WebContents* web_contents =
-      web_view_guest()->embedder_web_contents();
-  int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-  int render_frame_id = web_contents->GetMainFrame()->GetRoutingID();
-
-  const permissions::PermissionRequestID request_id(
-      render_process_id, render_frame_id,
-      // The geolocation permission request here is not initiated
-      // through WebGeolocationPermissionRequest. We are only interested
-      // in the fact whether the embedder/app has geolocation
-      // permission. Therefore we use an invalid |bridge_id|.
-      -1);
-
   Profile* profile = Profile::FromBrowserContext(
       web_view_guest()->browser_context());
   PermissionManagerFactory::GetForProfile(profile)->RequestPermission(
-      ContentSettingsType::GEOLOCATION, web_contents->GetMainFrame(),
+      ContentSettingsType::GEOLOCATION,
+      web_view_guest()->embedder_web_contents()->GetMainFrame(),
       web_view_guest()
           ->embedder_web_contents()
           ->GetLastCommittedURL()
           .GetOrigin(),
       user_gesture, std::move(callback));
-}
-
-void ChromeWebViewPermissionHelperDelegate::CancelGeolocationPermissionRequest(
-    int bridge_id) {
-  int request_id = RemoveBridgeID(bridge_id);
-  web_view_permission_helper()->CancelPendingPermissionRequest(request_id);
-}
-
-int ChromeWebViewPermissionHelperDelegate::RemoveBridgeID(int bridge_id) {
-  auto bridge_itr = bridge_id_to_request_id_map_.find(bridge_id);
-  if (bridge_itr == bridge_id_to_request_id_map_.end())
-    return webview::kInvalidPermissionRequestID;
-
-  int request_id = bridge_itr->second;
-  bridge_id_to_request_id_map_.erase(bridge_itr);
-  return request_id;
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestFileSystemPermission(
