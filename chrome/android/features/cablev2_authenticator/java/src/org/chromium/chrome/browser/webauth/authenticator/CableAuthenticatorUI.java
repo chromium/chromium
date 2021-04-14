@@ -159,9 +159,6 @@ public class CableAuthenticatorUI
                 break;
 
             case FCM:
-                v = inflater.inflate(R.layout.cablev2_fcm, container, false);
-                break;
-
             case SERVER_LINK:
                 v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
                 mStatusText = v.findViewById(R.id.status_text);
@@ -318,6 +315,7 @@ public class CableAuthenticatorUI
                 break;
 
             case SERVER_LINK:
+            case FCM:
                 // These values must match up with the Status enum in v2_authenticator.h
                 int id = -1;
                 if (code == 1) {
@@ -333,10 +331,8 @@ public class CableAuthenticatorUI
                 mStatusText.setText(getResources().getString(id));
                 break;
 
-            case FCM:
             case USB:
-                // In FCM mode, the handshake is done before the UI appears. For
-                // USB everything should happen immediately.
+                // In USB mode everything should happen immediately.
         }
     }
 
