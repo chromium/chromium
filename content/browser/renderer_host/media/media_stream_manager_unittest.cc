@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -258,7 +259,8 @@ class MediaStreamManagerTest : public ::testing::Test {
     MediaStreamManager::GenerateStreamCallback generate_stream_callback =
         base::BindOnce(GenerateStreamCallback, &run_loop_, request_audio,
                        true /* request_video */, &audio_device, &video_device);
-    MediaStreamManager::DeviceStoppedCallback stopped_callback;
+    base::MockCallback<MediaStreamManager::DeviceStoppedCallback>
+        stopped_callback;
     MediaStreamManager::DeviceChangedCallback changed_callback;
     MediaStreamManager::DeviceRequestStateChangeCallback
         request_state_change_callback;
@@ -286,7 +288,7 @@ class MediaStreamManagerTest : public ::testing::Test {
         StreamSelectionInfo::New(
             blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID,
             base::nullopt),
-        std::move(generate_stream_callback), std::move(stopped_callback),
+        std::move(generate_stream_callback), stopped_callback.Get(),
         std::move(changed_callback), std::move(request_state_change_callback));
     run_loop_.Run();
 
@@ -310,9 +312,14 @@ class MediaStreamManagerTest : public ::testing::Test {
           OnMediaRequestStateChanged(
               _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
               MEDIA_REQUEST_STATE_CLOSING));
+      blink::MediaStreamDevice device;
+      EXPECT_CALL(stopped_callback, Run(_, _))
+          .WillOnce(testing::SaveArg<1>(&device));
       media_stream_manager_->StopStreamDevice(
           render_process_id, render_frame_id, requester_id, audio_device.id,
           audio_device.session_id());
+      EXPECT_EQ(device.type,
+                blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE);
     }
   }
 
