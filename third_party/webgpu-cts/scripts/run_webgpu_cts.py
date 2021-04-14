@@ -165,7 +165,7 @@ def split_cts_expectations_and_web_test_expectations(
                 })
 
                 results = results.difference(set((ResultType.Failure, )))
-                raw_results = filter(lambda r: r != 'Failure', raw_results)
+                raw_results = [r for r in raw_results if r != 'Failure']
 
         if len(raw_results) != 0:
             # Forward everything, with the modified results.

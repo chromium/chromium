@@ -54,6 +54,8 @@ def compile_src_for_node(out_dir):
         'false',
         '--sourceMap',
         'false',
+        '--target',
+        'ES6',
     ])
 
 
