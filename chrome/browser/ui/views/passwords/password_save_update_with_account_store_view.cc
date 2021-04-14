@@ -59,39 +59,6 @@ namespace {
 
 constexpr int kAccountStoragePromoWidth = 240;
 
-struct ComboboxItem {
-  std::u16string combobox_text;
-  std::u16string dropdown_text;
-  std::u16string dropdown_secondary_text;
-  ui::ImageModel icon;
-};
-
-class ComboboxModelWithIcons : public ui::ComboboxModel {
- public:
-  explicit ComboboxModelWithIcons(std::vector<ComboboxItem> items)
-      : items_(std::move(items)) {}
-
-  int GetItemCount() const override { return items_.size(); }
-  std::u16string GetItemAt(int index) const override {
-    return items_[index].combobox_text;
-  }
-  std::u16string GetDropDownTextAt(int index) const override {
-    return items_[index].dropdown_text;
-  }
-  std::u16string GetDropDownSecondaryTextAt(int index) const override {
-    return items_[index].dropdown_secondary_text;
-  }
-  ui::ImageModel GetIconAt(int index) const override {
-    return items_[index].icon;
-  }
-  ui::ImageModel GetDropDownIconAt(int index) const override {
-    return items_[index].icon;
-  }
-
- private:
-  const std::vector<ComboboxItem> items_;
-};
-
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
   // if the user changes the font size.
@@ -224,7 +191,9 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
   });
   bool display_arrow = !usernames.empty();
   auto combobox = std::make_unique<views::EditableCombobox>(
-      std::make_unique<ui::SimpleComboboxModel>(std::move(usernames)),
+      std::make_unique<ui::SimpleComboboxModel>(
+          std::vector<ui::SimpleComboboxModel::Item>(usernames.begin(),
+                                                     usernames.end())),
       /*filter_on_edit=*/false, /*show_on_empty=*/true,
       views::EditableCombobox::Type::kRegular, views::style::CONTEXT_BUTTON,
       views::style::STYLE_PRIMARY, display_arrow);
@@ -251,7 +220,9 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
   });
   bool display_arrow = !passwords.empty();
   auto combobox = std::make_unique<views::EditableCombobox>(
-      std::make_unique<ui::SimpleComboboxModel>(std::move(passwords)),
+      std::make_unique<ui::SimpleComboboxModel>(
+          std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
+                                                     passwords.end())),
       /*filter_on_edit=*/false, /*show_on_empty=*/true,
       views::EditableCombobox::Type::kPassword, views::style::CONTEXT_BUTTON,
       STYLE_PRIMARY_MONOSPACED, display_arrow);
@@ -270,22 +241,23 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
       kComputerWithCircleBackgroundIcon,
       ui::NativeTheme::kColorId_DefaultIconColor, ComboboxIconSize());
 
-  std::vector<ComboboxItem> destinations = {
-      {.combobox_text = l10n_util::GetStringUTF16(
-           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
-       .dropdown_text = l10n_util::GetStringUTF16(
-           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
-       .dropdown_secondary_text = base::UTF8ToUTF16(primary_account_email),
-       .icon = primary_account_avatar},
-      {.combobox_text = l10n_util::GetStringUTF16(
-           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
-       .dropdown_text = l10n_util::GetStringUTF16(
-           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
-       .dropdown_secondary_text = std::u16string(),
-       .icon = computer_image}};
+  ui::SimpleComboboxModel::Item account_destination(
+      /*text=*/l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
+      /*dropdown_secondary_text=*/
+      base::UTF8ToUTF16(primary_account_email),
+      /*icon=*/primary_account_avatar);
+
+  ui::SimpleComboboxModel::Item device_destination(
+      /*text=*/l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
+      /*dropdown_secondary_text=*/std::u16string(),
+      /*icon=*/computer_image);
 
   auto combobox = std::make_unique<views::Combobox>(
-      std::make_unique<ComboboxModelWithIcons>(std::move(destinations)));
+      std::make_unique<ui::SimpleComboboxModel>(
+          std::vector<ui::SimpleComboboxModel::Item>{
+              std::move(account_destination), std::move(device_destination)}));
   if (is_using_account_store)
     combobox->SetSelectedRow(0);
   else

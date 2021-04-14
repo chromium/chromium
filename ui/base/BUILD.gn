@@ -876,6 +876,7 @@ test("ui_base_unittests") {
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",
     "models/image_model_unittest.cc",
+    "models/simple_combobox_model_unittest.cc",
     "models/simple_menu_model_unittest.cc",
     "models/tree_node_iterator_unittest.cc",
     "pointer/touch_ui_controller_unittest.cc",

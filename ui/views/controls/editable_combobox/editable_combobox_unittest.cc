@@ -27,6 +27,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -78,6 +79,12 @@ class EditableComboboxTest : public ViewsTestBase {
   // Initializes the combobox with the given items.
   void InitEditableCombobox(
       const std::vector<std::u16string>& items,
+      bool filter_on_edit,
+      bool show_on_empty = true,
+      EditableCombobox::Type type = EditableCombobox::Type::kRegular);
+
+  void InitEditableCombobox(
+      const std::vector<ui::SimpleComboboxModel::Item>& items,
       bool filter_on_edit,
       bool show_on_empty = true,
       EditableCombobox::Type type = EditableCombobox::Type::kRegular);
@@ -137,15 +144,26 @@ void EditableComboboxTest::TearDown() {
 void EditableComboboxTest::InitEditableCombobox(const int item_count,
                                                 const bool filter_on_edit,
                                                 const bool show_on_empty) {
-  std::vector<std::u16string> items;
+  std::vector<ui::SimpleComboboxModel::Item> items;
   for (int i = 0; i < item_count; ++i)
-    items.push_back(ASCIIToUTF16(base::StringPrintf("item[%i]", i)));
+    items.emplace_back(ASCIIToUTF16(base::StringPrintf("item[%i]", i)));
   InitEditableCombobox(items, filter_on_edit, show_on_empty);
+}
+
+void EditableComboboxTest::InitEditableCombobox(
+    const std::vector<std::u16string>& strings,
+    bool filter_on_edit,
+    bool show_on_empty,
+    EditableCombobox::Type type) {
+  std::vector<ui::SimpleComboboxModel::Item> items;
+  for (const auto& item_str : strings)
+    items.emplace_back(item_str);
+  InitEditableCombobox(items, filter_on_edit, show_on_empty, type);
 }
 
 // Initializes the combobox with the given items.
 void EditableComboboxTest::InitEditableCombobox(
-    const std::vector<std::u16string>& items,
+    const std::vector<ui::SimpleComboboxModel::Item>& items,
     const bool filter_on_edit,
     const bool show_on_empty,
     const EditableCombobox::Type type) {
@@ -658,6 +676,34 @@ TEST_F(EditableComboboxTest, FilteringEffectOnGetItems) {
   ASSERT_EQ(u"bad", combobox_->GetItemForTest(3));
 }
 
+TEST_F(EditableComboboxTest, FilteringEffectOnIcons) {
+  ui::SimpleComboboxModel::Item item1(
+      u"abc", std::u16string(),
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16)));
+
+  ui::SimpleComboboxModel::Item item2(
+      u"def", std::u16string(),
+      ui::ImageModel::FromImage(gfx::test::CreateImage(20, 20)));
+
+  InitEditableCombobox({item1, item2},
+                       /*filter_on_edit=*/true,
+                       /*show_on_empty=*/true);
+
+  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  EXPECT_EQ(16,
+            combobox_->GetComboboxModelForTest()->GetIconAt(0).Size().width());
+  EXPECT_EQ(20,
+            combobox_->GetComboboxModelForTest()->GetIconAt(1).Size().width());
+
+  combobox_->SetText(u"a");
+  ASSERT_EQ(1, combobox_->GetItemCountForTest());
+  EXPECT_EQ(16, combobox_->GetIconForTest(0).Size().width());
+
+  combobox_->SetText(u"d");
+  ASSERT_EQ(1, combobox_->GetItemCountForTest());
+  EXPECT_EQ(20, combobox_->GetIconForTest(0).Size().width());
+}
+
 TEST_F(EditableComboboxTest, FilteringWithMismatchedCase) {
   std::vector<std::u16string> items = {u"AbCd", u"aBcD", u"xyz"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
@@ -802,7 +848,9 @@ TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
 }
 
 TEST_F(EditableComboboxTest, NoCrashWithoutWidget) {
-  std::vector<std::u16string> items = {u"item0", u"item1"};
+  std::vector<ui::SimpleComboboxModel::Item> items = {
+      ui::SimpleComboboxModel::Item(u"item0"),
+      ui::SimpleComboboxModel::Item(u"item1")};
   auto combobox = std::make_unique<EditableCombobox>(
       std::make_unique<ui::SimpleComboboxModel>(items),
       /*filter_on_edit=*/false,

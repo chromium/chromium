@@ -26,7 +26,8 @@ const int kNumberOfExpirationYears = 10;
 // Returns the items that are in the expiration year dropdown. If
 // |additional_year| is not 0 and not within the normal range, it will be added
 // accordingly.
-std::vector<std::u16string> GetExpirationYearItems(int additional_year) {
+std::vector<ui::SimpleComboboxModel::Item> GetExpirationYearItems(
+    int additional_year) {
   std::vector<std::u16string> years;
   // Add the "Year" placeholder item.
   years.push_back(
@@ -46,7 +47,7 @@ std::vector<std::u16string> GetExpirationYearItems(int additional_year) {
     years.push_back(base::UTF8ToUTF16(std::to_string(additional_year)));
   }
 
-  return years;
+  return std::vector<ui::SimpleComboboxModel::Item>(years.begin(), years.end());
 }
 
 // Formats a month, zero-padded (e.g. "02").

@@ -151,14 +151,12 @@ class EditableCombobox::EditableComboboxMenuModel
     if (!update_items_shown_enabled_)
       return;
     items_shown_.clear();
-    items_shown_enabled_.clear();
     if (show_on_empty_ || !owner_->GetText().empty()) {
       for (int i = 0; i < combobox_model_->GetItemCount(); ++i) {
         if (!filter_on_edit_ ||
             base::StartsWith(combobox_model_->GetItemAt(i), owner_->GetText(),
                              base::CompareCase::INSENSITIVE_ASCII)) {
-          items_shown_.push_back(combobox_model_->GetItemAt(i));
-          items_shown_enabled_.push_back(combobox_model_->IsItemEnabledAt(i));
+          items_shown_.push_back({i, combobox_model_->IsItemEnabledAt(i)});
         }
       }
     }
@@ -175,10 +173,16 @@ class EditableCombobox::EditableComboboxMenuModel
   }
 
   std::u16string GetItemTextAt(int index, bool showing_password_text) const {
+    int index_in_model = items_shown_[index].index;
+    std::u16string text = combobox_model_->GetItemAt(index_in_model);
     return showing_password_text
-               ? items_shown_[index]
-               : std::u16string(items_shown_[index].length(),
+               ? text
+               : std::u16string(text.length(),
                                 gfx::RenderText::kPasswordReplacementChar);
+  }
+
+  ui::ImageModel GetIconAt(int index) const override {
+    return combobox_model_->GetDropDownIconAt(items_shown_[index].index);
   }
 
   void OnComboboxModelChanged(ui::ComboboxModel* model) override {
@@ -188,6 +192,10 @@ class EditableCombobox::EditableComboboxMenuModel
   int GetItemCount() const override { return items_shown_.size(); }
 
  private:
+  struct ShownItem {
+    size_t index;
+    bool enabled;
+  };
   bool HasIcons() const override {
     for (int i = 0; i < GetItemCount(); ++i) {
       if (!GetIconAt(i).IsEmpty())
@@ -227,21 +235,19 @@ class EditableCombobox::EditableComboboxMenuModel
   }
 
   bool IsItemCheckedAt(int index) const override {
-    return UseCheckmarks() && items_shown_[index] == owner_->GetText();
+    return UseCheckmarks() &&
+           combobox_model_->GetItemAt(items_shown_[index].index) ==
+               owner_->GetText();
   }
 
   int GetGroupIdAt(int index) const override { return -1; }
-
-  ui::ImageModel GetIconAt(int index) const override {
-    return combobox_model_->GetDropDownIconAt(index);
-  }
 
   ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
     return nullptr;
   }
 
   bool IsEnabledAt(int index) const override {
-    return items_shown_enabled_[index];
+    return items_shown_[index].enabled;
   }
 
   void ActivatedAt(int index) override { owner_->OnItemSelected(index); }
@@ -257,9 +263,9 @@ class EditableCombobox::EditableComboboxMenuModel
   // Whether to show options when the textfield is empty.
   const bool show_on_empty_;
 
-  // The items from |combobox_model_| that we are currently showing.
-  std::vector<std::u16string> items_shown_;
-  std::vector<bool> items_shown_enabled_;
+  // The indices of the items from |combobox_model_| that we are currently
+  // showing, and whether they are enabled.
+  std::vector<ShownItem> items_shown_;
 
   // When false, UpdateItemsShown doesn't do anything.
   bool update_items_shown_enabled_ = true;
@@ -409,6 +415,10 @@ int EditableCombobox::GetItemCountForTest() {
 
 std::u16string EditableCombobox::GetItemForTest(int index) {
   return menu_model_->GetItemTextAt(index, showing_password_text_);
+}
+
+ui::ImageModel EditableCombobox::GetIconForTest(int index) {
+  return menu_model_->GetIconAt(index);
 }
 
 void EditableCombobox::Layout() {

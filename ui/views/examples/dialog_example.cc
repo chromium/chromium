@@ -110,11 +110,11 @@ class DialogExample::Dialog : public Delegate<DialogDelegateView> {
 DialogExample::DialogExample()
     : ExampleBase("Dialog"),
       mode_model_({
-          u"Modeless",
-          u"Window Modal",
-          u"Child Modal",
-          u"System Modal",
-          u"Fake Modeless (non-bubbles)",
+          ui::SimpleComboboxModel::Item(u"Modeless"),
+          ui::SimpleComboboxModel::Item(u"Window Modal"),
+          ui::SimpleComboboxModel::Item(u"Child Modal"),
+          ui::SimpleComboboxModel::Item(u"System Modal"),
+          ui::SimpleComboboxModel::Item(u"Fake Modeless (non-bubbles)"),
       }) {}
 
 DialogExample::~DialogExample() = default;

@@ -8,22 +8,51 @@
 
 namespace ui {
 
-SimpleComboboxModel::SimpleComboboxModel(std::vector<std::u16string> items)
+SimpleComboboxModel::Item::Item(std::u16string text) : text(std::move(text)) {}
+SimpleComboboxModel::Item::Item(std::u16string text,
+                                std::u16string dropdown_secondary_text,
+                                ui::ImageModel icon)
+    : text(std::move(text)),
+      dropdown_secondary_text(std::move(dropdown_secondary_text)),
+      icon(std::move(icon)) {}
+SimpleComboboxModel::Item::Item(const SimpleComboboxModel::Item& other) =
+    default;
+SimpleComboboxModel::Item& SimpleComboboxModel::Item::operator=(
+    const SimpleComboboxModel::Item& other) = default;
+SimpleComboboxModel::Item::Item(SimpleComboboxModel::Item&& other) = default;
+SimpleComboboxModel::Item& SimpleComboboxModel::Item::operator=(
+    SimpleComboboxModel::Item&& other) = default;
+SimpleComboboxModel::Item::~Item() = default;
+
+// static
+SimpleComboboxModel::Item SimpleComboboxModel::Item::CreateSeparator() {
+  return SimpleComboboxModel::Item(std::u16string());
+}
+
+SimpleComboboxModel::SimpleComboboxModel(std::vector<Item> items)
     : items_(std::move(items)) {}
 
-SimpleComboboxModel::~SimpleComboboxModel() {
-}
+SimpleComboboxModel::~SimpleComboboxModel() = default;
 
 int SimpleComboboxModel::GetItemCount() const {
   return items_.size();
 }
 
 std::u16string SimpleComboboxModel::GetItemAt(int index) const {
-  return items_[index];
+  return items_[index].text;
+}
+
+std::u16string SimpleComboboxModel::GetDropDownSecondaryTextAt(
+    int index) const {
+  return items_[index].dropdown_secondary_text;
+}
+
+ui::ImageModel SimpleComboboxModel::GetIconAt(int index) const {
+  return items_[index].icon;
 }
 
 bool SimpleComboboxModel::IsItemSeparatorAt(int index) const {
-  return items_[index].empty();
+  return items_[index].text.empty();
 }
 
 int SimpleComboboxModel::GetDefaultIndex() const {
