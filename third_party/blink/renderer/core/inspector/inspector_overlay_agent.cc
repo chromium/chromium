@@ -267,9 +267,14 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
       layer_->SetBounds(gfx::Size(size));
       DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,
                           ("InspectorOverlay"));
+      auto state = overlay_->OverlayMainFrame()
+                       ->View()
+                       ->GetLayoutView()
+                       ->FirstFragment()
+                       .LocalBorderBoxProperties();
       RecordForeignLayer(graphics_context, debug_name_client,
                          DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                         IntPoint(), &PropertyTreeState::Root());
+                         IntPoint(), &state);
       return;
     }
 
