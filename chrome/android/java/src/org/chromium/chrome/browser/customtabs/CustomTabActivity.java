@@ -303,7 +303,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @VisibleForTesting
-    NightModeStateProvider getNightModeStateProviderForTesting() {
+    public NightModeStateProvider getNightModeStateProviderForTesting() {
         return super.getNightModeStateProvider();
     }
 }
