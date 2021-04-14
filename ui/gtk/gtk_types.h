@@ -6,13 +6,12 @@
 #define UI_GTK_GTK_TYPES_H_
 
 #include <gdk/gdk.h>
-
-#include "ui/gtk/gtk_buildflags.h"
+#include <gtk/gtk.h>
 
 // This file provides types that are only available in specific versions of GTK.
 
 extern "C" {
-#if BUILDFLAG(GTK_VERSION) == 3
+#if GTK_MAJOR_VERSION == 3
 using GskRenderNodeType = enum {
   GSK_NOT_A_RENDER_NODE = 0,
   GSK_CONTAINER_NODE,

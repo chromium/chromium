@@ -5,6 +5,8 @@
 #include "ui/gtk/settings_provider_gtk.h"
 
 #include "base/strings/string_split.h"
+#include "gtk_compat.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_util.h"
 
@@ -13,22 +15,18 @@ namespace gtk {
 namespace {
 
 std::string GetDecorationLayoutFromGtkWindow() {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  NOTREACHED();
-  static const char kDefaultGtkLayout[] = "menu:minimize,maximize,close";
-  return kDefaultGtkLayout;
-#else
+  DCHECK(!GtkCheckVersion(4));
+
   GtkCssContext context = GetStyleContextFromCss("");
   gtk_style_context_add_class(context, "csd");
 
   gchar* layout_c = nullptr;
-  gtk_style_context_get_style(context, "decoration-button-layout", &layout_c,
-                              nullptr);
+  GtkStyleContextGetStyle(context, "decoration-button-layout", &layout_c,
+                          nullptr);
   DCHECK(layout_c);
   std::string layout(layout_c);
   g_free(layout_c);
   return layout;
-#endif
 }
 
 void ParseActionString(const std::string& value,

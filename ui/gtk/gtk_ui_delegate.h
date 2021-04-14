@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gtk/gtk_buildflags.h"
 
 using GdkKeymap = struct _GdkKeymap;
 using GtkWindow = struct _GtkWindow;

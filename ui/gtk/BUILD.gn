@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
@@ -15,15 +14,8 @@ import("//tools/generate_stubs/rules.gni")
 assert(is_linux || is_chromeos_lacros || is_chromeos,
        "This file should only be referenced on Linux")
 
-buildflag_header("gtk_buildflags") {
-  header = "gtk_buildflags.h"
-
-  flags = [ "GTK_VERSION=$gtk_version" ]
-}
-
 source_set("gtk_types") {
   sources = [ "gtk_types.h" ]
-  deps = [ ":gtk_buildflags" ]
 }
 
 generate_stubs("gtk_stubs") {
@@ -50,7 +42,6 @@ source_set("gtk_compat") {
     "gtk_compat.h",
   ]
   deps = [
-    ":gtk_buildflags",
     ":gtk_stubs",
     ":gtk_types",
     "//base",
@@ -64,7 +55,6 @@ component("gtk_ui_delegate") {
   public = [ "gtk_ui_delegate.h" ]
   sources = [ "gtk_ui_delegate.cc" ]
   deps = [
-    ":gtk_buildflags",
     "//base",
     "//ui/gfx",
   ]

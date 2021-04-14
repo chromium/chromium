@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/no_destructor.h"
-#include "ui/gtk/gtk_buildflags.h"
 #include "ui/gtk/gtk_stubs.h"
 
 namespace gtk {
@@ -94,7 +93,7 @@ gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
 }  // namespace
 
 bool LoadGtk() {
-  static bool loaded = LoadGtkImpl(BUILDFLAG(GTK_VERSION));
+  static bool loaded = LoadGtkImpl(GTK_MAJOR_VERSION);
   return loaded;
 }
 
