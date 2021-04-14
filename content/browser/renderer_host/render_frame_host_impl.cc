@@ -5038,8 +5038,8 @@ void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
   GetRenderWidgetHost()->SelectionChanged(text, offset, range);
 }
 
-void RenderFrameHostImpl::DidReceiveFirstUserActivation() {
-  delegate_->DidReceiveFirstUserActivation(this);
+void RenderFrameHostImpl::DidReceiveUserActivation() {
+  delegate_->DidReceiveUserActivation(this);
 }
 
 void RenderFrameHostImpl::MaybeIsolateForUserActivation() {

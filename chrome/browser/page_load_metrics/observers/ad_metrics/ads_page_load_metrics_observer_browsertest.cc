@@ -793,6 +793,50 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                   ukm::builders::AdFrameLoad::kStatus_UserActivationName));
 }
 
+// See https://crbug.com/1193885.
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       UserActivationSetOnFrameAfterSameOriginActivation) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "foo.com", "/ad_tagging/frame_factory.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create two same-origin ad frames.
+  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
+      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
+  EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(
+      web_contents, "createAdFrame('/ad_tagging/ad.html', '');"));
+
+  // Wait for the frames resources to be loaded as we only log histograms for
+  // frames that have non-zero bytes. Four resources in the main frame and one
+  // favicon.
+  waiter->AddMinimumCompleteResourcesExpectation(7);
+  waiter->Wait();
+
+  // Activate one frame by executing a dummy script. This will inherently
+  // activate the second frame due to same-origin visibility user activation.
+  // The activation of the second frame by this heuristic should be ignored.
+  content::RenderFrameHost* ad_frame =
+      ChildFrameAt(web_contents->GetMainFrame(), 0);
+  const std::string no_op_script = "// No-op script";
+  EXPECT_TRUE(ExecuteScript(ad_frame, no_op_script));
+
+  // Activate the other frame directly by executing a dummy script.
+  content::RenderFrameHost* ad_frame_2 =
+      ChildFrameAt(web_contents->GetMainFrame(), 1);
+  EXPECT_TRUE(ExecuteScript(ad_frame_2, no_op_script));
+
+  // Ensure both frames are marked active.
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  histogram_tester.ExpectUniqueSample(
+      kAdUserActivationHistogramId,
+      page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
+}
+
 // Test that a subframe that aborts (due to doc.write) doesn't cause a crash
 // if it continues to load resources.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,

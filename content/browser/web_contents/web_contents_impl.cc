@@ -7090,14 +7090,12 @@ void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
                              render_frame_host, name);
 }
 
-void WebContentsImpl::DidReceiveFirstUserActivation(
+void WebContentsImpl::DidReceiveUserActivation(
     RenderFrameHostImpl* render_frame_host) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::DidReceiveFirstUserActivation",
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidReceiveUserActivation",
                         "render_frame_host", render_frame_host);
-  observers_.NotifyObservers(
-      &WebContentsObserver::FrameReceivedFirstUserActivation,
-      render_frame_host);
+  observers_.NotifyObservers(&WebContentsObserver::FrameReceivedUserActivation,
+                             render_frame_host);
 }
 
 void WebContentsImpl::DidChangeDisplayState(

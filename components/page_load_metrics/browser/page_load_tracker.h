@@ -279,7 +279,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info);
 
-  void FrameReceivedFirstUserActivation(content::RenderFrameHost* rfh);
+  void FrameReceivedUserActivation(content::RenderFrameHost* rfh);
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_display_none);
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,

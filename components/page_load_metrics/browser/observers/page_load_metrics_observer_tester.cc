@@ -286,9 +286,9 @@ void PageLoadMetricsObserverTester::SimulateLoadedResource(
       web_contents()->GetMainFrame(), request_id, resource_load_info);
 }
 
-void PageLoadMetricsObserverTester::SimulateFrameReceivedFirstUserActivation(
+void PageLoadMetricsObserverTester::SimulateFrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
-  metrics_web_contents_observer_->FrameReceivedFirstUserActivation(
+  metrics_web_contents_observer_->FrameReceivedUserActivation(
       render_frame_host);
 }
 

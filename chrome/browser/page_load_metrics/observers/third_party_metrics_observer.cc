@@ -52,7 +52,7 @@ ThirdPartyMetricsObserver::FlushMetricsOnAppEnterBackground(
   return STOP_OBSERVING;
 }
 
-void ThirdPartyMetricsObserver::FrameReceivedFirstUserActivation(
+void ThirdPartyMetricsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   bool is_third_party = false;
   auto* third_party_info = GetThirdPartyInfo(
@@ -63,7 +63,8 @@ void ThirdPartyMetricsObserver::FrameReceivedFirstUserActivation(
       is_third_party);
 
   // Update the activation status and record use counters as necessary.
-  if (is_third_party && third_party_info != nullptr) {
+  if (is_third_party && third_party_info != nullptr &&
+      !third_party_info->activation) {
     third_party_info->activation = true;
     RecordUseCounters(AccessType::kMaxValue, third_party_info);
   }

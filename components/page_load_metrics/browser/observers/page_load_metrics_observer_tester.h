@@ -119,8 +119,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateLoadedResource(const ExtraRequestCompleteInfo& info,
                               const content::GlobalRequestID& request_id);
 
-  // Simulate the first user interaction for a frame.
-  void SimulateFrameReceivedFirstUserActivation(
+  // Simulate the user interaction for a frame.
+  void SimulateFrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host);
 
   // Simulates a user input.
