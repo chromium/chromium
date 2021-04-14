@@ -804,12 +804,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           false /* origin_agent_cluster */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          -1 /* http_response_code */,
-          std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
-          std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
+          false /* is_cross_browsing_instance */,
+          nullptr /* old_page_info */, -1 /* http_response_code */);
 #if defined(OS_ANDROID)
   if (NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
     commit_params->data_url_as_string = GetDataURLAsString()->data();

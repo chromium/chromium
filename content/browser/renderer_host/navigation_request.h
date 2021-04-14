@@ -380,16 +380,6 @@ class CONTENT_EXPORT NavigationRequest
     commit_params_->is_cross_browsing_instance = is_cross_browsing_instance;
   }
 
-  void set_app_history_back_entries(
-      std::vector<mojom::AppHistoryEntryPtr> entries) {
-    commit_params_->app_history_back_entries = std::move(entries);
-  }
-
-  void set_app_history_forward_entries(
-      std::vector<mojom::AppHistoryEntryPtr> entries) {
-    commit_params_->app_history_forward_entries = std::move(entries);
-  }
-
   NavigationURLLoader* loader_for_testing() const { return loader_.get(); }
 
   NavigationState state() const { return state_; }

@@ -236,7 +236,6 @@ interface AppHistory : EventTarget
     getter onnavigateerror
     getter onnavigatesuccess
     method constructor
-    method entries
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess

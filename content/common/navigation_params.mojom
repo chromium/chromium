@@ -6,7 +6,6 @@ module content.mojom;
 
 import "content/common/prefetched_signed_exchange_info.mojom";
 import "content/public/common/was_activated_option.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -280,16 +279,6 @@ struct OldPageInfo {
   blink.mojom.PageLifecycleState new_lifecycle_state_for_old_page;
 };
 
-// AppHistoryEntry contains a subset of a session history item that is used by
-// the appHistory API to represent a non-current history entry. The browser
-// ensures that an AppHistoryEntry is only sent to the renderer if its |url| is
-// same-origin to the navigation being committed.
-struct AppHistoryEntry {
-  mojo_base.mojom.String16 key;
-  mojo_base.mojom.String16 id;
-  mojo_base.mojom.String16 url;
-};
-
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
@@ -482,9 +471,4 @@ struct CommitNavigationParams {
   // The HTTP response status code for the navigation. Set to -1 if we never
   // received response headers.
   int32 http_response_code = -1;
-
-  // A same-origin subset of the back/forward list exposed by the appHistory
-  // API.
-  array<AppHistoryEntry> app_history_back_entries;
-  array<AppHistoryEntry> app_history_forward_entries;
 };

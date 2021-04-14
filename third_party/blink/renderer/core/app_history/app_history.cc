@@ -28,91 +28,12 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 
-void AppHistory::InitializeForNavigation(
-    HistoryItem& current,
-    const WebVector<WebHistoryItem>& back_entries,
-    const WebVector<WebHistoryItem>& forward_entries) {
-  DCHECK(entries_.IsEmpty());
-
-  // Construct |entries_|. Any back entries are inserted, then the current
-  // entry, then any forward entries.
-  entries_.ReserveCapacity(back_entries.size() + forward_entries.size() + 1);
-  for (const auto& entry : back_entries) {
-    entries_.emplace_back(
-        MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), entry));
-  }
-
-  current_index_ = back_entries.size();
-  entries_.emplace_back(
-      MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &current));
-
-  for (const auto& entry : forward_entries) {
-    entries_.emplace_back(
-        MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), entry));
-  }
-}
-
-void AppHistory::CloneFromPrevious(AppHistory& previous) {
-  DCHECK(entries_.IsEmpty());
-  // We want to copy the backing state from |previous|, but we need to create
-  // new AppHistoryEntry objects because the previous ones are associated with
-  // the previous LocalDOMWindow.
-  entries_.ReserveCapacity(previous.entries_.size());
-  for (size_t i = 0; i < previous.entries_.size(); i++) {
-    entries_.emplace_back(MakeGarbageCollected<AppHistoryEntry>(
-        GetSupplementable(), previous.entries_[i]->GetItem()));
-  }
-  current_index_ = previous.current_index_;
-}
-
-void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
-  // A same-document navigation (e.g., a document.open()) in a newly created
-  // iframe will try to operate on an empty |entries_|. appHistory considers
-  // this a no-op.
-  if (entries_.IsEmpty())
-    return;
-
-  if (type == WebFrameLoadType::kBackForward) {
-    // If this is a same-document back/forward navigation, the new current_
-    // should already be present in entries_.
-    // We just need to update current_index_ to its index, so find it.
-    size_t new_current_index = 0;
-    for (; new_current_index < entries_.size(); new_current_index++) {
-      if (entries_[new_current_index]->key() == item.GetAppHistoryKey())
-        break;
-    }
-    DCHECK_LT(new_current_index, entries_.size());
-    current_index_ = new_current_index;
-    return;
-  }
-
-  if (type == WebFrameLoadType::kStandard) {
-    // For a new back/forward entry, truncate any forward entries and prepare to
-    // append.
-    current_index_++;
-    entries_.resize(current_index_ + 1);
-  }
-
-  // current_index_ is now correctly set (for type of
-  // WebFrameLoadType::kReplaceCurrentItem/kReload/kReloadBypassingCache, it
-  // didn't change). Create the new current entry.
-  entries_[current_index_] =
-      MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
+void AppHistory::UpdateForCommit(HistoryItem* item) {
+  current_ = MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), item);
 }
 
 AppHistoryEntry* AppHistory::current() const {
-  // current_index_ is initialized to -1 and set >= 0 when entries_ is
-  // populated. It will still be negative if the appHistory of an initial empty
-  // document is accessed.
-  return current_index_ >= 0 && GetSupplementable()->GetFrame()
-             ? entries_[current_index_]
-             : nullptr;
-}
-
-HeapVector<Member<AppHistoryEntry>> AppHistory::entries() {
-  return GetSupplementable()->GetFrame()
-             ? entries_
-             : HeapVector<Member<AppHistoryEntry>>();
+  return GetSupplementable()->GetFrame() ? current_ : nullptr;
 }
 
 bool AppHistory::DispatchNavigateEvent(const KURL& url,
@@ -150,7 +71,7 @@ const AtomicString& AppHistory::InterfaceName() const {
 void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
-  visitor->Trace(entries_);
+  visitor->Trace(current_);
 }
 
 }  // namespace blink

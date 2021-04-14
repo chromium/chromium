@@ -70,7 +70,6 @@
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
-#include "content/common/navigation_params_utils.h"
 #include "content/common/trace_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -3565,12 +3564,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           false /* origin_agent_cluster */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          -1 /* http_response_code */,
-          std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
-          std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
+          false /* is_cross_browsing_instance */,
+          nullptr /* old_page_info */, -1 /* http_response_code */);
 #if defined(OS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
@@ -4134,93 +4129,6 @@ void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
       new_partition_id.ToString());
 
   base::debug::DumpWithoutCrashing();
-}
-
-std::vector<mojom::AppHistoryEntryPtr>
-NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
-    Direction direction,
-    int entry_index,
-    const url::Origin& pending_origin,
-    FrameTreeNode* node,
-    SiteInstance* site_instance,
-    int64_t previous_item_sequence_number) {
-  std::vector<mojom::AppHistoryEntryPtr> entries;
-  int offset = direction == Direction::kForward ? 1 : -1;
-  for (int i = entry_index + offset; i >= 0 && i < GetEntryCount();
-       i += offset) {
-    FrameNavigationEntry* frame_entry = GetEntryAtIndex(i)->GetFrameEntry(node);
-    if (!frame_entry || !frame_entry->committed_origin())
-      break;
-    if (site_instance != frame_entry->site_instance())
-      break;
-    if (!pending_origin.IsSameOriginWith(*frame_entry->committed_origin()))
-      break;
-    if (previous_item_sequence_number == frame_entry->item_sequence_number())
-      continue;
-    blink::ExplodedPageState exploded_page_state;
-    if (blink::DecodePageState(frame_entry->page_state().ToEncodedData(),
-                               &exploded_page_state)) {
-      blink::ExplodedFrameState frame_state = exploded_page_state.top;
-      mojom::AppHistoryEntryPtr entry = mojom::AppHistoryEntry::New(
-          frame_state.app_history_key.value_or(std::u16string()),
-          frame_state.app_history_id.value_or(std::u16string()),
-          frame_state.url_string.value_or(std::u16string()));
-      DCHECK(pending_origin.CanBeDerivedFrom(GURL(entry->url)));
-      entries.push_back(std::move(entry));
-      previous_item_sequence_number = frame_entry->item_sequence_number();
-    }
-  }
-  // If |entries| was constructed by iterating backwards from
-  // |entry_index|, it's latest-at-the-front, but the renderer will want it
-  // earliest-at-the-front. Reverse it.
-  if (direction == Direction::kBack)
-    std::reverse(entries.begin(), entries.end());
-  return entries;
-}
-
-void NavigationControllerImpl::PopulateAppHistoryEntryVectors(
-    NavigationRequest* request) {
-  url::Origin pending_origin =
-      request->commit_params().origin_to_commit
-          ? *request->commit_params().origin_to_commit
-          : url::Origin::Create(request->common_params().url);
-
-  FrameTreeNode* node = request->frame_tree_node();
-  scoped_refptr<SiteInstance> site_instance =
-      request->GetRenderFrameHost()->GetSiteInstance();
-
-  // NOTE: |entry_index| is an estimate of the index where this entry will
-  // commit, but it may be wrong in corner cases (e.g., if we are at the max
-  // entry limit, the earliest entry will be dropped). This is ok because this
-  // algorithm only uses |entry_index| to walk the entry list as it stands right
-  // now, and it isn't saved for anything post-commit.
-  int entry_index = GetPendingEntryIndex();
-  bool will_create_new_entry = false;
-  if (NavigationTypeUtils::IsReload(request->common_params().navigation_type) ||
-      request->common_params().should_replace_current_entry) {
-    entry_index = GetLastCommittedEntryIndex();
-  } else if (entry_index == -1) {
-    will_create_new_entry = true;
-    entry_index = GetLastCommittedEntryIndex() + 1;
-  }
-
-  int64_t pending_item_sequence_number = 0;
-  if (auto* pending_entry = GetPendingEntry()) {
-    if (auto* frame_entry = pending_entry->GetFrameEntry(node))
-      pending_item_sequence_number = frame_entry->item_sequence_number();
-  }
-
-  request->set_app_history_back_entries(PopulateSingleAppHistoryEntryVector(
-      Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
-      pending_item_sequence_number));
-
-  // Don't populate forward entries if they will be truncated by a new entry.
-  if (!will_create_new_entry) {
-    request->set_app_history_forward_entries(
-        PopulateSingleAppHistoryEntryVector(
-            Direction::kForward, entry_index, pending_origin, node,
-            site_instance.get(), pending_item_sequence_number));
-  }
 }
 
 }  // namespace content

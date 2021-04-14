@@ -9,8 +9,6 @@
 ] interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
 
-  sequence<AppHistoryEntry> entries();
-
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;

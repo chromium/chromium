@@ -1003,28 +1003,6 @@ void FillMiscNavigationParams(
 
   if (commit_params.http_response_code != -1)
     navigation_params->http_status_code = commit_params.http_response_code;
-
-  navigation_params->app_history_back_entries.reserve(
-      commit_params.app_history_back_entries.size());
-  for (const auto& entry : commit_params.app_history_back_entries) {
-    WebHistoryItem item;
-    item.Initialize();
-    item.SetAppHistoryKey(WebString::FromUTF16(entry->key));
-    item.SetAppHistoryId(WebString::FromUTF16(entry->id));
-    item.SetURLString(WebString::FromUTF16(entry->url));
-    navigation_params->app_history_back_entries.emplace_back(item);
-  }
-
-  navigation_params->app_history_forward_entries.reserve(
-      commit_params.app_history_forward_entries.size());
-  for (const auto& entry : commit_params.app_history_forward_entries) {
-    WebHistoryItem item;
-    item.Initialize();
-    item.SetAppHistoryKey(WebString::FromUTF16(entry->key));
-    item.SetAppHistoryId(WebString::FromUTF16(entry->id));
-    item.SetURLString(WebString::FromUTF16(entry->url));
-    navigation_params->app_history_forward_entries.emplace_back(item);
-  }
 }
 
 // Fills in the origin policy associated with this response, if any is present.
