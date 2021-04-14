@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   // Uninstall default app.
   proxy->UninstallSilently(preinstalled_app_id,
-                           apps::mojom::UninstallSource::kUser);
+                           apps::mojom::UninstallSource::kUnknown);
 
   // Ensure the UI receives the app uninstall.
   apps::AppServiceProxyFactory::GetForProfile(profile())

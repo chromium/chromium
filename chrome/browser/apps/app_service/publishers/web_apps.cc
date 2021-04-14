@@ -22,6 +22,7 @@ WebApps::~WebApps() = default;
 // static
 void WebApps::UninstallImpl(Profile* profile,
                             const std::string& app_id,
+                            apps::mojom::UninstallSource uninstall_source,
                             gfx::NativeWindow parent_window) {
   web_app::WebAppUiManagerImpl* web_app_ui_manager =
       web_app::WebAppUiManagerImpl::Get(profile);
@@ -29,6 +30,8 @@ void WebApps::UninstallImpl(Profile* profile,
     return;
   }
 
+  // TODO (crbug.com/1196477): convert |uninstall_source| to a new
+  // WebappUninstallSource.
   web_app::WebAppDialogManager& web_app_dialog_manager =
       web_app_ui_manager->dialog_manager();
   if (web_app_dialog_manager.CanUninstallWebApp(app_id)) {

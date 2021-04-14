@@ -143,6 +143,7 @@ class AppServiceProxyBase : public KeyedService,
   // the uninstall dialog will be created as a modal dialog anchored at
   // |parent_window|. Otherwise, the browser window will be used as the anchor.
   virtual void Uninstall(const std::string& app_id,
+                         apps::mojom::UninstallSource uninstall_source,
                          gfx::NativeWindow parent_window) = 0;
 
   // Uninstalls an app for the given |app_id| without prompting the user to

@@ -134,8 +134,10 @@ enum InstallSource {
 // What caused the app to be uninstalled.
 enum UninstallSource {
   kUnknown = 0,
-  kUser,       // Uninstall by user action.
-  kMigration,  // Uninstall by app migration.
+  kAppList,       // Uninstall by the user from the App List (Launcher)
+  kAppManagement, // Uninstall by the user from the App Management page
+  kShelf,         // Uninstall by the user from the Shelf
+  kMigration,     // Uninstall by app migration.
 };
 
 // Augments a bool to include an 'unknown' value.

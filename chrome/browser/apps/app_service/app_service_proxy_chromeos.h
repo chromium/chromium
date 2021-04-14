@@ -46,6 +46,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
+                 apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
 
   // Pauses apps. |pause_data|'s key is the app_id. |pause_data|'s PauseData
@@ -96,6 +97,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
                                 OnPauseDialogClosedCallback pause_callback);
 
   void UninstallImpl(const std::string& app_id,
+                     apps::mojom::UninstallSource uninstall_source,
                      gfx::NativeWindow parent_window,
                      base::OnceClosure callback);
 
@@ -108,6 +110,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   // |uninstall_dialogs_|.
   void OnUninstallDialogClosed(apps::mojom::AppType app_type,
                                const std::string& app_id,
+                               apps::mojom::UninstallSource uninstall_source,
                                bool uninstall,
                                bool clear_site_data,
                                bool report_abuse,

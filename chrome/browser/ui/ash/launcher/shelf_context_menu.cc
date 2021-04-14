@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/launcher/extension_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/extension_uninstaller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
@@ -41,7 +42,8 @@ void UninstallApp(Profile* profile, const std::string& app_id) {
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(app_id) !=
       apps::mojom::AppType::kUnknown) {
-    proxy->Uninstall(app_id, nullptr /* parent_window */);
+    proxy->Uninstall(app_id, apps::mojom::UninstallSource::kShelf,
+                     nullptr /* parent_window */);
     return;
   }
 

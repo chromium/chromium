@@ -115,9 +115,11 @@ apps::InstanceRegistry& AppServiceProxyChromeOs::InstanceRegistry() {
   return instance_registry_;
 }
 
-void AppServiceProxyChromeOs::Uninstall(const std::string& app_id,
-                                        gfx::NativeWindow parent_window) {
-  UninstallImpl(app_id, parent_window, base::DoNothing());
+void AppServiceProxyChromeOs::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    gfx::NativeWindow parent_window) {
+  UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
 }
 
 void AppServiceProxyChromeOs::PauseApps(
@@ -230,7 +232,8 @@ void AppServiceProxyChromeOs::UninstallForTesting(
     const std::string& app_id,
     gfx::NativeWindow parent_window,
     base::OnceClosure callback) {
-  UninstallImpl(app_id, parent_window, std::move(callback));
+  UninstallImpl(app_id, apps::mojom::UninstallSource::kUnknown, parent_window,
+                std::move(callback));
 }
 
 void AppServiceProxyChromeOs::Shutdown() {
@@ -245,14 +248,17 @@ void AppServiceProxyChromeOs::Shutdown() {
   borealis_apps_.reset();
 }
 
-void AppServiceProxyChromeOs::UninstallImpl(const std::string& app_id,
-                                            gfx::NativeWindow parent_window,
-                                            base::OnceClosure callback) {
+void AppServiceProxyChromeOs::UninstallImpl(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    gfx::NativeWindow parent_window,
+    base::OnceClosure callback) {
   if (!app_service_.is_connected()) {
     return;
   }
 
-  app_registry_cache_.ForOneApp(app_id, [this, parent_window, &callback](
+  app_registry_cache_.ForOneApp(app_id, [this, uninstall_source, parent_window,
+                                         &callback](
                                             const apps::AppUpdate& update) {
     apps::mojom::IconKeyPtr icon_key = update.IconKey();
     auto uninstall_dialog = std::make_unique<UninstallDialog>(
@@ -260,7 +266,7 @@ void AppServiceProxyChromeOs::UninstallImpl(const std::string& app_id,
         std::move(icon_key), this, parent_window,
         base::BindOnce(&AppServiceProxyChromeOs::OnUninstallDialogClosed,
                        weak_ptr_factory_.GetWeakPtr(), update.AppType(),
-                       update.AppId()));
+                       update.AppId(), uninstall_source));
     uninstall_dialog->SetDialogCreatedCallbackForTesting(std::move(callback));
     uninstall_dialogs_.emplace(std::move(uninstall_dialog));
   });
@@ -269,6 +275,7 @@ void AppServiceProxyChromeOs::UninstallImpl(const std::string& app_id,
 void AppServiceProxyChromeOs::OnUninstallDialogClosed(
     apps::mojom::AppType app_type,
     const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
     bool uninstall,
     bool clear_site_data,
     bool report_abuse,
@@ -276,9 +283,8 @@ void AppServiceProxyChromeOs::OnUninstallDialogClosed(
   if (uninstall) {
     app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
 
-    app_service_->Uninstall(app_type, app_id,
-                            apps::mojom::UninstallSource::kUser,
-                            clear_site_data, report_abuse);
+    app_service_->Uninstall(app_type, app_id, uninstall_source, clear_site_data,
+                            report_abuse);
   }
 
   DCHECK(uninstall_dialog);

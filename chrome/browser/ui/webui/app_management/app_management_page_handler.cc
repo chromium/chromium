@@ -182,7 +182,8 @@ void AppManagementPageHandler::SetPermission(
 
 void AppManagementPageHandler::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-      app_id, nullptr /* parent_window */);
+      app_id, apps::mojom::UninstallSource::kAppManagement,
+      nullptr /* parent_window */);
 }
 
 void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {

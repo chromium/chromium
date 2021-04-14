@@ -81,7 +81,9 @@ extensions::UninstallReason GetUninstallReason(
     case apps::mojom::UninstallSource::kUnknown:
       NOTREACHED();
       FALLTHROUGH;
-    case apps::mojom::UninstallSource::kUser:
+    case apps::mojom::UninstallSource::kAppList:
+    case apps::mojom::UninstallSource::kAppManagement:
+    case apps::mojom::UninstallSource::kShelf:
       return extensions::UNINSTALL_REASON_USER_INITIATED;
     case apps::mojom::UninstallSource::kMigration:
       return extensions::UNINSTALL_REASON_MIGRATED;
