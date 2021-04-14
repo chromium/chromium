@@ -16,7 +16,7 @@
 namespace net {
 
 // TrustStoreNSS is an implementation of TrustStore which uses NSS to find trust
-// anchors for path building.
+// anchors for path building. This TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public TrustStore {
  public:
   struct DisallowTrustForCertsOnUserSlots {};

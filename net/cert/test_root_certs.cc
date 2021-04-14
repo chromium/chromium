@@ -5,12 +5,16 @@
 #include "net/cert/test_root_certs.h"
 
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
+#include "net/cert/internal/cert_errors.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
 
@@ -43,6 +47,19 @@ bool TestRootCerts::HasInstance() {
   return g_has_instance;
 }
 
+bool TestRootCerts::Add(X509Certificate* certificate) {
+  CertErrors errors;
+  scoped_refptr<ParsedCertificate> parsed = ParsedCertificate::Create(
+      bssl::UpRef(certificate->cert_buffer()),
+      x509_util::DefaultParseCertificateOptions(), &errors);
+  if (!parsed) {
+    return false;
+  }
+
+  test_trust_store_.AddTrustAnchor(std::move(parsed));
+  return AddImpl(certificate);
+}
+
 bool TestRootCerts::AddFromFile(const base::FilePath& file) {
   base::ThreadRestrictions::ScopedAllowIO allow_io_for_loading_test_certs;
   CertificateList root_certs = LoadCertificates(file);
@@ -50,6 +67,15 @@ bool TestRootCerts::AddFromFile(const base::FilePath& file) {
     return false;
 
   return Add(root_certs.front().get());
+}
+
+void TestRootCerts::Clear() {
+  ClearImpl();
+  test_trust_store_.Clear();
+}
+
+bool TestRootCerts::IsEmpty() const {
+  return test_trust_store_.IsEmpty();
 }
 
 TestRootCerts::TestRootCerts() {

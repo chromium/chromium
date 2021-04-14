@@ -13,8 +13,6 @@ namespace net {
 
 // Create a SystemTrustStore that will accept trust for:
 // (*) built-in certificates
-// (*) test root certificates
-// (*) additional trust anchors (added through SystemTrustStore::AddTrustAnchor)
 // (*) certificates stored on the |user_slot|.
 NET_EXPORT std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
@@ -22,8 +20,6 @@ CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
 
 // Create a SystemTrustStore that will accept trust for:
 // (*) built-in certificates
-// (*) test root certificates
-// (*) additional trust anchors (added through SystemTrustStore::AddTrustAnchor)
 // It will not accept trust for certificates stored on other slots.
 NET_EXPORT std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreNSSWithNoUserSlots();

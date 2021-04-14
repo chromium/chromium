@@ -21,6 +21,9 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   TrustStoreInMemory();
   ~TrustStoreInMemory() override;
 
+  // Returns whether the TrustStore is in the initial empty state.
+  bool IsEmpty() const;
+
   // Empties the trust store, resetting it to original state.
   void Clear();
 

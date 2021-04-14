@@ -18,6 +18,8 @@
 #include "net/cert/internal/path_builder.h"
 #include "net/cert/internal/simple_path_builder_delegate.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/internal/trust_store_collection.h"
+#include "net/cert/internal/trust_store_in_memory.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
@@ -131,19 +133,23 @@ bool VerifyUsingPathBuilder(
     const base::Time at_time,
     const base::FilePath& dump_prefix_path,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    std::unique_ptr<net::SystemTrustStore> ssl_trust_store) {
+    net::SystemTrustStore* system_trust_store) {
   base::Time::Exploded exploded_time;
   at_time.UTCExplode(&exploded_time);
   net::der::GeneralizedTime time = ConvertExplodedTime(exploded_time);
 
+  net::TrustStoreInMemory additional_roots;
   for (const auto& der_cert : root_der_certs) {
     scoped_refptr<net::ParsedCertificate> cert = ParseCertificate(der_cert);
     if (cert) {
-      ssl_trust_store->AddTrustAnchor(cert);
+      additional_roots.AddTrustAnchor(std::move(cert));
     }
   }
+  net::TrustStoreCollection trust_store;
+  trust_store.AddTrustStore(&additional_roots);
+  trust_store.AddTrustStore(system_trust_store->GetTrustStore());
 
-  if (!ssl_trust_store->UsesSystemTrustStore() && root_der_certs.empty()) {
+  if (!system_trust_store->UsesSystemTrustStore() && root_der_certs.empty()) {
     std::cerr << "NOTE: CertPathBuilder does not currently use OS trust "
                  "settings (--roots must be specified).\n";
   }
@@ -163,9 +169,9 @@ bool VerifyUsingPathBuilder(
   net::SimplePathBuilderDelegate delegate(
       2048, net::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
   net::CertPathBuilder path_builder(
-      target_cert, ssl_trust_store->GetTrustStore(), &delegate, time,
-      net::KeyPurpose::SERVER_AUTH, net::InitialExplicitPolicy::kFalse,
-      {net::AnyPolicy()}, net::InitialPolicyMappingInhibit::kFalse,
+      target_cert, &trust_store, &delegate, time, net::KeyPurpose::SERVER_AUTH,
+      net::InitialExplicitPolicy::kFalse, {net::AnyPolicy()},
+      net::InitialPolicyMappingInhibit::kFalse,
       net::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
 

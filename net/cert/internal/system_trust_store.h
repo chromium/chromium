@@ -17,25 +17,20 @@ namespace net {
 class TrustStore;
 
 // The SystemTrustStore interface is used to encapsulate a TrustStore for the
-// current platform, with some extra bells and whistles.
+// current platform, with some extra bells and whistles. Implementations must be
+// thread-safe.
 //
 // This is primarily used to abstract out the platform-specific bits that
 // relate to configuring the TrustStore needed for path building.
-//
-// Implementations of SystemTrustStore create an effective trust
-// store that is the composition of:
-//
-//   * The platform-specific trust store
-//   * A set of manually added trust anchors
-//   * Test certificates added via ScopedTestRoot
 class SystemTrustStore {
  public:
-  virtual ~SystemTrustStore() {}
+  virtual ~SystemTrustStore() = default;
 
   // Returns an aggregate TrustStore that can be used by the path builder. The
   // store composes the system trust store (if implemented) with manually added
   // trust anchors added via AddTrustAnchor(). This pointer is non-owned, and
-  // valid only for the lifetime of |this|.
+  // valid only for the lifetime of |this|. Any TrustStore objects returned from
+  // this method must be thread-safe.
   virtual TrustStore* GetTrustStore() = 0;
 
   // Returns false if the implementation of SystemTrustStore doesn't actually
@@ -50,17 +45,10 @@ class SystemTrustStore {
   // that it is one of default trust anchors for the system, as opposed to a
   // user-installed one.
   virtual bool IsKnownRoot(const ParsedCertificate* cert) const = 0;
-
-  // Adds a trust anchor to this particular instance of SystemTrustStore,
-  // and not globally for the system.
-  virtual void AddTrustAnchor(const scoped_refptr<ParsedCertificate>& cert) = 0;
-
-  // Returns true if |trust_anchor| was one added via |AddTrustAnchor()|.
-  virtual bool IsAdditionalTrustAnchor(const ParsedCertificate* cert) const = 0;
 };
 
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
-// trust store. This canno return nullptr, even in the case where system trust
+// trust store. This cannot return nullptr, even in the case where system trust
 // store integration is not supported. In this latter case, the SystemTrustStore
 // will only give access to the manually added trust anchors. This can be
 // inspected by testing whether UsesSystemTrustStore() returns false.

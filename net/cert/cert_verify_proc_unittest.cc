@@ -36,6 +36,7 @@
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/internal/system_trust_store.h"
 #include "net/cert/pem.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
@@ -200,9 +201,8 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
       return new CertVerifyProcWin();
 #endif
     case CERT_VERIFY_PROC_BUILTIN:
-      return CreateCertVerifyProcBuiltin(
-          std::move(cert_net_fetcher),
-          SystemTrustStoreProvider::CreateDefaultForSSL());
+      return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                         CreateSslSystemTrustStore());
     default:
       return nullptr;
   }

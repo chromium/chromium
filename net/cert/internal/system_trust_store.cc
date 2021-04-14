@@ -28,7 +28,6 @@
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/trust_store_collection.h"
 #include "net/cert/internal/trust_store_in_memory.h"
-#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
@@ -42,6 +41,7 @@
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_mac.h"
 #elif defined(OS_FUCHSIA)
+#include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #endif
 
@@ -49,38 +49,18 @@ namespace net {
 
 namespace {
 
-// Abstract implementation of SystemTrustStore to be used as a base class.
-// Handles the addition of additional trust anchors.
-class BaseSystemTrustStore : public SystemTrustStore {
+class DummySystemTrustStore : public SystemTrustStore {
  public:
-  BaseSystemTrustStore() {
-    trust_store_.AddTrustStore(&additional_trust_store_);
-  }
-
-  void AddTrustAnchor(
-      const scoped_refptr<ParsedCertificate>& trust_anchor) override {
-    additional_trust_store_.AddTrustAnchor(trust_anchor);
-  }
-
   TrustStore* GetTrustStore() override { return &trust_store_; }
 
-  bool IsAdditionalTrustAnchor(
-      const ParsedCertificate* trust_anchor) const override {
-    return additional_trust_store_.Contains(trust_anchor);
-  }
-
- protected:
-  TrustStoreCollection trust_store_;
-  TrustStoreInMemory additional_trust_store_;
-};
-
-class DummySystemTrustStore : public BaseSystemTrustStore {
- public:
   bool UsesSystemTrustStore() const override { return false; }
 
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
     return false;
   }
+
+ private:
+  TrustStoreCollection trust_store_;
 };
 
 }  // namespace
@@ -88,22 +68,12 @@ class DummySystemTrustStore : public BaseSystemTrustStore {
 #if defined(USE_NSS_CERTS)
 namespace {
 
-class SystemTrustStoreNSS : public BaseSystemTrustStore {
+class SystemTrustStoreNSS : public SystemTrustStore {
  public:
   explicit SystemTrustStoreNSS(std::unique_ptr<TrustStoreNSS> trust_store_nss)
-      : trust_store_nss_(std::move(trust_store_nss)) {
-    trust_store_.AddTrustStore(trust_store_nss_.get());
+      : trust_store_nss_(std::move(trust_store_nss)) {}
 
-    // When running in test mode, also layer in the test-only root certificates.
-    //
-    // Note that this integration requires TestRootCerts::HasInstance() to be
-    // true by the time SystemTrustStoreNSS is created - a limitation which is
-    // acceptable for the test-only code that consumes this.
-    if (TestRootCerts::HasInstance()) {
-      trust_store_.AddTrustStore(
-          TestRootCerts::GetInstance()->test_trust_store());
-    }
-  }
+  TrustStore* GetTrustStore() override { return trust_store_nss_.get(); }
 
   bool UsesSystemTrustStore() const override { return true; }
 
@@ -155,21 +125,11 @@ CreateSslSystemTrustStoreNSSWithNoUserSlots() {
 
 #elif defined(OS_MAC)
 
-class SystemTrustStoreMac : public BaseSystemTrustStore {
+class SystemTrustStoreMac : public SystemTrustStore {
  public:
-  SystemTrustStoreMac() {
-    trust_store_.AddTrustStore(GetGlobalTrustStoreMac());
+  SystemTrustStoreMac() = default;
 
-    // When running in test mode, also layer in the test-only root certificates.
-    //
-    // Note that this integration requires TestRootCerts::HasInstance() to be
-    // true by the time SystemTrustStoreMac is created - a limitation which is
-    // acceptable for the test-only code that consumes this.
-    if (TestRootCerts::HasInstance()) {
-      trust_store_.AddTrustStore(
-          TestRootCerts::GetInstance()->test_trust_store());
-    }
-  }
+  TrustStore* GetTrustStore() override { return GetGlobalTrustStoreMac(); }
 
   bool UsesSystemTrustStore() const override { return true; }
 
@@ -282,14 +242,12 @@ base::LazyInstance<FuchsiaSystemCerts>::Leaky g_root_certs_fuchsia =
 
 }  // namespace
 
-class SystemTrustStoreFuchsia : public BaseSystemTrustStore {
+class SystemTrustStoreFuchsia : public SystemTrustStore {
  public:
-  SystemTrustStoreFuchsia() {
-    trust_store_.AddTrustStore(g_root_certs_fuchsia.Get().system_trust_store());
-    if (TestRootCerts::HasInstance()) {
-      trust_store_.AddTrustStore(
-          TestRootCerts::GetInstance()->test_trust_store());
-    }
+  SystemTrustStoreFuchsia() = default;
+
+  TrustStore* GetTrustStore() override {
+    return g_root_certs_fuchsia.Get().system_trust_store();
   }
 
   bool UsesSystemTrustStore() const override { return true; }

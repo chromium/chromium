@@ -18,7 +18,7 @@
 
 namespace net {
 
-bool TestRootCerts::Add(X509Certificate* certificate) {
+bool TestRootCerts::AddImpl(X509Certificate* certificate) {
   base::ScopedCFTypeRef<SecCertificateRef> os_cert(
       x509_util::CreateSecCertificateFromX509Certificate(certificate));
   if (!os_cert)
@@ -30,25 +30,11 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
     return true;
   CFArrayAppendValue(temporary_roots_, os_cert.get());
 
-  // Add the certificate to the parallel |test_trust_store_|.
-  CertErrors errors;
-  scoped_refptr<ParsedCertificate> parsed = ParsedCertificate::Create(
-      bssl::UpRef(certificate->cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), &errors);
-  if (!parsed)
-    return false;
-  test_trust_store_.AddTrustAnchor(parsed);
-
   return true;
 }
 
-void TestRootCerts::Clear() {
+void TestRootCerts::ClearImpl() {
   CFArrayRemoveAllValues(temporary_roots_);
-  test_trust_store_.Clear();
-}
-
-bool TestRootCerts::IsEmpty() const {
-  return CFArrayGetCount(temporary_roots_) == 0;
 }
 
 OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {

@@ -15,8 +15,8 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
-#include "services/cert_verifier/system_trust_store_provider_chromeos.h"
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) || \
@@ -55,7 +55,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcForUser(
     crypto::ScopedPK11Slot user_public_slot) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<SystemTrustStoreProviderChromeOS>(
+      net::CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
           std::move(user_public_slot)));
 }
 
@@ -63,7 +63,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcWithoutUserSlots(
     scoped_refptr<net::CertNetFetcher> net_fetcher) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<SystemTrustStoreProviderChromeOS>());
+      net::CreateSslSystemTrustStoreNSSWithNoUserSlots());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -32,6 +32,7 @@
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/internal/system_trust_store.h"
 #include "net/cert/known_roots.h"
 #include "net/cert/ocsp_revocation_status.h"
 #include "net/cert/pem.h"
@@ -515,9 +516,8 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-  return CreateCertVerifyProcBuiltin(
-      std::move(cert_net_fetcher),
-      SystemTrustStoreProvider::CreateDefaultForSSL());
+  return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                     CreateSslSystemTrustStore());
 }
 #endif
 

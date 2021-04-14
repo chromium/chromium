@@ -15,13 +15,6 @@ source_set("lib") {
     "cert_verifier_service_factory.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "system_trust_store_provider_chromeos.cc",
-      "system_trust_store_provider_chromeos.h",
-    ]
-  }
-
   if (trial_comparison_cert_verifier_supported) {
     sources += [
       "trial_comparison_cert_verifier_mojo.cc",

@@ -96,23 +96,6 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(SystemTrustStoreNSSTest);
 };
 
-// Tests that SystemTrustStore respects TestRootCerts.
-TEST_F(SystemTrustStoreNSSTest, TrustTestRootCerts) {
-  std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStore();
-
-  EXPECT_TRUE(test_root_certs_->Add(root_cert_.get()));
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
-
-  test_root_certs_->Clear();
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
-  EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
-}
-
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
 // allows certificates stored on the specified user slot to be trusted.
 TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {

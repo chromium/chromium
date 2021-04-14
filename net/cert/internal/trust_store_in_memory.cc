@@ -9,6 +9,10 @@ namespace net {
 TrustStoreInMemory::TrustStoreInMemory() = default;
 TrustStoreInMemory::~TrustStoreInMemory() = default;
 
+bool TrustStoreInMemory::IsEmpty() const {
+  return entries_.empty();
+}
+
 void TrustStoreInMemory::Clear() {
   entries_.clear();
 }

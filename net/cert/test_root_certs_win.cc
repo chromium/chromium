@@ -136,7 +136,7 @@ BOOL WINAPI InterceptedOpenStoreW(LPCSTR store_provider,
 
 }  // namespace
 
-bool TestRootCerts::Add(X509Certificate* certificate) {
+bool TestRootCerts::AddImpl(X509Certificate* certificate) {
   // Ensure that the default CryptoAPI functionality has been intercepted.
   // If a test certificate is never added, then no interception should
   // happen.
@@ -153,22 +153,15 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
     return GetLastError() == static_cast<DWORD>(CRYPT_E_EXISTS);
   }
 
-  empty_ = false;
   return true;
 }
 
-void TestRootCerts::Clear() {
-  empty_ = true;
-
+void TestRootCerts::ClearImpl() {
   for (PCCERT_CONTEXT prev_cert =
            CertEnumCertificatesInStore(temporary_roots_, nullptr);
        prev_cert;
        prev_cert = CertEnumCertificatesInStore(temporary_roots_, nullptr))
     CertDeleteCertificateFromStore(prev_cert);
-}
-
-bool TestRootCerts::IsEmpty() const {
-  return empty_;
 }
 
 HCERTCHAINENGINE TestRootCerts::GetChainEngine() const {
@@ -205,7 +198,6 @@ TestRootCerts::~TestRootCerts() {
 }
 
 void TestRootCerts::Init() {
-  empty_ = true;
   temporary_roots_ =
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
                     CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr);

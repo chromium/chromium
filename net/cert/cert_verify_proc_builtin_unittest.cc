@@ -36,13 +36,6 @@ namespace net {
 
 namespace {
 
-class DummySystemTrustStoreProvider : public SystemTrustStoreProvider {
- public:
-  std::unique_ptr<SystemTrustStore> CreateSystemTrustStore() override {
-    return CreateEmptySystemTrustStore();
-  }
-};
-
 std::unique_ptr<test_server::HttpResponse> HangRequestAndCallback(
     base::OnceClosure callback,
     const test_server::HttpRequest& request) {
@@ -93,8 +86,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
-    verify_proc_ = CreateCertVerifyProcBuiltin(
-        cert_net_fetcher_, std::make_unique<DummySystemTrustStoreProvider>());
+    verify_proc_ = CreateCertVerifyProcBuiltin(cert_net_fetcher_,
+                                               CreateEmptySystemTrustStore());
 
     context_ = std::make_unique<net::TestURLRequestContext>();
 
