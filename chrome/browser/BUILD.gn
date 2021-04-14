@@ -2384,6 +2384,7 @@ static_library("browser") {
       "//chromeos/components/eche_app_ui/mojom",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/help_app_ui:mojo_bindings",
+      "//chromeos/components/help_app_ui/search:mojo_bindings",
       "//chromeos/components/local_search_service",
       "//chromeos/components/local_search_service/public/cpp:cpp",
       "//chromeos/components/local_search_service/public/mojom",

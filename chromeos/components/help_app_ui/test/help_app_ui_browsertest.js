@@ -37,8 +37,8 @@ var HelpAppUIBrowserTest = class extends testing.Test {
   get featureList() {
     return {
       enabled: [
+        'chromeos::features::kHelpAppLauncherSearch',
         'chromeos::features::kHelpAppSearchServiceIntegration',
-        'chromeos::features::kEnableLocalSearchService',
       ]
     };
   }
@@ -68,6 +68,18 @@ TEST_F('HelpAppUIBrowserTest', 'HasChromeSchemeURL', () => {
 TEST_F('HelpAppUIBrowserTest', 'HasTitleAndLang', () => {
   assertEquals(document.documentElement.lang, 'en');
   assertEquals(document.title, 'Explore');
+  testDone();
+});
+
+// Tests that we can make calls to the search handler to search.
+// TODO(b/182857903): Test that update works as well.
+TEST_F('HelpAppUIBrowserTest', 'CanSearchViaSearchHandler', async () => {
+  const toString16 = s => ({data: Array.from(s, c => c.charCodeAt())});
+  const result = await searchHandlerRemote.search(
+      toString16('verycomplicatedsearchquery'), 100);
+
+  // There should be no results for this query.
+  assertEquals(result.results.length, 0);
   testDone();
 });
 

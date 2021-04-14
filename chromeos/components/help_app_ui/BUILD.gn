@@ -33,6 +33,7 @@ static_library("help_app_ui") {
     ":mojo_bindings_js",
     "//ash/constants",
     "//chromeos/components/help_app_ui/search:mojo_bindings",
+    "//chromeos/components/help_app_ui/search:mojo_bindings_js",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",

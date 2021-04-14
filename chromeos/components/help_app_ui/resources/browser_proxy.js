@@ -15,6 +15,15 @@ helpAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
 const indexRemote =
     chromeos.localSearchService.mojom.Index.getRemote();
 
+/**
+ * Talks to the search handler. Use for updating the content for launcher
+ * search.
+ * TODO(b/182763045): Add API to make calls to this from the untrusted context.
+ *
+ * @type {!chromeos.helpApp.mojom.SearchHandlerRemote}
+ */
+const searchHandlerRemote = chromeos.helpApp.mojom.SearchHandler.getRemote();
+
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const guestFrame =
     /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));

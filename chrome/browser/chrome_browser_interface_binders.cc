@@ -202,6 +202,7 @@
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/help_app_ui.mojom.h"
+#include "chromeos/components/help_app_ui/search/search.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/media_app_ui.mojom.h"
@@ -786,6 +787,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::local_search_service::mojom::Index, chromeos::HelpAppUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      chromeos::help_app::mojom::SearchHandler, chromeos::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::eche_app::mojom::SignalingMessageExchanger,
