@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"

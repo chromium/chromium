@@ -15,7 +15,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"

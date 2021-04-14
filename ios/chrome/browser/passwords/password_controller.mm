@@ -29,7 +29,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -83,7 +82,6 @@
 
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
-using autofill::JsSuggestionManager;
 using autofill::PasswordFormGenerationData;
 using password_manager::PasswordForm;
 using autofill::FormRendererId;
@@ -585,8 +583,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     }
     FormInputAccessoryViewHandler* handler =
         [[FormInputAccessoryViewHandler alloc] init];
-    handler.JSSuggestionManager =
-        JsSuggestionManager::GetOrCreateForWebState(weakSelf.webState);
     NSString* mainFrameID =
         SysUTF8ToNSString(web::GetMainWebFrameId(weakSelf.webState));
     [handler setLastFocusFormActivityWebFrameID:mainFrameID];

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 
 #include "base/mac/foundation_util.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 
@@ -22,7 +21,6 @@ TEST_F(FormInputAccessoryViewHandlerTest, FormInputAccessoryViewHandler) {
       [[FormInputAccessoryViewHandler alloc] init];
   ASSERT_TRUE(accessory_view_delegate);
   [accessory_view_delegate closeKeyboardWithoutButtonPress];
-  accessory_view_delegate.JSSuggestionManager =
-      autofill::JsSuggestionManager::GetOrCreateForWebState(web_state());
+  accessory_view_delegate.webState = web_state();
   [accessory_view_delegate closeKeyboardWithoutButtonPress];
 }

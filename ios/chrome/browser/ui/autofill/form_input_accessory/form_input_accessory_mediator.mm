@@ -13,7 +13,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
@@ -176,10 +175,7 @@ using base::UmaHistogramEnumeration;
       }
     }
     _formInputAccessoryHandler = [[FormInputAccessoryViewHandler alloc] init];
-    _formInputAccessoryHandler.JSSuggestionManager =
-        _webState
-            ? autofill::JsSuggestionManager::GetOrCreateForWebState(_webState)
-            : nullptr;
+    _formInputAccessoryHandler.webState = _webState;
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
@@ -487,8 +483,7 @@ using base::UmaHistogramEnumeration;
     if (tabHelper) {
       self.provider = tabHelper->GetAccessoryViewProvider();
     }
-    _formInputAccessoryHandler.JSSuggestionManager =
-        autofill::JsSuggestionManager::GetOrCreateForWebState(webState);
+    _formInputAccessoryHandler.webState = webState;
   } else {
     self.webState = nullptr;
     self.provider = nil;

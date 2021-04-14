@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -298,6 +299,8 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(print_feature.get());
 
   features.push_back(autofill::AutofillJavaScriptFeature::GetInstance());
+  features.push_back(
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance());
 
   return features;
 }

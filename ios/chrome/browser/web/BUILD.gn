@@ -176,7 +176,6 @@ source_set("unit_tests") {
 js_compile_bundle("chrome_bundle_all_frames") {
   closure_entry_point = "__crWeb.chromeBundleAllFrames"
   sources = [
-    "//components/autofill/ios/browser/resources/suggestion_controller.js",
     "//components/autofill/ios/form_util/resources/form_handlers.js",
     "resources/chrome_bundle_all_frames.js",
   ]

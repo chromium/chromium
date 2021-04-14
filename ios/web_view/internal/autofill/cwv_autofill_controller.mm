@@ -20,7 +20,7 @@
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
+#import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -284,20 +284,35 @@ using autofill::FieldRendererId;
 }
 
 - (void)focusPreviousField {
-  autofill::JsSuggestionManager::GetOrCreateForWebState(_webState)
-      ->SelectPreviousElementInFrameWithID(_lastFormActivityWebFrameID);
+  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
+      _lastFormActivityWebFrameID);
+
+  if (!frame)
+    return;
+
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectPreviousElementInFrame(frame);
 }
 
 - (void)focusNextField {
-  autofill::JsSuggestionManager::GetOrCreateForWebState(_webState)
-      ->SelectNextElementInFrameWithID(_lastFormActivityWebFrameID);
+  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
+      _lastFormActivityWebFrameID);
+
+  if (!frame)
+    return;
+
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectNextElementInFrame(frame);
 }
 
 - (void)checkIfPreviousAndNextFieldsAreAvailableForFocusWithCompletionHandler:
     (void (^)(BOOL previous, BOOL next))completionHandler {
-  autofill::JsSuggestionManager::GetOrCreateForWebState(_webState)
-      ->FetchPreviousAndNextElementsPresenceInFrameWithID(
-          _lastFormActivityWebFrameID, base::BindOnce(completionHandler));
+  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
+      _lastFormActivityWebFrameID);
+
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->FetchPreviousAndNextElementsPresenceInFrame(
+          frame, base::BindOnce(completionHandler));
 }
 
 #pragma mark - CWVAutofillClientIOSBridge

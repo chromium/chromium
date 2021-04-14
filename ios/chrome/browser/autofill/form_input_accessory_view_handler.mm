@@ -11,8 +11,10 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
+#import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -155,7 +157,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
       _keyboardAccessoryMetricsLogger;
 }
 
-@synthesize JSSuggestionManager = _JSSuggestionManager;
+@synthesize webState = _webState;
 
 - (instancetype)init {
   self = [super init];
@@ -259,14 +261,22 @@ NSArray* FindDescendantToolbarItemsForActionName(
     (void (^)(bool, bool))completionHandler {
   DCHECK(completionHandler);
 
-  if (!_JSSuggestionManager) {
+  if (!_webState) {
     completionHandler(false, false);
     return;
   }
 
-  _JSSuggestionManager->FetchPreviousAndNextElementsPresenceInFrameWithID(
-      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID),
-      base::BindOnce(completionHandler));
+  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
+      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+
+  if (!frame) {
+    completionHandler(false, false);
+    return;
+  }
+
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->FetchPreviousAndNextElementsPresenceInFrame(
+          frame, base::BindOnce(completionHandler));
 }
 
 #pragma mark - Private
@@ -279,11 +289,16 @@ NSArray* FindDescendantToolbarItemsForActionName(
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
   if (!performedAction && [_lastFocusFormActivityWebFrameID length] &&
-      _JSSuggestionManager) {
+      _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    _JSSuggestionManager->CloseKeyboardForFrameWithID(
+    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
         base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+
+    if (frame) {
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+          ->CloseKeyboardForFrame(frame);
+    }
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnCloseButtonPressed();
@@ -297,11 +312,16 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSString* actionName = kFormSuggestionAssistButtonPreviousElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction && _JSSuggestionManager) {
+  if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    _JSSuggestionManager->SelectPreviousElementInFrameWithID(
+    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
         base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+
+    if (frame) {
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+          ->SelectPreviousElementInFrame(frame);
+    }
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnPreviousButtonPressed();
@@ -315,11 +335,16 @@ NSArray* FindDescendantToolbarItemsForActionName(
   NSString* actionName = kFormSuggestionAssistButtonNextElement;
   BOOL performedAction = [self executeFormAssistAction:actionName];
 
-  if (!performedAction && _JSSuggestionManager) {
+  if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    _JSSuggestionManager->SelectNextElementInFrameWithID(
+    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
         base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+
+    if (frame) {
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+          ->SelectNextElementInFrame(frame);
+    }
   }
   if (loggingButtonPressed) {
     _keyboardAccessoryMetricsLogger->OnNextButtonPressed();

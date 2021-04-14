@@ -24,7 +24,6 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"

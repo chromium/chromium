@@ -31,14 +31,15 @@ source_set("browser") {
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
-    "js_suggestion_manager.h",
-    "js_suggestion_manager.mm",
     "personal_data_manager_observer_bridge.h",
     "personal_data_manager_observer_bridge.mm",
+    "suggestion_controller_java_script_feature.h",
+    "suggestion_controller_java_script_feature.mm",
   ]
 
   deps = [
     ":autofill_js",
+    ":suggestion_controller_js",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -63,6 +64,11 @@ source_set("browser") {
 js_compile_bundle("autofill_js") {
   closure_entry_point = "__crWeb.autofill"
   sources = [ "resources/autofill_controller.js" ]
+}
+
+js_compile_bundle("suggestion_controller_js") {
+  closure_entry_point = "__crWeb.suggestion"
+  sources = [ "resources/suggestion_controller.js" ]
 }
 
 source_set("test_support") {

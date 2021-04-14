@@ -7,4 +7,3 @@
 goog.provide('__crWeb.webViewAllFrames');
 
 goog.require('__crWeb.formHandlers');
-goog.require('__crWeb.suggestion');

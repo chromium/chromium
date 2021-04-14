@@ -16,7 +16,6 @@
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
@@ -45,9 +44,6 @@ using base::UmaHistogramEnumeration;
 
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;
-
-// Convenience getter for the current suggestion manager.
-@property(nonatomic, readonly) autofill::JsSuggestionManager* suggestionManager;
 
 // Interface for |reauthenticationModule|, handling mostly the case when no
 // hardware for authentication is available.
@@ -174,18 +170,6 @@ using base::UmaHistogramEnumeration;
   }
 }
 
-#pragma mark - Getters
-
-- (autofill::JsSuggestionManager*)suggestionManager {
-  autofill::JsSuggestionManager* suggestionManager = nullptr;
-  web::WebState* webState = self.webStateList->GetActiveWebState();
-  if (webState) {
-    suggestionManager =
-        autofill::JsSuggestionManager::GetOrCreateForWebState(webState);
-  }
-  return suggestionManager;
-}
-
 #pragma mark - Private
 
 // Injects the passed string to the active field and jumps to the next field.
@@ -213,7 +197,7 @@ using base::UmaHistogramEnumeration;
 - (void)jumpToNextField {
   FormInputAccessoryViewHandler* handler =
       [[FormInputAccessoryViewHandler alloc] init];
-  handler.JSSuggestionManager = self.suggestionManager;
+  handler.webState = self.webStateList->GetActiveWebState();
   [handler setLastFocusFormActivityWebFrameID:
                base::SysUTF8ToNSString(self.lastFocusedElementFrameIdentifier)];
   [handler selectNextElementWithoutButtonPress];

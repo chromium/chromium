@@ -6,4 +6,3 @@
 goog.provide('__crWeb.chromeBundleAllFrames');
 
 goog.require('__crWeb.formHandlers');
-goog.require('__crWeb.suggestion');

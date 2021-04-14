@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
+#import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 
 #import <Foundation/Foundation.h>
 
@@ -23,14 +23,12 @@
 namespace {
 
 // Test fixture to test suggestions.
-class JsSuggestionManagerTest : public ChromeWebTest {
+class SuggestionControllerJavaScriptFeatureTest : public ChromeWebTest {
  protected:
-  void SetUp() override;
-
-  JsSuggestionManagerTest()
+  SuggestionControllerJavaScriptFeatureTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
-  // Returns the frame ID for the main frame of |web_state()|'s current page.
-  std::string GetFrameIdForMainFrame();
+  // Returns the main frame of |web_state()|'s current page.
+  web::WebFrame* GetMainFrame();
   // Helper method that initializes a form with three fields. Can be used to
   // test whether adding an attribute on the second field causes it to be
   // skipped (or not, as is appropriate) by selectNextElement.
@@ -46,25 +44,19 @@ class JsSuggestionManagerTest : public ChromeWebTest {
           return [GetActiveElementName() isEqualToString:name];
         });
   }
-  autofill::JsSuggestionManager* manager_;
 };
 
-void JsSuggestionManagerTest::SetUp() {
-  ChromeWebTest::SetUp();
-  manager_ = autofill::JsSuggestionManager::GetOrCreateForWebState(web_state());
-}
-
-std::string JsSuggestionManagerTest::GetFrameIdForMainFrame() {
+web::WebFrame* SuggestionControllerJavaScriptFeatureTest::GetMainFrame() {
   web::WebFramesManager* manager = web_state()->GetWebFramesManager();
-  return manager->GetMainWebFrame()->GetFrameId();
+  return manager->GetMainWebFrame();
 }
 
-TEST_F(JsSuggestionManagerTest, InitAndInject) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
   EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.suggestion"));
 }
 
-TEST_F(JsSuggestionManagerTest, SelectElementInTabOrder) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
   NSString* htmlFragment =
       @"<html> <body>"
        "<input id='1 (0)' tabIndex=1 href='http://www.w3schools.com'>1 (0)</a>"
@@ -129,11 +121,11 @@ TEST_F(JsSuggestionManagerTest, SelectElementInTabOrder) {
       // If the expected next element is null, the focus is not moved.
       expected_id = element_id;
     }
-    NSString* script = [NSString stringWithFormat:
-                                     @"document.getElementById('%@').focus();"
-                                      "__gCrWeb.suggestion.selectNextElement();"
-                                      "document.activeElement.id",
-                                     element_id];
+    NSString* script =
+        [NSString stringWithFormat:@"document.getElementById('%@').focus();"
+                                    "__gCrWeb.suggestion.selectNextElement();"
+                                    "document.activeElement.id",
+                                   element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting next element with active element "
         << base::SysNSStringToUTF8(element_id);
@@ -142,10 +134,10 @@ TEST_F(JsSuggestionManagerTest, SelectElementInTabOrder) {
   for (NSString* element_id : next_expected_ids) {
     // If the expected next element is null, there is no next element.
     BOOL expected = ![next_expected_ids[element_id] isEqualToString:@"null"];
-    NSString* script = [NSString stringWithFormat:
-                                     @"document.getElementById('%@').focus();"
-                                      "__gCrWeb.suggestion.hasNextElement()",
-                                     element_id];
+    NSString* script =
+        [NSString stringWithFormat:@"document.getElementById('%@').focus();"
+                                    "__gCrWeb.suggestion.hasNextElement()",
+                                   element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasNextElement() for "
         << base::SysNSStringToUTF8(element_id);
@@ -197,12 +189,11 @@ TEST_F(JsSuggestionManagerTest, SelectElementInTabOrder) {
       // If the expected previous element is null, the focus is not moved.
       expected_id = element_id;
     }
-    NSString* script =
-        [NSString stringWithFormat:
-                      @"document.getElementById('%@').focus();"
-                       "__gCrWeb.suggestion.selectPreviousElement();"
-                       "document.activeElement.id",
-                      element_id];
+    NSString* script = [NSString
+        stringWithFormat:@"document.getElementById('%@').focus();"
+                          "__gCrWeb.suggestion.selectPreviousElement();"
+                          "document.activeElement.id",
+                         element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting previous element with active element "
         << base::SysNSStringToUTF8(element_id);
@@ -212,17 +203,16 @@ TEST_F(JsSuggestionManagerTest, SelectElementInTabOrder) {
     // If the expected next element is null, there is no next element.
     BOOL expected = ![prev_expected_ids[element_id] isEqualToString:@"null"];
     NSString* script =
-        [NSString stringWithFormat:
-                      @"document.getElementById('%@').focus();"
-                       "__gCrWeb.suggestion.hasPreviousElement()",
-                      element_id];
+        [NSString stringWithFormat:@"document.getElementById('%@').focus();"
+                                    "__gCrWeb.suggestion.hasPreviousElement()",
+                                   element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasPreviousElement() for "
         << base::SysNSStringToUTF8(element_id);
   }
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigation) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest, SequentialNavigation) {
   LoadHtml(@"<html><body><form name='testform' method='post'>"
             "<input type='text' name='firstname'/>"
             "<input type='text' name='lastname'/>"
@@ -231,27 +221,32 @@ TEST_F(JsSuggestionManagerTest, SequentialNavigation) {
 
   ExecuteJavaScript(@"document.getElementsByName('firstname')[0].focus()");
 
-  manager_->SelectNextElementInFrameWithID(GetFrameIdForMainFrame());
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectNextElementInFrame(GetMainFrame());
   EXPECT_TRUE(WaitUntilElementSelected(@"lastname"));
   __block BOOL block_was_called = NO;
-  manager_->FetchPreviousAndNextElementsPresenceInFrameWithID(
-      GetFrameIdForMainFrame(),
-      base::BindOnce(^void(bool has_previous_element, bool has_next_element) {
-        block_was_called = YES;
-        EXPECT_TRUE(has_previous_element);
-        EXPECT_TRUE(has_next_element);
-      }));
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->FetchPreviousAndNextElementsPresenceInFrame(
+          GetMainFrame(), base::BindOnce(^void(bool has_previous_element,
+                                               bool has_next_element) {
+            block_was_called = YES;
+            EXPECT_TRUE(has_previous_element);
+            EXPECT_TRUE(has_next_element);
+          }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
-  manager_->SelectNextElementInFrameWithID(GetFrameIdForMainFrame());
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectNextElementInFrame(GetMainFrame());
   EXPECT_TRUE(WaitUntilElementSelected(@"email"));
-  manager_->SelectPreviousElementInFrameWithID(GetFrameIdForMainFrame());
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectPreviousElementInFrame(GetMainFrame());
   EXPECT_TRUE(WaitUntilElementSelected(@"lastname"));
 }
 
-void JsSuggestionManagerTest::SequentialNavigationSkipCheck(NSString* attribute,
-                                                            BOOL shouldSkip) {
+void SuggestionControllerJavaScriptFeatureTest::SequentialNavigationSkipCheck(
+    NSString* attribute,
+    BOOL shouldSkip) {
   LoadHtml([NSString stringWithFormat:@"<html><body>"
                                        "<form name='testform' method='post'>"
                                        "<input type='text' name='firstname'/>"
@@ -261,72 +256,86 @@ void JsSuggestionManagerTest::SequentialNavigationSkipCheck(NSString* attribute,
                                       attribute]);
   ExecuteJavaScript(@"document.getElementsByName('firstname')[0].focus()");
   EXPECT_NSEQ(@"firstname", GetActiveElementName());
-  manager_->SelectNextElementInFrameWithID(GetFrameIdForMainFrame());
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->SelectNextElementInFrame(GetMainFrame());
   if (shouldSkip)
     EXPECT_TRUE(WaitUntilElementSelected(@"lastname"));
   else
     EXPECT_TRUE(WaitUntilElementSelected(@"middlename"));
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationNoSkipText) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationNoSkipText) {
   SequentialNavigationSkipCheck(@"input type='text'", NO);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationNoSkipTextArea) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationNoSkipTextArea) {
   SequentialNavigationSkipCheck(@"input type='textarea'", NO);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationOverInvisibleElement) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationOverInvisibleElement) {
   SequentialNavigationSkipCheck(@"input type='text' style='display:none'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationOverHiddenElement) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationOverHiddenElement) {
   SequentialNavigationSkipCheck(@"input type='text' style='visibility:hidden'",
                                 YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationOverDisabledElement) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationOverDisabledElement) {
   SequentialNavigationSkipCheck(@"type='text' disabled", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationNoSkipPassword) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationNoSkipPassword) {
   SequentialNavigationSkipCheck(@"input type='password'", NO);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipSubmit) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipSubmit) {
   SequentialNavigationSkipCheck(@"input type='submit'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipImage) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipImage) {
   SequentialNavigationSkipCheck(@"input type='image'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipButton) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipButton) {
   SequentialNavigationSkipCheck(@"input type='button'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipRange) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipRange) {
   SequentialNavigationSkipCheck(@"input type='range'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipRadio) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipRadio) {
   SequentialNavigationSkipCheck(@"type='radio'", YES);
 }
 
-TEST_F(JsSuggestionManagerTest, SequentialNavigationSkipCheckbox) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest,
+       SequentialNavigationSkipCheckbox) {
   SequentialNavigationSkipCheck(@"type='checkbox'", YES);
 }
 
 // Special test for a condition where the closeKeyboard script would cause an
 // illegal JS recursion if a blur event results in an event that triggers a
 // crwebinvoke:// back, such as a page change.
-TEST_F(JsSuggestionManagerTest, CloseKeyboardSafetyTest) {
+TEST_F(SuggestionControllerJavaScriptFeatureTest, CloseKeyboardSafetyTest) {
   LoadHtml(@"<select id='select'>Select</select>");
   ExecuteJavaScript(
       @"select.onblur = function(){window.location.href = '#test'}");
   ExecuteJavaScript(@"select.focus()");
   // In the failure condition the app will crash during the next line.
-  manager_->CloseKeyboardForFrameWithID(GetFrameIdForMainFrame());
+  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+      ->CloseKeyboardForFrame(GetMainFrame());
   // TODO(crbug.com/661624): add a check for the keyboard actually being
   // dismissed; unfortunately it is not known how to adapt
   // WaitForBackgroundTasks to yield for events wrapped with window.setTimeout()
@@ -335,10 +344,11 @@ TEST_F(JsSuggestionManagerTest, CloseKeyboardSafetyTest) {
 
 // Test fixture to test
 // |FetchPreviousAndNextElementsPresenceInFrameWithID|.
-class FetchPreviousAndNextExceptionTest : public JsSuggestionManagerTest {
+class FetchPreviousAndNextExceptionTest
+    : public SuggestionControllerJavaScriptFeatureTest {
  public:
   void SetUp() override {
-    JsSuggestionManagerTest::SetUp();
+    SuggestionControllerJavaScriptFeatureTest::SetUp();
     LoadHtml(@"<html></html>");
   }
 
@@ -349,13 +359,14 @@ class FetchPreviousAndNextExceptionTest : public JsSuggestionManagerTest {
   void EvaluateJavaScriptAndExpectNoPreviousAndNextElement(NSString* js) {
     ExecuteJavaScript(js);
     __block BOOL block_was_called = NO;
-    manager_->FetchPreviousAndNextElementsPresenceInFrameWithID(
-        GetFrameIdForMainFrame(),
-        base::BindOnce(^(bool hasPreviousElement, bool hasNextElement) {
-          EXPECT_FALSE(hasPreviousElement);
-          EXPECT_FALSE(hasNextElement);
-          block_was_called = YES;
-        }));
+    autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+        ->FetchPreviousAndNextElementsPresenceInFrame(
+            GetMainFrame(),
+            base::BindOnce(^(bool hasPreviousElement, bool hasNextElement) {
+              EXPECT_FALSE(hasPreviousElement);
+              EXPECT_FALSE(hasNextElement);
+              block_was_called = YES;
+            }));
     base::test::ios::WaitUntilCondition(^bool() {
       base::RunLoop().RunUntilIdle();
       return block_was_called;
