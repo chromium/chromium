@@ -93,7 +93,8 @@ like `git cl upload` don't yet work on an arm Mac. The build will also use
 system `python`, `python3`, and `git`, instead of depot\_tools's hermetic
 versions for now.
 
-However, enough works to be able to check out and build, with some setup.
+However, enough works to be able to check out and build (with goma too), with
+some setup.
 
 1. opt in to arm64 binaries from cipd by running
 
@@ -114,5 +115,3 @@ build, using `gn`, `ninja` etc like normal.
 gtest-based binaries should build, run, and mostly pass. Web tests probably
 don't work yet due to lack of an arm apache binary
 ([tracking bug](https://crbug.com/1190885)).
-
-(goma does not yet work, [internal tracking bug](https://b/183118231).)
