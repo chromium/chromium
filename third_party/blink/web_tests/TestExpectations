@@ -6752,6 +6752,7 @@ crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Pass
 
 # Sheriff 2021-04-13
 crbug.com/1198515 [ Mac ] external/wpt/web-animations/timing-model/animations/playing-an-animation.html [ Pass Failure ]
+crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
 
 # Temporarily disabled to land a devtools-frontend change.
 crbug.com/1197542 http/tests/devtools/elements/styles-2/metrics-box-sizing.js [ Pass Failure ]
