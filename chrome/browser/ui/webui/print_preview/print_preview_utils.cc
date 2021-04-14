@@ -27,6 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/page_range.h"
+#include "printing/print_job_constants.h"
 
 namespace printing {
 

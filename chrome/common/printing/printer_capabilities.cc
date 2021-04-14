@@ -23,6 +23,7 @@
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/print_job_constants.h"
 
 #if defined(OS_WIN)
 #include "base/strings/string_split.h"

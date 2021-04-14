@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/print_job_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 

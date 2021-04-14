@@ -34,6 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/print_job_constants.h"
 #include "url/gurl.h"
 
 namespace printing {
