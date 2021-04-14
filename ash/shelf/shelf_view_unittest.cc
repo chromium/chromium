@@ -2096,7 +2096,7 @@ TEST_P(LtrRtlShelfViewTest, ReplacingDelegateCancelsContextMenu) {
 
 // Verifies that shelf is shown with the app list in fullscreen mode, and that
 // shelf app buttons are clickable.
-TEST_F(ShelfViewTest, ClickItemInFullscreen) {
+TEST_P(LtrRtlShelfViewTest, ClickItemInFullscreen) {
   ShelfID app_button_id = AddAppShortcut();
   auto selection_tracker_owned = std::make_unique<ShelfItemSelectionTracker>();
   ShelfItemSelectionTracker* selection_tracker = selection_tracker_owned.get();

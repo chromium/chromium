@@ -516,10 +516,8 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
     return;
   }
 
-  // Layer::SetBounds() does not mirror bounds under RTL. So set the mirrored
-  // bounds explicitly.
-  SetTranslucentBackground(scrollable_shelf_view_->GetMirroredRect(
-      scrollable_shelf_view_->GetHotseatBackgroundBounds()));
+  SetTranslucentBackground(
+      scrollable_shelf_view_->GetHotseatBackgroundBounds());
 }
 
 void HotseatWidget::DelegateView::SetTranslucentBackground(

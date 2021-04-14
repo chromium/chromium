@@ -512,7 +512,7 @@ views::View* ScrollableShelfView::GetDefaultFocusableChild() {
 }
 
 gfx::Rect ScrollableShelfView::GetHotseatBackgroundBounds() const {
-  return available_space_;
+  return GetMirroredRect(available_space_);
 }
 
 bool ScrollableShelfView::ShouldAdaptToRTL() const {
