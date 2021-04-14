@@ -416,7 +416,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
   virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                        const std::u16string& method_name,
-                                       base::Value&& arguments,
+                                       base::Value arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only
@@ -847,7 +847,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool DocumentUsedWebOTP() = 0;
 
   // Write a description of this RenderFrameHost into the provided |context|.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue&& context) = 0;
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Start/stop event log output from WebRTC on this RFH for the peer connection
   // identified locally within the RFH using the ID `lid`.
