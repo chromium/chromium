@@ -300,12 +300,14 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
     if (from_webstore_)
       prompt->SetWebstoreData("69,420", true, 2.5, 37);
 
+    ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     auto install_prompt =
         std::make_unique<ExtensionInstallPrompt>(web_contents);
     install_prompt->ShowDialog(base::DoNothing(), extension.get(), &icon,
                                std::move(prompt),
                                ExtensionInstallPrompt::ShowDialogCallback());
+    base::RunLoop().RunUntilIdle();
   }
 
   void set_from_webstore() { from_webstore_ = true; }
