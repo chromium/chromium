@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.app.Activity;
 import android.util.SparseArray;
+
 import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
@@ -212,10 +214,16 @@ class ManualFillingComponentBridge {
     }
 
     private ManualFillingComponent getManualFillingComponent() {
-        ChromeActivity activity = (ChromeActivity) mWindowAndroid.getActivity().get();
-        if (activity == null) return null; // Has the activity died since it was last checked?
-        activity.getManualFillingComponent().addObserver(mDestructionObserver);
-        return activity.getManualFillingComponent();
+        Supplier<ManualFillingComponent> manualFillingComponentSupplier =
+                ManualFillingComponentSupplier.from(mWindowAndroid);
+        if (manualFillingComponentSupplier == null) return null;
+
+        ManualFillingComponent component = manualFillingComponentSupplier.get();
+        if (component != null) {
+            component.addObserver(mDestructionObserver);
+        }
+
+        return component;
     }
 
     private void onComponentDestroyed() {
