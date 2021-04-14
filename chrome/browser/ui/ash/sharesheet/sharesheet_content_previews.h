@@ -28,9 +28,6 @@ class SharesheetContentPreviews : public views::View {
   SharesheetContentPreviews& operator=(const SharesheetContentPreviews&) =
       delete;
 
-  // Returns the height of the text preview view.
-  int GetTitleViewHeight();
-
  private:
   // Adds the view for image previews and sets the required properties.
   void InitaliseImageView();
@@ -39,7 +36,7 @@ class SharesheetContentPreviews : public views::View {
   void ShowTextPreview();
 
   // Creates a new Label view and adds styling.
-  void AddTextLine(std::string text, int bottom_spacing);
+  void AddTextLine(std::string text);
 
   // Parses the share_text attribute for each individual url and text
   // from the intent struct and returns the result in a vector.
@@ -52,7 +49,7 @@ class SharesheetContentPreviews : public views::View {
   void OnImageLoaded(const SkBitmap* bitmap, base::File::Error error);
 
   // Contains the share title and text preview views.
-  views::View* content_view_ = nullptr;
+  views::View* text_view_ = nullptr;
   views::ImageView* image_preview_ = nullptr;
 
   Profile* profile_;

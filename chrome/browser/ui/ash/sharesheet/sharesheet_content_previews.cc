@@ -32,10 +32,8 @@
 namespace {
 
 constexpr SkColor kTitlePreviewColor = gfx::kGoogleGrey700;
+constexpr int kBetweenChildSpacing = 12;
 
-// This is the left inset used for the distance between the Share text and the
-// image preview.
-constexpr int kSmallSpacing = 10;
 }  // namespace
 
 SharesheetContentPreviews::SharesheetContentPreviews(
@@ -45,26 +43,28 @@ SharesheetContentPreviews::SharesheetContentPreviews(
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      /* inside_border_insets */ gfx::Insets(),
-      /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
+      /* inside_border_insets */ gfx::Insets(SharesheetBubbleView::kSpacing),
+      /* between_child_spacing */ kBetweenChildSpacing,
+      /* collapse_margins_spacing */ false));
+  // Sets all views to be left-aligned.
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  // Sets all views to be top-aligned.
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
   // The image view is initialised first to ensure its left most placement.
   InitaliseImageView();
 
   // A separate view is created for the share title and preview string views.
-  content_view_ = AddChildView(std::make_unique<views::View>());
-  content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  text_view_ = AddChildView(std::make_unique<views::View>());
+  text_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
-  auto* share_title_view = content_view_->AddChildView(std::move(share_title));
-  share_title_view->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(SharesheetBubbleView::kSpacing, kSmallSpacing, 0,
-                  SharesheetBubbleView::kSpacing));
+  text_view_->AddChildView(std::move(share_title));
   ShowTextPreview();
 
   if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
@@ -77,26 +77,13 @@ SharesheetContentPreviews::SharesheetContentPreviews(
 
 SharesheetContentPreviews::~SharesheetContentPreviews() = default;
 
-int SharesheetContentPreviews::GetTitleViewHeight() {
-  return content_view_->GetPreferredSize().height();
-}
-
 void SharesheetContentPreviews::InitaliseImageView() {
   image_preview_ = AddChildView(std::make_unique<views::ImageView>());
-  image_preview_->SetProperty(views::kMarginsKey,
-                              gfx::Insets(SharesheetBubbleView::kSpacing,
-                                          SharesheetBubbleView::kSpacing,
-                                          SharesheetBubbleView::kSpacing, 0));
-  image_preview_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   image_preview_->SetImageSize(
       gfx::Size(sharesheet::kIconSize, sharesheet::kIconSize));
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
-  // TODO(crbug.com/2650014): call a function that will dynamically resize the
-  // image preview thumbnail relative to how many lines of text preview are
-  // present.
-
   // TODO(crbug.com/2650014): Handle case for sharing multiple files. Add an
   // enumeration string to reflect how many files are being sent.
 
@@ -117,28 +104,21 @@ void SharesheetContentPreviews::ShowTextPreview() {
     }
   }
 
-  // If there are two items to be shared, only the second line of text preview
-  // will have a bottom inset of |kSpacing| to create whitespace from the
-  // targets.
   if (share_fields.size() == 1) {
-    AddTextLine(share_fields[0], SharesheetBubbleView::kSpacing);
+    AddTextLine(share_fields[0]);
   } else if (share_fields.size() > 1) {
-    AddTextLine(share_fields[0], 0);
-    AddTextLine(share_fields[1], SharesheetBubbleView::kSpacing);
+    AddTextLine(share_fields[0]);
+    AddTextLine(share_fields[1]);
   }
 }
 
-void SharesheetContentPreviews::AddTextLine(std::string text,
-                                            int bottom_spacing) {
-  auto* new_line = content_view_->AddChildView(std::make_unique<views::Label>(
+void SharesheetContentPreviews::AddTextLine(std::string text) {
+  auto* new_line = text_view_->AddChildView(std::make_unique<views::Label>(
       (base::ASCIIToUTF16(text)),
       ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
   new_line->SetLineHeight(SharesheetBubbleView::kTitleLineHeight);
   new_line->SetEnabledColor(kTitlePreviewColor);
   new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  new_line->SetProperty(views::kMarginsKey,
-                        gfx::Insets(0, kSmallSpacing, bottom_spacing,
-                                    SharesheetBubbleView::kSpacing));
 }
 
 std::vector<std::string> SharesheetContentPreviews::ExtractShareText() {

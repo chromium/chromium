@@ -198,8 +198,7 @@ void SharesheetBubbleView::ShowBubble(
     // content previews flag is off.
     share_title_view->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(SharesheetBubbleView::kSpacing, kSpacing, kSpacing,
-                    SharesheetBubbleView::kSpacing));
+        gfx::Insets(kSpacing, kSpacing, kSpacing, kSpacing));
     share_title_view_ = main_view_->AddChildView(std::move(share_title_view));
   } else {
     // Adds view for content previews including the title, text descriptor
@@ -738,7 +737,7 @@ int SharesheetBubbleView::GetBubbleHeadHeight() {
   if (content_previews_) {
     // The bubble height is increased by the height of the additional lines from
     // text preview.
-    head_height = content_previews_->GetTitleViewHeight();
+    head_height = content_previews_->GetPreferredSize().height();
   }
   if (share_title_view_) {
     head_height = share_title_view_->GetProperty(views::kMarginsKey)->height() +
