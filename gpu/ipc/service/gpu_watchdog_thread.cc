@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -26,6 +27,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
 
 #if defined(OS_WIN)
@@ -33,20 +35,32 @@
 #endif
 
 namespace gpu {
+
+base::TimeDelta GetGpuWatchdogTimeout() {
+  std::string timeout_str =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kGpuWatchdogTimeoutSeconds);
+  if (!timeout_str.empty()) {
+    size_t timeout_seconds;
+    if (base::StringToSizeT(timeout_str, &timeout_seconds))
+      return base::TimeDelta::FromSeconds(timeout_seconds);
+
+    LOG(WARNING) << "Invalid --" << switches::kGpuWatchdogTimeoutSeconds << ": "
+                 << timeout_str;
+  }
+
 #if defined(OS_WIN)
-base::TimeDelta GetGpuWatchdogTimeoutBasedOnCpuCores() {
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     int num_of_processors = base::SysInfo::NumberOfProcessors();
-
     if (num_of_processors > 8)
       return (kGpuWatchdogTimeout - base::TimeDelta::FromSeconds(10));
     else if (num_of_processors <= 4)
       return kGpuWatchdogTimeout + base::TimeDelta::FromSeconds(5);
   }
+#endif
 
   return kGpuWatchdogTimeout;
 }
-#endif
 
 GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
                                      int init_factor,
@@ -127,13 +141,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
 // static
 std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     bool start_backgrounded) {
-#if defined(OS_WIN)
-  base::TimeDelta gpu_watchdog_timeout = GetGpuWatchdogTimeoutBasedOnCpuCores();
-#else
-  base::TimeDelta gpu_watchdog_timeout = kGpuWatchdogTimeout;
-#endif
-
-  return Create(start_backgrounded, gpu_watchdog_timeout, kInitFactor,
+  return Create(start_backgrounded, GetGpuWatchdogTimeout(), kInitFactor,
                 kRestartFactor, false);
 }
 

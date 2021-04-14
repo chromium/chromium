@@ -114,4 +114,7 @@ const char kVulkanSyncCpuMemoryLimitMb[] = "vulkan-sync-cpu-memory-limit-mb";
 // GPU process crashes unexpectedly.
 const char kForceBrowserCrashOnGpuCrash[] = "force-browser-crash-on-gpu-crash";
 
+// Override value for the GPU watchdog timeout in seconds.
+const char kGpuWatchdogTimeoutSeconds[] = "gpu-watchdog-timeout-seconds";
+
 }  // namespace switches

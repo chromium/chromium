@@ -300,6 +300,7 @@ static const char* const kSwitchNames[] = {
 #endif
     switches::kGpuBlocklistTestGroup,
     switches::kGpuDriverBugListTestGroup,
+    switches::kGpuWatchdogTimeoutSeconds,
     switches::kUseCmdDecoder,
     switches::kForceVideoOverlays,
 #if defined(OS_ANDROID)

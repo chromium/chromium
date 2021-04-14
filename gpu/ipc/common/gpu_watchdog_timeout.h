@@ -23,11 +23,6 @@ constexpr base::TimeDelta kGpuWatchdogTimeout =
 #elif defined(OS_WIN)
 constexpr base::TimeDelta kGpuWatchdogTimeout =
     base::TimeDelta::FromSeconds(30);
-#elif defined(OS_FUCHSIA)
-// Increased temporarily to investigate if this helps https://crbug.com/1185119
-// (GPU process hangs when running blink web tests on Fuchsia).
-constexpr base::TimeDelta kGpuWatchdogTimeout =
-    base::TimeDelta::FromSeconds(30);
 #else
 constexpr base::TimeDelta kGpuWatchdogTimeout =
     base::TimeDelta::FromSeconds(15);

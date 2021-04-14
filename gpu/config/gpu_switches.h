@@ -37,6 +37,7 @@ GPU_EXPORT extern const char kDisableVulkanFallbackToGLForTesting[];
 GPU_EXPORT extern const char kVulkanHeapMemoryLimitMb[];
 GPU_EXPORT extern const char kVulkanSyncCpuMemoryLimitMb[];
 GPU_EXPORT extern const char kForceBrowserCrashOnGpuCrash[];
+GPU_EXPORT extern const char kGpuWatchdogTimeoutSeconds[];
 
 }  // namespace switches
 
