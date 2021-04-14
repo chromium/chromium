@@ -495,7 +495,7 @@ TEST_F(ScanServiceTest, ScanFails) {
 TEST_F(ScanServiceTest, PageSaveFails) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  // Sending an empty string in test data simulates a page saving to fail.
+  // Sending an empty string in test data simulates a page failing to save.
   const std::vector<std::string> scan_data = {"TestData1", "", "TestData3"};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
