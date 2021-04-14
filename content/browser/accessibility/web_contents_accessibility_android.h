@@ -333,7 +333,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id);
 
-  void CollectStats();
   void UpdateAccessibilityNodeInfoBoundsRect(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

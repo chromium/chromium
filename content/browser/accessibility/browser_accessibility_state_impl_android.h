@@ -20,11 +20,7 @@ class BrowserAccessibilityStateImplAndroid
   BrowserAccessibilityStateImplAndroid();
   ~BrowserAccessibilityStateImplAndroid() override {}
 
-  int GetServiceEventTypeMask();
-  int GetServiceFeedbackTypeMask();
-  int GetServiceFlagsMask();
-  int GetServiceCapabilitiesMask();
-  base::android::ScopedJavaLocalRef<jobjectArray> GetServiceIds();
+  void CollectAccessibilityServiceStats();
 
  protected:
   void UpdateHistogramsOnOtherThread() override;
