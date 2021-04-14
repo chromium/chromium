@@ -307,8 +307,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 17
-// Next id: 17
+// Next version: 18
+// Next id: 18
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -419,6 +419,10 @@ struct BrowserInitParams {
   // Added in M91.
   [MinVersion=16]
   Account? device_account@16;
+
+  // Specifies whether lacros-chrome should use new account manager logic.
+  [MinVersion=17]
+  bool use_new_account_manager@17;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

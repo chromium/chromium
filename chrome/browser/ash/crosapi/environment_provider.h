@@ -46,6 +46,9 @@ class EnvironmentProvider {
   virtual std::string GetDeviceAccountPolicy();
   virtual void SetDeviceAccountPolicy(const std::string& policy_blob);
 
+  // Returns true if lacros-chrome should use new account manager logic.
+  virtual bool GetUseNewAccountManager();
+
  private:
   // The serialized PolicyFetchResponse object corresponding to the policy of
   // device account. Used to pass the data from Ash to Lacros.
