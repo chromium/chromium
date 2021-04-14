@@ -135,6 +135,14 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="44" label="SERVICE_TYPE_UNKNOWN"/>
   <int value="45" label="SERVICE_TYPE_PASSWORD_MANAGER"/>
   <int value="46" label="SERVICE_TYPE_ASSISTIVE_TECH"/>
+  <int value="47" label="CAPABILITY_CAN_REQUEST_FINGERPRINT_GESTURES"/>
+  <int value="48" label="CAPABILITY_CAN_TAKE_SCREENSHOT"/>
+  <int value="49" label="FLAG_ENABLE_ACCESSIBILITY_VOLUME"/>
+  <int value="50" label="FLAG_REQUEST_ACCESSIBILITY_BUTTON"/>
+  <int value="51" label="FLAG_REQUEST_FINGERPRINT_GESTURES"/>
+  <int value="52" label="FLAG_REQUEST_MULTI_FINGER_GESTURES"/>
+  <int value="53" label="FLAG_REQUEST_SHORTCUT_WARNING_DIALOG_SPOKEN_FEEDBACK"/>
+  <int value="54" label="FLAG_SERVICE_HANDLES_DOUBLE_TAP"/>
 </enum>
 
 <enum name="AccessibilityATKAPIEnum">
