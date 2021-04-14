@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -79,6 +80,9 @@ ThreadCreationParams& ThreadCreationParams::SetSupportsGC(bool gc_enabled) {
 
 std::unique_ptr<Thread> Thread::CreateThread(
     const ThreadCreationParams& params) {
+#if DCHECK_IS_ON()
+  WTF::WillCreateThread();
+#endif
   auto thread = std::make_unique<scheduler::WorkerThread>(params);
   thread->Init();
   return std::move(thread);
