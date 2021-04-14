@@ -101,9 +101,6 @@ specific_include_rules = {
   "NativePageFactory\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "RecentTabsPage\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "OfflinePageBridge\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],

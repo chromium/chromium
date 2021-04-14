@@ -131,7 +131,8 @@ public class NativePageFactory {
                     ()
                             -> HistoryManagerUtils.showHistoryManager(mActivity, tab,
                                     mActivity.getTabModelSelector().isIncognitoSelected()));
-            return new RecentTabsPage(mActivity, recentTabsManager, new TabShim(tab, mActivity));
+            return new RecentTabsPage(mActivity, recentTabsManager, new TabShim(tab, mActivity),
+                    mActivity.getBrowserControlsManager());
         }
 
         protected NativePage buildLaunchpadPage(Tab tab) {

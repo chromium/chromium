@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -62,9 +61,10 @@ public class RecentTabsPage
      * @param activity The activity this view belongs to.
      * @param recentTabsManager The RecentTabsManager which provides the model data.
      * @param pageHost The NativePageHost used to provide a history navigation delegate object.
+     * @param browserControlsManager The BrowserControlsManager used to provide offset values.
      */
-    public RecentTabsPage(
-            ChromeActivity activity, RecentTabsManager recentTabsManager, NativePageHost pageHost) {
+    public RecentTabsPage(Activity activity, RecentTabsManager recentTabsManager,
+            NativePageHost pageHost, BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
         mPageHost = pageHost;
@@ -86,7 +86,7 @@ public class RecentTabsPage
         mView.addOnAttachStateChangeListener(this);
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            mBrowserControlsStateProvider = activity.getBrowserControlsManager();
+            mBrowserControlsStateProvider = browserControlsStateProvider;
             mBrowserControlsStateProvider.addObserver(this);
             onBottomControlsHeightChanged(mBrowserControlsStateProvider.getBottomControlsHeight(),
                     mBrowserControlsStateProvider.getBottomControlsMinHeight());
