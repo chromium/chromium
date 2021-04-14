@@ -495,6 +495,7 @@ crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFECompo
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
 crbug.com/1183814 external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Failure ]
+crbug.com/1167352 external/wpt/css/css-will-change/will-change-transform-add-content.html [ Failure ]
 
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
