@@ -924,6 +924,67 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--e"));
 }
 
+TEST_F(ComputedStyleTest, GetVariableNamesCount_Invalidation) {
+  ComputedStyle* style = CreateComputedStyle();
+
+  EXPECT_EQ(style->GetVariableNamesCount(), 0u);
+
+  auto data = css_test_helpers::CreateVariableData("foo");
+  style->SetVariableData("--x", data, false);
+  EXPECT_EQ(style->GetVariableNamesCount(), 1u);
+
+  style->SetVariableData("--y", data, false);
+  EXPECT_EQ(style->GetVariableNamesCount(), 2u);
+
+  style->SetVariableData("--z", data, true);
+  EXPECT_EQ(style->GetVariableNamesCount(), 3u);
+}
+
+TEST_F(ComputedStyleTest, GetVariableNames_Invalidation) {
+  ComputedStyle* style = CreateComputedStyle();
+
+  auto data = css_test_helpers::CreateVariableData("foo");
+  style->SetVariableData("--x", data, false);
+  EXPECT_EQ(style->GetVariableNames().size(), 1u);
+  EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
+
+  style->SetVariableData("--y", data, false);
+  EXPECT_EQ(style->GetVariableNames().size(), 2u);
+  EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
+  EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
+
+  style->SetVariableData("--z", data, true);
+  EXPECT_EQ(style->GetVariableNames().size(), 3u);
+  EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
+  EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
+  EXPECT_TRUE(style->GetVariableNames().Contains("--z"));
+}
+
+TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
+  using css_test_helpers::CreateLengthRegistration;
+
+  ComputedStyle* style = CreateComputedStyle();
+
+  {
+    PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
+    registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
+    style->SetInitialData(StyleInitialData::Create(*registry));
+  }
+  EXPECT_EQ(style->GetVariableNames().size(), 1u);
+  EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
+
+  // Not set StyleInitialData to something else.
+  {
+    PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
+    registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
+    registry->RegisterProperty("--z", *CreateLengthRegistration("--z", 3));
+    style->SetInitialData(StyleInitialData::Create(*registry));
+  }
+  EXPECT_EQ(style->GetVariableNames().size(), 2u);
+  EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
+  EXPECT_TRUE(style->GetVariableNames().Contains("--z"));
+}
+
 TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);

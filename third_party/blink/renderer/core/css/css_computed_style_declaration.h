@@ -94,6 +94,8 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   // CSSOM functions.
   CSSRule* parentRule() const override;
   const ComputedStyle* ComputeComputedStyle() const;
+  const Vector<AtomicString>* GetVariableNames() const;
+  size_t GetVariableNamesCount() const;
   String getPropertyValue(const String& property_name) override;
   String getPropertyPriority(const String& property_name) override;
   String GetPropertyShorthand(const String& property_name) override;
