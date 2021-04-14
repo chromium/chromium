@@ -207,10 +207,17 @@ struct MixedContentDownloadData {
 
     // Evaluate download security.
     is_redirect_chain_secure_ = true;
-    for (const auto& url : item->GetUrlChain()) {
-      if (!network::IsUrlPotentiallyTrustworthy(url)) {
-        is_redirect_chain_secure_ = false;
-        break;
+    // Skip over the final URL so that we can investigate it separately below.
+    // The redirect chain always contains the final URL, so this is always safe
+    // in Chrome, but some tests don't plan for it, so we check here.
+    const auto& chain = item->GetUrlChain();
+    if (chain.size() > 1) {
+      for (unsigned i = 0; i < chain.size() - 1; ++i) {
+        const GURL& url = chain[i];
+        if (!network::IsUrlPotentiallyTrustworthy(url)) {
+          is_redirect_chain_secure_ = false;
+          break;
+        }
       }
     }
     const GURL& dl_url = item->GetURL();
