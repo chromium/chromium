@@ -256,10 +256,7 @@ component("capture_lib") {
     configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
   }
 
-  # This includes the case of ChromeOS
-  # TODO: As we move to separately version Chrome from ChromeOS, we may need to split
-  # these sources into linux, chromeos, and common.
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "video/linux/scoped_v4l2_device_fd.cc",
       "video/linux/scoped_v4l2_device_fd.h",
@@ -327,10 +324,6 @@ component("capture_lib") {
       "video/chromeos/video_capture_jpeg_decoder.h",
       "video/chromeos/video_capture_jpeg_decoder_impl.cc",
       "video/chromeos/video_capture_jpeg_decoder_impl.h",
-      "video/linux/camera_config_chromeos.cc",
-      "video/linux/camera_config_chromeos.h",
-      "video/linux/video_capture_device_chromeos.cc",
-      "video/linux/video_capture_device_chromeos.h",
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
@@ -391,7 +384,7 @@ source_set("test_support") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "video/linux/fake_device_provider.cc",
       "video/linux/fake_device_provider.h",
@@ -453,15 +446,11 @@ test("capture_unittests") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "video/linux/v4l2_capture_delegate_unittest.cc",
       "video/linux/video_capture_device_factory_linux_unittest.cc",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "video/linux/camera_config_chromeos_unittest.cc" ]
   }
 
   if (is_android) {

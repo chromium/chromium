@@ -31,20 +31,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
     virtual void GetDeviceIds(std::vector<std::string>* target_container) = 0;
     virtual std::string GetDeviceModelId(const std::string& device_id) = 0;
     virtual std::string GetDeviceDisplayName(const std::string& device_id) = 0;
-    virtual VideoFacingMode GetCameraFacing(const std::string& device_id,
-                                            const std::string& model_id) = 0;
-    // Get the orientation of the camera. The value is the angle that the camera
-    // image needs to be rotated clockwise so it shows correctly on the display
-    // in its natural orientation. It should be 0, 90, 180, or 270.
-    //
-    // For example, suppose a device has a naturally tall screen. The
-    // back-facing camera sensor is mounted in landscape. You are looking at the
-    // screen. If the top side of the camera sensor is aligned with the right
-    // edge of the screen in natural orientation, the value should be 90. If the
-    // top side of a front-facing camera sensor is aligned with the right of the
-    // screen, the value should be 270.
-    virtual int GetOrientation(const std::string& device_id,
-                               const std::string& model_id) = 0;
   };
 
   explicit VideoCaptureDeviceFactoryLinux(

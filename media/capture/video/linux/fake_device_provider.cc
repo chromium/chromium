@@ -52,15 +52,4 @@ std::string FakeDeviceProvider::GetDeviceDisplayName(
   return iter->display_name();
 }
 
-VideoFacingMode FakeDeviceProvider::GetCameraFacing(
-    const std::string& device_id,
-    const std::string& model_id) {
-  return MEDIA_VIDEO_FACING_NONE;
-}
-
-int FakeDeviceProvider::GetOrientation(const std::string& device_id,
-                                       const std::string& model_id) {
-  return 0;
-}
-
 }  // namespace media
