@@ -135,12 +135,7 @@
       <cr-icon-button class="icon-arrow-back no-overlap" id="closeButton"
           aria-label="$i18n{back}" on-click="onCloseButtonTap_">
       </cr-icon-button>
-      <img id="icon" src="[[data.iconUrl]]"
-          aria-label$="[[a11yAssociation(data.name)]]"
-          alt$="[[appOrExtension(
-              data.type,
-              '$i18nPolymer{appIcon}',
-              '$i18nPolymer{extensionIcon}')]]">
+      <img id="icon" src="[[data.iconUrl]]" alt="">
       <span id="name" class="cr-title-text" role="heading" aria-level="1">
         [[data.name]]
       </span>

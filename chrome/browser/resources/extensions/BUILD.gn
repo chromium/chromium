@@ -345,7 +345,6 @@ js_library("keyboard_shortcut_delegate") {
 
 js_library("keyboard_shortcuts") {
   deps = [
-    ":item_behavior",
     ":keyboard_shortcut_delegate",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
   ]
@@ -362,7 +361,6 @@ js_library("kiosk_browser_proxy") {
 if (is_chromeos_ash) {
   js_library("kiosk_dialog") {
     deps = [
-      ":item_behavior",
       ":kiosk_browser_proxy",
       "//ui/webui/resources/js:web_ui_listener_behavior.m",
     ]
@@ -409,7 +407,6 @@ js_library("navigation_helper") {
 
 js_library("options_dialog") {
   deps = [
-    ":item_behavior",
     ":navigation_helper",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]

@@ -14,7 +14,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemBehavior} from './item_behavior.js';
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 
 
@@ -23,7 +22,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [WebUIListenerBehavior, ItemBehavior],
+  behaviors: [WebUIListenerBehavior],
 
   properties: {
     /** @private {?string} */

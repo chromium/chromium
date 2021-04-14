@@ -30,7 +30,6 @@ js_library("activity_log") {
   deps = [
     ":activity_log_history",
     ":activity_log_stream",
-    "..:item_behavior",
     "..:navigation_helper",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",

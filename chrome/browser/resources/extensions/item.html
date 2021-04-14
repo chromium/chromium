@@ -187,11 +187,7 @@
   <div id="main">
     <div id="icon-wrapper">
       <img id="icon" src="[[data.iconUrl]]"
-          aria-describedby="a11yAssociation"
-          alt$="[[appOrExtension(
-              data.type,
-              '$i18nPolymer{appIcon}',
-              '$i18nPolymer{extensionIcon}')]]">
+          aria-describedby="a11yAssociation" alt="">
       <template is="dom-if"
           if="[[computeSourceIndicatorIcon_(data.*)]]">
         <div id="source-indicator">

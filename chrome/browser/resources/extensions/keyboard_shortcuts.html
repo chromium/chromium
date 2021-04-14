@@ -70,11 +70,7 @@
   <template is="dom-repeat" items="[[calculateShownItems_(items.*)]]">
     <div class="shortcut-card">
       <div class="card-title cr-title-text">
-        <img class="icon" src="[[item.iconUrl]]"
-            alt$="[[appOrExtension(
-                item.type,
-                '$i18nPolymer{appIcon}',
-                '$i18nPolymer{extensionIcon}')]]">
+        <img class="icon" src="[[item.iconUrl]]" alt="">
         <span role="heading" aria-level="2">[[item.name]]</span>
       </div>
       <div class="card-controls">

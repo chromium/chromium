@@ -11,7 +11,6 @@ import './shortcut_input.js';
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemBehavior} from './item_behavior.js';
 import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
@@ -20,7 +19,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [CrContainerShadowBehavior, ItemBehavior],
+  behaviors: [CrContainerShadowBehavior],
 
   properties: {
     /** @type {!KeyboardShortcutDelegate} */

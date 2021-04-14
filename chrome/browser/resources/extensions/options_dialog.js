@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemBehavior} from './item_behavior.js';
 import {navigation, Page} from './navigation_helper.js';
 
 /**
@@ -39,8 +38,6 @@ Polymer({
   is: 'extensions-options-dialog',
 
   _template: html`{__html_template__}`,
-
-  behaviors: [ItemBehavior],
 
   properties: {
     /** @private {Object} */
