@@ -1019,8 +1019,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
   base::Optional<LogicalSize> replaced_size;
   if (is_replaced) {
-    replaced_size = ComputeReplacedSize(
-        node_info.node, node_info.constraint_space, min_max_sizes);
+    replaced_size =
+        ComputeReplacedSize(node_info.node, node_info.constraint_space);
   }
 
   ComputeOutOfFlowInlineDimensions(

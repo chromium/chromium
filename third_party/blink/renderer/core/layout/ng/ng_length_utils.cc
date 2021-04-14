@@ -780,10 +780,8 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
 }  // namespace
 
 // Computes size for a replaced element.
-LogicalSize ComputeReplacedSize(
-    const NGBlockNode& node,
-    const NGConstraintSpace& space,
-    const base::Optional<MinMaxSizes>& child_min_max_sizes) {
+LogicalSize ComputeReplacedSize(const NGBlockNode& node,
+                                const NGConstraintSpace& space) {
   DCHECK(node.IsReplaced());
 
   const ComputedStyle& style = node.Style();
@@ -800,7 +798,8 @@ LogicalSize ComputeReplacedSize(
   if (space.IsFixedBlockSize()) {
     replaced_block = space.AvailableSize().block_size;
     DCHECK_GE(*replaced_block, 0);
-  } else if (!block_length.IsAuto() || space.StretchBlockSizeIfAuto()) {
+  } else if (!block_length.IsAutoOrContentOrIntrinsic() ||
+             space.StretchBlockSizeIfAuto()) {
     Length block_length_to_resolve = block_length;
     if (block_length_to_resolve.IsAuto()) {
       // TODO(dgrogan): This code block (and its corresponding inline version
@@ -837,12 +836,43 @@ LogicalSize ComputeReplacedSize(
         MinimumValueForLength(style.LogicalInlineEnd(), available_size);
   }
 
+  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const base::Optional<LogicalSize> natural_size =
+      ComputeNormalizedNaturalSize(node, border_padding, aspect_ratio);
+
+  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    LayoutUnit size;
+    if (aspect_ratio.IsEmpty()) {
+      DCHECK(natural_size);
+      size = natural_size->inline_size;
+    } else if (replaced_block) {
+      size =
+          InlineSizeFromAspectRatio(border_padding, aspect_ratio,
+                                    EBoxSizing::kContentBox, *replaced_block);
+    } else if (natural_size) {
+      size = natural_size->inline_size;
+    } else {
+      // We don't have a natural size - default to stretch if our available
+      // size is definite.
+      size = (space.AvailableSize().inline_size == kIndefiniteSize)
+                 ? border_padding.InlineSum()
+                 : ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
+                       space, style, border_padding, base::nullopt,
+                       Length::FillAvailable());
+    }
+
+    // |depends_on_block_constraints| doesn't matter in this context.
+    MinMaxSizes sizes;
+    sizes += size;
+    return {sizes, /* depends_on_block_constraints */ false};
+  };
+
   const Length& inline_length = style.LogicalWidth();
   const MinMaxSizes inline_min_max_sizes = {
-      ResolveMinInlineLength(space, style, border_padding, child_min_max_sizes,
+      ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
                              style.LogicalMinWidth(),
                              available_inline_size_adjustment),
-      ResolveMaxInlineLength(space, style, border_padding, child_min_max_sizes,
+      ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                              style.LogicalMaxWidth(),
                              available_inline_size_adjustment)};
   base::Optional<LayoutUnit> replaced_inline;
@@ -857,8 +887,8 @@ LogicalSize ComputeReplacedSize(
       inline_length_to_resolve = Length::FillAvailable();
     }
     replaced_inline = ResolveMainInlineLength(
-        space, style, border_padding, child_min_max_sizes,
-        inline_length_to_resolve, available_inline_size_adjustment);
+        space, style, border_padding, MinMaxSizesFunc, inline_length_to_resolve,
+        available_inline_size_adjustment);
     DCHECK(replaced_inline != kIndefiniteSize);
     replaced_inline =
         inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
@@ -867,19 +897,15 @@ LogicalSize ComputeReplacedSize(
   if (replaced_inline && replaced_block)
     return LogicalSize(*replaced_inline, *replaced_block);
 
-  const LogicalSize aspect_ratio = node.GetAspectRatio();
-  const base::Optional<LogicalSize> natural_size =
-      ComputeNormalizedNaturalSize(node, border_padding, aspect_ratio);
-
   // We have *only* an aspect-ratio with no sizes (natural or otherwise), here
   // we default to stretching to the available-size if available.
   if (!natural_size && !replaced_inline && !replaced_block) {
     replaced_inline =
         (space.AvailableSize().inline_size == kIndefiniteSize)
             ? border_padding.InlineSum()
-            : ResolveMainInlineLength(
-                  space, style, border_padding, child_min_max_sizes,
-                  Length::FillAvailable(), available_inline_size_adjustment);
+            : ResolveMainInlineLength(space, style, border_padding,
+                                      MinMaxSizesFunc, Length::FillAvailable(),
+                                      available_inline_size_adjustment);
     replaced_inline =
         inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
   }
@@ -1358,16 +1384,9 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
     node.GetLayoutBox()->ComputePercentageLogicalHeight(Length::Percent(0));
   }
 
-  // TODO(ikilpatrick): This check shouldn't be needed. |ComputeReplacedSize|
-  // should be able to determine the correct size without the
-  // |NGBlockSize::ComputeMinMaxSizes| call.
-  if (!is_intrinsic && node.IsReplaced()) {
-    MinMaxSizes intrinsic_min_max_sizes =
-        node.ComputeMinMaxSizes(constraint_space.GetWritingMode(),
-                                MinMaxSizesType::kIntrinsic, constraint_space)
-            .sizes;
+  if (node.IsReplaced()) {
     const LogicalSize border_box_size =
-        ComputeReplacedSize(node, constraint_space, intrinsic_min_max_sizes);
+        ComputeReplacedSize(node, constraint_space);
     return {border_box_size, border, scrollbar, padding};
   }
 

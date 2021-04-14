@@ -330,6 +330,8 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
 bool AbsoluteNeedsChildInlineSize(const NGBlockNode& node) {
   if (node.IsTable())
     return true;
+  if (node.IsReplaced())
+    return false;
   const auto& style = node.Style();
   return style.LogicalWidth().IsContentOrIntrinsic() ||
          style.LogicalMinWidth().IsContentOrIntrinsic() ||
@@ -341,6 +343,8 @@ bool AbsoluteNeedsChildInlineSize(const NGBlockNode& node) {
 bool AbsoluteNeedsChildBlockSize(const NGBlockNode& node) {
   if (node.IsTable())
     return true;
+  if (node.IsReplaced())
+    return false;
   const auto& style = node.Style();
   return style.LogicalHeight().IsContentOrIntrinsic() ||
          style.LogicalMinHeight().IsContentOrIntrinsic() ||
@@ -414,12 +418,12 @@ void ComputeOutOfFlowInlineDimensions(
     min_inline_size = std::max(min_inline_size, minmax_content_sizes->min_size);
 
   base::Optional<LayoutUnit> inline_size;
-  if (!style.LogicalWidth().IsAuto()) {
+  if (replaced_size.has_value()) {
+    inline_size = replaced_size->inline_size;
+  } else if (!style.LogicalWidth().IsAuto()) {
     inline_size =
         ResolveMainInlineLength(space, style, border_padding,
                                 minmax_content_sizes, style.LogicalWidth());
-  } else if (replaced_size.has_value()) {
-    inline_size = replaced_size->inline_size;
   } else if (IsInlineSizeComputableFromBlockSize(node)) {
     DCHECK(minmax_content_sizes.has_value());
     inline_size = minmax_content_sizes->min_size;
@@ -484,12 +488,12 @@ void ComputeOutOfFlowBlockDimensions(
     min_block_size = std::max(min_block_size, min_max_sizes->min_size);
 
   base::Optional<LayoutUnit> block_size;
-  if (!style.LogicalHeight().IsAuto()) {
+  if (replaced_size.has_value()) {
+    block_size = replaced_size->block_size;
+  } else if (!style.LogicalHeight().IsAuto()) {
     block_size = ResolveMainBlockLength(space, style, border_padding,
                                         style.LogicalHeight(),
                                         child_block_size_or_indefinite);
-  } else if (replaced_size.has_value()) {
-    block_size = replaced_size->block_size;
   }
 
   const auto writing_direction = style.GetWritingDirection();

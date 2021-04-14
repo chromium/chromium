@@ -452,16 +452,17 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
                           const NGBlockNode& node,
                           const NGBoxStrut& border_scrollbar_padding);
 
-// Intrinsic size for replaced elements is computed as:
-// - |out_replaced_size| intrinsic size of the element. It might have no value.
-// - |out_aspect_ratio| only set if out_replaced_size is empty.
-//   If out_replaced_size is not empty, that is the aspect ratio.
-// This routine will return precisely one of |out_replaced_size| and
-// |out_aspect_ratio|. If |out_aspect_ratio| is filled in, both inline and block
-// componenents will be non-zero.
+// Computes the size for a replaced element. See:
+// https://www.w3.org/TR/CSS2/visudet.html#inline-replaced-width
+// https://www.w3.org/TR/CSS2/visudet.html#inline-replaced-height
+// https://www.w3.org/TR/CSS22/visudet.html#min-max-widths
+// https://drafts.csswg.org/css-sizing-3/#intrinsic-sizes
+//
+// This will handle both intrinsic, and layout calculations depending on the
+// space provided. (E.g. if the available inline-size is indefinite it will
+// return the intrinsic size).
 CORE_EXPORT LogicalSize ComputeReplacedSize(const NGBlockNode&,
-                                            const NGConstraintSpace&,
-                                            const base::Optional<MinMaxSizes>&);
+                                            const NGConstraintSpace&);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.
