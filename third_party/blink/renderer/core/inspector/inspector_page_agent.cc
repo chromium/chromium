@@ -981,11 +981,14 @@ void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
     script_to_evaluate_on_load_once_ = pending_script_to_evaluate_on_load_once_;
     pending_script_to_evaluate_on_load_once_ = String();
   }
-  GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()));
+  GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()),
+                                protocol::Page::NavigationTypeEnum::Navigation);
 }
 
 void InspectorPageAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
-  GetFrontend()->frameNavigated(BuildObjectForFrame(frame));
+  GetFrontend()->frameNavigated(
+      BuildObjectForFrame(frame),
+      protocol::Page::NavigationTypeEnum::BackForwardCacheRestore);
 }
 
 void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,

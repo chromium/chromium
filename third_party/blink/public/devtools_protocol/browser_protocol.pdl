@@ -7329,11 +7329,18 @@ domain Page
         # A new frame target will be created (see Target.attachedToTarget).
         swap
 
+  # The type of a frameNavigated event.
+  experimental type NavigationType extends string
+    enum
+      Navigation
+      BackForwardCacheRestore
+
   # Fired once navigation of the frame has completed. Frame is now associated with the new loader.
   event frameNavigated
     parameters
       # Frame object.
       Frame frame
+      experimental NavigationType type
 
   # Fired when opening document to write to.
   experimental event documentOpened
