@@ -492,7 +492,7 @@ bool ActionsParser::ParsePointerAction(
   if (button_id_value) {
     if (!button_id_value->is_int()) {
       error_message_ = base::StringPrintf(
-          "actions[%zu].actions.button is not a string", action_index_);
+          "actions[%zu].actions.button is not an integer", action_index_);
       return false;
     }
     button_id = button_id_value->GetInt();
@@ -529,6 +529,109 @@ bool ActionsParser::ParsePointerAction(
     key_modifiers |= key_modifier;
   }
 
+  double width = 40;
+  const base::Value* width_value = action.FindKey("width");
+  if (width_value) {
+    width = width_value->GetDouble();
+    if (width < 0) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.width should not be negative", action_index_);
+      return false;
+    }
+  }
+
+  double height = 40;
+  const base::Value* height_value = action.FindKey("height");
+  if (height_value) {
+    height = height_value->GetDouble();
+    if (height < 0) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.height should not be negative", action_index_);
+      return false;
+    }
+  }
+
+  double pressure = 0.5;
+  const base::Value* pressure_value = action.FindKey("pressure");
+  if (pressure_value) {
+    pressure = pressure_value->GetDouble();
+    if (pressure < 0 || pressure > 1) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.pressure must be a non-negative number in the "
+          "range of [0,1]",
+          action_index_);
+      return false;
+    }
+  }
+
+  double tangential_pressure = 0;
+  const base::Value* tangential_pressure_value =
+      action.FindKey("tangentialPressure");
+  if (tangential_pressure_value) {
+    tangential_pressure = tangential_pressure_value->GetDouble();
+    if (tangential_pressure < -1 || tangential_pressure > 1) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.tangentialPressure must be a non-negative "
+          "number in the range of [-1,1]",
+          action_index_);
+      return false;
+    }
+  }
+
+  int tilt_x = 0;
+  const base::Value* tilt_x_value = action.FindKey("tiltX");
+  if (tilt_x_value) {
+    if (!tilt_x_value->is_int()) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.tiltX is not an integer", action_index_);
+      return false;
+    }
+    tilt_x = tilt_x_value->GetInt();
+    if (tilt_x < -90 || tilt_x > 90) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.tiltX must be an integer in the range of "
+          "[-90,90]",
+          action_index_);
+      return false;
+    }
+  }
+
+  int tilt_y = 0;
+  const base::Value* tilt_y_value = action.FindKey("tiltY");
+  if (tilt_y_value) {
+    if (!tilt_y_value->is_int()) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.tiltY is not an integer", action_index_);
+      return false;
+    }
+    tilt_y = tilt_y_value->GetInt();
+    if (tilt_y < -90 || tilt_y > 90) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.tiltY must be an integer in the range of "
+          "[-90,90]",
+          action_index_);
+      return false;
+    }
+  }
+
+  int twist = 0;
+  const base::Value* twist_value = action.FindKey("twist");
+  if (twist_value) {
+    if (!twist_value->is_int()) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.twist is not an integer", action_index_);
+      return false;
+    }
+    twist = twist_value->GetInt();
+    if (twist < 0 || twist > 359) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.twist must be an integer in the range of "
+          "[0,359]",
+          action_index_);
+      return false;
+    }
+  }
+
   int duration = viz::BeginFrameArgs::DefaultInterval().InMilliseconds();
   if (pointer_action_type ==
           SyntheticPointerActionParams::PointerActionType::IDLE &&
@@ -543,10 +646,24 @@ bool ActionsParser::ParsePointerAction(
       action_param.set_position(gfx::PointF(position_x, position_y));
       action_param.set_button(button);
       action_param.set_key_modifiers(key_modifiers);
+      action_param.set_width(width);
+      action_param.set_height(height);
+      action_param.set_force(pressure);
+      action_param.set_tangential_pressure(tangential_pressure);
+      action_param.set_tilt_x(tilt_x);
+      action_param.set_tilt_y(tilt_y);
+      action_param.set_rotation_angle(twist);
       break;
     case SyntheticPointerActionParams::PointerActionType::MOVE:
       action_param.set_position(gfx::PointF(position_x, position_y));
       action_param.set_key_modifiers(key_modifiers);
+      action_param.set_width(width);
+      action_param.set_height(height);
+      action_param.set_force(pressure);
+      action_param.set_tangential_pressure(tangential_pressure);
+      action_param.set_tilt_x(tilt_x);
+      action_param.set_tilt_y(tilt_y);
+      action_param.set_rotation_angle(twist);
       break;
     case SyntheticPointerActionParams::PointerActionType::RELEASE:
       action_param.set_button(button);

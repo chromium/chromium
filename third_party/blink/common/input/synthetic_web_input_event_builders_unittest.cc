@@ -51,6 +51,42 @@ TEST(SyntheticWebInputEventBuilders, BuildWebTouchEvent) {
   EXPECT_EQ(2, event.touches[0].id);
   EXPECT_EQ(WebTouchPoint::State::kStatePressed, event.touches[0].state);
   EXPECT_EQ(gfx::PointF(9, 10), event.touches[0].PositionInWidget());
+  EXPECT_EQ(0.5, event.touches[0].force);
+  EXPECT_EQ(0.5, event.touches[1].force);
+  event.ResetPoints();
+
+  event.ReleasePoint(0);
+  event.ReleasePoint(1);
+  event.ResetPoints();
+
+  // Set radius, rotation angle, force for touch start event
+  event.PressPoint(9, 10, 10, 20, 36, 0.62);
+  EXPECT_EQ(1U, event.touches_length);
+  EXPECT_EQ(3, event.touches[0].id);
+  EXPECT_EQ(WebTouchPoint::State::kStatePressed, event.touches[0].state);
+  EXPECT_EQ(gfx::PointF(9, 10), event.touches[0].PositionInWidget());
+  EXPECT_EQ(10, event.touches[0].radius_x);
+  EXPECT_EQ(20, event.touches[0].radius_y);
+  EXPECT_EQ(36, event.touches[0].rotation_angle);
+  EXPECT_EQ(0.62f, event.touches[0].force);
+  EXPECT_EQ(0, event.touches[0].tilt_x);
+  EXPECT_EQ(0, event.touches[0].tilt_y);
+  EXPECT_EQ(0, event.touches[0].twist);
+
+  // Set radius, rotation angle, force for touch move event
+  event.MovePoint(0, 11, 15, 8, 16, 28, 0.73);
+  EXPECT_EQ(1U, event.touches_length);
+  EXPECT_EQ(3, event.touches[0].id);
+  EXPECT_EQ(WebTouchPoint::State::kStateMoved, event.touches[0].state);
+  EXPECT_EQ(gfx::PointF(11, 15), event.touches[0].PositionInWidget());
+  EXPECT_EQ(8, event.touches[0].radius_x);
+  EXPECT_EQ(16, event.touches[0].radius_y);
+  EXPECT_EQ(28, event.touches[0].rotation_angle);
+  EXPECT_EQ(0.73f, event.touches[0].force);
+  EXPECT_EQ(0, event.touches[0].tilt_x);
+  EXPECT_EQ(0, event.touches[0].tilt_y);
+  EXPECT_EQ(0, event.touches[0].twist);
+  event.ResetPoints();
 }
 
 }  // namespace blink

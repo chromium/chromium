@@ -34,11 +34,15 @@ void SyntheticTouchDriver::Press(float x,
                                  float height,
                                  float rotation_angle,
                                  float force,
+                                 float tangential_pressure,
+                                 int tilt_x,
+                                 int tilt_y,
                                  const base::TimeTicks& timestamp) {
   DCHECK_GE(index, 0);
   DCHECK(pointer_id_map_.find(index) == pointer_id_map_.end());
-  int touch_index = touch_event_.PressPoint(x, y, width / 2.f, height / 2.f,
-                                            rotation_angle, force);
+  int touch_index =
+      touch_event_.PressPoint(x, y, width / 2.f, height / 2.f, rotation_angle,
+                              force, tangential_pressure, tilt_x, tilt_y);
   touch_event_.touches[touch_index].id = index;
   pointer_id_map_[index] = touch_index;
   touch_event_.SetModifiers(key_modifiers);
@@ -51,11 +55,15 @@ void SyntheticTouchDriver::Move(float x,
                                 float width,
                                 float height,
                                 float rotation_angle,
-                                float force) {
+                                float force,
+                                float tangential_pressure,
+                                int tilt_x,
+                                int tilt_y) {
   DCHECK_GE(index, 0);
   DCHECK(pointer_id_map_.find(index) != pointer_id_map_.end());
   touch_event_.MovePoint(pointer_id_map_[index], x, y, width / 2.f,
-                         height / 2.f, rotation_angle, force);
+                         height / 2.f, rotation_angle, force,
+                         tangential_pressure, tilt_x, tilt_y);
   touch_event_.SetModifiers(key_modifiers);
 }
 

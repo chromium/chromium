@@ -203,6 +203,19 @@ struct CONTENT_EXPORT
     return r.force_;
   }
 
+  static float tangential_pressure(
+      const content::SyntheticPointerActionParams& r) {
+    return r.tangential_pressure_;
+  }
+
+  static uint32_t tilt_x(const content::SyntheticPointerActionParams& r) {
+    return r.tilt_x_;
+  }
+
+  static uint32_t tilt_y(const content::SyntheticPointerActionParams& r) {
+    return r.tilt_y_;
+  }
+
   static base::TimeTicks timestamp(
       const content::SyntheticPointerActionParams& r) {
     return r.timestamp_;

@@ -91,6 +91,9 @@ struct SyntheticPointerActionParams {
   float height;
   float rotation_angle;
   float force;
+  float tangential_pressure;
+  int32 tilt_x;
+  int32 tilt_y;
   mojo_base.mojom.TimeTicks timestamp;
   mojo_base.mojom.TimeDelta duration;
 };

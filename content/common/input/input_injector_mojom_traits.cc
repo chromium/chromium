@@ -198,8 +198,11 @@ bool StructTraits<content::mojom::SyntheticPointerActionParamsDataView,
   out->key_modifiers_ = data.key_modifiers();
   out->width_ = data.width();
   out->height_ = data.height();
-  out->rotation_angle_ = data.height();
+  out->rotation_angle_ = data.rotation_angle();
   out->force_ = data.force();
+  out->tangential_pressure_ = data.tangential_pressure();
+  out->tilt_x_ = data.tilt_x();
+  out->tilt_y_ = data.tilt_y();
   return true;
 }
 

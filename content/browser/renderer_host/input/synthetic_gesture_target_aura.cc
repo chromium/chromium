@@ -148,7 +148,10 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
   ui::EventType event_type = web_mouse_event.GetTypeAsUiEventType();
   int flags = ui::WebEventModifiersToEventFlags(web_mouse_event.GetModifiers());
   ui::PointerDetails pointer_details(
-      ui::WebPointerTypeToEventPointerType(web_mouse_event.pointer_type));
+      ui::WebPointerTypeToEventPointerType(web_mouse_event.pointer_type),
+      web_mouse_event.id, 0, 0, web_mouse_event.force, web_mouse_event.twist,
+      web_mouse_event.tilt_x, web_mouse_event.tilt_y,
+      web_mouse_event.tangential_pressure);
   int changed_button_flags = 0;
   if (event_type == ui::ET_MOUSE_PRESSED ||
       event_type == ui::ET_MOUSE_RELEASED) {

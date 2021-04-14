@@ -99,6 +99,24 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
     force_ = force;
   }
 
+  void set_tangential_pressure(float tangential_pressure) {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    tangential_pressure_ = tangential_pressure;
+  }
+
+  void set_tilt_x(int tilt_x) {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    tilt_x_ = tilt_x;
+  }
+
+  void set_tilt_y(int tilt_y) {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    tilt_y_ = tilt_y;
+  }
+
   void set_timestamp(base::TimeTicks timestamp) { timestamp_ = timestamp; }
 
   void set_duration(base::TimeDelta duration) {
@@ -152,6 +170,24 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
     return force_;
   }
 
+  float tangential_pressure() const {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    return tangential_pressure_;
+  }
+
+  int tilt_x() const {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    return tilt_x_;
+  }
+
+  int tilt_y() const {
+    DCHECK(pointer_action_type_ == PointerActionType::PRESS ||
+           pointer_action_type_ == PointerActionType::MOVE);
+    return tilt_y_;
+  }
+
   base::TimeTicks timestamp() const { return timestamp_; }
 
   base::TimeDelta duration() const {
@@ -185,6 +221,9 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
   float height_ = 40.f;
   float rotation_angle_ = 0.f;
   float force_ = 1.f;
+  float tangential_pressure_ = 0.f;
+  int tilt_x_ = 0;
+  int tilt_y_ = 0;
   base::TimeTicks timestamp_;
   // The duration of the pause action is in milliseconds.
   base::TimeDelta duration_;

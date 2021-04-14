@@ -29,7 +29,10 @@ class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
       float width = 1.f,
       float height = 1.f,
       float rotation_angle = 0.f,
-      float force = 1.f,
+      float force = 0.5,
+      float tangential_pressure = 0.f,
+      int tilt_x = 0,
+      int tilt_y = 0,
       const base::TimeTicks& timestamp = base::TimeTicks::Now()) override;
   void Move(float x,
             float y,
@@ -38,7 +41,10 @@ class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
             float width = 1.f,
             float height = 1.f,
             float rotation_angle = 0.f,
-            float force = 1.f) override;
+            float force = 0.5,
+            float tangential_pressure = 0.f,
+            int tilt_x = 0,
+            int tilt_y = 0) override;
   void Release(int index = 0,
                SyntheticPointerActionParams::Button button =
                    SyntheticPointerActionParams::Button::LEFT,

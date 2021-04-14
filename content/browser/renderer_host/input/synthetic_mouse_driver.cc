@@ -34,6 +34,9 @@ void SyntheticMouseDriver::Press(float x,
                                  float height,
                                  float rotation_angle,
                                  float force,
+                                 float tangential_pressure,
+                                 int tilt_x,
+                                 int tilt_y,
                                  const base::TimeTicks& timestamp) {
   DCHECK_EQ(index, 0);
   blink::WebMouseEvent::Button pressed_button =
@@ -47,6 +50,11 @@ void SyntheticMouseDriver::Press(float x,
   mouse_event_.button = pressed_button;
   last_modifiers_ = modifiers | last_modifiers_;
   mouse_event_.click_count = click_count_;
+  mouse_event_.force = force;
+  mouse_event_.tangential_pressure = tangential_pressure;
+  mouse_event_.twist = rotation_angle;
+  mouse_event_.tilt_x = tilt_x;
+  mouse_event_.tilt_y = tilt_y;
   last_mouse_click_time_ = timestamp;
   last_x_ = x;
   last_y_ = y;
@@ -59,7 +67,10 @@ void SyntheticMouseDriver::Move(float x,
                                 float width,
                                 float height,
                                 float rotation_angle,
-                                float force) {
+                                float force,
+                                float tangential_pressure,
+                                int tilt_x,
+                                int tilt_y) {
   DCHECK_EQ(index, 0);
   mouse_event_ = blink::SyntheticWebMouseEventBuilder::Build(
       blink::WebInputEvent::Type::kMouseMove, x, y,
@@ -68,6 +79,13 @@ void SyntheticMouseDriver::Move(float x,
       SyntheticPointerActionParams::GetWebMouseEventButtonFromModifier(
           last_modifiers_);
   mouse_event_.click_count = 0;
+  mouse_event_.force =
+      mouse_event_.button == blink::WebMouseEvent::Button::kNoButton ? 0
+                                                                     : force;
+  mouse_event_.tangential_pressure = tangential_pressure;
+  mouse_event_.twist = rotation_angle;
+  mouse_event_.tilt_x = tilt_x;
+  mouse_event_.tilt_y = tilt_y;
 }
 
 void SyntheticMouseDriver::Release(int index,

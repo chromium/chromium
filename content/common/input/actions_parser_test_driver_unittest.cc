@@ -437,4 +437,72 @@ TEST(ActionsParserTestDriverTest, ParseActionSequenceWithoutY) {
             actions_parser.error_message());
 }
 
+TEST(ActionsParserTestDriverTest, ParseActionSequencePenProperties) {
+  base::Optional<base::Value> value = base::JSONReader::Read(
+      R"JSON( [{"type": "pointer",
+                "actions": [{"type": "pointerMove", "x": 10, "y": 5},
+                            {"type": "pointerDown", "x": 10, "y": 5,
+                             "button": 0, "pressure": 0.36, "tiltX": 21,
+                             "twist": 53},
+                            {"type": "pointerMove", "x": 30, "y": 20},
+                            {"type": "pointerUp" }],
+                "parameters": {"pointerType": "pen"},
+                "id": "1"}] )JSON");
+
+  ActionsParser actions_parser(std::move(value.value()));
+  EXPECT_TRUE(actions_parser.Parse());
+  SyntheticPointerActionListParams action_list_params =
+      static_cast<const SyntheticPointerActionListParams&>(
+          actions_parser.gesture_params());
+  EXPECT_EQ(mojom::GestureSourceType::kPenInput,
+            action_list_params.gesture_source_type);
+  EXPECT_EQ(4U, action_list_params.params.size());
+  EXPECT_EQ(1U, action_list_params.params[1].size());
+  EXPECT_EQ(SyntheticPointerActionParams::PointerActionType::PRESS,
+            action_list_params.params[1][0].pointer_action_type());
+  EXPECT_EQ(gfx::PointF(10, 5), action_list_params.params[1][0].position());
+  EXPECT_EQ(SyntheticPointerActionParams::Button::LEFT,
+            action_list_params.params[1][0].button());
+  EXPECT_EQ(0.36f, action_list_params.params[1][0].force());
+  EXPECT_EQ(21, action_list_params.params[1][0].tilt_x());
+  EXPECT_EQ(53, action_list_params.params[1][0].rotation_angle());
+}
+
+TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidForce) {
+  base::Optional<base::Value> value = base::JSONReader::Read(
+      R"JSON( [{"type": "pointer",
+                "actions": [{"type": "pointerMove", "x": 10, "y": 10},
+                            {"type": "pointerDown", "x": 10, "y": 10,
+                             "button": 0, "pressure": 6.36},
+                            {"type": "pointerMove", "x": 30, "y": 30},
+                            {"type": "pointerUp" }],
+                "parameters": {"pointerType": "pen"},
+                "id": "1"}] )JSON");
+
+  ActionsParser actions_parser(std::move(value.value()));
+  EXPECT_FALSE(actions_parser.Parse());
+  EXPECT_EQ(
+      "actions[0].actions.pressure must be a non-negative number in the range "
+      "of [0,1]",
+      actions_parser.error_message());
+}
+
+TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidTiltX) {
+  base::Optional<base::Value> value = base::JSONReader::Read(
+      R"JSON( [{"type": "pointer",
+                "actions": [{"type": "pointerMove", "x": 10, "y": 10},
+                            {"type": "pointerDown", "x": 10, "y": 10,
+                             "button": 0, "tiltX": 110},
+                            {"type": "pointerMove", "x": 30, "y": 30},
+                            {"type": "pointerUp" }],
+                "parameters": {"pointerType": "pen"},
+                "id": "1"}] )JSON");
+
+  ActionsParser actions_parser(std::move(value.value()));
+  EXPECT_FALSE(actions_parser.Parse());
+  EXPECT_EQ(
+      "actions[0].actions.tiltX must be an integer in the range of [-90,90]",
+      actions_parser.error_message());
+}
+
 }  // namespace content
