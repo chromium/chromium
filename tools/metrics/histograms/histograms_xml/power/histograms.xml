@@ -883,8 +883,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.Mac.ThermalState" enum="MacThermalState"
-    expires_after="2021-05-13">
+    expires_after="2022-05-13">
   <owner>lgrey@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
   <summary>
     Thermal state of the user's machine as reported by macOS's [NSProcessInfo
     thermalState]. Sampled once per minute.
