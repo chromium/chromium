@@ -77,10 +77,13 @@
   }
 
   .statistics {
-    display: grid;
+    border-collapse: collapse;
     flex-grow: 1;
-    grid-template-columns: 5fr 1fr;
-    padding: 20px;
+    margin: 20px;
+  }
+
+  .statistics td {
+    padding: 0;
   }
 
   .category {
@@ -172,14 +175,16 @@
           [[profileState.gaiaName]]
         </div>
       </div>
-      <div class="statistics">
+      <table class="statistics">
         <template is="dom-repeat" items="[[profileStatistics_]]">
-          <span class="category">[[getProfileStatisticText_(item)]]</span>
-          <span class="count">
-            [[getProfileStatisticCount_(item, statistics_)]]
-          </span>
+          <tr>
+            <td class="category">[[getProfileStatisticText_(item)]]</td>
+            <td class="count">
+              [[getProfileStatisticCount_(item, statistics_)]]
+            </td>
+          </tr>
         </template>
-      </div>
+      </table>
     </div>
   </div>
   <div slot="button-container">
