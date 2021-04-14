@@ -55,8 +55,8 @@ group("wpt_tests_android_isolate") {
   testonly = true
   data_deps = [ "//third_party/blink/tools:wpt_tests_isolate" ]
   data = [
-    "//third_party/blink/web_tests/android/WeblayerWPTExpectations",
-    "//third_party/blink/web_tests/android/ChromiumWPTExpectations",
+    "//third_party/blink/web_tests/android/WebLayerWPTOverrideExpectations",
+    "//third_party/blink/web_tests/android/ChromeWPTOverrideExpectations",
     "//third_party/blink/web_tests/android/WebviewWPTExpectations",
     "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
   ]
