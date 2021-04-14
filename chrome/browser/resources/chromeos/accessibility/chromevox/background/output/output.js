@@ -17,6 +17,7 @@ goog.require('EventSourceState');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('NavBraille');
+goog.require('OutputContextOrder');
 goog.require('OutputFormatTree');
 goog.require('OutputRulesStr');
 goog.require('PhoneticData');
@@ -108,11 +109,8 @@ Output = class {
      */
     this.queueMode_;
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this.outputContextFirst_ = false;
+    /** @private {!OutputContextOrder} */
+    this.contextOrder_ = OutputContextOrder.LAST;
 
     /** @private {!Object<string, boolean>} */
     this.suppressions_ = {};
@@ -352,7 +350,7 @@ Output = class {
    * @return {!Output}
    */
   withContextFirst() {
-    this.outputContextFirst_ = true;
+    this.contextOrder_ = OutputContextOrder.FIRST;
     return this;
   }
 
@@ -617,7 +615,7 @@ Output = class {
       prevRange = null;
     }
 
-    // Scan unique ancestors to get the value of |outputContextFirst|.
+    // Scan unique ancestors to get the value of |contextOrder|.
     let parent = range.start.node;
     const prevParent = prevRange ? prevRange.start.node : parent;
     if (!parent || !prevParent) {
@@ -630,8 +628,9 @@ Output = class {
         break;
       }
       if (Output.ROLE_INFO_[parent.role] &&
-          Output.ROLE_INFO_[parent.role].outputContextFirst) {
-        this.outputContextFirst_ = true;
+          Output.ROLE_INFO_[parent.role].contextOrder) {
+        this.contextOrder_ =
+            Output.ROLE_INFO_[parent.role].contextOrder || this.contextOrder_;
         break;
       }
     }
@@ -1601,17 +1600,22 @@ Output = class {
       return;
     }
 
+    const isForward = prevRange.compare(range) === Dir.FORWARD;
+    const addContextBefore = this.contextOrder_ === OutputContextOrder.FIRST ||
+        (this.contextOrder_ === OutputContextOrder.DIRECTED && isForward);
+    const addContextAfter = this.contextOrder_ === OutputContextOrder.LAST ||
+        (this.contextOrder_ === OutputContextOrder.DIRECTED && !isForward);
     let cursor = cursors.Cursor.fromNode(range.start.node);
     let prevNode = prevRange.start.node;
 
     const formatNodeAndAncestors = function(node, prevNode) {
       const buff = [];
 
-      if (this.outputContextFirst_) {
+      if (addContextBefore) {
         this.ancestry_(node, prevNode, type, buff, ruleStr);
       }
       this.node_(node, prevNode, type, buff, ruleStr);
-      if (!this.outputContextFirst_) {
+      if (addContextAfter) {
         this.ancestry_(node, prevNode, type, buff, ruleStr);
       }
       if (node.location) {
@@ -1621,7 +1625,7 @@ Output = class {
     }.bind(this);
 
     let lca = null;
-    if (!this.outputContextFirst_) {
+    if (addContextAfter) {
       if (range.start.node !== range.end.node) {
         lca = AutomationUtil.getLeastCommonAncestor(
             range.end.node, range.start.node);
@@ -1646,7 +1650,7 @@ Output = class {
     }
 
     // Finally, add on ancestry announcements, if needed.
-    if (!this.outputContextFirst_) {
+    if (addContextAfter) {
       // No lca; the range was already fully described.
       if (lca == null || !prevRange.start.node) {
         return;
@@ -1685,7 +1689,8 @@ Output = class {
           contextFirst = [];
           rest = [];
         }
-        if ((Output.ROLE_INFO_[node.role] || {}).outputContextFirst) {
+        if ((Output.ROLE_INFO_[node.role] || {}).contextOrder ===
+            OutputContextOrder.FIRST) {
           contextFirst.push(node);
         } else {
           rest.push(node);
@@ -1901,7 +1906,8 @@ Output = class {
       }
     }
 
-    if (this.outputContextFirst_) {
+    // Intentionally skip subnode output for OutputContextOrder.DIRECTED.
+    if (this.contextOrder_ === OutputContextOrder.FIRST) {
       this.ancestry_(node, prevNode, type, buff, ruleStr);
     }
     const earcon = this.findEarcon_(node, prevNode);
@@ -1926,7 +1932,7 @@ Output = class {
     }
     ruleStr.write('subNode_: ' + text + '\n');
 
-    if (!this.outputContextFirst_) {
+    if (this.contextOrder_ === OutputContextOrder.LAST) {
       this.ancestry_(node, prevNode, type, buff, ruleStr);
     }
 
@@ -2368,19 +2374,20 @@ Output.SPACE = ' ';
  * @const {Object<{msgId: string,
  *                 earconId: (string|undefined),
  *                 inherits: (string|undefined),
- *                 outputContextFirst: (boolean|undefined),
+ *                 contextOrder: (OutputContextOrder|undefined),
  *                 ignoreAncestry: (boolean|undefined)}>}
  * msgId: the message id of the role. Each role used requires a speech entry in
  *        chromevox_strings.grd + an optional Braille entry (with _BRL suffix).
  * earconId: an optional earcon to play when encountering the role.
  * inherits: inherits rules from this role.
- * outputContextFirst: where to place the context output.
+ * contextOrder: where to place the context output.
  * ignoreAncestry: ignores ancestry (context) output for this role.
  * @private
  */
 Output.ROLE_INFO_ = {
   alert: {msgId: 'role_alert'},
-  alertDialog: {msgId: 'role_alertdialog', outputContextFirst: true},
+  alertDialog:
+      {msgId: 'role_alertdialog', contextOrder: OutputContextOrder.FIRST},
   article: {msgId: 'role_article', inherits: 'abstractItem'},
   application: {msgId: 'role_application', inherits: 'abstractContainer'},
   audio: {msgId: 'tag_audio', inherits: 'abstractContainer'},
@@ -2395,12 +2402,12 @@ Output.ROLE_INFO_ = {
   contentDeletion: {
     msgId: 'role_content_deletion',
     inherits: 'abstractContainer',
-    outputContextFirst: true
+    contextOrder: OutputContextOrder.FIRST
   },
   contentInsertion: {
     msgId: 'role_content_insertion',
     inherits: 'abstractContainer',
-    outputContextFirst: true
+    contextOrder: OutputContextOrder.FIRST
   },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
   date: {msgId: 'input_type_date', inherits: 'abstractContainer'},
@@ -2408,8 +2415,11 @@ Output.ROLE_INFO_ = {
   descriptionList: {msgId: 'role_description_list', inherits: 'abstractList'},
   descriptionListDetail:
       {msgId: 'role_description_list_detail', inherits: 'abstractItem'},
-  dialog:
-      {msgId: 'role_dialog', outputContextFirst: true, ignoreAncestry: true},
+  dialog: {
+    msgId: 'role_dialog',
+    contextOrder: OutputContextOrder.DIRECTED,
+    ignoreAncestry: true
+  },
   directory: {msgId: 'role_directory', inherits: 'abstractContainer'},
   docAbstract: {msgId: 'role_doc_abstract', inherits: 'abstractContainer'},
   docAcknowledgments:
@@ -2500,7 +2510,11 @@ Output.ROLE_INFO_ = {
   mark: {msgId: 'role_mark', inherits: 'abstractContainer'},
   marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
   math: {msgId: 'role_math', inherits: 'abstractContainer'},
-  menu: {msgId: 'role_menu', outputContextFirst: true, ignoreAncestry: true},
+  menu: {
+    msgId: 'role_menu',
+    contextOrder: OutputContextOrder.FIRST,
+    ignoreAncestry: true
+  },
   menuBar: {
     msgId: 'role_menubar',
   },
@@ -2522,7 +2536,7 @@ Output.ROLE_INFO_ = {
   radioButton: {msgId: 'role_radio'},
   radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
   region: {msgId: 'role_region', inherits: 'abstractContainer'},
-  rootWebArea: {outputContextFirst: true},
+  rootWebArea: {contextOrder: OutputContextOrder.FIRST},
   row: {msgId: 'role_row', inherits: 'abstractContainer'},
   rowHeader: {msgId: 'role_rowheader', inherits: 'cell'},
   scrollBar: {msgId: 'role_scrollbar', inherits: 'abstractRange'},
@@ -2540,7 +2554,7 @@ Output.ROLE_INFO_ = {
   suggestion: {
     msgId: 'role_suggestion',
     inherits: 'abstractContainer',
-    outputContextFirst: true
+    contextOrder: OutputContextOrder.FIRST
   },
   tab: {msgId: 'role_tab'},
   tabList: {msgId: 'role_tablist', inherits: 'abstractContainer'},

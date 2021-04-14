@@ -31,7 +31,7 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     this.originalOutputContextValues_ = {};
     for (const role in Output.ROLE_INFO_) {
       this.originalOutputContextValues_[role] =
-          Output.ROLE_INFO_[role]['outputContextFirst'];
+          Output.ROLE_INFO_[role]['contextOrder'];
     }
   }
 
@@ -127,7 +127,7 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    */
   forceContextualLastOutput() {
     for (const role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] = undefined;
+      Output.ROLE_INFO_[role]['contextOrder'] = OutputContextOrder.LAST;
     }
   }
 
@@ -136,14 +136,14 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
    */
   forceContextualFirstOutput() {
     for (const role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] = true;
+      Output.ROLE_INFO_[role]['contextOrder'] = OutputContextOrder.FIRST;
     }
   }
 
   /** Resets contextual output values to their defaults. */
   resetContextualOutput() {
     for (const role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] =
+      Output.ROLE_INFO_[role]['contextOrder'] =
           this.originalOutputContextValues_[role];
     }
   }

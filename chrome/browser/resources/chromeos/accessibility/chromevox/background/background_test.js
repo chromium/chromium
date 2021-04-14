@@ -2982,9 +2982,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', function() {
 });
 
 TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
-  // This was overridden in setUp() for most all tests, but we want the
-  // production behavior here.
-  Output.ROLE_INFO_[RoleType.DIALOG]['outputContextFirst'] = true;
+  this.resetContextualOutput();
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
@@ -2995,14 +2993,29 @@ TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
       <button>Exit</button>
       <button>Let's go</button>
     </div>
+    <p>end</p>
   `,
       function(root) {
         mockFeedback.call(doCmd('nextObject'))
             .expectSpeech('Setup', 'Dialog')
             .expectSpeech(
                 `Welcome This is some introductory text Exit Let's go`)
-            .expectSpeech('Welcome')
-            .expectSpeech('Heading 1')
+            .expectSpeech('Welcome', 'Heading 1')
+            .call(doCmd('nextObject'))
+            .expectSpeech('This is some introductory text')
+            .call(doCmd('nextObject'))
+            .expectSpeech('Exit', 'Button')
+            .call(doCmd('nextObject'))
+            .expectSpeech(`Let's go`, 'Button')
+            .call(doCmd('nextObject'))
+            .expectSpeech('end')
+
+            .call(doCmd('previousObject'))
+            .expectSpeech(`Let's go`, 'Button')
+            .expectSpeech('Setup', 'Dialog')
+            .expectSpeech(
+                `Welcome This is some introductory text Exit Let's go`)
+
             .replay();
       });
 });

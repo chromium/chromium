@@ -66,6 +66,7 @@ chromevox_modules = [
   "background/pointer_handler.js",
   "background/output/output.js",
   "background/output/output_format_tree.js",
+  "background/output/output_types.js",
   "background/panel_command.js",
   "background/phonetic_data.js",
   "background/prefs.js",
