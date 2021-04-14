@@ -210,6 +210,9 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
         IDS_PROFILE_SWITCH_PROMO_SCREENREADER;
     params.feature_command_id = IDC_SHOW_AVATAR_MENU;
     params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+    // Focusable for accessibility (https://crbug.com/1198049).
+    params.allow_focus = true;
+    params.persist_on_blur = true;
 
     RegisterFeature(feature_engagement::kIPHProfileSwitchFeature, params,
                     base::BindRepeating(GetAvatarToolbarButton));
