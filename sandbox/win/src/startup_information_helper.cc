@@ -97,7 +97,8 @@ int StartupInformationHelper::CountAttributes() {
   if (!inherited_handle_list_.empty())
     ++attribute_count;
 
-  if (app_container_) {
+  if (app_container_ &&
+      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
     ++attribute_count;
     if (app_container_->GetEnableLowPrivilegeAppContainer())
       ++attribute_count;
@@ -171,7 +172,8 @@ bool StartupInformationHelper::BuildStartupInformation() {
     expected_attributes--;
   }
 
-  if (app_container_) {
+  if (app_container_ &&
+      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
     if (!startup_info_.UpdateProcThreadAttribute(
             PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
             security_capabilities_.get(), sizeof(SECURITY_CAPABILITIES))) {

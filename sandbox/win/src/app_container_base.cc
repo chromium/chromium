@@ -5,11 +5,13 @@
 #include <memory>
 
 #include <aclapi.h>
+#include <sddl.h>
 #include <userenv.h>
 
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/win_utils.h"
@@ -97,7 +99,7 @@ AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
   if (FAILED(hr))
     return nullptr;
   std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerBase(Sid(package_sid));
+  return new AppContainerBase(Sid(package_sid), AppContainerType::kProfile);
 }
 
 // static
@@ -115,7 +117,17 @@ AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
     return nullptr;
 
   std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerBase(Sid(package_sid));
+  return new AppContainerBase(Sid(package_sid), AppContainerType::kDerived);
+}
+
+// static
+AppContainerBase* AppContainerBase::CreateLowbox(const wchar_t* sid) {
+  PSID package_sid;
+  if (!ConvertStringSidToSid(sid, &package_sid))
+    return nullptr;
+
+  std::unique_ptr<void, LocalFreeDeleter> sid_deleter(package_sid);
+  return new AppContainerBase(Sid(package_sid), AppContainerType::kLowbox);
 }
 
 // static
@@ -129,10 +141,12 @@ bool AppContainerBase::Delete(const wchar_t* package_name) {
   return SUCCEEDED(delete_app_container_profile(package_name));
 }
 
-AppContainerBase::AppContainerBase(const Sid& package_sid)
+AppContainerBase::AppContainerBase(const Sid& package_sid,
+                                   AppContainerType type)
     : ref_count_(0),
       package_sid_(package_sid),
-      enable_low_privilege_app_container_(false) {}
+      enable_low_privilege_app_container_(false),
+      type_(type) {}
 
 AppContainerBase::~AppContainerBase() {}
 
@@ -159,7 +173,7 @@ bool AppContainerBase::GetRegistryLocation(REGSAM desired_access,
     return false;
 
   base::win::ScopedHandle token;
-  if (!BuildLowBoxToken(&token))
+  if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
     return false;
 
   ScopedImpersonation impersonation(token);
@@ -245,7 +259,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   DWORD priv_set_length = sizeof(PRIVILEGE_SET);
 
   base::win::ScopedHandle token;
-  if (!BuildLowBoxToken(&token))
+  if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
     return false;
 
   return !!::AccessCheck(sd, token.Get(), desired_access, &generic_mapping,
@@ -309,15 +323,47 @@ bool AppContainerBase::GetEnableLowPrivilegeAppContainer() {
   return enable_low_privilege_app_container_;
 }
 
+AppContainerType AppContainerBase::GetAppContainerType() {
+  return type_;
+}
+
 std::unique_ptr<SecurityCapabilities>
 AppContainerBase::GetSecurityCapabilities() {
   return std::make_unique<SecurityCapabilities>(package_sid_, capabilities_);
 }
 
-bool AppContainerBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
-  return CreateLowBoxToken(nullptr, IMPERSONATION,
-                           GetSecurityCapabilities().get(), nullptr, 0,
-                           token) == ERROR_SUCCESS;
+ResultCode AppContainerBase::BuildLowBoxToken(
+    base::win::ScopedHandle* token,
+    base::win::ScopedHandle* lockdown) {
+  if (type_ == AppContainerType::kLowbox) {
+    if (!lowbox_directory_.IsValid()) {
+      DWORD result = CreateLowBoxObjectDirectory(package_sid_.GetPSID(), true,
+                                                 &lowbox_directory_);
+      DCHECK(result == ERROR_SUCCESS);
+    }
+
+    // The order of handles isn't important in the CreateLowBoxToken call.
+    // The kernel will maintain a reference to the object directory handle.
+    HANDLE saved_handles[1] = {lowbox_directory_.Get()};
+    DWORD saved_handles_count = lowbox_directory_.IsValid() ? 1 : 0;
+
+    if (CreateLowBoxToken(lockdown->Get(), PRIMARY,
+                          GetSecurityCapabilities().get(), saved_handles,
+                          saved_handles_count, token) != ERROR_SUCCESS) {
+      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
+    }
+
+    if (!ReplacePackageSidInDacl(token->Get(), SE_KERNEL_OBJECT, package_sid_,
+                                 TOKEN_ALL_ACCESS)) {
+      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
+    }
+  } else if (CreateLowBoxToken(nullptr, IMPERSONATION,
+                               GetSecurityCapabilities().get(), nullptr, 0,
+                               token) != ERROR_SUCCESS) {
+    return SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN;
+  }
+
+  return SBOX_ALL_OK;
 }
 
 }  // namespace sandbox

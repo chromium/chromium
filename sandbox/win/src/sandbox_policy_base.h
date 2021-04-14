@@ -173,8 +173,6 @@ class PolicyBase final : public TargetPolicy {
   // target process. A null set means we need to close all handles of the
   // given type.
   HandleCloser handle_closer_;
-  PSID lowbox_sid_;
-  base::win::ScopedHandle lowbox_directory_;
   std::unique_ptr<Dispatcher> dispatcher_;
   bool lockdown_default_dacl_;
   bool add_restricting_random_sid_;

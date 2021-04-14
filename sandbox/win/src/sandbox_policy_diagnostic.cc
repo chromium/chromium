@@ -407,10 +407,9 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
          policy->app_container_->GetImpersonationCapabilities()) {
       initial_capabilities_.push_back(sid);
     }
-  }
 
-  if (policy->lowbox_sid_)
-    lowbox_sid_ = std::make_unique<Sid>(policy->lowbox_sid_);
+    app_container_type_ = policy->app_container_->GetAppContainerType();
+  }
 
   if (policy->policy_) {
     size_t policy_mem_size = policy->policy_->data_size + sizeof(PolicyGlobal);
@@ -475,11 +474,11 @@ const char* PolicyDiagnostic::JsonString() {
       value.SetKey(kAppContainerInitialCapabilities,
                    base::Value(std::move(imp_caps)));
     }
-  }
 
-  if (lowbox_sid_) {
-    value.SetStringKey(
-        kLowboxSid, base::AsStringPiece16(GetSidAsString(lowbox_sid_.get())));
+    if (app_container_type_ == AppContainerType::kLowbox)
+      value.SetStringKey(
+          kLowboxSid,
+          base::AsStringPiece16(GetSidAsString(app_container_sid_.get())));
   }
 
   if (policy_rules_)

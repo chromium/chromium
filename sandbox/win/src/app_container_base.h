@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/app_container.h"
+#include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/sid.h"
 
@@ -43,6 +44,7 @@ class AppContainerBase final : public AppContainer {
   bool AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) override;
   void SetEnableLowPrivilegeAppContainer(bool enable) override;
   bool GetEnableLowPrivilegeAppContainer() override;
+  AppContainerType GetAppContainerType() override;
 
   // Get the package SID for this AC.
   Sid GetPackageSid() const;
@@ -64,19 +66,26 @@ class AppContainerBase final : public AppContainer {
                                          const wchar_t* display_name,
                                          const wchar_t* description);
 
-  // Opens an AppContainer object. No checks will be made on
+  // Opens a derived AppContainer object. No checks will be made on
   // whether the package exists or not.
   static AppContainerBase* Open(const wchar_t* package_name);
+
+  // Creates a new Lowbox object. Need to followup with a call to build lowbox
+  // token
+  static AppContainerBase* CreateLowbox(const wchar_t* sid);
 
   // Delete a profile based on name. Returns true if successful, or if the
   // package doesn't already exist.
   static bool Delete(const wchar_t* package_name);
 
+  // Build the token for the lowbox
+  ResultCode BuildLowBoxToken(base::win::ScopedHandle* token,
+                              base::win::ScopedHandle* lockdown = nullptr);
+
  private:
-  AppContainerBase(const Sid& package_sid);
+  AppContainerBase(const Sid& package_sid, AppContainerType type);
   ~AppContainerBase();
 
-  bool BuildLowBoxToken(base::win::ScopedHandle* token);
   bool AddCapability(const Sid& capability_sid, bool impersonation_only);
 
   // Standard object-lifetime reference counter.
@@ -85,6 +94,8 @@ class AppContainerBase final : public AppContainer {
   bool enable_low_privilege_app_container_;
   std::vector<Sid> capabilities_;
   std::vector<Sid> impersonation_capabilities_;
+  AppContainerType type_;
+  base::win::ScopedHandle lowbox_directory_;
 
   DISALLOW_COPY_AND_ASSIGN(AppContainerBase);
 };

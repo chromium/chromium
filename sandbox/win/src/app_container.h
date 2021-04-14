@@ -15,6 +15,8 @@
 
 namespace sandbox {
 
+enum AppContainerType { kNone, kDerived, kProfile, kLowbox };
+
 class AppContainer {
  public:
   // Increments the reference count of this object. The reference count must
@@ -67,6 +69,8 @@ class AppContainer {
   // Enable Low Privilege AC.
   virtual void SetEnableLowPrivilegeAppContainer(bool enable) = 0;
   virtual bool GetEnableLowPrivilegeAppContainer() = 0;
+
+  virtual AppContainerType GetAppContainerType() = 0;
 };
 
 }  // namespace sandbox

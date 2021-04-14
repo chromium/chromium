@@ -108,7 +108,6 @@ PolicyBase::PolicyBase()
       is_csrss_connected_(true),
       policy_maker_(nullptr),
       policy_(nullptr),
-      lowbox_sid_(nullptr),
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
       effective_token_(nullptr) {
@@ -119,9 +118,6 @@ PolicyBase::PolicyBase()
 PolicyBase::~PolicyBase() {
   delete policy_maker_;
   delete policy_;
-
-  if (lowbox_sid_)
-    ::LocalFree(lowbox_sid_);
 
   ::DeleteCriticalSection(&lock_);
 }
@@ -295,10 +291,11 @@ ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sid);
-  if (lowbox_sid_ || app_container_)
+  if (app_container_)
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (!ConvertStringSidToSid(sid, &lowbox_sid_))
+  app_container_ = AppContainerBase::CreateLowbox(sid);
+  if (!app_container_)
     return SBOX_ERROR_INVALID_LOWBOX_SID;
 
   return SBOX_ALL_OK;
@@ -474,29 +471,12 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     }
   }
 
-  if (lowbox_sid_) {
-    if (!lowbox_directory_.IsValid()) {
-      result =
-          CreateLowBoxObjectDirectory(lowbox_sid_, true, &lowbox_directory_);
-      DCHECK(result == ERROR_SUCCESS);
-    }
+  if (app_container_ &&
+      app_container_->GetAppContainerType() == AppContainerType::kLowbox) {
+    ResultCode result_code = app_container_->BuildLowBoxToken(lowbox, lockdown);
 
-    // The order of handles isn't important in the CreateLowBoxToken call.
-    // The kernel will maintain a reference to the object directory handle.
-    HANDLE saved_handles[1] = {lowbox_directory_.Get()};
-    DWORD saved_handles_count = lowbox_directory_.IsValid() ? 1 : 0;
-
-    Sid package_sid(lowbox_sid_);
-    SecurityCapabilities caps(package_sid);
-    if (CreateLowBoxToken(lockdown->Get(), PRIMARY, &caps, saved_handles,
-                          saved_handles_count, lowbox) != ERROR_SUCCESS) {
-      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
-    }
-
-    if (!ReplacePackageSidInDacl(lowbox->Get(), SE_KERNEL_OBJECT, package_sid,
-                                 TOKEN_ALL_ACCESS)) {
-      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
-    }
+    if (result_code != SBOX_ALL_OK)
+      return result_code;
   }
 
   // Create the 'better' token. We use this token as the one that the main
@@ -509,10 +489,6 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
 
   return SBOX_ALL_OK;
-}
-
-PSID PolicyBase::GetLowBoxSid() const {
-  return lowbox_sid_;
 }
 
 ResultCode PolicyBase::AddTarget(std::unique_ptr<TargetProcess> target) {
@@ -641,8 +617,7 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(package_name);
-  if (lowbox_sid_ || app_container_ ||
-      integrity_level_ != INTEGRITY_LEVEL_LAST) {
+  if (app_container_ || integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
 

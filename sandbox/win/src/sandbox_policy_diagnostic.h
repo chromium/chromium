@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/values.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/process_mitigations.h"
@@ -42,14 +43,12 @@ class PolicyDiagnostic final : public PolicyInfo {
   JobLevel job_level_ = JOB_NONE;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
-  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
   std::unique_ptr<Sid> app_container_sid_ = nullptr;
   // Only populated if |app_container_sid_| is present.
   std::vector<Sid> capabilities_;
   // Only populated if |app_container_sid_| is present.
   std::vector<Sid> initial_capabilities_;
-  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
-  std::unique_ptr<Sid> lowbox_sid_ = nullptr;
+  AppContainerType app_container_type_ = AppContainerType::kNone;
   std::unique_ptr<PolicyGlobal> policy_rules_ = nullptr;
   bool is_csrss_connected_ = false;
   HandleMap handles_to_close_;

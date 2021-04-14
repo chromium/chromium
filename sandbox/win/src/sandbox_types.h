@@ -141,6 +141,8 @@ enum ResultCode : int {
   SBOX_ERROR_CANNOT_INIT_BROKERSERVICES = 59,
   // Cannot update job active process limit.
   SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT = 60,
+  // Cannot create an impersonation lowbox token
+  SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN = 61,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
