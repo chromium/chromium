@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.Image.DownloadedSize" units="MB"
-    expires_after="2021-05-16">
+    expires_after="2022-05-16">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.LaunchResult" enum="PluginVmLaunchResult"
-    expires_after="2021-05-16">
+    expires_after="2022-05-16">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
