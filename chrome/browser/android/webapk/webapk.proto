@@ -81,6 +81,9 @@ message WebApk {
   // A list of all reasons why the WebAPK needs to be updated.
   repeated UpdateReason update_reasons = 11;
 
+  // The Android OS version (e.g '11').
+  optional string android_version = 12;
+
   reserved 4, 10;
 }
 
