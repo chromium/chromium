@@ -268,7 +268,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
 <translation id="2801022321632964776">Chrome jetzt aktualisieren und das Internet in Ihrer Sprache entdecken</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="281504910091592009">Gespeicherte Passwörter in Ihrem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>
+<translation id="281504910091592009">Gespeicherte Passwörter in meinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>
 <translation id="2818669890320396765">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Lesezeichen auf allen Ihren Geräten zu sehen</translation>
 <translation id="2827278682606527653">Feedkartenmenü halb geöffnet</translation>
 <translation id="2839327205551510876">Sie folgen <ph name="SITE_NAME" /> nicht mehr</translation>
@@ -502,6 +502,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493497663118223949">Lite-Modus ist aktiviert</translation>
+<translation id="4504667196171871375">Über WLAN oder mobile Daten</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4508642716788467538">Sprache auswählen</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Vor # Tag}other{Vor # Tagen}}</translation>

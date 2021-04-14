@@ -312,7 +312,7 @@
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Жыйналды</translation>
 <translation id="311015743332597320">Төрт манжаңыз менен экранды оңго сүрүңүз</translation>
-<translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн, Control+Alt+Z баскычтарын басыңыз.</translation>
+<translation id="3112457281078985179">ChromeVox'ту күйгүзүп же өчүрүү үчүн Control+Alt+Z баскычтарын басыңыз.</translation>
 <translation id="3115800313647508384">Экран өчүрүлсүнбү?</translation>
 <translation id="3131002934070407451">Сандарды төмөнкүдөй окуу:</translation>
 <translation id="3134461040845705080">окуу үчүн гана</translation>
@@ -361,7 +361,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{плюс}other{# плюс белгилери}}</translation>
 <translation id="338583716107319301">Ажыраткыч</translation>
 <translation id="3389259863310851658">Мурунку форма талаасы</translation>
-<translation id="3393605254399152980">Текстти окууну күйгүзүү үчүн, манжаңыз менен экранды сүрүңүз.</translation>
+<translation id="3393605254399152980">Текстти окууну күйгүзүү үчүн манжаңыз менен экранды сүрүңүз.</translation>
 <translation id="3406283310380167331">Көрсөтүү формаларынын тизмеси</translation>
 <translation id="3414400929511680526">Мала көк</translation>
 <translation id="3418936350470374046">Төмөндө уяча жок</translation>
@@ -1080,6 +1080,7 @@
 <translation id="8897030325301866860"><ph name="FONT_FAMILY" /> ариби</translation>
 <translation id="8898516272131543774">Тыныш белгилеринин жаңырыгынын мерчими</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Аракеттер жеткиликтүү. Көрүү үчүн Издөө+Ctrl+A баскычтарын басыңыз</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Өзгөрткүч баскычтары</translation>
 <translation id="8943282376843390568">Ачык жашыл</translation>

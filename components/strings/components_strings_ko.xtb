@@ -1162,6 +1162,7 @@
 <translation id="5327248766486351172">이름</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
 <translation id="5332219387342487447">배송 방법</translation>
+<translation id="5333022057423422993">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="534295439873310000">NFC 기기</translation>
@@ -1276,6 +1277,7 @@
 <translation id="5784606427469807560">카드 확인 중에 문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.</translation>
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="5786044859038896871">카드 정보를 입력하시겠습니까?</translation>
+<translation id="578633867165174378">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="5798290721819630480">변경사항을 삭제하시겠습니까?</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
@@ -1465,6 +1467,7 @@
 <translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
 <translation id="6583674473685352014">B6(봉투)</translation>
+<translation id="6587182488465657433">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 지금 바로 비밀번호를 변경한 후 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
 <translation id="6592952801936330159">사이트 설정 관리 버튼, Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>

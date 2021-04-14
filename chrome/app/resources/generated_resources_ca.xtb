@@ -737,7 +737,7 @@
 <translation id="1778457539567749232">Marca com a no llegit</translation>
 <translation id="1779162884187776723">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1779468444204342338">Mínims</translation>
-<translation id="1779652936965200207">Introduïu aquesta contrasenya a "<ph name="DEVICE_NAME" />":</translation>
+<translation id="1779652936965200207">Introdueix aquesta clau d'accés a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="177989070088644880">Aplicació (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Tanca el grup</translation>
 <translation id="1781291988450150470">PIN actual</translation>
@@ -7211,7 +7211,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9041692268811217999">L'administrador ha desactivat l'accés als fitxers locals de l'ordinador</translation>
 <translation id="904224458472510106">Aquesta operació no es pot desfer</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
-<translation id="904451693890288097">Introduïu la contrasenya per a "<ph name="DEVICE_NAME" />":</translation>
+<translation id="904451693890288097">Introdueix la clau d'accés per a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">S'ha produït un error en connectar amb la xarxa: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envia a Google l'adreça web de la pàgina que estàs provant de visitar</translation>
 <translation id="9046895021617826162">S'ha produït un error en la connexió</translation>

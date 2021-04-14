@@ -859,6 +859,7 @@
       設定這項政策後，如果超過記憶體使用限制，瀏覽器會開始捨棄分頁以節省記憶體。不過，我們無法保證瀏覽器運作時，記憶體使用量會一律在限制值以下。1024 以下的值會進位到 1024。
 
       如果不設定這項政策，瀏覽器只會在偵測到電腦上的實體記憶體即將用盡時，才會開始嘗試節省記憶體。</translation>
+<translation id="2164610500194388856">授予網頁應用程式特定類型檔案的存取權</translation>
 <translation id="2166472654199325139">不要針對成人內容篩選網站。</translation>
 <translation id="2168397434410358693">在 AC 供電環境下執行時的閒置延遲時間</translation>
 <translation id="217013996107840632">從替代瀏覽器切換到 Chrome 所使用的指令列參數。</translation>
@@ -1042,6 +1043,7 @@
 設好這項政策後，使用者即無法覆寫設定值。
 
 如果未設定這項政策，系統預設會停用隱私保護畫面，但使用者可以自行變更。</translation>
+<translation id="2415715982424988916">探索 (自 91 版起開始支援)</translation>
 <translation id="241739814668386424"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
 
       如果啟用這項政策，使用者便可透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
@@ -1334,6 +1336,11 @@
 <translation id="2757054304033424106">允許安裝的擴充功能/應用程式類型</translation>
 <translation id="2759224876420453487">控制使用者在多重設定檔工作階段中的行為</translation>
 <translation id="2761483219396643566">在電池供電環境下執行時的閒置警告延遲時間</translation>
+<translation id="2764964245640818227">控管 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否能為 PDF 加註。
+
+      如果將這項政策設為 True 或不設定，PDF 檢視器將可以為 PDF 加註。
+
+      如果將這項政策設為 False，PDF 檢視器將無法為PDF 加註。</translation>
 <translation id="2769952903507981510">設定遠端存取主機所需的網域名稱</translation>
 <translation id="2772955711376920612">如果將這項政策設為啟用，同時設定 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />，電源尖峰轉移功能將保持在開啟狀態，前提是裝置提供相關支援。尖峰轉移電源管理政策是一項節電政策，能夠在用電尖峰時段將交流電的使用量降到最低。你可以針對每個平日，個別設定「電源尖峰轉移」模式的開始和結束時間。在這些時間範圍內，只要電池電量高於指定閾值，即使裝置已連接到交流電源，也仍會使用電池的電力。到達指定的結束時間後，如果裝置已連接到交流電源，則將改用交流電源，但不會為電池充電。到達指定的充電開始時間後，如果裝置已連接到交流電源，裝置一樣會使用交流電源運作，並為電池充電。
 
@@ -1551,6 +1558,7 @@
 
         這項政策不會影響已發布的政策。</translation>
 <translation id="3016255526521614822">將「<ph name="PRODUCT_OS_NAME" />」螢幕鎖定畫面允許的筆記應用程式加入許可清單</translation>
+<translation id="3017578958356048910">PDF 檢視器可以為 PDF 加註</translation>
 <translation id="3020953534071988875">你可以透過這項政策指定是否可以在 <ph name="PRODUCT_NAME" /> 的無痕模式和訪客設定檔中執行背景驗證。
 
       如果未透過 NTLM/Kerberos/Negotiate 問題詢答的驗證配置提供明確的憑證，則背景驗證為包含預設憑證的 HTTP 驗證。
@@ -1782,6 +1790,7 @@
 <translation id="332771718998993005">確定公開為「<ph name="PRODUCT_NAME" />」目的地的名稱。
 
           如果這項政策設為非空白字串，該字串就會成為「<ph name="PRODUCT_NAME" />」目的地的名稱，否則目的地名稱將會是裝置名稱。如果未設定這項政策，則目的地名稱會是裝置名稱，且裝置擁有者 (或裝置管理網域中的使用者) 可進行變更。名稱長度上限為 24 個字元。</translation>
+<translation id="3329063005964041553">封鎖這些網頁應用程式上的 File Handling API</translation>
 <translation id="3339271789059866414">設定系統 Proxy 服務的可用性和系統服務的 Proxy 憑證。
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
 <translation id="3348799281602260763">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
@@ -2461,6 +2470,9 @@
 <translation id="4325690621216251241">在系統列顯示登出按鈕</translation>
 <translation id="4329095223358818804">允許快速解答功能存取所選內容</translation>
 <translation id="4330372709562934569">允許列出的不安全網站向更私密的網路端點傳送要求。</translation>
+<translation id="4331357743227845302">管理員可以透過這項政策設定允許 <ph name="PRODUCT_OS_NAME" /> 連接的藍牙服務。
+
+如果設定這項政策，<ph name="PRODUCT_OS_NAME" /> 只會允許使用者連接特定藍牙服務，但清單中沒有任何項目時則屬例外，表示開放使用所有服務。藍牙 SIG 預留的 UUID 格式為 <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> 或 <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />，自訂 UUID 的格式則為 <ph name="BLUETOOTH_CUSTOM_UUID" />。UUID 不區分大小寫。如果不設定這項政策，使用者就可以連接至任何藍牙服務。</translation>
 <translation id="4332177773549877617">Android 應用程式安裝記錄事件</translation>
 <translation id="4341199399451274159">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策來指定搜尋引擎支援的字元編碼。編碼就是 UTF-8、GB2312 和 ISO-8859-1 等字碼頁名稱，系統會依提供的順序嘗試使用編碼。
 
@@ -2515,6 +2527,7 @@
 
       如果將這項政策設為 False，當裝置升級 OS 後，瀏覽器不會在首次啟動時重新顯示歡迎頁面。</translation>
 <translation id="4423597592074154136">手動指定 Proxy 設定</translation>
+<translation id="4427173305799125784">PDF 檢視器無法為 PDF 加註</translation>
 <translation id="4432762137771104529">啟用安全瀏覽模式的進階回報功能</translation>
 <translation id="443454694385851356">舊版 (不安全)</translation>
 <translation id="443665821428652897">瀏覽器關閉時清除網站資料 (已淘汰)</translation>
@@ -2757,6 +2770,7 @@
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可自行決定是否要自動隱藏檔案櫃。</translation>
 <translation id="4812714598405913256">設定 DeviceMinimumVersion 政策的自動更新期限訊息</translation>
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
+<translation id="4818228398115369966">設定要停用的攝影機、瀏覽器設定、作業系統設定、掃描功能、線上應用程式商店、畫布、Google 新聞和探索功能</translation>
 <translation id="4820432864264617413">禁止使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
@@ -2968,6 +2982,7 @@
 <translation id="5075190314377370852">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會針對在本機上安裝的 CA 憑證所簽署的成功驗證伺服器憑證執行撤銷檢查。如果 <ph name="PRODUCT_NAME" /> 無法取得撤銷狀態資訊，<ph name="PRODUCT_NAME" /> 會將這些憑證視為已撤銷 (作業失敗)。
 
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。</translation>
+<translation id="5078623750797048009">啟用 PDF 註解功能</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5087424855041813182">你可以透過這項政策設定網址模式清單，用於指定可顯示通知的網站。
@@ -3035,6 +3050,7 @@
 <translation id="5178479074002209469">布林值標記，表示這項政策要求進行更新時，是否要讓未受管理的使用者工作階段接收通知並強制登出。</translation>
 <translation id="5182055907976889880">設定在 <ph name="PRODUCT_OS_NAME" /> 中使用 Google 雲端硬碟。</translation>
 <translation id="5182483318861266793">將檔案櫃放在畫面的右側</translation>
+<translation id="5189360528842591274">僅允許連接至清單中的藍牙服務</translation>
 <translation id="5190426551516379357">如果設定這項政策，系統會在 YouTube 上強制執行低度的嚴格篩選模式，並禁止使用者選擇更寬鬆的模式。這項政策可設定的選項如下：
 
       * 高度：在 YouTube 上一律啟用高度嚴格篩選模式。
@@ -3044,6 +3060,7 @@
       * 關閉或未設定值：Chrome 不會強制執行 YouTube 上的嚴格篩選模式，但外部政策 (例如 YouTube 政策) 可能仍會強制執行嚴格篩選模式。</translation>
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
 <translation id="5196520640744454600">在登入畫面上啟用相黏鍵功能</translation>
+<translation id="5196630732055960309">允許這些網頁應用程式上的 File Handling API</translation>
 <translation id="5206454085187851382">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="5207543664699568887">設定 Linux 上的 <ph name="PRODUCT_NAME" /> 是否要使用系統通知。
 
@@ -3213,6 +3230,15 @@
       請注意，先前我們誤在 Android 裝置上啟用這項政策，但這項功能從未針對 Android 裝置提供完整支援。</translation>
 <translation id="5390083518957894426">在螢幕鎖定畫面上啟用 SAML 使用者的線上重新驗證功能</translation>
 <translation id="5391388690191341203">用於自動登入的裝置本機帳戶</translation>
+<translation id="5391867362692016532">你可以透過這項政策建立網址模式清單，指定哪些網頁應用程式無法要求使用者授予特定類型檔案的存取權。
+
+      如果未設定這項政策，系統會針對所有網頁應用程式套用 <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)；否則系統會套用使用者的個人設定。
+
+      針對既不符合 <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> 也不符合 <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> 的網址模式，系統會依序使用 <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> 或使用者的個人設定。
+
+      網址模式不得與 <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5393009997533871906">僅對使用者顯示許可清單中的印表機</translation>
 <translation id="5401696449591951427">啟用 <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">設定 <ph name="PRODUCT_OS_NAME" /> 登入畫面可使用的鍵盤配置。
@@ -4192,6 +4218,9 @@
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
       如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。未受管理的裝置可以執行虛擬機器。</translation>
+<translation id="6786575816328462682">如果將這項政策設為 1，系統會允許網頁應用程式存取特定類型的檔案。如果將這項政策設為 2，系統會禁止網站應用程式存取特定類型的檔案。
+
+      如果不設定這項政策，網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786967369487349613">設定漫遊設定檔目錄</translation>
 <translation id="6789422336869764846">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置的開發人員模式切換設定在開機時的狀態。
@@ -4824,6 +4853,7 @@
       * 允許 PIN 碼和指紋，請使用 ["PIN", "FINGERPRINT"]。
 
       如果不設定這項政策或設為空白清單，受管理的裝置將無法使用任何快速解鎖模式。</translation>
+<translation id="754176366378585605">控管 File Handling API 使用權限</translation>
 <translation id="7543109906499122922">裝置開始使用電池供電的時間 (根據裝置當地時區)。</translation>
 <translation id="7547549430720182663">合併</translation>
 <translation id="7553535237300701827">設定這項政策後，系統會根據設定值採用下列其中一種登入驗證流程：
@@ -5564,6 +5594,7 @@
           如果不設定這項政策，系統在預設狀態下會啟用無障礙功能快速鍵。</translation>
 <translation id="8524334245528364388">含有列印伺服器清單的 JSON 檔案的網址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
+<translation id="8528951285051082869">禁止任何網頁應用程式透過 File Handling API 存取特定類型的檔案</translation>
 <translation id="8537051350735478658">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>
@@ -5647,6 +5678,14 @@
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統會回報裝置的藍牙資訊。</translation>
+<translation id="8703378568562190813">你可以透過這項政策建立網址模式清單，指定要授予哪些網頁應用程式特定類型檔案的存取權。
+
+      如果未設定這項政策，系統會針對所有網頁應用程式套用 <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)；否則系統會套用使用者的個人設定。
+      針對既不符合 <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> 也不符合 <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> 的網址模式，系統會依序使用 <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> 或使用者的個人設定。
+
+      網址模式不得與 <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="8703488928438047864">回報主機板狀態</translation>
 <translation id="8704831857353097849">停用的外掛程式清單</translation>
 <translation id="8705895771006864851">如果將這項政策設為 True，系統會適時在 <ph name="PRODUCT_NAME" /> 中顯示整合式翻譯工具列，為使用者提供翻譯功能。使用者也可以按一下滑鼠右鍵開啟內容選單，選擇其中的翻譯選項。如果將這項政策設為 False，系統會關閉所有內建的翻譯功能。

@@ -1162,6 +1162,7 @@
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
 <translation id="5332219387342487447">運送方式</translation>
+<translation id="5333022057423422993">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
@@ -1276,6 +1277,7 @@
 <translation id="5784606427469807560">驗證您的信用卡時發生問題。請檢查網際網路連線，然後再試一次。</translation>
 <translation id="5785756445106461925">此外，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，進而變更網頁外觀。</translation>
 <translation id="5786044859038896871">要填入你的信用卡資訊嗎？</translation>
+<translation id="578633867165174378">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。建議你立即變更密碼。</translation>
 <translation id="5798290721819630480">要捨棄變更嗎？</translation>
 <translation id="5803412860119678065">要填入你的 <ph name="CARD_DETAIL" /> 資訊嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -1465,6 +1467,7 @@
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583674473685352014">B6 (信封)</translation>
+<translation id="6587182488465657433">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你立即變更密碼，並檢查已儲存的密碼。</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
 <translation id="6592952801936330159">「管理網站設定」按鈕；按下 Enter 鍵即可在 Chrome 設定中管理各網站的權限及儲存的資料</translation>

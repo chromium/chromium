@@ -925,7 +925,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="443673843213245140">Die Proxy-Nutzung ist deaktiviert, es ist jedoch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="4464826014807964867">Websites mit Informationen Ihrer Organisation</translation>
 <translation id="4466881336512663640">Änderungen im Formular gehen verloren. Möchten Sie den Vorgang wirklich fortsetzen?</translation>
-<translation id="4476953670630786061">Dieses Formular ist nicht sicher. Die Funktion "Automatisches Ausfüllen" wurde deaktiviert.</translation>
+<translation id="4476953670630786061">Dieses Formular ist nicht sicher. Die Funktion „Automatisches Ausfüllen“ wurde deaktiviert.</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4482953324121162758">Diese Website wird nicht übersetzt.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1160,6 +1160,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329858041417644019">Ihr Browser wird nicht verwaltet</translation>
 <translation id="5332219387342487447">Versandart</translation>
+<translation id="5333022057423422993">Chrome hat das Passwort, das Sie gerade verwendet haben, in einer Datenpanne gefunden. Wir empfehlen Ihnen, Ihre gespeicherten Passwörter zu prüfen, um Ihre Konten besser zu schützen.</translation>
 <translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
@@ -1274,6 +1275,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5784606427469807560">Beim Bestätigen Ihrer Karte ist ein Problem aufgetreten. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="5785756445106461925">Außerdem enthält diese Seite andere, nicht sichere Ressourcen. Diese Ressourcen können während der Übertragung von anderen Nutzern angezeigt und von Angreifern bearbeitet werden, die das Layout der Seite verändern.</translation>
 <translation id="5786044859038896871">Möchten Sie Ihre Kreditkarteninformationen eingeben?</translation>
+<translation id="578633867165174378">Chrome hat das Passwort, das Sie gerade verwendet haben, in einer Datenpanne gefunden. Wie empfehlen Ihnen, dieses Passwort jetzt zu ändern.</translation>
 <translation id="5798290721819630480">Änderungen verwerfen?</translation>
 <translation id="5803412860119678065">Möchten Sie die Daten Ihrer <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
@@ -1463,6 +1465,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6579630537141957243">MIDI-Gerät verbinden?</translation>
 <translation id="6579990219486187401">Hellrosa</translation>
 <translation id="6583674473685352014">B6 (Umschlag)</translation>
+<translation id="6587182488465657433">Chrome hat das Passwort, das Sie gerade verwendet haben, in einer Datenpanne gefunden. Wir empfehlen Ihnen, es jetzt zu ändern, und dann Ihre gespeicherten Passwörter zu prüfen, um Ihre Konten besser zu schützen.</translation>
 <translation id="6587923378399804057">Von Ihnen kopierter Link</translation>
 <translation id="6591833882275308647">Ihr <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
 <translation id="6592952801936330159">Schaltfläche zum Verwalten der Website-Einstellungen – drücken Sie die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>

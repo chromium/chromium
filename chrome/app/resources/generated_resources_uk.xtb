@@ -271,6 +271,7 @@
 <translation id="1288300545283011870">Властивості мовлення</translation>
 <translation id="1289619947962767206">Цей параметр уже не підтримується. Щоб показати вкладку, скористайтеся <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">Умови використання <ph name="MANAGER" /></translation>
+<translation id="1291603679744561561">SIM-карту заблоковано</translation>
 <translation id="1292849930724124745">Щоб не виходити з облікового запису, вставте розумну картку</translation>
 <translation id="1293264513303784526">Пристрій із портом USB типу C (ліворуч)</translation>
 <translation id="1293556467332435079">Файли</translation>
@@ -448,6 +449,7 @@
 <translation id="1478607704480248626">Встановлення не підтримується</translation>
 <translation id="1481537595330271162">Не вдалося змінити розмір диска</translation>
 <translation id="1482626744466814421">Додати цю вкладку до закладок…</translation>
+<translation id="1483272013430662157">Веб-додатки можуть просити дозвіл відкривати певні типи файлів</translation>
 <translation id="1483493594462132177">Надіслати</translation>
 <translation id="1484979925941077974">Сайт використовує Bluetooth</translation>
 <translation id="1485015260175968628">Тепер може:</translation>
@@ -1033,6 +1035,7 @@
 <translation id="2113921862428609753">Доступ до відомостей про центри сертифікації</translation>
 <translation id="2114326799768592691">Перезавантажити фрейм</translation>
 <translation id="2114896190328250491">Автор фотографії: <ph name="NAME" /></translation>
+<translation id="2114995631896158695">SIM-карту не вставлено</translation>
 <translation id="2116619964159595185">Сайти зазвичай підключаються до пристроїв із Bluetooth для роботи таких функцій, як налаштування або синхронізація маяків із низьким енергоспоживанням, пристроїв для відстеження здоров'я або фізичної активності, розумних лампочок</translation>
 <translation id="2119349053129246860">Відкрити в додатку <ph name="APP" /></translation>
 <translation id="2119461801241504254">Функція Безпечного перегляду ввімкнена й захищає вас від шкідливих сайтів і завантажень</translation>
@@ -1581,6 +1584,8 @@
 <translation id="2714393097308983682">Магазин Google Play</translation>
 <translation id="2715640894224696481">Запит ключа безпеки</translation>
 <translation id="2715751256863167692">Це оновлення скидає налаштування Chromebook і вилучає дані поточного користувача.</translation>
+<translation id="271639966356700691">Щоб наблизити, натисніть комбінацію клавіш Ctrl + Alt + збільшення яскравості,
+а щоб віддалити – комбінацію клавіш Ctrl + Alt + зменшення яскравості.</translation>
 <translation id="2716986496990888774">Цим налаштуванням керують батьки.</translation>
 <translation id="2718395828230677721">Нічний екран</translation>
 <translation id="2718998670920917754">Антивірусне програмне забезпечення виявило вірус.</translation>
@@ -2105,6 +2110,7 @@
 <translation id="3303260552072730022">Розширення запустило повноекранний режим.</translation>
 <translation id="3303818374450886607">Копії</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
+<translation id="3304212451103136496">Знижка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Процес форматування може зайняти декілька секунд. Зачекайте.</translation>
 <translation id="3305661444342691068">Відкрити файл PDF у вікні попереднього перегляду</translation>
 <translation id="3308116878371095290">Цій сторінці було відмовлено в збереженні файлів cookie.</translation>
@@ -2530,6 +2536,7 @@
 <translation id="377050016711188788">Морозиво</translation>
 <translation id="3771290962915251154">Цей параметр вимкнено, оскільки ввімкнено батьківський контроль</translation>
 <translation id="3771294271822695279">Відеофайли</translation>
+<translation id="3772609330847318323">Оновіть пароль для сайту <ph name="ORIGIN" /></translation>
 <translation id="3775432569830822555">Сертифікат SSL-сервера</translation>
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
 <translation id="3776796446459804932">Це розширення порушує політику Веб-магазину Chrome.</translation>
@@ -3522,6 +3529,7 @@
 <translation id="489985760463306091">Щоб завершити видалення шкідливого програмного забезпечення, перезавантажте комп’ютер</translation>
 <translation id="4900392736118574277">Стартову сторінку змінено на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
+<translation id="4901309472892185668">Вибрати статус експерименту "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -3825,6 +3833,7 @@
 <translation id="5260508466980570042">На жаль, не вдалося підтвердити вашу електронну адресу чи пароль. Повторіть спробу.</translation>
 <translation id="5261683757250193089">Відкрити у Веб-магазині</translation>
 <translation id="5262178194499261222">Видалити пароль</translation>
+<translation id="526260164969390554">Щоб увімкнути або вимкнути повноекранну лупу, натисніть комбінацію Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Наблизивши зображення, переміщуйтеся по екрану за допомогою комбінації Ctrl + Alt + клавіші зі стрілками.</translation>
 <translation id="5262784498883614021">Автоматично підключатися до мережі</translation>
 <translation id="5264148714798105376">Це може зайняти близько хвилини.</translation>
 <translation id="5264252276333215551">Щоб запустити програму в режимі термінала, під’єднайтеся до Інтернету.</translation>
@@ -3873,6 +3882,7 @@
 <translation id="5311304534597152726">Вхід в обліковий запис</translation>
 <translation id="5311565231560644461">Заборонити сайтам доступ до даних і пристроїв віртуальної реальності</translation>
 <translation id="5312876166662946389">{COUNT,plural, =1{зображення}one{# зображення}few{# зображення}many{# зображень}other{# зображення}}</translation>
+<translation id="5315179276708231080">Lacros – це експериментальний веб-переглядач. Щоб повідомити про проблему, натисніть "Довідка" &gt; "Повідомити про проблему…" Щоб знайти стандартний веб-переглядач, введіть запит "Chrome" на панелі запуску.</translation>
 <translation id="5315738755890845852">Зайва фігурна дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>
@@ -4975,6 +4985,7 @@
 <translation id="656293578423618167">Шлях файлу чи назва файлу задовгі. Збережіть з коротшою назвою чи в іншому місці.</translation>
 <translation id="6563469144985748109">Адміністратор ще не схвалив його</translation>
 <translation id="6568283005472142698">Пошук вкладок</translation>
+<translation id="6569911211938664415">Паролі зберігаються в обліковому записі Google (<ph name="ACCOUNT" />), щоб ви могли користуватися ними на будь-якому пристрої</translation>
 <translation id="6569934958368283244">Інші люди</translation>
 <translation id="6573497332121198392">Не вдалося видалити ярлик</translation>
 <translation id="657402800789773160">&amp;Перезавантажити цю сторінку</translation>
@@ -5370,6 +5381,7 @@
 <translation id="7003844668372540529">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайт може використовувати MIDI</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
+<translation id="7004969808832734860">Знижка до <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Додаткові дозволи</translation>
 <translation id="7005812687360380971">Помилка</translation>
 <translation id="7005848115657603926">Недійсний діапазон сторінок, використовуйте <ph name="EXAMPLE_PAGE_RANGE" /></translation>
@@ -5390,6 +5402,7 @@
 <translation id="7025082428878635038">Новий спосіб навігації жестами</translation>
 <translation id="7025190659207909717">Керування службою пересилання мобільних даних</translation>
 <translation id="7025895441903756761">Безпека та конфіденційність</translation>
+<translation id="7026552751317161576">Заборонити веб-додаткам відкривати певні типи файлів</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Відкрити всі у &amp;вікні в режимі анонімного перегляду}=1{Відкрити у &amp;вікні в режимі анонімного перегляду}one{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}few{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}many{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}other{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}}</translation>
 <translation id="7029307918966275733">Crostini не встановлено. Установіть це рішення, щоб переглянути дані про розробників.</translation>
 <translation id="7029809446516969842">Паролі</translation>
@@ -5956,6 +5969,7 @@
 <translation id="7680416688940118410">Калібрування сенсорного екрана</translation>
 <translation id="7681095912841365527">Сайт може використовувати Bluetooth</translation>
 <translation id="7681597159868843240">Сайти зазвичай використовують датчики руху на пристрої для роботи таких функцій, як віртуальна реальність чи відстеження фізичної активності</translation>
+<translation id="7683164815270164555">Запитувати, коли веб-додаток хоче відкрити певні типи файлів</translation>
 <translation id="7683373461016844951">Натисніть OK і виберіть "Додати користувача", щоб створити новий профіль для своєї електронної адреси <ph name="DOMAIN" />.</translation>
 <translation id="7683593009096723900">{COUNT,plural, =0{Відкрити всі у &amp;вікні в режимі анонімного перегляду}=1{Відкрити у &amp;вікні в режимі анонімного перегляду}one{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}few{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}many{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}other{Відкрити всі ({COUNT}) у &amp;вікні в режимі анонімного перегляду}}</translation>
 <translation id="7684212569183643648">Установив адміністратор</translation>
@@ -6116,6 +6130,7 @@
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Час завершення</translation>
+<translation id="783229689197954457">Якщо Google знайде знижку, вона з’явиться на цій сторінці</translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
 <translation id="7835178595033117206">Закладку видалено</translation>
 <translation id="7836850009646241041">Спробуйте торкнутися ключа безпеки ще раз</translation>
@@ -6155,6 +6170,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Переглянути обліковий запис</translation>
 <translation id="7883792253546618164">Ви можете будь-коли скасувати підписку.</translation>
+<translation id="788453346724465748">Завантаження даних облікового запису…</translation>
 <translation id="7885253890047913815">Останні місця призначення</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Створити копію</translation>
@@ -6647,6 +6663,7 @@
 <translation id="8449008133205184768">Вставити та застосувати стиль</translation>
 <translation id="8449036207308062757">Керувати пам’яттю</translation>
 <translation id="8452135315243592079">Немає SIM-карти</translation>
+<translation id="8454502708934796641">Дозволити Google шукати знижки на товари, які ви додали в кошики?</translation>
 <translation id="8455026683977728932">Не вдалось увімкнути ілюстрацію ADB</translation>
 <translation id="8456398879271637452">Відображаються живі субтитри; натисніть комбінацію клавіш Ctrl + назад або Ctrl + уперед, щоб виділити спливаюче вікно</translation>
 <translation id="8456512334795994339">Знайдіть додатки для роботи й відпочинку</translation>
@@ -6666,6 +6683,7 @@
 <translation id="8470214316007448308">Інші люди</translation>
 <translation id="8470513973197838199">Збережені паролі для <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сайти зазвичай підключаються до пристроїв USB для роботи таких функцій, як друк документів або зберігання файлів на пристрої пам'яті</translation>
+<translation id="8471959340398751476">Знижки вимкнено. Ви можете ввімкнути їх у меню налаштувань.</translation>
 <translation id="8472623782143987204">з апаратною підтримкою</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8475313423285172237">Інша програма на вашому комп’ютері додала розширення, яке може змінити роботу Chrome.</translation>
@@ -6782,6 +6800,7 @@
 <translation id="8620436878122366504">Батьки ще не схвалили його</translation>
 <translation id="8621866727807194849">Виявлено шкідливе програмне забезпечення на вашому комп’ютері. Chrome видаляє його, відновлює налаштування й вимикає розширення. Завдяки цьому веб-переглядач знову працюватиме належним чином.</translation>
 <translation id="8621979332865976405">Поділитися цілим екраном</translation>
+<translation id="8624354461147303341">Отримувати знижки</translation>
 <translation id="862542460444371744">&amp;Розширення</translation>
 <translation id="8625663000550647058">Заборонено використовувати мікрофон</translation>
 <translation id="8625916342247441948">Заборонити сайтам підключатися до пристроїв HID</translation>
@@ -6960,6 +6979,7 @@
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8800004011501252845">Показано місця призначення для</translation>
 <translation id="8800034312320686233">Сайт не працює?</translation>
+<translation id="880004380809002950">Заборонити веб-додаткам відкривати певні типи файлів</translation>
 <translation id="8803953437405899238">Відкривайте нову вкладку одним кліком</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Перемістити вкладку в інше вікно}one{Перемістити вкладки в інше вікно}few{Перемістити вкладки в інше вікно}many{Перемістити вкладки в інше вікно}other{Перемістити вкладки в інше вікно}}</translation>
 <translation id="8805140816472474147">Щоб почати синхронізацію, підтвердьте її налаштування.</translation>
@@ -7138,6 +7158,7 @@
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> може змінювати файл "<ph name="FILENAME" />"</translation>
 <translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
+<translation id="8985661493893822002">Щоб увійти на пристрої <ph name="DEVICE_TYPE" />, підключіться до Інтернету.</translation>
 <translation id="8986362086234534611">Видалити</translation>
 <translation id="8986494364107987395">Автоматично надсилати статистику використання та звіти про аварійне завершення роботи в Google</translation>
 <translation id="8987927404178983737">Місяць</translation>
@@ -7275,6 +7296,7 @@
 <translation id="9128870381267983090">З'єднатися з мережею</translation>
 <translation id="9130015405878219958">Введено недійсний режим.</translation>
 <translation id="9131487537093447019">Обмінюватися повідомленнями на пристроях Bluetooth.</translation>
+<translation id="913700572893686595">З Google Диска</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
 <translation id="9137157311132182254">Основна пошукова система</translation>
 <translation id="9137248913990643158">Перш ніж користуватися додатком, увійдіть в обліковий запис Chrome.</translation>

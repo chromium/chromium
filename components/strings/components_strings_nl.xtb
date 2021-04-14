@@ -1159,6 +1159,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
 <translation id="5332219387342487447">Verzendmethode</translation>
+<translation id="5333022057423422993">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="5334013548165032829">Gedetailleerde systeemlogboeken</translation>
 <translation id="5340250774223869109">App is geblokkeerd</translation>
 <translation id="534295439873310000">NFC-apparaten</translation>
@@ -1273,6 +1274,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5784606427469807560">Er is een probleem opgetreden bij het bevestigen van je creditcard. Controleer je internetverbinding en probeer het opnieuw.</translation>
 <translation id="5785756445106461925">Bovendien bevat deze pagina bronnen die niet beveiligd zijn. Deze bronnen kunnen tijdens verzending door anderen worden bekeken en kunnen door een aanvaller worden gewijzigd om het uiterlijk van de pagina aan te passen.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
+<translation id="578633867165174378">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="5798290721819630480">Wijzigingen niet opslaan?</translation>
 <translation id="5803412860119678065">Wil je de gegevens van je <ph name="CARD_DETAIL" /> laten invullen?</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -1461,6 +1463,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6579630537141957243">MIDI-apparaat verbinden?</translation>
 <translation id="6579990219486187401">Lichtroze</translation>
 <translation id="6583674473685352014">B6 (envelop)</translation>
+<translation id="6587182488465657433">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken.</translation>
 <translation id="6587923378399804057">Link die je hebt gekopieerd</translation>
 <translation id="6591833882275308647">Je <ph name="DEVICE_TYPE" /> wordt niet beheerd</translation>
 <translation id="6592952801936330159">Knop Site-instellingen beheren, druk op Enter om rechten en opgeslagen gegevens voor sites te beheren in de Chrome-instellingen</translation>

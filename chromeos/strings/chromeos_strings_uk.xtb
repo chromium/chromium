@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
+<translation id="1715359911173058521">Не вдалося підключитися до сканера. Перевірте з’єднання з мережею або USB та повторіть спробу.</translation>
 <translation id="1717874160321062422">Пристроєм керують <ph name="FIRST_MANAGER" /> і <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">Керований</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Залишилася {0} спроба}one{Залишилася {0} спроба}few{Залишилися {0} спроби}many{Залишилося {0} спроб}other{Залишилося {0} спроби}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Не вдалося зісканувати</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знайдено</translation>
+<translation id="6037291330010597344">Автоподавач документів порожній. Покладіть документи та повторіть спробу.</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6040852767465482106">Анонімна ідентифікація</translation>
 <translation id="604124094241169006">Автоматично</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
+<translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Оптимальний</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
+<translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
 <translation id="6911383237894364323">Не вдалося підключитися до медіасерверів</translation>
 <translation id="6957231940976260713">Назва служби</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
+<translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>

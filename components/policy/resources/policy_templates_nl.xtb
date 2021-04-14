@@ -864,6 +864,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als het beleid is ingesteld, worden tabbladen in de browser verwijderd om geheugen te besparen als de limiet wordt bereikt. Er is geen garantie dat de browser altijd onder de limiet wordt uitgevoerd. Elke waarde lager dan 1024 wordt afgerond naar 1024.
 
       Als dit beleid niet is ingesteld, begint de browser pas met het besparen van geheugen nadat is gedetecteerd dat er nog maar een kleine hoeveelheid fysiek geheugen op de machine beschikbaar is.</translation>
+<translation id="2164610500194388856">Web-apps toegang tot bestandstypen geven</translation>
 <translation id="2166472654199325139">Sites niet filteren op content voor volwassenen</translation>
 <translation id="2168397434410358693">Inactieve vertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="217013996107840632">Opdrachtregelparameters voor overschakeling vanaf de alternatieve browser.</translation>
@@ -1045,6 +1046,7 @@ Als dit beleid is ingesteld op False, staat het privacyscherm altijd uit.
 Als dit beleid is ingesteld, kan de gebruiker de waarde niet overschrijven.
 
 Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie uit, maar kan de gebruiker dit aanzetten.</translation>
+<translation id="2415715982424988916">Ontdekken (ondersteund vanaf versie 91)</translation>
 <translation id="241739814668386424"> Als je dit beleid niet toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat niet volledig verbinden via PCIe-tunneling.
 
       Als je dit beleid toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat volledig verbinden via PCIe-tunneling.
@@ -1337,6 +1339,11 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
+<translation id="2764964245640818227">Beheert of er annotaties in pdf's kunnen worden gemaakt met de pdf-viewer in <ph name="PRODUCT_NAME" />.
+
+      Als dit beleid niet is ingesteld of is ingesteld op true, kunnen met de pdf-viewer annotaties in pdf's worden gemaakt.
+
+      Als dit beleid is ingesteld op false, kunnen met de pdf-viewer geen annotaties in pdf's worden gemaakt.</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
 <translation id="2772955711376920612">Als je dit beleid toepast en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, blijft stroom voor piekuren aan (als het apparaat hiervoor geschikt is). Het beleid voor stroombeheer voor piekuren is een energiebesparingsbeleid waarmee het gebruik van wisselstroom op piekuren wordt geminimaliseerd. Voor elke dag van de week kun je een begin- en eindtijd instellen voor stroom voor piekuren. Zolang de batterij op deze momenten boven de ingestelde drempelwaarde blijft, blijft het apparaat op de batterij draaien (zelfs als het is aangesloten op wisselstroom). Na de ingestelde eindtijd gebruikt het apparaat wisselstroom (als het daarop is aangesloten) maar wordt de batterij niet opgeladen. Het apparaat keert terug naar de normale werking waarbij wisselstroom wordt gebruikt en de batterij wordt opgeladen na de opgegeven begintijd voor opladen.
 
@@ -1551,6 +1558,7 @@ en 3 optionele leden:
 
         Dit beleid heeft geen invloed op al uitgebrachte beleidsregels.</translation>
 <translation id="3016255526521614822">Notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm toevoegen aan de witte lijst</translation>
+<translation id="3017578958356048910">De pdf-viewer mag pdf's annoteren</translation>
 <translation id="3020953534071988875">Als je dit beleid instelt, wordt Ambient-verificatie voor incognito- en gastprofielen toegestaan/niet toegestaan in <ph name="PRODUCT_NAME" />.
 
       Ambient-verificatie is HTTP-verificatie met standaardgegevens als er geen expliciete gegevens worden verstrekt via uitdaging/reactie-schema's van NTLM/Kerberos/Negotiate.
@@ -1787,6 +1795,7 @@ en 3 optionele leden:
 <translation id="332771718998993005">De naam bepalen die wordt geadverteerd als een bestemming van <ph name="PRODUCT_NAME" />.
 
           Als dit beleid is ingesteld op een niet-lege tekenreeks, wordt die tekenreeks gebruikt als de naam van de <ph name="PRODUCT_NAME" />-bestemming. Anders wordt de apparaatnaam gebruikt voor de bestemmingsnaam. Als dit beleid niet is ingesteld, is de naam van de bestemming de apparaatnaam en kan de eigenaar van het apparaat (of een gebruiker in het domein dat het apparaat beheert) deze naam wijzigen. De naam mag maximaal 24 tekens lang zijn.</translation>
+<translation id="3329063005964041553">De File Handling API blokkeren voor deze web-apps</translation>
 <translation id="3339271789059866414">Configureert de beschikbaarheid van de systeemproxyservice en de proxygegevens voor systeemservices.
       Als het beleid niet is ingesteld, is de systeemproxyservice niet beschikbaar.</translation>
 <translation id="3348799281602260763">Als het beleid is toegepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
@@ -2468,6 +2477,9 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
 <translation id="4329095223358818804">'Snelle antwoorden' toegang tot geselecteerde content geven</translation>
 <translation id="4330372709562934569">Hiermee kunnen de vermelde websites vanuit niet-beveiligde contexten verzoeken sturen naar meer-privé netwerkeindpunten.</translation>
+<translation id="4331357743227845302">Met dit beleid kunnen beheerders bluetooth-services instellen waarmee <ph name="PRODUCT_OS_NAME" /> verbinding mag maken.
+
+Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alleen toe verbinding te maken met de opgegeven bluetooth-services, met een uitzondering wanneer de lijst leeg is, wat betekent dat elke service mag worden gebruikt. UUID's die zijn gereserveerd door de Bluetooth SIG kunnen worden weergegeven als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> of <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Aangepaste UUID's kunnen worden weergegeven als <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID's zijn hoofdlettergevoelig. Als je het beleid niet instelt, kunnen gebruikers verbinding maken met elke bluetooth-service.</translation>
 <translation id="4332177773549877617">Gebeurtenissen registreren voor installatie van Android-apps</translation>
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
@@ -2522,6 +2534,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als dit beleid is ingesteld op false, toont de browser de welkomstpagina niet bij de eerste opstart na een upgrade van het besturingssysteem.</translation>
 <translation id="4423597592074154136">Proxyinstellingen handmatig specificeren</translation>
+<translation id="4427173305799125784">Er kunnen geen annotaties in pdf's worden gemaakt met de pdf-viewer</translation>
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
 <translation id="443665821428652897">Sitegegevens wissen als de browser wordt gesloten (verouderd)</translation>
@@ -2765,6 +2778,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers zelf aangeven of de plank automatisch moet worden verborgen.</translation>
 <translation id="4812714598405913256">Bericht voor vervaldatum voor automatische updates configureren voor het beleid DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Toestaan dat Enterprise-gebruiker zowel primair als secundair is (standaardgedrag voor niet-beheerde gebruikers)</translation>
+<translation id="4818228398115369966">De camera, browserinstellingen, OS-instellingen en functies voor scannen, Web Store, canvas, Google Nieuws en Ontdekken instellen die moeten worden uitgezet</translation>
 <translation id="4820432864264617413">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
 <translation id="4826326557828204741">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op accuvermogen</translation>
 <translation id="482803100714220060">Volledige URL's tonen</translation>
@@ -2974,6 +2988,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="5075190314377370852">Als je het beleid instelt op 'True', voert <ph name="PRODUCT_NAME" /> altijd een intrekkingscontrole uit voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten. Als <ph name="PRODUCT_NAME" /> geen informatie over de intrekkingsstatus kan verkrijgen, beschouwt <ph name="PRODUCT_NAME" /> deze certificaten als ingetrokken ('hard-fail').
 
       Als je het beleid instelt op 'False' of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.</translation>
+<translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
 <translation id="5087424855041813182">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die meldingen mogen weergeven.
@@ -3044,6 +3059,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="5178479074002209469">Een Booleaanse markering die aangeeft of onbeheerde gebruikerssessies meldingen moeten krijgen en gedwongen moeten worden uitgelogd als er een update vereist is volgens dit beleid.</translation>
 <translation id="5182055907976889880">Google Drive in <ph name="PRODUCT_OS_NAME" /> configureren.</translation>
 <translation id="5182483318861266793">De plank aan de rechterkant van het scherm plaatsen</translation>
+<translation id="5189360528842591274">Alleen verbinding met de bluetooth-services in de lijst toestaan</translation>
 <translation id="5190426551516379357">Als je het beleid instelt, werkt YouTube in een minimale beperkte modus en kunnen gebruikers geen minder beperkte modus kiezen. Als je het instelt op:
 
       * Streng, is de strenge beperkte modus in YouTube altijd actief.
@@ -3053,6 +3069,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       * Uit of als je geen waarde instelt, werkt YouTube niet in de beperkte modus in Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5196520640744454600">Plaktoetsen op het inlogscherm aanzetten</translation>
+<translation id="5196630732055960309">De File Handling API toestaan voor deze web-apps</translation>
 <translation id="5206454085187851382">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Bepaalt of <ph name="PRODUCT_NAME" /> op Linux systeemmeldingen gebruikt.
 
@@ -3222,6 +3239,15 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Dit beleid werd in het verleden ten onrechte toegepast op Android, maar deze functionaliteit is nooit volledig ondersteund geweest op Android.</translation>
 <translation id="5390083518957894426">Zet online opnieuw verifiëren op vergrendelscherm aan voor SAML-gebruikers</translation>
 <translation id="5391388690191341203">Lokaal account op apparaat voor automatisch inloggen</translation>
+<translation id="5391867362692016532">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke web-apps gebruikers niet mogen vragen om ze toegang te geven tot bestandstypen.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle web-apps. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
+
+      Als URL-patronen niet overeenkomen met het beleid <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> of <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, krijgen <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> of de persoonlijke instellingen van de gebruiker voorrang, in die volgorde.
+
+      URL-patronen mogen geen conflict vormen met <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5393009997533871906">Alleen printers op de toelatingslijst worden getoond aan gebruikers</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> aanzetten</translation>
 <translation id="5405289061476885481">Hiermee configureer je welke toetsenbordindelingen zijn toegestaan voor het inlogscherm van <ph name="PRODUCT_OS_NAME" />.
@@ -4211,6 +4237,9 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6782977971207381602">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
 
       Als dit beleid niet is ingesteld op een beheerd apparaat, kan het apparaat geen virtuele machines uitvoeren. Niet-beheerde apparaten kunnen virtuele machines uitvoeren.</translation>
+<translation id="6786575816328462682">Als je het beleid instelt op 1, hebben web-apps toegang tot bestandstypen. Als je het beleid instelt op 2, wordt toegang tot bestandstypen geweigerd.
+
+      Als dit beleid niet is ingesteld, kunnen web-apps toegang vragen, maar gebruikers kunnen deze instelling wijzigen.</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786967369487349613">De map voor roaming-profielen instellen</translation>
 <translation id="6789422336869764846">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
@@ -4843,6 +4872,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       * Gebruik ["PIN", "FINGERPRINT"] als je een pincode en een vingerafdruk wilt toestaan.
 
       Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen standen voor snel ontgrendelen beschikbaar voor beheerde apparaten.</translation>
+<translation id="754176366378585605">Gebruik van de File Handling API beheren</translation>
 <translation id="7543109906499122922">Tijd wanneer het apparaat de batterij gaat gebruiken, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="7547549430720182663">Samenvoegen</translation>
 <translation id="7553535237300701827">Als dit beleid is ingesteld, wordt de inlogverificatie op een van de volgende manieren uitgevoerd (afhankelijk van de waarde van de instelling):
@@ -5592,6 +5622,7 @@ Dit beleid wordt verwijderd in M75.</translation>
           Als dit beleid niet is ingesteld, staan de snelkoppelingen voor toegankelijkheidsfuncties standaard aan.</translation>
 <translation id="8524334245528364388">URL naar een json-bestand met een lijst van afdrukservers.</translation>
 <translation id="8525526490824335042">Linux-container</translation>
+<translation id="8528951285051082869">Geen web-apps toestemming geven voor toegang tot bestandstypen via de File Handling API</translation>
 <translation id="8537051350735478658">Als je het beleid instelt op True, worden de zoeksuggesties in de adresbalk van <ph name="PRODUCT_NAME" /> aangezet. Als je het beleid instelt op False, worden deze zoeksuggesties uitgezet.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staan de zoeksuggesties in eerste instantie aan, maar kunnen gebruikers deze op elk moment uitzetten.</translation>
@@ -5675,6 +5706,15 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de bluetooth-gegevens van het apparaat gerapporteerd.</translation>
+<translation id="8703378568562190813">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke web-apps toegang tot bestandstypen krijgen.
+
+      Als je het beleid niet instelt, is <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle web-apps. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
+
+      Als URL-patronen niet overeenkomen met het beleid <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> of <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, krijgen <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> of de persoonlijke instellingen van de gebruiker voorrang, in die volgorde.
+
+      URL-patronen mogen geen conflict vormen met <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
+
+      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="8703488928438047864">Boardstatus rapporteren</translation>
 <translation id="8704831857353097849">Lijst met uitgezette plug-ins</translation>
 <translation id="8705895771006864851">Als je het beleid instelt op True, wordt gebruikers vertaalfunctionaliteit aangeboden als dit gepast is. In dat geval is een geïntegreerde vertaalwerkbalk zichtbaar in <ph name="PRODUCT_NAME" /> en een vertaaloptie in het contextmenu als je klikt met de rechtermuisknop. Als je het beleid instelt op False, worden alle ingebouwde vertaalfuncties uitgezet.

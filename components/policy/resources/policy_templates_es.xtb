@@ -878,6 +878,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se define esta política, el navegador empezará a descartar pestañas para ahorrar memoria cuando se supere el límite de memoria. Sin embargo, no se garantiza que el navegador se ejecute siempre por debajo de ese límite. Cualquier valor que sea inferior a 1024 se establecerá como 1024.
 
       Si no se define esta política, el navegador solo intentará ahorrar memoria cuando detecte que la cantidad de memoria física del equipo es baja.</translation>
+<translation id="2164610500194388856">Permitir que las aplicaciones web accedan a ciertos tipos de archivo</translation>
 <translation id="2166472654199325139">No filtrar el contenido para adultos de los sitios web</translation>
 <translation id="2168397434410358693">Retraso de inactividad cuando el dispositivo está conectado a la red</translation>
 <translation id="217013996107840632">Parámetros de línea de comandos para cambiar desde el navegador alternativo.</translation>
@@ -1061,6 +1062,7 @@ Si se le asigna el valor "False", la pantalla de privacidad siempre estará inha
 Si se asigna un valor a esta política, el usuario no podrá anularlo.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
+<translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
 <translation id="241739814668386424"> Si se inhabilita esta política, el usuario no podrá conectar totalmente su dispositivo periférico Thunderbolt/USB4 mediante la tunelización de PCIe.
 
       Si se habilita esta política, el usuario podrá conectar totalmente su dispositivo periférico Thunderbolt/USB4 mediante la tunelización de PCIe.
@@ -1359,6 +1361,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2761483219396643566">Tiempo de espera de advertencia de inactividad cuando el dispositivo funciona con batería</translation>
+<translation id="2764964245640818227">Controla si el visor de PDF de <ph name="PRODUCT_NAME" /> puede anotar PDFs.
+
+      Si no se define esta política o se le asigna el valor true, el visor de PDF podrá anotar PDFs.
+
+      Si se le asigna el valor false, el visor de PDF no podrá anotar PDFs.</translation>
 <translation id="2769952903507981510">Configurar el nombre de dominio obligatorio para hosts de acceso remoto</translation>
 <translation id="2772955711376920612">Si se habilita la política y se establecen <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantiene activado el cambio de alimentación en picos (en caso de ser compatible con el dispositivo). La política de gestión del cambio de alimentación en picos es una política de ahorro de energía que minimiza el uso de corriente alterna durante las horas en las que más energía se utiliza del día. Para ejecutar el modo de cambio de alimentación en picos, se puede configurar una hora de inicio y de finalización para cada día de la semana. Siempre y cuando la batería se mantenga por encima del umbral especificado, el dispositivo funciona con la batería durante esas horas (aunque esté conectada la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (si está conectada), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando la corriente alterna y cargando la batería después de la hora de inicio de carga especificada.
 
@@ -1581,6 +1588,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
         Esta política no tiene ningún efecto en las políticas ya publicadas.</translation>
 <translation id="3016255526521614822">Aplicaciones para tomar notas incluidas en la lista blanca que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3017578958356048910">El visor de PDF puede anotar PDFs</translation>
 <translation id="3020953534071988875">Al configurar esta política, se habilita o inhabilita la autenticación pasiva para los perfiles de incógnito y de invitado en <ph name="PRODUCT_NAME" />.
 
       La autenticación pasiva permite realizar la autenticación HTTP con credenciales predeterminadas si no se proporcionan credenciales explícitas a través de estructuras de desafío-respuesta de NTLM, Kerberos o Negotiate.
@@ -1821,6 +1829,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="332771718998993005">Determina el nombre que se utiliza como destino de <ph name="PRODUCT_NAME" />.
 
           Si se asigna una cadena que no esté vacía a esta política, esa cadena se utilizará como nombre del destino de <ph name="PRODUCT_NAME" />. De lo contrario, el nombre del destino será el nombre del dispositivo. Si esta política no se establece, el nombre del destino será el nombre del dispositivo y su propietario (o un usuario del dominio que gestiona el dispositivo) podrá cambiarlo. El nombre tiene un límite de 24 caracteres.</translation>
+<translation id="3329063005964041553">Bloquear la API File Handling en estas aplicaciones web</translation>
 <translation id="3339271789059866414">Configura la disponibilidad del servicio de proxy del sistema y las credenciales de proxy para los servicios del sistema.
       Si no se establece esta política, el servicio de proxy del sistema no estará disponible.</translation>
 <translation id="3348799281602260763">Si se habilita la política, las conexiones de punto a punto WebRTC podrán cambiar a versiones
@@ -2506,6 +2515,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4325690621216251241">Añadir un botón para cerrar sesión en la bandeja del sistema</translation>
 <translation id="4329095223358818804">Permitir que la función de Respuestas rápidas acceda al contenido seleccionado</translation>
 <translation id="4330372709562934569">Permitir que los sitios de la lista envíen solicitudes a puntos finales más privados de la red desde contextos no seguros.</translation>
+<translation id="4331357743227845302">Esta política permite a los administradores configurar los servicios Bluetooth a los que puede conectarse <ph name="PRODUCT_OS_NAME" />.
+
+Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a los servicios Bluetooth especificados. Si la lista está vacía, los usuarios podrán usar cualquier servicio. Los UUIDs reservados por Bluetooth SIG se pueden representar como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o como <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUIDs personalizados se pueden representar como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUIDs no distinguen entre mayúsculas y minúsculas. Si no se asigna ningún valor a esta política, los usuarios podrán conectarse a cualquier servicio Bluetooth.</translation>
 <translation id="4332177773549877617">Registrar eventos de descargas de aplicaciones para Android</translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
@@ -2560,6 +2572,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se le asigna el valor "False", el navegador no volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.</translation>
 <translation id="4423597592074154136">Especificar configuración de proxy manualmente</translation>
+<translation id="4427173305799125784">El visor de PDF no puede anotar PDFs</translation>
 <translation id="4432762137771104529">Habilita los informes ampliados de Navegación segura</translation>
 <translation id="443454694385851356">Antiguos (no seguro)</translation>
 <translation id="443665821428652897">Borrar datos del sitio al cerrar el navegador (obsoleta)</translation>
@@ -2804,6 +2817,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si la estantería se oculta automáticamente.</translation>
 <translation id="4812714598405913256">Configurar el mensaje de vencimiento de las actualizaciones automáticas de la política DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Permitir que el usuario de empresa sea principal y secundario (comportamiento predeterminado para usuarios no administrados)</translation>
+<translation id="4818228398115369966">Inhabilitar la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis y las funciones de Web Store, Canvas, Google Noticias y Explorar</translation>
 <translation id="4820432864264617413">Impedir que un usuario ejecute <ph name="BOREALIS_NAME" /></translation>
 <translation id="4826326557828204741">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está usando la batería</translation>
 <translation id="482803100714220060">Mostrar URL completas</translation>
@@ -3017,6 +3031,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5075190314377370852">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados localmente. Si <ph name="PRODUCT_NAME" /> no puede obtener información sobre el estado de la revocación, <ph name="PRODUCT_NAME" /> considerará que estos certificados están revocados (modo estricto).
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.</translation>
+<translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5087424855041813182">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden mostrar notificaciones.
@@ -3087,6 +3102,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5178479074002209469">Un indicador booleano que especifica si las sesiones de usuarios no gestionados deben recibir notificaciones y cerrar sesión de forma forzada si se necesita una actualización según se indique en esta política.</translation>
 <translation id="5182055907976889880">Configura Google Drive en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Colocar la estantería en la parte derecha de la pantalla</translation>
+<translation id="5189360528842591274">Permitir conectarse solo a los servicios Bluetooth de la lista</translation>
 <translation id="5190426551516379357">Si la política se define, se aplica un modo restringido mínimo en YouTube y se evita que los usuarios seleccionen un modo menos restringido. Cuando se asignan estos valores:
 
       * Estricto: el modo restringido estricto siempre está activo en YouTube.
@@ -3096,6 +3112,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       * Desactivado, o si no se define: Chrome no aplica el modo restringido en YouTube. Políticas externas, como las de YouTube, pueden seguir aplicando el modo restringido.</translation>
 <translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5196520640744454600">Habilitar las teclas persistentes en la pantalla de inicio de sesión</translation>
+<translation id="5196630732055960309">Permitir la API File Handling en estas aplicaciones web</translation>
 <translation id="5206454085187851382">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para el usuario. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones del sistema.
 
@@ -3265,6 +3282,15 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Ten en cuenta que esta política se habilitó anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="5390083518957894426">Habilita la reautenticación online en la pantalla de bloqueo para usuarios de SAML</translation>
 <translation id="5391388690191341203">Cuenta local del dispositivo para el inicio de sesión automático</translation>
+<translation id="5391867362692016532">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué aplicaciones web no pueden pedir a los usuarios que les concedan acceso a ciertos tipos de archivo.
+
+      Si no se asigna ningún valor a esta política, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> se aplicará a todas las aplicaciones web, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+
+      En el caso de los patrones de URL que no coincidan con <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> ni <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, se utilizará <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> o los ajustes personales de los usuarios, en ese orden.
+
+      Los patrones de URL no deben entrar en conflicto con <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5393009997533871906">Solo se muestran a los usuarios las impresoras incluidas en la lista de permitidos.</translation>
 <translation id="5401696449591951427">Habilitar <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Establece los diseños de teclado que se permiten en la pantalla de inicio de sesión de <ph name="PRODUCT_OS_NAME" />.
@@ -4285,6 +4311,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6782977971207381602">Si se habilita esta política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Para poder usar <ph name="PRODUCT_CROSTINI_NAME" />, las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas. Si se inhabilita la política, el dispositivo no podrá ejecutar máquinas virtuales. En caso de inhabilitar la política, esto se aplicará a las nuevas máquinas virtuales que se empiecen a usar, pero no a las que ya estén ejecutándose.
 
       Si no se establece la política en un dispositivo administrado, este no podrá ejecutar máquinas virtuales. Los dispositivos no administrados pueden ejecutar máquinas virtuales.</translation>
+<translation id="6786575816328462682">Si se asigna el valor 1 a esta política, las aplicaciones web podrán acceder a ciertos tipos de archivo. Si se le asigna el valor 2, se denegará el acceso a ciertos tipos de archivo.
+
+      Si no se le asigna ningún valor, las aplicaciones web podrán solicitar acceso, pero los usuarios podrán cambiar este ajuste.</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Especificar el directorio de perfiles de itinerancia</translation>
 <translation id="6789422336869764846">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el estado del interruptor del modo desarrollador del dispositivo al iniciarse.
@@ -4919,6 +4948,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       * PIN y huella digital. Para ello, usa ["PIN", "FINGERPRINT"].
 
       Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.</translation>
+<translation id="754176366378585605">Controlar el uso de la API File Handling</translation>
 <translation id="7543109906499122922">Hora a la que el dispositivo empezará a funcionar usando la batería, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="7547549430720182663">Combinar</translation>
 <translation id="7553535237300701827">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se asigne a esta política:
@@ -5674,6 +5704,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Si no se le asigna ningún valor, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada.</translation>
 <translation id="8524334245528364388">URL de un archivo JSON con una lista de servidores de impresión.</translation>
 <translation id="8525526490824335042">Contenedor de Linux</translation>
+<translation id="8528951285051082869">No permitir que ninguna aplicación web acceda a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="8537051350735478658">Si se asigna el valor "Verdadero" a esta política, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si se le asigna el valor "Falso", se desactivarán estas sugerencias de búsqueda.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, las sugerencias de búsqueda estarán activadas inicialmente, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
@@ -5757,6 +5788,15 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se enviará esta información del dispositivo.
       Si se le asigna el valor "true", se enviará información sobre las conexiones Bluetooth del dispositivo.</translation>
+<translation id="8703378568562190813">Si se establece esta política, podrás definir una lista de patrones de URL que especifique qué aplicaciones web tienen acceso a ciertos tipos de archivo.
+
+      Si no se asigna ningún valor a esta política, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> se aplicará a todas las aplicaciones web, si se ha definido. Si no, se aplicará la configuración personal del usuario.
+
+      En el caso de los patrones de URL que no coincidan con <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> ni <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, se utilizará <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> o los ajustes personales de los usuarios, en ese orden.
+
+      Los patrones de URL no deben entrar en conflicto con <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8703488928438047864">Informar sobre el estado de la placa</translation>
 <translation id="8704831857353097849">Lista de complementos inhabilitados</translation>
 <translation id="8705895771006864851">Si se le asigna el valor "Habilitada" a esta política, se proporcionará a los usuarios la posibilidad de traducir mediante una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" />, si procede, y una opción para traducir en el menú contextual que aparece al hacer clic con el botón derecho. Si se le asigna el valor "Inhabilitada", se desactivarán todas las funciones de traducción integradas.

@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706391837335750954">DNS ৰিজলভাৰ প্ৰেজেণ্ট</translation>
+<translation id="1715359911173058521">স্কেনাৰটোৰ সৈতে যোগাযোগ কৰাত এটা সমস্যা হৈছে। নেটৱৰ্কটো অথবা ইউএছবি সংযোগটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> আৰু <ph name="SECOND_MANAGER" />এ পৰিচালনা কৰা</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">পৰিচালিত</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} টা প্ৰয়াস বাকী আছে}one{{0} টা প্ৰয়াস বাকী আছে}other{{0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">স্কেন সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপোনাৰ ফাইলটো সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}one{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}other{আপোনাৰ ফাইলসমূহ সফলভাৱে স্কেন আৰু <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ত ছেভ কৰা হৈছে।}}</translation>
 <translation id="5931523347251946569">ফাইলটো পোৱা নগ’ল</translation>
+<translation id="6037291330010597344">স্কেনাৰৰ নথিৰ ফীডাৰটো খালী আছে। নথি যোগ দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6040852767465482106">অজ্ঞাত পৰিচয়</translation>
 <translation id="604124094241169006">স্বয়ংক্ৰিয়</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
+<translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>
 <translation id="6423239382391657905">VPN খোলক</translation>
 <translation id="6456394469623773452">ভাল</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="6853312040151791195">চাৰ্জ খৰচ হোৱাৰ হাৰ</translation>
+<translation id="6910312834584889076">স্কেনাৰৰ ঢাকনীখন খোলা আছে। ঢাকনীখন বন্ধ কৰি পুনৰ চেষ্টা কৰি চাওক।</translation>
 <translation id="6911383237894364323">মিডিয়া ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="6957231940976260713">সেৱাৰ নাম</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
+<translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>

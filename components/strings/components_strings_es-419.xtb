@@ -1163,6 +1163,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5329858041417644019">Tu navegador no está administrado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
+<translation id="5333022057423422993">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Para proteger tus cuentas, te recomendamos revisar las contraseñas guardadas.</translation>
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
@@ -1277,6 +1278,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5784606427469807560">Se produjo un problema al confirmar tu tarjeta. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="5785756445106461925">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar la apariencia de la página.</translation>
 <translation id="5786044859038896871">¿Deseas llenar los campos con la información de tu tarjeta?</translation>
+<translation id="578633867165174378">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Te recomendamos cambiar la contraseña ahora.</translation>
 <translation id="5798290721819630480">¿Descartas los cambios?</translation>
 <translation id="5803412860119678065">¿Deseas llenar los campos con la información de tu tarjeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -1466,6 +1468,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6579630537141957243">¿Quieres conectar un dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
+<translation id="6587182488465657433">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Para proteger tus cuentas, te recomendamos cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="6587923378399804057">Vínculo que copiaste</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado.</translation>
 <translation id="6592952801936330159">Botón Administrar la configuración de sitios: presiona Intro para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>

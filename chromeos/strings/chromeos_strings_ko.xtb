@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 리졸버 존재</translation>
+<translation id="1715359911173058521">스캐너와 통신하는 중에 문제가 발생했습니다. 네트워크 또는 USB 연결을 확인한 후 다시 시도해 보세요.</translation>
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
@@ -216,6 +217,7 @@
 <translation id="54609108002486618">관리</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">스캔을 완료할 수 없음</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -230,6 +232,7 @@
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
+<translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6040852767465482106">익명 ID</translation>
 <translation id="604124094241169006">자동</translation>
@@ -252,6 +255,7 @@
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
+<translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">공개 VPN</translation>
 <translation id="6456394469623773452">좋음</translation>
@@ -273,6 +277,7 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6853312040151791195">방전 속도</translation>
+<translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
@@ -287,6 +292,7 @@
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7216409898977639127">이동통신사</translation>
+<translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>

@@ -1014,7 +1014,7 @@
 <translation id="831207808878314375">Анықтама</translation>
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Ақшыл сары</translation>
-<translation id="8324974933005349667">Мәтінді дыбыстау параметрлерін жеке қажеттіліктерге бейімдеу</translation>
+<translation id="8324974933005349667">Мәтінді дыбыстау параметрлерін жекелендіру</translation>
 <translation id="8326783648485765113">Шөп реңкті жасыл</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{фунт}other{# фунт белгісі}}</translation>
 <translation id="8378855320830505539">Аймақ</translation>
@@ -1079,6 +1079,7 @@
 <translation id="8897030325301866860">Қаріп: <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Пунктуацияны қайталап дыбыстау</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">Әрекеттер қолжетімді. Көру үшін Search+Ctrl+A пернелер тіркесімін басыңыз.</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">Өзгерткіш пернелер</translation>
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
