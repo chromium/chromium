@@ -32,6 +32,9 @@ enum {
   //     restriction.
   //   - Most PC audio hardware is limited to 192 kHz, some specialized DAC
   //     devices will use 768 kHz though.
+  //
+  // kMaxSampleRate should be updated with
+  // blink::audio_utilities::MaxAudioBufferSampleRate()
   kMaxSampleRate = 768000,
   kMinSampleRate = 3000,
   kMaxChannels = 32,

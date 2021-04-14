@@ -123,9 +123,9 @@ float MinAudioBufferSampleRate() {
 }
 
 float MaxAudioBufferSampleRate() {
-  // <video> tags support sample rates up 384 kHz so audio context
+  // <video> tags support sample rates up 768 kHz so audio context
   // should too.
-  return 384000;
+  return 768000;
 }
 
 bool IsPowerOfTwo(size_t x) {
