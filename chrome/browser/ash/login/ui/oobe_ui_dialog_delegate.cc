@@ -283,6 +283,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 
   GetOobeUI()->GetErrorScreen()->MaybeInitCaptivePortalWindowProxy(
       dialog_view_->web_contents());
+  oobe_ui_observer_.Observe(GetOobeUI());
   captive_portal_observer_.Observe(
       GetOobeUI()->GetErrorScreen()->captive_portal_window_proxy());
 }
@@ -467,6 +468,14 @@ void OobeUIDialogDelegate::OnAfterCaptivePortalHidden() {
   should_display_captive_portal_ = false;
 
   captive_portal_delegate_->Hide();
+}
+
+void OobeUIDialogDelegate::OnCurrentScreenChanged(OobeScreenId current_screen,
+                                                  OobeScreenId new_screen) {}
+
+void OobeUIDialogDelegate::OnDestroyingOobeUI() {
+  captive_portal_observer_.Reset();
+  oobe_ui_observer_.Reset();
 }
 
 void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
