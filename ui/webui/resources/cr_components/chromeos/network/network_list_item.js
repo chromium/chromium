@@ -83,17 +83,6 @@ Polymer({
     },
 
     /**
-     * Whether the network item is a cellular one and is of an esim
-     * pending profile.
-     */
-    isESimPendingProfile_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-      computed: 'computeIsESimPendingProfile_(item, item.customItemType)',
-    },
-
-    /**
      * The cached ConnectionState for the network.
      * @type {!chromeos.networkConfig.mojom.ConnectionStateType|undefined}
      */
@@ -118,6 +107,9 @@ Polymer({
      */
     deviceState: Object,
 
+    /** @private {?chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties_: Object,
+
     /**
      * Subtitle for item.
      * @private {string}
@@ -135,11 +127,43 @@ Polymer({
       }
     },
 
+    /**
+     * Indicates the network item is a pSIM network not yet activated.
+     * @private
+     */
+    isPSimUnactivatedNetwork_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsPSimUnactivatedNetwork_(managedProperties_)',
+    },
+
+    /**
+     * Whether the network item is a cellular one and is of an esim
+     * pending profile.
+     * @private
+     */
+    isESimPendingProfile_: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+      computed: 'computeIsESimPendingProfile_(item, item.customItemType)',
+    },
+
     /**@private {boolean} */
     isCellularUnlockDialogOpen_: {
       type: Boolean,
       value: false,
     },
+  },
+
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
+
+  /** @override */
+  created() {
+    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
   },
 
   /** @override */
@@ -209,8 +233,21 @@ Polymer({
   /** @private */
   networkStateChanged_() {
     if (!this.networkState) {
+      this.managedProperties_ = undefined;
       return;
     }
+
+    // Temporarily place fetching managedProperties behind this flag so OOBE
+    // tests pass. TODO(crbug.com/1196507) Remove this check.
+    if (this.isUpdatedCellularUiEnabled_) {
+      this.networkConfig_.getManagedProperties(this.networkState.guid)
+          .then((response) => {
+            this.managedProperties_ = response.result;
+          });
+    } else {
+      this.managedProperties_ = undefined;
+    }
+
     const connectionState = this.networkState.connectionState;
     if (connectionState === this.connectionState_) {
       return;
@@ -527,6 +564,9 @@ Polymer({
    * @private
    */
   isSubpageButtonVisible_(networkState, showButtons, disabled_) {
+    if (this.isPSimUnactivatedNetwork_) {
+      return true;
+    }
     return !!networkState && showButtons && !disabled_ &&
         !this.shouldShowUnlockButton_();
   },
@@ -577,7 +617,7 @@ Polymer({
     }
     if (this.isSubpageButtonVisible_(
             this.networkState, this.showButtons, this.disabled_) &&
-        this.$$('#subpage-button') === this.shadowRoot.activeElement) {
+        this.$$('#subpageButton') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
     } else if (this.isESimPendingProfile_) {
       this.onInstallButtonClick_(event);
@@ -671,6 +711,35 @@ Polymer({
     return !!this.item && this.item.hasOwnProperty('customItemType') &&
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE;
+  },
+
+  /**
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean}
+   * @private
+   */
+  computeIsPSimUnactivatedNetwork_(managedProperties) {
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    if (!managedProperties || !managedProperties.typeProperties.cellular) {
+      return false;
+    }
+    const paymentPortal =
+        managedProperties.typeProperties.cellular.paymentPortal;
+    if (paymentPortal && paymentPortal.url) {
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getActivateBtnA11yLabel_() {
+    return this.i18n('networkListItemActivateA11yLabel', this.getItemName_());
   },
 
   /**
