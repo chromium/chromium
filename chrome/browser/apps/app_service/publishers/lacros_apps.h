@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+class Profile;
+
 namespace apps {
 
 // An app publisher (in the App Service sense) for the "LaCrOS" app icon,
@@ -21,7 +23,8 @@ namespace apps {
 // See components/services/app_service/README.md.
 class LacrosApps : public apps::PublisherBase {
  public:
-  explicit LacrosApps(const mojo::Remote<apps::mojom::AppService>& app_service);
+  LacrosApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+             Profile* profile);
   ~LacrosApps() override;
 
   LacrosApps(const LacrosApps&) = delete;
@@ -57,6 +60,7 @@ class LacrosApps : public apps::PublisherBase {
                     GetMenuModelCallback callback) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
+  Profile* const profile_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
   base::WeakPtrFactory<LacrosApps> weak_factory_{this};
 };

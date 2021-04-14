@@ -162,9 +162,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   bool ShouldRecordAppWindowActivity(extensions::AppWindow* app_window);
   void RegisterInstance(extensions::AppWindow* app_window, InstanceState state);
 
-  void GetMenuModelForChromeBrowserApp(apps::mojom::MenuType menu_type,
-                                       GetMenuModelCallback callback);
-
   content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
 
   void UpdateAppDisabledState(

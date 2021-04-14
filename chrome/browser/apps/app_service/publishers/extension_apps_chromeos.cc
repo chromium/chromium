@@ -38,7 +38,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
@@ -249,7 +248,7 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == extension_misc::kChromeAppId) {
-    GetMenuModelForChromeBrowserApp(menu_type, std::move(callback));
+    std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile()));
     return;
   }
 
@@ -751,36 +750,6 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
   instance->SetBrowserContext(app_window->browser_context());
   deltas.push_back(std::move(instance));
   instance_registry_->OnInstances(deltas);
-}
-
-void ExtensionAppsChromeOs::GetMenuModelForChromeBrowserApp(
-    apps::mojom::MenuType menu_type,
-    GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-
-  // "Normal" windows are not allowed when incognito is enforced.
-  if (IncognitoModePrefs::GetAvailability(profile()->GetPrefs()) !=
-      IncognitoModePrefs::FORCED) {
-    AddCommandItem((menu_type == apps::mojom::MenuType::kAppList)
-                       ? ash::APP_CONTEXT_MENU_NEW_WINDOW
-                       : ash::MENU_NEW_WINDOW,
-                   IDS_APP_LIST_NEW_WINDOW, &menu_items);
-  }
-
-  // Incognito windows are not allowed when incognito is disabled.
-  if (!profile()->IsOffTheRecord() &&
-      IncognitoModePrefs::GetAvailability(profile()->GetPrefs()) !=
-          IncognitoModePrefs::DISABLED) {
-    AddCommandItem((menu_type == apps::mojom::MenuType::kAppList)
-                       ? ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW
-                       : ash::MENU_NEW_INCOGNITO_WINDOW,
-                   IDS_APP_LIST_NEW_INCOGNITO_WINDOW, &menu_items);
-  }
-
-  AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                 &menu_items);
-
-  std::move(callback).Run(std::move(menu_items));
 }
 
 content::WebContents* ExtensionAppsChromeOs::LaunchImpl(

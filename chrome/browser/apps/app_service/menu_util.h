@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_MENU_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_MENU_UTIL_H_
 
-#include <memory>
+#include <stdint.h>
+
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -91,6 +93,10 @@ base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type);
 // Convert |menu_type| string to enum. Useful to pass |menu_type| enum as string
 // id.
 apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
+
+// Returns the browser menu items for the given |menu_type|.
+mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
+                                           const Profile* profile);
 
 // A size of square shortcut menu item icons in the context menu.
 constexpr int kAppShortcutIconSizeDip = 32;

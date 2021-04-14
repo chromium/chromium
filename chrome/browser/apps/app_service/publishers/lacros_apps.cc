@@ -20,8 +20,9 @@
 
 namespace apps {
 
-LacrosApps::LacrosApps(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
+LacrosApps::LacrosApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+                       Profile* profile)
+    : profile_(profile) {
   DCHECK(crosapi::browser_util::IsLacrosEnabled());
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kLacros);
 }
@@ -121,16 +122,7 @@ void LacrosApps::GetMenuModel(const std::string& app_id,
                               apps::mojom::MenuType menu_type,
                               int64_t display_id,
                               GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-
-  // TODO(crbug.com/1108462): "New Window" menu should be hidden if
-  // incognito only mode is enforced by user's profile pref.
-  AddCommandItem((menu_type == apps::mojom::MenuType::kAppList)
-                     ? ash::APP_CONTEXT_MENU_NEW_WINDOW
-                     : ash::MENU_NEW_WINDOW,
-                 IDS_APP_LIST_NEW_WINDOW, &menu_items);
-
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile_));
 }
 
 void LacrosApps::OnLoadComplete(bool success) {

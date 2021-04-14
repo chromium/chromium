@@ -90,7 +90,7 @@ void AppServiceProxyChromeOs::Initialize() {
   // profile and ensures there is only one instance of LacrosApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
       chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
-    lacros_apps_ = std::make_unique<LacrosApps>(app_service_);
+    lacros_apps_ = std::make_unique<LacrosApps>(app_service_, profile_);
   }
   web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
                                                 &instance_registry_);

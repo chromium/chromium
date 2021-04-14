@@ -120,17 +120,15 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
+    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW: {
+      const bool is_incognito =
+          command_id == ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW;
       if (app_type_ == apps::mojom::AppType::kLacros)
-        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
+        crosapi::BrowserManager::Get()->NewWindow(is_incognito);
       else
-        controller()->CreateNewWindow(/*incognito=*/false);
+        controller()->CreateNewWindow(is_incognito);
       break;
-
-    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
-      controller()->CreateNewWindow(/*incognito=*/true);
-      break;
-
+    }
     case ash::SHUTDOWN_GUEST_OS:
       if (app_id() == crostini::kCrostiniTerminalSystemAppId) {
         crostini::CrostiniManager::GetForProfile(profile())->StopVm(

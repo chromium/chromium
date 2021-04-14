@@ -137,8 +137,11 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::MENU_NEW_INCOGNITO_WINDOW:
-      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
-      ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+      if (app_type_ == apps::mojom::AppType::kLacros) {
+        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/true);
+      } else {
+        ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+      }
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
@@ -295,7 +298,8 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   size_t shortcut_index = menu_items->items.size();
   for (size_t i = index; i < menu_items->items.size(); i++) {
     // For Chrome browser, add the close item before the app info item.
-    if (item().id.app_id == extension_misc::kChromeAppId &&
+    if ((item().id.app_id == extension_misc::kChromeAppId ||
+         item().id.app_id == extension_misc::kLacrosAppId) &&
         menu_items->items[i]->command_id == ash::SHOW_APP_INFO) {
       BuildChromeAppMenu(menu_model.get());
     }
@@ -435,6 +439,11 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
     return;
   }
 
+  // TODO(crbug.com/1196697): If this comes from Lacros app, it shows the
+  // top "Apps" settings page. This is fallback, because Lacros app is not
+  // registered. This is short term workaround to keep the relative
+  // compatibility for Lacros Primary. We should figure out what should be shown
+  // by this.
   controller()->DoShowAppInfoFlow(controller()->profile(), item().id.app_id);
 }
 

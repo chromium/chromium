@@ -707,8 +707,12 @@ TEST_F(AppContextMenuLacrosTest, LacrosApp) {
   ASSERT_NE(menu_model, nullptr);
 
   // Verify expected menu items.
-  EXPECT_EQ(menu_model->GetItemCount(), 1);
+  // It should have, Open new window, Open incognito window, and app info.
+  EXPECT_EQ(menu_model->GetItemCount(), 3);
   std::vector<MenuState> states;
   AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
+  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW),
+              &states);
+  AddToStates(menu, MenuState(ash::SHOW_APP_INFO), &states);
   ValidateMenuState(menu_model.get(), states);
 }

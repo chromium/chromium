@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -230,6 +233,36 @@ apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type) {
   if (base::LowerCaseEqualsASCII(menu_type, "applist"))
     return apps::mojom::MenuType::kAppList;
   return apps::mojom::MenuType::kShelf;
+}
+
+mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
+                                           const Profile* profile) {
+  DCHECK(profile);
+  mojom::MenuItemsPtr menu_items = mojom::MenuItems::New();
+
+  // "Normal" windows are not allowed when incognito is enforced.
+  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      IncognitoModePrefs::FORCED) {
+    AddCommandItem((menu_type == mojom::MenuType::kAppList)
+                       ? ash::APP_CONTEXT_MENU_NEW_WINDOW
+                       : ash::MENU_NEW_WINDOW,
+                   IDS_APP_LIST_NEW_WINDOW, &menu_items);
+  }
+
+  // Incognito windows are not allowed when incognito is disabled.
+  if (!profile->IsOffTheRecord() &&
+      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+          IncognitoModePrefs::DISABLED) {
+    AddCommandItem((menu_type == mojom::MenuType::kAppList)
+                       ? ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW
+                       : ash::MENU_NEW_INCOGNITO_WINDOW,
+                   IDS_APP_LIST_NEW_INCOGNITO_WINDOW, &menu_items);
+  }
+
+  AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
+                 &menu_items);
+
+  return menu_items;
 }
 
 }  // namespace apps
