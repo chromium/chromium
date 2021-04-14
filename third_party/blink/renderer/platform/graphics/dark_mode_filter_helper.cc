@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -36,6 +37,7 @@ void ApplyToImageOnMainThread(GraphicsContext* context,
                               cc::PaintFlags* flags,
                               const SkIRect& rounded_src,
                               const SkIRect& rounded_dst) {
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.DarkMode.ApplyToImageOnMainThread");
   DCHECK(context->IsDarkModeEnabled());
 
   sk_sp<SkColorFilter> filter;
