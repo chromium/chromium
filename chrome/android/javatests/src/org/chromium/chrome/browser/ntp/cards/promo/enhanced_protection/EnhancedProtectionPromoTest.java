@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,6 +40,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -109,7 +111,10 @@ public class EnhancedProtectionPromoTest {
      */
     @Test
     @SmallTest
-    public void testSetUp_Basic() {
+    @DisableIf.Build(message = "Flaky on Android Lollipop, see crbug.com/1199125",
+            sdk_is_less_than = Build.VERSION_CODES.M)
+    public void
+    testSetUp_Basic() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         View enhancedProtectionPromo =
