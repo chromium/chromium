@@ -31,6 +31,10 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     kMediaDevicesDispatcherHost = 7,
     kWebBluetooth = 8,
     kWebUSB = 9,
+
+    // MediaSession's playback state is changed (crbug.com/1177661).
+    kMediaSession = 10,
+
     // New reasons should be accompanied by a comment as to why BackForwardCache
     // cannot be used in this case and a link to a bug to fix that if it is
     // fixable.

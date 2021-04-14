@@ -100,6 +100,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
+  // Returns whether MediaSessionImpl::OnServiceCreated is allowed for the
+  // BackForwardCache.
+  static bool IsMediaSessionImplOnServiceCreatedAllowed();
+
   explicit BackForwardCacheImpl();
   ~BackForwardCacheImpl() override;
 

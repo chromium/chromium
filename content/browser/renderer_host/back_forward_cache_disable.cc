@@ -31,6 +31,8 @@ std::string ReasonIdToString(
       return "WebBluetooth";
     case BackForwardCacheDisable::DisabledReasonId::kWebUSB:
       return "WebUSB";
+    case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
+      return "MediaSession";
     default:
       return "Unknown (default)";
   }

@@ -6612,6 +6612,7 @@ others/histograms.xml -->
   <int value="131079" label="kContent-kMediaDevicesDispatcherHost"/>
   <int value="131080" label="kContent-kWebBluetooth"/>
   <int value="131081" label="kContent-kWebUSB"/>
+  <int value="131082" label="kContent-kMediaSession"/>
   <int value="196608" label="kEmbedder-kUnknown"/>
   <int value="196609" label="kEmbedder-kPopupBlockerTabHelper"/>
   <int value="196610" label="kEmbedder-kSafeBrowsingTriggeredPopupBlocker"/>
