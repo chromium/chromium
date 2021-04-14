@@ -229,9 +229,10 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
 }
 
 - (void)didTapLinkButton:(id)button {
+  NSURL* linkUrl = _linkUrl;
   [self dismissViewControllerAnimated:YES
                            completion:^() {
-                             [UIApplication.sharedApplication openURL:_linkUrl
+                             [UIApplication.sharedApplication openURL:linkUrl
                                                               options:@{}
                                                     completionHandler:nil];
                            }];
