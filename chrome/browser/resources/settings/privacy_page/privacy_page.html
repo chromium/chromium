@@ -1018,46 +1018,15 @@
             </settings-toggle-button>
           </template>
 <if expr="chromeos or is_win">
-          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-             <div class="radio-group">
-              <div class="secondary">
-                $i18n{siteSettingsProtectedContentDescription}
-              </div>
-              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-              <div class="secondary radio-sub-heading">
-                $i18n{siteSettingsDefaultBehaviorDescription}
-              </div>
-              <settings-radio-group
-                pref="{{prefs.settings.privacy.drm_enabled}}"
-                selectable-elements="settings-collapse-radio-button">
-                <settings-collapse-radio-button no-collapse
-                    pref="[[prefs.settings.privacy.drm_enabled]]"
-                    label="$i18n{siteSettingsProtectedContentAllowed}"
-                    name="true"
-                    disabled$="[[isGuest_]]"
-                    icon="settings:protected-content">
-                </settings-collapse-radio-button>
-                <settings-collapse-radio-button no-collapse
-                    pref="[[prefs.settings.privacy.drm_enabled]]"
-                    label="$i18n{siteSettingsProtectedContentBlocked}"
-                    name="false"
-                    disabled$="[[isGuest_]]"
-                    icon="settings:protected-content-off">
-                </settings-collapse-radio-button>
-              </settings-radio-group>
-            </div>
-          </template>
-          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-            <div class="cr-row first two-line cr-padded-text">
-              $i18n{siteSettingsProtectedContentIdentifiersExplanation}
-            </div>
-            <settings-toggle-button
-                pref="{{prefs.settings.privacy.drm_enabled}}"
-                label="[[getProtectedContentIdentifiersLabel_(
-                    prefs.settings.privacy.drm_enabled.value)]]"
-                disabled$="[[isGuest_]]">
-            </settings-toggle-button>
-          </template>
+          <div class="cr-row first two-line cr-padded-text">
+            $i18n{siteSettingsProtectedContentIdentifiersExplanation}
+          </div>
+          <settings-toggle-button
+              pref="{{prefs.settings.privacy.drm_enabled}}"
+              label="[[getProtectedContentIdentifiersLabel_(
+                  prefs.settings.privacy.drm_enabled.value)]]"
+              disabled$="[[isGuest_]]">
+          </settings-toggle-button>
 </if>
 <if expr="chromeos">
           <template is="dom-if"
