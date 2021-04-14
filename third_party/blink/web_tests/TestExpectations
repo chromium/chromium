@@ -6748,6 +6748,7 @@ crbug.com/1198098 storage/indexeddb/key-generator.html [ Pass Timeout ]
 crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
 
 crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Pass Failure ]
+crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Pass Failure ]
 
 # Sheriff 2021-04-13
 crbug.com/1198515 [ Mac ] external/wpt/web-animations/timing-model/animations/playing-an-animation.html [ Pass Failure ]
