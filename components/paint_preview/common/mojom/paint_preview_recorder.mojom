@@ -70,6 +70,10 @@ struct PaintPreviewCaptureParams {
   // The maximum allowed size of a capture that can be produced. A value of
   // 0 means the size is unrestricted.
   uint64 max_capture_size;
+
+  // Limit on the maximum size of a decoded image that can be serialized.
+  // Any images with a decoded size exceeding this value will be discarded.
+  uint64 max_decoded_image_size_bytes;
 };
 
 struct LinkData {

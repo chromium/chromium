@@ -178,7 +178,8 @@ class PaintPreviewBaseServiceTest
       RecordingPersistence persistence,
       gfx::Rect clip_rect,
       bool capture_links,
-      size_t max_per_capture_size) {
+      size_t max_per_capture_size,
+      uint64_t max_decoded_image_size_bytes) {
     PaintPreviewBaseService::CaptureParams capture_params;
     capture_params.web_contents = web_contents;
     capture_params.root_dir = root_dir;
@@ -186,6 +187,7 @@ class PaintPreviewBaseServiceTest
     capture_params.clip_rect = clip_rect;
     capture_params.capture_links = capture_links;
     capture_params.max_per_capture_size = max_per_capture_size;
+    capture_params.max_decoded_image_size_bytes = max_decoded_image_size_bytes;
     return capture_params;
   }
 
@@ -200,6 +202,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
   params->is_main_frame = true;
   params->max_capture_size = 50;
+  params->max_decoded_image_size_bytes = 1000;
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
   response->embedding_token = base::nullopt;
@@ -218,7 +221,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   base::RunLoop loop;
   service->CapturePaintPreview(
       CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 50),
+                          gfx::Rect(0, 0, 0, 0), true, 50, 1000),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,
@@ -286,7 +289,8 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   base::RunLoop loop;
   service->CapturePaintPreview(
       CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 0),
+                          gfx::Rect(0, 0, 0, 0), true, 0,
+                          std::numeric_limits<uint64_t>::max()),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,
@@ -322,7 +326,8 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   base::RunLoop loop;
   service->CapturePaintPreview(
       CreateCaptureParams(web_contents(), &path, GetParam(),
-                          gfx::Rect(0, 0, 0, 0), true, 0),
+                          gfx::Rect(0, 0, 0, 0), true, 0,
+                          std::numeric_limits<uint64_t>::max()),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,

@@ -338,8 +338,11 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     max_capture_size = params->max_capture_size;
     auto* image_ctx = tracker->GetImageSerializationContext();
     image_ctx->remaining_image_size = params->max_capture_size;
-    image_ctx->max_representation_size = params->max_capture_size;
   }
+
+  auto* image_ctx = tracker->GetImageSerializationContext();
+  image_ctx->max_decoded_image_size_bytes =
+      params->max_decoded_image_size_bytes;
 
   FinishRecordingOnUIThread(recorder.finishRecordingAsPicture(), bounds,
                             std::move(tracker), params->persistence,

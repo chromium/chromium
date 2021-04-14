@@ -76,40 +76,47 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
 sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
+  // Ignore texture backed content if any slipped through. This shouldn't occur
+  // now that ToSkPicture has a dedicated ImageProvider that forces software
+  // SkImage inputs, but this is a safeguard.
   if (context->skip_texture_backed && image->isTextureBacked()) {
     return SkData::MakeEmpty();
   }
 
+  // If the decoded form of the image would result in it exceeding the allowable
+  // size then effectively delete it by providing no data.
   const SkImageInfo& image_info = image->imageInfo();
-  // If decoding/encoding the image would result in it exceeding the allowable
-  // size, effectively delete it by providing no data.
-  if (context->max_representation_size != 0 &&
-      image_info.computeMinByteSize() > context->max_representation_size) {
+  if (context->max_decoded_image_size_bytes !=
+          std::numeric_limits<uint64_t>::max() &&
+      image_info.computeMinByteSize() > context->max_decoded_image_size_bytes) {
     return SkData::MakeEmpty();
   }
 
   // If there already exists encoded data use it directly.
   sk_sp<SkData> encoded_data = image->refEncodedData();
   if (!encoded_data) {
+    // Use the default PNG at quality 100 as it is safe.
+    // TODO(crbug/1198304): Investigate supporting JPEG at quality 100 for
+    // opaque images.
     encoded_data = image->encodeToData();
   }
 
-  // If encoding failed then no-op.
   if (!encoded_data)
     return SkData::MakeEmpty();
 
-  // Ensure the encoded data fits in the restrictions if they are present.
-  if ((context->remaining_image_size == std::numeric_limits<uint64_t>::max() ||
-       context->remaining_image_size >= encoded_data->size()) &&
-      (context->max_representation_size == 0 ||
-       encoded_data->size() < context->max_representation_size)) {
-    if (context->remaining_image_size != std::numeric_limits<uint64_t>::max())
-      context->remaining_image_size -= encoded_data->size();
-
-    return encoded_data;
+  // Ensure the encoded data fits in the size restriction if present.
+  // OOM Prevention: This avoids creating/keeping large serialized images
+  // in-memory during serialization if the size budget is already exceeded due
+  // to images.
+  if (context->remaining_image_size != std::numeric_limits<uint64_t>::max()) {
+    if (context->remaining_image_size < encoded_data->size()) {
+      context->memory_budget_exceeded = true;
+      return SkData::MakeEmpty();
+    }
+    context->remaining_image_size -= encoded_data->size();
   }
 
-  return SkData::MakeEmpty();
+  return encoded_data;
 }
 
 // Deserializes a clip rect for a subframe within the main SkPicture. These
@@ -207,10 +214,15 @@ SkSerialProcs MakeSerialProcs(PictureSerializationContext* picture_ctx,
   //
   // At present this uses the native representation, but skips serializing if
   // loading to a bitmap for encoding might cause an OOM.
-  if (image_ctx->max_representation_size > 0 ||
-      image_ctx->remaining_image_size != std::numeric_limits<uint64_t>::max()) {
-    procs.fImageProc = SerializeImage;
-    procs.fImageCtx = image_ctx;
+  if (image_ctx) {
+    image_ctx->memory_budget_exceeded = false;
+    if (image_ctx->max_decoded_image_size_bytes !=
+            std::numeric_limits<uint64_t>::max() ||
+        image_ctx->remaining_image_size !=
+            std::numeric_limits<uint64_t>::max()) {
+      procs.fImageProc = SerializeImage;
+      procs.fImageCtx = image_ctx;
+    }
   }
   return procs;
 }

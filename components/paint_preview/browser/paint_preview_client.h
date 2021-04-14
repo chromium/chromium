@@ -103,10 +103,11 @@ class PaintPreviewClient
     // This corresponds to RenderFrameHost::EmbeddingToken.
     base::UnguessableToken root_frame_token;
 
-    // Got from the first recording params. Whether to capture links and the
+    // From the first recording params. Whether to capture links and the
     // size limit per capture respectively.
     bool capture_links = true;
     size_t max_per_capture_size = 0;
+    uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
 
     // UKM Source ID of the WebContent.
     ukm::SourceId source_id;

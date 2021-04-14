@@ -24,13 +24,20 @@ bool SerializeSkPicture(sk_sp<const SkPicture> skp,
                         PaintPreviewTracker* tracker,
                         SkWStream* out_stream) {
   TypefaceSerializationContext typeface_context(tracker->GetTypefaceUsageMap());
+  ImageSerializationContext* image_context =
+      tracker->GetImageSerializationContext();
   auto serial_procs = MakeSerialProcs(tracker->GetPictureSerializationContext(),
-                                      &typeface_context,
-                                      tracker->GetImageSerializationContext());
+                                      &typeface_context, image_context);
 
   skp->serialize(out_stream, &serial_procs);
   out_stream->flush();
-  return true;
+
+  // If the memory budget was exceeded while serializing images and it is not
+  // tolerated (inferred from setting a max decoded image size) then abort.
+  const bool tolerates_discarding =
+      image_context->max_decoded_image_size_bytes !=
+      std::numeric_limits<uint64_t>::max();
+  return tolerates_discarding || !image_context->memory_budget_exceeded;
 }
 
 }  // namespace

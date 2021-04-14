@@ -41,6 +41,12 @@ struct RecordingParams {
   // async ordering of captures from different frames making it hard to keep
   // track of available headroom at the time of each capture triggering.
   size_t max_capture_size;
+
+  // Limit on the maximum size of a decoded image that can be serialized.
+  // Any images with a decoded size exceeding this value will be discarded.
+  // This can be used to reduce the chance of an OOM during serialization and
+  // later during playback.
+  uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
 };
 
 // The result of a capture of a WebContents, which may contain recordings of

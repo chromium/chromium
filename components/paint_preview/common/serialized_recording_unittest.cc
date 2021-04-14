@@ -70,6 +70,26 @@ sk_sp<const SkPicture> PaintPictureSingleGrayPixel() {
                                        &expected_deserialization_context, {});
 }
 
+sk_sp<const SkPicture> PaintPictureLargeImage(gfx::Size bounds) {
+  SkBitmap bitmap;
+  {
+    bitmap.allocPixels(
+        SkImageInfo::MakeN32Premul(bounds.width(), bounds.height()));
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    canvas.drawColor(SK_ColorDKGRAY);
+  }
+
+  SkRect sk_bounds = SkRect::MakeWH(bounds.width(), bounds.height());
+  SkPictureRecorder recorder;
+  SkCanvas* canvas = recorder.beginRecording(sk_bounds);
+  SkPaint paint;
+  paint.setStyle(SkPaint::kFill_Style);
+  paint.setColor(SK_ColorRED);
+  canvas->drawRect(sk_bounds, paint);
+  canvas->drawImage(SkImage::MakeFromBitmap(bitmap), 0, 0);
+  return recorder.finishRecordingAsPicture();
+}
+
 SkBitmap CreateBitmapFromPicture(const SkPicture* pic) {
   SkRect cull_rect = pic->cullRect();
   SkBitmap bitmap;
@@ -149,6 +169,41 @@ TEST(PaintPreviewSerializedRecordingTest, RoundtripWithMemoryBufferBacking) {
   ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result->ctx.empty());
   ExpectPicturesEqual(result->skp, pic);
+}
+
+TEST(PaintPreviewSerializedRecordingTest, ImageDiscardingTolerated) {
+  sk_sp<const SkPicture> pic = PaintPictureLargeImage(gfx::Size(200, 200));
+
+  PaintPreviewTracker tracker(base::UnguessableToken::Create(), base::nullopt,
+                              /*is_main_frame=*/true);
+  auto* image_context = tracker.GetImageSerializationContext();
+  image_context->remaining_image_size = 200;
+  image_context->max_decoded_image_size_bytes = 300 * 300 * 4;
+  size_t serialized_size = 0;
+  base::Optional<mojo_base::BigBuffer> buffer =
+      RecordToBuffer(pic, &tracker, base::nullopt, &serialized_size);
+  ASSERT_GE(serialized_size, 0u);
+  ASSERT_TRUE(buffer.has_value());
+  ASSERT_TRUE(image_context->memory_budget_exceeded);
+
+  SerializedRecording recording =
+      SerializedRecording(std::move(buffer.value()));
+  ASSERT_TRUE(recording.IsValid());
+}
+
+TEST(PaintPreviewSerializedRecordingTest, ImageDiscardingNotTolerated) {
+  sk_sp<const SkPicture> pic = PaintPictureLargeImage(gfx::Size(200, 200));
+
+  PaintPreviewTracker tracker(base::UnguessableToken::Create(), base::nullopt,
+                              /*is_main_frame=*/true);
+  auto* image_context = tracker.GetImageSerializationContext();
+  image_context->remaining_image_size = 200;
+  size_t serialized_size = 0;
+  base::Optional<mojo_base::BigBuffer> buffer =
+      RecordToBuffer(pic, &tracker, base::nullopt, &serialized_size);
+  ASSERT_FALSE(buffer.has_value());
+  ASSERT_EQ(serialized_size, 0U);
+  ASSERT_TRUE(image_context->memory_budget_exceeded);
 }
 
 TEST(PaintPreviewSerializedRecordingTest, InvalidBacking) {

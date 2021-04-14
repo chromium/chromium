@@ -165,6 +165,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
 
   sk_sp<SkData> data = pic->serialize(&serial_procs);
   EXPECT_NE(data, nullptr);
+  EXPECT_TRUE(ictx.memory_budget_exceeded);
   SkDeserialProcs deserial_procs;
   size_t deserialized_images = 0;
   deserial_procs.fImageCtx = &deserialized_images;
@@ -202,7 +203,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
   ImageSerializationContext ictx;
-  ictx.max_representation_size = 200;
+  ictx.max_decoded_image_size_bytes = 200;
 
   SkSerialProcs serial_procs =
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
@@ -212,6 +213,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
 
   sk_sp<SkData> data = pic->serialize(&serial_procs);
   EXPECT_NE(data, nullptr);
+  EXPECT_FALSE(ictx.memory_budget_exceeded);
   SkDeserialProcs deserial_procs;
   size_t deserialized_images = 0;
   deserial_procs.fImageCtx = &deserialized_images;
