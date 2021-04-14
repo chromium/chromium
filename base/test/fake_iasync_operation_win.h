@@ -70,7 +70,7 @@ class FakeIAsyncOperation final
       ADD_FAILURE() << "GetResults called on incomplete IAsyncOperation.";
       return E_PENDING;
     }
-    if (status_ != AsyncStatus::Completed)
+    if (status_ != AsyncStatus::Completed && !results_includes_failure_)
       return E_UNEXPECTED;
     return base::win::internal::CopyTo(results_, results);
   }
@@ -85,6 +85,13 @@ class FakeIAsyncOperation final
     return S_OK;
   }
   IFACEMETHODIMP get_ErrorCode(HRESULT* error_code) final {
+    EXPECT_FALSE(results_includes_failure_)
+        << "get_ErrorCode called on IAsyncOperation whose failure is expected "
+           "to be expressed through the results instead. If a case arises "
+           "where this is actually intended this check can be removed, but is "
+           "most likely an indication of incorrectly assuming the error_code "
+           "can be used in place of get_Status or GetResults for this kind of "
+           "IAsyncOperation.";
     *error_code = error_code_;
     return S_OK;
   }
@@ -104,6 +111,22 @@ class FakeIAsyncOperation final
   // (if defined) will be run.
   void CompleteWithError(HRESULT error_code) {
     error_code_ = error_code;
+    status_ = AsyncStatus::Error;
+    InvokeCompletedHandler();
+  }
+
+  // Completes the operation with |results|, but with an AsyncStatus of Error.
+  // This is an uncommon combination only appropriate when |results| includes
+  // the failure information.
+  //
+  // The GetResults API will be set to return |results| and the get_ErrorCode
+  // API will be set to return S_OK, but the get_Status API will be set to
+  // return AsyncStatus::Error. Then the CompletedHandler (if defined) will be
+  // run.
+  void CompleteWithErrorResult(internal::AsyncOperationStorage<T> results) {
+    error_code_ = S_OK;
+    results_ = std::move(results);
+    results_includes_failure_ = true;
     status_ = AsyncStatus::Error;
     InvokeCompletedHandler();
   }
@@ -136,6 +159,7 @@ class FakeIAsyncOperation final
       handler_;
   bool is_complete_ = false;
   internal::AsyncOperationOptionalStorage<T> results_;
+  bool results_includes_failure_ = false;
   AsyncStatus status_ = AsyncStatus::Started;
 };
 

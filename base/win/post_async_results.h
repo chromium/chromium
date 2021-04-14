@@ -42,9 +42,15 @@ constexpr const char* ToCString(AsyncStatus async_status) {
 }
 
 template <typename T>
+using IAsyncOperationT = typename ABI::Windows::Foundation::IAsyncOperation<T>;
+
+template <typename T>
+using IAsyncOperationCompletedHandlerT =
+    typename base::OnceCallback<void(IAsyncOperationT<T>*, AsyncStatus)>;
+
+template <typename T>
 using AsyncAbiT = typename ABI::Windows::Foundation::Internal::GetAbiType<
-    typename ABI::Windows::Foundation::IAsyncOperation<T>::TResult_complex>::
-    type;
+    typename IAsyncOperationT<T>::TResult_complex>::type;
 
 // Compile time switch to decide what container to use for the async results for
 // |T|. Depends on whether the underlying Abi type is a pointer to IUnknown or
@@ -56,72 +62,287 @@ using AsyncResultsT = std::conditional_t<
     Microsoft::WRL::ComPtr<std::remove_pointer_t<AsyncAbiT<T>>>,
     AsyncAbiT<T>>;
 
-// Obtains the results of the provided async operation.
+// Fetches the result of the provided |async_operation| and corresponding
+// |async_status| and assigns that value to |result|. Returns an HRESULT
+// indicating the success of the operation.
 template <typename T>
-AsyncResultsT<T> GetAsyncResults(
-    ABI::Windows::Foundation::IAsyncOperation<T>* async_op) {
-  AsyncResultsT<T> results;
-  HRESULT hr = async_op->GetResults(&results);
-  if (FAILED(hr)) {
-    VLOG(2) << "GetAsyncResults failed: "
-            << logging::SystemErrorCodeToString(hr);
-    return AsyncResultsT<T>{};
+HRESULT GetAsyncResultsT(IAsyncOperationT<T>* async_operation,
+                         AsyncStatus async_status,
+                         AsyncResultsT<T>* results) {
+  if (async_status == AsyncStatus::Completed) {
+    // To expose |results| to GetResults as the expected type, this call first
+    // dereferences |results| from ComPtr<T>* or T* to ComPtr<T> or T
+    // respectively, then requests the address, converting to T** or T*
+    // respectively.
+    HRESULT hr = async_operation->GetResults(&(*results));
+    if (FAILED(hr))
+      *results = AsyncResultsT<T>{};
+    return hr;
   }
 
-  return results;
+  *results = AsyncResultsT<T>{};
+  Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncInfo> async_info;
+  HRESULT hr = async_operation->QueryInterface(IID_PPV_ARGS(&async_info));
+  if (FAILED(hr))
+    return hr;
+
+  HRESULT operation_hr;
+  hr = async_info->get_ErrorCode(&operation_hr);
+  if (FAILED(hr))
+    return hr;
+
+  DCHECK(FAILED(operation_hr));
+  return operation_hr;
 }
 
-}  // namespace internal
-
-// This method registers a completion handler for |async_op| and will post the
-// results to |callback|. The |callback| will be run on the same thread that
-// invoked this method. Callers need to ensure that this method is invoked in
-// the correct COM apartment, i.e. the one that created |async_op|. While a WRL
-// Callback can be constructed from callable types such as a lambda or
-// std::function objects, it cannot be directly constructed from a
-// base::OnceCallback. Thus the callback is moved into a capturing lambda, which
-// then posts the callback once it is run. Posting the results to the TaskRunner
-// is required, since the completion callback might be invoked on an arbitrary
-// thread. Lastly, the lambda takes ownership of |async_op|, as this needs to be
-// kept alive until GetAsyncResults can be invoked.
+// Registers an internal completion handler for |async_operation| and upon
+// completion, posts the results to the provided |completed_handler|. Returns an
+// HRESULT indicating the success of registering the internal completion
+// handler.
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The
+// |completed_handler| will be run on the same thread that invoked this method.
+// This call does not ensure the lifetime of the |async_operation|, which must
+// be done by the caller.
 template <typename T>
-HRESULT PostAsyncResults(
-    Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncOperation<T>>
-        async_op,
-    base::OnceCallback<void(internal::AsyncResultsT<T>)> callback) {
-  auto completed_cb = base::BindOnce(
-      [](Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncOperation<T>>
-             async_op,
-         base::OnceCallback<void(internal::AsyncResultsT<T>)> callback) {
-        std::move(callback).Run(internal::GetAsyncResults(async_op.Get()));
+HRESULT PostAsyncOperationCompletedHandler(
+    IAsyncOperationT<T>* async_operation,
+    IAsyncOperationCompletedHandlerT<T> completed_handler) {
+  auto internal_completed_handler = base::BindOnce(
+      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         IAsyncOperationCompletedHandlerT<T> completed_handler,
+         IAsyncOperationT<T>* async_operation, AsyncStatus async_status) {
+        // The raw |async_operation| pointer received as part of this
+        // CompletedHandler is only guaranteed to be valid for the lifetime of
+        // this call, so to ensure it is still valid through the lifetime of the
+        // call to the |completed_handler| we capture it in an appropriate
+        // ref-counted pointer.
+        Microsoft::WRL::ComPtr<IAsyncOperationT<T>> ref_counted_async_operation(
+            async_operation);
+
+        // Posting the results to the TaskRunner is required, since this
+        // CompletedHandler might be invoked on an arbitrary thread.
+        task_runner->PostTask(
+            FROM_HERE,
+            BindOnce(
+                [](IAsyncOperationCompletedHandlerT<T> completed_handler,
+                   Microsoft::WRL::ComPtr<IAsyncOperationT<T>> async_operation,
+                   AsyncStatus async_status) {
+                  std::move(completed_handler)
+                      .Run(async_operation.Get(), async_status);
+                },
+                std::move(completed_handler), ref_counted_async_operation,
+                async_status));
+        return S_OK;
       },
-      async_op, std::move(callback));
-
-  auto completed_lambda = [task_runner(base::ThreadTaskRunnerHandle::Get()),
-                           completed_cb(std::move(completed_cb))](
-                              auto&&, AsyncStatus async_status) mutable {
-    if (async_status != AsyncStatus::Completed) {
-      VLOG(2) << "Got unexpected AsyncStatus: "
-              << internal::ToCString(async_status);
-    }
-
-    // Note: We are ignoring the passed in pointer to |async_op|, as |callback|
-    // has access to the initially provided |async_op|. Since the code within
-    // the lambda could be executed on any thread, it is vital that the
-    // callback gets posted to the original |task_runner|, as this is
-    // guaranteed to be in the correct COM apartment.
-    task_runner->PostTask(FROM_HERE, std::move(completed_cb));
-    return S_OK;
-  };
+      base::ThreadTaskRunnerHandle::Get(), std::move(completed_handler));
 
   using CompletedHandler = Microsoft::WRL::Implements<
       Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
       ABI::Windows::Foundation::IAsyncOperationCompletedHandler<T>,
       Microsoft::WRL::FtmBase>;
 
-  return async_op->put_Completed(
-      Microsoft::WRL::Callback<CompletedHandler>(std::move(completed_lambda))
+  return async_operation->put_Completed(
+      Microsoft::WRL::Callback<CompletedHandler>(
+          [internal_completed_handler(std::move(internal_completed_handler))](
+              IAsyncOperationT<T>* async_operation,
+              AsyncStatus async_status) mutable {
+            return std::move(internal_completed_handler)
+                .Run(async_operation, async_status);
+          })
           .Get());
+}
+
+}  // namespace internal
+
+// Registers an internal completion handler for |async_operation| and upon
+// successful completion invokes the |success_callback| with the result. If the
+// |async_operation| encounters an error no callback will be invoked. Returns
+// an HRESULT indicating the success of registering the internal completion
+// handler.
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The resulting
+// callback (i.e. |success_callback|) will be run on the same
+// thread that invoked this method. This call does not ensure the lifetime of
+// the |async_operation|, which must be done by the caller.
+template <typename T>
+HRESULT PostAsyncHandlers(
+    internal::IAsyncOperationT<T>* async_operation,
+    base::OnceCallback<void(internal::AsyncResultsT<T>)> success_callback) {
+  return internal::PostAsyncOperationCompletedHandler(
+      async_operation,
+      base::BindOnce(
+          [](base::OnceCallback<void(internal::AsyncResultsT<T>)>
+                 success_callback,
+             internal::IAsyncOperationT<T>* async_operation,
+             AsyncStatus async_status) {
+            internal::AsyncResultsT<T> results;
+            HRESULT hr = internal::GetAsyncResultsT(async_operation,
+                                                    async_status, &results);
+            if (SUCCEEDED(hr))
+              std::move(success_callback).Run(results);
+          },
+          std::move(success_callback)));
+}
+
+// Registers an internal completion handler for |async_operation| and upon
+// successful completion invokes the |success_callback| with the result. If the
+// |async_operation| encounters an error the |failure_callback| will instead be
+// invoked. Returns an HRESULT indicating the success of registering the
+// internal completion handler.
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The resulting
+// callback (|success_callback| or |failure_callback|) will be run on the same
+// thread that invoked this method. This call does not ensure the lifetime of
+// the |async_operation|, which must be done by the caller.
+template <typename T>
+HRESULT PostAsyncHandlers(
+    internal::IAsyncOperationT<T>* async_operation,
+    base::OnceCallback<void(internal::AsyncResultsT<T>)> success_callback,
+    base::OnceCallback<void()> failure_callback) {
+  return internal::PostAsyncOperationCompletedHandler(
+      async_operation,
+      base::BindOnce(
+          [](base::OnceCallback<void(internal::AsyncResultsT<T>)>
+                 success_callback,
+             base::OnceCallback<void()> failure_callback,
+             internal::IAsyncOperationT<T>* async_operation,
+             AsyncStatus async_status) {
+            internal::AsyncResultsT<T> results;
+            HRESULT hr = internal::GetAsyncResultsT(async_operation,
+                                                    async_status, &results);
+            if (SUCCEEDED(hr))
+              std::move(success_callback).Run(results);
+            else
+              std::move(failure_callback).Run();
+          },
+          std::move(success_callback), std::move(failure_callback)));
+}
+
+// Registers an internal completion handler for |async_operation| and upon
+// successful completion invokes the |success_callback| with the result. If the
+// |async_operation| encounters an error the |failure_callback| will instead be
+// invoked with the failing HRESULT. Returns an HRESULT indicating the success
+// of registering the internal completion handler.
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The resulting
+// callback (|success_callback| or |failure_callback|) will be run on the same
+// thread that invoked this method. This call does not ensure the lifetime of
+// the |async_operation|, which must be done by the caller.
+template <typename T>
+HRESULT PostAsyncHandlers(
+    internal::IAsyncOperationT<T>* async_operation,
+    base::OnceCallback<void(internal::AsyncResultsT<T>)> success_callback,
+    base::OnceCallback<void(HRESULT)> failure_callback) {
+  return internal::PostAsyncOperationCompletedHandler(
+      async_operation,
+      base::BindOnce(
+          [](base::OnceCallback<void(internal::AsyncResultsT<T>)>
+                 success_callback,
+             base::OnceCallback<void(HRESULT)> failure_callback,
+             internal::IAsyncOperationT<T>* async_operation,
+             AsyncStatus async_status) {
+            internal::AsyncResultsT<T> results;
+            HRESULT hr = internal::GetAsyncResultsT(async_operation,
+                                                    async_status, &results);
+            if (SUCCEEDED(hr))
+              std::move(success_callback).Run(results);
+            else
+              std::move(failure_callback).Run(hr);
+          },
+          std::move(success_callback), std::move(failure_callback)));
+}
+
+// Registers an internal completion handler for |async_operation| and upon
+// successful completion invokes the |success_callback| with the result. If the
+// |async_operation| encounters an error the |failure_callback| will instead be
+// invoked with the result and an HRESULT indicating the success of fetching
+// that result (NOT an HRESULT expressing the failure of the operation). Returns
+// an HRESULT indicating the success of registering the internal completion
+// handler.
+//
+// This overload is designed for (uncommon) operations whose results encapsulate
+// success and failure information (and as a result of that are expected to be
+// available under both success and failure conditions).
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The resulting
+// callback (|success_callback| or |failure_callback|) will be run on the same
+// thread that invoked this method. This call does not ensure the lifetime of
+// the |async_operation|, which must be done by the caller.
+template <typename T>
+HRESULT PostAsyncHandlers(
+    internal::IAsyncOperationT<T>* async_operation,
+    base::OnceCallback<void(internal::AsyncResultsT<T>)> success_callback,
+    base::OnceCallback<void(HRESULT, internal::AsyncResultsT<T>)>
+        failure_callback) {
+  return internal::PostAsyncOperationCompletedHandler(
+      async_operation,
+      base::BindOnce(
+          [](base::OnceCallback<void(internal::AsyncResultsT<T>)>
+                 success_callback,
+             base::OnceCallback<void(HRESULT, internal::AsyncResultsT<T>)>
+                 failure_callback,
+             internal::IAsyncOperationT<T>* async_operation,
+             AsyncStatus async_status) {
+            internal::AsyncResultsT<T> results;
+            HRESULT hr = internal::GetAsyncResultsT(
+                async_operation,
+                async_status == AsyncStatus::Error ? AsyncStatus::Completed
+                                                   : async_status,
+                &results);
+            if (SUCCEEDED(hr) && async_status == AsyncStatus::Completed)
+              std::move(success_callback).Run(results);
+            else
+              std::move(failure_callback).Run(hr, results);
+          },
+          std::move(success_callback), std::move(failure_callback)));
+}
+
+// Deprecated.
+//
+// Registers an internal completion handler for |async_operation| and upon
+// invocation, posts the results to the provided |callback|. Returns an HRESULT
+// indicating the success of registering the internal completion handler.
+//
+// Callers need to ensure that this method is invoked in the correct COM
+// apartment, i.e. the one that created |async_operation|. The |callback| will
+// be run on the same thread that invoked this method.
+//
+// WARNING: This call holds a reference to the provided |async_operation| until
+// it completes.
+template <typename T>
+HRESULT PostAsyncResults(
+    Microsoft::WRL::ComPtr<internal::IAsyncOperationT<T>> async_operation,
+    base::OnceCallback<void(internal::AsyncResultsT<T>)> callback) {
+  return internal::PostAsyncOperationCompletedHandler(
+      async_operation.Get(),
+      base::BindOnce(
+          [](Microsoft::WRL::ComPtr<internal::IAsyncOperationT<T>>
+                 original_async_operation,
+             base::OnceCallback<void(internal::AsyncResultsT<T>)> callback,
+             internal::IAsyncOperationT<T>* async_operation,
+             AsyncStatus async_status) {
+            DCHECK(original_async_operation.Get() == async_operation);
+            if (async_status != AsyncStatus::Completed) {
+              VLOG(2) << "Got unexpected AsyncStatus: "
+                      << internal::ToCString(async_status);
+            }
+
+            internal::AsyncResultsT<T> results;
+            HRESULT hr = internal::GetAsyncResultsT(async_operation,
+                                                    async_status, &results);
+            if (FAILED(hr)) {
+              VLOG(2) << "GetAsyncResultsT failed: "
+                      << logging::SystemErrorCodeToString(hr);
+            }
+            std::move(callback).Run(results);
+          },
+          async_operation, std::move(callback)));
 }
 
 }  // namespace win
