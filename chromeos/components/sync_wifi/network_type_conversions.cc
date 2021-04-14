@@ -287,11 +287,15 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
   config->auto_connect = network_config::mojom::AutoConnectConfig::New(
       IsAutoconnectEnabled(specifics.automatically_connect()));
 
-  config->priority = network_config::mojom::PriorityConfig::New(
-      specifics.is_preferred() ==
-              sync_pb::WifiConfigurationSpecifics::IS_PREFERRED_ENABLED
-          ? 1
-          : 0);
+  if (specifics.has_is_preferred() &&
+      specifics.is_preferred() !=
+          sync_pb::WifiConfigurationSpecifics::IS_PREFERRED_UNSPECIFIED) {
+    config->priority = network_config::mojom::PriorityConfig::New(
+        specifics.is_preferred() ==
+                sync_pb::WifiConfigurationSpecifics::IS_PREFERRED_ENABLED
+            ? 1
+            : 0);
+  }
 
   // TODO(crbug/1128692): Restore support for the metered property when mojo
   // networks track the "Automatic" state.
