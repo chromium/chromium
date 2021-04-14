@@ -489,6 +489,42 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
 #endif
 
 #if defined(OS_ANDROID)
+// Test that the translation infobar is not presented when visiting a page with
+// a translation opportunity but where the page has specified that it should not
+// be translated.
+IN_PROC_BROWSER_TEST_F(
+    TranslateBrowserTest,
+    TranslateInfoBarNotPresentedWhenPageSpecifiesNoTranslate) {
+  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
+  auto* infobar_service = InfoBarService::FromWebContents(web_contents);
+
+  SetTranslateScript(kTestValidScript);
+
+  TranslateClientImpl* translate_client = GetTranslateClient(shell());
+
+  ResetLanguageDeterminationWaiter();
+  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
+  language_determination_waiter_->Wait();
+  EXPECT_EQ("und", translate_client->GetLanguageState().original_language());
+
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+
+  // Navigate to a page in French.
+  ResetLanguageDeterminationWaiter();
+  NavigateAndWaitForCompletion(
+      GURL(embedded_test_server()->GetURL("/french_page_no_translate.html")),
+      shell());
+  language_determination_waiter_->Wait();
+  EXPECT_EQ("fr", translate_client->GetLanguageState().original_language());
+
+  // NOTE: There is no notification to wait for the event of the infobar not
+  // showing. However, in practice the infobar is added synchronously, so if it
+  // were to be shown, this check would fail.
+  EXPECT_EQ(0u, infobar_service->infobar_count());
+}
+#endif
+
+#if defined(OS_ANDROID)
 // Test that the translation can be successfully initiated via infobar.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
