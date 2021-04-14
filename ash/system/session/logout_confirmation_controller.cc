@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/login_status.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -21,6 +22,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
@@ -81,6 +84,12 @@ class LogoutConfirmationController::LastWindowClosedObserver
       root->GetChildById(id)->AddObserver(this);
   }
 
+  bool ShouldShowDialogIfLastWindowClosing() const {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    return prefs->GetBoolean(prefs::kSuggestLogoutAfterClosingLastWindow);
+  }
+
   // Shows the logout confirmation dialog if the last window is closing in the
   // containers we are tracking. Called before closing instead of after closed
   // because aura::WindowObserver only provides notifications to parent windows
@@ -119,7 +128,8 @@ class LogoutConfirmationController::LastWindowClosedObserver
   void OnWindowHierarchyChanging(const HierarchyChangeParams& params) override {
     if (!params.new_parent && params.old_parent) {
       // A window is being removed (and not moved to another container).
-      ShowDialogIfLastWindowClosing(params.target);
+      if (ShouldShowDialogIfLastWindowClosing())
+        ShowDialogIfLastWindowClosing(params.target);
     }
   }
 
@@ -144,6 +154,13 @@ LogoutConfirmationController::~LogoutConfirmationController() {
 
   if (Shell::HasInstance())  // Null in testing::Test.
     Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+// static
+void LogoutConfirmationController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kSuggestLogoutAfterClosingLastWindow,
+                                true);
 }
 
 void LogoutConfirmationController::ConfirmLogout(base::TimeTicks logout_time,

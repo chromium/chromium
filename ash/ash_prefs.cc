@@ -37,6 +37,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/session/logout_button_tray.h"
+#include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -70,6 +71,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   holding_space_prefs::RegisterProfilePrefs(registry);
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
+  LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);

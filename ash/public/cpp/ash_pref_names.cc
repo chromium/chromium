@@ -456,6 +456,12 @@ const char kShowLogoutButtonInTray[] = "show_logout_button_in_tray";
 // a confirmation dialog.
 const char kLogoutDialogDurationMs[] = "logout_dialog_duration_ms";
 
+// A boolean pref that when set to true, displays the logout confirmation
+// dialog. If set to false, it prevents showing the dialog and the subsequent
+// logout after closing the last window.
+const char kSuggestLogoutAfterClosingLastWindow[] =
+    "suggest_logout_after_closing_last_window";
+
 // A dictionary pref that maps usernames to wallpaper info.
 const char kUserWallpaperInfo[] = "user_wallpaper_info";
 
