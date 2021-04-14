@@ -14,7 +14,7 @@ class WebContents;
 
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace autofill {
 class SaveAddressProfileBubbleController;

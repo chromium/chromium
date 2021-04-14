@@ -16,11 +16,13 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -29,9 +31,16 @@ namespace autofill {
 
 namespace {
 
+int ComboboxIconSize() {
+  // Use the line height of the body small text. This allows the icons to adapt
+  // if the user changes the font size.
+  return views::style::GetLineHeight(views::style::CONTEXT_MENU,
+                                     views::style::STYLE_PRIMARY);
+}
+
 void AddAddressSection(views::View* parent_view,
                        const gfx::VectorIcon& icon,
-                       std::unique_ptr<views::View> text_view) {
+                       std::unique_ptr<views::View> view) {
   views::View* row = parent_view->AddChildView(std::make_unique<views::View>());
   views::FlexLayout* row_layout =
       row->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -50,7 +59,7 @@ void AddAddressSection(views::View* parent_view,
       std::make_unique<views::ColorTrackingIconView>(icon, gfx::kFaviconSize);
   row->AddChildView(std::move(icon_view));
 
-  row->AddChildView(std::move(text_view));
+  row->AddChildView(std::move(view));
 }
 
 void AddAddressSection(views::View* parent_view,
@@ -135,6 +144,41 @@ std::unique_ptr<views::View> CreateStreetAddressView(
   return nullptr;
 }
 
+std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
+  // TODO(crbug.com/1167060): Update the icons
+  // TODO(crbug.com/1167060): Use internationalized string.
+  ui::SimpleComboboxModel::Item home(
+      /*text=*/u"Home",
+      /*dropdown_secondary_text=*/std::u16string(),
+      /*icon=*/
+      ui::ImageModel::FromVectorIcon(kNavigateHomeIcon,
+                                     ui::NativeTheme::kColorId_DefaultIconColor,
+                                     ComboboxIconSize()));
+
+  ui::SimpleComboboxModel::Item work(
+      /*text=*/u"Work",
+      /*dropdown_secondary_text=*/std::u16string(),
+      /*icon=*/
+      ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                     ui::NativeTheme::kColorId_DefaultIconColor,
+                                     ComboboxIconSize()));
+
+  std::vector<ui::SimpleComboboxModel::Item> nicknames{std::move(home),
+                                                       std::move(work)};
+
+  auto combobox = std::make_unique<views::EditableCombobox>(
+      std::make_unique<ui::SimpleComboboxModel>(std::move(nicknames)),
+      /*filter_on_edit=*/true);
+
+  combobox->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  // TODO(crbug.com/1167060): Use internationalized string.
+  combobox->SetAccessibleName(u"Address Label");
+  return combobox;
+}
+
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
@@ -145,6 +189,8 @@ SaveAddressProfileView::SaveAddressProfileView(
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
+  // TODO(crbug.com/1167060): Accept action should consider the selected
+  // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
@@ -175,7 +221,7 @@ SaveAddressProfileView::SaveAddressProfileView(
               &SaveAddressProfileBubbleController::OnEditButtonClicked,
               base::Unretained(controller_)),
           vector_icons::kEditIcon, gfx::kFaviconSize);
-  // TODO(crbug.com/1167060): User internationlized string.
+  // TODO(crbug.com/1167060): Use internationalized string.
   edit_button->SetAccessibleName(u"Edit Address");
   AddChildView(std::move(edit_button));
 
@@ -211,6 +257,12 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::u16string email = profile.GetInfo(EMAIL_ADDRESS, locale);
   if (!email.empty())
     AddAddressSection(/*parent_view=*/address_components_view, kWebIcon, email);
+
+  // TODO(crbug.com/1167060): Make sure the icon is vertically centered with the
+  // editable combobox.
+  AddAddressSection(/*parent_view=*/address_components_view,
+                    vector_icons::kExtensionIcon,
+                    CreateNicknameEditableCombobox());
 }
 
 bool SaveAddressProfileView::ShouldShowCloseButton() const {
