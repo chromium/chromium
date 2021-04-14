@@ -125,7 +125,7 @@ const base::Feature kPostQuantumCECPQ2{"PostQuantumCECPQ2",
 const base::Feature kPostQuantumCECPQ2SomeDomains{
     "PostQuantumCECPQ2SomeDomains", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<std::string>
-    kPostQuantumCECPQ2Prefix(&kPostQuantumCECPQ2SomeDomains, "prefix", "aa");
+    kPostQuantumCECPQ2Prefix(&kPostQuantumCECPQ2SomeDomains, "prefix", "a");
 
 const base::Feature kNetUnusedIdleSocketTimeout{
     "NetUnusedIdleSocketTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
