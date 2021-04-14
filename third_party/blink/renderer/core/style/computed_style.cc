@@ -122,6 +122,31 @@ struct SameSizeAsComputedStyle
 // ComputedStyle.
 ASSERT_SIZE(ComputedStyle, SameSizeAsComputedStyle);
 
+StyleCachedData& ComputedStyle::EnsureCachedData() const {
+  if (!cached_data_)
+    cached_data_ = MakeGarbageCollected<StyleCachedData>();
+  return *cached_data_;
+}
+
+bool ComputedStyle::HasCachedPseudoElementStyles() const {
+  return cached_data_ && cached_data_->pseudo_element_styles_ &&
+         cached_data_->pseudo_element_styles_->size();
+}
+
+PseudoElementStyleCache* ComputedStyle::GetPseudoElementStyleCache() const {
+  if (cached_data_)
+    return cached_data_->pseudo_element_styles_;
+  return nullptr;
+}
+
+PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
+  if (!cached_data_ || !cached_data_->pseudo_element_styles_) {
+    EnsureCachedData().pseudo_element_styles_ =
+        MakeGarbageCollected<PseudoElementStyleCache>();
+  }
+  return *cached_data_->pseudo_element_styles_;
+}
+
 ComputedStyle* ComputedStyle::CreateInitialStyleSingleton() {
   return MakeGarbageCollected<ComputedStyle>(PassKey());
 }
@@ -141,7 +166,7 @@ ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key, const ComputedStyle& o)
     : ComputedStyle(o) {}
 
 void ComputedStyle::Trace(Visitor* visitor) const {
-  visitor->Trace(cached_pseudo_element_styles_);
+  visitor->Trace(cached_data_);
 }
 
 static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
@@ -460,14 +485,14 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
-  if (!cached_pseudo_element_styles_ || !cached_pseudo_element_styles_->size())
+  if (!HasCachedPseudoElementStyles())
     return nullptr;
 
   if (StyleType() != kPseudoIdNone &&
       StyleType() != kPseudoIdFirstLineInherited)
     return nullptr;
 
-  for (const auto& pseudo_style : *cached_pseudo_element_styles_) {
+  for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
     if (pseudo_style->StyleType() == pseudo_id &&
         (!PseudoElementHasArguments(pseudo_id) ||
          pseudo_style->PseudoArgument() == pseudo_argument))
@@ -478,12 +503,12 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
 }
 
 bool ComputedStyle::CachedPseudoElementStylesDependOnFontMetrics() const {
-  if (!cached_pseudo_element_styles_ || !cached_pseudo_element_styles_->size())
+  if (!HasCachedPseudoElementStyles())
     return false;
 
   DCHECK_EQ(StyleType(), kPseudoIdNone);
 
-  for (const auto& pseudo_style : *cached_pseudo_element_styles_) {
+  for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
     if (pseudo_style->DependsOnFontMetrics())
       return true;
   }
@@ -498,14 +523,14 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
 
   const ComputedStyle* result = pseudo;
 
-  if (!cached_pseudo_element_styles_) {
-    cached_pseudo_element_styles_ =
-        MakeGarbageCollected<PseudoElementStyleCache>();
-  }
-
-  cached_pseudo_element_styles_->push_back(std::move(pseudo));
+  EnsurePseudoElementStyleCache().push_back(std::move(pseudo));
 
   return result;
+}
+
+void ComputedStyle::ClearCachedPseudoElementStyles() const {
+  if (cached_data_ && cached_data_->pseudo_element_styles_)
+    cached_data_->pseudo_element_styles_->clear();
 }
 
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
