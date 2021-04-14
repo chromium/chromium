@@ -576,6 +576,20 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
   NS_LOG(VERBOSE) << __func__ << ": A ReceiveSurface("
                   << ReceiveSurfaceStateToString(state)
                   << ") has been registered";
+
+  // TODO(crbug.com/1186559): Remove these logs. They are only needed to help
+  // debug crbug.com/1186559.
+  if (state == ReceiveSurfaceState::kForeground) {
+    if (!IsBluetoothPresent()) {
+      NS_LOG(ERROR) << __func__ << ": Bluetooth is not present.";
+    } else if (!IsBluetoothPowered()) {
+      NS_LOG(WARNING) << __func__ << ": Bluetooth is not powered.";
+    } else {
+      NS_LOG(VERBOSE) << __func__ << ": This device's MAC address is: "
+                      << bluetooth_adapter_->GetAddress();
+    }
+  }
+
   InvalidateReceiveSurfaceState();
   return StatusCodes::kOk;
 }
