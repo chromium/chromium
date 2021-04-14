@@ -4961,8 +4961,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReadCorruptLength) {
   EXPECT_NE(net::OK, OpenEntry(key, &entry));
 }
 
-// TODO(crbug.com/999584): Flaky on platforms which use POSIX-based file I/O.
-TEST_F(DiskCacheEntryTest, DISABLED_SimpleCacheCreateRecoverFromRmdir) {
+TEST_F(DiskCacheEntryTest, SimpleCacheCreateRecoverFromRmdir) {
   // This test runs as APP_CACHE to make operations more synchronous.
   // (in particular we want to see if create succeeded or not, so we don't
   //  want an optimistic one).
@@ -4973,7 +4972,7 @@ TEST_F(DiskCacheEntryTest, DISABLED_SimpleCacheCreateRecoverFromRmdir) {
   // Pretend someone deleted the cache dir. This shouldn't be too scary in
   // the test since cache_path_ is set as:
   //   CHECK(temp_dir_.CreateUniqueTempDir());
-  //   cache_path_ = temp_dir_.GetPath();
+  //   cache_path_ = temp_dir_.GetPath().AppendASCII("cache");
   disk_cache::DeleteCache(cache_path_,
                           true /* delete the dir, what we really want*/);
 

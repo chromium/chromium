@@ -1141,11 +1141,13 @@ bool SimpleSynchronousEntry::MaybeCreateFile(int file_index,
   // directory (e.g. because someone pressed "clear cache" on Android).
   // If so, we would keep failing for a while until periodic index snapshot
   // re-creates the cache dir, so try to recover from it quickly here.
+  //
+  // This previously also checked whether the directory was missing, but that
+  // races against other entry creations attempting the same recovery.
   if (!file->IsValid() &&
-      file->error_details() == base::File::FILE_ERROR_NOT_FOUND &&
-      !base::DirectoryExists(path_)) {
-    if (base::CreateDirectory(path_))
-      file->Initialize(filename, flags);
+      file->error_details() == base::File::FILE_ERROR_NOT_FOUND) {
+    base::CreateDirectory(path_);
+    file->Initialize(filename, flags);
   }
 
   *out_error = file->error_details();
