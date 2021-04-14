@@ -107,9 +107,16 @@ void CascadeExpansion::Next() {
   } while (!AtEnd() && filter_.Rejects(*property_));
 }
 
-bool CascadeExpansion::IsAffectedByAll(CSSPropertyID id) {
+bool CascadeExpansion::IsInAllExpansion(CSSPropertyID id) {
   const CSSProperty& property = CSSProperty::Get(id);
-  return !property.IsShorthand() && property.IsAffectedByAll();
+  // Only web-exposed properties are affected by 'all' (IsAffectedByAll).
+  // This excludes -internal-visited properties from being affected, but for
+  // the purposes of cascade expansion, they need to be included, otherwise
+  // rules like :visited { all:unset; } will not work.
+  const CSSProperty* unvisited = property.GetUnvisitedProperty();
+  return !property.IsShorthand() &&
+         (property.IsAffectedByAll() ||
+          (unvisited && unvisited->IsAffectedByAll()));
 }
 
 bool CascadeExpansion::ShouldEmitVisited() const {
@@ -144,7 +151,7 @@ void CascadeExpansion::AdvanceNormal() {
       // If this DCHECK is triggered, it means firstCSSProperty is not affected
       // by 'all', and we need a function for figuring out the first property
       // that _is_ affected by 'all'.
-      DCHECK(IsAffectedByAll(id_));
+      DCHECK(IsInAllExpansion(id_));
       break;
     default:
       property_ = &CSSProperty::Get(id_);
@@ -174,7 +181,7 @@ void CascadeExpansion::AdvanceAll() {
 
   for (; i < end; ++i) {
     id_ = ConvertToCSSPropertyID(i);
-    if (IsAffectedByAll(id_))
+    if (IsInAllExpansion(id_))
       break;
   }
 

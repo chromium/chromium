@@ -17,6 +17,33 @@ namespace blink {
 
 using css_test_helpers::ParseDeclarationBlock;
 
+namespace {
+
+// This list does not necessarily need to be exhaustive.
+const CSSPropertyID kVisitedPropertySamples[] = {
+    CSSPropertyID::kInternalVisitedColor,
+    CSSPropertyID::kInternalVisitedBackgroundColor,
+    CSSPropertyID::kInternalVisitedBorderBlockEndColor,
+    CSSPropertyID::kInternalVisitedBorderBlockStartColor,
+    CSSPropertyID::kInternalVisitedBorderBottomColor,
+    CSSPropertyID::kInternalVisitedBorderInlineEndColor,
+    CSSPropertyID::kInternalVisitedBorderInlineStartColor,
+    CSSPropertyID::kInternalVisitedBorderLeftColor,
+    CSSPropertyID::kInternalVisitedBorderRightColor,
+    CSSPropertyID::kInternalVisitedBorderTopColor,
+    CSSPropertyID::kInternalVisitedCaretColor,
+    CSSPropertyID::kInternalVisitedColumnRuleColor,
+    CSSPropertyID::kInternalVisitedFill,
+    CSSPropertyID::kInternalVisitedOutlineColor,
+    CSSPropertyID::kInternalVisitedStroke,
+    CSSPropertyID::kInternalVisitedTextDecorationColor,
+    CSSPropertyID::kInternalVisitedTextEmphasisColor,
+    CSSPropertyID::kInternalVisitedTextFillColor,
+    CSSPropertyID::kInternalVisitedTextStrokeColor,
+};
+
+}  // namespace
+
 class CascadeExpansionTest : public PageTestBase {
  public:
   CascadeExpansion ExpansionAt(const MatchResult& result,
@@ -30,15 +57,25 @@ class CascadeExpansionTest : public PageTestBase {
     Vector<CSSPropertyID> all;
     for (CSSPropertyID id : CSSPropertyIDList()) {
       const CSSProperty& property = CSSProperty::Get(id);
-      if (property.IsShorthand())
-        continue;
-      if (!property.IsAffectedByAll())
+      if (!CascadeExpansion::IsInAllExpansion(id))
         continue;
       if (filter.Rejects(property))
         continue;
       all.push_back(id);
     }
     return all;
+  }
+
+  Vector<CSSPropertyID> VisitedPropertiesInExpansion(CascadeExpansion e) {
+    Vector<CSSPropertyID> visited;
+
+    while (!e.AtEnd()) {
+      if (CSSProperty::Get(e.Id()).IsVisited())
+        visited.push_back(e.Id());
+      e.Next();
+    }
+
+    return visited;
   }
 };
 
@@ -574,6 +611,64 @@ TEST_F(CascadeExpansionTest, AllNonImportance) {
   }
 
   EXPECT_TRUE(e.AtEnd());
+}
+
+TEST_F(CascadeExpansionTest, AllVisitedOnly) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(ParseDeclarationBlock("all:unset"),
+                              CSSSelector::kMatchVisited,
+                              ValidPropertyFilter::kNoFilter);
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+
+  Vector<CSSPropertyID> visited =
+      VisitedPropertiesInExpansion(ExpansionAt(result, 0));
+
+  for (CSSPropertyID id : kVisitedPropertySamples) {
+    EXPECT_TRUE(visited.Contains(id))
+        << CSSProperty::Get(id).GetPropertyNameString()
+        << " should be in the expansion";
+  }
+}
+
+TEST_F(CascadeExpansionTest, AllVisitedOrLink) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(ParseDeclarationBlock("all:unset"),
+                              CSSSelector::kMatchAll,
+                              ValidPropertyFilter::kNoFilter);
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+
+  Vector<CSSPropertyID> visited =
+      VisitedPropertiesInExpansion(ExpansionAt(result, 0));
+
+  for (CSSPropertyID id : kVisitedPropertySamples) {
+    EXPECT_TRUE(visited.Contains(id))
+        << CSSProperty::Get(id).GetPropertyNameString()
+        << " should be in the expansion";
+  }
+}
+
+TEST_F(CascadeExpansionTest, AllLinkOnly) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(ParseDeclarationBlock("all:unset"),
+                              CSSSelector::kMatchLink,
+                              ValidPropertyFilter::kNoFilter);
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  ASSERT_EQ(1u, result.GetMatchedProperties().size());
+
+  Vector<CSSPropertyID> visited =
+      VisitedPropertiesInExpansion(ExpansionAt(result, 0));
+  EXPECT_EQ(visited.size(), 0u);
 }
 
 TEST_F(CascadeExpansionTest, Position) {
