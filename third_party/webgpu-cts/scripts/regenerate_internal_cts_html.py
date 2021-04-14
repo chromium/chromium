@@ -58,6 +58,8 @@ def generate_internal_cts_html():
             js_out_dir,
             '--noEmit',
             'false',
+            '--noEmitOnError',
+            'false',
             '--declaration',
             'false',
             '--sourceMap',
