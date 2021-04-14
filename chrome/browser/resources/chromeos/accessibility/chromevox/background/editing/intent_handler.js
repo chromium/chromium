@@ -123,7 +123,7 @@ IntentHandler = class {
             Dir.BACKWARD);
         const end = pos.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
         new Output()
-            .withSpeech(new Range(start, end), null, Output.EventType.NAVIGATE)
+            .withSpeech(new Range(start, end), null, OutputEventType.NAVIGATE)
             .go();
         return true;
 

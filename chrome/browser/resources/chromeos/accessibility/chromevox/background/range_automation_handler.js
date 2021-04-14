@@ -115,7 +115,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       this.lastAttributeTarget_ = evt.target.activeDescendant || evt.target;
       this.lastAttributeOutput_ = new Output().withRichSpeechAndBraille(
           cursors.Range.fromNode(this.lastAttributeTarget_), prev,
-          Output.EventType.NAVIGATE);
+          OutputEventType.NAVIGATE);
       if (this.lastAttributeTarget_ === prevTarget && prevOutput &&
           prevOutput.equals(this.lastAttributeOutput_)) {
         return;

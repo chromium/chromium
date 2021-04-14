@@ -721,7 +721,7 @@ CommandHandler.onCommand = function(command) {
                       .withoutHints()
                       .withRichSpeechAndBraille(
                           ChromeVoxState.instance.currentRange, prevRange,
-                          Output.EventType.NAVIGATE)
+                          OutputEventType.NAVIGATE)
                       .onSpeechEnd(continueReading);
 
         if (!o.hasSpeech) {
@@ -739,7 +739,7 @@ CommandHandler.onCommand = function(command) {
             new Output()
                 .withoutHints()
                 .withRichSpeechAndBraille(
-                    collapsedRange, collapsedRange, Output.EventType.NAVIGATE)
+                    collapsedRange, collapsedRange, OutputEventType.NAVIGATE)
                 .onSpeechEnd(continueReading);
 
         if (o.hasSpeech) {
@@ -834,7 +834,7 @@ CommandHandler.onCommand = function(command) {
           const o =
               new Output()
                   .format('@end_selection')
-                  .withSpeechAndBraille(sel, sel, Output.EventType.NAVIGATE)
+                  .withSpeechAndBraille(sel, sel, OutputEventType.NAVIGATE)
                   .go();
           DesktopAutomationHandler.instance.ignoreDocumentSelectionFromAction(
               false);
@@ -846,7 +846,7 @@ CommandHandler.onCommand = function(command) {
     case 'fullyDescribe':
       const o = new Output();
       o.withContextFirst()
-          .withRichSpeechAndBraille(current, null, Output.EventType.NAVIGATE)
+          .withRichSpeechAndBraille(current, null, OutputEventType.NAVIGATE)
           .go();
       return false;
     case 'viewGraphicAsBraille':

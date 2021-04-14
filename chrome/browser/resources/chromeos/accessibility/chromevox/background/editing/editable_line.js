@@ -256,7 +256,7 @@ editing.EditableLine = class {
       len += currentLen;
 
       try {
-        this.value_.setSpan(new Output.NodeSpan(parent, offset), prevLen, len);
+        this.value_.setSpan(new OutputNodeSpan(parent, offset), prevLen, len);
 
         // Also, annotate this span if it is associated with line containre.
         if (parent === this.startContainer_) {
@@ -539,7 +539,7 @@ editing.EditableLine = class {
                     .withRichSpeech(
                         Range.fromNode(cur),
                         prev ? Range.fromNode(prev) : Range.fromNode(cur),
-                        Output.EventType.NAVIGATE)
+                        OutputEventType.NAVIGATE)
                     .withQueueMode(queueMode);
 
       // Ignore whitespace only output except if it is leading content on the

@@ -13,7 +13,7 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('IntentHandler');
 goog.require('Output');
-goog.require('Output.EventType');
+goog.require('OutputEventType');
 goog.require('TreePathRecoveryStrategy');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');
@@ -256,7 +256,7 @@ const AutomationEditableText = class extends ChromeVoxEditableTextBase {
       lineText = '\n';
     }
 
-    const spannable = new Spannable(lineText, new Output.NodeSpan(this.node_));
+    const spannable = new Spannable(lineText, new OutputNodeSpan(this.node_));
     ChromeVox.braille.write(
         new NavBraille({text: spannable, startIndex, endIndex}));
   }
@@ -490,7 +490,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
         new Output()
             .withRichSpeech(
                 new Range(cur.start, cur.end), new Range(prev.start, prev.end),
-                Output.EventType.NAVIGATE)
+                OutputEventType.NAVIGATE)
             .go();
       }
 
@@ -536,7 +536,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       new Output()
           .withRichSpeech(
               new Range(cur.start, cur.end), new Range(prev.start, prev.end),
-              Output.EventType.NAVIGATE)
+              OutputEventType.NAVIGATE)
           .go();
     } else if (
         !prev.hasCollapsedSelection() && !cur.hasCollapsedSelection() &&
@@ -662,7 +662,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     if (context && context.role !== RoleType.TEXT_FIELD) {
       const output = new Output().suppress('name').withBraille(
           Range.fromNode(context), Range.fromNode(this.node_),
-          Output.EventType.NAVIGATE);
+          OutputEventType.NAVIGATE);
       if (output.braille.length) {
         const end = cur.containerEndOffset + 1;
         const prefix = value.substring(0, end);

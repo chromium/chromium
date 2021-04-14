@@ -75,7 +75,7 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   assertArraysEquals(
       ['move', Unit.WORD, Movement.BOUND, Dir.FORWARD], calls[1]);
   assertArraysEquals(
-      ['withSpeech', {}, null, Output.EventType.NAVIGATE], calls[2]);
+      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[2]);
   assertArraysEquals(['go'], calls[3]);
 
   calls = [];
@@ -87,7 +87,7 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   assertArraysEquals(
       ['move', Unit.WORD, Movement.BOUND, Dir.FORWARD], calls[1]);
   assertArraysEquals(
-      ['withSpeech', {}, null, Output.EventType.NAVIGATE], calls[2]);
+      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[2]);
   assertArraysEquals(['go'], calls[3]);
 
   calls = [];

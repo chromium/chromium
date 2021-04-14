@@ -49,7 +49,7 @@ FindHandler.onTextMatch_ = function(evt) {
   const range = cursors.Range.fromNode(evt.target);
   ChromeVoxState.instance.setCurrentRange(range);
   new Output()
-      .withRichSpeechAndBraille(range, null, Output.EventType.NAVIGATE)
+      .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
       .go();
 };
 

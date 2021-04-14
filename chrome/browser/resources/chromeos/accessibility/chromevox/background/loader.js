@@ -26,7 +26,7 @@ goog.require('LocaleOutputHelper');
 goog.require('MathHandler');
 goog.require('NavBraille');
 goog.require('Output');
-goog.require('Output.EventType');
+goog.require('OutputEventType');
 goog.require('PanelCommand');
 goog.require('PhoneticData');
 goog.require('constants');

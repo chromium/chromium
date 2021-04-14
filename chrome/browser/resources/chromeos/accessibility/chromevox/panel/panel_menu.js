@@ -397,7 +397,7 @@ PanelNodeMenu = class extends PanelMenu {
         const output = new Output();
         const range = cursors.Range.fromNode(node);
         output.withoutHints();
-        output.withSpeech(range, range, Output.EventType.NAVIGATE);
+        output.withSpeech(range, range, OutputEventType.NAVIGATE);
         const label = output.toString();
         this.addMenuItem(label, '', '', '', (function() {
                            const savedNode = node;

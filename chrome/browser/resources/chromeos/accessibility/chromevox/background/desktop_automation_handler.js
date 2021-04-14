@@ -153,7 +153,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       // results should generate output.
       const range = cursors.Range.fromNode(focus);
       ChromeVoxState.instance.setCurrentRange(range);
-      output.withRichSpeechAndBraille(range, null, Output.EventType.NAVIGATE)
+      output.withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
           .go();
     });
   }
@@ -510,8 +510,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       if (fromDesktop &&
           (!this.lastValueTarget_ || this.lastValueTarget_ !== t)) {
         const range = cursors.Range.fromNode(t);
-        output.withRichSpeechAndBraille(
-            range, range, Output.EventType.NAVIGATE);
+        output.withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE);
         this.lastValueTarget_ = t;
       } else {
         output.format(

@@ -177,7 +177,7 @@ export class LiveRegions {
     if (opt_prependFormatStr) {
       output.format(opt_prependFormatStr);
     }
-    output.withSpeech(range, range, Output.EventType.NAVIGATE);
+    output.withSpeech(range, range, OutputEventType.NAVIGATE);
 
     if (!output.hasSpeech && node.liveAtomic) {
       output.format('$joinedDescendants', node);

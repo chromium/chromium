@@ -2515,7 +2515,7 @@ TEST_F('ChromeVoxBackgroundTest', 'OutputEmptyQueueMode', function() {
     Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
     output.append_(
         output.speechBuffer_, new Spannable(''),
-        {annotation: [new Output.Action()]});
+        {annotation: [new OutputAction()]});
     output.withString('test');
     mockFeedback.clearPendingOutput()
         .call(output.go.bind(output))

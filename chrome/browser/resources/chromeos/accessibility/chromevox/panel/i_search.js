@@ -252,7 +252,7 @@ ISearchUI = class {
       o.format('$role', node);
     } else {
       o.withRichSpeechAndBraille(
-          cursors.Range.fromNode(node), null, Output.EventType.NAVIGATE);
+          cursors.Range.fromNode(node), null, OutputEventType.NAVIGATE);
     }
     o.go();
 

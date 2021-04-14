@@ -44,7 +44,7 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
 
   function describeSpan(span) {
     const obj = {value: span.value, start: span.start, end: span.end};
-    if (obj.value instanceof Output.NodeSpan) {
+    if (obj.value instanceof OutputNodeSpan) {
       obj.value.node =
           (obj.value.node.name || '') + ' ' + obj.value.node.toString();
     }
@@ -75,8 +75,8 @@ function checkOutput_(expectedText, expectedSpans, actualText, actualSpans) {
         expectedSpan.end !== actualSpan.end) {
       equal = false;
     } else if (
-        expectedSpan.value instanceof Output.NodeSpan &&
-        (!(actualSpan.value instanceof Output.NodeSpan) ||
+        expectedSpan.value instanceof OutputNodeSpan &&
+        (!(actualSpan.value instanceof OutputNodeSpan) ||
          expectedSpan.value.node !== actualSpan.value.node)) {
       equal = false;
     } else {
@@ -127,7 +127,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Links', function() {
         o.speechOutputForTest);
     checkBrailleOutput(
         'Click here intlnk',
-        [{value: new Output.NodeSpan(el), start: 0, end: 17}], o);
+        [{value: new OutputNodeSpan(el), start: 0, end: 17}], o);
   });
 });
 
@@ -139,13 +139,13 @@ TEST_F('ChromeVoxOutputE2ETest', 'Checkbox', function() {
     checkSpeechOutput(
         '|Check box|Not checked|Press Search+Space to toggle',
         [
-          {value: new Output.EarconAction('CHECK_OFF'), start: 0, end: 0},
+          {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
           {value: 'role', start: 1, end: 10},
           {value: {'delay': true}, start: 23, end: 51}
         ],
         o);
     checkBrailleOutput(
-        'chk ( )', [{value: new Output.NodeSpan(el), start: 0, end: 7}], o);
+        'chk ( )', [{value: new OutputNodeSpan(el), start: 0, end: 7}], o);
   });
 });
 
@@ -165,7 +165,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
         },
         o.speechOutputForTest);
     checkBrailleOutput(
-        'OK', [{value: new Output.NodeSpan(el), start: 0, end: 2}], o);
+        'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
 
     el = root.firstChild.firstChild;
     assertEquals('staticText', el.role);
@@ -181,7 +181,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'InLineTextBoxValueGetsIgnored', function() {
         },
         o.speechOutputForTest);
     checkBrailleOutput(
-        'OK', [{value: new Output.NodeSpan(el), start: 0, end: 2}], o);
+        'OK', [{value: new OutputNodeSpan(el), start: 0, end: 2}], o);
   });
 });
 
@@ -207,7 +207,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Headings', function() {
               o.speechOutputForTest);
           checkBrailleOutput(
               letter + ' h' + i,
-              [{value: new Output.NodeSpan(el), start: 0, end: 4}], o);
+              [{value: new OutputNodeSpan(el), start: 0, end: 4}], o);
           el = el.nextSibling;
         }
 
@@ -218,7 +218,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Headings', function() {
               string_: 'b|Link|Heading 1',
               'spans_': [
                 {value: 'name', start: 0, end: 1},
-                {value: new Output.EarconAction('LINK'), start: 0, end: 1},
+                {value: new OutputEarconAction('LINK'), start: 0, end: 1},
                 {value: 'role', start: 2, end: 6}
               ]
             },
@@ -227,12 +227,12 @@ TEST_F('ChromeVoxOutputE2ETest', 'Headings', function() {
             'b lnk h1',
             [
               {
-                value: new Output.NodeSpan(el.firstChild.firstChild),
+                value: new OutputNodeSpan(el.firstChild.firstChild),
                 start: 0,
                 end: 1
               },
-              {value: new Output.NodeSpan(el), start: 0, end: 8},
-              {value: new Output.NodeSpan(el.firstChild), start: 2, end: 5}
+              {value: new OutputNodeSpan(el), start: 0, end: 8},
+              {value: new OutputNodeSpan(el.firstChild), start: 2, end: 5}
             ],
             o);
       });
@@ -250,7 +250,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
         checkSpeechOutput(
             'play|Disabled|Button|audio|Tool bar',
             [
-              {value: new Output.EarconAction('BUTTON'), start: 0, end: 4},
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 4},
               {value: 'name', start: 21, end: 26},
               {value: 'role', start: 27, end: 35}
             ],
@@ -259,8 +259,8 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
         checkBrailleOutput(
             'play xx btn audio tlbar',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 11},
-              {value: new Output.NodeSpan(el.parent), start: 12, end: 23}
+              {value: new OutputNodeSpan(el), start: 0, end: 11},
+              {value: new OutputNodeSpan(el.parent), start: 12, end: 23}
             ],
             o);
 
@@ -274,7 +274,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
             '|audio time scrubber|Slider|0:00|Min 0|Max 0',
             [
               {value: 'name', start: 0, end: 0},
-              {value: new Output.EarconAction('SLIDER'), start: 0, end: 0},
+              {value: new OutputEarconAction('SLIDER'), start: 0, end: 0},
               {value: 'description', start: 1, end: 20},
               {value: 'role', start: 21, end: 27},
               {value: 'value', start: 28, end: 32}
@@ -282,7 +282,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
             o);
         checkBrailleOutput(
             'audio time scrubber sldr 0:00 min:0 max:0',
-            [{value: new Output.NodeSpan(el), start: 0, end: 41}], o);
+            [{value: new OutputNodeSpan(el), start: 0, end: 41}], o);
       });
 });
 
@@ -301,14 +301,14 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
       function(root) {
         const expectedSpansNonSearchBox = [
           {value: 'name', start: 0, end: 0},
-          {value: new Output.EarconAction('EDITABLE_TEXT'), start: 0, end: 0},
-          {value: new Output.SelectionSpan(0, 0, 0), start: 1, end: 1},
+          {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
+          {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
           {value: 'value', start: 1, end: 1}, {value: 'inputType', start: 2}
         ];
         const expectedSpansForSearchBox = [
           {value: 'name', start: 0, end: 0},
-          {value: new Output.EarconAction('EDITABLE_TEXT'), start: 0, end: 0},
-          {value: new Output.SelectionSpan(0, 0, 0), start: 1, end: 1},
+          {value: new OutputEarconAction('EDITABLE_TEXT'), start: 0, end: 0},
+          {value: new OutputSelectionSpan(0, 0, 0), start: 1, end: 1},
           {value: 'value', start: 1, end: 1}, {value: 'role', start: 2, end: 8}
         ];
 
@@ -319,7 +319,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
             '|Spin button',
             [
               {value: 'name', start: 0, end: 0},
-              {value: new Output.EarconAction('LISTBOX'), start: 0, end: 0},
+              {value: new OutputEarconAction('LISTBOX'), start: 0, end: 0},
               {value: 'role', start: 1, end: 12}
             ]
           ],
@@ -329,7 +329,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
             'No file chosen, Choose File|Button',
             [
               {value: 'name', start: 0, end: 27},
-              {value: new Output.EarconAction('BUTTON'), start: 0, end: 27},
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 27},
               {value: 'role', start: 28, end: 34}
             ]
           ],
@@ -372,7 +372,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
                 expectedValue,
                 [
                   {value: {startIndex: 0, endIndex: 0}, start: 0, end: 0}, {
-                    value: new Output.NodeSpan(el),
+                    value: new OutputNodeSpan(el),
                     start: 0,
                     end: expectedValue.length
                   }
@@ -380,7 +380,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Input', function() {
                 o);
           } else {
             let spans = [{
-              value: new Output.NodeSpan(el),
+              value: new OutputNodeSpan(el),
               start: 0,
               end: expectedValue.string_.length
             }];
@@ -415,8 +415,8 @@ TEST_F('ChromeVoxOutputE2ETest', 'List', function() {
         checkBrailleOutput(
             'a lstitm first lst +3',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 8},
-              {value: new Output.NodeSpan(el.parent), start: 9, end: 21}
+              {value: new OutputNodeSpan(el), start: 0, end: 8},
+              {value: new OutputNodeSpan(el.parent), start: 9, end: 21}
             ],
             o);
       });
@@ -446,9 +446,9 @@ TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
         checkBrailleOutput(
             'a tritm - 1/3 level 1 tree +3',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 1},
-              {value: new Output.NodeSpan(el.parent), start: 2, end: 22},
-              {value: new Output.NodeSpan(el.parent.parent), start: 22, end: 29}
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
+              {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
             ],
             o);
 
@@ -465,9 +465,9 @@ TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
         checkBrailleOutput(
             'b tritm 2/3 level 1 tree +3',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 1},
-              {value: new Output.NodeSpan(el.parent), start: 2, end: 20},
-              {value: new Output.NodeSpan(el.parent.parent), start: 20, end: 27}
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 20},
+              {value: new OutputNodeSpan(el.parent.parent), start: 20, end: 27}
             ],
             o);
 
@@ -485,9 +485,9 @@ TEST_F('ChromeVoxOutputE2ETest', 'Tree', function() {
         checkBrailleOutput(
             'c tritm + 3/3 level 1 tree +3',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 1},
-              {value: new Output.NodeSpan(el.parent), start: 2, end: 22},
-              {value: new Output.NodeSpan(el.parent.parent), start: 22, end: 29}
+              {value: new OutputNodeSpan(el), start: 0, end: 1},
+              {value: new OutputNodeSpan(el.parent), start: 2, end: 22},
+              {value: new OutputNodeSpan(el.parent.parent), start: 22, end: 29}
             ],
             o);
       });
@@ -516,8 +516,8 @@ TEST_F('ChromeVoxOutputE2ETest', 'Menu', function() {
         checkBrailleOutput(
             'a mnuitm 1/3 mnu',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 12},
-              {value: new Output.NodeSpan(el.parent), start: 13, end: 16}
+              {value: new OutputNodeSpan(el), start: 0, end: 12},
+              {value: new OutputNodeSpan(el.parent), start: 13, end: 16}
             ],
             o);
       });
@@ -539,15 +539,15 @@ TEST_F('ChromeVoxOutputE2ETest', 'ListBox', function() {
             '1|List item| 1 of 2 |Not selected|List box|with 2 items',
             [
               {value: 'name', start: 0, end: 1},
-              {value: new Output.EarconAction('LIST_ITEM'), start: 0, end: 1},
+              {value: new OutputEarconAction('LIST_ITEM'), start: 0, end: 1},
               {value: 'role', start: 34, end: 42}
             ],
             o);
         checkBrailleOutput(
             '1 lstitm 1/2 ( ) lstbx +2',
             [
-              {value: new Output.NodeSpan(el), start: 0, end: 16},
-              {value: new Output.NodeSpan(el.parent), start: 17, end: 25}
+              {value: new OutputNodeSpan(el), start: 0, end: 16},
+              {value: new OutputNodeSpan(el.parent), start: 17, end: 25}
             ],
             o);
       });
@@ -656,7 +656,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DivOmitsRole', function() {
             'that has content', [{value: 'name', start: 0, end: 16}], o);
         checkBrailleOutput(
             'that has content',
-            [{value: new Output.NodeSpan(el), start: 0, end: 16}], o);
+            [{value: new OutputNodeSpan(el), start: 0, end: 16}], o);
       });
 });
 
@@ -832,12 +832,12 @@ TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', function() {
         checkBrailleOutput(
             'this is a test of emphasized text',
             [
-              {value: new Output.NodeSpan(start), start: 0, end: 10}, {
-                value: new Output.NodeSpan(start.nextSibling),
+              {value: new OutputNodeSpan(start), start: 0, end: 10}, {
+                value: new OutputNodeSpan(start.nextSibling),
                 start: 10,
                 end: 14
               },
-              {value: new Output.NodeSpan(end), start: 15, end: 33}
+              {value: new OutputNodeSpan(end), start: 15, end: 33}
             ],
             o);
       });
@@ -860,10 +860,10 @@ TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', function() {
         checkBrailleOutput(
             'test lnk lstitm lst +1',
             [
-              {value: new Output.NodeSpan(text), start: 0, end: 4},
-              {value: new Output.NodeSpan(link), start: 5, end: 8},
-              {value: new Output.NodeSpan(listItem), start: 9, end: 15},
-              {value: new Output.NodeSpan(list), start: 16, end: 22}
+              {value: new OutputNodeSpan(text), start: 0, end: 4},
+              {value: new OutputNodeSpan(link), start: 5, end: 8},
+              {value: new OutputNodeSpan(listItem), start: 9, end: 15},
+              {value: new OutputNodeSpan(list), start: 16, end: 22}
             ],
 
             o);
@@ -890,7 +890,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             'volume|Slider|2|Min 1|Max 10',
             [
               {value: 'name', start: 0, end: 6},
-              {value: new Output.EarconAction('SLIDER'), start: 0, end: 6},
+              {value: new OutputEarconAction('SLIDER'), start: 0, end: 6},
               {value: 'role', start: 7, end: 13},
               {value: 'value', start: 14, end: 15}
             ],
@@ -924,7 +924,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             'volume|Spin button|2|Min 1|Max 10',
             [
               {value: 'name', start: 0, end: 6},
-              {value: new Output.EarconAction('LISTBOX'), start: 0, end: 6},
+              {value: new OutputEarconAction('LISTBOX'), start: 0, end: 6},
               {value: 'role', start: 7, end: 18},
               {value: 'value', start: 19, end: 20}
             ],
@@ -945,7 +945,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', function() {
             'hi|foo',
             [
               {value: 'name', start: 0, end: 2},
-              {value: new Output.EarconAction('BUTTON'), start: 0, end: 2},
+              {value: new OutputEarconAction('BUTTON'), start: 0, end: 2},
               {value: 'role', start: 3, end: 6}
             ],
             o);
@@ -1390,7 +1390,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
     checkSpeechOutput(
         '|Check box|checked state description',
         [
-          {value: new Output.EarconAction('CHECK_OFF'), start: 0, end: 0},
+          {value: new OutputEarconAction('CHECK_OFF'), start: 0, end: 0},
           {value: 'role', start: 1, end: 10},
           {value: 'checkedStateDescription', start: 11, end: 36}
         ],

@@ -85,7 +85,7 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
         .withoutHints()
         .withRichSpeechAndBraille(
             cursors.Range.fromNode(evt.target.activeDescendant), prev,
-            Output.EventType.NAVIGATE)
+            OutputEventType.NAVIGATE)
         .go();
     this.previousActiveDescendant_ = evt.target.activeDescendant;
   }
