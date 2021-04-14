@@ -169,7 +169,9 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
     SetIsSigninRequired(false);
 #endif
   }
+}
 
+void ProfileAttributesEntry::InitializeLastNameToDisplay() {
   DCHECK(last_name_to_display_.empty());
   last_name_to_display_ = GetName();
 }
