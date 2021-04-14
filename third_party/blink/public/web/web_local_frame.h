@@ -427,6 +427,12 @@ class WebLocalFrame : public WebFrame {
   virtual WebString Prompt(const WebString& message,
                            const WebString& default_value) = 0;
 
+  // Generates an intervention report, which will be routed to the Reporting API
+  // and any ReportingObservers. It will also emit the intervention message to
+  // the console.
+  virtual void GenerateInterventionReport(const WebString& message_id,
+                                          const WebString& message) = 0;
+
   // Editing -------------------------------------------------------------
   virtual void UnmarkText() = 0;
   virtual bool HasMarkedText() const = 0;

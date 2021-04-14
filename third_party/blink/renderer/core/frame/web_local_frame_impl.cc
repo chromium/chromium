@@ -180,6 +180,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -939,6 +940,12 @@ WebString WebLocalFrameImpl::Prompt(const WebString& message,
   ScriptState* script_state = ToScriptStateForMainWorld(GetFrame());
   DCHECK(script_state);
   return GetFrame()->DomWindow()->prompt(script_state, message, default_value);
+}
+
+void WebLocalFrameImpl::GenerateInterventionReport(const WebString& message_id,
+                                                   const WebString& message) {
+  DCHECK(GetFrame());
+  Intervention::GenerateReport(GetFrame(), message_id, message);
 }
 
 void WebLocalFrameImpl::CollectGarbageForTesting() {

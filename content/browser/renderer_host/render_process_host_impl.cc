@@ -3266,6 +3266,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kLogFile,
     switches::kLoggingLevel,
     switches::kMaxActiveWebGLContexts,
+    switches::kMaxWebMediaPlayerCount,
     switches::kMSEAudioBufferSizeLimitMb,
     switches::kMSEVideoBufferSizeLimitMb,
     switches::kNoZygote,

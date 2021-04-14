@@ -64,6 +64,10 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   void WasShown() override;
   void OnDestruct() override;
 
+  // Returns the number of WebMediaPlayers that are associated with this
+  // delegate.
+  size_t web_media_player_count() const { return id_map_.size(); }
+
   // Zeros out |idle_cleanup_interval_|, sets |idle_timeout_| to |idle_timeout|,
   // and |is_low_end_| to |is_low_end|. A zero cleanup interval
   // will cause the idle timer to run with each run of the message loop.

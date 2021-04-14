@@ -559,6 +559,9 @@ const char kMaxActiveWebGLContexts[] = "max-active-webgl-contexts";
 // Sets the maximium decoded image size limitation.
 const char kMaxDecodedImageSizeMb[] = "max-decoded-image-size-mb";
 
+// Sets the maximum number of WebMediaPlayers allowed per frame.
+const char kMaxWebMediaPlayerCount[] = "max-web-media-player-count";
+
 // Indicates the utility process should run with a message loop type of UI.
 const char kMessageLoopTypeUi[] = "message-loop-type-ui";
 

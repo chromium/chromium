@@ -12,12 +12,14 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "content/renderer/media/batching_media_log.h"
@@ -110,6 +112,34 @@
 #endif  // defined(OS_WIN)
 
 namespace {
+
+// This limit corresponds to the per-platform 99.9th %ile of the number of
+// WebMediaPlayers used by a single frame, as measured in March 2021. This
+// tries to balance minimizing web platform breakage and preventing abusive
+// API usage. See http://crbug.com/1144736#c49
+constexpr size_t kDefaultMaxWebMediaPlayers =
+#if defined(OS_ANDROID)
+    40;
+#else
+    // All desktop platforms share the same value.
+    75;
+#endif
+
+size_t GetMaxWebMediaPlayers() {
+  static const size_t kMaxWebMediaPlayers = []() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kMaxWebMediaPlayerCount)) {
+      std::string value =
+          command_line->GetSwitchValueASCII(switches::kMaxWebMediaPlayerCount);
+      size_t parsed_value = 0;
+      if (base::StringToSizeT(value, &parsed_value) && parsed_value > 0)
+        return parsed_value;
+    }
+    return kDefaultMaxWebMediaPlayers;
+  }();
+  return kMaxWebMediaPlayers;
+}
+
 class FrameFetchContext : public media::ResourceFetchContext {
  public:
   explicit FrameFetchContext(blink::WebLocalFrame* frame) : frame_(frame) {
@@ -374,6 +404,19 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     scoped_refptr<base::SingleThreadTaskRunner>
         main_thread_compositor_task_runner) {
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  auto* delegate = GetWebMediaPlayerDelegate();
+
+  // Prevent a frame from creating too many media players, as they are extremely
+  // heavy objects and a common cause of browser memory leaks. See
+  // crbug.com/1144736
+  if (delegate->web_media_player_count() >= GetMaxWebMediaPlayers()) {
+    blink::WebString message =
+        "Blocked attempt to create a WebMediaPlayer as there are too many "
+        "WebMediaPlayers already in existence. See crbug.com/1144736#c27";
+    web_frame->GenerateInterventionReport("TooManyWebMediaPlayers", message);
+    return nullptr;
+  }
+
   if (source.IsMediaStream()) {
     return CreateWebMediaPlayerForMediaStream(
         client, inspector_context, sink_id, web_frame, parent_frame_sink_id,
@@ -492,7 +535,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           base::BindRepeating(&ContentRendererClient::DeferMediaLoad,
                               base::Unretained(GetContentClient()->renderer()),
                               static_cast<RenderFrame*>(render_frame_),
-                              GetWebMediaPlayerDelegate()->has_played_media()),
+                              delegate->has_played_media()),
           audio_renderer_sink, media_task_runner,
           render_thread->GetWorkerTaskRunner(),
           render_thread->compositor_task_runner(),
@@ -523,7 +566,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           params->video_frame_compositor_task_runner(), std::move(submitter));
 
   media::WebMediaPlayerImpl* media_player = new media::WebMediaPlayerImpl(
-      web_frame, client, encrypted_client, GetWebMediaPlayerDelegate(),
+      web_frame, client, encrypted_client, delegate,
       std::move(factory_selector), url_index_.get(), std::move(vfc),
       std::move(params));
 

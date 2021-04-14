@@ -191,6 +191,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool Confirm(const WebString& message) override;
   WebString Prompt(const WebString& message,
                    const WebString& default_value) override;
+  void GenerateInterventionReport(const WebString& message_id,
+                                  const WebString& message) override;
   void UnmarkText() override;
   bool HasMarkedText() const override;
   WebRange MarkedRange() const override;
