@@ -37,8 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace {
@@ -200,10 +199,9 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  if (!init_params->use_new_account_manager)
+  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     return;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   signin::ChromeConnectedHeaderHelper chrome_connected_header_helper(

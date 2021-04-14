@@ -27,9 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
-#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -73,14 +71,6 @@ class SigninHeaderHelperTest : public testing::Test {
   void SetUp() override {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1198528): remove this after the rollout.
-    if (!chromeos::LacrosChromeServiceImpl::Get()) {
-      scoped_lacros_chrome_service_test_helper_ =
-          std::make_unique<chromeos::ScopedLacrosChromeServiceTestHelper>();
-    }
-#endif
 
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
@@ -154,7 +144,7 @@ class SigninHeaderHelperTest : public testing::Test {
   }
 #endif
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   bool sync_enabled_ = false;
   std::string device_id_ = kTestDeviceId;
@@ -164,10 +154,6 @@ class SigninHeaderHelperTest : public testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosChromeServiceTestHelper>
-      scoped_lacros_chrome_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
@@ -177,10 +163,9 @@ class SigninHeaderHelperTest : public testing::Test {
 // account id).
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  if (!init_params->use_new_account_manager)
+  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     return;
+  }
 #endif
   account_consistency_ = AccountConsistencyMethod::kMirror;
   CheckMirrorHeaderRequest(
@@ -192,7 +177,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=false");
 }
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(OS_ANDROID) || defined(OS_IOS)
 // Tests that eligible_for_consistency request is returned on mobile (Android,
 // iOS) when reaching to Gaia origin and there's no primary account. Only

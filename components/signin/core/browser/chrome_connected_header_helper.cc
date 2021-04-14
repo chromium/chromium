@@ -20,8 +20,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace signin {
@@ -207,9 +206,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   force_account_consistency = true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  if (init_params->use_new_account_manager) {
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     force_account_consistency = true;
   }
 #endif

@@ -233,7 +233,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/signin/public/base/signin_switches.h"
 #endif
@@ -947,9 +946,7 @@ bool ProfileImpl::IsMainProfile() const {
   // Device Account's certs to non-Device Accounts (Think of the case when the
   // Device Account has sensitive Enterprise SSL client certs).
   // TODO(sinhak): Remove this after launching go/cros-dent-1-lacros.
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  if (!init_params->use_new_account_manager)
+  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade))
     return IsDeviceAccountSignedIn(this);
 
   return true;

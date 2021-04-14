@@ -84,20 +84,10 @@ static_library("browser") {
       "active_directory_account_reconcilor_delegate.cc",
       "active_directory_account_reconcilor_delegate.h",
     ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/tpm:tpm",
-    ]
+    deps += [ "//chromeos/tpm:tpm" ]
     sources -= [
       "signin_status_metrics_provider.cc",
       "signin_status_metrics_provider_delegate.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
     ]
   }
 
@@ -148,20 +138,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/tpm:test_support",
-    ]
+    deps += [ "//chromeos/tpm:test_support" ]
     sources -= [
       "account_investigator_unittest.cc",
       "signin_status_metrics_provider_unittest.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
     ]
   }
 
