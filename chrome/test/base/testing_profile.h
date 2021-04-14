@@ -49,12 +49,6 @@ class ZoomLevelDelegate;
 #endif  // !defined(OS_ANDROID)
 }  // namespace content
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace chromeos {
-class ScopedLacrosChromeServiceTestHelper;
-}  // namespace chromeos
-#endif
-
 namespace net {
 class CookieStore;
 }
@@ -519,11 +513,6 @@ class TestingProfile : public Profile {
 
   base::Optional<std::string> requested_locale_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosChromeServiceTestHelper>
-      scoped_lacros_chrome_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<policy::PolicyService> policy_service_;
 

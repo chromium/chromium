@@ -51,12 +51,6 @@ class AccountManagerFacade;
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace account_manager {
-class AccountManagerFacade;
-}
-#endif
-
 namespace signin {
 enum class AccountConsistencyMethod;
 
@@ -81,11 +75,6 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AccountManager* account_manager;
-  account_manager::AccountManagerFacade* account_manager_facade;
-  bool is_regular_profile;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::AccountManagerFacade* account_manager_facade;
   bool is_regular_profile;
 #endif

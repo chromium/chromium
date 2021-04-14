@@ -38,10 +38,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/account_manager_facade_factory.h"
-#endif
-
 #if defined(OS_WIN)
 #include "base/bind.h"
 #include "chrome/browser/signin/signin_util_win.h"
@@ -130,15 +126,6 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
       GetAccountManagerFacade(profile->GetPath().value());
   params.is_regular_profile =
       chromeos::ProfileHelper::IsRegularProfile(profile);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  params.account_manager_facade =
-      GetAccountManagerFacade(profile->GetPath().value());
-  // Lacros runs inside a user session and is not used to render Chrome OS's
-  // Login Screen, or its Lock Screen. Hence, all Profiles in Lacros are regular
-  // Profiles.
-  params.is_regular_profile = true;
 #endif
 
   // Ephemeral Guest profiles are not supposed to fetch Dice access tokens.
