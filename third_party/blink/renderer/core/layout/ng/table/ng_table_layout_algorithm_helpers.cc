@@ -969,7 +969,9 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     if (column.percent)
       percent_sum += *column.percent;
   }
-  DCHECK_LE(percent_sum, 100.0f);
+  // Floating point math can cause total sum to be slightly above 100%.
+  DCHECK_LE(percent_sum, 100.5f);
+  percent_sum = std::min(percent_sum, 100.0f);
 
   // Table max inline size constraint can be computed from the total column
   // percentage combined with max_inline_size of non-percent columns.
