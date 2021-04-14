@@ -15,6 +15,7 @@
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shared_memory.h"
 #include "components/exo/shell_surface.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -31,7 +32,56 @@
 namespace exo {
 namespace {
 
-using DisplayTest = test::ExoTestBase;
+class DisplayTest : public test::ExoTestBase {
+ public:
+  DisplayTest()
+      : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DisplayTest(const DisplayTest&) = delete;
+  DisplayTest& operator=(const DisplayTest&) = delete;
+  ~DisplayTest() override = default;
+
+ protected:
+  // A property resolver for provide external shell surface source.
+  class TestPropertyResolver : public exo::WMHelper::AppPropertyResolver {
+   public:
+    TestPropertyResolver() = default;
+    ~TestPropertyResolver() override = default;
+    void PopulateProperties(
+        const Params& params,
+        ui::PropertyHandler& out_properties_container) override {
+      if (params.window_session_id <= 0)
+        return;
+      auto it = shell_surface_map_.find(params.window_session_id);
+      if (it != shell_surface_map_.end()) {
+        SetShellClientControlledShellSurface(&out_properties_container,
+                                             it->second.release());
+        shell_surface_map_.erase(it);
+      }
+    }
+    void PutClientControlledShellSurface(
+        int window_session_id,
+        std::unique_ptr<exo::ClientControlledShellSurface> shell_surface) {
+      shell_surface_map_.emplace(window_session_id, std::move(shell_surface));
+    }
+
+   private:
+    std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>
+        shell_surface_map_;
+  };
+
+  TestPropertyResolver* property_resolver() { return resolver_; }
+
+  // test::ExoTestBase:
+  void SetUp() override {
+    test::ExoTestBase::SetUp();
+    auto resolver = std::make_unique<TestPropertyResolver>();
+    resolver_ = resolver.get();
+    WMHelper::GetInstance()->RegisterAppPropertyResolver(std::move(resolver));
+  }
+
+ private:
+  TestPropertyResolver* resolver_;
+};
 
 TEST_F(DisplayTest, CreateSurface) {
   std::unique_ptr<Display> display(new Display);
@@ -126,7 +176,7 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
 
   // Create a remote shell surface for surface1.
   std::unique_ptr<ClientControlledShellSurface> shell_surface1 =
-      display->CreateClientControlledShellSurface(
+      display->CreateOrGetClientControlledShellSurface(
           surface1.get(), ash::kShellWindowId_SystemModalContainer,
           /*default_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true);
@@ -135,11 +185,38 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
 
   // Create a remote shell surface for surface2.
   std::unique_ptr<ShellSurfaceBase> shell_surface2 =
-      display->CreateClientControlledShellSurface(
+      display->CreateOrGetClientControlledShellSurface(
           surface2.get(), ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_factor=*/1.0,
           /*default_scale_cancellation=*/true);
   EXPECT_TRUE(shell_surface2);
+}
+
+TEST_F(DisplayTest, GetClientControlledShellSurface) {
+  std::unique_ptr<Display> display(new Display);
+
+  // Create a external surface, bind with a window id.
+  ClientControlledShellSurface* external_shell_surface =
+      new ClientControlledShellSurface(
+          new Surface,
+          /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId(),
+          /*default_scale_cancellation=*/true);
+  property_resolver()->PutClientControlledShellSurface(
+      /*window_session_id=*/10001, base::WrapUnique(external_shell_surface));
+
+  // Create surface with specific window id.
+  std::unique_ptr<Surface> surface_with_id = display->CreateSurface();
+  ASSERT_TRUE(surface_with_id);
+  surface_with_id->SetWindowSessionId(10001);
+
+  // Get a remote shell surface by external source.
+  std::unique_ptr<ClientControlledShellSurface> shell_surface =
+      display->CreateOrGetClientControlledShellSurface(
+          surface_with_id.get(), ash::desks_util::GetActiveDeskContainerId(),
+          /*default_scale_factor=*/2.0,
+          /*default_scale_cancellation=*/true);
+  ASSERT_TRUE(external_shell_surface);
+  EXPECT_EQ(shell_surface.get(), external_shell_surface);
 }
 
 TEST_F(DisplayTest, CreateSubSurface) {
@@ -242,7 +319,7 @@ TEST_F(DisplayTest, PinnedAlwaysOnTopWindow) {
   ASSERT_TRUE(surface);
 
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
-      display.CreateClientControlledShellSurface(
+      display.CreateOrGetClientControlledShellSurface(
           surface.get(), ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true);

@@ -19,6 +19,7 @@
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shared_memory.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
@@ -167,10 +168,11 @@ std::unique_ptr<XdgShellSurface> Display::CreateXdgShellSurface(
 }
 
 std::unique_ptr<ClientControlledShellSurface>
-Display::CreateClientControlledShellSurface(Surface* surface,
-                                            int container,
-                                            double default_device_scale_factor,
-                                            bool default_scale_cancellation) {
+Display::CreateOrGetClientControlledShellSurface(
+    Surface* surface,
+    int container,
+    double default_device_scale_factor,
+    bool default_scale_cancellation) {
   TRACE_EVENT2("exo", "Display::CreateRemoteShellSurface", "surface",
                surface->AsTracedValue(), "container", container);
 
@@ -182,9 +184,28 @@ Display::CreateClientControlledShellSurface(Surface* surface,
   // Remote shell surfaces in system modal container cannot be minimized.
   bool can_minimize = container != ash::kShellWindowId_SystemModalContainer;
 
-  std::unique_ptr<ClientControlledShellSurface> shell_surface(
-      std::make_unique<ClientControlledShellSurface>(
-          surface, can_minimize, container, default_scale_cancellation));
+  std::unique_ptr<ClientControlledShellSurface> shell_surface = nullptr;
+
+  int window_session_id = surface->GetWindowSessionId();
+  if (window_session_id > 0) {
+    // Root surface has window session id, try get shell surface from external
+    // source first.
+    ui::PropertyHandler handler;
+    WMHelper::AppPropertyResolver::Params params;
+    params.window_session_id = window_session_id;
+    WMHelper::GetInstance()->PopulateAppProperties(params, handler);
+    shell_surface =
+        base::WrapUnique(GetShellClientControlledShellSurface(&handler));
+  }
+
+  if (shell_surface) {
+    shell_surface->RebindRootSurface(surface, can_minimize, container,
+                                     default_scale_cancellation);
+  } else {
+    shell_surface = std::make_unique<ClientControlledShellSurface>(
+        surface, can_minimize, container, default_scale_cancellation);
+  }
+
   if (default_scale_cancellation) {
     shell_surface->SetScale(default_device_scale_factor);
     shell_surface->CommitPendingScale();

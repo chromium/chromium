@@ -135,6 +135,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Update the resizability for the surface.
   virtual void UpdateCanResize();
 
+  // Rebind a surface as the root surface of the shell surface.
+  void RebindRootSurface(Surface* root_surface,
+                         bool can_minimize,
+                         int container);
+
   // Returns a trace value representing the state of the surface.
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
 

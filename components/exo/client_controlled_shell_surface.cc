@@ -61,6 +61,8 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(exo::ClientControlledShellSurface*)
+
 namespace exo {
 
 namespace {
@@ -632,6 +634,16 @@ void ClientControlledShellSurface::SetClientAccessibilityId(
     SetShellClientAccessibilityId(widget_->GetNativeWindow(),
                                   client_accessibility_id_);
   }
+}
+
+void ClientControlledShellSurface::RebindRootSurface(
+    Surface* root_surface,
+    bool can_minimize,
+    int container,
+    bool default_scale_cancellation) {
+  current_pin_ = chromeos::WindowPinType::kNone;
+  use_default_scale_cancellation_ = default_scale_cancellation;
+  ShellSurfaceBase::RebindRootSurface(root_surface, can_minimize, container);
 }
 
 void ClientControlledShellSurface::DidReceiveCompositorFrameAck() {

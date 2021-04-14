@@ -137,7 +137,7 @@ ExoTestHelper::CreateClientControlledShellSurface(
     bool default_scale_cancellation) {
   int container = is_modal ? ash::kShellWindowId_SystemModalContainer
                            : ash::desks_util::GetActiveDeskContainerId();
-  auto shell_surface = Display().CreateClientControlledShellSurface(
+  auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
       surface, container,
       WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
       default_scale_cancellation);

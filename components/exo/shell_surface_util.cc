@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ui/base/window_properties.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
@@ -42,6 +43,11 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr)
 
 // Accessibility Id set by the client.
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
+
+// A property key containing the client controlled shell surface.
+DEFINE_UI_CLASS_PROPERTY_KEY(ClientControlledShellSurface*,
+                             kClientControlledShellSurface,
+                             nullptr)
 
 // Returns true if the component for a located event should be taken care of
 // by the window system.
@@ -129,6 +135,21 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
     return base::nullopt;
   else
     return id;
+}
+
+void SetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler,
+    const base::Optional<ClientControlledShellSurface*>& shell_surface) {
+  if (shell_surface)
+    property_handler->SetProperty(kClientControlledShellSurface,
+                                  shell_surface.value());
+  else
+    property_handler->ClearProperty(kClientControlledShellSurface);
+}
+
+ClientControlledShellSurface* GetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler) {
+  return property_handler->GetProperty(kClientControlledShellSurface);
 }
 
 void SetShellRootSurface(ui::PropertyHandler* property_handler,

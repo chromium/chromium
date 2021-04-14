@@ -574,6 +574,22 @@ void ShellSurfaceBase::UpdateCanResize() {
                (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_));
 }
 
+void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
+                                         bool can_minimize,
+                                         int container) {
+  can_minimize_ = can_minimize;
+  container_ = container;
+  this->root_surface()->RemoveSurfaceObserver(this);
+  root_surface->AddSurfaceObserver(this);
+  SetRootSurface(root_surface);
+  host_window()->Show();
+
+  SetCanMinimize(can_minimize_);
+  SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
+  SetCanResize(true);
+  SetShowTitle(false);
+}
+
 std::unique_ptr<base::trace_event::TracedValue>
 ShellSurfaceBase::AsTracedValue() const {
   std::unique_ptr<base::trace_event::TracedValue> value(

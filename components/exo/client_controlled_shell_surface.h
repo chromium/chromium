@@ -184,6 +184,12 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // |accessibility_id| is negative value, it will unset the ID.
   void SetClientAccessibilityId(int32_t accessibility_id);
 
+  // Rebind a surface as the root surface of the shell surface.
+  void RebindRootSurface(Surface* root_surface,
+                         bool can_minimize,
+                         int container,
+                         bool default_scale_cancellation);
+
   // Overridden from SurfaceTreeHost:
   void DidReceiveCompositorFrameAck() override;
 

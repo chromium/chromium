@@ -29,6 +29,7 @@ class KeyEvent;
 
 namespace exo {
 
+class ClientControlledShellSurface;
 class Surface;
 class ShellSurfaceBase;
 
@@ -55,6 +56,13 @@ void SetShellClientAccessibilityId(aura::Window* window,
                                    const base::Optional<int32_t>& id);
 const base::Optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
+
+// Sets the ClientControlledShellSurface to the property handler.
+void SetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler,
+    const base::Optional<ClientControlledShellSurface*>& shell_surface);
+ClientControlledShellSurface* GetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler);
 
 // Sets the root surface to the property handler.
 void SetShellRootSurface(ui::PropertyHandler* property_handler,

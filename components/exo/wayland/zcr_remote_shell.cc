@@ -927,7 +927,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       Surface* surface,
       int container,
       double default_device_scale_factor) {
-    return display_->CreateClientControlledShellSurface(
+    return display_->CreateOrGetClientControlledShellSurface(
         surface, container, default_device_scale_factor,
         use_default_scale_cancellation_);
   }
