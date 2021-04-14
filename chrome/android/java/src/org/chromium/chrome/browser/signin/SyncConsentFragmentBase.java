@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -42,7 +41,7 @@ import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
 import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.SigninView;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
-import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogFragment;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerDelegateException;
@@ -87,11 +86,7 @@ public abstract class SyncConsentFragmentBase
             "SigninFragmentBase.ChildAccountStatus";
     private static final String ARGUMENT_SIGNIN_FLOW_TYPE = "SigninFragmentBase.SigninFlowType";
 
-    private static final String ACCOUNT_PICKER_DIALOG_TAG =
-            "SigninFragmentBase.AccountPickerDialogFragment";
-
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
-    private static final int ACCOUNT_PICKER_DIALOG_REQUEST_CODE = 2;
 
     @IntDef({SigninFlowType.DEFAULT, SigninFlowType.CHOOSE_ACCOUNT, SigninFlowType.ADD_ACCOUNT})
     @Retention(RetentionPolicy.SOURCE)
@@ -126,6 +121,7 @@ public abstract class SyncConsentFragmentBase
     private AlertDialog mGmsIsUpdatingDialog;
     private long mGmsIsUpdatingDialogShowTime;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
+    private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
     /**
      * Creates an argument bundle for the default {@link SyncConsentFragment} flow.
@@ -220,7 +216,8 @@ public abstract class SyncConsentFragmentBase
             // If this fragment is being recreated from a saved state there's no need to show
             // account picked or starting AddAccount flow.
             if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
-                showAccountPicker();
+                mAccountPickerDialogCoordinator =
+                        new AccountPickerDialogCoordinator(requireContext(), this);
             } else if (signinFlowType == SigninFlowType.ADD_ACCOUNT) {
                 addAccount();
             }
@@ -372,7 +369,8 @@ public abstract class SyncConsentFragmentBase
 
     private void onAccountPickerClicked() {
         if (ChildAccountStatus.isChild(mChildAccountStatus) || !areControlsEnabled()) return;
-        showAccountPicker();
+        mAccountPickerDialogCoordinator =
+                new AccountPickerDialogCoordinator(requireContext(), this);
     }
 
     private void onRefuseButtonClicked(View button) {
@@ -454,26 +452,11 @@ public abstract class SyncConsentFragmentBase
                 });
     }
 
-    private void showAccountPicker() {
-        // Account picker is already shown
-        if (getAccountPickerDialogFragment() != null) return;
-
-        AccountPickerDialogFragment dialog = new AccountPickerDialogFragment();
-        dialog.setTargetFragment(this, ACCOUNT_PICKER_DIALOG_REQUEST_CODE);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(dialog, ACCOUNT_PICKER_DIALOG_TAG);
-        transaction.commitAllowingStateLoss();
-    }
-
-    private AccountPickerDialogFragment getAccountPickerDialogFragment() {
-        return (AccountPickerDialogFragment) getFragmentManager().findFragmentByTag(
-                ACCOUNT_PICKER_DIALOG_TAG);
-    }
-
     @Override
     public void onAccountSelected(String accountName, boolean isDefaultAccount) {
         selectAccount(accountName, isDefaultAccount);
-        getAccountPickerDialogFragment().dismissAllowingStateLoss();
+        mAccountPickerDialogCoordinator.dismissDialog();
+        mAccountPickerDialogCoordinator = null;
     }
 
     @Override
@@ -499,12 +482,11 @@ public abstract class SyncConsentFragmentBase
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             if (addedAccountName == null) return;
 
-            // Found the account name, dismiss the account picker dialog if it is shown.
-            AccountPickerDialogFragment accountPickerFragment = getAccountPickerDialogFragment();
-            if (accountPickerFragment != null) {
-                accountPickerFragment.dismissAllowingStateLoss();
+            // Found the account name, dismiss the dialog if it is shown
+            if (mAccountPickerDialogCoordinator != null) {
+                mAccountPickerDialogCoordinator.dismissDialog();
+                mAccountPickerDialogCoordinator = null;
             }
-
             // Wait for the account cache to be updated and select newly-added account.
             mAccountManagerFacade.waitForPendingUpdates(() -> {
                 mAccountSelectionPending = true;
@@ -587,7 +569,9 @@ public abstract class SyncConsentFragmentBase
         }
 
         selectAccount(mAccountNames.get(0), true);
-        showAccountPicker(); // Show account picker so user can confirm the account selection.
+        // Show account picker to user to confirm the account selection
+        mAccountPickerDialogCoordinator =
+                new AccountPickerDialogCoordinator(requireContext(), this);
     }
 
     @Nullable

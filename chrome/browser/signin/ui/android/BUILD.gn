@@ -19,6 +19,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/version:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
@@ -60,7 +61,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerFeatureUtils.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerMediator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerProperties.java",
@@ -163,7 +164,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/signin/ui/SignOutDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetTest.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogFragmentTest.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogTest.java",
   ]
   deps = [
     ":java",
