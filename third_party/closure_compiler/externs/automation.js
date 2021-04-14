@@ -432,12 +432,10 @@ chrome.automation.NameFromType = {
  * @see https://developer.chrome.com/extensions/automation#type-DescriptionFromType
  */
 chrome.automation.DescriptionFromType = {
-  ARIA_DESCRIPTION: 'ariaDescription',
-  BUTTON_LABEL: 'button-label',
+  UNINITIALIZED: 'uninitialized',
+  ATTRIBUTE: 'attribute',
+  CONTENTS: 'contents',
   RELATED_ELEMENT: 'relatedElement',
-  RUBY_ANNOTATION: 'rubyAnnotation',
-  SUMMARY: 'summary',  // HTML-AAM 5.8.2
-  TABLE_CAPTION: 'tableCaption',  // HTML-AAM 5.9.2
   TITLE: 'title',
 };
 

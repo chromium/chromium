@@ -999,46 +999,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
                        attributes);
   }
 
-  // Expose description-from and description.
-  int desc_from;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom, &desc_from)) {
-    std::string from;
-    switch (static_cast<ax::mojom::DescriptionFrom>(desc_from)) {
-      case ax::mojom::DescriptionFrom::kAriaDescription:
-        // Descriptions are exposed via each platform's usual description field.
-        // Also, only aria-description is exposed via tha "description" object
-        // attribute, in order to match Firefox.
-        AddAttributeToList(ax::mojom::StringAttribute::kDescription,
-                           "description", attributes);
-        from = "aria-description";
-        break;
-      case ax::mojom::DescriptionFrom::kButtonLabel:
-        from = "button-label";
-        break;
-      case ax::mojom::DescriptionFrom::kRelatedElement:
-        // Both @title an aria-describedby=tooltip get "tooltip".
-        from = IsDescribedByTooltip() ? "tooltip" : "aria-describedby";
-        break;
-      case ax::mojom::DescriptionFrom::kRubyAnnotation:
-        from = "ruby-annotation";
-        break;
-      case ax::mojom::DescriptionFrom::kSummary:
-        from = "summary";
-        break;
-      case ax::mojom::DescriptionFrom::kTableCaption:
-        from = "table-caption";
-        break;
-      case ax::mojom::DescriptionFrom::kTitle:
-        // Both @title an aria-describedby=tooltip get "tooltip".
-        from = "tooltip";
-        break;
-      case ax::mojom::DescriptionFrom::kNone:
-        NOTREACHED();
-    }
-    DCHECK(!from.empty());
-    AddAttributeToList("description-from", from, attributes);
-  }
-
   AddAttributeToList(ax::mojom::StringAttribute::kKeyShortcuts, "keyshortcuts",
                      attributes);
 
@@ -2210,24 +2170,6 @@ int AXPlatformNodeBase::GetSelectedItems(
 void AXPlatformNodeBase::SanitizeTextAttributeValue(const std::string& input,
                                                     std::string* output) const {
   DCHECK(output);
-}
-
-bool AXPlatformNodeBase::IsDescribedByTooltip() const {
-  const std::vector<int32_t>& description_ids =
-      GetIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds);
-
-  std::string description_from;
-
-  for (int id : description_ids) {
-    AXPlatformNodeBase* description_object =
-        static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(id));
-    if (description_object &&
-        description_object->GetData().role == ax::mojom::Role::kTooltip) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 std::string AXPlatformNodeBase::ComputeDetailsRoles() const {

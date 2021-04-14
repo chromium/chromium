@@ -829,7 +829,7 @@ WebString WebAXObject::Description(
     ax::mojom::NameFrom name_from,
     ax::mojom::DescriptionFrom& out_description_from,
     WebVector<WebAXObject>& out_description_objects) const {
-  out_description_from = ax::mojom::blink::DescriptionFrom::kNone;
+  out_description_from = ax::mojom::blink::DescriptionFrom::kUninitialized;
 
   if (IsDetached())
     return WebString();

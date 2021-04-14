@@ -447,12 +447,10 @@
   };
 
   enum DescriptionFromType {
-    ariaDescription,
-    buttonLabel,
+    uninitialized,
+    attribute,
+    contents,
     relatedElement,
-    rubyAnnotation,
-    summary,
-    tableCaption,
     title
   };
 

@@ -1647,25 +1647,20 @@ std::string WebAXObjectProxy::DescriptionFrom() {
   blink::WebVector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   ax::mojom::DescriptionFrom description_from =
-      ax::mojom::DescriptionFrom::kNone;
+      ax::mojom::DescriptionFrom::kUninitialized;
   blink::WebVector<blink::WebAXObject> description_objects;
   accessibility_object_.Description(name_from, description_from,
                                     description_objects);
   switch (description_from) {
+    case ax::mojom::DescriptionFrom::kUninitialized:
     case ax::mojom::DescriptionFrom::kNone:
       return "";
-    case ax::mojom::DescriptionFrom::kAriaDescription:
-      return "ariaDescription";
-    case ax::mojom::DescriptionFrom::kButtonLabel:
-      return "buttonLabel";
+    case ax::mojom::DescriptionFrom::kAttribute:
+      return "attribute";
+    case ax::mojom::DescriptionFrom::kContents:
+      return "contents";
     case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
-    case ax::mojom::DescriptionFrom::kRubyAnnotation:
-      return "rubyAnnotation";
-    case ax::mojom::DescriptionFrom::kSummary:
-      return "summary";
-    case ax::mojom::DescriptionFrom::kTableCaption:
-      return "tableCaption";
     case ax::mojom::DescriptionFrom::kTitle:
       return "title";
   }

@@ -141,7 +141,7 @@ class DescriptionSource {
   bool superseded = false;
   bool invalid = false;
   ax::mojom::blink::DescriptionFrom type =
-      ax::mojom::blink::DescriptionFrom::kNone;
+      ax::mojom::blink::DescriptionFrom::kUninitialized;
   const QualifiedName& attribute;
   AtomicString attribute_value;
   AXTextFromNativeHTML native_source = kAXTextFromNativeHTMLUninitialized;

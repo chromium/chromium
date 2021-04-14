@@ -528,9 +528,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // Compute value for object attribute details-roles on aria-details nodes.
   std::string ComputeDetailsRoles() const;
 
-  // Is there an aria-describedby that points to a role="tooltip".
-  bool IsDescribedByTooltip() const;
-
   DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeBase);
 };
 

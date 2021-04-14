@@ -1,4 +1,3 @@
 Document
 ++Group IsControlElement=false
 ++++Button Name='Button'
-++++Button Name='Name' FullDescription='Description'
