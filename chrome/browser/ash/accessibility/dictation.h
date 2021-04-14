@@ -38,7 +38,7 @@ class Dictation : public SpeechRecognizerDelegate,
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
-      const std::u16string& query,
+      const std::u16string& transcription,
       bool is_final,
       const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
           word_offsets) override;
