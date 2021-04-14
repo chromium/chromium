@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,27 +12,44 @@
 #include "ui/gfx/animation/animation.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-class BrowserAccessibilityStateImplAndroid
-    : public BrowserAccessibilityStateImpl {
- public:
-  BrowserAccessibilityStateImplAndroid();
-  ~BrowserAccessibilityStateImplAndroid() override {}
-
- protected:
-  void UpdateHistogramsOnOtherThread() override;
-  void UpdateUniqueUserHistograms() override;
-  void SetImageLabelsModeForProfile(bool enabled,
-                                    BrowserContext* profile) override;
-};
-
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  // Setup the listener for the prefers reduced motion setting changing, so we
-  // can inform the renderer about changes.
+  // Setup the listeners for accessibility state changes, so we can
+  // inform the renderer about changes.
   JNIEnv* env = AttachCurrentThread();
-  Java_BrowserAccessibilityState_registerAnimatorDurationScaleObserver(env);
+  Java_BrowserAccessibilityState_registerObservers(env);
+}
+
+int BrowserAccessibilityStateImplAndroid::GetServiceEventTypeMask() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_getAccessibilityServiceEventTypeMask(
+      env);
+}
+
+int BrowserAccessibilityStateImplAndroid::GetServiceFeedbackTypeMask() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_getAccessibilityServiceFeedbackTypeMask(
+      env);
+}
+
+int BrowserAccessibilityStateImplAndroid::GetServiceFlagsMask() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_getAccessibilityServiceFlagsMask(env);
+}
+
+int BrowserAccessibilityStateImplAndroid::GetServiceCapabilitiesMask() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_getAccessibilityServiceCapabilitiesMask(
+      env);
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+BrowserAccessibilityStateImplAndroid::GetServiceIds() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BrowserAccessibilityState_getAccessibilityServiceIds(env);
 }
 
 void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {

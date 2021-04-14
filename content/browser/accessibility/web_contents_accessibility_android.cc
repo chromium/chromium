@@ -21,7 +21,7 @@
 #include "base/numerics/ranges.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -1534,9 +1534,11 @@ void WebContentsAccessibilityAndroid::CollectStats() {
   if (obj.is_null())
     return;
 
-  int event_type_mask =
-      Java_WebContentsAccessibilityImpl_getAccessibilityServiceEventTypeMask(
-          env, obj);
+  BrowserAccessibilityStateImplAndroid* accessibility_state =
+      static_cast<BrowserAccessibilityStateImplAndroid*>(
+          BrowserAccessibilityStateImpl::GetInstance());
+
+  int event_type_mask = accessibility_state->GetServiceEventTypeMask();
   EVENT_TYPE_HISTOGRAM(event_type_mask, ANNOUNCEMENT);
   EVENT_TYPE_HISTOGRAM(event_type_mask, ASSIST_READING_CONTEXT);
   EVENT_TYPE_HISTOGRAM(event_type_mask, GESTURE_DETECTION_END);
@@ -1564,9 +1566,7 @@ void WebContentsAccessibilityAndroid::CollectStats() {
   EVENT_TYPE_HISTOGRAM(event_type_mask, WINDOW_CONTENT_CHANGED);
   EVENT_TYPE_HISTOGRAM(event_type_mask, WINDOW_STATE_CHANGED);
 
-  int feedback_type_mask =
-      Java_WebContentsAccessibilityImpl_getAccessibilityServiceFeedbackTypeMask(
-          env, obj);
+  int feedback_type_mask = accessibility_state->GetServiceFeedbackTypeMask();
   FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, SPOKEN);
   FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, HAPTIC);
   FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, AUDIBLE);
@@ -1574,9 +1574,7 @@ void WebContentsAccessibilityAndroid::CollectStats() {
   FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, GENERIC);
   FEEDBACK_TYPE_HISTOGRAM(feedback_type_mask, BRAILLE);
 
-  int flags_mask =
-      Java_WebContentsAccessibilityImpl_getAccessibilityServiceFlagsMask(env,
-                                                                         obj);
+  int flags_mask = accessibility_state->GetServiceFlagsMask();
   FLAGS_HISTOGRAM(flags_mask, INCLUDE_NOT_IMPORTANT_VIEWS);
   FLAGS_HISTOGRAM(flags_mask, REQUEST_TOUCH_EXPLORATION_MODE);
   FLAGS_HISTOGRAM(flags_mask, REQUEST_ENHANCED_WEB_ACCESSIBILITY);
@@ -1585,9 +1583,7 @@ void WebContentsAccessibilityAndroid::CollectStats() {
   FLAGS_HISTOGRAM(flags_mask, RETRIEVE_INTERACTIVE_WINDOWS);
   FLAGS_HISTOGRAM(flags_mask, FORCE_DIRECT_BOOT_AWARE);
 
-  int capabilities_mask =
-      Java_WebContentsAccessibilityImpl_getAccessibilityServiceCapabilitiesMask(
-          env, obj);
+  int capabilities_mask = accessibility_state->GetServiceCapabilitiesMask();
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask, CAN_RETRIEVE_WINDOW_CONTENT);
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask, CAN_REQUEST_TOUCH_EXPLORATION);
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask,
@@ -1596,8 +1592,7 @@ void WebContentsAccessibilityAndroid::CollectStats() {
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask, CAN_CONTROL_MAGNIFICATION);
   CAPABILITY_TYPE_HISTOGRAM(capabilities_mask, CAN_PERFORM_GESTURES);
 
-  auto service_ids =
-      Java_WebContentsAccessibilityImpl_getAccessibilityServiceIds(env, obj);
+  auto service_ids = accessibility_state->GetServiceIds();
   jsize len = env->GetArrayLength(service_ids.obj());
   bool has_assistive_tech = false;
   bool has_password_manager = false;
