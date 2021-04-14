@@ -395,8 +395,14 @@ void NetworkStateNotifier::CollectZeroedObservers(
 
   // If any observers were removed during the iteration they will have
   // 0 values, clean them up.
-  for (wtf_size_t i = 0; i < list->zeroed_observers.size(); ++i)
-    list->observers.EraseAt(list->zeroed_observers[i]);
+  std::sort(list->zeroed_observers.begin(), list->zeroed_observers.end());
+  int removed = 0;
+  for (wtf_size_t i = 0; i < list->zeroed_observers.size(); ++i) {
+    int index_to_remove = list->zeroed_observers[i] - removed;
+    DCHECK_EQ(nullptr, list->observers[index_to_remove]);
+    list->observers.EraseAt(index_to_remove);
+    removed += 1;
+  }
 
   list->zeroed_observers.clear();
 
