@@ -88,7 +88,7 @@ const char kChromeSearchMostVisitedHost[] = "most-visited";
 const char kChromeSearchMostVisitedUrl[] = "chrome-search://most-visited/";
 
 const char kChromeUIUntrustedNewTabPageBackgroundUrl[] =
-    "chrome-untrusted://background.jpg";
+    "chrome-untrusted://new-tab-page/background.jpg";
 const char kChromeUIUntrustedNewTabPageBackgroundFilename[] = "background.jpg";
 
 const char kChromeSearchRemoteNtpHost[] = "remote-ntp";
