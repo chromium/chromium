@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/test/task_environment.h"
 #include "base/trace_event/category_registry.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_category.h"
@@ -169,6 +170,15 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
               raster_decoder_state.get());
   }
 #endif
+
+ private:
+  // Any test/component which uses `base::ThreadTaskRunnerHandle::Get()` or
+  // `base::SequencedTaskRunnerHandle::Get()` to post tasks to the thread it was
+  // created on will need at least a `base::test::SingleThreadTaskEnvironment`
+  // in order for these APIs to be functional and `base::RunLoop` to run the
+  // posted tasks. This test eventually calls Scheduler::CreateSequence() which
+  // grabs a task runner via base::ThreadTaskRunnerHandle::Get().
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(GpuChannelManagerTest, EstablishChannel) {
