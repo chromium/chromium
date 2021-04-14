@@ -128,7 +128,7 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
   if (*otr_profile_id != Profile::OTRProfileID::PrimaryID())
     return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
 
-  switch (profile_metrics::GetBrowserContextType(parent_profile)) {
+  switch (profile_metrics::GetBrowserProfileType(parent_profile)) {
     case profile_metrics::BrowserProfileType::kRegular:
       return profile_metrics::BrowserProfileType::kIncognito;
 
@@ -169,7 +169,7 @@ OffTheRecordProfileImpl::OffTheRecordProfileImpl(
 
   // Register on BrowserContext.
   user_prefs::UserPrefs::Set(this, prefs_.get());
-  profile_metrics::SetBrowserContextType(
+  profile_metrics::SetBrowserProfileType(
       this, ComputeOffTheRecordProfileType(&otr_profile_id_, profile_));
 }
 
@@ -611,7 +611,7 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
  public:
   explicit GuestSessionProfile(Profile* real_profile)
       : OffTheRecordProfileImpl(real_profile, OTRProfileID::PrimaryID()) {
-    profile_metrics::SetBrowserContextType(
+    profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kGuest);
   }
 

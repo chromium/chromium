@@ -370,7 +370,7 @@ bool Profile::IsRegularProfile() const {
 }
 
 bool Profile::IsIncognitoProfile() const {
-  return profile_metrics::GetBrowserContextType(this) ==
+  return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kIncognito;
 }
 
@@ -403,18 +403,18 @@ bool Profile::IsGuestSession() const {
                ->session_type == crosapi::mojom::SessionType::kGuestSession;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return profile_metrics::GetBrowserContextType(this) ==
+  return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool Profile::IsEphemeralGuestProfile() const {
-  return profile_metrics::GetBrowserContextType(this) ==
+  return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kEphemeralGuest;
 }
 
 bool Profile::IsSystemProfile() const {
-  return profile_metrics::GetBrowserContextType(this) ==
+  return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kSystem;
 }
 

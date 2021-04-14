@@ -31,13 +31,13 @@ const void* const ProfileTypeUserData::kKey = &ProfileTypeUserData::kKey;
 
 namespace profile_metrics {
 
-void SetBrowserContextType(base::SupportsUserData* browser_context,
+void SetBrowserProfileType(base::SupportsUserData* browser_context,
                            BrowserProfileType type) {
   browser_context->SetUserData(ProfileTypeUserData::kKey,
                                std::make_unique<ProfileTypeUserData>(type));
 }
 
-BrowserProfileType GetBrowserContextType(
+BrowserProfileType GetBrowserProfileType(
     const base::SupportsUserData* browser_context) {
   base::SupportsUserData::Data* data =
       browser_context->GetUserData(ProfileTypeUserData::kKey);

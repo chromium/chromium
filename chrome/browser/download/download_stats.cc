@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/download_stats.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -76,8 +75,9 @@ void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event) {
 }
 
 void RecordDownloadStartPerProfileType(Profile* profile) {
-  base::UmaHistogramEnumeration("Download.Start.PerProfileType",
-                                ProfileMetrics::GetBrowserProfileType(profile));
+  base::UmaHistogramEnumeration(
+      "Download.Start.PerProfileType",
+      profile_metrics::GetBrowserProfileType(profile));
 }
 
 #ifdef OS_ANDROID

@@ -31,7 +31,6 @@
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -73,6 +72,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -702,8 +702,7 @@ profile_metrics::BrowserProfileType
 ChromePasswordManagerClient::GetProfileType() const {
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
-  return ProfileMetrics::GetBrowserProfileType(
-      Profile::FromBrowserContext(browser_context));
+  return profile_metrics::GetBrowserProfileType(browser_context);
 }
 
 const password_manager::PasswordManager*

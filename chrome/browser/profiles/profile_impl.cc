@@ -503,17 +503,17 @@ ProfileImpl::ProfileImpl(
 
   if (path == ProfileManager::GetGuestProfilePath()) {
     if (IsEphemeralGuestProfileEnabled()) {
-      profile_metrics::SetBrowserContextType(
+      profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kEphemeralGuest);
     } else {
-      profile_metrics::SetBrowserContextType(
+      profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
     }
   } else if (path == ProfileManager::GetSystemProfilePath()) {
-    profile_metrics::SetBrowserContextType(
+    profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
   } else {
-    profile_metrics::SetBrowserContextType(
+    profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kRegular);
   }
 

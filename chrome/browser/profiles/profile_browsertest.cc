@@ -939,28 +939,22 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
             Browser::GetCreationStatusForProfile(otr_profile));
 }
 
-// Tests if profile type returned by |ProfileMetrics::GetBrowserProfileType| and
-// |profile_metrics::GetBrowserContextType| are correct.
+// Tests if profile type returned by |profile_metrics::GetBrowserProfileType| is
+// correct.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
   Profile* regular_profile = browser()->profile();
   EXPECT_EQ(profile_metrics::BrowserProfileType::kRegular,
-            profile_metrics::GetBrowserContextType(regular_profile));
-  EXPECT_EQ(profile_metrics::BrowserProfileType::kRegular,
-            ProfileMetrics::GetBrowserProfileType(regular_profile));
+            profile_metrics::GetBrowserProfileType(regular_profile));
 
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
-            profile_metrics::GetBrowserContextType(incognito_profile));
-  EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
-            ProfileMetrics::GetBrowserProfileType(incognito_profile));
+            profile_metrics::GetBrowserProfileType(incognito_profile));
 
   Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID("profile::otr"), /*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
-            profile_metrics::GetBrowserContextType(otr_profile));
-  EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
-            ProfileMetrics::GetBrowserProfileType(otr_profile));
+            profile_metrics::GetBrowserProfileType(otr_profile));
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -991,9 +985,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, TestProfileTypes) {
                      : profile_metrics::BrowserProfileType::kGuest;
 
   EXPECT_EQ(expected_type,
-            profile_metrics::GetBrowserContextType(browser->profile()));
-  EXPECT_EQ(expected_type,
-            ProfileMetrics::GetBrowserProfileType(browser->profile()));
+            profile_metrics::GetBrowserProfileType(browser->profile()));
 }
 
 IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {

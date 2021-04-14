@@ -16,7 +16,6 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
@@ -31,6 +30,7 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -184,7 +184,7 @@ void RealboxHandler::OpenAutocompleteMatch(
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
   if (bookmark_model->IsBookmarked(match.destination_url)) {
     RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX,
-                         ProfileMetrics::GetBrowserProfileType(profile_));
+                         profile_metrics::GetBrowserProfileType(profile_));
   }
 
   const AutocompleteInput& input = autocomplete_controller_->input();

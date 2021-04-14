@@ -26,7 +26,6 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -74,6 +73,7 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -885,7 +885,7 @@ void SearchTabHelper::OpenAutocompleteMatch(
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile());
   if (bookmark_model->IsBookmarked(match.destination_url)) {
     RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX,
-                         ProfileMetrics::GetBrowserProfileType(profile()));
+                         profile_metrics::GetBrowserProfileType(profile()));
   }
 
   const AutocompleteInput& input = autocomplete_controller_->input();

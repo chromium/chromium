@@ -440,10 +440,10 @@ void TestingProfile::Init() {
 void TestingProfile::InitializeProfileType() {
   if (guest_session_) {
     if (IsEphemeralGuestProfileEnabled()) {
-      profile_metrics::SetBrowserContextType(
+      profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kEphemeralGuest);
     } else {
-      profile_metrics::SetBrowserContextType(
+      profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
     }
     return;
@@ -459,13 +459,13 @@ void TestingProfile::InitializeProfileType() {
     }
   }
   if (is_system) {
-    profile_metrics::SetBrowserContextType(
+    profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
     return;
   }
 
   if (IsOffTheRecord()) {
-    profile_metrics::SetBrowserContextType(
+    profile_metrics::SetBrowserProfileType(
         this,
         (otr_profile_id_ == OTRProfileID::PrimaryID())
             ? profile_metrics::BrowserProfileType::kIncognito
@@ -473,7 +473,7 @@ void TestingProfile::InitializeProfileType() {
     return;
   }
 
-  profile_metrics::SetBrowserContextType(
+  profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 }
 
@@ -1001,7 +1001,7 @@ bool TestingProfile::WasCreatedByVersionOrLater(const std::string& version) {
 }
 
 bool TestingProfile::IsGuestSession() const {
-  return profile_metrics::GetBrowserContextType(this) ==
+  return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
 }
 

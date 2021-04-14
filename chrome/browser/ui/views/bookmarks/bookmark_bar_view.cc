@@ -30,7 +30,6 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
@@ -65,6 +64,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
@@ -1356,7 +1356,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   page_navigator_->OpenURL(params);
   RecordBookmarkLaunch(
       BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR,
-      ProfileMetrics::GetBrowserProfileType(browser_->profile()));
+      profile_metrics::GetBrowserProfileType(browser_->profile()));
 }
 
 void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,

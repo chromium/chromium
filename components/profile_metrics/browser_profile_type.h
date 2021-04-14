@@ -8,16 +8,12 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 
-// TODO(https://crbug.com/1169142): Rename to browser_context_metrics to remove
-// the profile concept from /components.
 namespace profile_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.profile_metrics
-// TODO(https://crbug.com/1169142): Rename to BrowserContextType to remove the
-// profile concept from /components.
 enum class BrowserProfileType {
   kRegular = 0,
   kIncognito = 1,
@@ -30,9 +26,9 @@ enum class BrowserProfileType {
 
 // TODO(https://crbug.com/1169142): Expand to iOS.
 #if !defined(OS_IOS)
-BrowserProfileType GetBrowserContextType(
+BrowserProfileType GetBrowserProfileType(
     const base::SupportsUserData* browser_context);
-void SetBrowserContextType(base::SupportsUserData* browser_context,
+void SetBrowserProfileType(base::SupportsUserData* browser_context,
                            BrowserProfileType type);
 #endif
 }  // namespace profile_metrics

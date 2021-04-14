@@ -20,7 +20,6 @@ class FilePath;
 }
 
 namespace profile_metrics {
-enum class BrowserProfileType;
 struct Counts;
 }
 
@@ -162,11 +161,6 @@ class ProfileMetrics {
   // |storage|. This information is returned in the output variable |counts|.
   static void CountProfileInformation(ProfileAttributesStorage* storage,
                                       profile_metrics::Counts* counts);
-
-  // Returns profile type for logging.
-  // TODO(https://crbug.com/1169142): Deprecated, remove.
-  static profile_metrics::BrowserProfileType GetBrowserProfileType(
-      Profile* profile);
 
   static void LogNumberOfProfiles(ProfileAttributesStorage* storage);
   static void LogProfileAddNewUser(ProfileAdd metric);
