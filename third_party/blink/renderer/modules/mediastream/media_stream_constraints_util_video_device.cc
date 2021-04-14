@@ -65,10 +65,7 @@ double NumericValueFitness(const NumericConstraint& constraint,
 
 // Returns the fitness distance between the ideal value of |constraint| and the
 // closest value to it in the range [min, max] if the constraint is supported.
-// If the constraint is present but not supported, returns 1 if there is no
-// ideal value (to account the failed boolean capability constraint) or 2
-// otherwise (to account the failed boolean capability constraint and failed
-// numeric ideal value constraint).
+// If the constraint is present but not supported, returns 1.
 // If the ideal value is contained in the range, returns 0.
 // If there is no ideal value, returns 0;
 // Based on https://w3c.github.io/mediacapture-main/#dfn-fitness-distance.
@@ -81,7 +78,7 @@ double NumericRangeSupportFitness(
   DCHECK(!range.IsEmpty());
 
   if (constraint_present && !constraint_supported)
-    return 1.0 + (constraint.HasIdeal() ? 1.0 : 0.0);
+    return 1.0;
 
   if (!constraint.HasIdeal())
     return 0.0;
