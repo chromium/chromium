@@ -51,8 +51,8 @@ void JavascriptPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* default_setting =
       policies.GetValue(key::kDefaultJavaScriptSetting);
 
-  if (default_setting) {
-    default_setting->GetAsInteger(&setting);
+  if (default_setting && default_setting->is_int()) {
+    setting = default_setting->GetInt();
   } else {
     const base::Value* javascript_enabled =
         policies.GetValue(key::kJavascriptEnabled);
