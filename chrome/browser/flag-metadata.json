@@ -5378,6 +5378,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "wifi-sync-allow-deletes",
+    "owners": [ "jonmann", "cros-system-services@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "wifi-sync-android",
     "owners": [ "jonmann", "cvandermerwe@google.com", "cros-system-services@google.com" ],
     "expiry_milestone": 92

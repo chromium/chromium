@@ -30,6 +30,7 @@ static_library("sync_wifi") {
   ]
   deps = [
     ":network_eligibility_checker",
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chromeos/dbus/shill",
@@ -101,6 +102,7 @@ source_set("unit_tests") {
   deps = [
     ":sync_wifi",
     ":test_support",
+    "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chromeos/dbus/shill:test_support",

@@ -4882,6 +4882,12 @@ const char kWebuiDarkModeDescription[] =
     "Allows dark mode usage in WebUI. Note that this does not necessary enable "
     "dark mode, which is enabled via the #enable-force-dark flag.";
 
+const char kWifiSyncAllowDeletesName[] =
+    "Sync removal of Wi-Fi network configurations";
+const char kWifiSyncAllowDeletesDescription[] =
+    "Enables the option to sync deletions of Wi-Fi networks to other Chrome OS "
+    "devices when Wi-Fi Sync is enabled.";
+
 const char kWifiSyncAndroidName[] =
     "Sync Wi-Fi network configurations with Android";
 const char kWifiSyncAndroidDescription[] =

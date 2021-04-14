@@ -2843,6 +2843,9 @@ extern const char kWakeOnWifiAllowedDescription[];
 extern const char kWebuiDarkModeName[];
 extern const char kWebuiDarkModeDescription[];
 
+extern const char kWifiSyncAllowDeletesName[];
+extern const char kWifiSyncAllowDeletesDescription[];
+
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
 
