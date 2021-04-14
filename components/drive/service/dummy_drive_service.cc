@@ -263,7 +263,7 @@ CancelCallbackOnce DummyDriveService::AddPermission(
 }
 std::unique_ptr<BatchRequestConfiguratorInterface>
 DummyDriveService::StartBatchRequest() {
-  return std::unique_ptr<BatchRequestConfiguratorInterface>();
+  return nullptr;
 }
 
 }  // namespace drive

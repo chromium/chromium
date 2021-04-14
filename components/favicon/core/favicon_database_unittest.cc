@@ -218,7 +218,7 @@ class FaviconDatabaseTest : public testing::Test {
   std::unique_ptr<FaviconDatabase> LoadFromGolden(const char* golden_path) {
     if (!history::CreateDatabaseFromSQL(file_name_, golden_path)) {
       ADD_FAILURE() << "Failed loading " << golden_path;
-      return std::unique_ptr<FaviconDatabase>();
+      return nullptr;
     }
 
     std::unique_ptr<FaviconDatabase> db = std::make_unique<FaviconDatabase>();

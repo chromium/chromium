@@ -51,11 +51,11 @@ struct CacheSpec {
     std::vector<std::string> tokens = base::SplitString(
         spec_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (tokens.size() != 3)
-      return std::unique_ptr<CacheSpec>();
+      return nullptr;
     if (tokens[0] != kBlockFileBackendType && tokens[0] != kSimpleBackendType)
-      return std::unique_ptr<CacheSpec>();
+      return nullptr;
     if (tokens[1] != kDiskCacheType && tokens[1] != kAppCacheType)
-      return std::unique_ptr<CacheSpec>();
+      return nullptr;
     return std::unique_ptr<CacheSpec>(new CacheSpec(
         tokens[0] == kBlockFileBackendType ? net::CACHE_BACKEND_BLOCKFILE
                                            : net::CACHE_BACKEND_SIMPLE,

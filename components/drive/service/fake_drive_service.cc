@@ -1926,7 +1926,7 @@ FakeDriveService::StartBatchRequest() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   NOTREACHED();
-  return std::unique_ptr<BatchRequestConfiguratorInterface>();
+  return nullptr;
 }
 
 void FakeDriveService::NotifyObservers() {

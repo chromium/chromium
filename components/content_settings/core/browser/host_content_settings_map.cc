@@ -905,7 +905,7 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
     info->primary_pattern = ContentSettingsPattern();
     info->secondary_pattern = ContentSettingsPattern();
   }
-  return std::unique_ptr<base::Value>();
+  return nullptr;
 }
 
 // static
@@ -968,7 +968,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
       }
     }
   }
-  return std::unique_ptr<base::Value>();
+  return nullptr;
 }
 
 void HostContentSettingsMap::

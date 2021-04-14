@@ -435,7 +435,7 @@ std::unique_ptr<base::Value> SearchSuggestionParser::DeserializeJsonData(
     if (error_code == 0)
       return data;
   }
-  return std::unique_ptr<base::Value>();
+  return nullptr;
 }
 
 // static

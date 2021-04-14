@@ -1499,7 +1499,7 @@ std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
   s.BindString(0, guid);
 
   if (!s.Step())
-    return std::unique_ptr<CreditCard>();
+    return nullptr;
 
   return CreditCardFromStatement(s, *autofill_table_encryptor_);
 }

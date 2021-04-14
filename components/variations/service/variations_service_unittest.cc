@@ -67,7 +67,7 @@ void StubStoreClientInfo(const metrics::ClientInfo& /* client_info */) {}
 
 // A stub for the metrics state manager.
 std::unique_ptr<metrics::ClientInfo> StubLoadClientInfo() {
-  return std::unique_ptr<metrics::ClientInfo>();
+  return nullptr;
 }
 
 // TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.

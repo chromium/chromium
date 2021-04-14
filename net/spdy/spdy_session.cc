@@ -1324,7 +1324,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
     int* effective_len,
     bool* end_stream) {
   if (availability_state_ == STATE_DRAINING) {
-    return std::unique_ptr<SpdyBuffer>();
+    return nullptr;
   }
 
   ActiveStreamMap::const_iterator it = active_streams_.find(stream_id);
@@ -1334,7 +1334,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
 
   if (len < 0) {
     NOTREACHED();
-    return std::unique_ptr<SpdyBuffer>();
+    return nullptr;
   }
 
   *effective_len = std::min(len, kMaxSpdyFrameChunkSize);
@@ -1374,7 +1374,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
     net_log_.AddEventWithIntParams(
         NetLogEventType::HTTP2_SESSION_STREAM_STALLED_BY_STREAM_SEND_WINDOW,
         "stream_id", stream_id);
-    return std::unique_ptr<SpdyBuffer>();
+    return nullptr;
   }
 
   *effective_len = std::min(*effective_len, stream->send_window_size());
@@ -1386,7 +1386,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
     net_log_.AddEventWithIntParams(
         NetLogEventType::HTTP2_SESSION_STREAM_STALLED_BY_SESSION_SEND_WINDOW,
         "stream_id", stream_id);
-    return std::unique_ptr<SpdyBuffer>();
+    return nullptr;
   }
 
   *effective_len = std::min(*effective_len, session_send_window_size_);

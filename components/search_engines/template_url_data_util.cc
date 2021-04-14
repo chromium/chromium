@@ -35,7 +35,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   dict.GetString(DefaultSearchManager::kShortName, &short_name);
   // Check required TemplateURLData fields first.
   if (search_url.empty() || keyword.empty() || short_name.empty())
-    return std::unique_ptr<TemplateURLData>();
+    return nullptr;
 
   auto result = std::make_unique<TemplateURLData>();
   result->SetKeyword(keyword);
@@ -252,5 +252,5 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         suggest_url_post_params, image_url_post_params, favicon_url, encoding,
         *alternate_urls, id);
   }
-  return std::unique_ptr<TemplateURLData>();
+  return nullptr;
 }

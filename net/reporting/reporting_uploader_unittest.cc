@@ -61,7 +61,7 @@ void CheckUpload(const test_server::HttpRequest& request) {
 std::unique_ptr<test_server::HttpResponse> AllowPreflight(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -202,7 +202,7 @@ std::unique_ptr<test_server::HttpResponse> VerifyPreflight(
     bool* preflight_received_out,
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   *preflight_received_out = true;
   return AllowPreflight(request);
@@ -245,7 +245,7 @@ TEST_F(ReportingUploaderTest, SkipPreflightForSameOrigin) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightError(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_FORBIDDEN);
@@ -270,7 +270,7 @@ TEST_F(ReportingUploaderTest, FailedCorsPreflight) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutOrigin(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -300,7 +300,7 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutOrigin) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutMethods(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -330,7 +330,7 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutMethods) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutHeaders(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -377,7 +377,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnRedirect(
     const std::string& location,
     const test_server::HttpRequest& request) {
   if (request.relative_url != "/")
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
 
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_FOUND);
@@ -392,7 +392,7 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
     bool* redirect_followed_out,
     const test_server::HttpRequest& request) {
   if (request.relative_url != kRedirectPath)
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
 
   *redirect_followed_out = true;
   return ReturnResponse(HTTP_OK, request);

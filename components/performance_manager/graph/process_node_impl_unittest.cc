@@ -308,7 +308,7 @@ class LenientFakeBackgroundTracingManager
   }
   std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override {
-    return std::unique_ptr<content::BackgroundTracingConfig>();
+    return nullptr;
   }
   void AbortScenarioForTesting() override {}
   void SetTraceToUploadForTesting(

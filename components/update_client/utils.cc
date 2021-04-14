@@ -159,14 +159,14 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
   base::FilePath manifest =
       unpack_path.Append(FILE_PATH_LITERAL("manifest.json"));
   if (!base::PathExists(manifest))
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root)
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
   if (!root->is_dict())
-    return std::unique_ptr<base::DictionaryValue>();
+    return nullptr;
   return std::unique_ptr<base::DictionaryValue>(
       static_cast<base::DictionaryValue*>(root.release()));
 }

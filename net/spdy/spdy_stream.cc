@@ -80,7 +80,7 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override {
     if (!stream_.get()) {
       NOTREACHED();
-      return std::unique_ptr<SpdyBuffer>();
+      return nullptr;
     }
     DCHECK_GT(stream_->stream_id(), 0u);
     return std::make_unique<SpdyBuffer>(stream_->ProduceHeadersFrame());

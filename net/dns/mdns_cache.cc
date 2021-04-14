@@ -165,7 +165,7 @@ std::unique_ptr<const RecordParsed> MDnsCache::RemoveRecord(
     return result;
   }
 
-  return std::unique_ptr<const RecordParsed>();
+  return nullptr;
 }
 
 bool MDnsCache::IsCacheOverfilled() const {

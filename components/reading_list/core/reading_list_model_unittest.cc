@@ -107,14 +107,14 @@ class TestReadingListStorage : public ReadingListModelStorage {
   }
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override {
-    return std::unique_ptr<ScopedBatchUpdate>();
+    return nullptr;
   }
 
   // Syncing is not used in this test class.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override {
     NOTREACHED();
-    return std::unique_ptr<syncer::MetadataChangeList>();
+    return nullptr;
   }
 
   base::Optional<syncer::ModelError> MergeSyncData(

@@ -181,7 +181,7 @@ IconCacherImpl::MaybeProvideDefaultIcon(
     const PopularSites::Site& site,
     base::OnceClosure preliminary_icon_available) {
   if (site.default_icon_resource < 0) {
-    return std::unique_ptr<CancelableImageCallback>();
+    return nullptr;
   }
   std::unique_ptr<CancelableImageCallback> preliminary_callback(
       new CancelableImageCallback(

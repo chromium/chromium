@@ -36,7 +36,7 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   std::unique_ptr<const RecordRdata> rdata;
 
   if (!parser->ReadRecord(&record))
-    return std::unique_ptr<const RecordParsed>();
+    return nullptr;
 
   bool unrecognized_type = false;
   switch (record.type) {
@@ -80,7 +80,7 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   // If a recognized type has a malformed rdata, consider the whole record
   // malformed.
   if (!rdata.get() && !unrecognized_type)
-    return std::unique_ptr<const RecordParsed>();
+    return nullptr;
 
   return std::unique_ptr<const RecordParsed>(
       new RecordParsed(record.name, record.type, record.klass, record.ttl,

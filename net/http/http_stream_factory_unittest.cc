@@ -172,9 +172,7 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   }
   base::StringPiece GetAcceptChViaAlps() const override { return {}; }
 
-  std::unique_ptr<WebSocketStream> Upgrade() override {
-    return std::unique_ptr<WebSocketStream>();
-  }
+  std::unique_ptr<WebSocketStream> Upgrade() override { return nullptr; }
 
   base::WeakPtr<WebSocketHandshakeStreamBase> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

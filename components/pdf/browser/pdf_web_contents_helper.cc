@@ -166,7 +166,7 @@ void PDFWebContentsHelper::OnDragUpdate(
 std::unique_ptr<ui::TouchHandleDrawable>
 PDFWebContentsHelper::CreateDrawable() {
   // We can return null here, as the manager will look after this.
-  return std::unique_ptr<ui::TouchHandleDrawable>();
+  return nullptr;
 }
 
 void PDFWebContentsHelper::OnManagerWillDestroy(

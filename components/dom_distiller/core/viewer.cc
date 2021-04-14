@@ -317,7 +317,7 @@ std::unique_ptr<ViewerHandle> CreateViewRequest(
   if (has_valid_entry_id && has_valid_url) {
     // It is invalid to specify a query param for both |kEntryIdKey| and
     // |kUrlKey|.
-    return std::unique_ptr<ViewerHandle>();
+    return nullptr;
   }
 
   if (has_valid_entry_id) {
@@ -331,7 +331,7 @@ std::unique_ptr<ViewerHandle> CreateViewRequest(
   }
 
   // It is invalid to not specify a query param for |kEntryIdKey| or |kUrlKey|.
-  return std::unique_ptr<ViewerHandle>();
+  return nullptr;
 }
 
 const std::string GetDistilledPageThemeJs(mojom::Theme theme) {

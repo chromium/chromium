@@ -84,7 +84,7 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
 #if defined(OS_NACL)
   NOTIMPLEMENTED();
-  return std::unique_ptr<CertVerifier>();
+  return nullptr;
 #else
   scoped_refptr<CertVerifyProc> verify_proc;
 #if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)

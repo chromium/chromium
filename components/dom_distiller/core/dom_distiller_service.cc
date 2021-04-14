@@ -62,7 +62,7 @@ std::unique_ptr<ViewerHandle> DomDistillerService::ViewUrl(
     std::unique_ptr<DistillerPage> distiller_page,
     const GURL& url) {
   if (!url.is_valid()) {
-    return std::unique_ptr<ViewerHandle>();
+    return nullptr;
   }
 
   TaskTracker* task_tracker = nullptr;

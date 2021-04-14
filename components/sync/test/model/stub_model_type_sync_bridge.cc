@@ -19,7 +19,7 @@ StubModelTypeSyncBridge::~StubModelTypeSyncBridge() {}
 
 std::unique_ptr<MetadataChangeList>
 StubModelTypeSyncBridge::CreateMetadataChangeList() {
-  return std::unique_ptr<MetadataChangeList>();
+  return nullptr;
 }
 
 base::Optional<ModelError> StubModelTypeSyncBridge::MergeSyncData(

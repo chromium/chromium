@@ -511,7 +511,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   // Early return if type is not ready to commit (initial sync isn't done or
   // cryptographer has pending keys).
   if (!CanCommitItems())
-    return std::unique_ptr<CommitContribution>();
+    return nullptr;
 
   // Client shouldn't be committing data to server when it hasn't processed all
   // updates it received.
@@ -532,7 +532,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     response = request->ExtractResponse();
   if (response.empty()) {
     has_local_changes_state_ = kNoNudgedLocalChanges;
-    return std::unique_ptr<CommitContribution>();
+    return nullptr;
   }
 
   DCHECK(response.size() <= max_entries);

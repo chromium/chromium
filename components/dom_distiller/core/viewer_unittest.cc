@@ -54,11 +54,11 @@ class TestDomDistillerService : public DomDistillerServiceInterface {
   }
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPage(
       const gfx::Size& render_view_size) override {
-    return std::unique_ptr<DistillerPage>();
+    return nullptr;
   }
   std::unique_ptr<DistillerPage> CreateDefaultDistillerPageWithHandle(
       std::unique_ptr<SourcePageHandle> handle) override {
-    return std::unique_ptr<DistillerPage>();
+    return nullptr;
   }
   DistilledPagePrefs* GetDistilledPagePrefs() override;
   DistillerUIHandle* GetDistillerUIHandle() override;

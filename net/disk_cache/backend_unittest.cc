@@ -105,14 +105,14 @@ std::unique_ptr<disk_cache::BackendImpl> CreateExistingEntryCache(
                                                 /* net_log = */ nullptr));
   int rv = cache->Init(cb.callback());
   if (cb.GetResult(rv) != net::OK)
-    return std::unique_ptr<disk_cache::BackendImpl>();
+    return nullptr;
 
   TestEntryResultCompletionCallback cb2;
   EntryResult result =
       cache->CreateEntry(kExistingEntryKey, net::HIGHEST, cb2.callback());
   result = cb2.GetResult(std::move(result));
   if (result.net_error() != net::OK)
-    return std::unique_ptr<disk_cache::BackendImpl>();
+    return nullptr;
 
   return cache;
 }

@@ -385,7 +385,7 @@ MockTransportClientSocketFactory::CreateDatagramClientSocket(
     NetLog* net_log,
     const NetLogSource& source) {
   NOTREACHED();
-  return std::unique_ptr<DatagramClientSocket>();
+  return nullptr;
 }
 
 std::unique_ptr<TransportClientSocket>

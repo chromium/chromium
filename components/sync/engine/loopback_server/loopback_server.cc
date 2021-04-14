@@ -756,7 +756,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
     base::ListValue* list_value;
     if (!dictionary->GetList(ModelTypeToString(entity.GetModelType()),
                              &list_value)) {
-      return std::unique_ptr<base::DictionaryValue>();
+      return nullptr;
     }
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification
