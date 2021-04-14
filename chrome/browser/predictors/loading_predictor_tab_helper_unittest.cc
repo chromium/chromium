@@ -41,18 +41,17 @@ namespace predictors {
 class MockLoadingDataCollector : public LoadingDataCollector {
  public:
   explicit MockLoadingDataCollector(const LoadingPredictorConfig& config);
+  MOCK_METHOD4(RecordStartNavigation,
+               void(NavigationId, ukm::SourceId, const GURL&, base::TimeTicks));
 
-  MOCK_METHOD1(RecordStartNavigation, void(const NavigationID&));
-  MOCK_METHOD3(RecordFinishNavigation,
-               void(const NavigationID&, const NavigationID&, bool));
+  MOCK_METHOD4(RecordFinishNavigation,
+               void(NavigationId, const GURL&, const GURL&, bool));
   MOCK_METHOD2(RecordResourceLoadComplete,
-               void(const NavigationID&,
-                    const blink::mojom::ResourceLoadInfo&));
+               void(NavigationId, const blink::mojom::ResourceLoadInfo&));
   MOCK_METHOD2(RecordMainFrameLoadComplete,
-               void(const NavigationID&,
+               void(NavigationId,
                     const base::Optional<OptimizationGuidePrediction>&));
-  MOCK_METHOD2(RecordFirstContentfulPaint,
-               void(const NavigationID&, const base::TimeTicks&));
+  MOCK_METHOD2(RecordFirstContentfulPaint, void(NavigationId, base::TimeTicks));
 };
 
 MockLoadingDataCollector::MockLoadingDataCollector(
@@ -131,24 +130,26 @@ void LoadingPredictorTabHelperTest::TearDown() {
 
 void LoadingPredictorTabHelperTest::
     NavigateAndCommitInMainFrameAndVerifyMetrics(const std::string& url) {
-  NavigationID start_navigation_id;
-  NavigationID old_finish_navigation_id;
-  NavigationID new_finish_navigation_id;
-  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_))
-      .WillOnce(SaveArg<0>(&start_navigation_id));
+  ukm::SourceId ukm_source_id;
+  GURL main_frame_url;
+  GURL old_main_frame_url;
+  GURL new_main_frame_url;
+  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, _, _))
+      .WillOnce(DoAll(SaveArg<1>(&ukm_source_id), SaveArg<2>(&main_frame_url)));
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(_, _,
+              RecordFinishNavigation(_, _, _,
                                      /* is_error_page */ false))
-      .WillOnce(DoAll(SaveArg<0>(&old_finish_navigation_id),
-                      SaveArg<1>(&new_finish_navigation_id)));
+      .WillOnce(DoAll(SaveArg<1>(&old_main_frame_url),
+                      SaveArg<2>(&new_main_frame_url)));
 
   NavigateAndCommitInFrame(url, main_rfh());
 
-  auto expected_navigation_id = CreateNavigationID(
-      GetTabID(), url, web_contents()->GetMainFrame()->GetPageUkmSourceId());
-  EXPECT_EQ(start_navigation_id, expected_navigation_id);
-  EXPECT_EQ(old_finish_navigation_id, expected_navigation_id);
-  EXPECT_EQ(new_finish_navigation_id, expected_navigation_id);
+  EXPECT_EQ(ukm_source_id,
+            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+  GURL gurl(url);
+  EXPECT_EQ(gurl, main_frame_url);
+  EXPECT_EQ(gurl, old_main_frame_url);
+  EXPECT_EQ(gurl, new_main_frame_url);
 }
 
 SessionID LoadingPredictorTabHelperTest::GetTabID() {
@@ -177,30 +178,28 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigation) {
 // Tests that an old and new navigation ids are correctly set if a navigation
 // has redirects.
 TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
+  GURL main_frame_url("http://test.org");
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("http://test.org"), main_rfh());
+      main_frame_url, main_rfh());
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   navigation->SetKeepLoading(true);
-  NavigationID start_navigation_id;
-  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_))
-      .WillOnce(SaveArg<0>(&start_navigation_id));
+  ukm::SourceId ukm_source_id;
+  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, main_frame_url, _))
+      .WillOnce(SaveArg<1>(&ukm_source_id));
   navigation->Start();
   navigation->Redirect(GURL("http://test2.org"));
   navigation->Redirect(GURL("http://test3.org"));
-  auto new_navigation_id = start_navigation_id;
-  new_navigation_id.main_frame_url = GURL("http://test3.org");
-  EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(start_navigation_id, new_navigation_id,
-                                     /* is_error_page */ false));
+  GURL expected_main_frame_url("http://test3.org");
+  EXPECT_CALL(
+      *mock_collector_,
+      RecordFinishNavigation(_, main_frame_url, expected_main_frame_url, _));
   navigation->Commit();
 
-  EXPECT_EQ(
-      start_navigation_id,
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId()));
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            ukm_source_id);
 }
 
 // Tests that a subframe navigation is not recorded.
@@ -217,28 +216,28 @@ TEST_F(LoadingPredictorTabHelperTest, SubframeNavigation) {
 
 // Tests that a failed navigation is correctly recorded.
 TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
-  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("http://test.org"), main_rfh());
+  GURL url("http://test.org");
+  auto navigation =
+      content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
   navigation->SetKeepLoading(true);
   // The problem here is that mock_collector_ is a strict mock, which expects
   // a particular set of loading events and fails when extra is present.
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
-  NavigationID navigation_id;
-  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_))
-      .WillOnce(SaveArg<0>(&navigation_id));
+  ukm::SourceId ukm_source_id;
+  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, url, _))
+      .WillOnce(SaveArg<1>(&ukm_source_id));
   navigation->Start();
 
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(navigation_id, navigation_id,
+              RecordFinishNavigation(_, url, url,
                                      /* is_error_page */ true));
   navigation->Fail(net::ERR_TIMED_OUT);
   navigation->CommitErrorPage();
 
-  EXPECT_EQ(
-      navigation_id,
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId()));
+  EXPECT_EQ(ukm_source_id,
+
+            web_contents()->GetMainFrame()->GetPageUkmSourceId());
 }
 
 // Tests that a same document navigation is not recorded.
@@ -255,9 +254,6 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationSameDocument) {
 // id.
 TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -265,22 +261,18 @@ TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(navigation_id, _));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 }
 
 // Tests that a resource load is correctly recorded.
 TEST_F(LoadingPredictorTabHelperTest, ResourceLoadComplete) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   auto resource_load_info = CreateResourceLoadInfo(
       "http://test.org/script.js", network::mojom::RequestDestination::kScript);
   EXPECT_CALL(*mock_collector_,
-              RecordResourceLoadComplete(navigation_id,
-                                         Eq(ByRef(*resource_load_info))));
+              RecordResourceLoadComplete(_, Eq(ByRef(*resource_load_info))));
   tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
                                     *resource_load_info);
 }
@@ -306,20 +298,15 @@ TEST_F(LoadingPredictorTabHelperTest, ResourceLoadCompleteInSubFrame) {
 TEST_F(LoadingPredictorTabHelperTest, LoadResourceFromMemoryCache) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
-
   auto resource_load_info = CreateResourceLoadInfo(
       "http://test.org/script.js", network::mojom::RequestDestination::kScript,
       false);
   resource_load_info->mime_type = "application/javascript";
   resource_load_info->network_info->network_accessed = false;
   EXPECT_CALL(*mock_collector_,
-              RecordResourceLoadComplete(navigation_id,
-                                         Eq(ByRef(*resource_load_info))));
+              RecordResourceLoadComplete(_, Eq(ByRef(*resource_load_info))));
   tab_helper_->DidLoadResourceFromMemoryCache(
-      GURL("http://test.org/script.js"), "application/javascript",
+      main_rfh(), GURL("http://test.org/script.js"), "application/javascript",
       network::mojom::RequestDestination::kScript);
 }
 
@@ -363,9 +350,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                 base::test::IsNotNullCallback()))
       .Times(0);
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org/otherpage",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -375,9 +359,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   const base::Optional<OptimizationGuidePrediction>
       null_optimization_guide_prediction;
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id,
-                                          null_optimization_guide_prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
+                                    _, null_optimization_guide_prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   histogram_tester.ExpectTotalCount(
@@ -404,9 +387,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -426,8 +406,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   histogram_tester.ExpectUniqueSample(
@@ -458,9 +437,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
             callback = std::move(got_callback);
           })));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Invoke callback after commit.
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
@@ -484,8 +460,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   // Optimization guide predictions came after commit.
@@ -494,8 +469,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       OptimizationHintsReceiveStatus::kAfterNavigationFinish, 1);
 }
 
-// Tests that an old and new navigation ids are correctly set if a navigation
-// has redirects.
+// Tests that predictions are recorded correctly when they arrive after a
+// redirect.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionArrivedAfterRedirect) {
   base::HistogramTester histogram_tester;
@@ -507,9 +482,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   navigation->SetKeepLoading(true);
-  NavigationID initial_navigation_id;
-  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_))
-      .WillOnce(SaveArg<0>(&initial_navigation_id));
+  EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, _, _));
   optimization_guide::OptimizationMetadata optimization_metadata;
   optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
   lp_metadata.add_subresources()->set_url("http://test.org/resource1");
@@ -535,11 +508,9 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
                           optimization_metadata);
 
-  NavigationID new_navigation_id;
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(initial_navigation_id, _,
-                                     /* is_error_page */ false))
-      .WillOnce(SaveArg<1>(&new_navigation_id));
+              RecordFinishNavigation(_, _, _,
+                                     /* is_error_page */ false));
   navigation->Commit();
 
   // Prediction decision should be unknown since what came in was for the wrong
@@ -548,9 +519,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(new_navigation_id,
-                                          optimization_guide_prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   histogram_tester.ExpectUniqueSample(
@@ -569,9 +538,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
                                 base::test::IsNotNullCallback()));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -583,8 +549,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   // Histogram should not be recorded since prediction did not come back.
@@ -617,9 +582,6 @@ TEST_F(
             callback = std::move(got_callback);
           })));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -631,8 +593,7 @@ TEST_F(
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   // Invoke callback after document completed in main frame..
@@ -664,9 +625,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           optimization_guide::OptimizationGuideDecision::kFalse,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -677,8 +635,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   base::Optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   // Histogram should still be recorded even though no predictions were
@@ -708,9 +665,6 @@ TEST_F(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -724,8 +678,7 @@ TEST_F(
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id,
-                                          optimization_guide_prediction));
+              RecordMainFrameLoadComplete(_, optimization_guide_prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   // Histogram should still be recorded even though no predictions were
@@ -774,9 +727,6 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  auto navigation_id =
-      CreateNavigationID(GetTabID(), "http://test.org",
-                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Adding subframe navigation to ensure that the committed main frame url will
   // be used.
@@ -806,8 +756,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   prediction->predicted_subresources = {
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),
       GURL("http://other.org/resource3"), GURL("http://preconnectonly.com/")};
-  EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(navigation_id, prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
   tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   histogram_tester.ExpectUniqueSample(
@@ -819,25 +768,29 @@ class TestLoadingDataCollector : public LoadingDataCollector {
  public:
   explicit TestLoadingDataCollector(const LoadingPredictorConfig& config);
 
-  void RecordStartNavigation(const NavigationID& navigation_id) override {}
-  void RecordFinishNavigation(const NavigationID& old_navigation_id,
-                              const NavigationID& new_navigation_id,
+  void RecordStartNavigation(NavigationId navigation_id,
+                             ukm::SourceId ukm_source_id,
+                             const GURL& main_frame_url,
+                             base::TimeTicks creation_time) override {}
+  void RecordFinishNavigation(NavigationId navigation_id,
+                              const GURL& old_main_frame_url,
+                              const GURL& new_main_frame_url,
                               bool is_error_page) override {}
   void RecordResourceLoadComplete(
-      const NavigationID& navigation_id,
+      NavigationId navigation_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override {
     ++count_resource_loads_completed_;
     EXPECT_EQ(expected_request_priority_, resource_load_info.request_priority);
   }
 
   void RecordMainFrameLoadComplete(
-      const NavigationID& navigation_id,
+      NavigationId navigation_id,
       const base::Optional<OptimizationGuidePrediction>&
           optimization_guide_prediction) override {}
 
   void RecordFirstContentfulPaint(
-      const NavigationID& navigation_id,
-      const base::TimeTicks& first_contentful_paint) override {}
+      NavigationId navigation_id,
+      base::TimeTicks first_contentful_paint) override {}
 
   void SetExpectedResourcePriority(net::RequestPriority request_priority) {
     expected_request_priority_ = request_priority;

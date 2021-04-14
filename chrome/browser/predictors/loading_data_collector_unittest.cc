@@ -26,6 +26,15 @@ using testing::StrictMock;
 
 namespace predictors {
 
+namespace {
+
+NavigationId GetNextId() {
+  static NavigationId::Generator generator;
+  return generator.GenerateNextId();
+}
+
+}  // namespace
+
 class LoadingDataCollectorTest : public testing::Test {
  public:
   LoadingDataCollectorTest() : profile_(std::make_unique<TestingProfile>()) {
@@ -79,130 +88,117 @@ TEST_F(LoadingDataCollectorTest, HandledResourceTypes) {
 }
 
 TEST_F(LoadingDataCollectorTest, ShouldRecordMainFrameLoad) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
   auto http_request = CreateResourceLoadInfo("http://www.google.com");
-  EXPECT_TRUE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *http_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_request));
 
   auto https_request = CreateResourceLoadInfo("https://www.google.com");
-  EXPECT_TRUE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *https_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*https_request));
 
   auto file_request = CreateResourceLoadInfo("file://www.google.com");
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *file_request));
+  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*file_request));
 
   auto https_request_with_port =
       CreateResourceLoadInfo("https://www.google.com:666");
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(navigation_id,
-                                                    *https_request_with_port));
+  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*https_request_with_port));
 }
 
 // Resource loaded after FCP event is recorded by default.
 TEST_F(LoadingDataCollectorTest, ShouldRecordSubresourceLoadAfterFCP) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
+  auto navigation_id = GetNextId();
+  GURL url("http://www.google.com");
 
-  collector_->RecordStartNavigation(navigation_id);
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
   collector_->RecordFirstContentfulPaint(navigation_id, base::TimeTicks::Now());
 
   // Protocol.
   auto http_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *http_image_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_image_request));
 }
 
 TEST_F(LoadingDataCollectorTest, ShouldRecordSubresourceLoad) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kLoadingOnlyLearnHighPriorityResources);
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
 
   // Protocol.
   auto low_priority_http_image_request = CreateLowPriorityResourceLoadInfo(
       "http://www.google.com/cat.png",
       network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(
-      navigation_id, *low_priority_http_image_request));
+  EXPECT_FALSE(
+      collector_->ShouldRecordResourceLoad(*low_priority_http_image_request));
 
   auto http_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *http_image_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_image_request));
 
   auto https_image_request =
       CreateResourceLoadInfo("https://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(navigation_id,
-                                                   *https_image_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*https_image_request));
 
   auto https_image_request_with_port =
       CreateResourceLoadInfo("https://www.google.com:666/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(
-      navigation_id, *https_image_request_with_port));
+  EXPECT_FALSE(
+      collector_->ShouldRecordResourceLoad(*https_image_request_with_port));
 
   auto file_image_request =
       CreateResourceLoadInfo("file://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *file_image_request));
+  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*file_image_request));
 
   // Request destination.
   auto sub_frame_request =
       CreateResourceLoadInfo("http://www.google.com/frame.html",
                              network::mojom::RequestDestination::kIframe);
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *sub_frame_request));
+  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*sub_frame_request));
 
   auto font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kFont);
-  EXPECT_TRUE(
-      collector_->ShouldRecordResourceLoad(navigation_id, *font_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*font_request));
 
   // From MIME Type.
   auto prefetch_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_image_request->mime_type = "image/png";
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(navigation_id,
-                                                   *prefetch_image_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*prefetch_image_request));
 
   auto prefetch_unknown_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_unknown_image_request->mime_type = "image/my-wonderful-format";
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(
-      navigation_id, *prefetch_unknown_image_request));
+  EXPECT_FALSE(
+      collector_->ShouldRecordResourceLoad(*prefetch_unknown_image_request));
 
   auto prefetch_font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_font_request->mime_type = "font/woff";
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(navigation_id,
-                                                   *prefetch_font_request));
+  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*prefetch_font_request));
 
   auto prefetch_unknown_font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_unknown_font_request->mime_type = "font/woff-woff";
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(
-      navigation_id, *prefetch_unknown_font_request));
+  EXPECT_FALSE(
+      collector_->ShouldRecordResourceLoad(*prefetch_unknown_font_request));
 }
 
 // Single navigation that will be recorded. Will check for duplicate
 // resources and also for number of resources saved.
 TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
-  collector_->RecordStartNavigation(navigation_id);
-  collector_->RecordFinishNavigation(navigation_id, navigation_id,
+  auto navigation_id = GetNextId();
+  GURL url("http://www.google.com");
+
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
+  collector_->RecordFinishNavigation(navigation_id, url, url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
   auto* page_request_summary =
@@ -211,8 +207,7 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
   EXPECT_NE(page_request_summary->navigation_committed, base::TimeTicks::Max());
 
   // Main frame origin should not be recorded.
-  collector_->RecordPreconnectInitiated(navigation_id,
-                                        navigation_id.main_frame_url);
+  collector_->RecordPreconnectInitiated(navigation_id, url);
 
   collector_->RecordPreconnectInitiated(navigation_id,
                                         GURL("http://static.google.com"));
@@ -295,23 +290,23 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
 }
 
 TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://fb.com/google");
-  collector_->RecordStartNavigation(navigation_id);
+  auto navigation_id = GetNextId();
+  GURL url("http://fb.com/google");
+
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
 
   auto main_frame = CreateResourceLoadInfoWithRedirects(
       {"http://fb.com/google", "http://facebook.com/google",
        "https://facebook.com/google"});
 
-  auto new_navigation_id =
-      CreateNavigationID(kTabId, "https://facebook.com/google");
-  collector_->RecordFinishNavigation(navigation_id, new_navigation_id,
+  GURL new_url("https://facebook.com/google");
+  collector_->RecordFinishNavigation(navigation_id, url, new_url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
-  EXPECT_EQ(navigation_id.main_frame_url,
-            collector_->inflight_navigations_[new_navigation_id]->initial_url);
-  collector_->RecordResourceLoadComplete(new_navigation_id, *main_frame);
+  EXPECT_EQ(url, collector_->inflight_navigations_[navigation_id]->initial_url);
+  collector_->RecordResourceLoadComplete(navigation_id, *main_frame);
 
   std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(std::move(main_frame));
@@ -320,80 +315,87 @@ TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
       RecordPageRequestSummaryProxy(testing::Pointee(CreatePageRequestSummary(
           "https://facebook.com/google", "http://fb.com/google", resources))));
 
-  collector_->RecordMainFrameLoadComplete(new_navigation_id, base::nullopt);
+  collector_->RecordMainFrameLoadComplete(navigation_id, base::nullopt);
 }
 
 // Tests that RecordNavigationFinish without the corresponding
 // RecordNavigationStart works fine.
 TEST_F(LoadingDataCollectorTest, RecordStartNavigationMissing) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://bbc.com");
-  auto new_navigation_id = CreateNavigationID(kTabId, "https://www.bbc.com");
+  auto navigation_id = GetNextId();
+  GURL url("http://bbc.com");
+  GURL new_url("https://www.bbc.com");
+
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
 
   // collector_->RecordStartNavigtion(navigation_id) is missing.
-  collector_->RecordFinishNavigation(navigation_id, new_navigation_id,
+  collector_->RecordFinishNavigation(navigation_id, url, new_url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
-  EXPECT_EQ(navigation_id.main_frame_url,
-            collector_->inflight_navigations_[new_navigation_id]->initial_url);
+  EXPECT_EQ(url, collector_->inflight_navigations_[navigation_id]->initial_url);
 }
 
 TEST_F(LoadingDataCollectorTest, RecordFailedNavigation) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
-  auto navigation_id = CreateNavigationID(kTabId, "http://bbc.com");
+  auto navigation_id = GetNextId();
+  GURL url("http://bbc.com");
 
-  collector_->RecordStartNavigation(navigation_id);
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
-  collector_->RecordFinishNavigation(navigation_id, navigation_id,
+  collector_->RecordFinishNavigation(navigation_id, url, url,
                                      /* is_error_page */ true);
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 }
 
 TEST_F(LoadingDataCollectorTest, ManyNavigations) {
-  const SessionID kTabId1 = SessionID::FromSerializedValue(1);
-  const SessionID kTabId2 = SessionID::FromSerializedValue(2);
-  const SessionID kTabId3 = SessionID::FromSerializedValue(3);
-  const SessionID kTabId4 = SessionID::FromSerializedValue(4);
+  auto navigation_id1 = GetNextId();
+  auto navigation_id2 = GetNextId();
+  auto navigation_id3 = GetNextId();
+  GURL url1("http://www.google.com");
+  GURL url2("http://www.google.com");
+  GURL url3("http://www.yahoo.com");
 
-  auto navigation_id1 = CreateNavigationID(kTabId1, "http://www.google.com");
-  auto navigation_id2 = CreateNavigationID(kTabId2, "http://www.google.com");
-  auto navigation_id3 = CreateNavigationID(kTabId3, "http://www.yahoo.com");
-
-  collector_->RecordStartNavigation(navigation_id1);
+  collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url1,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
-  collector_->RecordStartNavigation(navigation_id2);
+  collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url2,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(2U, collector_->inflight_navigations_.size());
-  collector_->RecordStartNavigation(navigation_id3);
+  collector_->RecordStartNavigation(navigation_id3, ukm::SourceId(), url3,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
   // Insert another with same navigation id. It should replace.
-  auto navigation_id4 = CreateNavigationID(kTabId1, "http://www.nike.com");
-  collector_->RecordStartNavigation(navigation_id4);
+  GURL url4("http://www.nike.com");
+  collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url4,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
-  auto navigation_id5 = CreateNavigationID(kTabId2, "http://www.google.com");
+  GURL url5("http://www.google.com");
   // Change this creation time so that it will go away on the next insert.
-  navigation_id5.creation_time =
-      base::TimeTicks::Now() - base::TimeDelta::FromDays(1);
-  collector_->RecordStartNavigation(navigation_id5);
+  collector_->RecordStartNavigation(
+      navigation_id2, ukm::SourceId(), url5,
+      base::TimeTicks::Now() - base::TimeDelta::FromDays(1));
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
-  auto navigation_id6 = CreateNavigationID(kTabId4, "http://www.shoes.com");
-  collector_->RecordStartNavigation(navigation_id6);
+  auto navigation_id6 = GetNextId();
+  GURL url6("http://www.shoes.com");
+  collector_->RecordStartNavigation(navigation_id6, ukm::SourceId(), url6,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id3) !=
+  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id1) !=
               collector_->inflight_navigations_.end());
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id4) !=
+  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id3) !=
               collector_->inflight_navigations_.end());
   EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id6) !=
               collector_->inflight_navigations_.end());
 }
 
 TEST_F(LoadingDataCollectorTest, RecordResourceLoadComplete) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
   // If there is no inflight navigation, nothing happens.
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
+  auto navigation_id = GetNextId();
+  GURL url("http://www.google.com");
   auto resource1 =
       CreateResourceLoadInfo("http://google.com/style1.css",
                              network::mojom::RequestDestination::kStyle);
@@ -401,7 +403,8 @@ TEST_F(LoadingDataCollectorTest, RecordResourceLoadComplete) {
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 
   // Add an inflight navigation.
-  collector_->RecordStartNavigation(navigation_id);
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
 
   // Now add a few subresources.
@@ -420,18 +423,16 @@ TEST_F(LoadingDataCollectorTest, RecordResourceLoadComplete) {
 
 TEST_F(LoadingDataCollectorTest,
        RecordPreconnectInitiatedNoInflightNavigation) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
   // If there is no inflight navigation, nothing happens.
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
+  auto navigation_id = GetNextId();
   collector_->RecordPreconnectInitiated(navigation_id,
                                         GURL("http://google.com/"));
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 }
 
 TEST_F(LoadingDataCollectorTest, RecordPrefetchInitiatedNoInflightNavigation) {
-  const SessionID kTabId = SessionID::FromSerializedValue(1);
   // If there is no inflight navigation, nothing happens.
-  auto navigation_id = CreateNavigationID(kTabId, "http://www.google.com");
+  auto navigation_id = GetNextId();
   collector_->RecordPrefetchInitiated(navigation_id,
                                       GURL("http://google.com/style1.css"));
   EXPECT_TRUE(collector_->inflight_navigations_.empty());

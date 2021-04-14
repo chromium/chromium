@@ -131,6 +131,7 @@ void ResourceLoadObserver::ResourceLoadComplete(
 }
 
 void ResourceLoadObserver::DidLoadResourceFromMemoryCache(
+    content::RenderFrameHost* render_frame_host,
     const GURL& url,
     const std::string& mime_type,
     network::mojom::RequestDestination request_destination) {

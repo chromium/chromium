@@ -67,6 +67,7 @@ class ResourceLoadObserver : public WebContentsObserver {
       const GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
   void DidLoadResourceFromMemoryCache(
+      content::RenderFrameHost* render_frame_host,
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;

@@ -53,11 +53,13 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/multiple_pages_per_webcontents_helper.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -70,6 +72,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -2328,5 +2331,62 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false),
         /*IsPrefetchEnabled()=*/testing::Values(true),
         /*GetSubresourceType()=*/testing::Values("all")));
+
+// Tests that features work when there are multiple FrameTrees in a WebContents.
+class MultiPageBrowserTest : public InProcessBrowserTest {
+ public:
+  MultiPageBrowserTest() = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    test_server_handle_ = embedded_test_server()->StartAndReturnHandle();
+
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    page_holder_ = content::CreatePageHolderForTests(web_contents_);
+  }
+
+  void TearDownOnMainThread() override { page_holder_.reset(); }
+
+  content::WebContents* web_contents() { return web_contents_; }
+  content::TestPageHolder* page_holder() { return page_holder_.get(); }
+
+ private:
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+  content::WebContents* web_contents_;
+  std::unique_ptr<content::TestPageHolder> page_holder_;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
+  GURL url1 = embedded_test_server()->GetURL("/echo-raw?1");
+  GURL url2 = embedded_test_server()->GetURL("/echo-raw?2");
+
+  // Start navigationin primary FrameTree.
+  auto observer1 =
+      std::make_unique<content::TestNavigationManager>(web_contents(), url1);
+  web_contents()->GetController().LoadURL(
+      url1, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+
+  // Start navigation in test FrameTree.
+  auto observer2 =
+      std::make_unique<content::TestNavigationManager>(web_contents(), url2);
+  page_holder()->GetController().LoadURL(
+      url2, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(observer1->WaitForRequestStart());
+  EXPECT_TRUE(observer2->WaitForRequestStart());
+
+  // Check that both navigations have started and there are hints for both of
+  // them.
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+  EXPECT_EQ(2u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  EXPECT_LE(2u, loading_predictor->GetTotalHintsActivatedForTesting());
+  EXPECT_GE(4u, loading_predictor->GetTotalHintsActivatedForTesting());
+  observer1->WaitForNavigationFinished();
+  observer2->WaitForNavigationFinished();
+  EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
+  EXPECT_LE(2u, loading_predictor->GetTotalHintsActivatedForTesting());
+  EXPECT_GE(4u, loading_predictor->GetTotalHintsActivatedForTesting());
+}
 
 }  // namespace predictors

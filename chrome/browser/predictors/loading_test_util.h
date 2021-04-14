@@ -61,11 +61,6 @@ RedirectData CreateRedirectData(const std::string& primary_key,
 OriginData CreateOriginData(const std::string& host,
                             uint64_t last_visit_time = 0);
 
-NavigationID CreateNavigationID(
-    SessionID tab_id,
-    const std::string& main_frame_url,
-    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId);
-
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
     const std::string& initial_url,
@@ -100,7 +95,6 @@ std::ostream& operator<<(std::ostream& stream, const RedirectData& data);
 std::ostream& operator<<(std::ostream& stream, const RedirectStat& redirect);
 std::ostream& operator<<(std::ostream& stream,
                          const PageRequestSummary& summary);
-std::ostream& operator<<(std::ostream& stream, const NavigationID& id);
 
 std::ostream& operator<<(std::ostream& os, const OriginData& data);
 std::ostream& operator<<(std::ostream& os, const OriginStat& redirect);

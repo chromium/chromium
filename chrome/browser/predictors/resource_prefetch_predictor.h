@@ -21,7 +21,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/predictors/navigation_id.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -162,8 +161,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       sqlite_proto::KeyValueData<RedirectData, internal::LastVisitTimeCompare>;
   using OriginDataMap =
       sqlite_proto::KeyValueData<OriginData, internal::LastVisitTimeCompare>;
-  using NavigationMap =
-      std::map<NavigationID, std::unique_ptr<PageRequestSummary>>;
 
   ResourcePrefetchPredictor(const LoadingPredictorConfig& config,
                             Profile* profile);

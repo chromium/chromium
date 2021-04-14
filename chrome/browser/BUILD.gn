@@ -1229,8 +1229,6 @@ static_library("browser") {
     "predictors/loading_predictor_tab_helper.h",
     "predictors/loading_stats_collector.cc",
     "predictors/loading_stats_collector.h",
-    "predictors/navigation_id.cc",
-    "predictors/navigation_id.h",
     "predictors/network_hints_handler_impl.cc",
     "predictors/network_hints_handler_impl.h",
     "predictors/preconnect_manager.cc",

@@ -14,7 +14,7 @@ class WebContents;
 
 namespace predictors {
 class ResourcePrefetchPredictor;
-class LoadingDataCollector;
+class LoadingPredictorTabHelper;
 }
 
 namespace internal {
@@ -40,7 +40,7 @@ class LoadingPredictorPageLoadMetricsObserver
   // outlive this observer.
   explicit LoadingPredictorPageLoadMetricsObserver(
       predictors::ResourcePrefetchPredictor* predictor,
-      predictors::LoadingDataCollector* collector);
+      predictors::LoadingPredictorTabHelper* predictor_tab_helper);
 
   ~LoadingPredictorPageLoadMetricsObserver() override;
 
@@ -57,7 +57,7 @@ class LoadingPredictorPageLoadMetricsObserver
 
  private:
   predictors::ResourcePrefetchPredictor* predictor_;
-  predictors::LoadingDataCollector* collector_;
+  predictors::LoadingPredictorTabHelper* predictor_tab_helper_;
   bool record_histogram_preconnectable_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadingPredictorPageLoadMetricsObserver);

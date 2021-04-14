@@ -180,6 +180,8 @@ static_library("test_support") {
     "../public/test/mock_render_thread.h",
     "../public/test/mock_resource_context.cc",
     "../public/test/mock_resource_context.h",
+    "../public/test/multiple_pages_per_webcontents_helper.cc",
+    "../public/test/multiple_pages_per_webcontents_helper.h",
     "../public/test/navigation_handle_observer.cc",
     "../public/test/navigation_handle_observer.h",
     "../public/test/navigation_simulator.h",
@@ -375,6 +377,8 @@ static_library("test_support") {
     "test_web_contents_factory.cc",
     "web_contents_observer_consistency_checker.cc",
     "web_contents_observer_consistency_checker.h",
+    "web_contents_observer_test_utils.cc",
+    "web_contents_observer_test_utils.h",
   ]
 
   configs += [
@@ -1160,6 +1164,7 @@ test("content_browsertests") {
     "../browser/renderer_host/media/video_capture_browsertest.cc",
     "../browser/renderer_host/modal_close_listener_host_browsertest.cc",
     "../browser/renderer_host/navigation_controller_impl_browsertest.cc",
+    "../browser/renderer_host/navigation_handle_user_data_browsertest.cc",
     "../browser/renderer_host/navigation_request_browsertest.cc",
     "../browser/renderer_host/page_lifecycle_state_manager_browsertest.cc",
     "../browser/renderer_host/panel_rotation_browsertest.cc",

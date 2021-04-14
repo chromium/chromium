@@ -5447,8 +5447,8 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
                         "WebContentsImpl::DidLoadResourceFromMemoryCache",
                         "render_frame_host", source, "url", url);
   observers_.NotifyObservers(
-      &WebContentsObserver::DidLoadResourceFromMemoryCache, url, mime_type,
-      request_destination);
+      &WebContentsObserver::DidLoadResourceFromMemoryCache, source, url,
+      mime_type, request_destination);
 
   if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
     StoragePartition* partition = source->GetProcess()->GetStoragePartition();

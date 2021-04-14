@@ -317,6 +317,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   // This method is invoked when content was loaded from an in-memory cache.
   virtual void DidLoadResourceFromMemoryCache(
+      RenderFrameHost* render_frame_host,
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) {}

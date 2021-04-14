@@ -8,6 +8,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
+#include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -48,6 +49,7 @@ class LoadingPredictorPageLoadMetricsObserverTest
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     collector_ = std::make_unique<LoadingDataCollector>(predictor_.get(),
                                                         nullptr, config);
+    predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents());
     timing_.navigation_start = base::Time::FromDoubleT(1);
     timing_.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
     timing_.paint_timing->first_paint = base::TimeDelta::FromSeconds(2);
@@ -61,7 +63,9 @@ class LoadingPredictorPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<LoadingPredictorPageLoadMetricsObserver>(
-            predictor_.get(), collector_.get()));
+            predictor_.get(),
+            predictors::LoadingPredictorTabHelper::FromWebContents(
+                web_contents())));
   }
 
   void TestHistogramsRecorded(bool is_preconnectable) {

@@ -81,6 +81,11 @@ net::NetworkIsolationKey CreateNetworkIsolationKey(const GURL& main_frame_url) {
   return net::NetworkIsolationKey(origin, origin);
 }
 
+NavigationId GetNextId() {
+  static NavigationId::Generator generator;
+  return generator.GenerateNextId();
+}
+
 }  // namespace
 
 class LoadingPredictorTest : public testing::Test {
@@ -158,15 +163,15 @@ void LoadingPredictorPreconnectTest::SetPreference() {
 }
 
 TEST_F(LoadingPredictorTest, TestOnNavigationStarted) {
-  const SessionID tab_id = SessionID::FromSerializedValue(12);
-
   // Should return true if there are predictions.
-  auto navigation_id = CreateNavigationID(tab_id, kUrl);
-  EXPECT_TRUE(predictor_->OnNavigationStarted(navigation_id));
+  auto navigation_id = GetNextId();
+  EXPECT_TRUE(predictor_->OnNavigationStarted(
+      navigation_id, ukm::SourceId(), GURL(kUrl), base::TimeTicks::Now()));
 
   // Should return false since there are no predictions.
-  auto navigation_id2 = CreateNavigationID(tab_id, kUrl3);
-  EXPECT_FALSE(predictor_->OnNavigationStarted(navigation_id2));
+  auto navigation_id2 = GetNextId();
+  EXPECT_FALSE(predictor_->OnNavigationStarted(
+      navigation_id2, ukm::SourceId(), GURL(kUrl3), base::TimeTicks::Now()));
 }
 
 TEST_F(LoadingPredictorTest, TestMainFrameResponseCancelsHint) {
@@ -174,64 +179,42 @@ TEST_F(LoadingPredictorTest, TestMainFrameResponseCancelsHint) {
   predictor_->PrepareForPageLoad(url, HintOrigin::EXTERNAL);
   EXPECT_EQ(1UL, predictor_->active_hints_.size());
 
-  auto navigation_id =
-      CreateNavigationID(SessionID::FromSerializedValue(12), url.spec());
-  predictor_->OnNavigationFinished(navigation_id, navigation_id, false);
+  auto navigation_id = GetNextId();
+  predictor_->OnNavigationFinished(navigation_id, url, url, false);
   EXPECT_TRUE(predictor_->active_hints_.empty());
 }
 
-TEST_F(LoadingPredictorTest, TestMainFrameRequestCancelsStaleNavigations) {
-  const std::string url = kUrl;
-  const std::string url2 = kUrl2;
-  const SessionID tab_id = SessionID::FromSerializedValue(12);
-  const auto& active_navigations = predictor_->active_navigations_;
-  const auto& active_hints = predictor_->active_hints_;
-
-  auto navigation_id = CreateNavigationID(tab_id, url);
-
-  predictor_->OnNavigationStarted(navigation_id);
-  EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
-  EXPECT_NE(active_hints.find(GURL(url)), active_hints.end());
-
-  auto navigation_id2 = CreateNavigationID(tab_id, url2);
-  predictor_->OnNavigationStarted(navigation_id2);
-  EXPECT_EQ(active_navigations.find(navigation_id), active_navigations.end());
-  EXPECT_EQ(active_hints.find(GURL(url)), active_hints.end());
-
-  EXPECT_NE(active_navigations.find(navigation_id2), active_navigations.end());
-}
-
 TEST_F(LoadingPredictorTest, TestMainFrameResponseClearsNavigations) {
-  const std::string url = kUrl;
-  const std::string redirected = kUrl2;
-  const SessionID tab_id = SessionID::FromSerializedValue(12);
+  const GURL url(kUrl);
+  const GURL redirected(kUrl2);
   const auto& active_navigations = predictor_->active_navigations_;
   const auto& active_hints = predictor_->active_hints_;
   const auto& active_urls_to_navigations =
       predictor_->active_urls_to_navigations_;
 
-  auto navigation_id = CreateNavigationID(tab_id, url);
+  auto navigation_id = GetNextId();
 
-  predictor_->OnNavigationStarted(navigation_id);
+  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(), url,
+                                  base::TimeTicks::Now());
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   EXPECT_FALSE(active_hints.empty());
-  EXPECT_NE(active_urls_to_navigations.find(GURL(url)),
+  EXPECT_NE(active_urls_to_navigations.find(url),
             active_urls_to_navigations.end());
 
-  predictor_->OnNavigationFinished(navigation_id, navigation_id, false);
+  predictor_->OnNavigationFinished(navigation_id, url, url, false);
   EXPECT_TRUE(active_navigations.empty());
   EXPECT_TRUE(active_hints.empty());
   EXPECT_TRUE(active_urls_to_navigations.empty());
 
   // With redirects.
-  predictor_->OnNavigationStarted(navigation_id);
+  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(), url,
+                                  base::TimeTicks::Now());
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   EXPECT_FALSE(active_hints.empty());
-  EXPECT_NE(active_urls_to_navigations.find(GURL(url)),
+  EXPECT_NE(active_urls_to_navigations.find(url),
             active_urls_to_navigations.end());
 
-  auto new_navigation_id = CreateNavigationID(tab_id, redirected);
-  predictor_->OnNavigationFinished(navigation_id, new_navigation_id, false);
+  predictor_->OnNavigationFinished(navigation_id, url, redirected, false);
   EXPECT_TRUE(active_navigations.empty());
   EXPECT_TRUE(active_hints.empty());
   EXPECT_TRUE(active_urls_to_navigations.empty());
@@ -239,7 +222,6 @@ TEST_F(LoadingPredictorTest, TestMainFrameResponseClearsNavigations) {
 
 TEST_F(LoadingPredictorTest, TestMainFrameRequestDoesntCancelExternalHint) {
   const GURL url = GURL(kUrl);
-  const SessionID tab_id = SessionID::FromSerializedValue(12);
   const auto& active_navigations = predictor_->active_navigations_;
   auto& active_hints = predictor_->active_hints_;
 
@@ -253,8 +235,10 @@ TEST_F(LoadingPredictorTest, TestMainFrameRequestDoesntCancelExternalHint) {
   base::TimeTicks start_time = it->second - base::TimeDelta::FromSeconds(10);
   it->second = start_time;
 
-  auto navigation_id = CreateNavigationID(tab_id, url.spec());
-  predictor_->OnNavigationStarted(navigation_id);
+  auto navigation_id = GetNextId();
+
+  predictor_->OnNavigationStarted(navigation_id, ukm::SourceId(),
+                                  GURL(url.spec()), base::TimeTicks::Now());
   EXPECT_NE(active_navigations.find(navigation_id), active_navigations.end());
   it = active_hints.find(url);
   EXPECT_NE(it, active_hints.end());
