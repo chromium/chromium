@@ -8,10 +8,36 @@
 
 <body>
 <script>
+    test(t => {
+      let s = new Sanitizer({});
+      assert_throws_js(TypeError, _ => s.sanitizeToString());
+    }, "SanitizerAPI sanitize function without argument should throw an error.");
+
+    test(t => {
+      let s = new Sanitizer({});
+      fragment = s.sanitize(null);
+        assert_equals(s.sanitizeToString(null), "null");
+    }, "SanitizerAPI sanitizeToString function for null.");
+
     testcases.forEach(c => test(t => {
         let s = new Sanitizer(c.config_input);
         assert_equals(s.sanitizeToString(c.value), c.result);
-    }, "SanitizerAPI sanitizeToString function for " + c.message));
+    }, "SanitizerAPI config: " + c.message + ", sanitizeToString from string function for " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
+        let result = s.sanitizeToString(dom);
+
+        assert_equals(result, c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitizeToString from document function for " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        let tpl = document.createElement("template");
+        tpl.innerHTML = c.value;
+        assert_equals(s.sanitizeToString(tpl.content), c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitizeToString from document fragment function for " + c.message));
 </script>
 </body>
 </html>

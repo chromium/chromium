@@ -14,13 +14,52 @@
       return d.innerHTML;
     }
 
+    test(t => {
+      let s = new Sanitizer({});
+      assert_throws_js(TypeError, _ => s.sanitize());
+    }, "SanitizerAPI sanitize function without argument should throw an error.");
+
+    test(t => {
+      let s = new Sanitizer({});
+      fragment = s.sanitize(null);
+      assert_true(fragment instanceof DocumentFragment);
+      assert_equals(getString(fragment), "null");
+    }, "SanitizerAPI sanitize function for null.");
+
     testcases.forEach(c => test(t => {
         let s = new Sanitizer(c.config_input);
-
         fragment = s.sanitize(c.value);
         assert_true(fragment instanceof DocumentFragment);
         assert_equals(getString(fragment), c.result);
-    }, "SanitizerAPI sanitize function for " + c.message));
+    }, "SanitizerAPI with config: " + c.message + ", sanitize from string function for " + c.message));
+
+    async_test(t => {
+      let s = new Sanitizer();
+      fragment = s.sanitize("<img src='http://bla/'>");
+      t.step_timeout(_ => {
+        assert_equals(performance.getEntriesByName("http://bla/").length, 0);
+        t.done();
+      }, 1000);
+    }, "SanitizerAPI sanitize function shouldn't load the image.");
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
+        fragment = s.sanitize(dom);
+        assert_true(fragment instanceof DocumentFragment);
+
+        let result = getString(fragment);
+        assert_equals(result, c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitize from document function for " + c.message));
+
+    testcases.forEach(c => test(t => {
+        let s = new Sanitizer(c.config_input);
+        let tpl = document.createElement("template");
+        tpl.innerHTML = c.value;
+        fragment = s.sanitize(tpl.content);
+        assert_true(fragment instanceof DocumentFragment);
+        assert_equals(getString(fragment), c.result);
+    }, "SanitizerAPI with config: " + c.message + ", sanitize from document fragment function for " + c.message));
 </script>
 </body>
 </html>
