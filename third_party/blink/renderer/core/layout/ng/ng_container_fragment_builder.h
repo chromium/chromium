@@ -117,6 +117,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       bool needs_block_offset_adjustment = true,
       const base::Optional<LogicalRect> containing_block_rect = base::nullopt);
 
+  void AddOutOfFlowChildCandidate(
+      const NGLogicalOutOfFlowPositionedNode& candidate);
+
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining
   // the correct static-position.
@@ -147,8 +150,17 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
 
+  // Transfer the candidates from |oof_positioned_candidates_| to
+  // |destination_builder|.
+  void TransferOutOfFlowCandidates(
+      NGContainerFragmentBuilder* destination_builder);
+
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.IsEmpty();
+  }
+
+  bool HasOutOfFlowPositionedDescendants() const {
+    return !oof_positioned_descendants_.IsEmpty();
   }
 
   bool HasOutOfFlowFragmentainerDescendants() const {

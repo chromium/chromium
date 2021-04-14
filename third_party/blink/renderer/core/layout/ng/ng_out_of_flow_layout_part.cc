@@ -695,6 +695,16 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
       .LayoutFragmentainerDescendants(
           &oof_nodes_to_layout, column_inline_progression, &multicol_children);
 
+  // Any descendants should have been handled in
+  // LayoutFragmentainerDescendants(). However, if there were any candidates
+  // found, pass them back to |container_builder_| so they can continue
+  // propagating up the tree.
+  // TODO(almaher): Handle the case where a fixedpos containing block lives
+  // in an outer multicol.
+  DCHECK(!multicol_container_builder.HasOutOfFlowPositionedDescendants());
+  DCHECK(!multicol_container_builder.HasOutOfFlowFragmentainerDescendants());
+  multicol_container_builder.TransferOutOfFlowCandidates(container_builder_);
+
   // Handle any inner multicols with OOF descendants that may have propagated up
   // while laying out the direct OOF descendants of the current multicol.
   HandleMulticolsWithPendingOOFs(&multicol_container_builder);

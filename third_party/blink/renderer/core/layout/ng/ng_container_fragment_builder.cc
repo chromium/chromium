@@ -176,6 +176,11 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
       containing_block_rect);
 }
 
+void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
+    const NGLogicalOutOfFlowPositionedNode& candidate) {
+  oof_positioned_candidates_.emplace_back(candidate);
+}
+
 void NGContainerFragmentBuilder::AddOutOfFlowInlineChildCandidate(
     NGBlockNode child,
     const LogicalOffset& child_offset,
@@ -246,6 +251,13 @@ void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
   DCHECK(descendants->IsEmpty());
   DCHECK(!has_oof_candidate_that_needs_block_offset_adjustment_);
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
+}
+
+void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
+    NGContainerFragmentBuilder* destination_builder) {
+  for (const auto& candidate : oof_positioned_candidates_)
+    destination_builder->AddOutOfFlowChildCandidate(candidate);
+  oof_positioned_candidates_.clear();
 }
 
 void NGContainerFragmentBuilder::
