@@ -29,18 +29,17 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   const base::Value* availability =
       policies.GetValue(key::kIncognitoModeAvailability);
   if (availability) {
-    int int_value = IncognitoModePrefs::ENABLED;
-    if (!availability->GetAsInteger(&int_value)) {
+    if (!availability->is_int()) {
       errors->AddError(key::kIncognitoModeAvailability, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::INTEGER));
       return false;
     }
     IncognitoModePrefs::Availability availability_enum_value;
-    if (!IncognitoModePrefs::IntToAvailability(int_value,
+    if (!IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                                &availability_enum_value)) {
       errors->AddError(key::kIncognitoModeAvailability,
                        IDS_POLICY_OUT_OF_RANGE_ERROR,
-                       base::NumberToString(int_value));
+                       base::NumberToString(availability->GetInt()));
       return false;
     }
     return true;
@@ -74,10 +73,9 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* deprecated_enabled =
       policies.GetValue(key::kIncognitoEnabled);
   if (availability) {
-    int int_value = IncognitoModePrefs::ENABLED;
     IncognitoModePrefs::Availability availability_enum_value;
-    if (availability->GetAsInteger(&int_value) &&
-        IncognitoModePrefs::IntToAvailability(int_value,
+    if (availability->is_int() &&
+        IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                               &availability_enum_value)) {
       prefs->SetInteger(prefs::kIncognitoModeAvailability,
                         availability_enum_value);
