@@ -62,7 +62,13 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
+// Flaky on Linux. http://crbug.com/1198794
+#if defined(OS_LINUX)
+#define MAYBE_File DISABLED_File
+#else
+#define MAYBE_File File
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_File) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
