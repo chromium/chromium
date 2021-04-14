@@ -28,6 +28,10 @@
     on-click="onClearLogsButtonClicked_">
   Clear Logs
 </cr-button>
+<cr-button class="internals-button"
+    on-click="onClearPrefsButtonClicked_">
+  Reset Nearby
+</cr-button>
 <iron-list items="[[logList_]]" as="log" id="logs-list">
   <template>
     <log-object log-message="[[log]]">

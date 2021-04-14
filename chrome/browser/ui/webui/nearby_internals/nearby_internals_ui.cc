@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_contact_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_http_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_logs_handler.h"
+#include "chrome/browser/ui/webui/nearby_internals/nearby_internals_prefs_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_trigger_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -48,6 +49,8 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       std::make_unique<NearbyInternalsContactHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsHttpHandler>(context));
+  web_ui->AddMessageHandler(
+      std::make_unique<NearbyInternalsPrefsHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsUiTriggerHandler>(context));
 }
