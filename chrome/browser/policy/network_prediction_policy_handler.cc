@@ -55,10 +55,9 @@ void NetworkPredictionPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   const base::Value* network_prediction_options =
       policies.GetValue(key::kNetworkPredictionOptions);
-  int int_setting;
-  if (network_prediction_options &&
-      network_prediction_options->GetAsInteger(&int_setting)) {
-    prefs->SetInteger(prefs::kNetworkPredictionOptions, int_setting);
+  if (network_prediction_options && network_prediction_options->is_int()) {
+    prefs->SetInteger(prefs::kNetworkPredictionOptions,
+                      network_prediction_options->GetInt());
     return;
   }
 
