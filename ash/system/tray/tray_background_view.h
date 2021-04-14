@@ -163,8 +163,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   }
 
  private:
-  friend class TrayBackgroundViewTestView;
-
   class TrayWidgetObserver;
 
   void StartVisibilityAnimation(bool visible);
@@ -173,10 +171,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // `LogVisiblePodCountMetric()`.
   void UpdateStatusArea(bool should_log_visible_pod_count);
 
-  // After hide animation is finished/aborted/removed, we will need to do an
-  // update to the view's visibility and the view's status area widget state.
-  void OnVisibilityAnimationFinished(bool should_log_visible_pod_count,
-                                     bool aborted);
+  // After hide animoation is finished/aborted/removed or interrupted by any
+  // function, we will need to do an update to the view's visibility and the
+  // view's status area widget state.
+  void OnVisibilityAnimationFinished(bool should_log_visible_pod_count);
 
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
@@ -235,7 +233,6 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   bool show_when_collapsed_;
 
   bool use_bounce_in_animation_ = false;
-  bool is_starting_animation_ = false;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;

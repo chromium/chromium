@@ -179,7 +179,6 @@ class ASH_EXPORT StatusAreaWidget : public ClockObserver,
 
  private:
   friend class MediaTrayTest;
-  friend class TrayBackgroundViewTest;
 
   struct LayoutInputs {
     gfx::Rect bounds;
