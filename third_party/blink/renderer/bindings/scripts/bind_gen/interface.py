@@ -6655,10 +6655,15 @@ def _collect_include_headers(class_like):
 
     for attribute in class_like.attributes:
         collect_from_idl_type(attribute.idl_type)
-    for constructor in class_like.constructors:
-        for argument in constructor.arguments:
-            collect_from_idl_type(argument.idl_type)
-    for operation in class_like.operations:
+
+    operations = []
+    operations.extend(class_like.constructors)
+    operations.extend(class_like.operations)
+    if class_like.is_interface:
+        for x in [class_like.iterable, class_like.maplike, class_like.setlike]:
+            if x:
+                operations.extend(x.operations)
+    for operation in operations:
         collect_from_idl_type(operation.return_type)
         for argument in operation.arguments:
             collect_from_idl_type(argument.idl_type)
