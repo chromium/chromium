@@ -96,8 +96,6 @@ class SingleTestRunner(object):
         image_hash = None
         if self._should_fetch_expected_checksum():
             image_hash = self._port.expected_checksum(self._test_name)
-            if image_hash:
-                image_hash = image_hash.decode("ascii", "replace")
 
         args = self._port.args_for_test(self._test_name)
         test_name = self._port.name_for_test(self._test_name)

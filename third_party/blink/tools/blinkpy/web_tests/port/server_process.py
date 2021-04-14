@@ -31,7 +31,6 @@ import errno
 import logging
 import re
 import signal
-import six
 import sys
 import time
 
@@ -308,11 +307,6 @@ class ServerProcess(object):
                                                   or self._proc.poll()):
                     self._crashed = True
                 self._log_data('OUT', data)
-                if six.PY3:
-                    # TODO(crbug/1197331): Decode only for PY3 for now.
-                    # In PY2, decoding here causes html_diff.py->html_diff
-                    # to fail an assert.
-                    data = data.decode("utf-8", errors="replace")
                 self._output += data
 
             if err_fd in read_fds:
@@ -321,11 +315,6 @@ class ServerProcess(object):
                                                   or self._proc.poll()):
                     self._crashed = True
                 self._log_data('ERR', data)
-                if six.PY3:
-                    # TODO(crbug/1197331): Decode only for PY3 for now.
-                    # In PY2, decoding here causes error string encoding issues
-                    # while writing from test_failures.py
-                    data = data.decode("utf-8", errors="replace")
                 self._error += data
         except IOError:
             # We can ignore the IOErrors because we will detect if the

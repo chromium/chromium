@@ -111,7 +111,11 @@ class MeteredStream(object):
         else:
             msg = self._ensure_newline(txt)
 
-        self._stream.write(msg)
+        # This is the easiest way to make sure a byte stream is printable as ascii
+        # with all non-ascii characters replaced.
+        uni_msg = msg if isinstance(msg, unicode) else msg.decode(
+            'ascii', errors='replace')
+        self._stream.write(uni_msg.encode('ascii', errors='replace'))
 
     def writeln(self, txt, now=None, pid=None):
         self.write(self._ensure_newline(txt), now, pid)
