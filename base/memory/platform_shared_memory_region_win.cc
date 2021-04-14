@@ -213,23 +213,6 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   }
 
   *mapped_size = GetMemorySectionSize(*memory);
-  if (*mapped_size < size) {
-    // Mapping may succeed even if the actual shared memory object is smaller
-    // than `size` bytes. Make sure we still fail in that case.
-    Unmap(*memory, *mapped_size);
-    return false;
-  }
-
-  return true;
-}
-
-// static
-bool PlatformSharedMemoryRegion::Unmap(void* memory, size_t mapped_size) {
-  if (!UnmapViewOfFile(memory)) {
-    DPLOG(ERROR) << "UnmapViewOfFile";
-    return false;
-  }
-
   return true;
 }
 
