@@ -575,4 +575,11 @@
     },
     'identifier': 'OCTOPUS_TOT-1',
   },
+  'CROS_OCTOPUS_TOT-2': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R90-13816.40.0',
+    },
+    'identifier': 'OCTOPUS_TOT-2',
+  },
 }

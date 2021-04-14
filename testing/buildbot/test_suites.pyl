@@ -7183,8 +7183,9 @@
           'CROS_KEFKA_TOT',
           'CROS_KIP_TOT',
           'CROS_OCTOPUS_TOT',
-          'CROS_OCTOPUS_TOT-1',
           'CROS_SNAPPY_TOT',
+          'CROS_OCTOPUS_TOT-1',
+          'CROS_OCTOPUS_TOT-2',
         ]
       },
     },
