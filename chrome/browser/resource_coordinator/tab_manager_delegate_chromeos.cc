@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/memory/pressure/pressure.h"
 #include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -220,12 +219,12 @@ class TabManagerDelegate::FocusedProcess {
 // Target memory to free is the amount which brings available
 // memory back to the margin.
 int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
-  if (chromeos::memory::SystemMemoryPressureEvaluator::Get()) {
-    // The first output of GetMemoryMarginsKB() is the critical memory
-    // threshold. Low memory condition is reported if available memory is under
-    // the number.
-    return chromeos::memory::pressure::GetMemoryMarginsKB().first -
-           chromeos::memory::pressure::GetAvailableMemoryKB();
+  auto* monitor = chromeos::memory::SystemMemoryPressureEvaluator::Get();
+  if (monitor) {
+    // Low memory condition is reported if available memory is under the
+    // critical margin.
+    return monitor->GetMemoryMarginsKB().critical -
+           monitor->GetCachedAvailableMemoryKB();
   } else {
     // When TabManager::DiscardTab(LifecycleUnitDiscardReason::EXTERNAL) is
     // called by an integration test, TabManagerDelegate might be used without

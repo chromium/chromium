@@ -14,10 +14,13 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
 #include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 
 namespace chromeos {
 namespace memory {
@@ -31,9 +34,22 @@ namespace memory {
 class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
     : public util::SystemMemoryPressureEvaluator {
  public:
+  // Memory margins. When available is below critical, it's memory pressure
+  // level critical. When available is below moderate, it's memory pressure
+  // level moderate. See base/memory/memory_pressure_listener.h enum
+  // MemoryPressureLevel for the details.
+  struct MemoryMarginsKB {
+    uint64_t critical;
+    uint64_t moderate;
+  };
+
   explicit SystemMemoryPressureEvaluator(
       std::unique_ptr<util::MemoryPressureVoter> voter);
   ~SystemMemoryPressureEvaluator() override;
+
+  SystemMemoryPressureEvaluator(const SystemMemoryPressureEvaluator&) = delete;
+  SystemMemoryPressureEvaluator& operator=(
+      const SystemMemoryPressureEvaluator&) = delete;
 
   // ScheduleEarlyCheck is used by the ChromeOS tab manager delegate to force it
   // to quickly recheck pressure levels after a tab discard or some other
@@ -43,23 +59,45 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   // Returns the current system memory pressure evaluator.
   static SystemMemoryPressureEvaluator* Get();
 
+  // Returns the memory margins.
+  MemoryMarginsKB GetMemoryMarginsKB();
+
+  // Returns the cached available memory value.
+  uint64_t GetCachedAvailableMemoryKB();
+
  protected:
   // This constructor is only used for testing.
   SystemMemoryPressureEvaluator(
-      bool disable_timer_for_testing,
+      bool for_testing,
       std::unique_ptr<util::MemoryPressureVoter> voter);
 
   void CheckMemoryPressure();
 
   // Split CheckMemoryPressure and CheckMemoryPressureImpl for testing.
-  void CheckMemoryPressureImpl(uint64_t moderate_avail_mb,
-                               uint64_t critical_avail_mb,
-                               uint64_t mem_avail_mb);
+  void CheckMemoryPressureImpl(uint64_t moderate_margin_kb,
+                               uint64_t critical_margin_kb,
+                               uint64_t mem_avail_kb);
 
  private:
   void CheckMemoryPressureAndRecordStatistics();
-  int moderate_pressure_threshold_mb_ = 0;
-  int critical_pressure_threshold_mb_ = 0;
+
+  void SetupDefaultMemoryMargins();
+
+  // Callback for D-Bus method GetMemoryMarginsKB.
+  void OnMemoryMargins(
+      base::Optional<chromeos::ResourcedClient::MemoryMarginsKB> result);
+
+  // Callback for D-Bus method GetAvailableMemoryKB.
+  void OnAvailableMemory(base::Optional<uint64_t> result);
+
+  // Member variables.
+
+  // Margins for pressure levels.
+  uint64_t moderate_margin_kb_ = 0;
+  uint64_t critical_margin_kb_ = 0;
+
+  // Cached available memory.
+  std::atomic<uint64_t> cached_available_kb_;
 
   // We keep track of how long it has been since we last notified at the
   // moderate level.
@@ -76,8 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMemoryPressureEvaluator);
 };
 
 }  // namespace memory

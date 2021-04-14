@@ -24,6 +24,7 @@ component("memory") {
     "//chromeos:chromeos_export",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",
+    "//chromeos/dbus/resourced:resourced",
     "//crypto",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
   ]

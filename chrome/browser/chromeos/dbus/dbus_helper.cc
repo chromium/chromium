@@ -34,6 +34,7 @@
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
@@ -105,6 +106,7 @@ void InitializeDBus() {
   InitializeDBusClient<PciguardClient>(bus);
   InitializeDBusClient<PermissionBrokerClient>(bus);
   InitializeDBusClient<PowerManagerClient>(bus);
+  InitializeDBusClient<ResourcedClient>(bus);
   InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -152,6 +154,7 @@ void ShutdownDBus() {
   SystemProxyClient::Shutdown();
   SystemClockClient::Shutdown();
   SessionManagerClient::Shutdown();
+  ResourcedClient::Shutdown();
   PowerManagerClient::Shutdown();
   PermissionBrokerClient::Shutdown();
   PciguardClient::Shutdown();

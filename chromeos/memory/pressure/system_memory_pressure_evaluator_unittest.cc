@@ -40,10 +40,9 @@ void OnMemoryPressure(
 class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   TestSystemMemoryPressureEvaluator(
-      bool disable_timer_for_testing,
+      bool for_testing,
       std::unique_ptr<util::MemoryPressureVoter> voter)
-      : SystemMemoryPressureEvaluator(disable_timer_for_testing,
-                                      std::move(voter)) {}
+      : SystemMemoryPressureEvaluator(for_testing, std::move(voter)) {}
 
   void CheckMemoryPressureImpl(uint64_t moderate_avail_mb,
                                uint64_t critical_avail_mb,
@@ -78,7 +77,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   monitor.ResetSystemEvaluatorForTesting();
 
   auto evaluator = std::make_unique<TestSystemMemoryPressureEvaluator>(
-      /*disable_timer_for_testing=*/true, monitor.CreateVoter());
+      /*for_testing=*/true, monitor.CreateVoter());
 
   // At this point we have no memory pressure.
   ASSERT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
