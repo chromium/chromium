@@ -111,7 +111,10 @@ void TtsControllerImpl::SetStopSpeakingWhenHidden(bool value) {
   stop_speaking_when_hidden_ = value;
 }
 
-TtsControllerImpl::TtsControllerImpl() = default;
+TtsControllerImpl::TtsControllerImpl() {
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  OnNetworkChanged(net::NetworkChangeNotifier::GetConnectionType());
+}
 
 TtsControllerImpl::~TtsControllerImpl() {
   if (current_utterance_) {
@@ -121,6 +124,8 @@ TtsControllerImpl::~TtsControllerImpl() {
 
   // Clear any queued utterances too.
   ClearUtteranceQueue(false);  // Don't sent events.
+
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
 }
 
 void TtsControllerImpl::SpeakOrEnqueue(
@@ -309,6 +314,13 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   tts_platform->LoadBuiltInTtsEngine(browser_context);
   if (TtsPlatformReady())
     tts_platform->GetVoices(out_voices);
+
+  if (!allow_remote_voices_) {
+    auto it =
+        std::remove_if(out_voices->begin(), out_voices->end(),
+                       [](const VoiceData& voice) { return voice.remote; });
+    out_voices->resize(it - out_voices->begin());
+  }
 }
 
 bool TtsControllerImpl::IsSpeaking() {
@@ -832,6 +844,27 @@ void TtsControllerImpl::WebContentsDestroyed() {
 void TtsControllerImpl::OnVisibilityChanged(Visibility visibility) {
   if (visibility == Visibility::HIDDEN && stop_speaking_when_hidden_)
     StopCurrentUtteranceAndRemoveUtterancesMatching(web_contents());
+}
+
+void TtsControllerImpl::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  switch (type) {
+      // Non-cellular connections.
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
+      allow_remote_voices_ = true;
+      break;
+
+      // Cellular connections.
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
+      allow_remote_voices_ = false;
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

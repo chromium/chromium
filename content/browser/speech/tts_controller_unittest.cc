@@ -199,6 +199,8 @@ class TestTtsControllerImpl : public TtsControllerImpl {
   using TtsControllerImpl::IsPausedForTesting;
 
   TtsUtterance* current_utterance() { return current_utterance_.get(); }
+
+  void set_allow_remote_voices(bool value) { allow_remote_voices_ = value; }
 };
 
 class TtsControllerTest : public testing::Test {
@@ -908,6 +910,30 @@ TEST_F(TtsControllerTest, SpeakWhenLoadingPlatformImpl) {
   EXPECT_TRUE(IsUtteranceListEmpty());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
+}
+
+TEST_F(TtsControllerTest, GetVoicesOnlineOffline) {
+  std::vector<VoiceData> voices;
+  VoiceData voice_data0;
+  voice_data0.name = "offline";
+  voices.push_back(std::move(voice_data0));
+
+  VoiceData voice_data1;
+  voice_data1.name = "online";
+  voice_data1.remote = true;
+  voices.push_back(std::move(voice_data1));
+  platform_impl()->set_voices(voices);
+
+  controller()->set_allow_remote_voices(true);
+  std::vector<VoiceData> controller_voices;
+  controller()->GetVoices(browser_context(), &controller_voices);
+  EXPECT_EQ(2U, controller_voices.size());
+
+  controller_voices.clear();
+  controller()->set_allow_remote_voices(false);
+  controller()->GetVoices(browser_context(), &controller_voices);
+  EXPECT_EQ(1U, controller_voices.size());
+  EXPECT_EQ("offline", controller_voices[0].name);
 }
 
 #if !defined(OS_ANDROID)
