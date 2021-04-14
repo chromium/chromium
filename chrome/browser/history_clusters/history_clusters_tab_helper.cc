@@ -115,14 +115,17 @@ HistoryClustersTabHelper::HistoryClustersTabHelper(
 HistoryClustersTabHelper::~HistoryClustersTabHelper() = default;
 
 void HistoryClustersTabHelper::OnOmniboxUrlCopied() {
-  DCHECK(!navigation_ids_.empty());
+  // It's possible that there have been no navigations if certain builtin pages
+  // were opened in a new tab (e.g. chrome://crash or chrome://invalid-page).
+  if (navigation_ids_.empty())
+    return;
   auto* memories_service = GetMemoriesService();
   // It's possible that the last navigation is complete if the tab crashed and a
   // new navigation hasn't began.
-  if (memories_service->HasIncompleteVisit(navigation_ids_.back())) {
-    memories_service->GetIncompleteVisit(navigation_ids_.back())
-        .context_signals.omnibox_url_copied = true;
-  }
+  if (!memories_service->HasIncompleteVisit(navigation_ids_.back()))
+    return;
+  memories_service->GetIncompleteVisit(navigation_ids_.back())
+      .context_signals.omnibox_url_copied = true;
 }
 
 void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
