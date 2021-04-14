@@ -14,9 +14,9 @@ namespace gfx {
 
 // This class implements the subset of 2D linear transforms that only
 // translation and uniform scaling are allowed.
-// Internally this is stored as a scalar pre-scale factor, and a vector
+// Internally this is stored as a vector for pre-scale, and another vector
 // for post-translation. The class constructor and member accessor follows
-// the same convention.
+// the same convention, but a scalar scale factor is also accepted.
 class GEOMETRY_EXPORT AxisTransform2d {
  public:
   constexpr AxisTransform2d() = default;
