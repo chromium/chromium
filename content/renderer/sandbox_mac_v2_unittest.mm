@@ -45,7 +45,7 @@ void SetParametersForTest(sandbox::SandboxCompiler* compiler,
       sandbox::policy::kParamDisableSandboxDenialLogging, !enable_logging));
 
   std::string homedir =
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::GetHomeDir()).value();
+      sandbox::policy::GetCanonicalPath(base::GetHomeDir()).value();
   CHECK(compiler->InsertStringParam(sandbox::policy::kParamHomedirAsLiteral,
                                     homedir));
 
@@ -57,8 +57,7 @@ void SetParametersForTest(sandbox::SandboxCompiler* compiler,
                                     std::to_string(os_version)));
 
   std::string bundle_path =
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::mac::MainBundlePath())
-          .value();
+      sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath()).value();
   CHECK(compiler->InsertStringParam(sandbox::policy::kParamBundlePath,
                                     bundle_path));
 
@@ -102,7 +101,7 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   CHECK(temp_dir.CreateUniqueTempDir());
   CHECK(temp_dir.IsValid());
   base::FilePath temp_path = temp_dir.GetPath();
-  temp_path = sandbox::policy::SandboxMac::GetCanonicalPath(temp_path);
+  temp_path = sandbox::policy::GetCanonicalPath(temp_path);
   const base::FilePath log_file = temp_path.Append("log-file");
   const base::FilePath exec_file("/bin/ls");
 

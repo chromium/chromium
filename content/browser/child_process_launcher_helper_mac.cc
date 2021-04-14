@@ -75,8 +75,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
   if (!no_sandbox) {
     // Generate the profile string.
-    std::string profile =
-        sandbox::policy::SandboxMac::GetSandboxProfile(sandbox_type);
+    std::string profile = sandbox::policy::GetSandboxProfile(sandbox_type);
 
     // Disable os logging to com.apple.diagnosticd which is a performance
     // problem.

@@ -28,8 +28,7 @@
 namespace sandbox {
 namespace policy {
 
-// static
-base::FilePath SandboxMac::GetCanonicalPath(const base::FilePath& path) {
+base::FilePath GetCanonicalPath(const base::FilePath& path) {
   base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
   if (!fd.is_valid()) {
     DPLOG(ERROR) << "GetCanonicalSandboxPath() failed for: " << path.value();
@@ -45,8 +44,7 @@ base::FilePath SandboxMac::GetCanonicalPath(const base::FilePath& path) {
   return base::FilePath(canonical_path);
 }
 
-// static
-std::string SandboxMac::GetSandboxProfile(SandboxType sandbox_type) {
+std::string GetSandboxProfile(SandboxType sandbox_type) {
   std::string profile = std::string(kSeatbeltPolicyString_common);
 
   switch (sandbox_type) {

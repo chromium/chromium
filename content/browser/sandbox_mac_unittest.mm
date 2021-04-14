@@ -60,8 +60,7 @@ class SandboxMacTest : public base::MultiProcessTest {
   void ExecuteWithParams(const std::string& procname,
                          sandbox::policy::SandboxType sandbox_type) {
     std::string profile =
-        sandbox::policy::SandboxMac::GetSandboxProfile(sandbox_type) +
-        kTempDirSuffix;
+        sandbox::policy::GetSandboxProfile(sandbox_type) + kTempDirSuffix;
     sandbox::SeatbeltExecClient client;
     client.SetProfile(profile);
     SetupSandboxParameters(sandbox_type,

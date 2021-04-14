@@ -70,22 +70,19 @@ void AddDarwinDirs(sandbox::SeatbeltExecClient* client) {
   PCHECK(rv != 0);
   CHECK(client->SetParameter(
       sandbox::policy::kParamDarwinUserCacheDir,
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
-          .value()));
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 
   rv = confstr(_CS_DARWIN_USER_DIR, dir_path, sizeof(dir_path));
   PCHECK(rv != 0);
   CHECK(client->SetParameter(
       sandbox::policy::kParamDarwinUserDir,
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
-          .value()));
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 
   rv = confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path));
   PCHECK(rv != 0);
   CHECK(client->SetParameter(
       sandbox::policy::kParamDarwinUserTempDir,
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
-          .value()));
+      sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 }
 
 // All of the below functions populate the |client| with the parameters that the
@@ -103,8 +100,7 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
       sandbox::policy::kParamDisableSandboxDenialLogging, !enable_logging));
 
   std::string bundle_path =
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::mac::MainBundlePath())
-          .value();
+      sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath()).value();
   CHECK(client->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
 
   std::string bundle_id = base::mac::BaseBundleID();
@@ -123,7 +119,7 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
   // the dylibs live.
   base::FilePath component_path = base::mac::MainBundlePath().Append("..");
   std::string component_path_canonical =
-      sandbox::policy::SandboxMac::GetCanonicalPath(component_path).value();
+      sandbox::policy::GetCanonicalPath(component_path).value();
   CHECK(client->SetParameter(sandbox::policy::kParamComponentPath,
                              component_path_canonical));
 #endif
@@ -131,7 +127,7 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
   CHECK(client->SetParameter(sandbox::policy::kParamOsVersion, GetOSVersion()));
 
   std::string homedir =
-      sandbox::policy::SandboxMac::GetCanonicalPath(base::GetHomeDir()).value();
+      sandbox::policy::GetCanonicalPath(base::GetHomeDir()).value();
   CHECK(client->SetParameter(sandbox::policy::kParamHomedirAsLiteral, homedir));
 
   CHECK(client->SetBooleanParameter(
@@ -154,19 +150,17 @@ void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
       sandbox::policy::kParamNetworkServiceStoragePathsCount,
       base::NumberToString(storage_paths.size())));
   for (size_t i = 0; i < storage_paths.size(); ++i) {
-    base::FilePath path =
-        sandbox::policy::SandboxMac::GetCanonicalPath(storage_paths[i]);
+    base::FilePath path = sandbox::policy::GetCanonicalPath(storage_paths[i]);
     std::string param_name = base::StringPrintf(
         "%s%zu", sandbox::policy::kParamNetworkServiceStoragePathN, i);
     CHECK(client->SetParameter(param_name, path.value())) << param_name;
   }
 
   if (GetNetworkTestCertsDirectory().has_value()) {
-    CHECK(
-        client->SetParameter(sandbox::policy::kParamNetworkServiceTestCertsDir,
-                             sandbox::policy::SandboxMac::GetCanonicalPath(
-                                 *GetNetworkTestCertsDirectory())
-                                 .value()));
+    CHECK(client->SetParameter(
+        sandbox::policy::kParamNetworkServiceTestCertsDir,
+        sandbox::policy::GetCanonicalPath(*GetNetworkTestCertsDirectory())
+            .value()));
   }
 }
 
@@ -177,8 +171,8 @@ void SetupPPAPISandboxParameters(sandbox::SeatbeltExecClient* client) {
   std::vector<content::WebPluginInfo> plugins;
   PluginService::GetInstance()->GetInternalPlugins(&plugins);
 
-  base::FilePath bundle_path = sandbox::policy::SandboxMac::GetCanonicalPath(
-      base::mac::MainBundlePath());
+  base::FilePath bundle_path =
+      sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath());
 
   const std::string param_base_name = "PPAPI_PATH_";
   int index = 0;
