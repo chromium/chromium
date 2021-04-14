@@ -23,7 +23,7 @@
 #endif
 #endif
 
-#define PCSCAN_DISABLE_SAFEPOINTS 1
+#define PCSCAN_DISABLE_SAFEPOINTS 0
 
 namespace base {
 namespace internal {

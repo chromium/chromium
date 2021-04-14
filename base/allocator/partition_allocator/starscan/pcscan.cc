@@ -1535,8 +1535,11 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
   auto task = base::MakeRefCounted<PCScanTask>(*this);
   PCScanInternal::Instance().SetCurrentPCScanTask(task);
 
-  if (UNLIKELY(invocation_mode == InvocationMode::kScheduleOnlyForTesting))
+  if (UNLIKELY(invocation_mode == InvocationMode::kScheduleOnlyForTesting)) {
+    // Immediately change the state to enable safepoint testing.
+    state_.store(State::kScanning, std::memory_order_release);
     return;
+  }
 
   // Post PCScan task.
   if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
