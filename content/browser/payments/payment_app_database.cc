@@ -112,7 +112,7 @@ SupportedDelegations ToSupportedDelegations(
 std::unique_ptr<StoredPaymentApp> ToStoredPaymentApp(const std::string& input) {
   StoredPaymentAppProto app_proto;
   if (!app_proto.ParseFromString(input))
-    return std::unique_ptr<StoredPaymentApp>();
+    return nullptr;
 
   std::unique_ptr<StoredPaymentApp> app = std::make_unique<StoredPaymentApp>();
   app->registration_id = app_proto.registration_id();

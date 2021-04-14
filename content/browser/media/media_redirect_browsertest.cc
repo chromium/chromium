@@ -44,7 +44,7 @@ class MediaRedirectTest : public MediaBrowserTest {
       const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/" + kHiddenPath,
                           base::CompareCase::SENSITIVE)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(

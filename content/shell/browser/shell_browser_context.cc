@@ -139,7 +139,7 @@ void ShellBrowserContext::FinishInitWhileIOAllowed() {
 #if !defined(OS_ANDROID)
 std::unique_ptr<ZoomLevelDelegate> ShellBrowserContext::CreateZoomLevelDelegate(
     const base::FilePath&) {
-  return std::unique_ptr<ZoomLevelDelegate>();
+  return nullptr;
 }
 #endif  // !defined(OS_ANDROID)
 

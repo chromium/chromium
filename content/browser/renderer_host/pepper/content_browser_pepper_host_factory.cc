@@ -63,7 +63,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
 
   // Make sure the plugin is giving us a valid instance for this resource.
   if (!host_->IsValidInstance(instance))
-    return std::unique_ptr<ppapi::host::ResourceHost>();
+    return nullptr;
 
   // Public interfaces.
   switch (message.type()) {
@@ -76,7 +76,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
       if (!ppapi::UnpackMessage<PpapiHostMsg_FileSystem_Create>(
               message, &file_system_type)) {
         NOTREACHED();
-        return std::unique_ptr<ppapi::host::ResourceHost>();
+        return nullptr;
       }
       return std::unique_ptr<ppapi::host::ResourceHost>(
           new PepperFileSystemBrowserHost(host_, instance, resource,
@@ -103,7 +103,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
       if (!ppapi::UnpackMessage<PpapiHostMsg_FileRef_CreateForFileAPI>(
               message, &file_system, &internal_path)) {
         NOTREACHED();
-        return std::unique_ptr<ppapi::host::ResourceHost>();
+        return nullptr;
       }
       return std::unique_ptr<ppapi::host::ResourceHost>(new PepperFileRefHost(
           host_, instance, resource, file_system, internal_path));
@@ -211,7 +211,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
         new PepperNetworkMonitorHost(host_, instance, resource));
   }
 
-  return std::unique_ptr<ppapi::host::ResourceHost>();
+  return nullptr;
 }
 
 std::unique_ptr<ppapi::host::ResourceHost>
@@ -224,7 +224,7 @@ ContentBrowserPepperHostFactory::CreateAcceptedTCPSocket(
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   if (!CanCreateSocket())
-    return std::unique_ptr<ppapi::host::ResourceHost>();
+    return nullptr;
   scoped_refptr<PepperTCPSocketMessageFilter> tcp_socket(
       base::MakeRefCounted<PepperTCPSocketMessageFilter>(
           nullptr /* factory */, host_, instance, version));
@@ -244,7 +244,7 @@ ContentBrowserPepperHostFactory::CreateNewTCPSocket(
   scoped_refptr<ppapi::host::ResourceMessageFilter> tcp_socket(
       new PepperTCPSocketMessageFilter(this, host_, instance, version));
   if (!tcp_socket.get())
-    return std::unique_ptr<ppapi::host::ResourceHost>();
+    return nullptr;
 
   return std::unique_ptr<ppapi::host::ResourceHost>(
       new ppapi::host::MessageFilterHost(host_->GetPpapiHost(), instance,

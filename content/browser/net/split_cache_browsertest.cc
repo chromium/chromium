@@ -130,7 +130,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       return http_response;
     }
 
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   }
 
  protected:

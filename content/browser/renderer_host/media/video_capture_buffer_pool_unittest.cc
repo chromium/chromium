@@ -98,7 +98,7 @@ class VideoCaptureBufferPoolTest
         &buffer_id, &buffer_id_to_drop);
     if (reserve_result !=
         media::VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
-      return std::unique_ptr<Buffer>();
+      return nullptr;
     }
     EXPECT_EQ(expected_dropped_id_, buffer_id_to_drop);
 

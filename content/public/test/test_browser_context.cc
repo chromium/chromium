@@ -75,7 +75,7 @@ base::FilePath TestBrowserContext::GetPath() {
 #if !defined(OS_ANDROID)
 std::unique_ptr<ZoomLevelDelegate> TestBrowserContext::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
-  return std::unique_ptr<ZoomLevelDelegate>();
+  return nullptr;
 }
 #endif  // !defined(OS_ANDROID)
 

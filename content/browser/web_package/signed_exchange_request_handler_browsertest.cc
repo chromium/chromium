@@ -1150,7 +1150,7 @@ class SignedExchangeAcceptHeaderBrowserTest
   RedirectResponseHandler(const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/r?",
                           base::CompareCase::SENSITIVE)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -1167,7 +1167,7 @@ class SignedExchangeAcceptHeaderBrowserTest
     const std::string prefix = "/fallback_sxg?";
     if (!base::StartsWith(request.relative_url, prefix,
                           base::CompareCase::SENSITIVE)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
     std::string fallback_url(request.relative_url.substr(prefix.length()));
     if (fallback_url.empty()) {

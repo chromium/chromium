@@ -237,7 +237,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdateWorker(
   static int counter = 0;
 
   if (request.relative_url != "/service_worker/update_worker.js")
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
@@ -255,7 +255,7 @@ RequestHandlerForBigWorkerScript(const net::test_server::HttpRequest& request) {
   static int counter = 0;
 
   if (request.relative_url != "/service_worker/update_worker.js")
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);

@@ -602,7 +602,7 @@ std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForCookies(
 
   const auto& iter = request.headers.find("Cookie");
   if (iter == request.headers.end() || request.relative_url != "/manifest.json")
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse());
@@ -663,7 +663,7 @@ std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForNoCookies(
 
   const auto& iter = request.headers.find("Cookie");
   if (iter != request.headers.end() || request.relative_url != "/manifest.json")
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse());

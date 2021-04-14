@@ -4999,7 +4999,7 @@ void RegisterServiceWorker(RenderFrameHostImpl* rfh) {
 std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdateWorker(
     const net::test_server::HttpRequest& request) {
   if (request.relative_url != "/back_forward_cache/service-worker.js")
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   static int counter = 0;
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);

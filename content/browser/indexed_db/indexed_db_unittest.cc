@@ -69,7 +69,7 @@ std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
   leveldb::FileLock* lock = nullptr;
   leveldb::Status status = env->LockFile(lock_path.AsUTF8Unsafe(), &lock);
   if (!status.ok())
-    return std::unique_ptr<LevelDBLock>();
+    return nullptr;
   DCHECK(lock);
   return std::make_unique<LevelDBLock>(env, lock);
 }

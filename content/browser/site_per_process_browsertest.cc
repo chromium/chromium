@@ -9724,7 +9724,7 @@ class RequestDelayingSitePerProcessBrowserTest
       return std::make_unique<DelayedResponse>(this);
     }
     MaybeStartRequests();
-    return std::unique_ptr<net::test_server::BasicHttpResponse>();
+    return nullptr;
   }
 
   // If there are no more requests to delay, post a series of tasks finishing

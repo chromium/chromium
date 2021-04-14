@@ -830,11 +830,11 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     IndexedDBBrowserTest* test,
     const net::test_server::HttpRequest& request) {
   std::string request_path;
-  if (path.find(s_corrupt_db_test_prefix) != std::string::npos)
-    request_path = request.relative_url.substr(
-        std::string(s_corrupt_db_test_prefix).size());
-  else
-    return std::unique_ptr<net::test_server::HttpResponse>();
+  if (path.find(s_corrupt_db_test_prefix) == std::string::npos)
+    return nullptr;
+
+  request_path =
+      request.relative_url.substr(std::string(s_corrupt_db_test_prefix).size());
 
   // Remove the query string if present.
   std::string request_query;
@@ -968,7 +968,7 @@ std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
     IndexedDBBrowserTest* test,
     const net::test_server::HttpRequest& request) {
   if (path.find(s_indexeddb_test_prefix) == std::string::npos)
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
   std::string request_path =
       request.relative_url.substr(std::string(s_indexeddb_test_prefix).size());
   return ServePath(request_path);

@@ -24,10 +24,10 @@ std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
     case content::mojom::GestureSourceType::kPenInput:
       return std::make_unique<SyntheticPenDriver>();
     case content::mojom::GestureSourceType::kDefaultInput:
-      return std::unique_ptr<SyntheticPointerDriver>();
+      return nullptr;
   }
   NOTREACHED();
-  return std::unique_ptr<SyntheticPointerDriver>();
+  return nullptr;
 }
 
 }  // namespace content
