@@ -2402,7 +2402,7 @@ if (!is_android) {
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
         ]
       }
-      if (!is_chromeos_ash) {
+      if (!is_chromeos_ash && !is_chromeos_lacros) {
         sources += [
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
@@ -6856,8 +6856,6 @@ if (!is_android) {
         "//chromeos/dbus",
         "//chromeos/ui/frame:test_support",
       ]
-      sources -=
-          [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
       sources += [
         "../browser/ash/login/login_manager_test.cc",
         "../browser/ash/login/login_manager_test.h",
@@ -6871,6 +6869,12 @@ if (!is_android) {
         "../browser/notifications/notification_interactive_uitest_support.h",
         "../browser/notifications/notification_ui_manager_browsertest.cc",
       ]
+    }
+
+    # These tests are not applicable on Chrome OS - Ash and Lacros.
+    if (is_chromeos_ash || is_chromeos_lacros) {
+      sources -=
+          [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
     }
 
     if (is_chromeos_lacros) {

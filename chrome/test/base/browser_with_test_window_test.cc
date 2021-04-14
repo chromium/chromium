@@ -38,6 +38,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
 #endif
 
 using content::NavigationController;
@@ -54,9 +55,10 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
-  lacros_chrome_service_ =
-      std::make_unique<chromeos::LacrosChromeServiceImpl>(nullptr);
+  if (!chromeos::LacrosChromeServiceImpl::Get()) {
+    scoped_lacros_chrome_service_test_helper_ =
+        std::make_unique<chromeos::ScopedLacrosChromeServiceTestHelper>();
+  }
   tablet_state_ = std::make_unique<chromeos::TabletState>();
 #endif
 

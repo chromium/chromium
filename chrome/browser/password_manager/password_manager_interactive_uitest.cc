@@ -11,6 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -27,14 +29,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #endif  // ENABLE_DICE_SUPPORT
 
 namespace {
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Wait until |condition| returns true.
 void WaitForCondition(base::RepeatingCallback<bool()> condition) {
   while (!condition.Run()) {
@@ -484,7 +486,9 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/1198490): Remove explicit !BUILDFLAG(IS_CHROMEOS_LACROS) when
+// DICE is not enabled on Lacros.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.
 class PasswordManagerInteractiveTestWithSigninInterception
