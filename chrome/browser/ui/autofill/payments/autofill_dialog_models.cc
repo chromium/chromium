@@ -28,26 +28,26 @@ const int kNumberOfExpirationYears = 10;
 // accordingly.
 std::vector<ui::SimpleComboboxModel::Item> GetExpirationYearItems(
     int additional_year) {
-  std::vector<std::u16string> years;
+  std::vector<ui::SimpleComboboxModel::Item> years;
   // Add the "Year" placeholder item.
-  years.push_back(
+  years.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
 
   base::Time::Exploded now_exploded;
   AutofillClock::Now().LocalExplode(&now_exploded);
 
   if (additional_year != 0 && additional_year < now_exploded.year)
-    years.push_back(base::UTF8ToUTF16(std::to_string(additional_year)));
+    years.emplace_back(base::NumberToString16(additional_year));
 
   for (int i = 0; i < kNumberOfExpirationYears; i++)
-    years.push_back(base::UTF8ToUTF16(std::to_string(now_exploded.year + i)));
+    years.emplace_back(base::NumberToString16(now_exploded.year + i));
 
   if (additional_year != 0 &&
       additional_year >= now_exploded.year + kNumberOfExpirationYears) {
-    years.push_back(base::UTF8ToUTF16(std::to_string(additional_year)));
+    years.emplace_back(base::NumberToString16(additional_year));
   }
 
-  return std::vector<ui::SimpleComboboxModel::Item>(years.begin(), years.end());
+  return years;
 }
 
 // Formats a month, zero-padded (e.g. "02").
