@@ -2758,11 +2758,14 @@ void LocalFrameView::RunPaintLifecyclePhase() {
         for (PaintLayerScrollableArea* area : *animating_scrollable_areas)
           area->UpdateCompositorScrollAnimations();
       }
-      frame_view.GetLayoutView()
-          ->GetDocument()
-          .GetDocumentAnimations()
-          .UpdateAnimations(DocumentLifecycle::kPaintClean,
-                            paint_artifact_compositor_.get());
+      {
+        ScriptForbiddenScope forbid_script;
+        frame_view.GetLayoutView()
+            ->GetDocument()
+            .GetDocumentAnimations()
+            .UpdateAnimations(DocumentLifecycle::kPaintClean,
+                              paint_artifact_compositor_.get());
+      }
     });
 
     // Initialize animation properties in the newly created paint property
