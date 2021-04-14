@@ -167,6 +167,14 @@
       "use_goma": false
     }
   },
+  "linux-no-base-tracing-rel": {
+    "gn_args": {
+      "enable_base_tracing": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
   "linux-ozone-rel": {
     "gn_args": {
       "is_component_build": false,
