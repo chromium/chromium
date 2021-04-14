@@ -2803,7 +2803,7 @@
           '--enable-gpu',
           '--test-launcher-bot-mode',
           '--test-launcher-jobs=1',
-          '--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*',
+          '--gtest_filter=TabCaptureApiPixelTest.EndToEnd*',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'browser_tests',

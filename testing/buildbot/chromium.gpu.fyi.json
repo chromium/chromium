@@ -8391,7 +8391,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*",
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
           "--no-xvfb"
         ],
         "merge": {
@@ -9049,7 +9049,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*",
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
           "--no-xvfb"
         ],
         "merge": {
@@ -9973,7 +9973,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*",
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
           "--no-xvfb"
         ],
         "merge": {
@@ -11246,7 +11246,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*",
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
           "--no-xvfb"
         ],
         "merge": {
@@ -14764,7 +14764,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -16096,7 +16096,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -17287,7 +17287,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -19649,7 +19649,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -20914,7 +20914,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -22076,7 +22076,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -23306,7 +23306,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -28042,7 +28042,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -29057,7 +29057,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -30103,7 +30103,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -31042,7 +31042,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -32029,7 +32029,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -32943,7 +32943,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -34113,7 +34113,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -35794,7 +35794,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -36590,7 +36590,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
@@ -37423,7 +37423,7 @@
           "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
-          "--gtest_filter=CastStreamingApiTestWithPixelOutput.EndToEnd*:TabCaptureApiPixelTest.EndToEnd*"
+          "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*"
         ],
         "merge": {
           "args": [],
