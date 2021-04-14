@@ -10,6 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -273,6 +274,27 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 
   bundle.ComputePoliciesForError();
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+}
+
+// Verifies that history policies from a reused navigation entry aren't used for
+// non-local navigations.
+IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
+                       NoHistoryPoliciesInheritedForNonLocalUrlsOnReload) {
+  // Navigate to some non-local url first.
+  WebContents* tab = shell()->web_contents();
+  EXPECT_TRUE(NavigateToURL(tab, PublicUrl()));
+  EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
+
+  // Navigate to about:blank to put policies to navigation entry.
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+  EXPECT_EQ(AboutBlankUrl(), tab->GetLastCommittedURL());
+
+  // Now reload to original url and ensure that history entry policies stored
+  // earlier aren't applied to non-local URL (no DCHECK triggered).
+  TestNavigationObserver observer(tab, /*number_of_navigations=*/1);
+  tab->GetController().Reload(ReloadType::ORIGINAL_REQUEST_URL, false);
+  observer.Wait();  // No DCHECK expected.
+  EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 }
 
 }  // namespace
