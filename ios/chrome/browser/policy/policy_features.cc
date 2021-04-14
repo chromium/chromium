@@ -12,9 +12,6 @@
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/common/features.h"
 
-const base::Feature kEnableIncognitoModeAvailabilityIOS{
-    "EnableIncognitoModeAvailabilityIOS", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kURLBlocklistIOS{"URLBlocklistIOS",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -39,10 +36,6 @@ bool IsDisableEnterprisePolicySwitchPresent() {
 
 bool IsEnterprisePolicyEnabled() {
   return !IsDisableEnterprisePolicySwitchPresent();
-}
-
-bool IsIncognitoModeAvailable() {
-  return base::FeatureList::IsEnabled(kEnableIncognitoModeAvailabilityIOS);
 }
 
 bool ShouldInstallEnterprisePolicyHandlers() {
