@@ -2961,8 +2961,14 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 #endif  // defined(OS_ANDROID)
 }
 
+// Flaky on Android. http://crbug.com/1198777
+#if defined(OS_ANDROID)
+#define MAYBE_TransferSharedArrayBuffer DISABLED_TransferSharedArrayBuffer
+#else
+#define MAYBE_TransferSharedArrayBuffer TransferSharedArrayBuffer
+#endif
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
-                       TransferSharedArrayBuffer) {
+                       MAYBE_TransferSharedArrayBuffer) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         DCHECK_EQ(params->url_request.url, OriginTrialURL());
