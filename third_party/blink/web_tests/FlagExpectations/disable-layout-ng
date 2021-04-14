@@ -911,6 +911,8 @@ crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-001.html
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-002.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/tentative/paint/background-image-column.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/tentative/paint/collapsed-border-large-cell.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/tentative/baseline-table.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/tentative/baseline-td.html [ Failure ]
 
 ### external/wpt/css/css-tables/height-distribution/
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-001.html [ Failure ]
