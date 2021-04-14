@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -735,6 +736,29 @@ TEST_P(TableViewTest, GetVirtualAccessibilityCell) {
                        ax::mojom::IntAttribute::kTableCellColumnIndex)));
     }
   }
+}
+
+TEST_P(TableViewTest, ChangingCellFiresAccessibilityEvent) {
+  int text_changed_count = 0;
+  table_->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting(
+          [&](const ui::AXPlatformNodeDelegate*, const ax::mojom::Event event) {
+            if (event == ax::mojom::Event::kTextChanged)
+              ++text_changed_count;
+          }));
+
+  // A kTextChanged event is fired when a cell's data is accessed and
+  // its computed accessible text isn't the same as the previously cached
+  // value. Ensure that the cached value is correctly updated so that
+  // retrieving the data multiple times doesn't result in firing additional
+  // kTextChanged events.
+  const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(0, 0);
+  ASSERT_TRUE(cell);
+  ui::AXNodeData cell_data;
+  for (int i = 0; i < 100; ++i)
+    cell_data = cell->GetData();
+
+  EXPECT_EQ(1, text_changed_count);
 }
 
 // Verifies SetColumnVisibility().

@@ -1466,8 +1466,11 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   std::u16string new_name =
       model()->GetText(model_index, GetVisibleColumn(column_index).column.id);
   data->SetName(new_name);
-  if (current_name != new_name)
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  if (current_name != new_name) {
+    ui::AXNodeData& cell_data = ax_cell->GetCustomData();
+    cell_data.SetName(new_name);
+    ax_cell->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged);
+  }
 }
 
 std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
