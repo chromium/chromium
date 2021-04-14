@@ -30,11 +30,4 @@ void TestCellularESimProfileHandler::OnHermesPropertiesUpdated() {
   NotifyESimProfileListUpdated();
 }
 
-bool TestCellularESimProfileHandler::AddOrRemoveStubCellularNetworks(
-    NetworkStateHandler::ManagedStateList& network_list,
-    NetworkStateHandler::ManagedStateList& new_stub_networks,
-    const DeviceState* device) {
-  return false;
-}
-
 }  // namespace chromeos

@@ -183,6 +183,8 @@ component("network") {
     "shill_property_handler.h",
     "shill_property_util.cc",
     "shill_property_util.h",
+    "stub_cellular_networks_provider.cc",
+    "stub_cellular_networks_provider.h",
     "system_token_cert_db_storage.cc",
     "system_token_cert_db_storage.h",
     "tether_constants.cc",
@@ -309,6 +311,7 @@ source_set("unit_tests") {
     "proxy/proxy_config_service_impl_unittest.cc",
     "proxy/ui_proxy_config_service_unittest.cc",
     "shill_property_handler_unittest.cc",
+    "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
   ]
 }

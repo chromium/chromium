@@ -30,6 +30,7 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/network/stub_cellular_networks_provider.h"
 
 namespace chromeos {
 
@@ -42,6 +43,7 @@ NetworkHandler::NetworkHandler()
   if (features::IsCellularActivationUiEnabled()) {
     cellular_inhibitor_.reset(new CellularInhibitor());
     cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
+    stub_cellular_networks_provider_.reset(new StubCellularNetworksProvider());
     cellular_esim_connection_handler_.reset(
         new CellularESimConnectionHandler());
   }
@@ -78,6 +80,8 @@ void NetworkHandler::Init() {
                               network_device_handler_.get());
     cellular_esim_profile_handler_->Init(network_state_handler_.get(),
                                          cellular_inhibitor_.get());
+    stub_cellular_networks_provider_->Init(
+        network_state_handler_.get(), cellular_esim_profile_handler_.get());
     cellular_esim_connection_handler_->Init(
         network_state_handler_.get(), cellular_inhibitor_.get(),
         cellular_esim_profile_handler_.get());

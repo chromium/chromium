@@ -17,19 +17,19 @@
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;
 
 namespace chromeos {
 
+class NetworkStateHandler;
+
 // Source of truth for which eSIM profiles are available on this device.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
     : public HermesManagerClient::Observer,
       public HermesEuiccClient::Observer,
-      public HermesProfileClient::Observer,
-      public NetworkStateHandler::StubCellularNetworksProvider {
+      public HermesProfileClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -82,7 +82,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
 
   virtual void OnHermesPropertiesUpdated() = 0;
   void NotifyESimProfileListUpdated();
-  virtual void InitInternal() {}
 
   NetworkStateHandler* network_state_handler() {
     return network_state_handler_;

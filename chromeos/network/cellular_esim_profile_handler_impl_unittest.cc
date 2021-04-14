@@ -30,8 +30,6 @@ const char kDefaultCellularDevicePath[] = "stub_cellular_device";
 const char kTestEuiccBasePath[] = "/org/chromium/Hermes/Euicc/";
 const char kTestProfileBasePath[] = "/org/chromium/Hermes/Profile/";
 const char kTestBaseEid[] = "12345678901234567890123456789012";
-const char kTestPSimIccid[] = "1234567890";
-const char kTestCellularServicePath[] = "/service/cellular";
 
 std::string CreateTestEuiccPath(int euicc_num) {
   return base::StringPrintf("%s%d", kTestEuiccBasePath, euicc_num);
@@ -138,16 +136,6 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
   std::vector<CellularESimProfile> GetESimProfiles() {
     return handler_->GetESimProfiles();
-  }
-
-  bool AddOrRemoveStubCellularNetworks(
-      NetworkStateHandler::ManagedStateList& network_list,
-      NetworkStateHandler::ManagedStateList& new_stub_networks) {
-    const DeviceState* device_state =
-        helper_.network_state_handler()->GetDeviceStateByType(
-            NetworkTypePattern::Cellular());
-    return handler_->AddOrRemoveStubCellularNetworks(
-        network_list, new_stub_networks, device_state);
   }
 
   size_t NumObserverEvents() const { return observer_.num_updates(); }
@@ -449,56 +437,6 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
             euicc_paths_from_prefs.GetList()[0].GetString());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest, AddOrRemoveStubCellularNetworks) {
-  SetPSimSlotInfo(kTestPSimIccid);
-  AddEuicc(/*euicc_num=*/1);
-  dbus::ObjectPath profile1_path =
-      AddProfile(/*euicc_num=*/1, hermes::profile::State::kPending,
-                 /*activation_code=*/"code1");
-  dbus::ObjectPath profile2_path =
-      AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
-                 /*activation_code=*/"code1");
-  Init();
-  SetDevicePrefs();
-  HermesProfileClient::Properties* profile2_properties =
-      HermesProfileClient::Get()->GetProperties(profile2_path);
-
-  NetworkStateHandler::ManagedStateList network_list, new_stub_networks;
-
-  // Verify that stub services are created for eSIM profiles and pSIM iccids
-  // on sim slot info.
-  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(2u, new_stub_networks.size());
-  NetworkState* network1 = new_stub_networks[0]->AsNetworkState();
-  NetworkState* network2 = new_stub_networks[1]->AsNetworkState();
-  EXPECT_TRUE(network1->IsNonShillCellularNetwork());
-  EXPECT_TRUE(network2->IsNonShillCellularNetwork());
-  EXPECT_EQ(network1->iccid(), profile2_properties->iccid().value());
-  EXPECT_EQ(network2->iccid(), kTestPSimIccid);
-
-  // Verify the stub networks are removed when corresponding slot is no longer
-  // present. e.g. SIM removed.
-  network_list = std::move(new_stub_networks);
-  new_stub_networks.clear();
-  SetPSimSlotInfo(/*iccid=*/std::string());
-  base::RunLoop().RunUntilIdle();
-  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(1u, network_list.size());
-
-  // Verify that stub networks are removed when real networks are added to the
-  // list.
-  std::unique_ptr<NetworkState> test_network =
-      std::make_unique<NetworkState>(kTestCellularServicePath);
-  test_network->PropertyChanged(shill::kTypeProperty,
-                                base::Value(shill::kTypeCellular));
-  test_network->PropertyChanged(
-      shill::kIccidProperty, base::Value(profile2_properties->iccid().value()));
-  test_network->set_update_received();
-  network_list.push_back(std::move(test_network));
-  AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(1u, network_list.size());
 }
 
 }  // namespace chromeos
