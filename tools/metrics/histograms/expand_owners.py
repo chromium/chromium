@@ -78,8 +78,9 @@ def _IsEmailOrPlaceholder(is_first_owner, owner_tag_text, histogram_name,
 
   if should_check_owner_email and not _IsValidPrimaryOwnerEmail(owner_tag_text):
     raise Error(
-        'The histogram {} must have a valid primary owner, i.e. a '
-        'Googler with an @google.com or @chromium.org email address.'.format(
+        'The histogram {} must have a valid primary owner, i.e. a Googler '
+        'with an @google.com or @chromium.org email address. Please '
+        'manually update the histogram with a valid primary owner.'.format(
             histogram_name))
 
   return is_email or is_placeholder

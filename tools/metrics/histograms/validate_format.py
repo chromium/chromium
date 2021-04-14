@@ -13,7 +13,8 @@ import histogram_paths
 import merge_xml
 
 def main():
-  doc = merge_xml.MergeFiles(histogram_paths.ALL_XMLS)
+  doc = merge_xml.MergeFiles(histogram_paths.ALL_XMLS,
+                             should_expand_owners=True)
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   sys.exit(errors)
 

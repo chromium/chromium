@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import unittest
+import xml.dom.minidom
 
+import expand_owners
 import histogram_paths
 import merge_xml
 
@@ -204,6 +206,29 @@ class MergeXmlTest(unittest.TestCase):
 """
     self.maxDiff = None
     self.assertMultiLineEqual(expected_merged_xml.strip(), merged.strip())
+
+
+  def testMergeFiles_InvalidPrimaryOwner(self):
+    histograms_without_valid_first_owner = xml.dom.minidom.parseString("""
+<histogram-configuration>
+<histograms>
+
+<histogram name="Caffeination" units="mg">
+  <owner>culprit@evil.com</owner>
+  <summary>I like coffee.</summary>
+</histogram>
+
+</histograms>
+</histogram-configuration>
+""")
+
+    with self.assertRaisesRegexp(
+        expand_owners.Error,
+        'The histogram Caffeination must have a valid primary owner, i.e. a '
+        'Googler with an @google.com or @chromium.org email address. Please '
+        'manually update the histogram with a valid primary owner.'):
+      merge_xml.MergeTrees([histograms_without_valid_first_owner],
+                           should_expand_owners=True)
 
 
 if __name__ == '__main__':
