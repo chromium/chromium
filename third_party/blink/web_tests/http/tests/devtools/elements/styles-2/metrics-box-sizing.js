@@ -73,7 +73,7 @@
         'padding: ' + getChildTextByClassName(paddingElement, 'top') + ' ' +
         getChildTextByClassName(paddingElement, 'right') + ' ' + getChildTextByClassName(paddingElement, 'bottom') +
         ' ' + getChildTextByClassName(paddingElement, 'left'));
-    TestRunner.addResult('content: ' + contentDimensions[0].textContent + ' x ' + contentDimensions[1].textContent);
+    TestRunner.addResult('content: ' + contentDimensions[0].textContent + ' x ' + contentDimensions[2].textContent);
   }
 
   function createDoubleClickEvent() {
