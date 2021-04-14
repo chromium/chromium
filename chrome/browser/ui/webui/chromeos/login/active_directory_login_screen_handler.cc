@@ -98,7 +98,7 @@ void ActiveDirectoryLoginScreenHandler::SetErrorState(
 
 void ActiveDirectoryLoginScreenHandler::ShowSignInError(
     const std::string& error_text) {
-  core_oobe_view_->ShowSignInError(0 /* login_attempts */, error_text,
+  core_oobe_view_->ShowSignInError(error_text,
                                    std::string() /* help_link_text */,
                                    HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }

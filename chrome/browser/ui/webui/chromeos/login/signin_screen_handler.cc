@@ -624,13 +624,10 @@ void SigninScreenHandler::OnPreferencesChanged() {
   }
 }
 
-
-void SigninScreenHandler::ShowError(int login_attempts,
-                                    const std::string& error_text,
+void SigninScreenHandler::ShowError(const std::string& error_text,
                                     const std::string& help_link_text,
                                     HelpAppLauncher::HelpTopic help_topic_id) {
-  core_oobe_view_->ShowSignInError(login_attempts, error_text, help_link_text,
-                                   help_topic_id);
+  core_oobe_view_->ShowSignInError(error_text, help_link_text, help_topic_id);
 }
 
 void SigninScreenHandler::ShowAllowlistCheckFailedError() {

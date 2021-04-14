@@ -1308,8 +1308,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, MAYBE_DoNotLaunchWhenUntrusted) {
       "if (cr.ui.Oobe.getInstance().errorMessageWasShownForTesting_) {"
       "  window.domAutomationController.send(true);"
       "} else {"
-      "  cr.ui.Oobe.showSignInError = function("
-      "      loginAttempts, message, link, helpId) {"
+      "  cr.ui.Oobe.showSignInError = function(message, link, helpId) {"
       "    window.domAutomationController.send(true);"
       "  };"
       "}",

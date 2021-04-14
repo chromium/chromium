@@ -137,13 +137,12 @@ cr.define('cr.ui', function() {
 
   /**
    * Shows sign-in error bubble.
-   * @param {number} loginAttempts Number of login attemps tried.
    * @param {string} message Error message to show.
    * @param {string} link Text to use for help link.
    * @param {number} helpId Help topic Id associated with help link.
    */
-  Oobe.showSignInError = function(loginAttempts, message, link, helpId) {
-    DisplayManager.showSignInError(loginAttempts, message, link, helpId);
+  Oobe.showSignInError = function(message, link, helpId) {
+    DisplayManager.showSignInError(message, link, helpId);
   };
 
   /**

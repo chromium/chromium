@@ -811,18 +811,16 @@ cr.define('cr.ui.login', function() {
 
   /**
    * Shows sign-in error bubble.
-   * @param {number} loginAttempts Number of login attemps tried.
    * @param {string} message Error message to show.
    * @param {string} link Text to use for help link.
    * @param {number} helpId Help topic Id associated with help link.
    */
-  DisplayManager.showSignInError = function(
-      loginAttempts, message, link, helpId) {
+  DisplayManager.showSignInError = function(message, link, helpId) {
     var error = DisplayManager.createErrorElement_(message, link, helpId);
 
     var currentScreen = Oobe.getInstance().currentScreen;
     if (currentScreen && typeof currentScreen.showErrorBubble === 'function') {
-      currentScreen.showErrorBubble(loginAttempts, error);
+      currentScreen.showErrorBubble(error);
       this.errorMessageWasShownForTesting_ = true;
     }
   };

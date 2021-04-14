@@ -521,7 +521,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
       // TODO: make the string localized.
       std::string msg = "Failed to fetch the SAML redirect URL from the server";
       core_oobe_view_->ShowSignInError(
-          0, msg, std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+          msg, std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
       return;
     }
   }
@@ -794,7 +794,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
               : base::nullopt,
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error_message)) {
-    core_oobe_view_->ShowSignInError(0, error_message, std::string(),
+    core_oobe_view_->ShowSignInError(error_message, std::string(),
                                      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
     pending_user_context_.reset();
     return;
@@ -816,7 +816,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 void GaiaScreenHandler::OnCookieWaitTimeout() {
   LoadAuthExtension(true /* force */);
   core_oobe_view_->ShowSignInError(
-      0, l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),
+      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),
       std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }
 
@@ -1010,7 +1010,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
           /*sync_trusted_vault_keys=*/base::nullopt,
           *extension_provided_client_cert_usage_observer_, &user_context,
           &error_message)) {
-    core_oobe_view_->ShowSignInError(0, error_message, std::string(),
+    core_oobe_view_->ShowSignInError(error_message, std::string(),
                                      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
     return;
   }

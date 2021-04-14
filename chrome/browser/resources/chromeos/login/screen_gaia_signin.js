@@ -702,7 +702,7 @@ Polymer({
   onLoginUIVisible_() {
     // Show deferred error bubble.
     if (this.errorBubble_) {
-      this.showErrorBubble(this.errorBubble_[0], this.errorBubble_[1]);
+      this.showErrorBubble(this.errorBubble_);
       this.errorBubble_ = undefined;
     }
 
@@ -938,17 +938,16 @@ Polymer({
 
   /**
    * Shows sign-in error bubble.
-   * @param {number} loginAttempts Number of login attempts tried.
    * @param {HTMLElement} error Content to show in bubble.
    */
-  showErrorBubble(loginAttempts, error) {
+  showErrorBubble(error) {
     if (!this.loadingFrameContents_) {
       $('bubble').showContentForElement(
           this, cr.ui.Bubble.Attachment.BOTTOM, error,
           BUBBLE_HORIZONTAL_PADDING, BUBBLE_VERTICAL_PADDING);
     } else {
       // Defer the bubble until the frame has been loaded.
-      this.errorBubble_ = [loginAttempts, error];
+      this.errorBubble_ = error;
     }
   },
 

@@ -191,8 +191,7 @@ void LoginDisplayMojo::ShowError(int error_msg_id,
   if (login_attempts > 1)
     help_link = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
 
-  webui_handler_->ShowError(login_attempts, error_text, help_link,
-                            help_topic_id);
+  webui_handler_->ShowError(error_text, help_link, help_topic_id);
 }
 
 void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
