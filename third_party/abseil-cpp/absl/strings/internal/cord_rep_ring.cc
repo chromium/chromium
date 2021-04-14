@@ -301,7 +301,7 @@ bool CordRepRing::IsValid(std::ostream& output) const {
     if (offset >= child->length || entry_length > child->length - offset) {
       output << "entry[" << head << "] has offset " << offset
              << " and entry length " << entry_length
-             << " which are outside of the childs length of " << child->length;
+             << " which are outside of the child's length of " << child->length;
       return false;
     }
 

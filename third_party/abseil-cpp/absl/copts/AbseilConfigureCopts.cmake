@@ -35,8 +35,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(ABSL_DEFAULT_COPTS "${ABSL_GCC_FLAGS}")
   set(ABSL_TEST_COPTS "${ABSL_GCC_FLAGS};${ABSL_GCC_TEST_FLAGS}")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # MATCHES so we get both Clang and AppleClang
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")  # MATCHES so we get both Clang and AppleClang
   if(MSVC)
     # clang-cl is half MSVC, half LLVM
     set(ABSL_DEFAULT_COPTS "${ABSL_CLANG_CL_FLAGS}")

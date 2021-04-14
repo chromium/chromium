@@ -47,11 +47,11 @@ using Payloads = absl::InlinedVector<Payload, 1>;
 
 // Reference-counted representation of Status data.
 struct StatusRep {
-  StatusRep(absl::StatusCode code, std::string message,
+  StatusRep(absl::StatusCode code, absl::string_view message,
             std::unique_ptr<status_internal::Payloads> payloads)
       : ref(int32_t{1}),
         code(code),
-        message(std::move(message)),
+        message(message),
         payloads(std::move(payloads)) {}
 
   std::atomic<int32_t> ref;

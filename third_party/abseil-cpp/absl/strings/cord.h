@@ -946,8 +946,7 @@ inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src)
   }
 }
 
-inline Cord::InlineRep::InlineRep(Cord::InlineRep&& src) {
-  data_ = src.data_;
+inline Cord::InlineRep::InlineRep(Cord::InlineRep&& src) : data_(src.data_) {
   src.ResetToEmpty();
 }
 

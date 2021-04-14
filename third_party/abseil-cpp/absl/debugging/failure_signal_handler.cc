@@ -366,6 +366,7 @@ static void AbslFailureSignalHandler(int signo, siginfo_t*, void* ucontext) {
   // goes after this point.
   if (fsh_options.writerfn != nullptr) {
     WriteFailureInfo(signo, ucontext, my_cpu, fsh_options.writerfn);
+    fsh_options.writerfn(nullptr);
   }
 
   if (fsh_options.call_previous_handler) {

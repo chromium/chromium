@@ -495,7 +495,6 @@ void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
 
   data_ = src.data_;
   if (is_tree()) {
-    data_.set_profiled(false);
     CordRep::Ref(tree());
     clear_cordz_info();
   }

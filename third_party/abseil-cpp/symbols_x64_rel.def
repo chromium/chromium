@@ -119,6 +119,7 @@ EXPORTS
     ??0Rep@GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0SpinLock@base_internal@absl@@QEAA@W4SchedulingMode@12@@Z
     ??0Status@absl@@QEAA@W4StatusCode@1@Vstring_view@1@@Z
+    ??0StatusRep@status_internal@absl@@QEAA@W4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@@__1@std@@@__1@std@@@Z
     ??0Streamable@str_format_internal@absl@@QEAA@AEBVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ??0TimeZoneLibC@cctz@time_internal@absl@@QEAA@AEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ??0Waiter@synchronization_internal@absl@@QEAA@XZ
@@ -509,7 +510,6 @@ EXPORTS
     ?New@CordRepFlat@cord_internal@absl@@SAPEAU123@_K@Z
     ?New@CordRepRing@cord_internal@absl@@CAPEAV123@_K0@Z
     ?NewArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@H@Z
-    ?NewRep@Status@absl@@CA_KW4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@@__1@std@@@__1@std@@@Z
     ?Next@CordRepRingReader@cord_internal@absl@@QEAA?AVstring_view@3@XZ
     ?NextTransition@TimeZone@absl@@QEBA_NVTime@2@PEAUCivilTransition@12@@Z
     ?NextTransition@TimeZoneInfo@cctz@time_internal@absl@@UEBA_NAEBV?$time_point@Vsystem_clock@chrono@__1@std@@V?$duration@_JV?$ratio@$00$00@__1@std@@@234@@chrono@__1@std@@PEAUcivil_transition@time_zone@234@@Z

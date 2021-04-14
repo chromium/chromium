@@ -1024,7 +1024,7 @@ EXPORTS
     ??0SpinLockHolder@base_internal@absl@@QEAA@PEAVSpinLock@12@@Z
     ??0Status@absl@@QEAA@$$QEAV01@@Z
     ??0Status@absl@@QEAA@W4StatusCode@1@Vstring_view@1@@Z
-    ??0StatusRep@status_internal@absl@@QEAA@W4StatusCode@2@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@@__1@std@@@56@@Z
+    ??0StatusRep@status_internal@absl@@QEAA@W4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@@__1@std@@@__1@std@@@Z
     ??0Storage@?$FixedArray@PEAUCordRep@cord_internal@absl@@$0?0V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@absl@@QEAA@_KAEBV?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@Z
     ??0Streamable@str_format_internal@absl@@QEAA@AEBVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ??0StringReleaser@?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QEAA@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@QEAA@$$QEAU0?M@???$?0V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@12@QEAA@0@Z@@Z
@@ -2017,7 +2017,6 @@ EXPORTS
     ?New@CordRepFlat@cord_internal@absl@@SAPEAU123@_K@Z
     ?New@CordRepRing@cord_internal@absl@@CAPEAV123@_K0@Z
     ?NewArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@H@Z
-    ?NewRep@Status@absl@@CA_KW4StatusCode@2@Vstring_view@2@V?$unique_ptr@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@U?$default_delete@V?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@@__1@std@@@__1@std@@@Z
     ?Next@CordRepRingReader@cord_internal@absl@@QEAA?AVstring_view@3@XZ
     ?NextCapacity@?$Storage@H$0CP@V?$allocator@H@__1@std@@@inlined_vector_internal@absl@@SA_K_K@Z
     ?NextCapacity@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@SA_K_K@Z
@@ -3189,7 +3188,6 @@ EXPORTS
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z
     ?set_inline_size@InlineData@cord_internal@absl@@QEAAX_K@Z
     ?set_inline_size@InlineRep@Cord@absl@@AEAAX_K@Z
-    ?set_profiled@InlineData@cord_internal@absl@@QEAAX_N@Z
     ?set_tree@InlineData@cord_internal@absl@@QEAAXPEAUCordRep@23@@Z
     ?set_tree@InlineRep@Cord@absl@@QEAAXPEAUCordRep@cord_internal@3@@Z
     ?set_value@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z

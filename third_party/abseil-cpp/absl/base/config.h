@@ -690,10 +690,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // a compiler instrumentation module and a run-time library.
 #ifdef ABSL_HAVE_MEMORY_SANITIZER
 #error "ABSL_HAVE_MEMORY_SANITIZER cannot be directly set."
-#elif defined(MEMORY_SANITIZER)
-// The MEMORY_SANITIZER macro is deprecated but we will continue to honor it
-// for now.
-#define ABSL_HAVE_MEMORY_SANITIZER 1
 #elif defined(__SANITIZE_MEMORY__)
 #define ABSL_HAVE_MEMORY_SANITIZER 1
 #elif !defined(__native_client__) && ABSL_HAVE_FEATURE(memory_sanitizer)
@@ -705,10 +701,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // ThreadSanitizer (TSan) is a fast data race detector.
 #ifdef ABSL_HAVE_THREAD_SANITIZER
 #error "ABSL_HAVE_THREAD_SANITIZER cannot be directly set."
-#elif defined(THREAD_SANITIZER)
-// The THREAD_SANITIZER macro is deprecated but we will continue to honor it
-// for now.
-#define ABSL_HAVE_THREAD_SANITIZER 1
 #elif defined(__SANITIZE_THREAD__)
 #define ABSL_HAVE_THREAD_SANITIZER 1
 #elif ABSL_HAVE_FEATURE(thread_sanitizer)
@@ -720,10 +712,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // AddressSanitizer (ASan) is a fast memory error detector.
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER
 #error "ABSL_HAVE_ADDRESS_SANITIZER cannot be directly set."
-#elif defined(ADDRESS_SANITIZER)
-// The ADDRESS_SANITIZER macro is deprecated but we will continue to honor it
-// for now.
-#define ABSL_HAVE_ADDRESS_SANITIZER 1
 #elif defined(__SANITIZE_ADDRESS__)
 #define ABSL_HAVE_ADDRESS_SANITIZER 1
 #elif ABSL_HAVE_FEATURE(address_sanitizer)

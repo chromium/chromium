@@ -335,11 +335,6 @@ class InlineData {
   // byte of cordz_info overlaps with the last byte holding the tag.
   static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
 
-  // kFakeCordzInfo holds a 'fake', non-null cordz-info value we use to
-  // emulate the previous 'kProfiled' tag logic in 'set_profiled' until
-  // cord code is changed to store cordz_info values in InlineData.
-  static constexpr cordz_info_t kFakeCordzInfo = BigEndianByte(9);
-
   constexpr InlineData() : as_chars_{0} {}
   explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
   explicit constexpr InlineData(absl::string_view chars)
@@ -452,13 +447,6 @@ class InlineData {
   void set_inline_size(size_t size) {
     ABSL_ASSERT(size <= kMaxInline);
     tag() = static_cast<char>(size << 1);
-  }
-
-  // Sets or unsets the 'is_profiled' state of this instance.
-  // Requires the current instance to hold a tree value.
-  void set_profiled(bool profiled) {
-    assert(is_tree());
-    as_tree_.cordz_info = profiled ? kFakeCordzInfo : kNullCordzInfo;
   }
 
  private:
