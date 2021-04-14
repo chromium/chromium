@@ -107,21 +107,11 @@ WeeklyTime WeeklyTime::GetGmtWeeklyTime(base::Time time) {
 }
 
 // static
-WeeklyTime WeeklyTime::GetCurrentGmtWeeklyTime(base::Clock* clock) {
-  return GetGmtWeeklyTime(clock->Now());
-}
-
-// static
 WeeklyTime WeeklyTime::GetLocalWeeklyTime(base::Time time) {
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
   WeeklyTime result = GetWeeklyTimeFromExploded(exploded, base::nullopt);
   return result;
-}
-
-// static
-WeeklyTime WeeklyTime::GetCurrentLocalWeeklyTime(base::Clock* clock) {
-  return GetLocalWeeklyTime(clock->Now());
 }
 
 // static

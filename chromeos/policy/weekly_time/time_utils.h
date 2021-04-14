@@ -15,7 +15,6 @@
 
 namespace base {
 class Clock;
-class TimeDelta;
 }  // namespace base
 
 namespace policy {
@@ -58,24 +57,11 @@ CHROMEOS_EXPORT std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
 CHROMEOS_EXPORT bool Contains(const base::Time& time,
                               const std::vector<WeeklyTimeInterval>& intervals);
 
-// Return duration till next weekly time interval.
-CHROMEOS_EXPORT base::TimeDelta GetDeltaTillNextTimeInterval(
-    const WeeklyTime& current_time,
-    const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
-
 // Returns next start or end interval time after |current_time|, or
 // base::nullopt in case |weekly_time_intervals| is empty.
 CHROMEOS_EXPORT base::Optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
-
-// Takes in a vector of weekly time intervals. If |clock->Now()|
-// is inside one of the intervals, then the function returns the
-// interval that contains |clock->Now()|. Otherwise, return |base::nullopt|.
-// The intervals must have a defined
-CHROMEOS_EXPORT base::Optional<WeeklyTimeInterval> GetIntervalForCurrentTime(
-    const std::vector<WeeklyTimeInterval>& intervals,
-    base::Clock* clock);
 
 }  // namespace weekly_time_utils
 }  // namespace policy

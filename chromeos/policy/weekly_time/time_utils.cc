@@ -119,19 +119,6 @@ bool Contains(const base::Time& time,
   return false;
 }
 
-base::TimeDelta GetDeltaTillNextTimeInterval(
-    const WeeklyTime& current_time,
-    const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
-  // Weekly intervals repeat every week, therefore the maximum duration till
-  // next weekly interval is one week.
-  base::TimeDelta till_next_interval = kWeek;
-  for (const auto& interval : weekly_time_intervals) {
-    till_next_interval = std::min(till_next_interval,
-                                  current_time.GetDurationTo(interval.start()));
-  }
-  return till_next_interval;
-}
-
 base::Optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
@@ -166,18 +153,6 @@ base::Optional<base::Time> GetNextEventTime(
   // This is possible if FromUTCExploded fails during daylight saving time
   // switches, see base::Time::Midnight implementation.
   return current_time + till_next_event;
-}
-
-base::Optional<WeeklyTimeInterval> GetIntervalForCurrentTime(
-    const std::vector<WeeklyTimeInterval>& intervals,
-    base::Clock* clock) {
-  WeeklyTime weekly_time_now = WeeklyTime::GetCurrentGmtWeeklyTime(clock);
-  for (const auto& interval : intervals) {
-    if (interval.Contains(weekly_time_now)) {
-      return interval;
-    }
-  }
-  return base::nullopt;
 }
 
 }  // namespace weekly_time_utils

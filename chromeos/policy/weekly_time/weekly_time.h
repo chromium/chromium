@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/chromeos_export.h"
@@ -99,14 +98,8 @@ class CHROMEOS_EXPORT WeeklyTime {
   // Return the |time| in GMT in WeeklyTime structure.
   static WeeklyTime GetGmtWeeklyTime(base::Time time);
 
-  // Return the current time in GMT in WeeklyTime structure.
-  static WeeklyTime GetCurrentGmtWeeklyTime(base::Clock* clock);
-
   // Return the system's local |time| in WeeklyTime structure.
   static WeeklyTime GetLocalWeeklyTime(base::Time time);
-
-  // Return the current time in the system's local time in WeeklyTime structure.
-  static WeeklyTime GetCurrentLocalWeeklyTime(base::Clock* clock);
 
  private:
   // Number of weekday (1 = Monday, 2 = Tuesday, etc.)
