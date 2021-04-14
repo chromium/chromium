@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.provider.Browser;
 
 import androidx.annotation.Nullable;
 
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -150,34 +147,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
             Intent intent, boolean proxy) {
         return StartActivityIfNeededResult.DID_NOT_HANDLE;
-    }
-
-    @Override
-    public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
-            final Intent intent, final GURL referrerUrl, final GURL fallbackUrl) {
-        String primaryUrl = intent.getDataString();
-        boolean isUrlLoadedInTheSameTab = ExternalNavigationHandler.loadUrlFromIntent(
-                referrerUrl, new GURL(primaryUrl), fallbackUrl.getSpec(), this, false, true);
-        return (isUrlLoadedInTheSameTab) ? OverrideUrlLoadingResult.forClobberingTab()
-                                         : OverrideUrlLoadingResult.forExternalIntent();
-    }
-
-    @Override
-    public boolean supportsCreatingNewTabs() {
-        return true;
-    }
-
-    @Override
-    public void loadUrlInNewTab(final GURL url, final boolean launchIncognito) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
-        String packageName = ContextUtils.getApplicationContext().getPackageName();
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, packageName);
-        if (launchIncognito) intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setClassName(packageName, ChromeLauncherActivity.class.getName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        IntentHandler.addTrustedIntentExtras(intent);
-        ExternalNavigationHandler.startActivity(intent, false, this);
     }
 
     @Override

@@ -14,7 +14,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -88,14 +87,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return StartActivityIfNeededResult.DID_NOT_HANDLE;
     }
 
-    // This method should never be invoked as WebLayer does not handle incoming intents.
-    @Override
-    public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
-            final Intent intent, final GURL referrerUrl, final GURL fallbackUrl) {
-        assert false;
-        return OverrideUrlLoadingResult.forNoOverride();
-    }
-
     @Override
     public void loadUrlIfPossible(LoadUrlParams loadUrlParams) {
         if (!hasValidTab()) return;
@@ -109,23 +100,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public void maybeSetWindowId(Intent intent) {}
-
-    @Override
-    public boolean supportsCreatingNewTabs() {
-        // In WebLayer all URLs that ExternalNavigationHandler loads internally are loaded within
-        // the current tab; this flow is sufficient for WebLayer from a UX POV, and there is no
-        // reason to add the complexity of a flow to create new tabs here. In particular, in Chrome
-        // that new tab creation is done by launching an activity targeted at the Chrome package.
-        // This would not work for WebLayer as the embedder does not in general handle incoming
-        // browsing intents.
-        return false;
-    }
-
-    @Override
-    public void loadUrlInNewTab(final GURL url, final boolean launchIncognito) {
-        // Should never be invoked based on the implementation of supportsCreatingNewTabs().
-        assert false;
-    }
 
     @Override
     public boolean canLoadUrlInCurrentTab() {

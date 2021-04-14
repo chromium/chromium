@@ -645,7 +645,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(92)
     public void
     testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids()
             throws Throwable {
@@ -654,15 +654,8 @@ public class ExternalNavigationTest {
         NavigationCallback navigationCallback = new NavigationCallback() {
             @Override
             public void onNavigationStarted(Navigation navigation) {
-                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_DATA_STRING)) {
-                    // Stop the navigation so that it doesn't hit the network.
-                    mActivityTestRule.getActivity()
-                            .getBrowser()
-                            .getActiveTab()
-                            .getNavigationController()
-                            .stop();
-                    onNavigationToIntentDataStringStartedCallbackHelper.notifyCalled();
-                }
+                // There should be no additional navigations after the initial one.
+                Assert.assertEquals(INTENT_TO_CHROME_URL, navigation.getUri().toString());
             }
             @Override
             public void onNavigationFailed(Navigation navigation) {
@@ -703,16 +696,10 @@ public class ExternalNavigationTest {
         // The navigation should fail...
         onNavigationToIntentFailedCallbackHelper.waitForFirst();
 
-        // ...the intent should not have been launched...
+        // ...the intent should not have been launched.
         Assert.assertNull(intentInterceptor.mLastIntent);
 
-        // ...and per the behavior of WebLayer's intent launching logic in this flow, there should
-        // be a navigation to the data string contained in the intent (which is a valid URL in this
-        // case).
-        onNavigationToIntentDataStringStartedCallbackHelper.waitForFirst();
-
-        // As the navigation to the data string was stopped, there should be zero navigations in
-        // the tab.
+        // As there was no fallback Url, there should be zero navigations in the tab.
         Browser browser = mActivityTestRule.getActivity().getBrowser();
         int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
             return browser.getActiveTab().getNavigationController().getNavigationListSize();
