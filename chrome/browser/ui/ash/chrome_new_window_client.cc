@@ -130,14 +130,10 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
       chromeos::settings::mojom::kKnownNetworksSubpagePath},
      {ChromePage::OSLANGUAGES,
       chromeos::settings::mojom::kLanguagesAndInputSectionPath},
-     {ChromePage::OSLANGUAGESDETAILS,
-      chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath},
      {ChromePage::OSLANGUAGESEDITDICTIONARY,
       chromeos::settings::mojom::kEditDictionarySubpagePath},
      {ChromePage::OSLANGUAGESINPUT,
       chromeos::settings::mojom::kInputSubpagePath},
-     {ChromePage::OSLANGUAGESINPUTMETHODS,
-      chromeos::settings::mojom::kManageInputMethodsSubpagePath},
      {ChromePage::OSLANGUAGESLANGUAGES,
       chromeos::settings::mojom::kLanguagesSubpagePath},
      {ChromePage::OSLANGUAGESSMARTINPUTS,
@@ -206,7 +202,10 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kAboutPagesMapping[] =
 constexpr arc::mojom::ChromePage kDeprecatedPages[] = {
     ChromePage::DEPRECATED_DOWNLOADEDCONTENT,
     ChromePage::DEPRECATED_PLUGINVMDETAILS,
-    ChromePage::DEPRECATED_CROSTINIDISKRESIZE};
+    ChromePage::DEPRECATED_CROSTINIDISKRESIZE,
+    ChromePage::DEPRECATED_OSLANGUAGESDETAILS,
+    ChromePage::DEPRECATED_OSLANGUAGESINPUTMETHODS,
+};
 
 // mojom::ChromePage::LAST returns the amount of valid entries - 1.
 static_assert(base::size(kOSSettingsMapping) +

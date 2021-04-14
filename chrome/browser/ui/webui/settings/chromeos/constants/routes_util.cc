@@ -95,8 +95,6 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
 
       // Languages and Input section.
       chromeos::settings::mojom::kLanguagesAndInputSectionPath,
-      chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath,
-      chromeos::settings::mojom::kManageInputMethodsSubpagePath,
       chromeos::settings::mojom::kSmartInputsSubpagePath,
       chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
       chromeos::settings::mojom::kLanguagesSubpagePath,

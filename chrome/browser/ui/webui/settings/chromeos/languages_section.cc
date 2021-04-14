@@ -463,13 +463,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kEditDictionarySubpagePath);
 
-  // Languages and input details.
-  generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE,
-      mojom::Subpage::kLanguagesAndInputDetails,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kLanguagesAndInputDetailsSubpagePath);
-
   generator->RegisterNestedSetting(mojom::Setting::kAddLanguage,
                                    mojom::Subpage::kLanguages);
   generator->RegisterNestedSetting(mojom::Setting::kShowInputOptionsInShelf,
@@ -481,14 +474,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kInputMethodOptionsSubpagePath);
-
-  // Manage input methods.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_LANGUAGES_MANAGE_INPUT_METHODS_TITLE,
-      mojom::Subpage::kManageInputMethods,
-      mojom::Subpage::kLanguagesAndInputDetails,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kManageInputMethodsSubpagePath);
 
   // Smart inputs.
   generator->RegisterTopLevelSubpage(

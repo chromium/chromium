@@ -311,19 +311,11 @@ void TestAllOSSettingPages(const GURL& base_url) {
       base_url.Resolve(
           chromeos::settings::mojom::kLanguagesAndInputSectionPath));
   TestOpenOSSettingsChromePage(
-      ChromePage::OSLANGUAGESDETAILS,
-      base_url.Resolve(
-          chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath));
-  TestOpenOSSettingsChromePage(
       ChromePage::OSLANGUAGESEDITDICTIONARY,
       base_url.Resolve(chromeos::settings::mojom::kEditDictionarySubpagePath));
   TestOpenOSSettingsChromePage(
       ChromePage::OSLANGUAGESINPUT,
       base_url.Resolve(chromeos::settings::mojom::kInputSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::OSLANGUAGESINPUTMETHODS,
-      base_url.Resolve(
-          chromeos::settings::mojom::kManageInputMethodsSubpagePath));
   TestOpenOSSettingsChromePage(
       ChromePage::OSLANGUAGESLANGUAGES,
       base_url.Resolve(chromeos::settings::mojom::kLanguagesSubpagePath));
