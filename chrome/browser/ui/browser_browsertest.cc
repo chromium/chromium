@@ -2881,8 +2881,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveBrowserChangedUserAction) {
   EXPECT_EQ(user_action_tester.GetActionCount("ActiveBrowserChanged"), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTest,
-                       SameDocumentNavigationWithNothingCommittedAfterCrash) {
+// DISABLED for flakiness. See https://crbug.com/1184168
+IN_PROC_BROWSER_TEST_F(
+    BrowserTest,
+    DISABLED_SameDocumentNavigationWithNothingCommittedAfterCrash) {
   // The test sets this closure before each navigation to /sometimes-slow in
   // order to control the response for that navigation.
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
@@ -2957,9 +2959,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
+// DISABLED for flakiness. See https://crbug.com/1184168
 IN_PROC_BROWSER_TEST_F(
     BrowserTest,
-    SameDocumentHistoryNavigationWithNothingCommittedAfterCrash) {
+    DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterCrash) {
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
 
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
