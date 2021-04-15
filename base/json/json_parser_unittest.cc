@@ -142,9 +142,8 @@ TEST_F(JSONParserTest, ConsumeNumbers) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  int number_i;
-  EXPECT_TRUE(value->GetAsInteger(&number_i));
-  EXPECT_EQ(1234, number_i);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(1234, value->GetInt());
 
   // Negative integer.
   input = "-1234,|";
@@ -155,8 +154,8 @@ TEST_F(JSONParserTest, ConsumeNumbers) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsInteger(&number_i));
-  EXPECT_EQ(-1234, number_i);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(-1234, value->GetInt());
 
   // Double.
   input = "12.34,|";
