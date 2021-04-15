@@ -29,7 +29,10 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -454,7 +457,8 @@ void NewEmptyWindow(Profile* profile) {
         SessionServiceFactory::GetForProfileForSessionRestore(
             profile->GetOriginalProfile());
     if (!session_service ||
-        !session_service->RestoreIfNecessary(std::vector<GURL>())) {
+        !session_service->RestoreIfNecessary(std::vector<GURL>(),
+                                             /* restore_apps */ false)) {
       OpenEmptyWindow(profile->GetOriginalProfile());
     }
   }
@@ -905,8 +909,8 @@ WebContents* DuplicateTabAt(Browser* browser, int index) {
     CreateAndShowNewWindowWithContents(std::move(contents_dupe), browser);
   }
 
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileIfExisting(browser->profile());
+  SessionServiceBase* session_service =
+      GetAppropriateSessionServiceIfExisting(browser);
   if (session_service)
     session_service->TabRestored(raw_contents_dupe, pinned);
   return raw_contents_dupe;

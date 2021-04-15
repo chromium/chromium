@@ -12,12 +12,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
-bool AppSessionServiceFactory::RelevantToAppSessionService(Browser::Type type) {
-  return (type == Browser::Type::TYPE_APP ||
-          type == Browser::Type::TYPE_APP_POPUP);
-}
-
-// static
 AppSessionService* AppSessionServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<AppSessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

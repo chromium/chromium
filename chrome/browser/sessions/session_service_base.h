@@ -25,6 +25,7 @@
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service_client.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
@@ -56,6 +57,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   enum class SessionServiceType { kAppRestore, kSessionRestore };
 
   ~SessionServiceBase() override;
+
+  static Browser::Type GetBrowserTypeFromWebContents(
+      content::WebContents* web_contents);
 
   Profile* profile() const { return profile_; }
 
@@ -103,6 +107,10 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   // Called when a tab is closing.
   void TabClosing(content::WebContents* contents);
+
+  // Notification that a tab has restored its entries or a closed tab is being
+  // reused.
+  void TabRestored(content::WebContents* tab, bool pinned);
 
   // Sets the type of window. In order for the contents of a window to be
   // tracked SetWindowType must be invoked with a type we track
@@ -163,6 +171,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Creates a SessionService for the specified profile.
   SessionServiceBase(Profile* profile, SessionServiceType type);
 
+  // This method is implemented by child classes to pass us the type.
+  virtual Browser::Type GetDesiredBrowserTypeForWebContents() = 0;
+
   bool rebuild_on_next_save() const { return rebuild_on_next_save_; }
   void set_rebuild_on_next_save(bool value) { rebuild_on_next_save_ = value; }
   std::map<SessionID, int>* last_selected_tab_in_window() {
@@ -175,6 +186,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   sessions::CommandStorageManager* command_storage_manager() {
     return command_storage_manager_.get();
   }
+
+  using WindowsTracking = std::set<SessionID>;
+  WindowsTracking* windows_tracking() { return &windows_tracking_; }
 
   // This should only be used by derived classes in their destructors.
   void DestroyCommandStorageManager();
@@ -233,7 +247,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void ScheduleCommand(std::unique_ptr<sessions::SessionCommand> command);
 
   // Returns true if changes to tabs in the specified window should be tracked.
-  virtual bool ShouldTrackChangesToWindow(const SessionID& window_id) const = 0;
+  bool ShouldTrackChangesToWindow(const SessionID& window_id) const;
 
   // Returns true if we track changes to the specified browser.
   bool ShouldTrackBrowser(Browser* browser) const;
@@ -275,6 +289,10 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Don't send duplicate SetSelectedTabInWindow commands when the selected
   // tab's index hasn't changed.
   std::map<SessionID, int> last_selected_tab_in_window_;
+
+  // Set of windows we're tracking changes to. This is only browsers that
+  // return true from |ShouldRestoreWindowOfType|.
+  WindowsTracking windows_tracking_;
 
   base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
 

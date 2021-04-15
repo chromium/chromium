@@ -164,9 +164,11 @@ class StartupBrowserCreatorImpl {
   // this may attempt a session restore or create a new browser. May also allow
   // DOM Storage to begin cleanup once it's clear it is not needed anymore.
   Browser* RestoreOrCreateBrowser(
-    const StartupTabs& tabs, BrowserOpenBehavior behavior,
-    SessionRestore::BehaviorBitmask restore_options, bool process_startup,
-    bool is_post_crash_launch);
+      const StartupTabs& tabs,
+      BrowserOpenBehavior behavior,
+      SessionRestore::BehaviorBitmask restore_options,
+      bool process_startup,
+      bool is_post_crash_launch);
 
   // Adds any startup infobars to the selected tab of the given browser.
   void AddInfoBarsIfNecessary(

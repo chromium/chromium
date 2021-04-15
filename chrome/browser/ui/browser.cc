@@ -40,6 +40,7 @@
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -85,6 +86,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -273,6 +275,11 @@
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 #include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#include "chrome/browser/sessions/app_session_service.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #endif
 
 using base::TimeDelta;
@@ -519,10 +526,11 @@ Browser::Browser(const CreateParams& params)
   extension_window_controller_ =
       std::make_unique<extensions::BrowserExtensionWindowController>(this);
 
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileForSessionRestore(profile_);
-  if (session_service)
-    session_service->WindowOpened(this);
+  SessionServiceBase* service =
+      GetAppropriateSessionServiceForSessionRestore(this);
+
+  if (service)
+    service->WindowOpened(this);
 
   // TODO(beng): move to ChromeBrowserMain:
   if (first_run::ShouldDoPersonalDataManagerFirstRun()) {
@@ -574,10 +582,10 @@ Browser::~Browser() {
     DownloadCoreService::CancelAllDownloads();
   }
 
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(profile_);
-  if (session_service)
-    session_service->WindowClosed(session_id_);
+  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
+
+  if (service)
+    service->WindowClosed(session_id_);
 
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(profile());
@@ -871,6 +879,10 @@ bool Browser::RunUnloadListenerBeforeClosing(
 void Browser::SetWindowUserTitle(const std::string& user_title) {
   user_title_ = user_title;
   window_->UpdateTitleBar();
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // See comment in Browser::OnTabGroupChanged
+  DCHECK(!IsRelevantToAppSessionService(type_));
+#endif
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(profile_);
   if (session_service)
@@ -900,10 +912,10 @@ void Browser::OnWindowClosing() {
 
   // Don't use GetForProfileIfExisting here, we want to force creation of the
   // session service so that user can restore what was open.
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(profile());
-  if (session_service)
-    session_service->WindowClosing(session_id());
+  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
+
+  if (service)
+    service->WindowClosing(session_id());
 
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(profile());
@@ -1196,6 +1208,14 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::OnTabGroupChanged(const TabGroupChange& change) {
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // If apps ever get tab grouping, this function needs to be updated to
+  // retrieve AppSessionService from the correct factory. Additionally,
+  // AppSessionService doesn't support SetTabGroupMetadata, so some
+  // work to refactor the code to support that into SessionServiceBase
+  // would be the best way to achieve that.
+  DCHECK(!IsRelevantToAppSessionService(type_));
+#endif
   if (change.type == TabGroupChange::kVisualsChanged) {
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(profile_);
@@ -1218,6 +1238,10 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
 void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
                                     WebContents* contents,
                                     int index) {
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // See comment in Browser::OnTabGroupChanged
+  DCHECK(!IsRelevantToAppSessionService(type_));
+#endif
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
   if (session_service) {
@@ -1233,6 +1257,10 @@ void Browser::TabGroupedStateChanged(
     base::Optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // See comment in Browser::OnTabGroupChanged
+  DCHECK(!IsRelevantToAppSessionService(type_));
+#endif
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(profile_);
   if (!session_service)
@@ -2276,13 +2304,13 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   // yet if this function is called before TabStripModel::TabInsertedAt().
   UpdateWindowForLoadingStateChanged(contents, true);
 
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(profile_);
-  if (session_service) {
-    session_service->TabInserted(contents);
+  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
+
+  if (service) {
+    service->TabInserted(contents);
     int new_active_index = tab_strip_model_->active_index();
     if (index < new_active_index)
-      session_service->SetSelectedTabInWindow(session_id(), new_active_index);
+      service->SetSelectedTabInWindow(session_id(), new_active_index);
   }
 }
 
@@ -2307,21 +2335,20 @@ void Browser::OnTabClosing(WebContents* contents) {
   metrics_observer->WebContentsWillSoonBeDestroyed();
 
   exclusive_access_manager_->OnTabClosing(contents);
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(profile_);
-  if (session_service)
-    session_service->TabClosing(contents);
+  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
+
+  if (service)
+    service->TabClosing(contents);
 
   SearchTabHelper::FromWebContents(contents)->OnTabClosing();
 }
 
 void Browser::OnTabDetached(WebContents* contents, bool was_active) {
   if (!tab_strip_model_->closing_all()) {
-    SessionService* session_service =
-        SessionServiceFactory::GetForProfileIfExisting(profile_);
-    if (session_service) {
-      session_service->SetSelectedTabInWindow(session_id(),
-                                              tab_strip_model_->active_index());
+    SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(this);
+    if (service) {
+      service->SetSelectedTabInWindow(session_id(),
+                                      tab_strip_model_->active_index());
     }
   }
 
@@ -2412,15 +2439,14 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   // Update sessions (selected tab index and last active time). Don't force
   // creation of sessions. If sessions doesn't exist, the change will be picked
   // up by sessions when created.
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileIfExisting(profile_);
-  if (session_service && !tab_strip_model_->closing_all()) {
-    session_service->SetSelectedTabInWindow(session_id(),
-                                            tab_strip_model_->active_index());
+  SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(this);
+  if (service && !tab_strip_model_->closing_all()) {
+    service->SetSelectedTabInWindow(session_id(),
+                                    tab_strip_model_->active_index());
     sessions::SessionTabHelper* session_tab_helper =
         sessions::SessionTabHelper::FromWebContents(new_contents);
-    session_service->SetLastActiveTime(
-        session_id(), session_tab_helper->session_id(), base::TimeTicks::Now());
+    service->SetLastActiveTime(session_id(), session_tab_helper->session_id(),
+                               base::TimeTicks::Now());
   }
 
   SearchTabHelper::FromWebContents(new_contents)->OnTabActivated();
@@ -2438,8 +2464,8 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
   bool was_active = index == tab_strip_model_->active_index();
   TabDetachedAtImpl(old_contents, was_active, DETACH_TYPE_REPLACE);
   exclusive_access_manager_->OnTabClosing(old_contents);
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(profile_);
+  SessionServiceBase* session_service =
+      GetAppropriateSessionServiceForProfile(this);
   if (session_service)
     session_service->TabClosing(old_contents);
   OnTabInsertedAt(new_contents, index);
@@ -2628,6 +2654,13 @@ StatusBubble* Browser::GetStatusBubble() {
 // Browser, Session restore functions (private):
 
 void Browser::SyncHistoryWithTabs(int index) {
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+  // Apps don't need to do this. Skip.
+  if (IsRelevantToAppSessionService(type_)) {
+    return;
+  }
+#endif
+
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
   if (session_service) {
