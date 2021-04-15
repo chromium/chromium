@@ -69,6 +69,7 @@ std::unique_ptr<DialActivity> DialActivity::From(
     const std::string& presentation_id,
     const MediaSinkInternal& sink,
     const MediaSource::Id& source_id,
+    const url::Origin& client_origin,
     bool off_the_record) {
   MediaSource source(source_id);
   GURL url = source.url();
@@ -106,15 +107,22 @@ std::unique_ptr<DialActivity> DialActivity::From(
       /* is_local */ true, /* for_display */ true);
   route.set_presentation_id(presentation_id);
   route.set_off_the_record(off_the_record);
-  return std::make_unique<DialActivity>(launch_info, route, sink);
+  return std::make_unique<DialActivity>(launch_info, route, sink,
+                                        client_origin);
 }
 
 DialActivity::DialActivity(const DialLaunchInfo& launch_info,
                            const MediaRoute& route,
-                           const MediaSinkInternal& sink)
-    : launch_info(launch_info), route(route), sink(sink) {}
+                           const MediaSinkInternal& sink,
+                           const url::Origin& client_origin)
+    : launch_info(launch_info),
+      route(route),
+      sink(sink),
+      client_origin(client_origin) {}
 
 DialActivity::~DialActivity() = default;
+
+DialActivity::DialActivity(const DialActivity&) = default;
 
 DialActivityManager::DialActivityManager(
     DialAppDiscoveryService* app_discovery_service)
@@ -146,6 +154,26 @@ const DialActivity* DialActivityManager::GetActivityBySinkId(
   auto record_it = std::find_if(
       records_.begin(), records_.end(), [&sink_id](const auto& record) {
         return record.second->activity.route.media_sink_id() == sink_id;
+      });
+  return record_it != records_.end() ? &(record_it->second->activity) : nullptr;
+}
+
+const DialActivity* DialActivityManager::GetActivityToJoin(
+    const std::string& presentation_id,
+    const MediaSource& media_source,
+    const url::Origin& client_origin,
+    bool off_the_record) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto record_it = std::find_if(
+      records_.begin(), records_.end(),
+      [&presentation_id, &media_source, &client_origin,
+       off_the_record](const auto& record) {
+        const auto& route = record.second->activity.route;
+        const url::Origin& origin = record.second->activity.client_origin;
+        return route.presentation_id() == presentation_id &&
+               route.media_source() == media_source &&
+               origin == client_origin &&
+               route.is_off_the_record() == off_the_record;
       });
   return record_it != records_.end() ? &(record_it->second->activity) : nullptr;
 }

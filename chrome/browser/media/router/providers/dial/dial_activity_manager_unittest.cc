@@ -24,8 +24,9 @@ TEST(DialActivityTest, From) {
   MediaSinkInternal sink = CreateDialSink(1);
   MediaSource::Id source_id =
       "cast-dial:YouTube?clientId=152127444812943594&dialPostData=foo";
+  url::Origin origin = url::Origin::Create(GURL("https://www.youtube.com/"));
 
-  auto activity = DialActivity::From(presentation_id, sink, source_id,
+  auto activity = DialActivity::From(presentation_id, sink, source_id, origin,
                                      /*off_the_record*/ true);
   ASSERT_TRUE(activity);
 
@@ -111,8 +112,9 @@ class DialActivityManagerTest : public testing::Test {
                     RouteRequestResult::ResultCode));
 
   std::unique_ptr<DialActivity> FailToStopApp() {
-    auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                       /*off_the_record*/ false);
+    auto activity =
+        DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                           /*off_the_record*/ false);
     CHECK(activity);
     manager_.AddActivity(*activity);
 
@@ -133,19 +135,20 @@ class DialActivityManagerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment environment_;
-  std::string presentation_id_ = "presentationId";
-  MediaSinkInternal sink_ = CreateDialSink(1);
-  MediaSource::Id source_id_ =
-      "cast-dial:YouTube?clientId=152127444812943594&dialPostData=foo";
+  std::string presentation_id_{"presentationId"};
+  MediaSinkInternal sink_{CreateDialSink(1)};
+  MediaSource::Id source_id_{
+      "cast-dial:YouTube?clientId=152127444812943594&dialPostData=foo"};
+  url::Origin origin_{url::Origin::Create(GURL{"https://www.youtube.com/"})};
   network::TestURLLoaderFactory loader_factory_;
   MockDialAppDiscoveryService app_discovery_service_;
   TestDialActivityManager manager_;
-  DISALLOW_COPY_AND_ASSIGN(DialActivityManagerTest);
 };
 
 TEST_F(DialActivityManagerTest, AddActivity) {
-  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
 
   EXPECT_TRUE(manager_.GetRoutes().empty());
@@ -157,9 +160,35 @@ TEST_F(DialActivityManagerTest, AddActivity) {
   EXPECT_TRUE(manager_.GetActivity(activity->route.media_route_id()));
 }
 
-TEST_F(DialActivityManagerTest, LaunchApp) {
+TEST_F(DialActivityManagerTest, GetActivityBySinkId) {
   auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+                                     origin_, /*off_the_record*/ false);
+  manager_.AddActivity(*activity);
+  EXPECT_TRUE(manager_.GetActivityBySinkId(sink_.id()));
+  EXPECT_FALSE(manager_.GetActivityBySinkId("wrong-sink-id"));
+}
+
+TEST_F(DialActivityManagerTest, GetActivityToJoin) {
+  const bool off_the_record = false;
+  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
+                                     origin_, off_the_record);
+  manager_.AddActivity(*activity);
+  EXPECT_TRUE(manager_.GetActivityToJoin(
+      presentation_id_, MediaSource(source_id_), origin_, off_the_record));
+  EXPECT_FALSE(manager_.GetActivityToJoin(presentation_id_,
+                                          MediaSource("wrong-source-id"),
+                                          origin_, off_the_record));
+  EXPECT_FALSE(manager_.GetActivityToJoin("wrong-presentation-id",
+                                          MediaSource(source_id_), origin_,
+                                          off_the_record));
+  EXPECT_FALSE(manager_.GetActivityToJoin(
+      presentation_id_, MediaSource(source_id_), origin_, !off_the_record));
+}
+
+TEST_F(DialActivityManagerTest, LaunchApp) {
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 
@@ -169,8 +198,9 @@ TEST_F(DialActivityManagerTest, LaunchApp) {
 }
 
 TEST_F(DialActivityManagerTest, LaunchAppLaunchParameter) {
-  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 
@@ -180,8 +210,9 @@ TEST_F(DialActivityManagerTest, LaunchAppLaunchParameter) {
 }
 
 TEST_F(DialActivityManagerTest, LaunchAppFails) {
-  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 
@@ -202,8 +233,9 @@ TEST_F(DialActivityManagerTest, LaunchAppFails) {
 }
 
 TEST_F(DialActivityManagerTest, StopApp) {
-  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 
@@ -232,8 +264,9 @@ TEST_F(DialActivityManagerTest, StopApp) {
 }
 
 TEST_F(DialActivityManagerTest, StopAppUseFallbackURL) {
-  auto activity = DialActivity::From(presentation_id_, sink_, source_id_,
-                                     /*off_the_record*/ false);
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_,
+                         /*off_the_record*/ false);
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 

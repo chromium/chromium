@@ -108,8 +108,8 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
     return;
   }
 
-  auto activity =
-      DialActivity::From(presentation_id, *sink, media_source, incognito);
+  auto activity = DialActivity::From(presentation_id, *sink, media_source,
+                                     origin, incognito);
   if (!activity) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Failed to create route. Unsupported source.", sink_id,
@@ -139,8 +139,8 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
   logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                    "Successfully created a new route.", sink_id, media_source,
                    presentation_id);
-  std::move(callback).Run(activity->route, nullptr, base::nullopt,
-                          RouteRequestResult::OK);
+  std::move(callback).Run(activity->route, /*presentation_connection*/ nullptr,
+                          /*error_text*/ base::nullopt, RouteRequestResult::OK);
 
   // When a custom DIAL launch request is received, DialMediaRouteProvider will
   // create a MediaRoute immediately in order to start exchanging messages with
@@ -161,10 +161,17 @@ void DialMediaRouteProvider::JoinRoute(const std::string& media_source,
                                        base::TimeDelta timeout,
                                        bool incognito,
                                        JoinRouteCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(
-      base::nullopt, nullptr, std::string("Not implemented"),
-      RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
+  const DialActivity* activity = activity_manager_->GetActivityToJoin(
+      presentation_id, MediaSource(media_source), origin, incognito);
+  if (activity) {
+    std::move(callback).Run(
+        activity->route, /*presentation_connection*/ nullptr,
+        /*error_text*/ base::nullopt, RouteRequestResult::OK);
+  } else {
+    std::move(callback).Run(base::nullopt, /*presentation_connection*/ nullptr,
+                            "DIAL activity not found",
+                            RouteRequestResult::ROUTE_NOT_FOUND);
+  }
 }
 
 void DialMediaRouteProvider::ConnectRouteByRouteId(

@@ -18,6 +18,7 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/route_request_result.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace media_router {
 
@@ -54,16 +55,21 @@ struct DialActivity {
   static std::unique_ptr<DialActivity> From(const std::string& presentation_id,
                                             const MediaSinkInternal& sink,
                                             const MediaSource::Id& source_id,
+                                            const url::Origin& client_origin,
                                             bool off_the_record);
 
   DialActivity(const DialLaunchInfo& launch_info,
                const MediaRoute& route,
-               const MediaSinkInternal& sink);
+               const MediaSinkInternal& sink,
+               const url::Origin& client_origin);
   ~DialActivity();
+  DialActivity(const DialActivity&);
 
   DialLaunchInfo launch_info;
   MediaRoute route;
   MediaSinkInternal sink;
+  // The origin of the web frame that launched the activity.
+  url::Origin client_origin;
 };
 
 template <typename CallbackType>
@@ -114,6 +120,13 @@ class DialActivityManager {
   // Returns the DialActivity associated with |sink_id| or nullptr if not
   // found.
   const DialActivity* GetActivityBySinkId(const MediaSink::Id& sink_id) const;
+
+  // Returns a DialActivity that can be joined by a request with the given
+  // properties, or a nullptr if there is no such activity.
+  const DialActivity* GetActivityToJoin(const std::string& presentation_id,
+                                        const MediaSource& media_source,
+                                        const url::Origin& client_origin,
+                                        bool off_the_record) const;
 
   // Launches the app specified in the activity associated with |route_id|.
   // If |message.launch_parameter| is set, then it overrides the post data
