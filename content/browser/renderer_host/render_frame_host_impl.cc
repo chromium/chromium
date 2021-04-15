@@ -8142,7 +8142,7 @@ void RenderFrameHostImpl::CancelPrerendering(
 void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
     const std::string& interface_name) {
   RecordPrerenderCancelledInterface(interface_name);
-  CancelPrerendering(PrerenderHost::FinalStatus::kDisallowedMojoInterface);
+  CancelPrerendering(PrerenderHost::FinalStatus::kMojoBinderPolicy);
 }
 
 void RenderFrameHostImpl::ActivateForPrerendering() {

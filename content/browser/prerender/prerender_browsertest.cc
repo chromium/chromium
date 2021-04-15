@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester should log
   // PrerenderCancelledInterface::kUnkown here.
@@ -1279,7 +1279,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   SetBrowserClientForTesting(old_browser_client);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester should log
   // PrerenderCancelledInterface::kUnkown here.
@@ -1678,7 +1678,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kDisallowedMojoInterface, 1);
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface",
       PrerenderCancelledInterface::kGamepadMonitor, 1);
