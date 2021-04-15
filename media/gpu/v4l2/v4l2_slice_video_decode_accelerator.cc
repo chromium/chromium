@@ -1478,9 +1478,18 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
   gl::ScopedTextureBinder bind_restore(gl_device->GetTextureTarget(),
                                        texture_id);
   bool ret = gl_image->BindTexImage(gl_device->GetTextureTarget());
-  DCHECK(ret);
-  bind_image_cb_.Run(client_texture_id, gl_device->GetTextureTarget(), gl_image,
-                     true);
+  if (!ret) {
+    LOG(ERROR) << "Error while binding tex image";
+    NOTIFY_ERROR(PLATFORM_FAILURE);
+    return;
+  }
+  ret = bind_image_cb_.Run(client_texture_id, gl_device->GetTextureTarget(),
+                           gl_image, true);
+  if (!ret) {
+    LOG(ERROR) << "Error while running bind image callback";
+    NOTIFY_ERROR(PLATFORM_FAILURE);
+    return;
+  }
 }
 
 void V4L2SliceVideoDecodeAccelerator::ImportBufferForPicture(
