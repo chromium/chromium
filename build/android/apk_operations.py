@@ -728,10 +728,19 @@ class _LogcatProcessor(object):
     def consume_token_or_default(default):
       return tokens.pop(0) if len(tokens) > 0 else default
 
+    def consume_integer_token_or_default(default):
+      if len(tokens) == 0:
+        return default
+
+      try:
+        return int(tokens.pop(0))
+      except ValueError:
+        return default
+
     date = consume_token_or_default('')
     invokation_time = consume_token_or_default('')
-    pid = int(consume_token_or_default(-1))
-    tid = int(consume_token_or_default(-1))
+    pid = consume_integer_token_or_default(-1)
+    tid = consume_integer_token_or_default(-1)
     priority = consume_token_or_default('')
     tag = consume_token_or_default('')
     original_message = consume_token_or_default('')
