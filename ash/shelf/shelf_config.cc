@@ -104,6 +104,7 @@ ShelfConfig::ShelfConfig()
       overview_mode_(false),
       in_tablet_mode_(false),
       is_dense_(false),
+      is_in_app_(true),
       shelf_controls_shown_(true),
       is_virtual_keyboard_shown_(false),
       is_app_list_visible_(false),
@@ -159,6 +160,7 @@ void ShelfConfig::Init() {
   display::Screen::GetScreen()->AddObserver(this);
   shell->system_tray_model()->virtual_keyboard()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
+  shell->session_controller()->AddObserver(this);
 
   shell->tablet_mode_controller()->AddObserver(this);
   in_tablet_mode_ = shell->IsInTabletMode();
@@ -169,6 +171,7 @@ void ShelfConfig::Shutdown() {
   Shell* const shell = Shell::Get();
   shell->tablet_mode_controller()->RemoveObserver(this);
 
+  shell->session_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
@@ -197,6 +200,10 @@ void ShelfConfig::OnTabletModeStarting() {
   in_tablet_mode_ = true;
 
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
+}
+
+void ShelfConfig::OnSessionStateChanged(session_manager::SessionState state) {
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
 void ShelfConfig::OnTabletModeEnding() {
@@ -335,22 +342,6 @@ int ShelfConfig::status_area_hit_region_padding() const {
                    : shelf_status_area_hit_region_padding_;
 }
 
-bool ShelfConfig::is_in_app() const {
-  Shell* shell = Shell::Get();
-  const auto* session = shell->session_controller();
-  if (!session ||
-      session->GetSessionState() != session_manager::SessionState::ACTIVE) {
-    return false;
-  }
-  if (is_virtual_keyboard_shown_)
-    return true;
-  if (is_app_list_visible_)
-    return false;
-  if (overview_mode_)
-    return use_in_app_shelf_in_overview_;
-  return true;
-}
-
 float ShelfConfig::drag_hide_ratio_threshold() const {
   return kDragHideRatioThreshold;
 }
@@ -385,17 +376,24 @@ void ShelfConfig::UpdateConfig(bool new_is_app_list_visible,
           ? Shell::Get()->system_tray_model()->virtual_keyboard()->visible()
           : false;
 
-  if (!tablet_mode_changed && is_dense_ == new_is_dense &&
-      shelf_controls_shown_ == new_shelf_controls_shown &&
-      is_virtual_keyboard_shown_ == new_is_virtual_keyboard_shown &&
-      is_app_list_visible_ == new_is_app_list_visible) {
+  const bool new_is_in_app =
+      CalculateIsInApp(new_is_app_list_visible, new_is_virtual_keyboard_shown);
+
+  const bool changed =
+      tablet_mode_changed || is_dense_ != new_is_dense ||
+      is_in_app_ != new_is_in_app ||
+      shelf_controls_shown_ != new_shelf_controls_shown ||
+      is_virtual_keyboard_shown_ != new_is_virtual_keyboard_shown ||
+      is_app_list_visible_ != new_is_app_list_visible;
+
+  if (!changed)
     return;
-  }
 
   is_dense_ = new_is_dense;
   shelf_controls_shown_ = new_shelf_controls_shown;
   is_virtual_keyboard_shown_ = new_is_virtual_keyboard_shown;
   is_app_list_visible_ = new_is_app_list_visible;
+  is_in_app_ = new_is_in_app;
 
   OnShelfConfigUpdated();
 }
@@ -489,6 +487,23 @@ gfx::Size ShelfConfig::DragHandleSize() const {
 
 void ShelfConfig::UpdateConfigForAccessibilityState() {
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
+}
+
+bool ShelfConfig::CalculateIsInApp(bool app_list_visible,
+                                   bool virtual_keyboard_shown) const {
+  Shell* shell = Shell::Get();
+  const auto* session = shell->session_controller();
+  if (!session ||
+      session->GetSessionState() != session_manager::SessionState::ACTIVE) {
+    return false;
+  }
+  if (virtual_keyboard_shown)
+    return true;
+  if (app_list_visible)
+    return false;
+  if (overview_mode_)
+    return use_in_app_shelf_in_overview_;
+  return true;
 }
 
 void ShelfConfig::OnShelfConfigUpdated() {

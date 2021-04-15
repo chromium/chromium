@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/style/ash_color_provider.h"
@@ -19,11 +20,16 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/animation/tween.h"
 
+namespace session_manager {
+enum class SessionState;
+}  // namespace session_manager
+
 namespace ash {
 
 // Provides layout and drawing config for the Shelf. Note That some of these
 // values could change at runtime.
 class ASH_EXPORT ShelfConfig : public TabletModeObserver,
+                               public SessionObserver,
                                public AppListControllerObserver,
                                public display::DisplayObserver,
                                public VirtualKeyboardModel::Observer,
@@ -56,6 +62,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // TabletModeObserver:
   void OnTabletModeStarting() override;
   void OnTabletModeEnding() override;
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -124,9 +133,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // The extra padding added to status area tray buttons on the shelf.
   int status_area_hit_region_padding() const;
 
-  // Returns whether the in app shelf should be shown.
-  bool is_in_app() const;
-
   // The threshold relative to the size of the shelf that is used to determine
   // if the shelf visibility should change during a drag.
   float drag_hide_ratio_threshold() const;
@@ -168,6 +174,8 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   }
 
   bool is_dense() const { return is_dense_; }
+
+  bool is_in_app() const { return is_in_app_; }
 
   bool shelf_controls_shown() const { return shelf_controls_shown_; }
 
@@ -235,6 +243,11 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Updates shelf config - called when the accessibility state changes.
   void UpdateConfigForAccessibilityState();
 
+  // Calculates the intended in-app state with the provided app list and virtual
+  // keyboard visibility.
+  bool CalculateIsInApp(bool app_list_visible,
+                        bool virtual_keyboard_shown) const;
+
   // Whether the in app shelf should be shown in overview mode.
   bool use_in_app_shelf_in_overview_;
 
@@ -246,6 +259,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   // Whether shelf is currently standard or dense.
   bool is_dense_;
+
+  // Whether the shelf is currently in in-app state.
+  bool is_in_app_;
 
   // Whether the shelf buttons (navigation controls, and overview tray button)
   // should be shown.

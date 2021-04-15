@@ -26,7 +26,11 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_preview_view.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -670,16 +674,70 @@ TEST_F(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
   ASSERT_TRUE(widget);
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
-    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize, kTrayItemSize),
-              test_api()->GetPreviewsTrayIcon()->size());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
 
   // Transition to home screen.
   widget->Minimize();
 
-    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
-    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
-              test_api()->GetPreviewsTrayIcon()->size());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
+}
+
+// Tests that the tray icon size changes on in-app shelf after transition from
+// overview when overview is not showing in-app shelf.
+TEST_F(
+    HoldingSpaceTrayTest,
+    UpdateTrayIconSizeForInAppShelfAfterTransitionFromOverviewWithHomeShelf) {
+  MarkTimeOfFirstPin();
+  StartSession();
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  // Add a download item - the button should be shown.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  // Create a test widget and minimize it to transition to home screen.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  ASSERT_TRUE(widget);
+  widget->Minimize();
+
+  ASSERT_FALSE(ShelfConfig::Get()->is_in_app());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
+
+  // Transition to overview, the shelf is expected to remain in home screen
+  // style state.
+  Shell::Get()->overview_controller()->StartOverview();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+
+  ASSERT_FALSE(ShelfConfig::Get()->is_in_app());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
+
+  // Tap the test window preview within the overview UI, and tap it to exit
+  // overview.
+  OverviewItem* overview_item =
+      Shell::Get()
+          ->overview_controller()
+          ->overview_session()
+          ->GetOverviewItemForWindow(widget->GetNativeWindow());
+  GetEventGenerator()->GestureTapAt(overview_item->overview_item_view()
+                                        ->preview_view()
+                                        ->GetBoundsInScreen()
+                                        .CenterPoint());
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
+
+  ASSERT_TRUE(ShelfConfig::Get()->is_in_app());
+  ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+  EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize, kTrayItemSize),
+            test_api()->GetPreviewsTrayIcon()->size());
 }
 
 // Tests that a shelf config change just after an item has been removed does
