@@ -91,13 +91,9 @@ class DataRequestedTestCallback {
 
 class FakeDataTransferManagerTest : public ::testing::Test {
  protected:
-  bool IsSupportedEnvironment() {
-    return FakeDataTransferManager::IsSupportedEnvironment();
-  }
-
   void SetUp() override {
-    if (!IsSupportedEnvironment())
-      return;
+    if (!FakeDataTransferManager::IsSupportedEnvironment())
+      GTEST_SKIP();
 
     winrt_initializer_.emplace();
     ASSERT_TRUE(winrt_initializer_->Succeeded());
@@ -105,19 +101,11 @@ class FakeDataTransferManagerTest : public ::testing::Test {
         Microsoft::WRL::Make<FakeDataTransferManager>();
   }
 
-  void TearDown() override {
-    if (!IsSupportedEnvironment())
-      return;
-  }
-
   base::Optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   ComPtr<FakeDataTransferManager> fake_data_transfer_manager_;
 };
 
 TEST_F(FakeDataTransferManagerTest, RemovingHandlerForInvalidToken) {
-  if (!IsSupportedEnvironment())
-    return;
-
   // Validate removing an invalid token both fails and creates a test failure
   // when there is no listener
   EventRegistrationToken invalid_token;
@@ -153,9 +141,6 @@ TEST_F(FakeDataTransferManagerTest, RemovingHandlerForInvalidToken) {
 }
 
 TEST_F(FakeDataTransferManagerTest, OutOfOrderEventUnsubscribing) {
-  if (!IsSupportedEnvironment())
-    return;
-
   ASSERT_FALSE(fake_data_transfer_manager_->HasDataRequestedListener());
 
   DataRequestedTestCallback callback_1;
@@ -208,9 +193,6 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventUnsubscribing) {
 }
 
 TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
-  if (!IsSupportedEnvironment())
-    return;
-
   DataRequestedTestCallback callback_1;
   EventRegistrationToken token_1;
   ASSERT_HRESULT_SUCCEEDED(fake_data_transfer_manager_->add_DataRequested(
@@ -260,9 +242,6 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
-  if (!IsSupportedEnvironment())
-    return;
-
   base::test::SingleThreadTaskEnvironment task_environment;
 
   // Create a StorageFile/Item to provide to the DataRequested event
@@ -366,9 +345,6 @@ TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback_Deferral) {
-  if (!IsSupportedEnvironment())
-    return;
-
   // Set up a handler for the DataRequested event that requests a deferral
   ComPtr<IDataRequestDeferral> data_request_deferral;
   auto callback = Callback<
