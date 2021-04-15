@@ -352,6 +352,14 @@ crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangl
 crbug.com/1073538 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
 crbug.com/1086194 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 crbug.com/1136231 [ mac nvidia-0xfe9 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/negativevertexarrayapi.html [ Failure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/functions/functions_017_to_024.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/multisample/fbo_8_samples.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/mul_dynamic_lowp.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/sub_const.html [ RetryOnFailure ]
+crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/sub_dynamic.html [ RetryOnFailure ]
 
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 
