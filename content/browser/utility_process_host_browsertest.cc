@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -45,10 +46,13 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     done_closure_ =
         base::BindOnce(&UtilityProcessHostBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure(), crash);
-    GetIOThreadTaskRunner({})->PostTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &UtilityProcessHostBrowserTest::RunUtilityProcessOnIOThread,
+            &UtilityProcessHostBrowserTest::RunUtilityProcessOnProcessThread,
             base::Unretained(this), elevated, crash));
     run_loop.Run();
   }
@@ -61,8 +65,10 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     std::move(quit_closure).Run();
   }
 
-  void RunUtilityProcessOnIOThread(bool elevated, bool crash) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  void RunUtilityProcessOnProcessThread(bool elevated, bool crash) {
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     UtilityProcessHost* host = new UtilityProcessHost();
     host->SetName(u"TestProcess");
     host->SetMetricsName(kTestProcessName);
@@ -76,26 +82,30 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     host->GetChildProcess()->BindReceiver(
         service_.BindNewPipeAndPassReceiver());
     if (crash) {
-      service_->DoCrashImmediately(
-          base::BindOnce(&UtilityProcessHostBrowserTest::OnSomethingOnIOThread,
-                         base::Unretained(this), crash));
+      service_->DoCrashImmediately(base::BindOnce(
+          &UtilityProcessHostBrowserTest::OnSomethingOnProcessThread,
+          base::Unretained(this), crash));
     } else {
-      service_->DoSomething(
-          base::BindOnce(&UtilityProcessHostBrowserTest::OnSomethingOnIOThread,
-                         base::Unretained(this), crash));
+      service_->DoSomething(base::BindOnce(
+          &UtilityProcessHostBrowserTest::OnSomethingOnProcessThread,
+          base::Unretained(this), crash));
     }
   }
 
-  void ResetServiceOnIOThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  void ResetServiceOnProcessThread() {
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     service_.reset();
   }
 
-  void OnSomethingOnIOThread(bool expect_crash) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  void OnSomethingOnProcessThread(bool expect_crash) {
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     // If service crashes then this never gets called.
     ASSERT_EQ(false, expect_crash);
-    ResetServiceOnIOThread();
+    ResetServiceOnProcessThread();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
 
@@ -133,10 +143,14 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     EXPECT_EQ(kTestProcessName, data.metrics_name);
     EXPECT_EQ(false, has_crashed);
     has_crashed = true;
-    GetIOThreadTaskRunner({})->PostTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&UtilityProcessHostBrowserTest::ResetServiceOnIOThread,
-                       base::Unretained(this)));
+        base::BindOnce(
+            &UtilityProcessHostBrowserTest::ResetServiceOnProcessThread,
+            base::Unretained(this)));
     std::move(done_closure_).Run();
   }
 };

@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/plugin_service.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -50,17 +51,20 @@ class PluginResponseInterceptorURLLoaderThrottleBrowserTest
   int CountPDFProcesses() {
     int result = -1;
     base::RunLoop run_loop;
-    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&PluginResponseInterceptorURLLoaderThrottleBrowserTest::
-                           CountPDFProcessesOnIOThread,
+                           CountPDFProcessesOnProcessThread,
                        base::Unretained(this), base::Unretained(&result)),
         run_loop.QuitClosure());
     run_loop.Run();
     return result;
   }
 
-  void CountPDFProcessesOnIOThread(int* result) {
+  void CountPDFProcessesOnProcessThread(int* result) {
     auto* service = content::PluginService::GetInstance();
     *result = service->CountPpapiPluginProcessesForProfile(
         base::FilePath(ChromeContentClient::kPDFPluginPath),

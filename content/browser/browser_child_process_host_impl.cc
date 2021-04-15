@@ -128,7 +128,7 @@ memory_instrumentation::mojom::ProcessType GetCoordinatorClientProcessType(
   }
 }
 
-void BindTracedProcessOnIOThread(
+void BindTracedProcessOnProcessThread(
     base::WeakPtr<BrowserChildProcessHostImpl> weak_host,
     mojo::PendingReceiver<tracing::mojom::TracedProcess> receiver) {
   if (!weak_host)
@@ -140,8 +140,13 @@ void BindTracedProcessOnIOThread(
 void BindTracedProcessFromUIThread(
     base::WeakPtr<BrowserChildProcessHostImpl> weak_host,
     mojo::PendingReceiver<tracing::mojom::TracedProcess> receiver) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    BindTracedProcessOnProcessThread(std::move(weak_host), std::move(receiver));
+    return;
+  }
+
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BindTracedProcessOnIOThread,
+      FROM_HERE, base::BindOnce(&BindTracedProcessOnProcessThread,
                                 std::move(weak_host), std::move(receiver)));
 }
 

@@ -374,16 +374,19 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   int CountPDFProcesses() {
     int result = -1;
     base::RunLoop run_loop;
-    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&PDFExtensionTest::CountPDFProcessesOnIOThread,
+        base::BindOnce(&PDFExtensionTest::CountPDFProcessesOnProcessThread,
                        base::Unretained(this), base::Unretained(&result)),
         run_loop.QuitClosure());
     run_loop.Run();
     return result;
   }
 
-  void CountPDFProcessesOnIOThread(int* result) {
+  void CountPDFProcessesOnProcessThread(int* result) {
     auto* service = content::PluginService::GetInstance();
     *result = service->CountPpapiPluginProcessesForProfile(
         base::FilePath(ChromeContentClient::kPDFPluginPath),

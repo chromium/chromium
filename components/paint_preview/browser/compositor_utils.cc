@@ -17,16 +17,19 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace paint_preview {
 
 namespace {
 
-void BindDiscardableSharedMemoryManagerOnIOThread(
+void BindDiscardableSharedMemoryManagerOnProcessThread(
     mojo::PendingReceiver<
         discardable_memory::mojom::DiscardableSharedMemoryManager> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
   discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
       std::move(receiver));
 }
@@ -84,10 +87,13 @@ void BindDiscardableSharedMemoryManager(
       discardable_memory_manager;
 
   // Set up the discardable memory manager.
-  content::GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &BindDiscardableSharedMemoryManagerOnIOThread,
+          &BindDiscardableSharedMemoryManagerOnProcessThread,
           discardable_memory_manager.InitWithNewPipeAndPassReceiver()));
   collection->get()->SetDiscardableSharedMemoryManager(
       std::move(discardable_memory_manager));

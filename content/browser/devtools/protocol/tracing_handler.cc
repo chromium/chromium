@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_service.h"
+#include "content/public/common/content_features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
@@ -793,7 +794,10 @@ void TracingHandler::Start(Maybe<std::string> categories,
   trace_config_ = std::move(trace_config);
 
   // GPU process id can only be retrieved on IO thread. Do some thread hopping.
-  GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([]() {
         GpuProcessHost* gpu_process_host =
             GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,

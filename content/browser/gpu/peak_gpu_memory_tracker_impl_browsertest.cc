@@ -15,8 +15,10 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,14 +35,15 @@ const uint64_t kPeakMemory = kPeakMemoryMB * 1048576u;
 // memory monitoring aspects.
 class TestGpuService : public viz::mojom::GpuService {
  public:
-  TestGpuService() = default;
+  explicit TestGpuService(base::RepeatingClosure quit_closure)
+      : quit_closure_(quit_closure) {}
   TestGpuService(const TestGpuService*) = delete;
   ~TestGpuService() override = default;
   TestGpuService& operator=(const TestGpuService&) = delete;
 
   // mojom::GpuService:
   void StartPeakMemoryMonitor(uint32_t sequence_num) override {
-    peak_memory_monitor_started_ = true;
+    quit_closure_.Run();
   }
 
   void GetPeakMemoryUsage(uint32_t sequence_num,
@@ -50,10 +53,6 @@ class TestGpuService : public viz::mojom::GpuService {
     allocation_per_source[gpu::GpuPeakMemoryAllocationSource::UNKNOWN] =
         kPeakMemory;
     std::move(callback).Run(kPeakMemory, allocation_per_source);
-  }
-
-  bool peak_memory_monitor_started() const {
-    return peak_memory_monitor_started_;
   }
 
  private:
@@ -132,7 +131,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void ThrowJavaException() override {}
   void Stop(StopCallback callback) override {}
 
-  bool peak_memory_monitor_started_ = false;
+  base::RepeatingClosure quit_closure_;
 };
 
 // Runs |task| on the Browser's IO thread, and blocks the Main thread until that
@@ -154,16 +153,20 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
   // Waits until all messages to the mojo::Remote<viz::mojom::GpuService> have
   // been processed.
   void FlushRemoteForTesting() {
-    PostTaskToIOThreadAndWait(
-        base::BindOnce(&viz::GpuHostImplTestApi::FlushRemoteForTesting,
-                       base::Unretained(gpu_host_impl_test_api_.get())));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      gpu_host_impl_test_api_->FlushRemoteForTesting();
+    } else {
+      PostTaskToIOThreadAndWait(
+          base::BindOnce(&viz::GpuHostImplTestApi::FlushRemoteForTesting,
+                         base::Unretained(gpu_host_impl_test_api_.get())));
+    }
   }
 
   // Initializes the TestGpuService, and installs it as the active service.
-  void InitOnIOThread() {
+  void InitOnProcessThread(base::RepeatingClosure quit_closure) {
     gpu_host_impl_test_api_ = std::make_unique<viz::GpuHostImplTestApi>(
         GpuProcessHost::Get()->gpu_host());
-    test_gpu_service_ = std::make_unique<TestGpuService>();
+    test_gpu_service_ = std::make_unique<TestGpuService>(quit_closure);
     mojo::Remote<viz::mojom::GpuService> gpu_service_remote;
     gpu_service_receiver_ =
         std::make_unique<mojo::Receiver<viz::mojom::GpuService>>(
@@ -185,19 +188,32 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
   // Setup requires that we have the Browser threads still initialized.
   // ContentBrowserTest:
   void PreRunTestOnMainThread() override {
+    run_loop_for_start_ = std::make_unique<base::RunLoop>();
     ContentBrowserTest::PreRunTestOnMainThread();
-    PostTaskToIOThreadAndWait(base::BindOnce(
-        &PeakGpuMemoryTrackerImplTest::InitOnIOThread, base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      InitOnProcessThread(run_loop_for_start_->QuitClosure());
+    } else {
+      PostTaskToIOThreadAndWait(base::BindOnce(
+          &PeakGpuMemoryTrackerImplTest::InitOnProcessThread,
+          base::Unretained(this), run_loop_for_start_->QuitClosure()));
+    }
   }
   void PostRunTestOnMainThread() override {
-    PostTaskToIOThreadAndWait(base::BindOnce(
-        [](std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>>
-               gpu_service_receiver) {},
-        std::move(gpu_service_receiver_)));
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      gpu_service_receiver_.reset();
+    } else {
+      PostTaskToIOThreadAndWait(base::BindOnce(
+          [](std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>>
+                 gpu_service_receiver) {},
+          std::move(gpu_service_receiver_)));
+    }
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
+  void WaitForStartPeakMemoryMonitor() { run_loop_for_start_->Run(); }
+
  private:
+  std::unique_ptr<base::RunLoop> run_loop_for_start_;
   std::unique_ptr<TestGpuService> test_gpu_service_;
   std::unique_ptr<viz::GpuHostImplTestApi> gpu_host_impl_test_api_;
   std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>> gpu_service_receiver_;
@@ -215,9 +231,9 @@ IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   // No report in response to creation.
   histogram.ExpectTotalCount("Memory.GPU.PeakMemoryUsage2.PageLoad", 0);
   histogram.ExpectTotalCount(
-      "Memory.GPU.PeakMemoryAllocationSource2.PageLoad.Unknown", 0);
+      "Memory.GPU.PeakMemoryAllocationSource.PageLoad.Unknown", 0);
   // However the serive should have started monitoring.
-  EXPECT_TRUE(gpu_service()->peak_memory_monitor_started());
+  WaitForStartPeakMemoryMonitor();
 
   // Deleting the tracker should start a request for peak Gpu memory usage, with
   // the callback being a posted task.

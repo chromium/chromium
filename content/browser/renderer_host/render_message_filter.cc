@@ -74,6 +74,20 @@
 #endif
 
 namespace content {
+namespace {
+
+void GotHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback,
+                      bool has_gpu) {
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), has_gpu));
+}
+
+void GetHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback) {
+  GpuProcessHost::GetHasGpuProcess(
+      base::BindOnce(GotHasGpuProcess, std::move(callback)));
+}
+
+}  // namespace
 
 RenderMessageFilter::RenderMessageFilter(
     int render_process_id,
@@ -160,6 +174,11 @@ void RenderMessageFilter::OnMediaLogRecords(
 }
 
 void RenderMessageFilter::HasGpuProcess(HasGpuProcessCallback callback) {
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(GetHasGpuProcess, std::move(callback)));
+    return;
+  }
   GpuProcessHost::GetHasGpuProcess(std::move(callback));
 }
 
