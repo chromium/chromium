@@ -75,6 +75,14 @@ class DelegatedFrameHost;
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
  public:
+  // The TooltipObserver is used in browser tests only.
+  class CONTENT_EXPORT TooltipObserver {
+   public:
+    virtual ~TooltipObserver() = default;
+
+    virtual void OnTooltipTextUpdated(const std::u16string& tooltip_text) = 0;
+  };
+
   RenderWidgetHostViewBase(const RenderWidgetHostViewBase&) = delete;
   RenderWidgetHostViewBase& operator=(const RenderWidgetHostViewBase&) = delete;
 
@@ -520,6 +528,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
     return content_background_color_;
   }
 
+  void SetTooltipObserverForTesting(TooltipObserver* observer);
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
@@ -581,6 +591,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   base::Optional<SkColor> default_background_color_;
 
   bool is_currently_scrolling_viewport_ = false;
+
+  TooltipObserver* tooltip_observer_for_testing_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(

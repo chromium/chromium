@@ -3285,11 +3285,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // Tooltips aren't used on Android, so no need to compile/run this test in that
 // case.
 #if !defined(OS_ANDROID)
-class TooltipMonitor : public CursorManager::TooltipObserver {
+class TooltipMonitor : public RenderWidgetHostViewBase::TooltipObserver {
  public:
-  TooltipMonitor(CursorManager* cursor_manager) : run_loop_(new base::RunLoop) {
-    DCHECK(cursor_manager);
-    cursor_manager->SetTooltipObserverForTesting(this);
+  explicit TooltipMonitor(RenderWidgetHostViewBase* rwhv)
+      : run_loop_(new base::RunLoop) {
+    DCHECK(rwhv);
+    rwhv->SetTooltipObserverForTesting(this);
   }
   ~TooltipMonitor() override {}
 
@@ -3298,8 +3299,7 @@ class TooltipMonitor : public CursorManager::TooltipObserver {
     tooltips_received_.clear();
   }
 
-  void OnSetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                               const std::u16string& tooltip_text) override {
+  void OnTooltipTextUpdated(const std::u16string& tooltip_text) override {
     tooltips_received_.push_back(tooltip_text);
     if (tooltip_text == tooltip_text_wanted_ && run_loop_->running())
       run_loop_->Quit();
@@ -3344,9 +3344,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostViewBase* rwhv_b = static_cast<RenderWidgetHostViewBase*>(
       b_node->current_frame_host()->GetRenderWidgetHost()->GetView());
 
-  DCHECK(rwhv_a->GetCursorManager());
-
-  TooltipMonitor tooltip_monitor(rwhv_a->GetCursorManager());
+  TooltipMonitor tooltip_monitor(rwhv_a);
 
   WaitForHitTestData(b_node->current_frame_host());
 
@@ -3413,7 +3411,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     tooltip_monitor.Reset();
   }
 
-  rwhv_a->GetCursorManager()->SetTooltipObserverForTesting(nullptr);
+  rwhv_a->SetTooltipObserverForTesting(nullptr);
 }
 #endif  // !defined(OS_ANDROID)
 

@@ -21,14 +21,6 @@ class RenderWidgetHostViewBase;
 // update was received for the current view.
 class CONTENT_EXPORT CursorManager {
  public:
-  class TooltipObserver {
-   public:
-    virtual ~TooltipObserver() {}
-
-    virtual void OnSetTooltipTextForView(
-        const RenderWidgetHostViewBase* view,
-        const std::u16string& tooltip_text) = 0;
-  };
 
   CursorManager(RenderWidgetHostViewBase* root);
   ~CursorManager();
@@ -55,8 +47,6 @@ class CONTENT_EXPORT CursorManager {
   // the cursor otherwise.
   bool GetCursorForTesting(RenderWidgetHostViewBase*, WebCursor&);
 
-  void SetTooltipObserverForTesting(TooltipObserver* observer);
-
  private:
   // Stores the last received cursor from each RenderWidgetHostView.
   std::map<RenderWidgetHostViewBase*, WebCursor> cursor_map_;
@@ -68,8 +58,6 @@ class CONTENT_EXPORT CursorManager {
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
   RenderWidgetHostViewBase* root_view_;
-
-  TooltipObserver* tooltip_observer_for_testing_;
 };
 
 }  // namespace content

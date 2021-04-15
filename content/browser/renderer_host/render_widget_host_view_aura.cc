@@ -766,6 +766,9 @@ void RenderWidgetHostViewAura::SetTooltipText(
 void RenderWidgetHostViewAura::DisplayTooltipText(
     const std::u16string& tooltip_text) {
   tooltip_ = tooltip_text;
+  if (tooltip_observer_for_testing_)
+    tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
+
   aura::Window* root_window = window_->GetRootWindow();
   wm::TooltipClient* tooltip_client = wm::GetTooltipClient(root_window);
   if (tooltip_client) {

@@ -9,9 +9,7 @@
 namespace content {
 
 CursorManager::CursorManager(RenderWidgetHostViewBase* root)
-    : view_under_cursor_(root),
-      root_view_(root),
-      tooltip_observer_for_testing_(nullptr) {}
+    : view_under_cursor_(root), root_view_(root) {}
 
 CursorManager::~CursorManager() {}
 
@@ -26,10 +24,6 @@ void CursorManager::SetTooltipTextForView(const RenderWidgetHostViewBase* view,
                                           const std::u16string& tooltip_text) {
   if (view == view_under_cursor_) {
     root_view_->DisplayTooltipText(tooltip_text);
-    if (tooltip_observer_for_testing_ && view) {
-      tooltip_observer_for_testing_->OnSetTooltipTextForView(view,
-                                                             tooltip_text);
-    }
   }
 }
 
@@ -69,10 +63,6 @@ bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
 
   cursor = cursor_map_[view];
   return true;
-}
-
-void CursorManager::SetTooltipObserverForTesting(TooltipObserver* observer) {
-  tooltip_observer_for_testing_ = observer;
 }
 
 }  // namespace content

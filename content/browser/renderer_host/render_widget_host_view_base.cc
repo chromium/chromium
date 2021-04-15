@@ -793,6 +793,11 @@ RenderWidgetHostViewBase::GetWebContentsAccessibility() {
   return nullptr;
 }
 
+void RenderWidgetHostViewBase::SetTooltipObserverForTesting(
+    TooltipObserver* observer) {
+  tooltip_observer_for_testing_ = observer;
+}
+
 // TODO(wjmaclean): Would it simplify this function if we re-implemented it
 // using GetTransformToViewCoordSpace()?
 bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
