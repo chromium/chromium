@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
-
-#include "base/notreached.h"
-
 namespace autofill {
 
 TestAutofillBubbleHandler::TestAutofillBubbleHandler() = default;
@@ -55,6 +52,17 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
   if (!save_address_profile_bubble_view_)
     save_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
   return save_address_profile_bubble_view_.get();
+}
+
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowUpdateAddressProfileBubble(
+    content::WebContents* contents,
+    SaveAddressProfileBubbleController* controller,
+    bool is_user_gesture) {
+  if (!update_address_profile_bubble_view_) {
+    update_address_profile_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return update_address_profile_bubble_view_.get();
 }
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowEditAddressProfileDialog(

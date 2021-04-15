@@ -33,6 +33,7 @@ class SaveAddressProfileBubbleControllerImplTest : public DialogBrowserTest {
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContents(web_contents);
     autofill_client->ConfirmSaveAddressProfile(test::GetFullProfile(),
+                                               /*original_profile=*/nullptr,
                                                base::DoNothing());
     controller_ =
         SaveAddressProfileBubbleControllerImpl::FromWebContents(web_contents);

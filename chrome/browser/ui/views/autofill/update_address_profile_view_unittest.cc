@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
+#include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
@@ -35,10 +35,10 @@ class MockSaveAddressProfileBubbleController
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 };
 
-class SaveAddressProfileViewTest : public ChromeViewsTestBase {
+class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
  public:
-  SaveAddressProfileViewTest();
-  ~SaveAddressProfileViewTest() override = default;
+  UpdateAddressProfileViewTest();
+  ~UpdateAddressProfileViewTest() override = default;
 
   void CreateViewAndShow();
 
@@ -53,7 +53,7 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
   const AutofillProfile& address_profile_to_save() {
     return address_profile_to_save_;
   }
-  SaveAddressProfileView* view() { return view_; }
+  UpdateAddressProfileView* view() { return view_; }
   MockSaveAddressProfileBubbleController* mock_controller() {
     return &mock_controller_;
   }
@@ -66,11 +66,11 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  SaveAddressProfileView* view_;
+  UpdateAddressProfileView* view_;
   testing::NiceMock<MockSaveAddressProfileBubbleController> mock_controller_;
 };
 
-SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
+UpdateAddressProfileViewTest::UpdateAddressProfileViewTest() {
   feature_list_.InitAndEnableFeature(
       features::kAutofillAddressProfileSavePrompt);
 
@@ -78,7 +78,7 @@ SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 }
 
-void SaveAddressProfileViewTest::CreateViewAndShow() {
+void UpdateAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetWindowTitle())
       .WillByDefault(testing::Return(std::u16string()));
   ON_CALL(*mock_controller(), GetProfileToSave())
@@ -94,17 +94,17 @@ void SaveAddressProfileViewTest::CreateViewAndShow() {
   anchor_widget_->Show();
 
   view_ =
-      new SaveAddressProfileView(anchor_widget_->GetContentsView(),
-                                 test_web_contents_.get(), mock_controller());
+      new UpdateAddressProfileView(anchor_widget_->GetContentsView(),
+                                   test_web_contents_.get(), mock_controller());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 
-TEST_F(SaveAddressProfileViewTest, HasCloseButton) {
+TEST_F(UpdateAddressProfileViewTest, HasCloseButton) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowCloseButton());
 }
 
-TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
+TEST_F(UpdateAddressProfileViewTest, AcceptInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(
       *mock_controller(),
@@ -113,7 +113,7 @@ TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
   view()->AcceptDialog();
 }
 
-TEST_F(SaveAddressProfileViewTest, CancelInvokesTheController) {
+TEST_F(UpdateAddressProfileViewTest, CancelInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(
       *mock_controller(),

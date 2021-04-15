@@ -5,6 +5,7 @@
 #include "weblayer/browser/autofill_client_impl.h"
 
 #include "base/stl_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
@@ -222,6 +223,7 @@ void AutofillClientImpl::ConfirmCreditCardFillAssist(
 
 void AutofillClientImpl::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
+    const autofill::AutofillProfile* original_profile,
     AddressProfileSavePromptCallback callback) {
   NOTREACHED();
 }

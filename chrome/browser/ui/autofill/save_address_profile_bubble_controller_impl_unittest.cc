@@ -39,7 +39,8 @@ TEST_F(SaveAddressProfileBubbleControllerImplTest,
        DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(profile, callback.Get());
+  controller()->OfferSave(profile, /*original_profile=*/nullptr,
+                          callback.Get());
 
   EXPECT_CALL(
       callback,
@@ -53,7 +54,8 @@ TEST_F(SaveAddressProfileBubbleControllerImplTest,
        DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(profile, callback.Get());
+  controller()->OfferSave(profile, /*original_profile=*/nullptr,
+                          callback.Get());
 
   EXPECT_CALL(
       callback,

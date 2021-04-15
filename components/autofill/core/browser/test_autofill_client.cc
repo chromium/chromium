@@ -222,6 +222,7 @@ void TestAutofillClient::ConfirmCreditCardFillAssist(
 
 void TestAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AddressProfileSavePromptCallback callback) {}
 
 bool TestAutofillClient::HasCreditCardScanFeature() {

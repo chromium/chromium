@@ -24,7 +24,7 @@ void AddressProfileSaveManager::SaveProfile(const AutofillProfile& profile) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePrompt)) {
     client_->ConfirmSaveAddressProfile(
-        profile,
+        profile, /*original_profile=*/nullptr,
         base::BindOnce(&AddressProfileSaveManager::SaveProfilePromptCallback,
                        weak_ptr_factory_.GetWeakPtr()));
     return;

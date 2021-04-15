@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
 
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -26,12 +27,14 @@ SaveAddressProfileBubbleControllerImpl::
 
 void SaveAddressProfileBubbleControllerImpl::OfferSave(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view())
     return;
   address_profile_ = profile;
+  original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
@@ -41,12 +44,17 @@ void SaveAddressProfileBubbleControllerImpl::OfferSave(
 std::u16string SaveAddressProfileBubbleControllerImpl::GetWindowTitle() const {
   // TODO(crbug.com/1167060): Use ineternationalized string upon having final
   // strings.
-  return u"Save Address?";
+  return original_profile_ ? u"Update Address?" : u"Save Address?";
 }
 
 const AutofillProfile&
 SaveAddressProfileBubbleControllerImpl::GetProfileToSave() const {
   return address_profile_;
+}
+
+const AutofillProfile*
+SaveAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
+  return base::OptionalOrNullptr(original_profile_);
 }
 
 void SaveAddressProfileBubbleControllerImpl::OnUserDecision(
@@ -90,16 +98,27 @@ AutofillBubbleBase* SaveAddressProfileBubbleControllerImpl::GetSaveBubbleView()
 
 PageActionIconType
 SaveAddressProfileBubbleControllerImpl::GetPageActionIconType() {
+  // TODO(crbug.com/1167060): Switch to PageActionIconType::kSaveAutofillAddress
+  // once there are acceesible name for the page icon view.
   return PageActionIconType::kSaveCard;
 }
 
 void SaveAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(!bubble_view());
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  set_bubble_view(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowSaveAddressProfileBubble(web_contents(), this,
-                                                     shown_by_user_gesture_));
+  if (!original_profile_) {
+    // This must is a save prompt.
+    set_bubble_view(browser->window()
+                        ->GetAutofillBubbleHandler()
+                        ->ShowSaveAddressProfileBubble(web_contents(), this,
+                                                       shown_by_user_gesture_));
+  } else {
+    // This is an update prompt.
+    set_bubble_view(browser->window()
+                        ->GetAutofillBubbleHandler()
+                        ->ShowUpdateAddressProfileBubble(
+                            web_contents(), this, shown_by_user_gesture_));
+  }
   DCHECK(bubble_view());
 }
 

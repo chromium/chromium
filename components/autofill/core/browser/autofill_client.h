@@ -458,10 +458,14 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmCreditCardFillAssist(const CreditCard& card,
                                            base::OnceClosure callback) = 0;
 
-  // Shows the offer-to-save address profile bubble. Runs |callback| once the
-  // user makes a decision with respect to the offer-to-save prompt.
+  // Shows the offer-to-save (or update) address profile bubble. If
+  // `original_profile` is nullptr, this renders a save prompt. Otherwise, it
+  // renders an update prompt where `original_profile` is the address profile
+  // that will be updated if the user accepts the update prompt. Runs `callback`
+  // once the user makes a decision with respect to the offer-to-save prompt.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
       AddressProfileSavePromptCallback callback) = 0;
 
   // Returns true if both the platform and the device support scanning credit

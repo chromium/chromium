@@ -222,6 +222,7 @@ void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
 
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AddressProfileSavePromptCallback callback) {}
 
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {

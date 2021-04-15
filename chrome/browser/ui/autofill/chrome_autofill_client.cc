@@ -531,15 +531,17 @@ void ChromeAutofillClient::ConfirmCreditCardFillAssist(
 
 void ChromeAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AddressProfileSavePromptCallback callback) {
 #if defined(OS_ANDROID)
+  // TODO(crbug.com/1167061): Implement update.
   save_address_profile_flow_manager_.OfferSave(web_contents(), profile,
                                                std::move(callback));
 #else
   SaveAddressProfileBubbleControllerImpl::CreateForWebContents(web_contents());
   SaveAddressProfileBubbleControllerImpl* controller =
       SaveAddressProfileBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferSave(profile, std::move(callback));
+  controller->OfferSave(profile, original_profile, std::move(callback));
 #endif
 }
 

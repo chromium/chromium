@@ -32,16 +32,19 @@ class SaveAddressProfileBubbleControllerImpl
       const SaveAddressProfileBubbleControllerImpl&) = delete;
   ~SaveAddressProfileBubbleControllerImpl() override;
 
-  // Sets up the controller and offers to save the |profile|.
-  // |address_profile_save_prompt_callback| will be invoked once the user makes
-  // a decision with respect to the offer-to-save prompt.
+  // Sets up the controller and offers to save the `profile`. If
+  // `original_profile` is not nullptr, it will be updated of the user accepts
+  // the offer. `address_profile_save_prompt_callback` will be invoked once the
+  // user makes a decision with respect to the offer-to-save prompt.
   void OfferSave(const AutofillProfile& profile,
+                 const AutofillProfile* original_profile,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback);
 
   // SaveAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
   const AutofillProfile& GetProfileToSave() const override;
+  const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision) override;
   void OnEditButtonClicked() override;
@@ -71,6 +74,10 @@ class SaveAddressProfileBubbleControllerImpl
   // Contains the details of the address profile that will be saved if the user
   // accepts.
   AutofillProfile address_profile_;
+
+  // Contains the details of the address profile that will be updated if the
+  // user accepts the prompt.
+  base::Optional<AutofillProfile> original_profile_;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address

@@ -103,6 +103,7 @@ class AwAutofillClient : public autofill::AutofillClient,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
+      const autofill::AutofillProfile* original_profile,
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;

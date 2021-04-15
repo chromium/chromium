@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
+#include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -164,6 +165,26 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
       PageActionIconType::kSaveAutofillAddress);
   SaveAddressProfileView* bubble =
       new SaveAddressProfileView(anchor_view, web_contents, controller);
+  DCHECK(bubble);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveAutofillAddress);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
+    content::WebContents* web_contents,
+    SaveAddressProfileBubbleController* controller,
+    bool is_user_gesture) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kSaveAutofillAddress);
+  UpdateAddressProfileView* bubble =
+      new UpdateAddressProfileView(anchor_view, web_contents, controller);
   DCHECK(bubble);
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(

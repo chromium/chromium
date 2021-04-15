@@ -52,6 +52,11 @@ class AutofillBubbleHandler {
       SaveAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
 
+  virtual AutofillBubbleBase* ShowUpdateAddressProfileBubble(
+      content::WebContents* web_contents,
+      SaveAddressProfileBubbleController* controller,
+      bool is_user_gesture) = 0;
+
   virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* web_contents,
       EditAddressProfileDialogController* controller) = 0;
