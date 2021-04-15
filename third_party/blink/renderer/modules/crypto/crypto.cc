@@ -31,6 +31,7 @@
 #include "crypto/random.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -72,6 +73,10 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
   }
   crypto::RandBytes(array->BaseAddress(), array->byteLength());
   return array;
+}
+
+String Crypto::randomUUID() {
+  return WTF::CreateCanonicalUUIDString();
 }
 
 SubtleCrypto* Crypto::subtle() {

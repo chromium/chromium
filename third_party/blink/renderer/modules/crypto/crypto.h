@@ -48,6 +48,7 @@ class Crypto final : public ScriptWrappable {
 
   NotShared<DOMArrayBufferView> getRandomValues(NotShared<DOMArrayBufferView>,
                                                 ExceptionState&);
+  String randomUUID();
 
   SubtleCrypto* subtle();
 

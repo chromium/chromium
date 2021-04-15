@@ -2104,6 +2104,10 @@
       status: "stable",
     },
     {
+      name: "UUID",
+      status: "experimental"
+    },
+    {
       name: "V8IdleTasks",
     },
     {
