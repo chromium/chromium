@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
@@ -31,8 +32,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
-
-const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
 
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
@@ -462,8 +461,7 @@ bool NetworkState::IsPrivate() const {
 }
 
 bool NetworkState::IsNonShillCellularNetwork() const {
-  return type() == shill::kTypeCellular &&
-         base::StartsWith(path(), kNonShillCellularNetworkPathPrefix);
+  return type() == shill::kTypeCellular && IsStubCellularServicePath(path());
 }
 
 bool NetworkState::IsShillCaptivePortal() const {
@@ -619,7 +617,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
     const std::string& iccid,
     const std::string& eid,
     const DeviceState* cellular_device) {
-  std::string path = base::StrCat({kNonShillCellularNetworkPathPrefix, iccid});
+  std::string path = GenerateStubCellularServicePath(iccid);
   auto new_state = std::make_unique<NetworkState>(path);
   new_state->set_type(shill::kTypeCellular);
   new_state->set_update_received();
