@@ -1283,18 +1283,19 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
     bool password_changed =
         form.password_value != old_primary_key_password.decrypted_password;
 
-    if (password_changed) {
-      insecure_credentials_table().RemoveRow(
-          form.signon_realm, form.username_value,
-          RemoveInsecureCredentialsReason::kUpdate);
-    }
+    InsecureCredentialsChanged insecure_changed(
+        password_changed ? insecure_credentials_table().RemoveRow(
+                               form.signon_realm, form.username_value,
+                               RemoveInsecureCredentialsReason::kUpdate)
+                         : false);
 
     PasswordForm form_with_encrypted_password = form;
     form_with_encrypted_password.encrypted_password = encrypted_password;
     FillFormInStore(&form_with_encrypted_password);
-    list.emplace_back(
-        PasswordStoreChange::UPDATE, std::move(form_with_encrypted_password),
-        FormPrimaryKey(old_primary_key_password.primary_key), password_changed);
+    list.emplace_back(PasswordStoreChange::UPDATE,
+                      std::move(form_with_encrypted_password),
+                      FormPrimaryKey(old_primary_key_password.primary_key),
+                      password_changed, insecure_changed);
   } else if (error) {
     *error = UpdateLoginError::kNoUpdatedRecords;
   }

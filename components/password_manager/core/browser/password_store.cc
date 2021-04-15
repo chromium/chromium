@@ -769,6 +769,12 @@ void PasswordStore::NotifyLoginsChanged(
     if (reuse_detector_)
       reuse_detector_->OnLoginsChanged(changes);
   }
+
+  if (base::ranges::any_of(changes, [](const auto& change) {
+        return change.insecure_credentials_changed();
+      })) {
+    NotifyInsecureCredentialsChanged();
+  }
 }
 
 void PasswordStore::NotifyInsecureCredentialsChanged() {

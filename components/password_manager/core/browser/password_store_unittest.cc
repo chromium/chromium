@@ -1972,4 +1972,55 @@ TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenAlreadyUploaded) {
   store->ShutdownOnUIThread();
 }
 
+// Verify that when a password is updated that the corresponding row is also
+// removed from the insecure credentials table and consumer is notified.
+TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnPasswordUpdate) {
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+
+  MockDatabaseInsecureCredentialsObserver observer;
+  store->AddDatabaseInsecureCredentialsObserver(&observer);
+
+  /* clang-format off */
+  static const PasswordFormData kTestCredential =
+      {PasswordForm::Scheme::kHtml,
+       kTestWebRealm1,
+       kTestWebOrigin1,
+       "", u"", u"username_element_1",  u"password_element_1",
+       u"username_value_1",
+       u"", kTestLastUsageTime, 1};
+  /* clang-format on */
+
+  std::unique_ptr<PasswordForm> test_form(
+      FillPasswordFormWithData(kTestCredential));
+
+  store->AddLogin(*test_form);
+  WaitForPasswordStore();
+
+  // If there are no insecure credentials, we should not notify insecure
+  // credentials observer.
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(0);
+
+  test_form->password_value = u"new_password";
+  store->UpdateLogin(*test_form);
+  WaitForPasswordStore();
+  testing::Mock::VerifyAndClear(&observer);
+
+  // Add insecure credential.
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
+  store->AddInsecureCredential(insecure_credential);
+  WaitForPasswordStore();
+
+  // Expect a notification after updating a password.
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(1);
+
+  test_form->password_value = u"new_password_2";
+  store->UpdateLogin(*test_form);
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
 }  // namespace password_manager
