@@ -26,14 +26,14 @@ struct Paper {
 };
 
 // An advanced capability value for ChromeOS printing.
-[Stable, EnableIf=is_chromeos_or_lacros]
+[Stable, EnableIf=is_chromeos]
 struct AdvancedCapabilityValue {
   string name;
   string display_name;
 };
 
 // The type of the values for advanced capabilities.
-[Stable, Extensible, EnableIf=is_chromeos_or_lacros]
+[Stable, Extensible, EnableIf=is_chromeos]
 enum AdvancedCapabilityType {
   [Default] kString,
   kBoolean,
@@ -42,7 +42,7 @@ enum AdvancedCapabilityType {
 };
 
 // An advanced capability for ChromeOS printing.
-[Stable, EnableIf=is_chromeos_or_lacros]
+[Stable, EnableIf=is_chromeos]
 struct AdvancedCapability {
   string name;
   string display_name;
@@ -69,8 +69,8 @@ struct PrinterSemanticCapsAndDefaults {
   array<gfx.mojom.Size> dpis;
   gfx.mojom.Size default_dpi;
 
-  [EnableIf=is_chromeos_or_lacros]
+  [EnableIf=is_chromeos]
   bool pin_supported = false;
-  [EnableIf=is_chromeos_or_lacros]
+  [EnableIf=is_chromeos]
   array<AdvancedCapability> advanced_capabilities;
 };

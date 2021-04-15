@@ -14,12 +14,12 @@ import "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom
 // objects should be instantiated.
 struct CertVerifierCreationParams {
   // Specifies the path to the directory where NSS will store its database.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   mojo_base.mojom.FilePath? nss_path;
 
   // This is used in combination with nss_path, to ensure that the NSS database
   // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   string username_hash;
 
   // Specifies which cert verifier implementation to use.

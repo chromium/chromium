@@ -613,11 +613,9 @@ template("mojom") {
     if (is_android) {
       enabled_features += [ "is_android" ]
     } else if (is_chromeos_ash) {
-      # TODO(crbug.com/1196839): Rename is_chromeos to is_chromeos_ash and
-      # is_chromeos_or_lacros to is_chromeos.
       enabled_features += [
         "is_chromeos",
-        "is_chromeos_or_lacros",
+        "is_chromeos_ash",
       ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
@@ -626,7 +624,10 @@ template("mojom") {
     } else if (is_linux || is_chromeos_lacros) {
       enabled_features += [ "is_linux" ]
       if (is_chromeos_lacros) {
-        enabled_features += [ "is_chromeos_or_lacros" ]
+        enabled_features += [
+          "is_chromeos",
+          "is_chromeos_lacros",
+        ]
       }
     } else if (is_mac) {
       enabled_features += [ "is_mac" ]

@@ -24,10 +24,10 @@ import "services/device/public/mojom/wake_lock_provider.mojom";
 [EnableIf=is_android]
 import "services/device/public/mojom/nfc_provider.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/bluetooth_system.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=enable_hid]
@@ -70,11 +70,11 @@ interface DeviceService {
   BindHidManager(pending_receiver<HidManager> receiver);
 
   // Binds a BluetoothSystemFactory endpoint.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   BindBluetoothSystemFactory(pending_receiver<BluetoothSystemFactory> receiver);
 
   // Binds a MtpManager endpoint.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   BindMtpManager(pending_receiver<MtpManager> receiver);
 
   // Binds a PowerMonitor endpoint.

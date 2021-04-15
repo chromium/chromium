@@ -33,6 +33,6 @@ interface PlatformVerification {
   GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
 
   // Returns true if Verified Access is enabled in settings, false otherwise.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   IsVerifiedAccessEnabled() => (bool enabled);
 };

@@ -25,7 +25,7 @@ struct NativePixmapHandle {
 
   [EnableIf=is_linux]
   uint64 modifier;
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   uint64 modifier;
 
   [EnableIf=is_fuchsia]

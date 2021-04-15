@@ -127,7 +127,7 @@ struct NetworkServiceParams {
 
 // Information about how logging should be configured.
 // Corresponds to logging::LoggingSettings.
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 struct LoggingSettings {
   uint32 logging_dest;
   handle<platform> log_file_descriptor;
@@ -145,7 +145,7 @@ interface NetworkService {
   // Reinitializes the Network Service's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   ReinitializeLogging(LoggingSettings settings);
 
   // Starts observing the NetLog event stream and writing entries to |file|.

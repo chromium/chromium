@@ -17,7 +17,7 @@ interface ChromeOSListener {
   // Call when the merge session process (cookie reconstruction from
   // OAuth2 refresh token in ChromeOS login) is complete. All XHR's
   // will be throttled until unlocked by this call.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   MergeSessionComplete();
 };
 
