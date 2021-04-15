@@ -1244,8 +1244,6 @@ crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-ma
 crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-math-script-001.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-bold-italic-001.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-001.tentative.html [ Failure ]
-crbug.com/1043295 [ Fuchsia ] virtual/font-access-persistent/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Skip ]
-crbug.com/1043295 [ Fuchsia ] virtual/font-access-persistent/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Skip ]
 
 # ====== Style team owned tests from here ======
 
@@ -5523,9 +5521,6 @@ crbug.com/868706 external/wpt/css/css-layout-api/auto-block-size-inflow.https.ht
 # Sheriff 2018-08-01
 crbug.com/869773 http/tests/misc/window-dot-stop.html [ Pass Failure ]
 
-crbug.com/1162393 [ Fuchsia ] paint/invalidation/selection/selected-replaced.html [ Failure Pass ]
-crbug.com/1162393 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
-
 crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video.https.html [ Timeout Pass ]
 crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video-cache.https.html [ Timeout Pass ]
 
@@ -6264,16 +6259,6 @@ crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/video-tag.https.html [ Failure ]
 crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-frame.html [ Failure ]
 
-# Sheriff 2020-02-18
-crbug.com/1050893 [ Fuchsia ] virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html [ Skip ]
-crbug.com/1051014 [ Fuchsia ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scroll-corner-crash.html [ Skip ]
-crbug.com/1051370 [ Fuchsia ] virtual/prefer_compositing_to_lcd_text/scrollbars/viewport-scrollbar-corner-with-percent-padding-crash.html [ Skip ]
-crbug.com/1051015 [ Fuchsia ] virtual/stable/fast/css3-text/css3-text-decoration/stable/getComputedStyle-text-decoration.html [ Skip ]
-crbug.com/1050995 [ Fuchsia ] http/tests/pointer-lock/iframe-sandboxed.html [ Skip ]
-crbug.com/1051774 [ Fuchsia ] http/tests/plugins/navigator-plugins-in-cross-origin-frame.html [ Skip ]
-crbug.com/1051133 [ Fuchsia ] http/tests/canvas/philip/tests/security.pattern.canvas.fillStyle.html [ Skip ]
-crbug.com/1051131 [ Fuchsia ] http/tests/appcache/abort-cache-onchecking-resource-404.html [ Skip ]
-
 # Sheriff 2020-02-19
 crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.html [ Pass Failure Timeout ]
 
@@ -6314,7 +6299,6 @@ crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-pannernode
 crbug.com/1061226 [ Fuchsia ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip ]
 
 # Sheriff 2020-03-13
-crbug.com/1061159 [ Fuchsia ] fast/inspector-support/cssURLQuotes.html [ Pass Failure ]
 crbug.com/1061043 fast/plugins/keypress-event.html [ Pass Failure ]
 crbug.com/1061131 [ Mac ] editing/selection/replaced-boundaries-1.html [ Pass Failure ]
 
@@ -6460,10 +6444,6 @@ crbug.com/1097005 http/tests/devtools/console/console-search.js [ Pass Failure C
 
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Pass Failure ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Pass Failure ]
-
-crbug.com/1098067 [ Fuchsia ] external/wpt/shadow-dom/Element-interface-shadowRoot-attribute.html [ Pass Crash ]
-crbug.com/1098067 [ Fuchsia ] external/wpt/shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/dom-tree-accessors-002.html [ Pass Crash ]
-crbug.com/1098067 [ Fuchsia ] virtual/text-antialias/bidi-isolate-nextlinebreak-failure.html [ Pass Crash ]
 
 # Sheriff 2020-06-23
 crbug.com/1098136 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure ]
@@ -6723,7 +6703,6 @@ crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure Timeout ]
-crbug.com/1145742 [ Fuchsia ] virtual/stable/http/tests/navigation/location-assign-adds-history-item.html [ Pass Crash Timeout ]
 
 # Sheriff 2020-11-06
 crbug.com/1146560 [ Win ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure Pass ]
