@@ -624,6 +624,8 @@ class Internals final : public ScriptWrappable {
                                           const String& optimizer,
                                           ExceptionState&);
 
+  void setAllowPerChunkTransferring(ReadableStream* stream);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;

@@ -3889,7 +3889,7 @@ ReadableStream* Internals::createReadableStream(
       MakeGarbageCollected<TestReadableStreamSource>(script_state, type);
   source->Attach(std::make_unique<TestReadableStreamSource::Generator>(10));
   return ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, source, queue_size,
+      script_state, source, queue_size, AllowPerChunkTransferring(false),
       source->CreateTransferringOptimizer(script_state));
 }
 
@@ -3941,6 +3941,14 @@ ScriptValue Internals::createWritableStreamAndSink(
             ToV8(resolver->Promise(), script_state))
       .Check();
   return ScriptValue(script_state->GetIsolate(), object);
+}
+
+void Internals::setAllowPerChunkTransferring(ReadableStream* stream) {
+  if (!stream) {
+    return;
+  }
+  stream->SetAllowPerChunkTransferringForTesting(
+      AllowPerChunkTransferring(true));
 }
 
 }  // namespace blink

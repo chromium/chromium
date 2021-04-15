@@ -295,7 +295,8 @@ WritableStream* WritableStream::Deserialize(
   // In the standard |value| contains an unitialized WritableStream. In the
   // implementation, we create the stream here.
   auto* writable = CreateCrossRealmTransformWritable(
-      script_state, port, std::move(optimizer), exception_state);
+      script_state, port, AllowPerChunkTransferring(false),
+      std::move(optimizer), exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

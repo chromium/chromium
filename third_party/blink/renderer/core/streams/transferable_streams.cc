@@ -113,6 +113,7 @@ void PackAndPostMessage(ScriptState* script_state,
                         MessagePort* port,
                         MessageType type,
                         v8::Local<v8::Value> value,
+                        AllowPerChunkTransferring allow_per_chunk_transferring,
                         ExceptionState& exception_state) {
   DVLOG(3) << "PackAndPostMessage sending message type "
            << static_cast<int>(type);
@@ -126,13 +127,23 @@ void PackAndPostMessage(ScriptState* script_state,
       isolate, "t", v8::Number::New(isolate, static_cast<int>(type)), "v",
       value);
 
+  // 5. Let options be «[ "transfer" → « » ]».
+  PostMessageOptions* options = PostMessageOptions::Create();
+  if (allow_per_chunk_transferring && type == MessageType::kChunk) {
+    // Here we set a non-empty transfer list: This is a non-standardized and
+    // non-default behavior, and the one who set `allow_per_chunk_transferring`
+    // to true must guarantee the validity.
+    HeapVector<ScriptValue> transfer;
+    transfer.push_back(ScriptValue(isolate, value));
+    options->setTransfer(transfer);
+  }
+
   // 4. Let targetPort be the port with which port is entangled, if any;
   //    otherwise let it be null.
-  // 5. Let options be «[ "transfer" → « » ]».
   // 6. Run the message port post message steps providing targetPort, message,
   //    and options.
-  port->postMessage(script_state, ScriptValue(isolate, packed),
-                    PostMessageOptions::Create(), exception_state);
+  port->postMessage(script_state, ScriptValue(isolate, packed), options,
+                    exception_state);
 }
 
 // Sends a kError message to the remote side, disregarding failure.
@@ -145,7 +156,7 @@ void CrossRealmTransformSendError(ScriptState* script_state,
   // https://streams.spec.whatwg.org/#abstract-opdef-crossrealmtransformsenderror
   // 1. Perform PackAndPostMessage(port, "error", error), discarding the result.
   PackAndPostMessage(script_state, port, MessageType::kError, error,
-                     exception_state);
+                     AllowPerChunkTransferring(false), exception_state);
   if (exception_state.HadException()) {
     DLOG(WARNING) << "Disregarding exception while sending error";
     exception_state.ClearException();
@@ -160,17 +171,20 @@ void CrossRealmTransformSendError(ScriptState* script_state,
 // verbosity at the calling sites. The function returns true for a normal
 // completion and false for an abrupt completion.When there's an abrupt
 // completion result.[[Value]] is stored into |error|.
-bool PackAndPostMessageHandlingError(ScriptState* script_state,
-                                     MessagePort* port,
-                                     MessageType type,
-                                     v8::Local<v8::Value> value,
-                                     v8::Local<v8::Value>* error) {
+bool PackAndPostMessageHandlingError(
+    ScriptState* script_state,
+    MessagePort* port,
+    MessageType type,
+    v8::Local<v8::Value> value,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
+    v8::Local<v8::Value>* error) {
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionState::kUnknownContext, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-packandpostmessagehandlingerror
   // 1. Let result be PackAndPostMessage(port, type, value).
-  PackAndPostMessage(script_state, port, type, value, exception_state);
+  PackAndPostMessage(script_state, port, type, value,
+                     allow_per_chunk_transferring, exception_state);
 
   // 2. If result is an abrupt completion,
   if (exception_state.HadException()) {
@@ -183,6 +197,15 @@ bool PackAndPostMessageHandlingError(ScriptState* script_state,
   }
 
   return true;
+}
+
+bool PackAndPostMessageHandlingError(ScriptState* script_state,
+                                     MessagePort* port,
+                                     MessageType type,
+                                     v8::Local<v8::Value> value,
+                                     v8::Local<v8::Value>* error) {
+  return PackAndPostMessageHandlingError(
+      script_state, port, type, value, AllowPerChunkTransferring(false), error);
 }
 
 // Base class for CrossRealmTransformWritable and CrossRealmTransformReadable.
@@ -313,11 +336,15 @@ class CrossRealmTransformErrorListener final : public NativeEventListener {
 // stream.
 class CrossRealmTransformWritable final : public CrossRealmTransformStream {
  public:
-  CrossRealmTransformWritable(ScriptState* script_state, MessagePort* port)
+  CrossRealmTransformWritable(
+      ScriptState* script_state,
+      MessagePort* port,
+      AllowPerChunkTransferring allow_per_chunk_transferring)
       : script_state_(script_state),
         message_port_(port),
         backpressure_promise_(
-            MakeGarbageCollected<StreamPromiseResolver>(script_state)) {}
+            MakeGarbageCollected<StreamPromiseResolver>(script_state)),
+        allow_per_chunk_transferring_(allow_per_chunk_transferring) {}
 
   WritableStream* CreateWritableStream(ExceptionState&);
 
@@ -343,6 +370,7 @@ class CrossRealmTransformWritable final : public CrossRealmTransformStream {
   const Member<MessagePort> message_port_;
   Member<StreamPromiseResolver> backpressure_promise_;
   Member<WritableStreamDefaultController> controller_;
+  const AllowPerChunkTransferring allow_per_chunk_transferring_;
 };
 
 class CrossRealmTransformWritable::WriteAlgorithm final
@@ -430,9 +458,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
     //     2. Let result be PackAndPostMessageHandlingError(port, "chunk",
     //        chunk).
-    bool success =
-        PackAndPostMessageHandlingError(script_state, writable_->message_port_,
-                                        MessageType::kChunk, chunk, &error);
+    bool success = PackAndPostMessageHandlingError(
+        script_state, writable_->message_port_, MessageType::kChunk, chunk,
+        writable_->allow_per_chunk_transferring_, &error);
     //     3. If result is an abrupt completion,
     if (!success) {
       //     1. Disentangle port.
@@ -1019,11 +1047,12 @@ void CrossRealmTransformReadable::HandleError(v8::Local<v8::Value> error) {
 CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(
     ScriptState* script_state,
     MessagePort* port,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  WritableStream* stream =
-      MakeGarbageCollected<CrossRealmTransformWritable>(script_state, port)
-          ->CreateWritableStream(exception_state);
+  WritableStream* stream = MakeGarbageCollected<CrossRealmTransformWritable>(
+                               script_state, port, allow_per_chunk_transferring)
+                               ->CreateWritableStream(exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

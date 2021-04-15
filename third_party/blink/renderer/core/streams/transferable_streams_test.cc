@@ -162,8 +162,8 @@ TEST(TransferableStreamsTest, SmokeTest) {
       MakeGarbageCollected<MessageChannel>(scope.GetExecutionContext());
   auto* script_state = scope.GetScriptState();
   auto* writable = CreateCrossRealmTransformWritable(
-      script_state, channel->port1(), /*optimizer=*/nullptr,
-      ASSERT_NO_EXCEPTION);
+      script_state, channel->port1(), AllowPerChunkTransferring(false),
+      /*optimizer=*/nullptr, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(writable);
   auto* readable = CreateCrossRealmTransformReadable(
       script_state, channel->port2(), /*optimizer=*/nullptr,

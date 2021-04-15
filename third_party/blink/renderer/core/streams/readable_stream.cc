@@ -1104,6 +1104,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     size_t high_water_mark) {
   return CreateWithCountQueueingStrategy(script_state, underlying_source,
                                          high_water_mark,
+                                         AllowPerChunkTransferring(false),
                                          /*optimizer=*/nullptr);
 }
 
@@ -1111,6 +1112,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     ScriptState* script_state,
     UnderlyingSourceBase* underlying_source,
     size_t high_water_mark,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
 
@@ -1148,6 +1150,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
         << "Ignoring an exception in CreateWithCountQueuingStrategy().";
   }
 
+  stream->allow_per_chunk_transferring_ = allow_per_chunk_transferring;
   stream->transferring_optimizer_ = std::move(optimizer);
   return stream;
 }
@@ -1572,7 +1575,8 @@ void ReadableStream::Serialize(ScriptState* script_state,
   // 5. Let writable be a new WritableStream in the current Realm.
   // 6. Perform ! SetUpCrossRealmTransformWritable(writable, port1).
   auto* writable = CreateCrossRealmTransformWritable(
-      script_state, port, /*optimizer=*/nullptr, exception_state);
+      script_state, port, allow_per_chunk_transferring_, /*optimizer=*/nullptr,
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }

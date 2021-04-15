@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/transferable_streams.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -91,10 +92,14 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
       ScriptState* script_state,
       UnderlyingSourceBase* underlying_source,
       size_t high_water_mark);
+  // Specifying true for `allow_per_chunk_transferring` implies the following:
+  //  1. Each chunk has never been exposed to scripts.
+  //  2. Each chunk is transferable.
   static ReadableStream* CreateWithCountQueueingStrategy(
       ScriptState* script_state,
       UnderlyingSourceBase* underlying_source,
       size_t high_water_mark,
+      AllowPerChunkTransferring allow_per_chunk_transferring,
       std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer);
 
   // CreateReadableStream():
@@ -244,6 +249,10 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   std::unique_ptr<ReadableStreamTransferringOptimizer>
   TakeTransferringOptimizer();
 
+  void SetAllowPerChunkTransferringForTesting(AllowPerChunkTransferring value) {
+    allow_per_chunk_transferring_ = value;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -327,6 +336,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
       ExceptionState& exception_state);
 
   bool is_disturbed_ = false;
+  // When set to true, each chunk can be transferred instead of cloned on
+  // transferring the stream.
+  AllowPerChunkTransferring allow_per_chunk_transferring_{false};
   State state_ = kReadable;
   Member<ReadableStreamController> readable_stream_controller_;
   Member<ReadableStreamGenericReader> reader_;

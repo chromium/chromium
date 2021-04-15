@@ -449,4 +449,6 @@
     // The return value consists of a WritableStream (.stream) and a promise of
     // a sink object (.sink).
     [RaisesException, CallWith=ScriptState] any createWritableStreamAndSink(long queueSize, DOMString optimizer);
+
+    void setAllowPerChunkTransferring(ReadableStream stream);
 };
