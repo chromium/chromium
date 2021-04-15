@@ -93,10 +93,6 @@ const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
     "translate_ignored_count_for_language";
 const char TranslatePrefs::kPrefTranslateAcceptedCount[] =
     "translate_accepted_count";
-const char TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage[] =
-    "translate_last_denied_time_for_language";
-const char TranslatePrefs::kPrefTranslateTooOftenDeniedForLanguage[] =
-    "translate_too_often_denied_for_language";
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const char TranslatePrefs::kPrefTranslateAutoAlwaysCount[] =
@@ -822,10 +818,6 @@ void TranslatePrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       kPrefTranslateAcceptedCount,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDictionaryPref(kPrefTranslateLastDeniedTimeForLanguage);
-  registry->RegisterDictionaryPref(
-      kPrefTranslateTooOftenDeniedForLanguage,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterStringPref(prefs::kPrefTranslateRecentTarget, "",
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

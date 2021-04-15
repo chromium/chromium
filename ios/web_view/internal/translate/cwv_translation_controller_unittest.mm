@@ -114,10 +114,6 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
         translate::TranslatePrefs::kPrefTranslateIgnoredCount);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateAcceptedCount);
-    pref_service_.registry()->RegisterDictionaryPref(
-        translate::TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage);
-    pref_service_.registry()->RegisterDictionaryPref(
-        translate::TranslatePrefs::kPrefTranslateTooOftenDeniedForLanguage);
     pref_service_.registry()->RegisterStringPref(
         prefs::kPrefTranslateRecentTarget, "");
     // Using string literal here because kForceTriggerTranslateCount is private

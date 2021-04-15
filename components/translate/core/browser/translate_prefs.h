@@ -104,8 +104,6 @@ class TranslatePrefs {
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];
-  static const char kPrefTranslateLastDeniedTimeForLanguage[];
-  static const char kPrefTranslateTooOftenDeniedForLanguage[];
 #if defined(OS_ANDROID) || defined(OS_IOS)
   static const char kPrefTranslateAutoAlwaysCount[];
   static const char kPrefTranslateAutoNeverCount[];

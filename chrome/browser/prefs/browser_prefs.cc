@@ -550,6 +550,12 @@ const char kToolbarIconSurfacingBubbleLastShowTime[] =
     "toolbar_icon_surfacing_bubble_show_time";
 #endif
 
+// Deprecated 04/2021
+const char kTranslateLastDeniedTimeForLanguage[] =
+    "translate_last_denied_time_for_language";
+const char kTranslateTooOftenDeniedForLanguage[] =
+    "translate_too_often_denied_for_language";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -671,6 +677,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kToolbarIconSurfacingBubbleAcknowledged, false);
   registry->RegisterInt64Pref(kToolbarIconSurfacingBubbleLastShowTime, 0);
 #endif
+
+  registry->RegisterDictionaryPref(kTranslateLastDeniedTimeForLanguage);
+  registry->RegisterDictionaryPref(kTranslateTooOftenDeniedForLanguage);
 }
 
 }  // namespace
@@ -1363,6 +1372,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kToolbarIconSurfacingBubbleAcknowledged);
   profile_prefs->ClearPref(kToolbarIconSurfacingBubbleLastShowTime);
 #endif
+
+  // Added 04/2021
+  profile_prefs->ClearPref(kTranslateLastDeniedTimeForLanguage);
+  profile_prefs->ClearPref(kTranslateTooOftenDeniedForLanguage);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
