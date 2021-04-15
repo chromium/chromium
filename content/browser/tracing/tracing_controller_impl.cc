@@ -29,6 +29,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/tracing/file_tracing_provider_impl.h"
 #include "content/browser/tracing/tracing_ui.h"
@@ -336,6 +337,7 @@ TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict->SetString("gpu-gl-vendor", gpu_info.gl_vendor);
   metadata_dict->SetString("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
+  metadata_dict->SetDictionary("gpu-features", GetFeatureStatus());
 
   metadata_dict->SetString("clock-domain", GetClockString());
   metadata_dict->SetBoolean("highres-ticks",
