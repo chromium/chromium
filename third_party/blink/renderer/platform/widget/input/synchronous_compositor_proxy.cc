@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -18,6 +20,9 @@ namespace blink {
 SynchronousCompositorProxy::SynchronousCompositorProxy(
     blink::SynchronousInputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.SynchronousCompositorProxy")),
       viz_frame_submission_enabled_(
           features::IsUsingVizFrameSubmissionForWebView()),
       page_scale_factor_(0.f),
@@ -122,6 +127,10 @@ void SynchronousCompositorProxy::DemandDrawHw(
   invalidate_needs_draw_ = false;
   hardware_draw_reply_ = std::move(callback);
 
+  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
+  animation_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kAnimationTimeout);
+
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DemandDrawHw(
         params->viewport_size, params->viewport_rect_for_tile_priority,
@@ -172,6 +181,11 @@ void SynchronousCompositorProxy::DemandDrawSw(
     mojom::blink::SyncCompositorDemandDrawSwParamsPtr params,
     DemandDrawSwCallback callback) {
   invalidate_needs_draw_ = false;
+
+  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
+  animation_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kSoftwareDrawTimeout);
+
   software_draw_reply_ = std::move(callback);
   if (layer_tree_frame_sink_) {
     if (use_in_process_zero_copy_software_draw_) {
@@ -263,6 +277,16 @@ void SynchronousCompositorProxy::SetBeginFrameSourcePaused(bool paused) {
 void SynchronousCompositorProxy::BeginFrame(
     const viz::BeginFrameArgs& args,
     const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details) {
+  if (!layer_tree_frame_sink_ || !needs_begin_frames_) {
+    // Received a BeginFrame without the needs_begin_frames_ signal present,
+    // so the PowerModeVoter in SynchronousLayerTreeFrameSink will not cover
+    // this IPC. Track it via a one-off vote here instead.
+    animation_power_mode_voter_->VoteFor(
+        power_scheduler::PowerMode::kAnimation);
+    animation_power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kAnimationTimeout);
+  }
+
   if (layer_tree_frame_sink_) {
     base::flat_map<uint32_t, viz::FrameTimingDetails> timings;
     for (const auto& pair : timing_details) {

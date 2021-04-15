@@ -37,6 +37,11 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   static constexpr base::TimeDelta kAnimationTimeout =
       base::TimeDelta::FromMilliseconds(50);
 
+  // Software draws can take longer than the rest of animations, so the timeout
+  // value for them is higher.
+  static constexpr base::TimeDelta kSoftwareDrawTimeout =
+      base::TimeDelta::FromMilliseconds(100);
+
   // Avoid getting stuck in loading stage forever. More than 99.9% of
   // navigations load (to largest contentful paint) in less than a minute.
   static constexpr base::TimeDelta kLoadingTimeout =
