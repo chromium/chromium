@@ -60,6 +60,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
                                    hermes::profile::ProfileClass profile_class,
                                    bool service_only) = 0;
 
+    // Remove a carrier profile with path |carrier_profile_path| from EUICC with
+    // given |euicc_path|. Return true if successful.
+    virtual bool RemoveCarrierProfile(
+        const dbus::ObjectPath& euicc_path,
+        const dbus::ObjectPath& carrier_profile_path) = 0;
+
     // Queues an error code that will be returned from a subsequent
     // method call.
     virtual void QueueHermesErrorStatus(HermesResponseStatus status) = 0;
