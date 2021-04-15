@@ -80,6 +80,11 @@ class MockInputChannel : public mojom::InputChannel {
               HandleAutocorrect,
               (mojom::AutocorrectSpanPtr autocorrect_span),
               (override));
+  MOCK_METHOD(void,
+              RequestSuggestions,
+              (mojom::SuggestionsRequestPtr request,
+               RequestSuggestionsCallback callback),
+              (override));
 
  private:
   mojo::Receiver<mojom::InputChannel> receiver_;

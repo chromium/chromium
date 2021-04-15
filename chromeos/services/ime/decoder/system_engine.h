@@ -47,6 +47,10 @@ class SystemEngine : public InputEngine {
       mojom::SelectionRangePtr selection_range) override;
   void OnCompositionCanceled() override;
 
+  // Handle the suggestion response returned from a call to
+  // remote->RequestSuggestions().
+  void OnSuggestionsReturned(mojom::SuggestionsResponsePtr response);
+
  private:
   // Try to load the decoding functions from some decoder shared library.
   // Returns whether loading decoder is successful.

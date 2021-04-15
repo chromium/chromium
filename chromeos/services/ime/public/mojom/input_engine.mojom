@@ -181,14 +181,9 @@ enum SuggestionType {
 
 // Single request to generate suggestion candidates from the given context.
 struct SuggestionsRequest {
-  // The type of suggestions that should be generated.
-  SuggestionType suggestion_type;
-
-  // The preceding text used to produced the suggestions.
-  string text;
-
-  // Optional: any candidates generated to complete the current text.
-  array<CompletionCandidate> completion_candidates;
+  // TODO(crbug/1146266): As noted in crrev/c/2810539, we will remove this
+  // struct's params for the moment and add them back as we begin to use them
+  // in future CLs.
 };
 
 // A suggestion candidate containing multiple predicted words.
@@ -208,8 +203,9 @@ union SuggestionCandidate {
 
 // Encapsulates the results of a suggestions request.
 struct SuggestionsResponse {
-  // A list of suggestion candidates generated.
-  array<SuggestionCandidate> candidates;
+  // TODO(crbug/1146266): As noted in crrev/c/2810539, we will remove this
+  // struct's params for the moment and add them back as we begin to use them
+  // in future CLs.
 };
 
 // Manages access to a set of IME engines, implemented by the IME service
@@ -337,6 +333,11 @@ interface InputChannel {
   // the old span is removed first.
   // This method does not modify the input field text.
   HandleAutocorrect(AutocorrectSpan autocorrect_span);
+
+  // Asks the system to generate and return suggestions for the given
+  // prediction context.
+  RequestSuggestions(SuggestionsRequest request)
+    => (SuggestionsResponse response);
 };
 
 // Implemented in the browser process, used to perform network requests or

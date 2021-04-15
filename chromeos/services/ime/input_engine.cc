@@ -222,5 +222,10 @@ void InputEngine::HandleAutocorrect(
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::RequestSuggestions(mojom::SuggestionsRequestPtr request,
+                                     RequestSuggestionsCallback callback) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 }  // namespace ime
 }  // namespace chromeos

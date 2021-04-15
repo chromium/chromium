@@ -167,6 +167,11 @@ void NativeInputMethodEngine::Initialize(
       std::make_unique<AutocorrectManager>(this);
   autocorrect_manager_ = autocorrect_manager.get();
 
+  auto suggestions_collector =
+      base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
+          ? std::make_unique<SuggestionsCollector>()
+          : nullptr;
+
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
@@ -175,7 +180,8 @@ void NativeInputMethodEngine::Initialize(
   auto native_observer =
       std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
           profile->GetPrefs(), std::move(observer),
-          std::move(assistive_suggester), std::move(autocorrect_manager));
+          std::move(assistive_suggester), std::move(autocorrect_manager),
+          std::move(suggestions_collector));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }
@@ -217,12 +223,14 @@ NativeInputMethodEngine::ImeObserver::ImeObserver(
     PrefService* prefs,
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
-    std::unique_ptr<AutocorrectManager> autocorrect_manager)
+    std::unique_ptr<AutocorrectManager> autocorrect_manager,
+    std::unique_ptr<SuggestionsCollector> suggestions_collector)
     : prefs_(prefs),
       ime_base_observer_(std::move(ime_base_observer)),
       receiver_from_engine_(this),
       assistive_suggester_(std::move(assistive_suggester)),
-      autocorrect_manager_(std::move(autocorrect_manager)) {}
+      autocorrect_manager_(std::move(autocorrect_manager)),
+      suggestions_collector_(std::move(suggestions_collector)) {}
 
 NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
 
@@ -482,6 +490,13 @@ void NativeInputMethodEngine::ImeObserver::OnScreenProjectionChanged(
   ime_base_observer_->OnScreenProjectionChanged(is_projected);
 }
 
+void NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered(
+    RequestSuggestionsCallback callback,
+    const std::vector<TextSuggestion>& suggestions) {
+  // TODO(crbug/1146266): Map suggestions to expected format for mojom.
+  std::move(callback).Run(ime::mojom::SuggestionsResponse::New());
+}
+
 void NativeInputMethodEngine::ImeObserver::OnSuggestionsChanged(
     const std::vector<std::string>& suggestions) {
   ime_base_observer_->OnSuggestionsChanged(suggestions);
@@ -542,6 +557,17 @@ void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
       autocorrect_span->autocorrect_range,
       base::UTF8ToUTF16(autocorrect_span->original_text),
       base::UTF8ToUTF16(autocorrect_span->current_text));
+}
+
+void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
+    ime::mojom::SuggestionsRequestPtr request,
+    RequestSuggestionsCallback callback) {
+  // TODO(crbug/1146266): Map request to suggestion context.
+  SuggestionContext context;
+  suggestions_collector_->GatherSuggestions(
+      context, base::BindOnce(
+                   &NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered,
+                   base::Unretained(this), std::move(callback)));
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

@@ -198,6 +198,11 @@ void SystemEngine::OnCompositionCanceled() {
                  base::DoNothing());
 }
 
+void SystemEngine::OnSuggestionsReturned(
+    mojom::SuggestionsResponsePtr response) {
+  // TODO(crbug/1146266): Send the response into the shared lib.
+}
+
 void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message,
                                   ProcessMessageCallback callback) {
   // TODO(https://crbug.com/837156): Set a default protobuf message.
@@ -219,6 +224,7 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
   }
 
   const ime::PublicMessage& reply = wrapper.public_message();
+  // TODO(crbug/1146266): Add case to handle request for suggestions.
   switch (reply.param_case()) {
     case ime::PublicMessage::kOnKeyEventReply: {
       const auto it = pending_key_event_callbacks_.find(reply.seq_id());

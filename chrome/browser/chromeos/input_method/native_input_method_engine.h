@@ -9,6 +9,8 @@
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
+#include "chrome/browser/chromeos/input_method/suggestions.h"
+#include "chrome/browser/chromeos/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -86,7 +88,8 @@ class NativeInputMethodEngine
         PrefService* prefs,
         std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
         std::unique_ptr<AssistiveSuggester> assistive_suggester,
-        std::unique_ptr<AutocorrectManager> autocorrect_manager);
+        std::unique_ptr<AutocorrectManager> autocorrect_manager,
+        std::unique_ptr<SuggestionsCollector> suggestions_collector);
     ~ImeObserver() override;
 
     // InputMethodEngineBase::Observer:
@@ -150,6 +153,13 @@ class NativeInputMethodEngine
     void DeleteSurroundingText(uint32_t before, uint32_t after) override;
     void HandleAutocorrect(
         ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
+    void RequestSuggestions(ime::mojom::SuggestionsRequestPtr request,
+                            RequestSuggestionsCallback callback) override;
+
+    // Called when suggestions are collected from the system via
+    // suggestions_collector_.
+    void OnSuggestionsGathered(RequestSuggestionsCallback request_callback,
+                               const std::vector<TextSuggestion>& suggestions);
 
     // Flush all relevant Mojo pipes.
     void FlushForTesting();
@@ -183,6 +193,7 @@ class NativeInputMethodEngine
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
+    std::unique_ptr<SuggestionsCollector> suggestions_collector_;
 
     ui::CharacterComposer character_composer_;
   };

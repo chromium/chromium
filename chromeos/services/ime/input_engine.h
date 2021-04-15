@@ -71,6 +71,8 @@ class InputEngine : public mojom::InputChannel {
   void DeleteSurroundingText(uint32_t num_bytes_before_cursor,
                              uint32_t num_bytes_after_cursor) override;
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override;
+  void RequestSuggestions(mojom::SuggestionsRequestPtr request,
+                          RequestSuggestionsCallback callback) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
