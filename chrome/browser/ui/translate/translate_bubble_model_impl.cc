@@ -165,12 +165,18 @@ void TranslateBubbleModelImpl::OnBubbleClosing() {
 }
 
 bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
-  const translate::LanguageState& language_state =
+  const translate::LanguageState* language_state =
       ui_delegate_->GetLanguageState();
-  return ui_delegate_->GetSourceLanguageCode() ==
-             language_state.original_language() &&
-         ui_delegate_->GetTargetLanguageCode() ==
-             language_state.current_language();
+  if (language_state) {
+    return ui_delegate_->GetSourceLanguageCode() ==
+               language_state->original_language() &&
+           ui_delegate_->GetTargetLanguageCode() ==
+               language_state->current_language();
+  }
+  // If LanguageState does not exist, it means that TranslateManager has been
+  // destructed. Return true so that callers don't try to kick off any more
+  // translations.
+  return true;
 }
 
 void TranslateBubbleModelImpl::ReportUIInteraction(
