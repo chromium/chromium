@@ -10,6 +10,10 @@ ca-certificates
 # Make sure users have compatible fonts for viewing PDFs.
 liberation-fonts
 
+# https://crbug.com/1192861 GTK is dlopen()'ed with a currently hard
+# dependency on version 3.
+libgtk-3.so.0()(64bit)
+
 # Specify a more recent version for security and stability updates. While we
 # depend on libnss3.so and not libssl3.so, force the dependency on libssl3 to
 # ensure the NSS version is 3.28 or later, since libssl3 should always be

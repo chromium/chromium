@@ -45,7 +45,6 @@ LIBRARY_FILTER = set([
     "libglib-2.0.so",
     "libgmodule-2.0.so",
     "libgobject-2.0.so",
-    "libgtk-3.so",
     "libm.so",
     "libnspr4.so",
     "libnss3.so",

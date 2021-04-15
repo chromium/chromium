@@ -58,7 +58,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   }
 
   return {
-      .opcode = gdk_event_get_event_type(gdk_event) == GDK_KEY_PRESS
+      .opcode = gtk::GdkEventGetEventType(gdk_event) == GDK_KEY_PRESS
                     ? x11::KeyEvent::Press
                     : x11::KeyEvent::Release,
       .detail = static_cast<x11::KeyCode>(keymap_key.keycode),

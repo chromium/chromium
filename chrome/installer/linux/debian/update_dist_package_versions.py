@@ -49,7 +49,6 @@ PACKAGE_FILTER = set([
     "libgbm1",
     "libgcc1",
     "libglib2.0-0",
-    "libgtk-3-0",
     "libnspr4",
     "libnss3",
     "libpango-1.0-0",
