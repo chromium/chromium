@@ -304,8 +304,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, IsFocused_Change) {
 
   std::string frames[2] = {"frame1", "frame2"};
   for (const std::string& frame : frames) {
-    ExecuteScriptAndGetValue(web_contents()->GetMainFrame(),
-                             "focus" + frame + "()");
+    EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "focus" + frame + "()"));
 
     // The main frame is not the focused frame in the frame tree but the main
     // frame is focused per RFHI rules because one of its descendant is focused.
@@ -322,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("render_frame_host", "focus.html")));
 
-  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "focusframe4()");
+  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "focusframe4()"));
 
   EXPECT_NE(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
   EXPECT_EQ("frame4", web_contents()->GetFocusedFrame()->GetFrameName());
@@ -330,16 +329,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoveFocusedFrame) {
             web_contents()->GetFocusedFrame()->GetParent()->GetFrameName());
   EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "detachframe(3)");
+  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "detachframe(3)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "focusframe2()");
+  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "focusframe2()"));
   EXPECT_NE(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_NE(web_contents()->GetMainFrame(), web_contents()->GetFocusedFrame());
   EXPECT_NE(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 
-  ExecuteScriptAndGetValue(web_contents()->GetMainFrame(), "detachframe(2)");
+  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), "detachframe(2)"));
   EXPECT_EQ(nullptr, web_contents()->GetFocusedFrame());
   EXPECT_EQ(-1, web_contents()->GetFrameTree()->focused_frame_tree_node_id_);
 }
@@ -573,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "var iframe = document.createElement('iframe');"
       "document.body.appendChild(iframe);"
       "iframe.contentWindow.onbeforeunload=function(e){return 'x'};";
-  EXPECT_TRUE(content::ExecuteScript(web_contents(), script));
+  EXPECT_TRUE(ExecJs(web_contents(), script));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // JavaScript onbeforeunload dialogs require a user gesture.
   for (auto* frame : web_contents()->GetAllFrames())
@@ -719,7 +718,7 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
     if (before_unload_options & SHOW_DIALOG)
       script += "return 'x'; ";
     script += " }";
-    EXPECT_TRUE(ExecuteScript(ftn, script));
+    EXPECT_TRUE(ExecJs(ftn, script));
   }
 
   int RetrievePingsFromMessageQueue(DOMMessageQueue* msg_queue) {
@@ -1042,11 +1041,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
       "window.onbeforeunload = () => { "
       "  document.body.removeChild(document.querySelector('iframe'));"
       "}";
-  EXPECT_TRUE(ExecuteScript(root, script));
+  EXPECT_TRUE(ExecJs(root, script));
 
   // Install a beforeunload handler which never finishes in subframe.
-  EXPECT_TRUE(ExecuteScript(root->child_at(0),
-                            "window.onbeforeunload = () => { while (1) ; }"));
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     "window.onbeforeunload = () => { while (1) ; }"));
 
   // Disable beforeunload timer to prevent flakiness.
   PrepContentsForBeforeUnloadTest(web_contents());
@@ -1101,8 +1100,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   InstallBeforeUnloadHandler(root, SEND_PING);
 
   // Install a beforeunload handler which never finishes in subframe.
-  EXPECT_TRUE(ExecuteScript(root->child_at(0),
-                            "window.onbeforeunload = () => { while (1) ; }"));
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     "window.onbeforeunload = () => { while (1) ; }"));
 
   // Navigate the main frame.  We should eventually time out on the subframe
   // beforeunload handler and complete the navigation.
@@ -1334,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   TestNavigationObserver second_contents_navigation_observer(nullptr, 1);
   second_contents_navigation_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScript(shell(), open_script));
+  EXPECT_TRUE(ExecJs(shell(), open_script));
   second_contents_navigation_observer.Wait();
 
   ASSERT_EQ(2u, Shell::windows().size());
@@ -1344,17 +1343,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   new_shell->Close();
   deleted_observer.WaitUntilDeleted();
 
-  bool did_call_window_open = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(), "domAutomationController.send(!!popup.didCallWindowOpen)",
-      &did_call_window_open));
-  EXPECT_TRUE(did_call_window_open);
+  EXPECT_EQ(true, EvalJs(shell(), "!!popup.didCallWindowOpen"));
 
-  std::string result_of_window_open;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(), "domAutomationController.send(String(popup.resultOfWindowOpen))",
-      &result_of_window_open));
-  EXPECT_EQ("null", result_of_window_open);
+  EXPECT_EQ("null", EvalJs(shell(), "String(popup.resultOfWindowOpen)"));
 }
 
 namespace {
@@ -1492,13 +1483,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // should get aborted because of the document.open() in the navigating RFH.
   NavigationHandleGrabber observer(web_contents());
   const std::u16string title = u"done";
-  EXPECT_TRUE(
-      ExecuteScript(web_contents(), "window.location.href='/title2.html'"));
+  EXPECT_TRUE(ExecJs(web_contents(), "window.location.href='/title2.html'"));
   observer.WaitForTitle2();
   // Flush IPCs to make sure the renderer didn't tell us to navigate. Need to
   // make two round trips.
-  EXPECT_TRUE(ExecuteScript(web_contents(), ""));
-  EXPECT_TRUE(ExecuteScript(web_contents(), ""));
+  EXPECT_TRUE(ExecJs(web_contents(), ""));
+  EXPECT_TRUE(ExecJs(web_contents(), ""));
   EXPECT_FALSE(observer.committed_title2());
 }
 
@@ -1556,7 +1546,7 @@ IN_PROC_BROWSER_TEST_F(
       "request.open('GET', '%s');"
       "request.send();";
   const GURL slow_url = embedded_test_server()->GetURL("/xhr_request");
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       shell(), base::StringPrintf(send_slow_xhr, slow_url.spec().c_str())));
   xhr_response.WaitForRequest();
 
@@ -1564,8 +1554,7 @@ IN_PROC_BROWSER_TEST_F(
   // aborted.
   TestNavigationManager observer(shell()->web_contents(),
                                  GURL("customprotocol:aborted"));
-  EXPECT_TRUE(content::ExecuteScript(
-      shell(), "window.location = 'customprotocol:aborted'"));
+  EXPECT_TRUE(ExecJs(shell(), "window.location = 'customprotocol:aborted'"));
   EXPECT_FALSE(observer.WaitForResponse());
   observer.WaitForNavigationFinished();
 
@@ -2043,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         "f.src=\"%s\"; "
         "document.body.append(f);",
         subframe_url.spec().c_str());
-    ASSERT_TRUE(ExecuteScript(shell(), script));
+    ASSERT_TRUE(ExecJs(shell(), script));
 
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -2097,7 +2086,7 @@ IN_PROC_BROWSER_TEST_F(
   // Note that the child frame will first cycle through loading the initial
   // empty document regardless of when/how/if the `src` attribute is set.
 
-  ASSERT_TRUE(ExecuteScript(shell(), kNavigateToOneThenTwoScript));
+  ASSERT_TRUE(ExecJs(shell(), kNavigateToOneThenTwoScript));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
@@ -2114,7 +2103,7 @@ IN_PROC_BROWSER_TEST_F(
   ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
   injector.set_fake_receiver_for_next_commit(mojo::NullReceiver());
 
-  ASSERT_TRUE(ExecuteScript(shell(), kNavigateToThreeScript));
+  ASSERT_TRUE(ExecJs(shell(), kNavigateToThreeScript));
   commit_observer.WaitForCommit();
   EXPECT_FALSE(injector.original_receiver_of_last_commit().is_valid());
 
@@ -2159,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                        expected_main_frame_key);
 
   // Create iframe.
-  ASSERT_TRUE(ExecuteScript(shell(), R"(
+  ASSERT_TRUE(ExecJs(shell(), R"(
       var f = document.createElement('iframe');
       f.id = 'myiframe';
       document.body.append(f);
@@ -2174,7 +2163,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             child->current_frame_host()->GetProcess());
 
   // Same-document navigation of iframe.
-  ASSERT_TRUE(ExecuteScript(shell(), R"(
+  ASSERT_TRUE(ExecJs(shell(), R"(
       let iframe = document.querySelector('#myiframe');
       iframe.contentWindow.location.hash = 'foo';
   )"));
@@ -2192,7 +2181,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "iframe = document.querySelector('#myiframe');"
       "iframe.contentWindow.location.href = $1;",
       subframe_url_three);
-  ASSERT_TRUE(ExecuteScript(shell(), subframe_script_three));
+  ASSERT_TRUE(ExecJs(shell(), subframe_script_three));
   commit_observer.WaitForCommit();
 
   CheckURLOriginAndNetworkIsolationKey(child, subframe_url_three,
@@ -2228,7 +2217,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Create popup.
   WebContentsAddedObserver popup_observer;
-  ASSERT_TRUE(ExecuteScript(shell(), "var w = window.open('');"));
+  ASSERT_TRUE(ExecJs(shell(), "var w = window.open('');"));
   WebContentsImpl* popup =
       static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
 
@@ -2239,7 +2228,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             popup_frame->current_frame_host()->GetProcess());
 
   // Same-document navigation of popup.
-  ASSERT_TRUE(ExecuteScript(shell(), "w.location.hash = 'foo';"));
+  ASSERT_TRUE(ExecJs(shell(), "w.location.hash = 'foo';"));
   EXPECT_TRUE(WaitForLoadStop(popup));
 
   CheckURLOriginAndNetworkIsolationKey(
@@ -2250,8 +2239,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Cross-document navigation of popup.
   TestFrameNavigationObserver commit_observer(
       popup_frame->current_frame_host());
-  ASSERT_TRUE(ExecuteScript(
-      shell(), JsReplace("w.location.href = $1;", popup_url_three)));
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace("w.location.href = $1;", popup_url_three)));
   commit_observer.WaitForCommit();
 
   CheckURLOriginAndNetworkIsolationKey(popup_frame, popup_url_three,
@@ -2284,7 +2273,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHost* iframe = root->child_at(0)->current_frame_host();
 
   TestFrameNavigationObserver commit_observer(iframe);
-  ASSERT_TRUE(ExecuteScript(iframe, "window.location = 'about:blank'"));
+  ASSERT_TRUE(ExecJs(iframe, "window.location = 'about:blank'"));
   commit_observer.WaitForCommit();
 
   ASSERT_EQ(1u, root->child_count());
@@ -3330,7 +3319,7 @@ IN_PROC_BROWSER_TEST_F(
   const auto script = base::StringPrintf("window.location.href=\"%s\"; ",
                                          https_url.spec().c_str());
   TestNavigationObserver observer(web_contents());
-  ASSERT_TRUE(ExecuteScript(child_frame, script));
+  ASSERT_TRUE(ExecJs(child_frame, script));
   observer.Wait();
   EXPECT_EQ(https_url, child_frame->current_url());
   // frame subresource
@@ -3386,7 +3375,7 @@ IN_PROC_BROWSER_TEST_F(
   const auto script = base::StringPrintf("window.location.href=\"%s\"; ",
                                          https_url.spec().c_str());
   TestNavigationObserver observer(web_contents());
-  ASSERT_TRUE(ExecuteScript(child_frame, script));
+  ASSERT_TRUE(ExecJs(child_frame, script));
   observer.Wait();
   EXPECT_EQ(https_url, child_frame->current_url());
   // frame subresource
@@ -3484,7 +3473,7 @@ IN_PROC_BROWSER_TEST_F(
       "f.src=\"%s\"; "
       "document.body.appendChild(f);",
       b_url.spec().c_str());
-  ASSERT_TRUE(ExecuteScript(child_blank->current_frame_host(), script));
+  ASSERT_TRUE(ExecJs(child_blank->current_frame_host(), script));
   observer.Wait();
 
   ASSERT_EQ(1u, child_blank->child_count());
@@ -3518,8 +3507,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_EQ(1u, main_frame->child_count());
   FrameTreeNode* child_data = main_frame->child_at(0);
   TestNavigationObserver observer1(web_contents());
-  EXPECT_TRUE(ExecuteScript(child_data->current_frame_host(),
-                            "window.location='data:text/html,foo'"));
+  EXPECT_TRUE(ExecJs(child_data->current_frame_host(),
+                     "window.location='data:text/html,foo'"));
   observer1.Wait();
   EXPECT_EQ("data", child_data->current_url().scheme());
   // frame being navigated.
@@ -3538,7 +3527,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "document.body.appendChild(f);",
       b_url.spec().c_str());
   TestNavigationObserver observer2(web_contents());
-  ASSERT_TRUE(ExecuteScript(child_data->current_frame_host(), script));
+  ASSERT_TRUE(ExecJs(child_data->current_frame_host(), script));
   observer2.Wait();
 
   ASSERT_EQ(1u, child_data->child_count());
@@ -3590,7 +3579,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   const auto script1 =
       base::StringPrintf("window.location=\"%s\"; ", a_url.spec().c_str());
   TestNavigationObserver observer1(web_contents());
-  ASSERT_TRUE(ExecuteScript(child_a->current_frame_host(), script1));
+  ASSERT_TRUE(ExecJs(child_a->current_frame_host(), script1));
   observer1.Wait();
   EXPECT_EQ(a_url, child_a->current_url());
   // frame subresource
@@ -3614,7 +3603,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "document.body.appendChild(f);",
       b_url.spec().c_str());
   TestNavigationObserver observer2(web_contents());
-  ASSERT_TRUE(ExecuteScript(child_a->current_frame_host(), script2));
+  ASSERT_TRUE(ExecJs(child_a->current_frame_host(), script2));
   observer2.Wait();
 
   ASSERT_EQ(1u, child_a->child_count());

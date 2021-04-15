@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, BasicRenderFrameHost) {
   EXPECT_TRUE(old_root->current_frame_host());
 
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell(), "window.open();"));
+  EXPECT_TRUE(ExecJs(shell(), "window.open();"));
   Shell* new_shell = new_shell_observer.GetShell();
   FrameTreeNode* new_root = static_cast<WebContentsImpl*>(
       new_shell->web_contents())->GetFrameTree()->root();
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, IsFocusedElementEditable) {
 
   WebContents* contents = shell()->web_contents();
   EXPECT_FALSE(contents->IsFocusedElementEditable());
-  EXPECT_TRUE(ExecuteScript(shell(), "focus_textfield();"));
+  EXPECT_TRUE(ExecJs(shell(), "focus_textfield();"));
   EXPECT_TRUE(contents->IsFocusedElementEditable());
 }
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, MAYBE_ReleaseSessionOnCloseACK) {
   // Make a new Shell, a seperate tab with it's own session namespace and
   // have it start loading a url but still be in progress.
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell(), "window.open();"));
+  EXPECT_TRUE(ExecJs(shell(), "window.open();"));
   Shell* new_shell = new_shell_observer.GetShell();
   new_shell->LoadURL(test_url);
   auto* site_instance = static_cast<SiteInstanceImpl*>(

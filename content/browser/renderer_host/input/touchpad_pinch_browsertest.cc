@@ -155,8 +155,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
 // is performed.
 IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
   LoadURL();
-  ASSERT_TRUE(
-      content::ExecuteScript(shell()->web_contents(), "setListener(false);"));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "setListener(false);"));
   SynchronizeCompositorAndMainThreads();
 
   content::TestPageScaleObserver scale_observer(shell()->web_contents());
@@ -167,14 +166,12 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
   PerformTouchpadPinch(shell()->web_contents(), pinch_position, 1.23);
 
   // Ensure that the page saw the synthetic wheel.
-  bool default_prevented = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "handlerPromise.then(function(e) {"
-      "  window.domAutomationController.send(e.defaultPrevented);"
-      "});",
-      &default_prevented));
-  EXPECT_FALSE(default_prevented);
+  ASSERT_EQ(false,
+            EvalJs(shell()->web_contents(),
+                   "handlerPromise.then(function(e) {"
+                   "  window.domAutomationController.send(e.defaultPrevented);"
+                   "});",
+                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Since the listener did not cancel the synthetic wheel, we should still
   // change the page scale.
@@ -197,38 +194,35 @@ void TouchpadPinchBrowserTest::EnsureNoScaleChangeWhenCanceled(
       starting_scale_observer.WaitForPageScaleUpdate();
   ASSERT_GT(starting_scale_factor, 0.f);
 
-  ASSERT_TRUE(
-      content::ExecuteScript(shell()->web_contents(), "setListener(true);"));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "setListener(true);"));
   SynchronizeCompositorAndMainThreads();
 
   std::move(send_events).Run(shell()->web_contents(), pinch_position);
 
   // Ensure the page handled a wheel event that it was able to cancel.
-  bool default_prevented = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "handlerPromise.then(function(e) {"
-      "  window.domAutomationController.send(e.defaultPrevented);"
-      "});",
-      &default_prevented));
-  EXPECT_TRUE(default_prevented);
+  ASSERT_EQ(true,
+            EvalJs(shell()->web_contents(),
+                   "handlerPromise.then(function(e) {"
+                   "  window.domAutomationController.send(e.defaultPrevented);"
+                   "});",
+                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // We'll check that the previous event(s) did not cause a scale change by
   // performing another pinch that does change the scale.
-  ASSERT_TRUE(content::ExecuteScript(shell()->web_contents(),
-                                     "reset(); "
-                                     "setListener(false);"));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     "reset(); "
+                     "setListener(false);"));
   SynchronizeCompositorAndMainThreads();
 
   content::TestPageScaleObserver scale_observer(shell()->web_contents());
   PerformTouchpadPinch(shell()->web_contents(), pinch_position, 2.0);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "handlerPromise.then(function(e) {"
-      "  window.domAutomationController.send(e.defaultPrevented);"
-      "});",
-      &default_prevented));
-  EXPECT_FALSE(default_prevented);
+
+  ASSERT_EQ(false,
+            EvalJs(shell()->web_contents(),
+                   "handlerPromise.then(function(e) {"
+                   "  window.domAutomationController.send(e.defaultPrevented);"
+                   "});",
+                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   const float last_scale_factor = scale_observer.WaitForPageScaleUpdate();
   // The scale changes may be imprecise.

@@ -150,22 +150,22 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 600));
   }
 
-  bool GetPointInsideText(gfx::PointF* point) {
-    std::string str;
-    if (ExecuteScriptAndExtractString(shell(), "get_point_inside_text()",
-                                      &str)) {
-      return JSONToPoint(str, point);
-    }
-    return false;
+  gfx::PointF GetPointInsideText() {
+    gfx::PointF point;
+    JSONToPoint(EvalJs(shell(), "get_point_inside_text()",
+                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractString(),
+                &point);
+    return point;
   }
 
-  bool GetPointInsideTextfield(gfx::PointF* point) {
-    std::string str;
-    if (ExecuteScriptAndExtractString(shell(), "get_point_inside_textfield()",
-                                      &str)) {
-      return JSONToPoint(str, point);
-    }
-    return false;
+  gfx::PointF GetPointInsideTextfield() {
+    gfx::PointF point;
+    JSONToPoint(EvalJs(shell(), "get_point_inside_textfield()",
+                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractString(),
+                &point);
+    return point;
   }
 
   RenderWidgetHostViewAura* GetRenderWidgetHostViewAura() {
@@ -241,8 +241,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point;
-  ASSERT_TRUE(GetPointInsideText(&point));
+  gfx::PointF point = GetPointInsideText();
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -454,10 +453,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  std::string str;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(child->current_frame_host(),
-                                            "get_point_inside_text()", &str));
-  JSONToPoint(str, &point_f);
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()",
+                     EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString(),
+              &point_f);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);
 
   // Initiate selection with a sequence of events that go through the targeting
@@ -517,9 +516,9 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   FrameTreeNode* child = root->child_at(0);
 
   // Make sure mainframe can scroll.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "document.body.style.height = '900px'; "
-                            "document.body.style.overFlowY = 'scroll';"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.body.style.height = '900px'; "
+                     "document.body.style.overFlowY = 'scroll';"));
 
   RenderWidgetHostViewAura* parent_view =
       static_cast<RenderWidgetHostViewAura*>(
@@ -575,10 +574,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  std::string str;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(child->current_frame_host(),
-                                            "get_point_inside_text()", &str));
-  JSONToPoint(str, &point_f);
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()",
+                     EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString(),
+              &point_f);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);
 
   // Initiate selection with a sequence of events that go through the targeting
@@ -718,9 +717,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
 
-  gfx::PointF point_f;
-  ASSERT_TRUE(GetPointInsideTextfield(&point_f));
-  gfx::Point point = gfx::ToRoundedPoint(point_f);
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.GestureTapAt(point);
 
@@ -764,8 +761,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point;
-  ASSERT_TRUE(GetPointInsideText(&point));
+  gfx::PointF point = GetPointInsideText();
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -831,8 +827,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point;
-  ASSERT_TRUE(GetPointInsideText(&point));
+  gfx::PointF point = GetPointInsideText();
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -939,8 +934,7 @@ IN_PROC_BROWSER_TEST_P(
   // Long-press on the text and wait for handles to appear.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
-  gfx::PointF point;
-  ASSERT_TRUE(GetPointInsideText(&point));
+  gfx::PointF point = GetPointInsideText();
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -1035,8 +1029,7 @@ IN_PROC_BROWSER_TEST_P(
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
 
-  gfx::PointF point;
-  ASSERT_TRUE(GetPointInsideTextfield(&point));
+  gfx::PointF point = GetPointInsideTextfield();
 
   ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
   gesture_tap_down_details.set_device_type(

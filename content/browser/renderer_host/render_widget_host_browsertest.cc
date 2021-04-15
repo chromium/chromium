@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     // wait for the RenderWidgetHost to be shown.
     auto filter =
         std::make_unique<ShowPopupWidgetWaiter>(contents, root_frame_host);
-    EXPECT_TRUE(ExecuteScript(root_frame_host, "focusSelectMenu();"));
+    EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
     root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
     filter->Wait();
 
@@ -625,8 +625,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
           popup_widget_host_impl->GetWeakPtr();
 
       // Close the popup RenderWidget from the renderer side by removing focus.
-      EXPECT_TRUE(
-          ExecuteScript(root_frame_host, "document.activeElement.blur()"));
+      EXPECT_TRUE(ExecJs(root_frame_host, "document.activeElement.blur()"));
 
       // Ensure that the RenderWidgetHostImpl gets destroyed, which implies the
       // close step has also been sent to the renderer process.
@@ -638,8 +637,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     {
       std::u16string title_when_done[] = {u"done 0", u"done 1"};
       TitleWatcher title_watcher(shell()->web_contents(), title_when_done[i]);
-      EXPECT_TRUE(ExecuteScript(root_frame_host,
-                                JsReplace("document.title='done $1'", i)));
+      EXPECT_TRUE(
+          ExecJs(root_frame_host, JsReplace("document.title='done $1'", i)));
       EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_done[i]);
     }
   }

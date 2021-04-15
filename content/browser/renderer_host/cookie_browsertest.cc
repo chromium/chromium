@@ -55,10 +55,7 @@ void SetCookieFromJS(RenderFrameHost* frame, std::string cookie) {
 }
 
 std::string GetCookieFromJS(RenderFrameHost* frame) {
-  std::string cookie;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame, "window.domAutomationController.send(document.cookie);", &cookie));
-  return cookie;
+  return EvalJs(frame, "document.cookie;").ExtractString();
 }
 
 void SetCookieDirect(WebContentsImpl* tab,
@@ -176,26 +173,26 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
 
   // Non-TLS page writes secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_http->GetMainFrame(),
-                            "document.cookie = 'A=1; secure;';"));
+  EXPECT_TRUE(ExecJs(web_contents_http->GetMainFrame(),
+                     "document.cookie = 'A=1; secure;';"));
   EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
   EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
 
   // TLS page writes not-secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_http->GetMainFrame(),
-                            "document.cookie = 'B=2';"));
+  EXPECT_TRUE(
+      ExecJs(web_contents_http->GetMainFrame(), "document.cookie = 'B=2';"));
   EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetMainFrame()));
   EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
 
   // TLS page writes secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_https->GetMainFrame(),
-                            "document.cookie = 'C=3;secure;';"));
+  EXPECT_TRUE(ExecJs(web_contents_https->GetMainFrame(),
+                     "document.cookie = 'C=3;secure;';"));
   EXPECT_EQ("B=2; C=3", GetCookieFromJS(web_contents_https->GetMainFrame()));
   EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
 
   // TLS page writes not-secure cookie.
-  EXPECT_TRUE(ExecuteScript(web_contents_https->GetMainFrame(),
-                            "document.cookie = 'D=4';"));
+  EXPECT_TRUE(
+      ExecJs(web_contents_https->GetMainFrame(), "document.cookie = 'D=4';"));
   EXPECT_EQ("B=2; C=3; D=4",
             GetCookieFromJS(web_contents_https->GetMainFrame()));
   EXPECT_EQ("B=2; D=4", GetCookieFromJS(web_contents_http->GetMainFrame()));

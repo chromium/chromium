@@ -400,8 +400,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       /* show_reason_unoccluded */ false,
       /* show_reason_bfcache_restore */ false));
   // Force the child to submit a new frame.
-  ASSERT_TRUE(ExecuteScript(root->child_at(0)->current_frame_host(),
-                            "document.write('Force a new frame.');"));
+  ASSERT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
+                     "document.write('Force a new frame.');"));
   do {
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
@@ -645,12 +645,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
-  ASSERT_TRUE(
-      ExecuteScript(root->current_frame_host(),
-                    "var elem = document.createElement('input'); "
-                    "elem.id = 'mainframe_input_id';"
-                    "document.body.appendChild(elem);"
-                    "document.getElementById('mainframe_input_id').focus();"));
+  ASSERT_TRUE(ExecJs(root->current_frame_host(),
+                     "var elem = document.createElement('input'); "
+                     "elem.id = 'mainframe_input_id';"
+                     "document.body.appendChild(elem);"
+                     "document.getElementById('mainframe_input_id').focus();"));
   root_widget->UpdateTextDirection(base::i18n::RIGHT_TO_LEFT);
   root_widget->NotifyTextDirection();
   std::string mainframe_input_element_dir =
@@ -664,12 +663,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   FrameTreeNode* ipchild = root->child_at(0);
   RenderWidgetHostImpl* ipchild_widget =
       ipchild->current_frame_host()->GetRenderWidgetHost();
-  ASSERT_TRUE(
-      ExecuteScript(ipchild->current_frame_host(),
-                    "var elem = document.createElement('input'); "
-                    "elem.id = 'ipchild_input_id';"
-                    "document.body.appendChild(elem);"
-                    "document.getElementById('ipchild_input_id').focus();"));
+  ASSERT_TRUE(ExecJs(ipchild->current_frame_host(),
+                     "var elem = document.createElement('input'); "
+                     "elem.id = 'ipchild_input_id';"
+                     "document.body.appendChild(elem);"
+                     "document.getElementById('ipchild_input_id').focus();"));
   ipchild_widget->UpdateTextDirection(base::i18n::LEFT_TO_RIGHT);
   ipchild_widget->NotifyTextDirection();
   std::string ip_input_element_dir =
@@ -683,12 +681,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   FrameTreeNode* oopchild = root->child_at(1);
   RenderWidgetHostImpl* oopchild_widget =
       oopchild->current_frame_host()->GetRenderWidgetHost();
-  ASSERT_TRUE(
-      ExecuteScript(oopchild->current_frame_host(),
-                    "var elem = document.createElement('input'); "
-                    "elem.id = 'oop_input_id';"
-                    "document.body.appendChild(elem);"
-                    "document.getElementById('oop_input_id').focus();"));
+  ASSERT_TRUE(ExecJs(oopchild->current_frame_host(),
+                     "var elem = document.createElement('input'); "
+                     "elem.id = 'oop_input_id';"
+                     "document.body.appendChild(elem);"
+                     "document.getElementById('oop_input_id').focus();"));
   oopchild_widget->UpdateTextDirection(base::i18n::RIGHT_TO_LEFT);
   oopchild_widget->NotifyTextDirection();
   std::string oop_input_element_dir =

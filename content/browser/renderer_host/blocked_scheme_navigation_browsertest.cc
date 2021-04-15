@@ -217,12 +217,12 @@ class BlockedSchemeNavigationBrowserTest
         "    });"
         "  });"
         "});";
-    std::string filesystem_url_string;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        shell()->web_contents()->GetMainFrame(),
-        base::StringPrintf(kCreateFilesystemUrlScript, content.c_str(),
-                           filename.c_str(), mime_type.c_str()),
-        &filesystem_url_string));
+    std::string filesystem_url_string =
+        EvalJs(shell()->web_contents()->GetMainFrame(),
+               base::StringPrintf(kCreateFilesystemUrlScript, content.c_str(),
+                                  filename.c_str(), mime_type.c_str()),
+               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString();
     GURL filesystem_url(filesystem_url_string);
     EXPECT_TRUE(filesystem_url.is_valid());
     EXPECT_TRUE(filesystem_url.SchemeIsFileSystem());
@@ -264,7 +264,7 @@ class BlockedSchemeNavigationBrowserTest
         "document.body.appendChild(f);",
         url.spec().c_str());
     TestNavigationObserver observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
     observer.Wait();
     std::string message;
     while (message_queue.WaitForMessage(&message)) {
@@ -369,7 +369,7 @@ class BlockedSchemeNavigationBrowserTest
     }
 
     TestNavigationObserver navigation_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
 
     if (console_observer)
       console_observer->Wait();
@@ -405,7 +405,7 @@ class BlockedSchemeNavigationBrowserTest
       const std::string& javascript,
       ExpectedNavigationStatus expected_navigation_status) {
     ShellAddedObserver new_shell_observer;
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
 
     Shell* new_shell = new_shell_observer.GetShell();
     WaitForLoadStop(new_shell->web_contents());
@@ -438,7 +438,7 @@ class BlockedSchemeNavigationBrowserTest
     DownloadTestObserverTerminal download_observer(
         download_manager, 1, DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
     Shell* new_shell = new_shell_observer.GetShell();
 
     WaitForLoadStop(new_shell->web_contents());
@@ -463,7 +463,7 @@ class BlockedSchemeNavigationBrowserTest
     DownloadTestObserverTerminal download_observer(
         download_manager, 1, DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
     // If no download happens, this will timeout.
     download_observer.WaitForFinished();
 
@@ -513,7 +513,7 @@ class BlockedSchemeNavigationBrowserTest
         shell->web_contents(), kNavigationSuccessfulMessage, blocked_message);
 
     TestNavigationObserver navigation_observer(shell->web_contents());
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
     console_observer.Wait();
     EXPECT_EQ(BlockedURLWarningConsoleObserver::SAW_SUCCESS_MESSAGE,
               console_observer.status());
@@ -542,7 +542,7 @@ class BlockedSchemeNavigationBrowserTest
         shell->web_contents(), kNavigationSuccessfulMessage, blocked_message);
 
     TestNavigationObserver navigation_observer(shell->web_contents());
-    EXPECT_TRUE(ExecuteScript(rfh, javascript));
+    EXPECT_TRUE(ExecJs(rfh, javascript));
     console_observer.Wait();
     EXPECT_EQ(BlockedURLWarningConsoleObserver::SAW_FAILURE_MESSAGE,
               console_observer.status());
@@ -596,8 +596,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     // original page may clear all filesystem: URLs associated with that origin,
     // so we keep the origin around in the original shell.
     ShellAddedObserver new_shell_observer;
-    EXPECT_TRUE(
-        ExecuteScript(shell()->web_contents(), "window.open('about:blank');"));
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), "window.open('about:blank');"));
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
@@ -735,8 +734,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     // original page may clear all filesystem: URLs associated with that origin,
     // so we keep the origin around in the original shell.
     ShellAddedObserver new_shell_observer;
-    EXPECT_TRUE(
-        ExecuteScript(shell()->web_contents(), "window.open('about:blank');"));
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), "window.open('about:blank');"));
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
@@ -782,8 +780,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     ShellAddedObserver new_shell_observer;
     // TODO(crbug/811558): about:blank might commit without needing to wait.
     //                     Remove the wait.
-    EXPECT_TRUE(
-        ExecuteScript(shell()->web_contents(), "window.open('about:blank');"));
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), "window.open('about:blank');"));
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
@@ -1328,8 +1325,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   // This test will need to navigate the newly opened window.
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(
-      ExecuteScript(shell()->web_contents(),
-                    "document.getElementById('window-open-redirect').click()"));
+      ExecJs(shell()->web_contents(),
+             "document.getElementById('window-open-redirect').click()"));
   Shell* new_shell = new_shell_observer.GetShell();
   NavigationController* controller =
       &new_shell->web_contents()->GetController();
@@ -1379,7 +1376,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   EXPECT_EQ(1, controller->GetLastCommittedEntryIndex());
   {
     TestNavigationObserver observer(new_shell->web_contents());
-    EXPECT_TRUE(ExecuteScript(new_shell, "history.go(-1)"));
+    EXPECT_TRUE(ExecJs(new_shell, "history.go(-1)"));
     observer.Wait();
 
     NavigationEntry* entry = controller->GetLastCommittedEntry();

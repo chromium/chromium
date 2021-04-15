@@ -423,13 +423,9 @@ void ExpectChildFrameCollapsedInLayout(Shell* shell,
                                        const std::string& frame_id,
                                        bool expect_collapsed) {
   // Check if the frame is collapsed in practice.
-  const char kScript[] =
-      "window.domAutomationController.send("
-      "  document.getElementById(\"%s\").clientWidth"
-      ");";
-  int client_width = 0;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      shell, base::StringPrintf(kScript, frame_id.c_str()), &client_width));
+  const char kScript[] = "document.getElementById(\"%s\").clientWidth;";
+  int client_width =
+      EvalJs(shell, base::StringPrintf(kScript, frame_id.c_str())).ExtractInt();
   EXPECT_EQ(expect_collapsed, !client_width) << client_width;
 }
 
@@ -472,13 +468,8 @@ class NavigationRequestBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(observer.has_committed());
     EXPECT_TRUE(observer.is_error());
 
-    std::string result;
-    const std::string javascript =
-        "domAutomationController.send(document.body.textContent)";
     content::RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-    ASSERT_TRUE(
-        content::ExecuteScriptAndExtractString(rfh, javascript, &result));
-    EXPECT_EQ(kBodyTextContent, result);
+    EXPECT_EQ(kBodyTextContent, EvalJs(rfh, "document.body.textContent"));
   }
 };
 
@@ -691,8 +682,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyRendererInitiated) {
     NavigationHandleObserver observer(
         shell()->web_contents(),
         embedded_test_server()->GetURL("a.com", "/bar"));
-    EXPECT_TRUE(ExecuteScript(root->child_at(0),
-                              "window.history.pushState({}, '', 'bar');"));
+    EXPECT_TRUE(
+        ExecJs(root->child_at(0), "window.history.pushState({}, '', 'bar');"));
 
     EXPECT_TRUE(observer.has_committed());
     EXPECT_FALSE(observer.is_error());
@@ -729,8 +720,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
     NavigationHandleObserver observer(
         shell()->web_contents(),
         embedded_test_server()->GetURL("a.com", "/foo"));
-    EXPECT_TRUE(ExecuteScript(root->child_at(0),
-                              "window.history.pushState({}, '', 'foo');"));
+    EXPECT_TRUE(
+        ExecJs(root->child_at(0), "window.history.pushState({}, '', 'foo');"));
 
     EXPECT_TRUE(observer.has_committed());
     EXPECT_FALSE(observer.is_error());
@@ -740,8 +731,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
     NavigationHandleObserver observer(
         shell()->web_contents(),
         embedded_test_server()->GetURL("a.com", "/bar"));
-    EXPECT_TRUE(ExecuteScript(root->child_at(0),
-                              "window.history.replaceState({}, '', 'bar');"));
+    EXPECT_TRUE(ExecJs(root->child_at(0),
+                       "window.history.replaceState({}, '', 'bar');"));
 
     EXPECT_TRUE(observer.has_committed());
     EXPECT_FALSE(observer.is_error());
@@ -751,8 +742,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
     NavigationHandleObserver observer(
         shell()->web_contents(),
         embedded_test_server()->GetURL("a.com", "/bar#frag"));
-    EXPECT_TRUE(
-        ExecuteScript(root->child_at(0), "window.location.replace('#frag');"));
+    EXPECT_TRUE(ExecJs(root->child_at(0), "window.location.replace('#frag');"));
 
     EXPECT_TRUE(observer.has_committed());
     EXPECT_FALSE(observer.is_error());
@@ -762,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
   GURL about_blank_url(url::kAboutBlankURL);
   {
     NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         root, "document.body.appendChild(document.createElement('iframe'));"));
 
     EXPECT_TRUE(observer.has_committed());
@@ -1252,11 +1242,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
   // Starts the navigation from a link click and then check it.
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(), "window.domAutomationController.send(clickSameSiteLink());",
-      &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteLink();"));
   EXPECT_TRUE(link_manager.WaitForRequestStart());
   EXPECT_EQ(link_url, url_recorder.urls().back());
   EXPECT_EQ(2ul, url_recorder.urls().size());
@@ -1596,7 +1582,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   NavigationHandleObserver observer(shell()->web_contents(), url);
-  EXPECT_TRUE(ExecuteScript(shell(), "location.reload();"));
+  EXPECT_TRUE(ExecJs(shell(), "location.reload();"));
   EXPECT_EQ(observer.reload_type(), ReloadType::NORMAL);
 }
 
@@ -1607,9 +1593,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
   NavigationHandleObserver handle_observer(
       shell()->web_contents(), embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(ExecuteScript(shell(),
-                            "document.getElementById('test_iframe')."
-                            "contentWindow.location.reload();"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.getElementById('test_iframe')."
+                     "contentWindow.location.reload();"));
   EXPECT_EQ(handle_observer.reload_type(), ReloadType::NORMAL);
   EXPECT_FALSE(handle_observer.is_main_frame());
 }
@@ -1802,9 +1788,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorCodeOnRedirect) {
                                      blink::kChromeUINetworkErrorsListingURL);
   NavigationHandleObserver observer(shell()->web_contents(), redirect_url);
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  EXPECT_TRUE(
-      ExecuteScript(shell(), base::StringPrintf("location.href = '%s';",
-                                                redirect_url.spec().c_str())));
+  EXPECT_TRUE(ExecJs(shell(), base::StringPrintf("location.href = '%s';",
+                                                 redirect_url.spec().c_str())));
   same_tab_observer.Wait();
   EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, observer.net_error_code());
 }
@@ -1838,8 +1823,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     NavigationHandleObserver observer(shell()->web_contents(), blocked_url);
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     EXPECT_TRUE(
-        ExecuteScript(shell(), base::StringPrintf("location.href = '%s'",
-                                                  blocked_url.spec().c_str())));
+        ExecJs(shell(), base::StringPrintf("location.href = '%s'",
+                                           blocked_url.spec().c_str())));
     navigation_observer.Wait();
     EXPECT_TRUE(observer.has_committed());
     EXPECT_TRUE(observer.is_error());
@@ -1950,7 +1935,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     content::RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
     scoped_refptr<SiteInstance> initial_site_instance = rfh->GetSiteInstance();
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-    ASSERT_TRUE(content::ExecuteScript(rfh, javascript));
+    ASSERT_TRUE(content::ExecJs(rfh, javascript));
     navigation_observer.Wait();
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -2319,7 +2304,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
   {
     base::HistogramTester histograms;
     TestFrameNavigationObserver nav_observer(first_child);
-    EXPECT_TRUE(ExecuteScript(first_child, "location.reload();"));
+    EXPECT_TRUE(ExecJs(first_child, "location.reload();"));
     nav_observer.Wait();
     // location.reload triggers the PAGE_TRANSITION_AUTO_SUBFRAME which
     // corresponds to NewNavigation.
@@ -2340,7 +2325,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
   {
     base::HistogramTester histograms;
     TestFrameNavigationObserver nav_observer(first_child);
-    EXPECT_TRUE(ExecuteScript(first_child, "clickSameSiteLink();"));
+    EXPECT_TRUE(ExecJs(first_child, "clickSameSiteLink();"));
     nav_observer.Wait();
     // Link clicking will trigger PAGE_TRANSITION_MANUAL_SUBFRAME which
     // corresponds to NewNavigation.
@@ -2394,7 +2379,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       root, "document.body.appendChild(document.createElement('iframe'));"));
 
   // Navigate subframe cross-site and ensure Subframe metrics are logged.
@@ -2886,7 +2871,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
 
   {
     TestNavigationObserver navigation_observer(shell()->web_contents());
-    EXPECT_TRUE(ExecuteScript(root, "window.location.replace('#frag');"));
+    EXPECT_TRUE(ExecJs(root, "window.location.replace('#frag');"));
     navigation_observer.WaitForNavigationFinished();
   }
 

@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), page));
 
   auto* wc = shell()->web_contents();
-  ASSERT_TRUE(ExecuteScript(wc, "focusSelectMenu();"));
+  ASSERT_TRUE(ExecJs(wc, "focusSelectMenu();"));
   SimulateKeyPress(wc, ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
                    ui::VKEY_SPACE, false, false, false, false);
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
   Attach();
   SendCommand("Debugger.enable", nullptr);
 
-  ASSERT_TRUE(ExecuteScript(wc, "focusSelectMenu();"));
+  ASSERT_TRUE(ExecJs(wc, "focusSelectMenu();"));
   SimulateKeyPress(wc, ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
                    ui::VKEY_SPACE, false, false, false, false);
 
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
 
   // Try to access the renderer process, it would have died if
   // crbug.com/1032984 wasn't fixed.
-  ASSERT_TRUE(ExecuteScript(wc, "noop();"));
+  ASSERT_TRUE(ExecJs(wc, "noop();"));
 }
 
 // Used to verify features under the environment whose device scale factor is 2.
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 
   // Select text and wait until the bounding box updates.
   auto* wc = shell()->web_contents();
-  ASSERT_TRUE(ExecuteScript(wc, "selectText();"));
+  ASSERT_TRUE(ExecJs(wc, "selectText();"));
   WaitForSelectionBoundingBoxUpdate(wc);
 
   // Verify the device scale factor.

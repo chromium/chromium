@@ -117,22 +117,13 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
     hittest_observer.WaitForHitTestData();
   }
   int ExecuteScriptAndExtractInt(const std::string& script) {
-    int value = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        shell(), "domAutomationController.send(" + script + ")", &value));
-    return value;
+    return EvalJs(shell(), script).ExtractInt();
   }
   double ExecuteScriptAndExtractDouble(const std::string& script) {
-    double value = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-        shell(), "domAutomationController.send(" + script + ")", &value));
-    return value;
+    return EvalJs(shell(), script).ExtractDouble();
   }
   std::string ExecuteScriptAndExtractString(const std::string& script) {
-    std::string value;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        shell(), "domAutomationController.send(" + script + ")", &value));
-    return value;
+    return EvalJs(shell(), script).ExtractString();
   }
 };
 
@@ -244,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   EXPECT_EQ(1, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));
 
   // Remove the scrollableDiv which is the current target for wheel events.
-  EXPECT_TRUE(ExecuteScript(
-      shell(), "scrollableDiv.parentNode.removeChild(scrollableDiv)"));
+  EXPECT_TRUE(
+      ExecJs(shell(), "scrollableDiv.parentNode.removeChild(scrollableDiv)"));
 
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
   GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
@@ -318,8 +309,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Remove the scrollableDiv which is the current scroller and send the second
   // GSU.
-  EXPECT_TRUE(ExecuteScript(
-      shell(), "scrollableDiv.parentNode.removeChild(scrollableDiv)"));
+  EXPECT_TRUE(
+      ExecJs(shell(), "scrollableDiv.parentNode.removeChild(scrollableDiv)"));
   GiveItSomeTime();
   GetRootView()->ProcessGestureEvent(gesture_scroll_update, ui::LatencyInfo());
   while (ExecuteScriptAndExtractDouble("document.scrollingElement.scrollTop") <

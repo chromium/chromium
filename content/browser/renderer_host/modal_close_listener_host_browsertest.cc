@@ -37,7 +37,7 @@ class ModalCloseListenerHostBrowserTest : public ContentBrowserTest {
     std::string script =
         "let watcher = new ModalCloseWatcher(); "
         "watcher.onclose = () => window.document.title = 'SUCCESS';";
-    EXPECT_TRUE(ExecuteScript(web_contents(), script));
+    EXPECT_TRUE(ExecJs(web_contents(), script));
 
     RenderFrameHostImpl* render_frame_host_impl =
         web_contents()->GetFrameTree()->root()->current_frame_host();
