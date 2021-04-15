@@ -24,6 +24,7 @@ per-file PRESUBMIT*.py=agrieve@chromium.org  # For .pydeps changes
 per-file PRESUBMIT*.py=dcheng@chromium.org
 per-file PRESUBMIT*.py=dpranke@google.com
 per-file PRESUBMIT*.py=jochen@chromium.org
+per-file PRESUBMIT*.py=wnwen@chromium.org  # For .pydeps changes
 per-file README.md=*
 per-file WATCHLISTS=*
 per-file *.pydeps=file://build/OWNERS
