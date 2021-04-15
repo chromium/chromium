@@ -16,20 +16,22 @@ namespace enterprise_reporting {
 
 // The browser version that performed the most recent report upload.
 const char kLastUploadVersion[] = "enterprise_reporting.last_upload_version";
+// The list of requests that have been uploaded to the server.
+const char kCloudExtensionRequestUploadedIds[] =
+    "enterprise_reporting.extension_request.pending.ids";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // This is also registered as a Profile pref which will be removed after
   // the migration.
   registry->RegisterBooleanPref(kCloudReportingEnabled, false);
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(kLastUploadVersion, std::string());
-#endif
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
+  registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
 }
 
 }  // namespace enterprise_reporting

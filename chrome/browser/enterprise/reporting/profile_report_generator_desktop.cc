@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
@@ -34,20 +35,6 @@ namespace enterprise_reporting {
 namespace {
 
 const int kMaxNumberOfExtensionRequest = 1000;
-
-// Extension request are moved out of the pending list once user confirm the
-// notification. However, there is no need to upload these requests anymore as
-// long as admin made a decision.
-bool ShouldUploadExtensionRequest(
-    const std::string& extension_id,
-    const std::string& webstore_update_url,
-    extensions::ExtensionManagement* extension_management) {
-  auto mode = extension_management->GetInstallationMode(extension_id,
-                                                        webstore_update_url);
-  return (mode == extensions::ExtensionManagement::INSTALLATION_BLOCKED ||
-          mode == extensions::ExtensionManagement::INSTALLATION_REMOVED) &&
-         !extension_management->IsInstallationExplicitlyBlocked(extension_id);
-}
 
 }  // namespace
 
@@ -100,8 +87,8 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
 
   int number_of_requests = 0;
   for (const auto& it : *pending_requests) {
-    if (!ShouldUploadExtensionRequest(it.first, webstore_update_url,
-                                      extension_management)) {
+    if (!ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
+            it.first, webstore_update_url, extension_management)) {
       continue;
     }
 

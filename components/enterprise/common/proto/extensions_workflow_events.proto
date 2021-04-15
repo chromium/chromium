@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package reporting;
+package enterprise_reporting;
 
 // ExtensionsWorkflowEvent contains an extension request and is sent whenever a
 // user requests an extension or cancels one.

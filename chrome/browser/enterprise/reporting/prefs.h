@@ -14,6 +14,7 @@ class PrefRegistrySyncable;
 namespace enterprise_reporting {
 
 extern const char kLastUploadVersion[];
+extern const char kCloudExtensionRequestUploadedIds[];
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

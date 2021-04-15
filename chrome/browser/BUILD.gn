@@ -3571,6 +3571,8 @@ static_library("browser") {
       "enterprise/reporting/extension_request/extension_request_observer_factory.h",
       "enterprise/reporting/extension_request/extension_request_policy_handler.cc",
       "enterprise/reporting/extension_request/extension_request_policy_handler.h",
+      "enterprise/reporting/extension_request/extension_request_report_generator.cc",
+      "enterprise/reporting/extension_request/extension_request_report_generator.h",
       "enterprise/reporting/extension_request/extension_request_report_throttler.cc",
       "enterprise/reporting/extension_request/extension_request_report_throttler.h",
       "enterprise/reporting/prefs.cc",
