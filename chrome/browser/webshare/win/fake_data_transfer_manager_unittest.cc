@@ -10,10 +10,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/scoped_winrt_initializer.h"
 #include "base/win/vector.h"
 #include "chrome/browser/webshare/win/fake_storage_file_statics.h"
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
@@ -96,8 +98,9 @@ class FakeDataTransferManagerTest : public ::testing::Test {
   void SetUp() override {
     if (!IsSupportedEnvironment())
       return;
-    ASSERT_HRESULT_SUCCEEDED(
-        base::win::RoInitialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED));
+
+    winrt_initializer_.emplace();
+    ASSERT_TRUE(winrt_initializer_->Succeeded());
     fake_data_transfer_manager_ =
         Microsoft::WRL::Make<FakeDataTransferManager>();
   }
@@ -105,9 +108,9 @@ class FakeDataTransferManagerTest : public ::testing::Test {
   void TearDown() override {
     if (!IsSupportedEnvironment())
       return;
-    base::win::RoUninitialize();
   }
 
+  base::Optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   ComPtr<FakeDataTransferManager> fake_data_transfer_manager_;
 };
 
