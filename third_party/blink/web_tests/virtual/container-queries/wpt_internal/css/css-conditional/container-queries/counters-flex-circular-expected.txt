@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS #item1, #container, and #inner should all have the same width: 100
+PASS The container query should match the layed out width
+PASS The sum of the item widths should match the flexbox width
+FAIL The size of the flex item #2 should be given by its contents assert_equals: expected 100 but got 50
+Harness: the test ran to completion.
+
