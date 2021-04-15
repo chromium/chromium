@@ -903,6 +903,9 @@ class JPEGImageReader final {
   JSAMPARRAY Samples() const { return samples_; }
   JPEGImageDecoder* Decoder() { return decoder_; }
   IntSize UvSize() const { return uv_size_; }
+  bool HasStartedDecompression() const {
+    return state_ > JPEG_START_DECOMPRESS;
+  }
 
  private:
 #if defined(USE_SYSTEM_LIBJPEG)
@@ -1040,8 +1043,13 @@ bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
 }
 
 void JPEGImageDecoder::OnSetData(SegmentReader* data) {
-  if (reader_)
+  if (reader_) {
     reader_->SetData(data);
+
+    // Changing YUV decoding mode is not allowed after decompression starts.
+    if (reader_->HasStartedDecompression())
+      return;
+  }
 
   if (allow_decode_to_yuv_)
     return;
