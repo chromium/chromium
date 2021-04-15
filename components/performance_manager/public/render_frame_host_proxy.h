@@ -18,7 +18,7 @@ class FrameNodeImpl;
 // A RenderFrameHostProxy is used to post messages out of the performance
 // manager sequence that are bound for a RenderFrameHostProxy running on the UI
 // thread. The object is bound to the UI thread. A RenderFrameHostProxy is
-// conceptually equivalent to a WeakPtr<RenderProcessHost>. Copy and assignment
+// conceptually equivalent to a WeakPtr<RenderFrameHost>. Copy and assignment
 // are explicitly allowed for this object.
 class RenderFrameHostProxy {
  public:
