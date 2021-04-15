@@ -150,13 +150,7 @@ void StatusAreaWidget::Initialize() {
   for (TrayBackgroundView* tray_button : tray_buttons_)
     tray_button->Initialize();
 
-  // Move the |stop_recording_button_tray_| to the front so that it's more
-  // visible. This ensure the |stop_recording_button_tray_| always sticks to
-  // the left most side.
-  if (features::IsCaptureModeEnabled()) {
-    status_area_widget_delegate_->ReorderChildView(
-        stop_recording_button_tray_.get(), 1);
-  }
+  EnsureTrayOrder();
 
   UpdateAfterLoginStatusChange(
       Shell::Get()->session_controller()->login_status());
@@ -331,8 +325,18 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 void StatusAreaWidget::HandleLocaleChange() {
-  for (auto* tray_button : tray_buttons_)
+  // Here we force the layer's bounds to be updated for text direction (if
+  // needed).
+  status_area_widget_delegate_->RemoveAllChildViews(/*delete_children=*/false);
+
+  // The layout manager will be updated when shelf layout gets updated, which is
+  // done by the shelf layout manager after `HandleLocaleChange()` gets called.
+  status_area_widget_delegate_->SetLayoutManager(nullptr);
+  for (auto* tray_button : tray_buttons_) {
     tray_button->HandleLocaleChange();
+    status_area_widget_delegate_->AddChildView(tray_button);
+  }
+  EnsureTrayOrder();
 }
 
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
@@ -404,6 +408,13 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   overflow_button_tray_->UpdateAfterStatusAreaCollapseChange();
   for (TrayBackgroundView* tray_button : tray_buttons_)
     tray_button->UpdateAfterStatusAreaCollapseChange();
+}
+
+void StatusAreaWidget::EnsureTrayOrder() {
+  if (features::IsCaptureModeEnabled()) {
+    status_area_widget_delegate_->ReorderChildView(
+        stop_recording_button_tray_.get(), 1);
+  }
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()

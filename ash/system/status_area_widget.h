@@ -221,6 +221,10 @@ class ASH_EXPORT StatusAreaWidget : public ClockObserver,
   // of each tray button.
   void CalculateButtonVisibilityForCollapsedState();
 
+  // Move the `stop_recording_button_tray_` to the front so that it's more
+  // visible.
+  void EnsureTrayOrder();
+
   // Calculates and returns the appropriate collapse state depending on
   // current conditions.
   CollapseState CalculateCollapseState() const;

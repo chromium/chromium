@@ -12,6 +12,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -74,6 +75,45 @@ TEST_F(StatusAreaWidgetTest, Basics) {
   EXPECT_FALSE(status->logout_button_tray_for_testing()->GetVisible());
   EXPECT_FALSE(status->ime_menu_tray()->GetVisible());
   EXPECT_FALSE(status->virtual_keyboard_tray_for_testing()->GetVisible());
+}
+
+TEST_F(StatusAreaWidgetTest, HanldeOnLocaleChange) {
+  base::i18n::SetRTLForTesting(false);
+
+  StatusAreaWidget* status_area_ =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  TrayBackgroundView* ime_menu_(status_area_->ime_menu_tray());
+  TrayBackgroundView* palette_(status_area_->palette_tray());
+  TrayBackgroundView* dictation_button_(status_area_->dictation_button_tray());
+  TrayBackgroundView* select_to_speak_(status_area_->select_to_speak_tray());
+
+  ime_menu_->SetVisiblePreferred(true);
+  palette_->SetVisiblePreferred(true);
+  dictation_button_->SetVisiblePreferred(true);
+  select_to_speak_->SetVisiblePreferred(true);
+
+  // From left to right: dictation_button_, select_to_speak_, ime_menu_,
+  // palette_.
+  EXPECT_GT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
+  EXPECT_GT(ime_menu_->layer()->bounds().x(),
+            select_to_speak_->layer()->bounds().x());
+  EXPECT_GT(select_to_speak_->layer()->bounds().x(),
+            dictation_button_->layer()->bounds().x());
+
+  // Switch to RTL mode.
+  base::i18n::SetRTLForTesting(true);
+  // Trigger the LocaleChangeObserver, which should cause a layout of the menu.
+  ash::LocaleUpdateController::Get()->OnLocaleChanged();
+
+  // From left to right: palette_, ime_menu_, select_to_speak_,
+  // dictation_button_.
+  EXPECT_LT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
+  EXPECT_LT(ime_menu_->layer()->bounds().x(),
+            select_to_speak_->layer()->bounds().x());
+  EXPECT_LT(select_to_speak_->layer()->bounds().x(),
+            dictation_button_->layer()->bounds().x());
+
+  base::i18n::SetRTLForTesting(false);
 }
 
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
