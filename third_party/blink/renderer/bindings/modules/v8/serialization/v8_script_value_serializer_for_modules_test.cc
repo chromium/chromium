@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -42,13 +43,17 @@ using testing::UnorderedElementsAre;
 namespace blink {
 namespace {
 
-v8::Local<v8::Value> RoundTripForModules(v8::Local<v8::Value> value,
-                                         V8TestingScope& scope) {
+v8::Local<v8::Value> RoundTripForModules(
+    v8::Local<v8::Value> value,
+    V8TestingScope& scope,
+    Transferables* transferables = nullptr) {
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState& exception_state = scope.GetExceptionState();
+  V8ScriptValueSerializer::Options serialize_options;
+  DCHECK(!transferables || transferables->message_ports.IsEmpty());
+  serialize_options.transferables = transferables;
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      V8ScriptValueSerializerForModules(
-          script_state, V8ScriptValueSerializerForModules::Options())
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
           .Serialize(value, exception_state);
   DCHECK_EQ(!serialized_script_value, exception_state.HadException());
   EXPECT_TRUE(serialized_script_value);
@@ -1011,6 +1016,40 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
   blink_frame->close();
   EXPECT_FALSE(media_frame->HasOneRef());
 
+  new_frame->close();
+  EXPECT_TRUE(media_frame->HasOneRef());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
+  V8TestingScope scope;
+
+  const gfx::Size kFrameSize(600, 480);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  VideoFrameTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<VideoFrameTransferList>();
+  transfer_list->video_frames.push_back(blink_frame);
+  v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8VideoFrame::HasInstance(result, scope.GetIsolate()));
+
+  VideoFrame* new_frame = V8VideoFrame::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_frame->frame()->natural_size(), kFrameSize);
+
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  // The transfer should have closed the source frame.
+  EXPECT_EQ(blink_frame->frame(), nullptr);
+
+  // Closing |new_frame| should remove all references to |media_frame|.
   new_frame->close();
   EXPECT_TRUE(media_frame->HasOneRef());
 }

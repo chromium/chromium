@@ -229,11 +229,6 @@ class CORE_EXPORT SerializedScriptValue
   // Returns true if the array was filled, or false if the passed value was not
   // of an appropriate type.
   static bool ExtractTransferables(v8::Isolate*,
-                                   v8::Local<v8::Value>,
-                                   int,
-                                   Transferables&,
-                                   ExceptionState&);
-  static bool ExtractTransferables(v8::Isolate*,
                                    const HeapVector<ScriptValue>&,
                                    Transferables&,
                                    ExceptionState&);

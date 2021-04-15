@@ -23,6 +23,13 @@ class WebCryptoKey;
 class MODULES_EXPORT V8ScriptValueSerializerForModules final
     : public V8ScriptValueSerializer {
  public:
+  // |object_index| is for use in exception messages.
+  static bool ExtractTransferable(v8::Isolate*,
+                                  v8::Local<v8::Value>,
+                                  wtf_size_t object_index,
+                                  Transferables&,
+                                  ExceptionState&);
+
   explicit V8ScriptValueSerializerForModules(
       ScriptState* script_state,
       const SerializedScriptValue::SerializeOptions& options)

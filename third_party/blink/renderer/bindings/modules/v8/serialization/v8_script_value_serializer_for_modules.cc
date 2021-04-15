@@ -31,9 +31,44 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
+
+// static
+bool V8ScriptValueSerializerForModules::ExtractTransferable(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> object,
+    wtf_size_t object_index,
+    Transferables& transferables,
+    ExceptionState& exception_state) {
+  // Give the core/ implementation a chance to try first.
+  // If it didn't recognize the kind of object, try the modules types.
+  if (V8ScriptValueSerializer::ExtractTransferable(
+          isolate, object, object_index, transferables, exception_state)) {
+    return true;
+  }
+  if (exception_state.HadException())
+    return false;
+
+  if (V8VideoFrame::HasInstance(object, isolate)) {
+    VideoFrame* video_frame =
+        V8VideoFrame::ToImpl(v8::Local<v8::Object>::Cast(object));
+    VideoFrameTransferList* transfer_list =
+        transferables.GetOrCreateTransferList<VideoFrameTransferList>();
+    if (transfer_list->video_frames.Contains(video_frame)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "VideoFrame at index " + String::Number(object_index) +
+              " is a duplicate of an earlier VideoFrame.");
+      return false;
+    }
+    transfer_list->video_frames.push_back(video_frame);
+    return true;
+  }
+  return false;
+}
 
 bool V8ScriptValueSerializerForModules::WriteDOMObject(
     ScriptWrappable* wrappable,

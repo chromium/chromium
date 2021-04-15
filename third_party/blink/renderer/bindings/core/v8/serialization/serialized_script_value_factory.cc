@@ -12,6 +12,16 @@ namespace blink {
 
 SerializedScriptValueFactory* SerializedScriptValueFactory::instance_ = nullptr;
 
+bool SerializedScriptValueFactory::ExtractTransferable(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> object,
+    wtf_size_t object_index,
+    Transferables& transferables,
+    ExceptionState& exception_state) {
+  return V8ScriptValueSerializer::ExtractTransferable(
+      isolate, object, object_index, transferables, exception_state);
+}
+
 scoped_refptr<SerializedScriptValue> SerializedScriptValueFactory::Create(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,

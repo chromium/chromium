@@ -13,6 +13,7 @@
 namespace blink {
 
 class DOMArrayBufferBase;
+class ExceptionState;
 class ImageBitmap;
 class OffscreenCanvas;
 class MessagePort;
@@ -45,6 +46,30 @@ class CORE_EXPORT Transferables final {
   ReadableStreamArray readable_streams;
   WritableStreamArray writable_streams;
   TransformStreamArray transform_streams;
+
+  class CORE_EXPORT TransferList : public GarbageCollectedMixin {
+   public:
+    virtual ~TransferList() = default;
+    virtual void FinalizeTransfer(ExceptionState&) {}
+  };
+
+  HeapHashMap<const void* const*, Member<TransferList>> transfer_lists;
+
+  template <typename T>
+  T* GetOrCreateTransferList() {
+    auto result = transfer_lists.insert(&T::kTransferListKey, nullptr);
+    if (!result.stored_value->value)
+      result.stored_value->value = MakeGarbageCollected<T>();
+    return static_cast<T*>(result.stored_value->value.Get());
+  }
+
+  template <typename T>
+  const T* GetTransferListIfExists() const {
+    auto it = transfer_lists.find(&T::kTransferListKey);
+    if (it == transfer_lists.end())
+      return nullptr;
+    return static_cast<T*>(it->value.Get());
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Transferables);

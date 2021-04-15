@@ -72,8 +72,24 @@ async_test(t => {
   })
 
   localPort.postMessage(localFrame);
-
 }, 'Verify closing frames does not propagate accross contexts.');
+
+async_test(t => {
+  let localFrame = createDefaultVideoFrame();
+
+  let channel = new MessageChannel();
+  let localPort = channel.port1;
+  let externalPort = channel.port2;
+
+  externalPort.onmessage = t.step_func_done((e) => {
+    let externalFrame = e.data;
+    assert_equals(externalFrame.timestamp, defaultInit.timestamp);
+    externalFrame.close();
+  })
+
+  localPort.postMessage(localFrame, [localFrame]);
+  assert_not_equals(localFrame.timestamp, defaultInit.timestamp);
+}, 'Verify transferring frames closes them.');
 
 async_test(t => {
   let localFrame = createDefaultVideoFrame();

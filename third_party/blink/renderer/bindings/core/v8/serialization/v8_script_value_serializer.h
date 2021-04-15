@@ -36,6 +36,14 @@ class CORE_EXPORT V8ScriptValueSerializer
 
  public:
   using Options = SerializedScriptValue::SerializeOptions;
+
+  // |object_index| is for use in exceptiun messages.
+  static bool ExtractTransferable(v8::Isolate*,
+                                  v8::Local<v8::Value>,
+                                  wtf_size_t object_index,
+                                  Transferables&,
+                                  ExceptionState&);
+
   explicit V8ScriptValueSerializer(ScriptState*, const Options& = Options());
 
   scoped_refptr<SerializedScriptValue> Serialize(v8::Local<v8::Value>,
