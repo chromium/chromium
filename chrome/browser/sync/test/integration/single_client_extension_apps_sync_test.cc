@@ -50,14 +50,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-// Flaky on MAC: https://crbug.com/1161309
-#if defined(OS_MAC)
-#define MAYBE_StartWithSomePlatformApps DISABLED_StartWithSomePlatformApps
-#else
-#define MAYBE_StartWithSomePlatformApps StartWithSomePlatformApps
-#endif
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
-                       MAYBE_StartWithSomePlatformApps) {
+                       StartWithSomePlatformApps) {
   ASSERT_TRUE(SetupClients());
 
   const int kNumApps = 2;
