@@ -10,17 +10,18 @@ source_set("text_fragments") {
     "//base",
     "//components/shared_highlighting/core/common",
     "//ios/web/common:features",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",
-    "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:web_view_handler",
+    "//ios/web/public/text_fragments",
     "//services/metrics/public/cpp:metrics_cpp",
   ]
 
   sources = [
-    "crw_text_fragments_handler.h",
-    "crw_text_fragments_handler.mm",
+    "text_fragments_manager_impl.h",
+    "text_fragments_manager_impl.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

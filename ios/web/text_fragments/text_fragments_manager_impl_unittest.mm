@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/text_fragments/crw_text_fragments_handler.h"
+#import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -14,9 +14,8 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
-#import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
-#import "ios/web/web_state/web_state_impl.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -55,66 +54,35 @@ const char kSourceUkmMetric[] = "Source";
 
 }  // namespace
 
-class MockWebStateImpl : public web::WebStateImpl {
- public:
-  explicit MockWebStateImpl(web::WebState::CreateParams params)
-      : web::WebStateImpl(params) {}
+namespace web {
 
-  MOCK_METHOD1(ExecuteJavaScript, void(const std::u16string&));
-  MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
-
-  base::CallbackListSubscription AddScriptCommandCallback(
-      const web::WebState::ScriptCommandCallback& callback,
-      const std::string& command_prefix) override {
-    last_callback_ = callback;
-    last_command_prefix_ = command_prefix;
-    return {};
-  }
-
-  web::WebState::ScriptCommandCallback last_callback() {
-    return last_callback_;
-  }
-  const std::string last_command_prefix() { return last_command_prefix_; }
-
- private:
-  web::WebState::ScriptCommandCallback last_callback_;
-  std::string last_command_prefix_;
-};
-
-class CRWTextFragmentsHandlerTest : public web::WebTest {
+class TextFragmentsManagerImplTest : public WebTest {
  protected:
-  CRWTextFragmentsHandlerTest() : context_(), feature_list_() {}
+  TextFragmentsManagerImplTest() : context_(), feature_list_() {}
 
   void SetUp() override {
-    web::WebState::CreateParams params(GetBrowserState());
-    std::unique_ptr<MockWebStateImpl> web_state =
-        std::make_unique<MockWebStateImpl>(params);
+    std::unique_ptr<FakeWebState> web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
     context_.SetWebState(std::move(web_state));
-
-    mocked_delegate_ =
-        OCMStrictProtocolMock(@protocol(CRWWebViewHandlerDelegate));
-    OCMStub([mocked_delegate_ webStateImplForWebViewHandler:[OCMArg any]])
-        .andReturn((web::WebStateImpl*)web_state_);
   }
 
-  CRWTextFragmentsHandler* CreateDefaultHandler() {
-    return CreateHandler(/*has_opener=*/false,
+  TextFragmentsManagerImpl* CreateDefaultManager() {
+    return CreateManager(/*has_opener=*/false,
                          /*has_user_gesture=*/true,
                          /*is_same_document=*/false,
                          /*feature_enabled=*/true,
                          /*feature_color_change=*/false);
   }
 
-  CRWTextFragmentsHandler* CreateHandler(bool has_opener,
-                                         bool has_user_gesture,
-                                         bool is_same_document,
-                                         bool feature_enabled,
-                                         bool feature_color_change) {
+  TextFragmentsManagerImpl* CreateManager(bool has_opener,
+                                          bool has_user_gesture,
+                                          bool is_same_document,
+                                          bool feature_enabled,
+                                          bool feature_color_change) {
     if (feature_enabled && feature_color_change) {
       feature_list_.InitWithFeatures(
-          {web::features::kScrollToTextIOS,
-           web::features::kIOSSharedHighlightingColorChange},
+          {features::kScrollToTextIOS,
+           features::kIOSSharedHighlightingColorChange},
           {});
     } else if (feature_enabled) {
       feature_list_.InitAndEnableFeature(web::features::kScrollToTextIOS);
@@ -125,13 +93,11 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
     context_.SetHasUserGesture(has_user_gesture);
     context_.SetIsSameDocument(is_same_document);
 
-    return [[CRWTextFragmentsHandler alloc] initWithDelegate:mocked_delegate_];
+    TextFragmentsManagerImpl::CreateForWebState(web_state_);
+    return TextFragmentsManagerImpl::FromWebState(web_state_);
   }
 
-  void SetLastURL(const GURL& last_url) {
-    EXPECT_CALL(*web_state_, GetLastCommittedURL())
-        .WillOnce(ReturnRefOfCopy(last_url));
-  }
+  void SetLastURL(const GURL& last_url) { web_state_->SetCurrentURL(last_url); }
 
   Referrer GetSearchEngineReferrer() {
     return Referrer(GURL(kSearchEngineURL), web::ReferrerPolicyDefault);
@@ -141,11 +107,10 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
     return Referrer(GURL(kNonSearchEngineURL), web::ReferrerPolicyDefault);
   }
 
-  void CreateHandlerAndProcessTextFragments() {
-    CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  void CreateManagerAndProcessTextFragments() {
+    TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-    [handler processTextFragmentsWithContext:&context_
-                                    referrer:GetSearchEngineReferrer()];
+    manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
   }
 
   void ValidateLinkOpenedUkm(const ukm::TestAutoSetUkmRecorder& recorder,
@@ -168,183 +133,147 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
   }
 
   web::FakeNavigationContext context_;
-  MockWebStateImpl* web_state_;
+  FakeWebState* web_state_;
   base::test::ScopedFeatureList feature_list_;
-  id<CRWWebViewHandlerDelegate> mocked_delegate_;
 };
 
-// Tests that the handler will execute JavaScript if highlighting is allowed and
+// Tests that the manager will execute JavaScript if highlighting is allowed and
 // fragments are present.
-TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
+TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptSuccess) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kValidFragmentsURL));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  // Set up expectation.
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+
   std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsURL);
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
-
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
 
   // Verify that a command callback was added with the right prefix.
-  EXPECT_NE(web::WebState::ScriptCommandCallback(),
-            web_state_->last_callback());
-  EXPECT_EQ("textFragments", web_state_->last_command_prefix());
+  EXPECT_TRUE(web_state_->GetLastAddedCallback());
+  EXPECT_EQ("textFragments", web_state_->GetLastCommandPrefix());
 }
 
-// Tests that the handler will execute JavaScript with the default colors
+// Tests that the manager will execute JavaScript with the default colors
 // if the IOSSharedHighlightingColorChange flag is enabled, if highlighting
 // is allowed and fragments are present.
-TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptWithColorChange) {
+TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kValidFragmentsURL));
 
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/false,
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/true);
 
   // Set up expectation.
+
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
+
   std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsColorChangeURL);
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
-
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
 
   // Verify that a command callback was added with the right prefix.
-  EXPECT_NE(web::WebState::ScriptCommandCallback(),
-            web_state_->last_callback());
-  EXPECT_EQ("textFragments", web_state_->last_command_prefix());
+  EXPECT_TRUE(web_state_->GetLastAddedCallback());
+  EXPECT_EQ("textFragments", web_state_->GetLastCommandPrefix());
 }
 
-// Tests that the handler will not execute JavaScript if the scroll to text
+// Tests that the manager will not execute JavaScript if the scroll to text
 // feature is disabled.
-TEST_F(CRWTextFragmentsHandlerTest, FeatureDisabledFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/false,
+TEST_F(TextFragmentsManagerImplTest, FeatureDisabledFragmentsDisallowed) {
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
                     /*feature_enabled=*/false,
                     /*feature_color_change=*/false);
 
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
-  EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
+  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   // Verify that no callback was set when the flag is disabled.
-  EXPECT_EQ(web::WebState::ScriptCommandCallback(),
-            web_state_->last_callback());
+  EXPECT_FALSE(web_state_->GetLastAddedCallback());
 }
 
-// Tests that the handler will not execute JavaScript if the WebState has an
+// Tests that the manager will not execute JavaScript if the WebState has an
 // opener.
-TEST_F(CRWTextFragmentsHandlerTest, HasOpenerFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/true,
+TEST_F(TextFragmentsManagerImplTest, HasOpenerFragmentsDisallowed) {
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/true,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
-  EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
-// Tests that the handler will not execute JavaScript if the WebState has no
+// Tests that the manager will not execute JavaScript if the WebState has no
 // user gesture.
-TEST_F(CRWTextFragmentsHandlerTest, NoGestureFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/false,
+TEST_F(TextFragmentsManagerImplTest, NoGestureFragmentsDisallowed) {
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/false,
                     /*is_same_document=*/false,
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
-  EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
-// Tests that the handler will not execute JavaScript if we navigated on the
+// Tests that the manager will not execute JavaScript if we navigated on the
 // same document.
-TEST_F(CRWTextFragmentsHandlerTest, SameDocumentFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/false,
+TEST_F(TextFragmentsManagerImplTest, SameDocumentFragmentsDisallowed) {
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/true,
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
-  EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
-// Tests that the handler will not execute JavaScript if there are no
+// Tests that the manager will not execute JavaScript if there are no
 // fragments on the current URL.
-TEST_F(CRWTextFragmentsHandlerTest, NoFragmentsNoJavaScript) {
+TEST_F(TextFragmentsManagerImplTest, NoFragmentsNoJavaScript) {
   SetLastURL(GURL("https://www.chromium.org/"));
 
-  CRWTextFragmentsHandler* handler =
-      CreateHandler(/*has_opener=*/false,
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
                     /*feature_enabled=*/true,
                     /*feature_color_change=*/false);
 
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
-}
-
-// Tests that any timing issue which would call the handle after it got closed
-// would not crash the app.
-TEST_F(CRWTextFragmentsHandlerTest, PostCloseInvokeDoesNotCrash) {
-  // Reset the mock.
-  mocked_delegate_ =
-      OCMStrictProtocolMock(@protocol(CRWWebViewHandlerDelegate));
-  OCMStub([mocked_delegate_ webStateImplForWebViewHandler:[OCMArg any]])
-      .andReturn((web::WebStateImpl*)nullptr);
-
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
-
-  [handler close];
-
-  EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
-  EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
-
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
 // Tests that no metrics are recoded for an URL that doesn't contain text
 // fragments.
-TEST_F(CRWTextFragmentsHandlerTest, NoMetricsRecordedIfNoFragmentPresent) {
+TEST_F(TextFragmentsManagerImplTest, NoMetricsRecordedIfNoFragmentPresent) {
   base::HistogramTester histogram_tester;
 
   // Set a URL without text fragments.
   SetLastURL(GURL("https://www.chromium.org/"));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   // Make sure no metrics were logged.
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
@@ -355,7 +284,7 @@ TEST_F(CRWTextFragmentsHandlerTest, NoMetricsRecordedIfNoFragmentPresent) {
 
 // Tests that no metrics are recoded for an URL that doesn't contain text
 // fragments, even if it contains a fragment id
-TEST_F(CRWTextFragmentsHandlerTest,
+TEST_F(TextFragmentsManagerImplTest,
        NoMetricsRecordedIfNoFragmentPresentWithFragmentId) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -363,10 +292,9 @@ TEST_F(CRWTextFragmentsHandlerTest,
   // Set a URL without text fragments, but with an id fragment.
   SetLastURL(GURL("https://www.chromium.org/#FragmentID"));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   // Make sure no metrics were logged.
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
@@ -377,15 +305,14 @@ TEST_F(CRWTextFragmentsHandlerTest,
 
 // Tests that the LinkSource metric is recorded properly when the link comes
 // from a search engine.
-TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricSearchEngine) {
+TEST_F(TextFragmentsManagerImplTest, LinkSourceMetricSearchEngine) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetLastURL(GURL(kValidFragmentsURL));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 1,
                                       1);
@@ -393,15 +320,14 @@ TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricSearchEngine) {
 
 // Tests that the LinkSource metric is recorded properly when the link doesn't
 // come from a search engine.
-TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricNonSearchEngine) {
+TEST_F(TextFragmentsManagerImplTest, LinkSourceMetricNonSearchEngine) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetLastURL(GURL(kValidFragmentsURL));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetNonSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetNonSearchEngineReferrer());
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
                                       1);
@@ -409,44 +335,42 @@ TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricNonSearchEngine) {
 
 // Tests that the SelectorCount metric is recorded properly when a single
 // selector is present.
-TEST_F(CRWTextFragmentsHandlerTest, SelectorCountMetricSingleSelector) {
+TEST_F(TextFragmentsManagerImplTest, SelectorCountMetricSingleSelector) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kSingleFragmentURL));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 1, 1);
 }
 
 // Tests that the SelectorCount metric is recorded properly when two selectors
 // are present.
-TEST_F(CRWTextFragmentsHandlerTest, SelectorCountMetricTwoSelectors) {
+TEST_F(TextFragmentsManagerImplTest, SelectorCountMetricTwoSelectors) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kTwoFragmentsURL));
 
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
   histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 2, 1);
 }
 
 // Tests that the AmbiguousMatch and MatchRate success metrics are recorded
 // properly in a variety of cases.
-TEST_F(CRWTextFragmentsHandlerTest,
+TEST_F(TextFragmentsManagerImplTest,
        DidReceiveJavaScriptResponseSuccessMetrics) {
   SetLastURL(GURL(kTwoFragmentsURL));
-  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
 
-  [handler processTextFragmentsWithContext:&context_
-                                  referrer:GetSearchEngineReferrer()];
+  manager->ProcessTextFragments(&context_, GetSearchEngineReferrer());
 
-  web::WebState::ScriptCommandCallback parse_function =
-      web_state_->last_callback();
+  auto maybe_callback = web_state_->GetLastAddedCallback();
+  ASSERT_TRUE(maybe_callback);
+  web::WebState::ScriptCommandCallback parse_function = maybe_callback.value();
   auto fake_main_frame = web::FakeWebFrame::Create(
       /*frame_id=*/"", /*is_main_frame=*/true, GURL());
 
@@ -551,3 +475,5 @@ TEST_F(CRWTextFragmentsHandlerTest,
     ValidateNoLinkOpenedUkm(ukm_recorder);
   }
 }
+
+}  // namespace web

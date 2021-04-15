@@ -127,6 +127,9 @@ class FakeWebState : public WebState {
       bool for_main_frame,
       base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback);
   std::u16string GetLastExecutedJavascript() const;
+  // Returns a copy of the last added callback, if one has been added.
+  base::Optional<ScriptCommandCallback> GetLastAddedCallback() const;
+  std::string GetLastCommandPrefix() const;
   NSData* GetLastLoadedData() const;
   bool IsClosed() const;
 
@@ -164,6 +167,8 @@ class FakeWebState : public WebState {
   CRWWebViewProxyType web_view_proxy_;
   NSData* last_loaded_data_;
   base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
+  base::Optional<ScriptCommandCallback> last_added_callback_;
+  std::string last_command_prefix_;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true>::Unchecked observers_;

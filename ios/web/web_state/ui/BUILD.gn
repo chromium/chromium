@@ -37,6 +37,7 @@ source_set("ui") {
     "//ios/web/public/webui",
     "//ios/web/security",
     "//ios/web/session",
+    "//ios/web/text_fragments",
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",

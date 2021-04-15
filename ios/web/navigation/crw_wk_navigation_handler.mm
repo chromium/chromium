@@ -37,7 +37,7 @@
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
-#import "ios/web/text_fragments/crw_text_fragments_handler.h"
+#import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
 #include "ios/web/web_view/content_type_util.h"
@@ -114,7 +114,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 // Returns the js injector from self.delegate.
 @property(nonatomic, readonly, weak) CRWJSInjector* JSInjector;
 // Will handle highlighting text fragments on the page when necessary.
-@property(nonatomic, strong) CRWTextFragmentsHandler* textFragmentsHandler;
+@property(nonatomic, readonly)
+    web::TextFragmentsManagerImpl* textFragmentsHandler;
 
 @end
 
@@ -132,9 +133,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
             kMaxCertErrorsCount);
 
     _delegate = delegate;
-
-    _textFragmentsHandler =
-        [[CRWTextFragmentsHandler alloc] initWithDelegate:_delegate];
   }
   return self;
 }
@@ -1154,9 +1152,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     }
   }
 
-  [self.textFragmentsHandler
-      processTextFragmentsWithContext:context
-                             referrer:self.currentReferrer];
+  auto* handler = self.textFragmentsHandler;
+  DCHECK(handler);
+  handler->ProcessTextFragments(context, self.currentReferrer);
 
   [self.navigationStates setState:web::WKNavigationState::FINISHED
                     forNavigation:navigation];
@@ -2532,6 +2530,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           context->GetUrl());
     }
   }
+}
+
+- (web::TextFragmentsManagerImpl*)textFragmentsHandler {
+  return web::TextFragmentsManagerImpl::FromWebState(self.webStateImpl);
 }
 
 @end
