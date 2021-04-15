@@ -100,10 +100,8 @@ TEST(JSONReaderTest, EmbeddedComments) {
 TEST(JSONReaderTest, Ints) {
   Optional<Value> root = JSONReader::Read("43");
   ASSERT_TRUE(root);
-  EXPECT_TRUE(root->is_int());
-  int int_val = 0;
-  EXPECT_TRUE(root->GetAsInteger(&int_val));
-  EXPECT_EQ(43, int_val);
+  ASSERT_TRUE(root->is_int());
+  EXPECT_EQ(43, root->GetInt());
 }
 
 TEST(JSONReaderTest, NonDecimalNumbers) {
@@ -118,10 +116,8 @@ TEST(JSONReaderTest, NumberZero) {
   // clause).
   Optional<Value> root = JSONReader::Read("0");
   ASSERT_TRUE(root);
-  EXPECT_TRUE(root->is_int());
-  int int_val = 1;
-  EXPECT_TRUE(root->GetAsInteger(&int_val));
-  EXPECT_EQ(0, int_val);
+  ASSERT_TRUE(root->is_int());
+  EXPECT_EQ(0, root->GetInt());
 }
 
 TEST(JSONReaderTest, LargeIntPromotion) {
