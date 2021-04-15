@@ -210,9 +210,8 @@ void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
   if (core_.refresh_scheduler()) {
     const base::Value* policy_value =
         store_->policy_map().GetValue(key::kPolicyRefreshRate);
-    int delay = 0;
-    if (policy_value && policy_value->GetAsInteger(&delay))
-      core_.refresh_scheduler()->SetDesiredRefreshDelay(delay);
+    if (policy_value && policy_value->is_int())
+      core_.refresh_scheduler()->SetDesiredRefreshDelay(policy_value->GetInt());
   }
 }
 
