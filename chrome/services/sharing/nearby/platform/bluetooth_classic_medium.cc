@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
@@ -15,10 +16,25 @@ namespace chrome {
 
 namespace {
 
+// TODO(crbug.com/1191815): Remove this ASAP. This is a copy of the source of
+// truth constant in //c/b/nearby_sharing/common/nearby_share_switches.cc,
+// necessitated by //chrome/services/ being disallowed to depend on
+// //chrome/browser. We could migrate the source kNearbyShareVerboseLogging
+// constant to a more common location, but this runtime flag is only needed
+// temporarily until Tast logging issues (crbug.com/1197197) are resolved.
+const char kNearbyShareVerboseLogging[] = "nearby-share-verbose-logging";
+
 // Duration of time after which inactive Bluetooth devices may be removed from
 // the discovered devices map.
 const base::TimeDelta kStaleBluetoothDeviceTimeout =
     base::TimeDelta::FromSeconds(20);
+
+// TODO(crbug.com/1197197): Remove this function. See also
+// kNearbyShareVerboseLogging above.
+bool IsVerboseLoggingEnabled() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kNearbyShareVerboseLogging);
+}
 
 void LogStartDiscoveryResult(bool success) {
   base::UmaHistogramBoolean(
@@ -183,6 +199,11 @@ BluetoothDevice* BluetoothClassicMedium::GetRemoteDevice(
 }
 
 void BluetoothClassicMedium::PresentChanged(bool present) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  if (IsVerboseLoggingEnabled()) {
+    LOG(WARNING) << __func__ << ": " << present;
+  }
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |present| has become unexpectedly false. Need to ask
   // Nearby team.
@@ -191,6 +212,11 @@ void BluetoothClassicMedium::PresentChanged(bool present) {
 }
 
 void BluetoothClassicMedium::PoweredChanged(bool powered) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  if (IsVerboseLoggingEnabled()) {
+    LOG(WARNING) << __func__ << ": " << powered;
+  }
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |powered| has become unexpectedly false. Need to ask
   // Nearby team.
@@ -199,16 +225,27 @@ void BluetoothClassicMedium::PoweredChanged(bool powered) {
 }
 
 void BluetoothClassicMedium::DiscoverableChanged(bool discoverable) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  if (IsVerboseLoggingEnabled()) {
+    LOG(WARNING) << __func__ << ": " << discoverable;
+  }
+
   // Do nothing. BluetoothClassicMedium is not responsible for managing
   // discoverable state.
 }
 
 void BluetoothClassicMedium::DiscoveringChanged(bool discovering) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  if (IsVerboseLoggingEnabled()) {
+    LOG(WARNING) << __func__ << ": " << discovering;
+  }
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |discovering| has become unexpectedly false. Need to ask
   // Nearby team.
-  if (!discovering)
+  if (!discovering) {
     StopDiscovery();
+  }
 }
 
 void BluetoothClassicMedium::DeviceAdded(
@@ -218,6 +255,15 @@ void BluetoothClassicMedium::DeviceAdded(
     return;
   }
 
+  if (IsVerboseLoggingEnabled()) {
+    // TODO(crbug.com/1197197): Convert these to VLOG(1).
+    // TODO(crbug.com/1191815): Remove these logs. They are temporary logs used
+    // to debug this issue.
+    LOG(WARNING) << "Device added or changed. Address: " << device->address
+                 << ", Name: '"
+                 << (device->name ? "<None>" : device->name_for_display) << "'";
+  }
+
   // Best-effort attempt to filter out BLE advertisements. BLE advertisements
   // represented as "devices" may have their |name| set if the system has
   // created a GATT connection to the advertiser, but all BT Classic devices
@@ -225,8 +271,6 @@ void BluetoothClassicMedium::DeviceAdded(
   // for separate discovery of BLE advertisements (BlePeripherals).
   if (!device->name)
     return;
-
-  VLOG(1) << "Discovered Bluetooth device: " << device->name_for_display;
 
   const std::string& address = device->address;
   if (base::Contains(discovered_bluetooth_devices_map_, address)) {
