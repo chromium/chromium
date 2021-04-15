@@ -482,14 +482,15 @@ void CanvasRenderingContext2DState::ClearResolvedFilter() const {
   resolved_filter_.reset();
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::EmptyDrawLooper() const {
+sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::EmptyDrawLooper() const {
   if (!empty_draw_looper_)
     empty_draw_looper_ = DrawLooperBuilder().DetachDrawLooper();
 
-  return empty_draw_looper_.get();
+  return empty_draw_looper_;
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::ShadowOnlyDrawLooper() const {
+sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
+    const {
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, clampTo<float>(shadow_blur_),
@@ -498,11 +499,11 @@ SkDrawLooper* CanvasRenderingContext2DState::ShadowOnlyDrawLooper() const {
                                   DrawLooperBuilder::kShadowRespectsAlpha);
     shadow_only_draw_looper_ = draw_looper_builder.DetachDrawLooper();
   }
-  return shadow_only_draw_looper_.get();
+  return shadow_only_draw_looper_;
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper()
-    const {
+sk_sp<SkDrawLooper>&
+CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper() const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, clampTo<float>(shadow_blur_),
@@ -512,10 +513,10 @@ SkDrawLooper* CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper()
     draw_looper_builder.AddUnmodifiedContent();
     shadow_and_foreground_draw_looper_ = draw_looper_builder.DetachDrawLooper();
   }
-  return shadow_and_foreground_draw_looper_.get();
+  return shadow_and_foreground_draw_looper_;
 }
 
-sk_sp<PaintFilter> CanvasRenderingContext2DState::ShadowOnlyImageFilter()
+sk_sp<PaintFilter>& CanvasRenderingContext2DState::ShadowOnlyImageFilter()
     const {
   using ShadowMode = DropShadowPaintFilter::ShadowMode;
   if (!shadow_only_image_filter_) {
@@ -527,7 +528,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::ShadowOnlyImageFilter()
   return shadow_only_image_filter_;
 }
 
-sk_sp<PaintFilter>
+sk_sp<PaintFilter>&
 CanvasRenderingContext2DState::ShadowAndForegroundImageFilter() const {
   using ShadowMode = DropShadowPaintFilter::ShadowMode;
   if (!shadow_and_foreground_image_filter_) {
@@ -682,7 +683,7 @@ const PaintFlags* CanvasRenderingContext2DState::GetFlags(
   }
 
   if (!ShouldDrawShadows() && shadow_mode == kDrawShadowOnly) {
-    flags->setLooper(sk_ref_sp(EmptyDrawLooper()));  // draw nothing
+    flags->setLooper(EmptyDrawLooper());  // draw nothing
     flags->setImageFilter(nullptr);
     return flags;
   }
@@ -693,7 +694,7 @@ const PaintFlags* CanvasRenderingContext2DState::GetFlags(
       flags->setImageFilter(ShadowOnlyImageFilter());
       return flags;
     }
-    flags->setLooper(sk_ref_sp(ShadowOnlyDrawLooper()));
+    flags->setLooper(ShadowOnlyDrawLooper());
     flags->setImageFilter(nullptr);
     return flags;
   }
@@ -704,7 +705,7 @@ const PaintFlags* CanvasRenderingContext2DState::GetFlags(
     flags->setImageFilter(ShadowAndForegroundImageFilter());
     return flags;
   }
-  flags->setLooper(sk_ref_sp(ShadowAndForegroundDrawLooper()));
+  flags->setLooper(ShadowAndForegroundDrawLooper());
   flags->setImageFilter(nullptr);
   return flags;
 }

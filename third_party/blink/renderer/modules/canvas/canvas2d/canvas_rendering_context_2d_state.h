@@ -232,11 +232,11 @@ class CanvasRenderingContext2DState final
   void UpdateFilterQuality() const;
   void UpdateFilterQualityWithSkFilterQuality(const SkFilterQuality&) const;
   void ShadowParameterChanged();
-  SkDrawLooper* EmptyDrawLooper() const;
-  SkDrawLooper* ShadowOnlyDrawLooper() const;
-  SkDrawLooper* ShadowAndForegroundDrawLooper() const;
-  sk_sp<PaintFilter> ShadowOnlyImageFilter() const;
-  sk_sp<PaintFilter> ShadowAndForegroundImageFilter() const;
+  sk_sp<SkDrawLooper>& EmptyDrawLooper() const;
+  sk_sp<SkDrawLooper>& ShadowOnlyDrawLooper() const;
+  sk_sp<SkDrawLooper>& ShadowAndForegroundDrawLooper() const;
+  sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
+  sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
   unsigned unrealized_save_count_;
 
