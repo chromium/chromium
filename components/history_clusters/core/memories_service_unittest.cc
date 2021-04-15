@@ -129,30 +129,35 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        ASSERT_EQ(memories.size(), 2u);
-        EXPECT_FALSE(memories[0]->id.is_empty());
-        ASSERT_EQ(memories[0]->top_visits.size(), 2u);
-        EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
-        EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
-        EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
-        EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[0]->page_title),
-                  "Google title");
-        EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
-        EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
-        EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
-        EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[1]->page_title),
-                  "Github title");
-        ASSERT_EQ(memories[1]->top_visits.size(), 1u);
-        EXPECT_FALSE(memories[1]->id.is_empty());
-        EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
-        EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
-        EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
-        EXPECT_EQ(base::UTF16ToUTF8(memories[1]->top_visits[0]->page_title),
-                  "Github title");
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            ASSERT_EQ(memories.size(), 2u);
+            EXPECT_FALSE(memories[0]->id.is_empty());
+            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
+            EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
+            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
+            EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
+            EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[0]->page_title),
+                      "Google title");
+            EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
+            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
+            EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
+            EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[1]->page_title),
+                      "Github title");
+            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
+            EXPECT_FALSE(memories[1]->id.is_empty());
+            EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
+            EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
+            EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
+            EXPECT_EQ(base::UTF16ToUTF8(memories[1]->top_visits[0]->page_title),
+                      "Github title");
+            run_loop_quit_.Run();
+          }));
 
   // Verify the serialized request.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
@@ -224,12 +229,18 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
       history_clusters::kMemories,
       {{history_clusters::kRemoteModelEndpointParam, endpoint}});
 
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            EXPECT_TRUE(memories.empty());
+            run_loop_quit_.Run();
+          }));
 
   // Verify no request is made.
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
@@ -249,11 +260,16 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the empty response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the empty response.
+            EXPECT_TRUE(memories.empty());
+            run_loop_quit_.Run();
+          }));
 
   // Verify no request is made.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -274,11 +290,16 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            EXPECT_TRUE(memories.empty());
+            run_loop_quit_.Run();
+          }));
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
@@ -303,11 +324,16 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            EXPECT_TRUE(memories.empty());
+            run_loop_quit_.Run();
+          }));
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
@@ -332,11 +358,16 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        EXPECT_TRUE(memories.empty());
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            EXPECT_TRUE(memories.empty());
+            run_loop_quit_.Run();
+          }));
 
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
@@ -361,18 +392,26 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify not reached.
-        EXPECT_TRUE(false);
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify not reached.
+            EXPECT_TRUE(false);
+          }));
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
-      "", base::BindLambdaForTesting([&](history_clusters::Memories memories) {
-        // Verify the parsed response.
-        EXPECT_EQ(memories.size(), 2u);
-        run_loop_quit_.Run();
-      }));
+      history_clusters::mojom::QueryParams::New(),
+      base::BindLambdaForTesting(
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+            // Verify that the continuation query params is nullptr.
+            ASSERT_FALSE(!!continuation_query_params);
+            // Verify the parsed response.
+            EXPECT_EQ(memories.size(), 2u);
+            run_loop_quit_.Run();
+          }));
 
   // Verify there's a single request to the endpoint.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));

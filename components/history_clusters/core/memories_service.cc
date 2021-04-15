@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/memories_remote_model_helper.h"
 
 namespace history_clusters {
 
@@ -51,9 +52,10 @@ void MemoriesService::CompleteVisitIfReady(int64_t nav_id) {
   }
 }
 
-void MemoriesService::QueryMemories(const std::string& query,
-                                    MemoriesCallback callback) {
-  remote_model_helper_->GetMemories(visits_, std::move(callback));
+void MemoriesService::QueryMemories(mojom::QueryParamsPtr query_params,
+                                    QueryMemoriesCallback callback) {
+  remote_model_helper_->GetMemories(
+      visits_, base::BindOnce(std::move(callback), nullptr));
 }
 
 }  // namespace history_clusters

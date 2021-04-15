@@ -18,8 +18,11 @@ struct MemoriesResult {
   // Optional externally hosted thumbnail representing the Memories in the
   // result set.
   url.mojom.Url? thumbnail_url;
-  // The Memories in the result set.
+  // The Memories in the result set in reverse chronological order.
   array<history_clusters.mojom.Memory> memories;
+  // Optional continuation query params created by the browser to be used in the
+  // follow-up request to load older Memories.
+  QueryParams? continuation_query_params;
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -27,9 +30,13 @@ interface PageHandler {
   // The MemoriesBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
 
-  // Return memories related to |query| created from the user visit history.
-  // Note: Returns mock memories in non-official builds.
-  QueryMemories(string query) => (MemoriesResult result);
+  // Returns the freshest Memories created from the user visit history, in
+  // reverse chronological order, based on the parameters in |query_params|
+  // along with continuation query params meant to be used in the follow-up
+  // request to load older Memories.
+  // Note: Returns mock Memories in non-chrome-branded builds if no remote
+  // endpoint is specified.
+  QueryMemories(QueryParams query_params) => (MemoriesResult result);
 };
 
 // WebUI-side handler for requests from the browser.

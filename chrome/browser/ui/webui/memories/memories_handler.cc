@@ -21,8 +21,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -70,52 +68,82 @@ void MemoriesHandler::SetPage(
   page_.Bind(std::move(pending_page));
 }
 
-void MemoriesHandler::QueryMemories(const std::string& query,
-                                    QueryMemoriesCallback callback) {
+void MemoriesHandler::QueryMemories(
+    history_clusters::mojom::QueryParamsPtr query_params,
+    QueryMemoriesCallback callback) {
+  auto result_mojom = history_clusters::mojom::MemoriesResult::New();
+  result_mojom->title = query_params->query;
+  result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
   auto result_callback = base::BindOnce(
       &MemoriesHandler::OnMemoriesQueryResults, weak_ptr_factory_.GetWeakPtr(),
-      query, std::move(callback));
+      std::move(callback), std::move(result_mojom));
   if (history_clusters::RemoteModelEndpoint().is_valid()) {
     auto* memory_service =
         MemoriesServiceFactory::GetForBrowserContext(profile_);
-    memory_service->QueryMemories(query, std::move(result_callback));
+    memory_service->QueryMemories(std::move(query_params),
+                                  std::move(result_callback));
   } else {
 #if defined(CHROME_BRANDED)
     std::move(callback).Run(history_clusters::mojom::MemoriesResult::New());
 #else
-    history::HistoryService* history_service =
-        HistoryServiceFactory::GetForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    history::QueryOptions query_options;
-    query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-    query_options.SetRecentDayRange(90);
-    history_service->QueryHistory(
-        base::UTF8ToUTF16(query), query_options,
-        base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(result_callback)),
-        &history_task_tracker_);
+    QueryHistoryService(std::move(query_params), {},
+                        std::move(result_callback));
 #endif
   }
 }
 
 void MemoriesHandler::OnMemoriesQueryResults(
-    const std::string& query,
     QueryMemoriesCallback callback,
+    history_clusters::mojom::MemoriesResultPtr result_mojom,
+    history_clusters::mojom::QueryParamsPtr continuation_query_params,
     std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms) {
-  auto result_mojom = history_clusters::mojom::MemoriesResult::New();
-  result_mojom->title = base::UTF8ToUTF16(query);
-  result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
+  result_mojom->continuation_query_params =
+      std::move(continuation_query_params);
   result_mojom->memories = std::move(memory_mojoms);
   std::move(callback).Run(std::move(result_mojom));
 }
 
 #if !defined(CHROME_BRANDED)
+void MemoriesHandler::QueryHistoryService(
+    history_clusters::mojom::QueryParamsPtr query_params,
+    std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+    MemoriesQueryResultsCallback callback) {
+  const size_t max_count =
+      query_params->max_count ? query_params->max_count : -1;
+  if (memory_mojoms.size() == max_count) {
+    // Enough Memories have been created. Run the callback with those Memories
+    // along with the continuation query params.
+    std::move(callback).Run(std::move(query_params), std::move(memory_mojoms));
+    return;
+  }
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  const std::u16string query = query_params->query;
+  history::QueryOptions query_options;
+  query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+  query_options.end_time = query_params->recency_threshold;
+  // Make sure to look back far enough to find some visits.
+  query_options.begin_time =
+      query_options.end_time.LocalMidnight() - base::TimeDelta::FromDays(14);
+  history_service->QueryHistory(
+      query, query_options,
+      base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(query_params),
+                     std::move(memory_mojoms), std::move(callback)),
+      &history_task_tracker_);
+}
+
 void MemoriesHandler::OnHistoryQueryResults(
+    history_clusters::mojom::QueryParamsPtr query_params,
+    std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
     MemoriesQueryResultsCallback callback,
     history::QueryResults results) {
   if (results.empty()) {
-    std::move(callback).Run({});
+    // No more results to create Memories from. Run the callback with the
+    // Memories created so far along with the continuation query params.
+    std::move(callback).Run(std::move(query_params), std::move(memory_mojoms));
     return;
   }
 
@@ -129,11 +157,20 @@ void MemoriesHandler::OnHistoryQueryResults(
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
+  // Keep track of the visited URLs and their titles in this memory.
+  std::set<std::pair<GURL, std::u16string>> visited_urls;
+
   for (const auto& result : results) {
-    // Last visit time of the Memory is that of the most recently visited URL.
+    // Last visit time of the Memory is the visit time of most recently visited
+    // URL in the Memory. Collect all the visits in that day into the Memory.
     if (memory_mojom->last_visit_time.is_null()) {
       memory_mojom->last_visit_time = result.visit_time();
+    } else if (memory_mojom->last_visit_time.LocalMidnight() >
+               result.visit_time()) {
+      break;
     }
+
+    visited_urls.insert(std::make_pair(result.url(), result.title()));
 
     // Check if the URL is a valid search URL.
     std::u16string search_terms;
@@ -220,10 +257,8 @@ void MemoriesHandler::OnHistoryQueryResults(
         content::WebContents* web_contents =
             tab_strip_model->GetWebContentsAt(index);
         const GURL& url = web_contents->GetLastCommittedURL();
-        auto matching_result_it = std::find_if(
-            results.begin(), results.end(),
-            [&url](const auto& result) { return result.url() == url; });
-        if (matching_result_it != results.end()) {
+        if (base::Contains(visited_urls, url,
+                           [](const auto& pair) { return pair.first; })) {
           tab_group_has_url_in_memory = true;
           break;
         }
@@ -253,22 +288,26 @@ void MemoriesHandler::OnHistoryQueryResults(
     std::vector<bookmarks::UrlAndTitle> bookmarks;
     model->GetBookmarks(&bookmarks);
     for (const auto& bookmark : bookmarks) {
-      auto matching_result_it = std::find_if(
-          results.begin(), results.end(), [&bookmark](const auto& result) {
-            return result.url() == bookmark.url;
-          });
-      if (matching_result_it != results.end()) {
+      auto matching_visited_url_it = std::find_if(
+          visited_urls.begin(), visited_urls.end(),
+          [&bookmark](const auto& pair) { return pair.first == bookmark.url; });
+      if (matching_visited_url_it != visited_urls.end()) {
         auto webpage = history_clusters::mojom::WebPage::New();
-        webpage->url = matching_result_it->url();
-        webpage->title = matching_result_it->title();
+        webpage->url = matching_visited_url_it->first;
+        webpage->title = matching_visited_url_it->second;
         webpage->thumbnail_url = GetRandomlySizedThumbnailUrl();
         memory_mojom->bookmarks.push_back(std::move(webpage));
       }
     }
   }
 
-  std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms;
+  // Continue to extract Memories. Set the recency threshold to 11:59:59pm of
+  // the day before the Memory's |last_visit_time|.
+  query_params->recency_threshold =
+      memory_mojom->last_visit_time.LocalMidnight() -
+      base::TimeDelta::FromSeconds(1);
   memory_mojoms.push_back(std::move(memory_mojom));
-  std::move(callback).Run(std::move(memory_mojoms));
+  QueryHistoryService(std::move(query_params), std::move(memory_mojoms),
+                      std::move(callback));
 }
 #endif

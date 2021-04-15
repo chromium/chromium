@@ -47,20 +47,35 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler {
   // history_clusters::mojom::PageHandler:
   void SetPage(
       mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
-  void QueryMemories(const std::string& query,
+  void QueryMemories(history_clusters::mojom::QueryParamsPtr query_params,
                      QueryMemoriesCallback callback) override;
 
  private:
+  // Called with |memory_mojoms| and |continuation_query_params| when the
+  // results of querying the MemoriesService are available. The latter is
+  // created in anticipation of a continuation query. Subsequently, the bound
+  // partially constructed |result_mojom| parameter is supplied with
+  // |memory_mojoms| and |continuation_query_params| and sent to the JS via
+  // |callback|.
   void OnMemoriesQueryResults(
-      const std::string& query,
       QueryMemoriesCallback callback,
+      history_clusters::mojom::MemoriesResultPtr result_mojom,
+      history_clusters::mojom::QueryParamsPtr continuation_query_params,
       std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms);
 
 #if !defined(CHROME_BRANDED)
   using MemoriesQueryResultsCallback =
-      base::OnceCallback<void(std::vector<history_clusters::mojom::MemoryPtr>)>;
-  void OnHistoryQueryResults(MemoriesQueryResultsCallback callback,
-                             history::QueryResults results);
+      base::OnceCallback<void(history_clusters::mojom::QueryParamsPtr,
+                              std::vector<history_clusters::mojom::MemoryPtr>)>;
+  void QueryHistoryService(
+      history_clusters::mojom::QueryParamsPtr query_params,
+      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+      MemoriesQueryResultsCallback callback);
+  void OnHistoryQueryResults(
+      history_clusters::mojom::QueryParamsPtr query_params,
+      std::vector<history_clusters::mojom::MemoryPtr> memory_mojoms,
+      MemoriesQueryResultsCallback callback,
+      history::QueryResults results);
   base::CancelableTaskTracker history_task_tracker_;
 #endif
 

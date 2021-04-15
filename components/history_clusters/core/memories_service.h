@@ -13,12 +13,14 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history_clusters/core/memories_remote_model_helper.h"
+#include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/visit_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace history_clusters {
+
+class MemoriesRemoteModelHelper;
 
 // This Service is the API for UIs to fetch Chrome Memories.
 class MemoriesService : public KeyedService {
@@ -46,9 +48,18 @@ class MemoriesService : public KeyedService {
   // visit references retrieved prior will no longer be valid.
   void CompleteVisitIfReady(int64_t nav_id);
 
-  // Asks |remote_model_helper_| to construct memories from |visits_|.
-  // Note: |query| is ignored at the moment.
-  void QueryMemories(const std::string& query, MemoriesCallback callback);
+  // Returns the freshest Memories created from the user visit history, in
+  // reverse chronological order, based on the parameters in |query_params|
+  // along with continuation query params meant to be used in the follow-up
+  // request to load older Memories.
+  // Note: At the moment, this method asks |remote_model_helper_| to construct
+  // Memories from |visits_|. It ignores |query_params| and returns nullptr as
+  // continuation query params in the callback.
+  using QueryMemoriesCallback =
+      base::OnceCallback<void(mojom::QueryParamsPtr,
+                              std::vector<mojom::MemoryPtr>)>;
+  void QueryMemories(mojom::QueryParamsPtr query_params,
+                     QueryMemoriesCallback callback);
 
  private:
   friend class MemoriesServiceTestApi;

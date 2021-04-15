@@ -48,6 +48,10 @@
     margin: var(--memory-card-padding) auto;
     width: var(--memory-card-width);
   }
+
+  memory-card + memory-card {
+    margin-top: var(--memory-card-padding);
+  }
 </style>
 <memories-router query="{{query_}}"></memories-router>
 <cr-toolbar page-name="Memories" clear-label="$i18n{clearLabel}"
@@ -69,3 +73,6 @@
     </template>
   </div>
 </div>
+<iron-scroll-threshold id="scroll-threshold" scroll-target="container"
+    on-lower-threshold="onScrolledToBottom_">
+</iron-scroll-threshold>

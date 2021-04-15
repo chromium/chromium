@@ -23,6 +23,8 @@ js_library("app") {
     ":page_thumbnail",
     ":router",
     "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/iron-list",
+    "//third_party/polymer/v3_0/components-chromium/iron-scroll-threshold",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",

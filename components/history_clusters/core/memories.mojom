@@ -84,3 +84,20 @@ struct Memory {
   // visits. Used to rank Memories.
   double engagement_score;
 };
+
+// Parameters used to query the service for Memories in reverse chronological
+// order.
+struct QueryParams {
+  // The query string the Memories are matched against. The default value of
+  // empty string means to return every Memory that matches the other criteria.
+  mojo_base.mojom.String16 query;
+
+  // The time threshold (exclusive) for how recent the returned Memories can be.
+  // The sensible default value for this is the present time which should be
+  // explicitly set to base::Time::Now().
+  mojo_base.mojom.Time recency_threshold;
+
+  // The maximum number of Memories to return. The default value of 0 means to
+  // return every Memory that matches the other criteria.
+  uint32 max_count;
+};

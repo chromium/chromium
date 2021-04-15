@@ -8,6 +8,8 @@ import './router.js';
 import './shared_vars.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
 import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -20,6 +22,9 @@ import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
  * @fileoverview This file provides the root custom element for the Memories
  * landing page.
  */
+
+/** @type {number} */
+const RESULTS_PER_PAGE = 5;
 
 /** @polymer */
 class MemoriesAppElement extends MojomConversionMixinBase {
@@ -38,10 +43,12 @@ class MemoriesAppElement extends MojomConversionMixinBase {
       //========================================================================
 
       /**
-       * The currently displayed Memories returned by the browser in response to
-       * a request for Memories related to a given query or those within a given
-       * timespan.
-       * @private {!MemoriesResult}
+       * Contains 1) the Memories returned by the browser in response to a
+       * request for the freshest Memories related to a given query until a
+       * given time threshold and 2) the optional continuation query parameters
+       * returned alongside the Memories to be used in the follow-up request to
+       * load older Memories
+       * @private {MemoriesResult}
        */
       result_: Object,
 
@@ -77,6 +84,28 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     // Update the query based on the value of the search field, if necessary.
     if (e.detail !== this.query_) {
       this.query_ = e.detail;
+    }
+  }
+
+  /**
+   * Called when the scrollable area has been scrolled nearly to the bottom.
+   * @private
+   */
+  onScrolledToBottom_() {
+    /** @type {IronScrollThresholdElement} */ (this.$['scroll-threshold'])
+        .clearTriggers();
+
+    if (this.result_ && this.result_.continuationQueryParams) {
+      this.pageHandler_.queryMemories(this.result_.continuationQueryParams)
+          .then(({result}) => {
+            // Do not replace the existing result. |result| contains a partial
+            // set of memories that should be appended to the existing ones.
+            this.push('result_.memories', ...result.memories);
+            this.result_.continuationQueryParams =
+                result.continuationQueryParams;
+          });
+      // Invalidate the existing continuation query params.
+      this.result_.continuationQueryParams = null;
     }
   }
 
@@ -120,10 +149,22 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     if (searchField.getValue() !== this.query_) {
       searchField.setValue(this.query_);
     }
+
     this.onBrowserIdle_().then(() => {
-      this.pageHandler_.queryMemories(this.query_.trim()).then(({result}) => {
+      // Request up to |RESULTS_PER_PAGE| of the freshest Memories until now.
+      const queryParams = {
+        query: this.mojoString16(this.query_.trim()),
+        recencyThreshold: this.mojoTime(Date.now()),
+        maxCount: RESULTS_PER_PAGE,
+      };
+      this.pageHandler_.queryMemories(queryParams).then(({result}) => {
+        this.$.container.scrollTop = 0;
         this.result_ = result;
       });
+      // Invalidate the existing continuation query params, if any.
+      if (this.result_) {
+        this.result_.continuationQueryParams = null;
+      }
     });
   }
 }
