@@ -641,7 +641,6 @@
         <data android:scheme="googlechrome"/>
         <data android:scheme="http"/>
         <data android:scheme="https"/>
-        <data android:scheme="javascript"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
@@ -713,7 +712,6 @@
         <data android:scheme="googlechrome"/>
         <data android:scheme="http"/>
         <data android:scheme="https"/>
-        <data android:scheme="javascript"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>

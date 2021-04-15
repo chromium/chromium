@@ -201,7 +201,6 @@ by a child template that "extends" this file.
                 <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:scheme="about" />
-                <data android:scheme="javascript" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 {% endblock %}
             </intent-filter>
