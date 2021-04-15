@@ -21,6 +21,7 @@ BaseWebUIHandler::~BaseWebUIHandler() = default;
 void BaseWebUIHandler::InitializeBase() {
   page_is_ready_ = true;
   Initialize();
+  AllowJavascript();
 }
 
 void BaseWebUIHandler::GetLocalizedStrings(base::DictionaryValue* dict) {
