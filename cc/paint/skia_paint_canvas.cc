@@ -350,6 +350,10 @@ SkMatrix SkiaPaintCanvas::getTotalMatrix() const {
   return canvas_->getTotalMatrix();
 }
 
+SkM44 SkiaPaintCanvas::getLocalToDevice() const {
+  return canvas_->getLocalToDevice();
+}
+
 void SkiaPaintCanvas::Annotate(AnnotationType type,
                                const SkRect& rect,
                                sk_sp<SkData> data) {

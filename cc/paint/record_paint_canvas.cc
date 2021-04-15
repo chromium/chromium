@@ -314,6 +314,10 @@ SkMatrix RecordPaintCanvas::getTotalMatrix() const {
   return GetCanvas()->getTotalMatrix();
 }
 
+SkM44 RecordPaintCanvas::getLocalToDevice() const {
+  return GetCanvas()->getLocalToDevice();
+}
+
 void RecordPaintCanvas::Annotate(AnnotationType type,
                                  const SkRect& rect,
                                  sk_sp<SkData> data) {

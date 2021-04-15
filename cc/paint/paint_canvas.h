@@ -188,6 +188,7 @@ class CC_PAINT_EXPORT PaintCanvas {
 
   virtual bool isClipEmpty() const = 0;
   virtual SkMatrix getTotalMatrix() const = 0;
+  virtual SkM44 getLocalToDevice() const = 0;
 
   // Used for printing
   enum class AnnotationType {

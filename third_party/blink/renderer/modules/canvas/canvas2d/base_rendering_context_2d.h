@@ -605,8 +605,8 @@ void BaseRenderingContext2D::CompositedDraw(
          canvas_filter ||
          (GetState().ShouldDrawShadows() &&
           ShouldUseDropShadowPaintFilter(paint_type, image_type)));
-  SkMatrix ctm = c->getTotalMatrix();
-  c->setMatrix(SkMatrix::I());
+  SkM44 ctm = c->getLocalToDevice();
+  c->setMatrix(SkM44());
   PaintFlags composite_flags;
   composite_flags.setBlendMode(GetState().GlobalComposite());
   if (GetState().ShouldDrawShadows()) {

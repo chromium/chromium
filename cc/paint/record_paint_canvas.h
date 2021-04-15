@@ -108,6 +108,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 
   bool isClipEmpty() const override;
   SkMatrix getTotalMatrix() const override;
+  SkM44 getLocalToDevice() const override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,

@@ -130,6 +130,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
 
   bool isClipEmpty() const override;
   SkMatrix getTotalMatrix() const override;
+  SkM44 getLocalToDevice() const override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,

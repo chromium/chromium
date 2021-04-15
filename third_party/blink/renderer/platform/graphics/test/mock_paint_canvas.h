@@ -104,6 +104,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
   MOCK_CONST_METHOD0(isClipEmpty, bool());
   MOCK_CONST_METHOD0(isClipRect, bool());
   MOCK_CONST_METHOD0(getTotalMatrix, SkMatrix());
+  MOCK_CONST_METHOD0(getLocalToDevice, SkM44());
 
   MOCK_METHOD3(Annotate,
                void(AnnotationType type,
