@@ -93,23 +93,38 @@ constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kEnterpriseEnrollment,
 };
 
+// The color of the button text and icon in light mode. This is
+// the mode used during OOBE, but color mode is under feature flag
+// at the moment so only dark mode is available.
+constexpr SkColor kButtonTextAndIconColorLight = gfx::kGoogleGrey700;
+
+// The color of the button background color in light mode.
+constexpr SkColor kButtonBackgroundColorLight =
+    SkColorSetA(SK_ColorBLACK, 0x0D);
+
+// TODO(1190978): Remove this check once light mode is the default mode.
+bool IsOobe() {
+  return Shell::Get()->session_controller()->GetSessionState() ==
+         SessionState::OOBE;
+}
+
 SkColor GetButtonTextColor() {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor,
-      kLoginShelfButtonLabelColor);
+  if (IsOobe())
+    return kButtonTextAndIconColorLight;
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor);
 }
 
 SkColor GetButtonIconColor() {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor,
-      kLoginShelfButtonIconColor);
+  if (IsOobe())
+    return kButtonTextAndIconColorLight;
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
 }
 
 SkColor GetButtonBackgroundColor() {
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::OOBE) {
-    return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
-  }
+  if (IsOobe())
+    return kButtonBackgroundColorLight;
   return AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
@@ -152,9 +167,6 @@ constexpr int kButtonMarginRightDp = 16;
 
 // Spacing between the button image and label.
 constexpr int kImageLabelSpacingDp = 10;
-
-// The color of the button text during OOBE.
-constexpr SkColor kButtonTextColorOobe = gfx::kGoogleGrey700;
 
 void AnimateButtonOpacity(ui::Layer* layer,
                           float target_opacity,
@@ -260,19 +272,10 @@ class LoginShelfButton : public views::LabelButton {
     return std::u16string();
   }
 
-  void PaintDarkColors() {
-    SetEnabledTextColors(kButtonTextColorOobe);
+  void UpdateButtonColors() {
+    SetEnabledTextColors(GetButtonTextColor());
     SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon_, kButtonTextColorOobe));
-    SchedulePaint();
-  }
-
-  void PaintLightColors() {
-    SkColor button_text_color = GetButtonTextColor();
-    SetEnabledTextColors(button_text_color);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon_, button_text_color));
-    SchedulePaint();
+             gfx::CreateVectorIcon(icon_, GetButtonIconColor()));
   }
 
   void OnFocus() override {
@@ -332,10 +335,7 @@ class KioskAppsButton : public views::MenuButton,
 
     SetTextSubpixelRenderingEnabled(false);
 
-    SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kShelfAppsButtonIcon, GetButtonIconColor()));
     SetImageLabelSpacing(kImageLabelSpacingDp);
-    SetEnabledTextColors(GetButtonTextColor());
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
@@ -403,18 +403,10 @@ class KioskAppsButton : public views::MenuButton,
     return ink_drop;
   }
 
-  void PaintDarkColors() {
-    SetEnabledTextColors(kButtonTextColorOobe);
-    SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kShelfAppsButtonIcon, kButtonTextColorOobe));
-    SchedulePaint();
-  }
-
-  void PaintLightColors() {
+  void UpdateButtonColors() {
     SetEnabledTextColors(GetButtonTextColor());
     SetImage(views::Button::STATE_NORMAL,
              CreateVectorIcon(kShelfAppsButtonIcon, GetButtonIconColor()));
-    SchedulePaint();
   }
 
   void DisplayMenu() {
@@ -644,6 +636,11 @@ void LoginShelfView::Layout() {
   UpdateButtonUnionBounds();
 }
 
+void LoginShelfView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateButtonsColors();
+}
+
 bool LoginShelfView::LaunchAppForTesting(const std::string& app_id) {
   return kiosk_apps_button_->GetEnabled() &&
          kiosk_apps_button_->LaunchAppForTesting(app_id);
@@ -826,7 +823,6 @@ void LoginShelfView::UpdateUi() {
 
   bool is_login_primary = (session_state == SessionState::LOGIN_PRIMARY);
   bool dialog_visible = dialog_state_ != OobeDialogState::HIDDEN;
-  bool is_oobe = (session_state == SessionState::OOBE);
 
   GetViewByID(kBrowseAsGuest)->SetVisible(ShouldShowGuestButton());
   GetViewByID(kEnterpriseEnrollment)
@@ -851,40 +847,24 @@ void LoginShelfView::UpdateUi() {
   }
   SetFocusBehavior(is_anything_focusable ? views::View::FocusBehavior::ALWAYS
                                          : views::View::FocusBehavior::NEVER);
-  UpdateButtonColors(is_oobe);
+  UpdateButtonsColors();
   Layout();
 }
 
-void LoginShelfView::UpdateButtonColors(bool use_dark_colors) {
-  if (use_dark_colors) {
-    static_cast<LoginShelfButton*>(GetViewByID(kShutdown))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kRestart))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kSignOut))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kCloseNote))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kCancel))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kParentAccess))
-        ->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kBrowseAsGuest))
-        ->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kAddUser))->PaintDarkColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kEnterpriseEnrollment))
-        ->PaintDarkColors();
-    kiosk_apps_button_->PaintDarkColors();
-  } else {
-    static_cast<LoginShelfButton*>(GetViewByID(kShutdown))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kRestart))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kSignOut))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kCloseNote))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kCancel))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kParentAccess))
-        ->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kBrowseAsGuest))
-        ->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kAddUser))->PaintLightColors();
-    static_cast<LoginShelfButton*>(GetViewByID(kEnterpriseEnrollment))
-        ->PaintLightColors();
-    kiosk_apps_button_->PaintLightColors();
-  }
+void LoginShelfView::UpdateButtonsColors() {
+  static_cast<LoginShelfButton*>(GetViewByID(kShutdown))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kRestart))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kSignOut))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kCloseNote))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kCancel))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kParentAccess))
+      ->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kBrowseAsGuest))
+      ->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kAddUser))->UpdateButtonColors();
+  static_cast<LoginShelfButton*>(GetViewByID(kEnterpriseEnrollment))
+      ->UpdateButtonColors();
+  kiosk_apps_button_->UpdateButtonColors();
 }
 
 void LoginShelfView::UpdateButtonUnionBounds() {
