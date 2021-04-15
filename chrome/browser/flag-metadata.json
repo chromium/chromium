@@ -3650,6 +3650,11 @@
     "expiry_milestone": 84
   },
   {
+    "name": "muting-compromised-credentials",
+    "owners": [ "vsemeniuk", "vasilii" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "nearby-sharing",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
     "expiry_milestone": 95

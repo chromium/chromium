@@ -900,6 +900,9 @@ extern const char kMojoLinuxChannelSharedMemDescription[];
 extern const char kMouseSubframeNoImplicitCaptureName[];
 extern const char kMouseSubframeNoImplicitCaptureDescription[];
 
+extern const char kMutingCompromisedCredentialsName[];
+extern const char kMutingCompromisedCredentialsDescription[];
+
 extern const char kUseOfHashAffiliationFetcherName[];
 extern const char kUseOfHashAffiliationFetcherDescription[];
 
