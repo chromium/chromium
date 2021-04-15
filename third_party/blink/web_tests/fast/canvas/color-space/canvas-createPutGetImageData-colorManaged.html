@@ -7,9 +7,8 @@
 var xWidth = xHeight = 10;
 
 function checkImageData(expectedColorSetting, imageData) {
-  var imageDataColorSettings = imageData.getSettings();
-  assert_equals(expectedColorSetting.colorSpace, imageDataColorSettings.colorSpace);
-  assert_equals(expectedColorSetting.storageFormat, imageDataColorSettings.storageFormat);
+  assert_equals(expectedColorSetting.colorSpace, imageData.colorSpace);
+  assert_equals(expectedColorSetting.storageFormat, imageData.storageFormat);
   assert_equals(imageData.data.length, 4 * xWidth * xHeight);
 }
 

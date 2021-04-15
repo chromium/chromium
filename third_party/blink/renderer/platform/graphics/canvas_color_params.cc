@@ -73,6 +73,18 @@ CanvasColorSpace CanvasColorSpaceFromName(const String& color_space_name) {
   return CanvasColorSpace::kSRGB;
 }
 
+String CanvasColorSpaceToName(CanvasColorSpace color_space) {
+  switch (color_space) {
+    case CanvasColorSpace::kSRGB:
+      return kSRGBCanvasColorSpaceName;
+    case CanvasColorSpace::kRec2020:
+      return kRec2020CanvasColorSpaceName;
+    case CanvasColorSpace::kP3:
+      return kP3CanvasColorSpaceName;
+  };
+  NOTREACHED();
+}
+
 CanvasColorParams::CanvasColorParams() = default;
 
 CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
@@ -103,17 +115,8 @@ CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
   return CanvasResourceParams(color_space_, GetSkColorType(), alpha_type);
 }
 
-const char* CanvasColorParams::GetColorSpaceAsString() const {
-  switch (color_space_) {
-    case CanvasColorSpace::kSRGB:
-      return kSRGBCanvasColorSpaceName;
-    case CanvasColorSpace::kRec2020:
-      return kRec2020CanvasColorSpaceName;
-    case CanvasColorSpace::kP3:
-      return kP3CanvasColorSpaceName;
-  };
-  CHECK(false);
-  return "";
+String CanvasColorParams::GetColorSpaceAsString() const {
+  return CanvasColorSpaceToName(color_space_);
 }
 
 const char* CanvasColorParams::GetPixelFormatAsString() const {

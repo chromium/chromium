@@ -39,11 +39,30 @@
 
 namespace blink {
 
+ImageDataStorageFormat ImageDataStorageFormatFromName(const String& string) {
+  if (string == kUint16ArrayStorageFormatName)
+    return kUint16ArrayStorageFormat;
+  if (string == kFloat32ArrayStorageFormatName)
+    return kFloat32ArrayStorageFormat;
+  return kUint8ClampedArrayStorageFormat;
+}
+
+String ImageDataStorageFormatToName(ImageDataStorageFormat storage_format) {
+  switch (storage_format) {
+    case kUint8ClampedArrayStorageFormat:
+      return kUint8ClampedArrayStorageFormatName;
+    case kUint16ArrayStorageFormat:
+      return kUint16ArrayStorageFormatName;
+    case kFloat32ArrayStorageFormat:
+      return kFloat32ArrayStorageFormatName;
+  }
+}
+
 ImageData* ImageData::ValidateAndCreate(
     unsigned width,
     base::Optional<unsigned> height,
     base::Optional<NotShared<DOMArrayBufferView>> data,
-    const ImageDataSettings* input_settings,
+    const ImageDataSettings* settings,
     ExceptionState& exception_state,
     uint32_t flags) {
   IntSize size;
@@ -70,13 +89,6 @@ ImageData* ImageData::ValidateAndCreate(
     size.SetHeight(*height);
   }
 
-  // Populate the ImageDataSettings to use based on |input_settings|.
-  ImageDataSettings* settings = ImageDataSettings::Create();
-  if (input_settings) {
-    settings->setColorSpace(input_settings->colorSpace());
-    settings->setStorageFormat(input_settings->storageFormat());
-  }
-
   // Ensure the size does not overflow.
   unsigned size_in_elements = 0;
   {
@@ -101,19 +113,27 @@ ImageData* ImageData::ValidateAndCreate(
     size_in_elements = size_in_elements_checked.ValueOrDie();
   }
 
+  // Query the color space and storage format from |settings|.
+  CanvasColorSpace color_space = CanvasColorSpace::kSRGB;
+  ImageDataStorageFormat storage_format = kUint8ClampedArrayStorageFormat;
+  if (settings) {
+    color_space = CanvasColorSpaceFromName(settings->colorSpace());
+    storage_format = ImageDataStorageFormatFromName(settings->storageFormat());
+  }
+
   // If |data| is provided, ensure it is a reasonable format, and that it can
-  // work with |size|. Update |settings| to reflect |data|'s format.
+  // work with |size|. Update |storage_format| to reflect |data|'s format.
   if (data) {
     DCHECK(data);
     switch ((*data)->GetType()) {
       case DOMArrayBufferView::ViewType::kTypeUint8Clamped:
-        settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+        storage_format = kUint8ClampedArrayStorageFormat;
         break;
       case DOMArrayBufferView::ViewType::kTypeUint16:
-        settings->setStorageFormat(kUint16ArrayStorageFormatName);
+        storage_format = kUint16ArrayStorageFormat;
         break;
       case DOMArrayBufferView::ViewType::kTypeFloat32:
-        settings->setStorageFormat(kFloat32ArrayStorageFormatName);
+        storage_format = kFloat32ArrayStorageFormat;
         break;
       default:
         exception_state.ThrowDOMException(
@@ -173,8 +193,6 @@ ImageData* ImageData::ValidateAndCreate(
 
   NotShared<DOMArrayBufferView> allocated_data;
   if (!data) {
-    ImageDataStorageFormat storage_format =
-        GetImageDataStorageFormat(settings->storageFormat());
     allocated_data = AllocateAndValidateDataArray(
         size_in_elements, storage_format, &exception_state);
     if (!allocated_data)
@@ -182,7 +200,7 @@ ImageData* ImageData::ValidateAndCreate(
   }
 
   return MakeGarbageCollected<ImageData>(size, data ? *data : allocated_data,
-                                         settings);
+                                         color_space, storage_format);
 }
 
 NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
@@ -238,15 +256,19 @@ ImageData* ImageData::CreateForTest(const IntSize& size) {
   if (!byte_array)
     return nullptr;
 
-  return MakeGarbageCollected<ImageData>(size, byte_array);
+  return MakeGarbageCollected<ImageData>(size, byte_array,
+                                         CanvasColorSpace::kSRGB,
+                                         kUint8ClampedArrayStorageFormat);
 }
 
 // This function is called from unit tests, and all the parameters are supposed
 // to be validated on the call site.
 ImageData* ImageData::CreateForTest(const IntSize& size,
                                     NotShared<DOMArrayBufferView> buffer_view,
-                                    const ImageDataSettings* settings) {
-  return MakeGarbageCollected<ImageData>(size, buffer_view, settings);
+                                    CanvasColorSpace color_space,
+                                    ImageDataStorageFormat storage_format) {
+  return MakeGarbageCollected<ImageData>(size, buffer_view, color_space,
+                                         storage_format);
 }
 
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
@@ -290,17 +312,11 @@ ImageDataStorageFormat ImageData::GetImageDataStorageFormat(
 }
 
 CanvasColorSpace ImageData::GetCanvasColorSpace() const {
-  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled())
-    return CanvasColorSpace::kSRGB;
-  return CanvasColorSpaceFromName(settings_->colorSpace());
+  return color_space_;
 }
 
 ImageDataStorageFormat ImageData::GetImageDataStorageFormat() const {
-  if (data_u16_)
-    return kUint16ArrayStorageFormat;
-  if (data_f32_)
-    return kFloat32ArrayStorageFormat;
-  return kUint8ClampedArrayStorageFormat;
+  return storage_format_;
 }
 
 unsigned ImageData::StorageFormatBytesPerPixel(
@@ -327,6 +343,22 @@ unsigned ImageData::StorageFormatBytesPerPixel(
   }
   NOTREACHED();
   return 1;
+}
+
+String ImageData::colorSpace() const {
+  return CanvasColorSpaceToName(color_space_);
+}
+
+String ImageData::storageFormat() const {
+  return ImageDataStorageFormatToName(storage_format_);
+}
+
+ImageDataSettings* ImageData::getSettings() const {
+  // TODO(https://crbug.com/1198606): Remove this.
+  ImageDataSettings* settings = ImageDataSettings::Create();
+  settings->setColorSpace(colorSpace());
+  settings->setStorageFormat(storageFormat());
+  return settings;
 }
 
 bool ImageData::IsBufferBaseDetached() const {
@@ -403,8 +435,12 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
 
 ImageData::ImageData(const IntSize& size,
                      NotShared<DOMArrayBufferView> data,
-                     const ImageDataSettings* settings)
-    : size_(size), settings_(ImageDataSettings::Create()) {
+                     CanvasColorSpace color_space,
+                     ImageDataStorageFormat storage_format)
+    : size_(size),
+      settings_(ImageDataSettings::Create()),
+      color_space_(color_space),
+      storage_format_(storage_format) {
   DCHECK_GE(size.Width(), 0);
   DCHECK_GE(size.Height(), 0);
   DCHECK(data);
@@ -413,14 +449,12 @@ ImageData::ImageData(const IntSize& size,
   data_u16_.Clear();
   data_f32_.Clear();
 
-  if (settings) {
-    settings_->setColorSpace(settings->colorSpace());
-    settings_->setStorageFormat(settings->storageFormat());
+  if (settings_) {
+    settings_->setColorSpace(colorSpace());
+    settings_->setStorageFormat(storageFormat());
   }
 
-  ImageDataStorageFormat storage_format =
-      GetImageDataStorageFormat(settings_->storageFormat());
-  switch (storage_format) {
+  switch (storage_format_) {
     case kUint8ClampedArrayStorageFormat:
       DCHECK_EQ(data->GetType(),
                 DOMArrayBufferView::ViewType::kTypeUint8Clamped);

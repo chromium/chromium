@@ -756,8 +756,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method transferFromImageBitmap
 [Worker] interface ImageData
 [Worker]     attribute @@toStringTag
+[Worker]     getter colorSpace
 [Worker]     getter data
 [Worker]     getter height
+[Worker]     getter storageFormat
 [Worker]     getter width
 [Worker]     method constructor
 [Worker]     method getSettings

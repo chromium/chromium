@@ -57,6 +57,13 @@ constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
 constexpr const char* kUint16ArrayStorageFormatName = "uint16";
 constexpr const char* kFloat32ArrayStorageFormatName = "float32";
 
+// Convert a string to an ImageDataStorageFormat. On unrecognized strings this
+// will return kUint8ClampedArrayStorageFormat.
+ImageDataStorageFormat CORE_EXPORT
+ImageDataStorageFormatFromName(const String& string);
+String CORE_EXPORT
+ImageDataStorageFormatToName(ImageDataStorageFormat storage_format);
+
 class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     public ImageBitmapSource {
   DEFINE_WRAPPERTYPEINFO();
@@ -170,17 +177,19 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
       const ImageDataSettings* settings,
       ExceptionState& exception_state,
       uint32_t flags = 0);
-
+  // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() { return settings_; }
 
   static ImageData* CreateForTest(const IntSize&);
   static ImageData* CreateForTest(const IntSize&,
                                   NotShared<DOMArrayBufferView>,
-                                  const ImageDataSettings* = nullptr);
+                                  CanvasColorSpace,
+                                  ImageDataStorageFormat);
 
   ImageData(const IntSize&,
             NotShared<DOMArrayBufferView>,
-            const ImageDataSettings* = nullptr);
+            CanvasColorSpace,
+            ImageDataStorageFormat);
 
   static String CanvasColorSpaceName(CanvasColorSpace);
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
@@ -190,6 +199,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   IntSize Size() const { return size_; }
   int width() const { return size_.Width(); }
   int height() const { return size_.Height(); }
+  String colorSpace() const;
+  String storageFormat() const;
+
+  // TODO(https://crbug.com/1198606): Remove this.
+  ImageDataSettings* getSettings() const;
 
   ImageDataArray& data() { return data_; }
   const ImageDataArray& data() const { return data_; }
@@ -218,11 +232,14 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
  private:
   IntSize size_;
+  // TODO(https://crbug.com/1198606): Remove this.
   Member<ImageDataSettings> settings_;
   ImageDataArray data_;
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
+  CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
+  ImageDataStorageFormat storage_format_ = kUint8ClampedArrayStorageFormat;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
