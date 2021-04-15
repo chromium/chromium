@@ -62,6 +62,11 @@ class ASH_EXPORT CaptureModeTestApi {
   // recording is in progress.
   void FlushRecordingServiceForTesting();
 
+  // APIs to reset both the recording service remote, and its client receiver in
+  // order to test that these events are correctly handled.
+  void ResetRecordingServiceRemote();
+  void ResetRecordingServiceClientReceiver();
+
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or
   // image capture otherwise.

@@ -4,6 +4,8 @@
 
 #include "ash/services/recording/recording_service.h"
 
+#include <cstdlib>
+
 #include "ash/services/recording/recording_encoder_muxer.h"
 #include "ash/services/recording/recording_service_constants.h"
 #include "ash/services/recording/video_capture_params.h"
@@ -108,6 +110,16 @@ gfx::ImageSkia ExtractImageFromVideoFrame(const media::VideoFrame& frame) {
       scaled_size);
 }
 
+// Called when the channel to the client of the recording service gets
+// disconnected. At that point, there's nothing useful to do here, and instead
+// of wasting resources encoding/muxing remaining frames, and flushing the
+// buffers, we terminate the recording service process immediately.
+void TerminateServiceImmediately() {
+  LOG(ERROR)
+      << "The recording service client was disconnected. Exiting immediately.";
+  std::exit(EXIT_FAILURE);
+}
+
 }  // namespace
 
 RecordingService::RecordingService(
@@ -122,10 +134,31 @@ RecordingService::RecordingService(
           // reasons.
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  DETACH_FROM_SEQUENCE(encoding_sequence_checker_);
 }
 
-RecordingService::~RecordingService() = default;
+RecordingService::~RecordingService() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (!current_video_capture_params_)
+    return;
+
+  // If the service gets destructed while recording in progress, the client must
+  // be still connected (since otherwise the service process would have been
+  // immediately terminated). We attempt to flush whatever we have right now
+  // before exiting.
+  DCHECK(client_remote_.is_bound());
+  DCHECK(client_remote_.is_connected());
+  StopRecording();
+  video_capturer_remote_.reset();
+  consumer_receiver_.reset();
+  if (number_of_buffered_chunks_)
+    FlushBufferedChunks();
+  SignalRecordingEndedToClient(/*success=*/false);
+
+  // Note that we don't need to call FlushAndFinalize() on the |encoder_muxer_|,
+  // since it will be done asynchronously on the |encoding_task_runner_|, and by
+  // then this |RecordingService| instance will have been already gone.
+}
 
 void RecordingService::RecordFullscreen(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
@@ -324,15 +357,15 @@ void RecordingService::Capture(const media::AudioBus* audio_source,
   // chance to encode and flush the remaining frames (See
   // media::AudioInputDevice::Stop(), and
   // media::AudioInputDevice::AudioThreadCallback::Process() for details). It is
-  // safer that we own our AudioBuses that are keep alive until encoded and
+  // safer that we own our AudioBuses that are kept alive until encoded and
   // flushed.
   auto audio_data =
       media::AudioBus::Create(audio_source->channels(), audio_source->frames());
   audio_source->CopyTo(audio_data.get());
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RecordingService::OnAudioCaptured, base::Unretained(this),
-                     std::move(audio_data), audio_capture_time));
+      FROM_HERE, base::BindOnce(&RecordingService::OnAudioCaptured,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(audio_data), audio_capture_time));
 }
 
 void RecordingService::OnCaptureError(const std::string& message) {
@@ -355,6 +388,8 @@ void RecordingService::StartNewRecording(
 
   client_remote_.reset();
   client_remote_.Bind(std::move(client));
+  client_remote_.set_disconnect_handler(
+      base::BindOnce(&TerminateServiceImmediately));
 
   current_video_capture_params_ = std::move(capture_params);
   const bool should_record_audio = audio_stream_factory.is_valid();
@@ -363,10 +398,8 @@ void RecordingService::StartNewRecording(
       encoding_task_runner_,
       CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
       should_record_audio ? &audio_parameters_ : nullptr,
-      base::BindRepeating(&RecordingService::OnMuxerWrite,
-                          base::Unretained(this)),
-      base::BindOnce(&RecordingService::OnEncodingFailure,
-                     base::Unretained(this)));
+      BindRepeatingToMainThread(&RecordingService::OnMuxerOutput),
+      BindOnceToMainThread(&RecordingService::OnEncodingFailure));
 
   ConnectAndStartVideoCapturer(std::move(video_capturer));
 
@@ -400,8 +433,8 @@ void RecordingService::TerminateRecording(bool success) {
   consumer_receiver_.reset();
 
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::FlushAndFinalize)
-      .WithArgs(base::BindOnce(&RecordingService::OnEncoderMuxerFlushed,
-                               weak_ptr_factory_.GetWeakPtr(), success));
+      .WithArgs(BindOnceToMainThread(&RecordingService::OnEncoderMuxerFlushed,
+                                     success));
 }
 
 void RecordingService::ConnectAndStartVideoCapturer(
@@ -449,11 +482,9 @@ void RecordingService::OnAudioCaptured(
 }
 
 void RecordingService::OnEncodingFailure(FailureType type, bool for_video) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RecordingService::OnRecordingFailure,
-                                base::Unretained(this)));
+  OnRecordingFailure();
 }
 
 void RecordingService::OnRecordingFailure() {
@@ -469,16 +500,14 @@ void RecordingService::OnRecordingFailure() {
 }
 
 void RecordingService::OnEncoderMuxerFlushed(bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   // If flushing the encoders and muxers resulted in some chunks being cached
   // here, we flush them to the client now.
   if (number_of_buffered_chunks_)
     FlushBufferedChunks();
 
-  main_task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(&RecordingService::SignalRecordingEndedToClient,
-                                base::Unretained(this), success));
+  SignalRecordingEndedToClient(success);
 }
 
 void RecordingService::SignalMuxerOutputToClient(std::string muxer_output) {
@@ -495,24 +524,21 @@ void RecordingService::SignalRecordingEndedToClient(bool success) {
   client_remote_->OnRecordingEnded(success, video_thumbnail_);
 }
 
-void RecordingService::OnMuxerWrite(base::StringPiece data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
+void RecordingService::OnMuxerOutput(std::string data) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   ++number_of_buffered_chunks_;
-  muxed_chunks_buffer_.append(data.begin(), data.end());
+  muxed_chunks_buffer_.append(data);
 
   if (number_of_buffered_chunks_ >= kMaxBufferedChunks)
     FlushBufferedChunks();
 }
 
 void RecordingService::FlushBufferedChunks() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(number_of_buffered_chunks_);
 
-  main_task_runner_->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&RecordingService::SignalMuxerOutputToClient,
-                     base::Unretained(this), std::move(muxed_chunks_buffer_)));
+  SignalMuxerOutputToClient(std::move(muxed_chunks_buffer_));
   number_of_buffered_chunks_ = 0;
 }
 

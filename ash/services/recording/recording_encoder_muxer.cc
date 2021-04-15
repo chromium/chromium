@@ -46,8 +46,8 @@ base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const media::VideoEncoder::Options& video_encoder_options,
     const media::AudioParameters* audio_input_params,
-    media::WebmMuxer::WriteDataCB muxer_output_callback,
-    FailureCallback on_failure_callback) {
+    OnMuxerOutputCallback muxer_output_callback,
+    OnFailureCallback on_failure_callback) {
   return base::SequenceBound<RecordingEncoderMuxer>(
       std::move(blocking_task_runner), video_encoder_options,
       audio_input_params, std::move(muxer_output_callback),
@@ -138,12 +138,14 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
 RecordingEncoderMuxer::RecordingEncoderMuxer(
     const media::VideoEncoder::Options& video_encoder_options,
     const media::AudioParameters* audio_input_params,
-    media::WebmMuxer::WriteDataCB muxer_output_callback,
-    FailureCallback on_failure_callback)
-    : webm_muxer_(media::kCodecOpus,
+    OnMuxerOutputCallback muxer_output_callback,
+    OnFailureCallback on_failure_callback)
+    : on_muxer_output_callback_(std::move(muxer_output_callback)),
+      webm_muxer_(media::kCodecOpus,
                   /*has_video_=*/true,
                   /*has_audio_=*/!!audio_input_params,
-                  muxer_output_callback),
+                  base::BindRepeating(&RecordingEncoderMuxer::OnMuxerWrite,
+                                      base::Unretained(this))),
       on_failure_callback_(std::move(on_failure_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -276,6 +278,17 @@ void RecordingEncoderMuxer::OnAudioEncoded(
       encoded_audio.encoded_data_size};
   webm_muxer_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
                              encoded_audio.timestamp);
+}
+
+void RecordingEncoderMuxer::OnMuxerWrite(base::StringPiece data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!on_muxer_output_callback_.is_null());
+
+  // Note that |on_muxer_output_callback_| might be bound to a different
+  // sequence than the one used here. Therefore, we can't just pass in the
+  // StringPiece |data|, since by the time this callback is invoked on the
+  // target sequence, the |webm_muxer_| may have already clobbered it.
+  on_muxer_output_callback_.Run(std::string(data));
 }
 
 void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
