@@ -96,7 +96,7 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   DISALLOW_COPY_AND_ASSIGN(MediaRouterActionControllerUnitTest);
 };
 
-// TODO(b/161612403): Remove this class once
+// TODO(b/185139027): Remove this class once
 // |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
 class MediaRouterActionControllerGMCUnitTest
     : public MediaRouterActionControllerUnitTest {
