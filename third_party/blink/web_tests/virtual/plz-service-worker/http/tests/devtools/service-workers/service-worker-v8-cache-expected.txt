@@ -1,0 +1,70 @@
+Tests V8 cache information of Service Worker Cache Storage in timeline
+
+--- Trace events while installing -------------
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "worker top-level scripts are not streamable"
+        streamed : <boolean>
+        url : .../devtools/service-workers/resources/v8-cache-worker.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-worker.js:1
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "script has code-cache available"
+        producedCacheSize : <number>
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+-----------------------------------------------
+--- Trace events while executing scripts ------
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "script has code-cache available"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+-----------------------------------------------
+

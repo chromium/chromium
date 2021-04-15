@@ -503,6 +503,17 @@
              "--enable-blink-features=CorsRFC1918"]
   },
   {
+    "prefix": "plz-service-worker",
+    "bases": ["http/tests/serviceworker",
+              "http/tests/devtools/service-workers",
+              "http/tests/devtools/console",
+              "http/tests/inspector-protocol/fetch",
+              "external/wpt/service-workers",
+              "external/wpt/html/cross-origin-embedder-policy"],
+    "args": ["--enable-features=PlzServiceWorker"]
+  },
+
+  {
     "prefix": "direct-sockets",
     "bases": ["external/wpt/raw-sockets"],
     "args": ["--enable-features=DirectSockets"]

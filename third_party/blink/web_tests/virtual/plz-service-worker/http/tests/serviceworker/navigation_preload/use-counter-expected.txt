@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Navigation Preload is not counted if not enabled.
+PASS Navigation Preload is use counted.
+FAIL Navigation Preload is use counted even if preloadResponse is not used. assert_true: expected true got false
+Harness: the test ran to completion.
+
