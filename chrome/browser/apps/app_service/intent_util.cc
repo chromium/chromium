@@ -4,9 +4,10 @@
 
 #include "chrome/browser/apps/app_service/intent_util.h"
 
-#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
@@ -16,10 +17,13 @@
 
 namespace {
 
-constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
-constexpr char kIntentExtraSubject[] = "android.intent.extra.SUBJECT";
-constexpr char kIntentExtraStartType[] = "org.chromium.arc.start_type";
+constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
+constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
+constexpr char kIntentExtraStartType[] = "S.org.chromium.arc.start_type";
 constexpr char kIntentActionPrefix[] = "android.intent.action";
+constexpr char kType[] = "type";
+
+constexpr int kIntentPrefixLength = 2;
 
 const char* GetArcIntentAction(const std::string& action) {
   if (action == apps_util::kIntentActionMain) {
@@ -89,15 +93,19 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent) {
   auto extras = base::flat_map<std::string, std::string>();
   if (intent->share_text.has_value()) {
-    extras.insert(std::make_pair(kIntentExtraText, intent->share_text.value()));
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraText + kIntentPrefixLength,
+                                 intent->share_text.value()));
   }
   if (intent->share_title.has_value()) {
-    extras.insert(
-        std::make_pair(kIntentExtraSubject, intent->share_title.value()));
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraSubject + kIntentPrefixLength,
+                                 intent->share_title.value()));
   }
   if (intent->start_type.has_value()) {
-    extras.insert(
-        std::make_pair(kIntentExtraStartType, intent->start_type.value()));
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraStartType + kIntentPrefixLength,
+                                 intent->start_type.value()));
   }
   return extras;
 }
@@ -140,6 +148,83 @@ arc::mojom::IntentInfoPtr CreateArcIntent(
     arc_intent->extras = intent->extras;
   }
   return arc_intent;
+}
+
+std::string CreateLaunchIntent(const std::string& package_name,
+                               const apps::mojom::IntentPtr& intent) {
+  // If |intent| has |ui_bypassed|, |url| or |data|, it is too complex to
+  // convert to a string, so return the empty string.
+  if (intent->ui_bypassed != apps::mojom::OptionalBool::kUnknown ||
+      intent->url.has_value() || intent->data.has_value()) {
+    return std::string();
+  }
+
+  std::string ret = base::StringPrintf("%s;", arc::kIntentPrefix);
+
+  // Convert action.
+  std::string action;
+  if (intent->action.has_value()) {
+    action = GetArcIntentAction(intent->action.value());
+  }
+  ret += base::StringPrintf("%s=%s;", arc::kAction,
+                            GetArcIntentAction(intent->action.value()));
+
+  // Convert categories.
+  if (intent->categories.has_value()) {
+    for (const auto& category : intent->categories.value()) {
+      ret += base::StringPrintf("%s=%s;", arc::kCategory, category.c_str());
+    }
+  }
+
+  // Set launch flags.
+  ret +=
+      base::StringPrintf("%s=0x%x;", arc::kLaunchFlags,
+                         arc::Intent::FLAG_ACTIVITY_NEW_TASK |
+                             arc::Intent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+
+  // Convert activity_name.
+  if (intent->activity_name.has_value()) {
+    // Remove the |package_name| prefix, if activity starts with it.
+    const std::string& activity = intent->activity_name.value();
+    const char* activity_compact_name =
+        activity.find(package_name.c_str()) == 0
+            ? activity.c_str() + package_name.length()
+            : activity.c_str();
+    ret += base::StringPrintf("%s=%s/%s;", arc::kComponent,
+                              package_name.c_str(), activity_compact_name);
+  } else {
+    ret += base::StringPrintf("%s=%s/;", arc::kComponent, package_name.c_str());
+  }
+
+  if (intent->mime_type.has_value()) {
+    ret +=
+        base::StringPrintf("%s=%s;", kType, intent->mime_type.value().c_str());
+  }
+
+  if (intent->share_text.has_value()) {
+    ret += base::StringPrintf("%s=%s;", kIntentExtraText,
+                              intent->share_text.value().c_str());
+  }
+
+  if (intent->share_title.has_value()) {
+    ret += base::StringPrintf("%s=%s;", kIntentExtraSubject,
+                              intent->share_title.value().c_str());
+  }
+
+  if (intent->start_type.has_value()) {
+    ret += base::StringPrintf("%s=%s;", kIntentExtraStartType,
+                              intent->start_type.value().c_str());
+  }
+
+  if (intent->extras.has_value()) {
+    for (auto it : intent->extras.value()) {
+      ret += base::StringPrintf("%s=%s;", it.first.c_str(), it.second.c_str());
+    }
+  }
+
+  ret += arc::kEndSuffix;
+  DCHECK(!ret.empty());
+  return ret;
 }
 
 arc::IntentFilter CreateArcIntentFilter(

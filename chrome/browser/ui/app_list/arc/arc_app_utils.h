@@ -32,6 +32,13 @@ extern const char kRequestStartTimeParamTemplate[];
 extern const char kPlayStoreActivity[];
 extern const char kPlayStorePackage[];
 
+extern const char kAction[];
+extern const char kCategory[];
+extern const char kComponent[];
+extern const char kEndSuffix[];
+extern const char kIntentPrefix[];
+extern const char kLaunchFlags[];
+
 extern const char kCameraMigrationAppId[];
 extern const char kGmailAppId[];
 extern const char kGoogleCalendarAppId[];

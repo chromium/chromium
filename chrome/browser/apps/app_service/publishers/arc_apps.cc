@@ -700,35 +700,51 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       return;
     }
 
-    auto* arc_service_manager = arc::ArcServiceManager::Get();
-    if (!arc_service_manager) {
-      return;
-    }
-
     auto intent_for_full_restore = intent.Clone();
-    auto arc_intent = apps_util::CreateArcIntent(std::move(intent));
 
-    if (!arc_intent) {
-      LOG(ERROR) << "Launch App failed, launch intent is not valid";
-      return;
-    }
-
-    arc::mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->intent_helper(),
-        HandleIntentWithWindowInfo);
-    if (instance) {
-      instance->HandleIntentWithWindowInfo(
-          std::move(arc_intent), std::move(activity),
-          MakeArcWindowInfo(std::move(new_window_info)));
+    std::string intent_str =
+        apps_util::CreateLaunchIntent(app_info->package_name, intent);
+    if (!intent_str.empty()) {
+      // If |intent| can be converted to a string, call the Launch interface.
+      if (!arc::LaunchAppWithIntent(
+              profile_, app_id, intent_str, event_flags,
+              user_interaction_type.value(),
+              MakeArcWindowInfo(std::move(new_window_info)))) {
+        VLOG(2) << "Failed to launch app: " + app_id + ".";
+        return;
+      }
     } else {
-      instance = ARC_GET_INSTANCE_FOR_METHOD(
-          arc_service_manager->arc_bridge_service()->intent_helper(),
-          HandleIntent);
-      if (!instance) {
+      // If |intent| can't be converted to a string, call the HandleIntent
+      // interface.
+      auto arc_intent = apps_util::CreateArcIntent(std::move(intent));
+
+      if (!arc_intent) {
+        LOG(ERROR) << "Launch App failed, launch intent is not valid";
         return;
       }
 
-      instance->HandleIntent(std::move(arc_intent), std::move(activity));
+      auto* arc_service_manager = arc::ArcServiceManager::Get();
+      if (!arc_service_manager) {
+        return;
+      }
+
+      arc::mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
+          arc_service_manager->arc_bridge_service()->intent_helper(),
+          HandleIntentWithWindowInfo);
+      if (instance) {
+        instance->HandleIntentWithWindowInfo(
+            std::move(arc_intent), std::move(activity),
+            MakeArcWindowInfo(std::move(new_window_info)));
+      } else {
+        instance = ARC_GET_INSTANCE_FOR_METHOD(
+            arc_service_manager->arc_bridge_service()->intent_helper(),
+            HandleIntent);
+        if (!instance) {
+          return;
+        }
+
+        instance->HandleIntent(std::move(arc_intent), std::move(activity));
+      }
     }
 
     prefs->SetLastLaunchTime(app_id);

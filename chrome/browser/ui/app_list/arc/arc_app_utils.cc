@@ -86,13 +86,7 @@ constexpr char kIntentHelperClassName[] =
 constexpr char kSetInTouchModeIntent[] =
     "org.chromium.arc.intent_helper.SET_IN_TOUCH_MODE";
 
-constexpr char kAction[] = "action";
 constexpr char kActionMain[] = "android.intent.action.MAIN";
-constexpr char kCategory[] = "category";
-constexpr char kComponent[] = "component";
-constexpr char kEndSuffix[] = "end";
-constexpr char kIntentPrefix[] = "#Intent";
-constexpr char kLaunchFlags[] = "launchFlags";
 
 constexpr char kAndroidClockAppId[] = "ddmmnabaeomoacfpfjgghfpocfolhjlg";
 constexpr char kAndroidFilesAppId[] = "gmiohhmfhgfclpeacmdfancbipocempm";
@@ -226,6 +220,14 @@ const char kRequestStartTimeParamTemplate[] =
     "S.org.chromium.arc.request.start=%" PRId64;
 const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";
 const char kPlayStorePackage[] = "com.android.vending";
+
+// Intent labels, kept in sorted order.
+constexpr char kAction[] = "action";
+constexpr char kCategory[] = "category";
+constexpr char kComponent[] = "component";
+constexpr char kEndSuffix[] = "end";
+constexpr char kIntentPrefix[] = "#Intent";
+constexpr char kLaunchFlags[] = "launchFlags";
 
 // App IDs, kept in sorted order.
 const char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";

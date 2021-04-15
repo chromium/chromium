@@ -95,6 +95,10 @@ TEST_F(IntentUtilsTest, CreateIntentForArcIntentAndActivity) {
       apps_util::CreateIntentForArcIntentAndActivity(arc_intent.Clone(),
                                                      src_activity.Clone());
 
+  std::string intent_str =
+      apps_util::CreateLaunchIntent("com.android.vending", intent);
+  EXPECT_TRUE(intent_str.empty());
+
   arc::mojom::ActivityNamePtr dst_activity = arc::mojom::ActivityName::New();
   if (intent->activity_name.has_value() &&
       !intent->activity_name.value().empty()) {
@@ -117,6 +121,13 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   ASSERT_TRUE(intent);
   ASSERT_TRUE(arc_intent);
 
+  std::string intent_str =
+      "#Intent;action=android.intent.action.MAIN;category=android.intent."
+      "category.LAUNCHER;launchFlags=0x10200000;component=com.android.vending/"
+      ".AssetBrowserActivity;S.org.chromium.arc.start_type=initialStart;end";
+  EXPECT_EQ(intent_str,
+            apps_util::CreateLaunchIntent("com.android.vending", intent));
+
   EXPECT_EQ(arc::kIntentActionMain, arc_intent->action);
 
   base::flat_map<std::string, std::string> extras;
@@ -130,4 +141,16 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   arc_intent->extras = apps_util::CreateArcIntentExtras(intent);
   EXPECT_TRUE(intent->activity_name.has_value());
   EXPECT_EQ(activity_name, intent->activity_name.value());
+}
+
+TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
+  apps::mojom::IntentPtr intent =
+      apps_util::CreateShareIntentFromText("text", "title");
+  std::string intent_str =
+      "#Intent;action=android.intent.action.SEND;launchFlags=0x10200000;"
+      "component=com.android.vending/;type=text/"
+      "plain;S.android.intent.extra.TEXT=text;S.android.intent.extra.SUBJECT="
+      "title;end";
+  EXPECT_EQ(intent_str,
+            apps_util::CreateLaunchIntent("com.android.vending", intent));
 }
