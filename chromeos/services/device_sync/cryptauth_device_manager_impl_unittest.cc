@@ -341,13 +341,12 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       std::vector<cryptauth::SoftwareFeature> enabled_software_features;
 
       for (const auto& it : software_features_from_prefs->DictItems()) {
-        int software_feature_state;
-        ASSERT_TRUE(it.second.GetAsInteger(&software_feature_state));
+        ASSERT_TRUE(it.second.is_int());
 
         cryptauth::SoftwareFeature software_feature =
             SoftwareFeatureStringToEnum(it.first);
         switch (static_cast<multidevice::SoftwareFeatureState>(
-            software_feature_state)) {
+            it.second.GetInt())) {
           case multidevice::SoftwareFeatureState::kEnabled:
             enabled_software_features.push_back(software_feature);
             FALLTHROUGH;

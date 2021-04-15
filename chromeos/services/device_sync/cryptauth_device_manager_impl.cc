@@ -359,14 +359,13 @@ void AddSoftwareFeaturesToExternalDevice(
           static_cast<cryptauth::SoftwareFeature>(software_feature_int));
     }
 
-    int software_feature_state;
-    if (!it.second.GetAsInteger(&software_feature_state)) {
+    if (!it.second.is_int()) {
       PA_LOG(WARNING) << "Unable to retrieve SoftwareFeature; skipping.";
       continue;
     }
 
-    switch (static_cast<multidevice::SoftwareFeatureState>(
-        software_feature_state)) {
+    switch (
+        static_cast<multidevice::SoftwareFeatureState>(it.second.GetInt())) {
       case multidevice::SoftwareFeatureState::kEnabled:
         external_device->add_enabled_software_features(software_feature);
         FALLTHROUGH;
