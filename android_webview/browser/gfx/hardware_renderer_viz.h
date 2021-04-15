@@ -36,6 +36,8 @@ class HardwareRendererViz : public HardwareRenderer {
 
   void InitializeOnViz(RootFrameSinkGetter root_frame_sink_getter);
   bool IsUsingVulkan() const;
+  void MergeTransactionIfNeeded(
+      OverlaysParams::MergeTransactionFn merge_transaction);
 
   // Information about last delegated frame.
   float device_scale_factor_ = 0;

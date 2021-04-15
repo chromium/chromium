@@ -239,7 +239,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(::features::kBackgroundFetch);
 
-    // SurfaceControl is not supported on webview.
+    // SurfaceControl is controlled by kWebViewSurfaceControl flag.
     features.DisableIfNotSet(::features::kAndroidSurfaceControl);
 
     // TODO(https://crbug.com/963653): WebOTP is not yet supported on

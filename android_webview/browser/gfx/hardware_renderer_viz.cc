@@ -13,6 +13,7 @@
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
+#include "android_webview/browser/gfx/overlay_processor_webview.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
@@ -44,6 +45,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/transform.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
@@ -76,8 +78,14 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
                         const viz::SurfaceId& child_id,
                         float device_scale_factor,
                         const gfx::ColorSpace& color_space,
+                        bool overlays_enabled_by_hwui,
                         ChildFrame* child_frame);
   void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
+  void RemoveOverlaysOnViz();
+
+  OverlayProcessorWebView* overlay_processor() {
+    return overlay_processor_webview_;
+  }
 
   // viz::DisplayClient overrides.
   void DisplayOutputSurfaceLost() override;
@@ -108,6 +116,10 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   viz::SurfaceId child_surface_id_;
   const bool viz_frame_submission_;
 
+  // Initialized in ctor and never changes, so it's safe to access from both
+  // threads. Can be null, if overlays are disabled.
+  OverlayProcessorWebView* overlay_processor_webview_ = nullptr;
+
   THREAD_CHECKER(viz_thread_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(OnViz);
@@ -127,9 +139,20 @@ HardwareRendererViz::OnViz::OnViz(
       output_surface_provider->CreateOutputSurface(display_controller.get());
 
   stub_begin_frame_source_ = std::make_unique<viz::StubBeginFrameSource>();
+
+  std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
+
+  if (features::IsAndroidSurfaceControlEnabled()) {
+    auto overlay_processor_webview =
+        std::make_unique<OverlayProcessorWebView>(display_controller.get());
+    overlay_processor_webview_ = overlay_processor_webview.get();
+    overlay_processor = std::move(overlay_processor_webview);
+  } else {
+    overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
+  }
+
   auto scheduler =
       std::make_unique<DisplaySchedulerWebView>(without_gpu_.get());
-  auto overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
 
   // Android WebView has no overlay processor, and does not need to share
   // gpu_task_scheduler, so it is passed in as nullptr.
@@ -166,6 +189,7 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
     const viz::SurfaceId& child_id,
     float device_scale_factor,
     const gfx::ColorSpace& color_space,
+    bool overlays_enabled_by_hwui,
     ChildFrame* child_frame) {
   TRACE_EVENT1("android_webview", "HardwareRendererViz::DrawAndSwap",
                "child_id", child_id.ToString());
@@ -187,6 +211,11 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
     for (auto& copy_request : requests) {
       manager->RequestCopyOfOutput(child_id, std::move(copy_request));
     }
+  }
+
+  if (overlay_processor_webview_) {
+    overlay_processor_webview_->SetOverlaysEnabledByHWUI(
+        overlays_enabled_by_hwui);
   }
 
   gfx::DisplayColorSpaces display_color_spaces(
@@ -254,6 +283,11 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
 void HardwareRendererViz::OnViz::PostDrawOnViz(
     viz::FrameTimingDetailsMap* timing_details) {
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
+}
+
+void HardwareRendererViz::OnViz::RemoveOverlaysOnViz() {
+  if (overlay_processor_webview_)
+    overlay_processor_webview_->RemoveOverlays();
 }
 
 viz::FrameSinkManagerImpl* HardwareRendererViz::OnViz::GetFrameSinkManager() {
@@ -374,11 +408,25 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
         ->PessimisticallyResetGrContext();
   }
 
+  base::Optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
+      allow_surface_control;
+
+  auto* overlay_processor = on_viz_->overlay_processor();
+  const bool overlays_enabled_by_hwui =
+      overlays_params.overlays_mode == OverlaysParams::Mode::Enabled;
+  if (overlays_enabled_by_hwui && overlay_processor) {
+    DCHECK(overlays_params.get_surface_control);
+    allow_surface_control.emplace(overlay_processor,
+                                  overlays_params.get_surface_control);
+  }
+
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,
                      base::Unretained(on_viz_.get()), viewport, clip, transform,
                      surface_id_, device_scale_factor_, params.color_space,
-                     child_frame_.get()));
+                     overlays_enabled_by_hwui, child_frame_.get()));
+
+  MergeTransactionIfNeeded(overlays_params.merge_transaction);
 
   output_surface_provider_.gl_surface()->MaybeDidPresent(
       gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
@@ -401,7 +449,23 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
 
 void HardwareRendererViz::RemoveOverlays(
     OverlaysParams::MergeTransactionFn merge_transaction) {
-  NOTIMPLEMENTED();
+  VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
+      base::BindOnce(&HardwareRendererViz::OnViz::RemoveOverlaysOnViz,
+                     base::Unretained(on_viz_.get())));
+
+  MergeTransactionIfNeeded(merge_transaction);
+}
+
+void HardwareRendererViz::MergeTransactionIfNeeded(
+    OverlaysParams::MergeTransactionFn merge_transaction) {
+  auto* overlay_processor = on_viz_->overlay_processor();
+  if (overlay_processor) {
+    auto transaction = overlay_processor->TakeSurfaceTransactionOnRT();
+    if (transaction) {
+      DCHECK(merge_transaction);
+      merge_transaction(transaction->transaction());
+    }
+  }
 }
 
 }  // namespace android_webview

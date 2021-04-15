@@ -54,6 +54,10 @@ class GFX_EXPORT SurfaceControl {
 
   class GFX_EXPORT Surface : public base::RefCounted<Surface> {
    public:
+    // Wraps ASurfaceControl, but doesn't transfer ownership. Will not release
+    // in dtor.
+    static scoped_refptr<Surface> WrapUnowned(ASurfaceControl* surface);
+
     Surface();
     Surface(const Surface& parent, const char* name);
     Surface(ANativeWindow* parent, const char* name);
@@ -65,6 +69,7 @@ class GFX_EXPORT SurfaceControl {
     ~Surface();
 
     ASurfaceControl* surface_ = nullptr;
+    ASurfaceControl* owned_surface_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(Surface);
   };
@@ -135,6 +140,7 @@ class GFX_EXPORT SurfaceControl {
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     void Apply();
+    ASurfaceTransaction* transaction() { return transaction_; }
 
    private:
     int id_;

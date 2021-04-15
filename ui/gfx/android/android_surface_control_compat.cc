@@ -359,25 +359,36 @@ void SurfaceControl::ApplyTransaction(ASurfaceTransaction* transaction) {
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction);
 }
 
+scoped_refptr<SurfaceControl::Surface> SurfaceControl::Surface::WrapUnowned(
+    ASurfaceControl* surface) {
+  scoped_refptr<SurfaceControl::Surface> result =
+      base::MakeRefCounted<SurfaceControl::Surface>();
+  result->surface_ = surface;
+  return result;
+}
+
 SurfaceControl::Surface::Surface() = default;
 
 SurfaceControl::Surface::Surface(const Surface& parent, const char* name) {
-  surface_ = SurfaceControlMethods::Get().ASurfaceControl_createFn(
+  owned_surface_ = SurfaceControlMethods::Get().ASurfaceControl_createFn(
       parent.surface(), name);
-  if (!surface_)
+  if (!owned_surface_)
     LOG(ERROR) << "Failed to create ASurfaceControl : " << name;
+  surface_ = owned_surface_;
 }
 
 SurfaceControl::Surface::Surface(ANativeWindow* parent, const char* name) {
-  surface_ = SurfaceControlMethods::Get().ASurfaceControl_createFromWindowFn(
-      parent, name);
-  if (!surface_)
+  owned_surface_ =
+      SurfaceControlMethods::Get().ASurfaceControl_createFromWindowFn(parent,
+                                                                      name);
+  if (!owned_surface_)
     LOG(ERROR) << "Failed to create ASurfaceControl : " << name;
+  surface_ = owned_surface_;
 }
 
 SurfaceControl::Surface::~Surface() {
-  if (surface_)
-    SurfaceControlMethods::Get().ASurfaceControl_releaseFn(surface_);
+  if (owned_surface_)
+    SurfaceControlMethods::Get().ASurfaceControl_releaseFn(owned_surface_);
 }
 
 SurfaceControl::SurfaceStats::SurfaceStats() = default;

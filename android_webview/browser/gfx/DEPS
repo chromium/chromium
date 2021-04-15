@@ -7,6 +7,7 @@ include_rules = [
   "+android_webview/common/aw_switches.h",
   "+android_webview/public/browser",
   "+components/power_scheduler",
+  "+components/viz/service/gl",
   "+components/viz/service/main",
   "+ui/latency",
 ]

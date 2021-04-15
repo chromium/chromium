@@ -121,13 +121,17 @@ void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
       FROM_HERE,
       base::BindOnce(
           &VizCompositorThreadRunnerWebView::BindFrameSinkManagerOnViz,
-          base::Unretained(this), std::move(params)));
+          base::Unretained(this), std::move(params),
+          base::Unretained(gpu_service)));
 }
 
 void VizCompositorThreadRunnerWebView::BindFrameSinkManagerOnViz(
-    viz::mojom::FrameSinkManagerParamsPtr params) {
+    viz::mojom::FrameSinkManagerParamsPtr params,
+    viz::GpuServiceImpl* gpu_service) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   DCHECK(frame_sink_manager_);
+  DCHECK(!gpu_service_impl_ || gpu_service_impl_ == gpu_service);
+  gpu_service_impl_ = gpu_service;
 
   frame_sink_manager_->BindAndSetClient(
       std::move(params->frame_sink_manager), viz_task_runner_,
@@ -146,6 +150,11 @@ void VizCompositorThreadRunnerWebView::CleanupForShutdown(
   // In-process gpu is not supposed to shutdown.
   // Plus viz thread in webview architecture is not owned by the gpu thread.
   NOTREACHED();
+}
+
+viz::GpuServiceImpl* VizCompositorThreadRunnerWebView::GetGpuService() {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  return gpu_service_impl_;
 }
 
 }  // namespace android_webview

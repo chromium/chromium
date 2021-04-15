@@ -48,6 +48,8 @@ source_set("gfx") {
     "java_browser_view_renderer_helper.h",
     "output_surface_provider_webview.cc",
     "output_surface_provider_webview.h",
+    "overlay_processor_webview.cc",
+    "overlay_processor_webview.h",
     "parent_compositor_draw_constraints.cc",
     "parent_compositor_draw_constraints.h",
     "parent_output_surface.cc",

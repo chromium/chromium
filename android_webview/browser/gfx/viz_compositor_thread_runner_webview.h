@@ -52,6 +52,8 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   void PostTaskAndBlock(const base::Location& from_here,
                         base::OnceClosure task);
 
+  viz::GpuServiceImpl* GetGpuService();
+
   // viz::VizCompositorThreadRunner overrides.
   base::PlatformThreadId thread_id() override;
   base::SingleThreadTaskRunner* task_runner() override;
@@ -73,7 +75,8 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   ~VizCompositorThreadRunnerWebView() override;
 
   void InitFrameSinkManagerOnViz();
-  void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params);
+  void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params,
+                                 viz::GpuServiceImpl* gpu_service_impl);
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
@@ -82,6 +85,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   THREAD_CHECKER(viz_thread_checker_);
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
+  viz::GpuServiceImpl* gpu_service_impl_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(VizCompositorThreadRunnerWebView);
 };
