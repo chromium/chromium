@@ -80,7 +80,7 @@ bool FakeConciergeClient::IsDiskImageProgressSignalConnected() {
 void FakeConciergeClient::CreateDiskImage(
     const vm_tools::concierge::CreateDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback) {
-  create_disk_image_called_ = true;
+  create_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), create_disk_image_response_),
@@ -91,7 +91,7 @@ void FakeConciergeClient::CreateDiskImageWithFd(
     base::ScopedFD fd,
     const vm_tools::concierge::CreateDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback) {
-  create_disk_image_called_ = true;
+  create_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), create_disk_image_response_));
@@ -101,7 +101,7 @@ void FakeConciergeClient::DestroyDiskImage(
     const vm_tools::concierge::DestroyDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::DestroyDiskImageResponse>
         callback) {
-  destroy_disk_image_called_ = true;
+  destroy_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), destroy_disk_image_response_));
@@ -111,7 +111,7 @@ void FakeConciergeClient::ImportDiskImage(
     base::ScopedFD fd,
     const vm_tools::concierge::ImportDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse> callback) {
-  import_disk_image_called_ = true;
+  import_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), import_disk_image_response_));
@@ -147,7 +147,7 @@ void FakeConciergeClient::OnDiskImageProgress(
 void FakeConciergeClient::DiskImageStatus(
     const vm_tools::concierge::DiskImageStatusRequest& request,
     DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse> callback) {
-  disk_image_status_called_ = true;
+  disk_image_status_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -157,7 +157,7 @@ void FakeConciergeClient::DiskImageStatus(
 void FakeConciergeClient::ListVmDisks(
     const vm_tools::concierge::ListVmDisksRequest& request,
     DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse> callback) {
-  list_vm_disks_called_ = true;
+  list_vm_disks_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_vm_disks_response_));
@@ -166,7 +166,7 @@ void FakeConciergeClient::ListVmDisks(
 void FakeConciergeClient::StartTerminaVm(
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  start_termina_vm_called_ = true;
+  start_termina_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_),
       send_start_vm_response_delay_);
@@ -199,7 +199,7 @@ void FakeConciergeClient::NotifyTremplinStarted(
 void FakeConciergeClient::StopVm(
     const vm_tools::concierge::StopVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback) {
-  stop_vm_called_ = true;
+  stop_vm_call_count_++;
   vm_tools::concierge::VmStoppedSignal signal;
   signal.set_name(request.name());
   signal.set_owner_id(request.owner_id());
@@ -228,7 +228,7 @@ void FakeConciergeClient::ResumeVm(
 void FakeConciergeClient::GetVmInfo(
     const vm_tools::concierge::GetVmInfoRequest& request,
     DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse> callback) {
-  get_vm_info_called_ = true;
+  get_vm_info_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), get_vm_info_response_));
 }
@@ -237,7 +237,7 @@ void FakeConciergeClient::GetVmEnterpriseReportingInfo(
     const vm_tools::concierge::GetVmEnterpriseReportingInfoRequest& request,
     DBusMethodCallback<
         vm_tools::concierge::GetVmEnterpriseReportingInfoResponse> callback) {
-  get_vm_enterprise_reporting_info_called_ = true;
+  get_vm_enterprise_reporting_info_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 get_vm_enterprise_reporting_info_response_));
@@ -247,7 +247,7 @@ void FakeConciergeClient::SetVmCpuRestriction(
     const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
     DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
         callback) {
-  set_vm_cpu_restriction_called_ = true;
+  set_vm_cpu_restriction_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), set_vm_cpu_restriction_response_));
@@ -255,7 +255,7 @@ void FakeConciergeClient::SetVmCpuRestriction(
 
 void FakeConciergeClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
-  wait_for_service_to_be_available_called_ = true;
+  wait_for_service_to_be_available_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 wait_for_service_to_be_available_response_));
@@ -265,7 +265,7 @@ void FakeConciergeClient::GetContainerSshKeys(
     const vm_tools::concierge::ContainerSshKeysRequest& request,
     DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
         callback) {
-  get_container_ssh_keys_called_ = true;
+  get_container_ssh_keys_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -277,7 +277,7 @@ void FakeConciergeClient::AttachUsbDevice(
     base::ScopedFD fd,
     const vm_tools::concierge::AttachUsbDeviceRequest& request,
     DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse> callback) {
-  attach_usb_device_called_ = true;
+  attach_usb_device_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -287,7 +287,7 @@ void FakeConciergeClient::AttachUsbDevice(
 void FakeConciergeClient::DetachUsbDevice(
     const vm_tools::concierge::DetachUsbDeviceRequest& request,
     DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse> callback) {
-  detach_usb_device_called_ = true;
+  detach_usb_device_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -297,7 +297,7 @@ void FakeConciergeClient::DetachUsbDevice(
 void FakeConciergeClient::StartArcVm(
     const vm_tools::concierge::StartArcVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  start_arc_vm_called_ = true;
+  start_arc_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_));
 }
@@ -305,7 +305,7 @@ void FakeConciergeClient::StartArcVm(
 void FakeConciergeClient::ResizeDiskImage(
     const vm_tools::concierge::ResizeDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback) {
-  resize_disk_image_called_ = true;
+  resize_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), resize_disk_image_response_));
@@ -317,7 +317,7 @@ void FakeConciergeClient::ResizeDiskImage(
 void FakeConciergeClient::SetVmId(
     const vm_tools::concierge::SetVmIdRequest& request,
     DBusMethodCallback<vm_tools::concierge::SetVmIdResponse> callback) {
-  set_vm_id_called_ = true;
+  set_vm_id_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), set_vm_id_response_));
 }

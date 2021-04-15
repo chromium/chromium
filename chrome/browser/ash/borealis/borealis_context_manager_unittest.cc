@@ -296,7 +296,7 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   chromeos::FakeConciergeClient* fake_concierge_client =
       static_cast<chromeos::FakeConciergeClient*>(
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
-  EXPECT_TRUE(fake_concierge_client->stop_vm_called());
+  EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
   histogram_tester_->ExpectUniqueSample(kBorealisShutdownResultHistogram,
                                         BorealisShutdownResult::kSuccess, 1);
@@ -435,7 +435,7 @@ TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
   profile_->set_last_session_exited_cleanly(false);
   BorealisContextManagerImpl context_manager(profile_.get());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_concierge_client->stop_vm_called());
+  EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
 }
 
 }  // namespace

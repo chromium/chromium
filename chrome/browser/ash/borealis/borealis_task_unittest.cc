@@ -110,7 +110,7 @@ TEST_F(BorealisTasksTest, CreateDiskSucceedsAndCallbackRanWithResults) {
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(context_->disk_path(), path);
 }
 
@@ -130,7 +130,7 @@ TEST_F(BorealisTasksTest,
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(context_->disk_path(), path);
 }
 
@@ -146,7 +146,7 @@ TEST_F(BorealisTasksTest, StartBorealisVmSucceedsAndCallbackRanWithResults) {
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
@@ -162,7 +162,7 @@ TEST_F(BorealisTasksTest,
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
@@ -256,7 +256,7 @@ TEST_P(BorealisTasksTestDiskImage, CreateDiskFailsAndCallbackRanWithResults) {
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(context_->disk_path(), base::FilePath());
 }
 
@@ -288,7 +288,7 @@ TEST_P(BorealisTasksTestsStartBorealisVm,
   task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

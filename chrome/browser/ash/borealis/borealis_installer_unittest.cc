@@ -410,7 +410,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfShutdownFails) {
   chromeos::FakeConciergeClient* fake_concierge_client =
       static_cast<chromeos::FakeConciergeClient*>(
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
-  EXPECT_FALSE(fake_concierge_client->destroy_disk_image_called());
+  EXPECT_EQ(fake_concierge_client->destroy_disk_image_call_count(), 0);
 
   // Borealis is still "installed" according to the prefs.
   EXPECT_TRUE(
@@ -490,7 +490,7 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
   chromeos::FakeConciergeClient* fake_concierge_client =
       static_cast<chromeos::FakeConciergeClient*>(
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
-  EXPECT_TRUE(fake_concierge_client->destroy_disk_image_called());
+  EXPECT_GE(fake_concierge_client->destroy_disk_image_call_count(), 1);
 
   // Borealis's DLC is not installed
   UpdateCurrentDlcs();

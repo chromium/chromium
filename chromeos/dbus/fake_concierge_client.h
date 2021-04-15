@@ -136,26 +136,41 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
     return disk_image_observer_list_;
   }
 
-  bool wait_for_service_to_be_available_called() const {
-    return wait_for_service_to_be_available_called_;
+  int wait_for_service_to_be_available_call_count() const {
+    return wait_for_service_to_be_available_call_count_;
   }
-  bool create_disk_image_called() const { return create_disk_image_called_; }
-  bool destroy_disk_image_called() const { return destroy_disk_image_called_; }
-  bool import_disk_image_called() const { return import_disk_image_called_; }
-  bool list_vm_disks_called() const { return list_vm_disks_called_; }
-  bool start_termina_vm_called() const { return start_termina_vm_called_; }
-  bool stop_vm_called() const { return stop_vm_called_; }
-  bool get_vm_info_called() const { return get_vm_info_called_; }
-  bool get_vm_enterprise_reporting_info_called() const {
-    return get_vm_enterprise_reporting_info_called_;
+  int create_disk_image_call_count() const {
+    return create_disk_image_call_count_;
   }
-  bool get_container_ssh_keys_called() const {
-    return get_container_ssh_keys_called_;
+  int destroy_disk_image_call_count() const {
+    return destroy_disk_image_call_count_;
   }
-  bool attach_usb_device_called() const { return attach_usb_device_called_; }
-  bool detach_usb_device_called() const { return detach_usb_device_called_; }
-  bool start_arc_vm_called() const { return start_arc_vm_called_; }
-  bool resize_disk_image_called() const { return resize_disk_image_called_; }
+  int import_disk_image_call_count() const {
+    return import_disk_image_call_count_;
+  }
+  int list_vm_disks_call_count() const { return list_vm_disks_call_count_; }
+  int start_termina_vm_call_count() const {
+    return start_termina_vm_call_count_;
+  }
+  int stop_vm_call_count() const { return stop_vm_call_count_; }
+  int get_vm_info_call_count() const { return get_vm_info_call_count_; }
+  int get_vm_enterprise_reporting_info_call_count() const {
+    return get_vm_enterprise_reporting_info_call_count_;
+  }
+  int get_container_ssh_keys_call_count() const {
+    return get_container_ssh_keys_call_count_;
+  }
+  int attach_usb_device_call_count() const {
+    return attach_usb_device_call_count_;
+  }
+  int detach_usb_device_call_count() const {
+    return detach_usb_device_call_count_;
+  }
+  int start_arc_vm_call_count() const { return start_arc_vm_call_count_; }
+  int resize_disk_image_call_count() const {
+    return resize_disk_image_call_count_;
+  }
+
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
   }
@@ -292,23 +307,24 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal);
 
-  bool wait_for_service_to_be_available_called_ = false;
-  bool create_disk_image_called_ = false;
-  bool destroy_disk_image_called_ = false;
-  bool import_disk_image_called_ = false;
-  bool disk_image_status_called_ = false;
-  bool list_vm_disks_called_ = false;
-  bool start_termina_vm_called_ = false;
-  bool stop_vm_called_ = false;
-  bool get_vm_info_called_ = false;
-  bool get_vm_enterprise_reporting_info_called_ = false;
-  bool set_vm_cpu_restriction_called_ = false;
-  bool get_container_ssh_keys_called_ = false;
-  bool attach_usb_device_called_ = false;
-  bool detach_usb_device_called_ = false;
-  bool start_arc_vm_called_ = false;
-  bool resize_disk_image_called_ = false;
-  bool set_vm_id_called_ = false;
+  int wait_for_service_to_be_available_call_count_ = 0;
+  int create_disk_image_call_count_ = 0;
+  int destroy_disk_image_call_count_ = 0;
+  int import_disk_image_call_count_ = 0;
+  int disk_image_status_call_count_ = 0;
+  int list_vm_disks_call_count_ = 0;
+  int start_termina_vm_call_count_ = 0;
+  int stop_vm_call_count_ = 0;
+  int get_vm_info_call_count_ = 0;
+  int get_vm_enterprise_reporting_info_call_count_ = 0;
+  int set_vm_cpu_restriction_call_count_ = 0;
+  int get_container_ssh_keys_call_count_ = 0;
+  int attach_usb_device_call_count_ = 0;
+  int detach_usb_device_call_count_ = 0;
+  int start_arc_vm_call_count_ = 0;
+  int resize_disk_image_call_count_ = 0;
+  int set_vm_id_call_count_ = 0;
+
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
   bool is_container_startup_failed_signal_connected_ = true;

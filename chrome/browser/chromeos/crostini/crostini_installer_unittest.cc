@@ -108,7 +108,7 @@ class CrostiniInstallerTest : public testing::Test {
       base::RunLoop loop;
       quit_closure_ = loop.QuitClosure();
       loop.Run();
-      EXPECT_TRUE(start_termina_vm_called());
+      EXPECT_GE(start_termina_vm_call_count(), 1);
     }
 
    private:

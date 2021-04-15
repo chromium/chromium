@@ -43,7 +43,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
       base::RunLoop loop;
       closure_ = loop.QuitClosure();
       loop.Run();
-      EXPECT_TRUE(stop_vm_called());
+      EXPECT_GE(stop_vm_call_count(), 1);
     }
 
    private:

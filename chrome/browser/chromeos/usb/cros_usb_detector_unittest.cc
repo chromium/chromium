@@ -372,7 +372,7 @@ TEST_F(CrosUsbDetectorTest, UsbNotificationClicked) {
   notification->delegate()->Click(0, base::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->attach_usb_device_called());
+  EXPECT_GE(fake_concierge_client_->attach_usb_device_call_count(), 1);
   // Notification should close.
   EXPECT_FALSE(display_service_->GetNotification(notification_id));
 }
@@ -934,14 +934,14 @@ TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachSuccess) {
   device_info = GetSingleDeviceInfo();
   ASSERT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM2", *device_info.shared_vm_name);
-  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_EQ(fake_concierge_client_->detach_usb_device_call_count(), 0);
 
   // Attached to VM2 -> attached to VM3
   AttachDeviceToVm("VM3", device_info.guid);
   device_info = GetSingleDeviceInfo();
   ASSERT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM3", *device_info.shared_vm_name);
-  EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_GE(fake_concierge_client_->detach_usb_device_call_count(), 1);
 }
 
 TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachFailure) {
@@ -966,7 +966,7 @@ TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachFailure) {
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM2", *device_info.shared_vm_name);
-  EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_GE(fake_concierge_client_->detach_usb_device_call_count(), 1);
 
   // Shared but not attached to VM2 -> shared but not attached to VM3
   AttachDeviceToVm("VM3", device_info.guid, /*success=*/false);
@@ -994,7 +994,7 @@ TEST_F(CrosUsbDetectorTest, DetachFromDifferentVM) {
 
   // Device is not attached to VM2, so this will no-op.
   DetachDeviceFromVm("VM2", device_info.guid, /*expected_success=*/false);
-  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_EQ(fake_concierge_client_->detach_usb_device_call_count(), 0);
   EXPECT_EQ("VM1", *device_info.shared_vm_name);
 }
 
@@ -1022,21 +1022,21 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
       .WillOnce(MoveArg<1>(&callback4));
 
   AttachDeviceToVm("VM1", GetSingleDeviceInfo().guid);
-  EXPECT_FALSE(fake_concierge_client_->attach_usb_device_called());
+  EXPECT_EQ(fake_concierge_client_->attach_usb_device_call_count(), 0);
 
   // Unmount events would normally be fired by the DiskMountManager.
   NotifyMountEvent("disk1", chromeos::disks::DiskMountManager::UNMOUNTING);
   std::move(callback1).Run(chromeos::MOUNT_ERROR_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetSingleDeviceInfo().shared_vm_name.has_value());
-  EXPECT_FALSE(fake_concierge_client_->attach_usb_device_called());
+  EXPECT_EQ(fake_concierge_client_->attach_usb_device_call_count(), 0);
 
   // All unmounts must complete before sharing succeeds.
   NotifyMountEvent("disk4", chromeos::disks::DiskMountManager::UNMOUNTING);
   std::move(callback4).Run(chromeos::MOUNT_ERROR_NONE);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(fake_concierge_client_->attach_usb_device_called());
+  EXPECT_GE(fake_concierge_client_->attach_usb_device_call_count(), 1);
   EXPECT_EQ("VM1", GetSingleDeviceInfo().shared_vm_name);
 }
 
@@ -1073,7 +1073,7 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemFailure) {
 
   // AttachDeviceToVm() verifies CrosUsbDetector correctly calls the completion
   // callback, so there's not much to check here.
-  EXPECT_FALSE(fake_concierge_client_->attach_usb_device_called());
+  EXPECT_EQ(fake_concierge_client_->attach_usb_device_call_count(), 0);
 }
 
 TEST_F(CrosUsbDetectorTest, ReassignPromptForSharedDevice) {

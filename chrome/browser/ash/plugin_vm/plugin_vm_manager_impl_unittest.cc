@@ -141,7 +141,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
   EXPECT_FALSE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_FALSE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -162,7 +162,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmStartAndShow) {
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -217,7 +217,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmShowAndStop) {
   EXPECT_FALSE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -240,7 +240,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
 
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(ConciergeClient().get_vm_info_called());
+  EXPECT_GE(ConciergeClient().get_vm_info_call_count(), 1);
   EXPECT_TRUE(base::DirectoryExists(
       file_manager::util::GetMyFilesFolderForProfile(testing_profile_.get())));
   EXPECT_TRUE(SeneschalClient().share_path_called());
@@ -356,7 +356,7 @@ TEST_F(PluginVmManagerImplTest, RelaunchPluginVm) {
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -386,7 +386,7 @@ TEST_F(PluginVmManagerImplTest, UninstallRunningPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(
@@ -412,7 +412,7 @@ TEST_F(PluginVmManagerImplTest, UninstallStoppedPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(
@@ -438,7 +438,7 @@ TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_EQ(ConciergeClient().destroy_disk_image_call_count(), 0);
   EXPECT_NE(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_TRUE(testing_profile_->GetPrefs()->GetBoolean(
@@ -447,7 +447,7 @@ TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
   NotifyVmStateChanged(
       vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_NE(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_TRUE(testing_profile_->GetPrefs()->GetBoolean(
@@ -479,7 +479,7 @@ TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_EQ(ConciergeClient().destroy_disk_image_call_count(), 0);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(
