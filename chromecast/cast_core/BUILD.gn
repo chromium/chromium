@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("cast_core") {
+  sources = [
+    "cast_runtime_service.cc",
+    "cast_runtime_service.h",
+  ]
+
+  deps = [
+    "//chromecast/media/cma/backend/proxy:headers",
+    "//chromecast/service",
+  ]
+}
