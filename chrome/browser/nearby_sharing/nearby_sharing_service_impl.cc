@@ -2139,7 +2139,7 @@ void NearbySharingServiceImpl::ReceivePayloads(
       continue;
     }
 
-    base::FilePath file_path = download_path.AppendASCII(file.file_name());
+    base::FilePath file_path = download_path.Append(file.file_name());
     valid_file_payloads.emplace(file.id(), std::move(file_path));
   }
 
