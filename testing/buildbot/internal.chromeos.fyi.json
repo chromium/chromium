@@ -1197,6 +1197,10 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--board=amd64-generic",
+          "--use-vm"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

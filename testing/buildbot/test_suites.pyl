@@ -4143,6 +4143,10 @@
 
     'lacros_all_tast_tests_amd64_generic': {
       'lacros_all_tast_tests_amd64_generic': {
+        'args': [
+          '--board=amd64-generic',
+          '--use-vm',
+        ],
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
           'dimension_sets': [
@@ -4168,6 +4172,10 @@
 
     'lacros_smoke_tast_tests_amd64_generic': {
       'lacros_smoke_tast_tests_amd64_generic': {
+        'args': [
+          '--board=amd64-generic',
+          '--use-vm',
+        ],
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
           'dimension_sets': [
