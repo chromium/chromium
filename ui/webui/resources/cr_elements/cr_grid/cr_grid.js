@@ -17,13 +17,18 @@ export class CrGridElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {number} */
       columns: {
         type: Number,
-        value: 1,
         observer: 'onColumnsChange_',
       },
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @type {number} */
+    this.columns = 1;
   }
 
   /** @private */

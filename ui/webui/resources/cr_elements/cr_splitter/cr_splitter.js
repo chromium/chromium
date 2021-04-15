@@ -15,10 +15,7 @@ export class CrSplitterElement extends PolymerElement {
 
   static get properties() {
     return {
-      resizeNextElement: {
-        type: Boolean,
-        value: false,
-      },
+      resizeNextElement: Boolean,
     };
   }
 
@@ -33,6 +30,9 @@ export class CrSplitterElement extends PolymerElement {
 
     /** @private {number} */
     this.startWidth_ = -1;
+
+    /** @type {boolean} */
+    this.resizeNextElement = false;
   }
 
   ready() {
