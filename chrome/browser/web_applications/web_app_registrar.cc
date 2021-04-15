@@ -30,6 +30,17 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
   return it == registry_.end() ? nullptr : it->second.get();
 }
 
+const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
+  if (registry_profile_being_deleted_)
+    return nullptr;
+
+  for (auto const& it : registry_) {
+    if (it.second->start_url() == start_url)
+      return it.second.get();
+  }
+  return nullptr;
+}
+
 std::vector<AppId> WebAppRegistrar::GetAppsInSyncInstall() {
   AppSet apps_in_sync_install = AppSet(
       this, [](const WebApp& web_app) { return web_app.is_in_sync_install(); });

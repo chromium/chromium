@@ -63,6 +63,18 @@ AppId GenerateAppIdFromURL(const GURL& url) {
   return crx_file::id_util::GenerateId(GenerateAppHashFromURL(url));
 }
 
+AppId GenerateAppId(const base::Optional<std::string>& manifest_id,
+                    const GURL& start_url) {
+  // When manifest_id is specified, the app id is generated from
+  // <start_url_origin>/<manifest_id>.
+  // Note: start_url.GetOrigin().spec() returns the origin ending with slash.
+  if (manifest_id.has_value()) {
+    return crx_file::id_util::GenerateId(crypto::SHA256HashString(
+        start_url.GetOrigin().spec() + manifest_id.value()));
+  }
+  return GenerateAppIdFromURL(start_url);
+}
+
 // Generate the public key for the fake extension that we synthesize to contain
 // a web app.
 //

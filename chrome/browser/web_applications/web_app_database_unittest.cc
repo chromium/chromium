@@ -635,6 +635,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_TRUE(app->manifest_url().is_empty());
+  EXPECT_FALSE(app->manifest_id().has_value());
   controller().RegisterApp(std::move(app));
 
   Registry registry = database_factory().ReadRegistry();
@@ -693,6 +694,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
+  EXPECT_FALSE(app_copy->manifest_id().has_value());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {

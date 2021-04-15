@@ -283,6 +283,10 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 }
 
+void WebApp::SetManifestId(const base::Optional<std::string>& manifest_id) {
+  manifest_id_ = manifest_id;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -402,6 +406,9 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
 
   out << "  manifest_url: " << app.manifest_url_ << std::endl;
 
+  if (!app.manifest_id_.has_value())
+    out << "  manifest_id: " << app.manifest_id_.value() << std::endl;
+
   return out;
 }
 
@@ -460,6 +467,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.url_handlers_,
         app.capture_links_,
         app.manifest_url_,
+        app.manifest_id_,
         app.client_data_.system_web_app_data
         // clang-format on
     );

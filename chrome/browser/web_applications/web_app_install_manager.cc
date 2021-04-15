@@ -35,10 +35,12 @@ constexpr bool kLocallyInstallWebAppsOnSync = false;
 #endif
 
 InstallManager::InstallParams CreateSyncInstallParams(
+    const base::Optional<std::string>& manifest_id,
     const GURL& start_url,
     const std::u16string& app_name,
     DisplayMode user_display_mode) {
   InstallManager::InstallParams params;
+  params.override_manifest_id = manifest_id;
   params.user_display_mode = user_display_mode;
   params.fallback_start_url = start_url;
   params.fallback_app_name = app_name;
@@ -252,7 +254,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
 
   task->ExpectAppId(sync_app_id);
   task->SetInstallParams(CreateSyncInstallParams(
-      start_url, web_application_info->title,
+      web_application_info->manifest_id, start_url, web_application_info->title,
       web_application_info->open_as_window ? DisplayMode::kStandalone
                                            : DisplayMode::kBrowser));
 
@@ -331,6 +333,7 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
     DCHECK(web_app->is_in_sync_install());
 
     auto web_application_info = std::make_unique<WebApplicationInfo>();
+    web_application_info->manifest_id = web_app->manifest_id();
     web_application_info->start_url = web_app->start_url();
     web_application_info->title =
         base::UTF8ToUTF16(web_app->sync_fallback_data().name);

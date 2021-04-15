@@ -1134,6 +1134,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {
   VISIT(name);
   VISIT_ENUM(user_display_mode);
   VISIT(theme_color);
+  VISIT(manifest_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics::

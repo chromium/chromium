@@ -165,6 +165,9 @@ struct WebApplicationInfo {
   explicit WebApplicationInfo(const webapps::mojom::WebPageMetadata& metadata);
   ~WebApplicationInfo();
 
+  // Id specified in the manifest.
+  base::Optional<std::string> manifest_id;
+
   // Title of the application.
   std::u16string title;
 
