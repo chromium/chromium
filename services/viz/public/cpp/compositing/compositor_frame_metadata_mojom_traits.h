@@ -105,6 +105,8 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
 
   static base::Optional<base::TimeDelta> preferred_frame_interval(
       const viz::CompositorFrameMetadata& metadata) {
+    DCHECK(!metadata.preferred_frame_interval ||
+           metadata.preferred_frame_interval.value() >= base::TimeDelta());
     return metadata.preferred_frame_interval;
   }
 

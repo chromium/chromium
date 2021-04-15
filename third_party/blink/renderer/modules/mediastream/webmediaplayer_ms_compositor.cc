@@ -582,7 +582,8 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock auto_lock(current_frame_lock_);
-    if (current_frame_)
+    // Last timestamp in the stream might not have timestamp.
+    if (current_frame_ && !frame->timestamp().is_zero())
       last_render_length_ = frame->timestamp() - current_frame_->timestamp();
     SetCurrentFrame(std::move(frame), is_copy, base::nullopt);
   }

@@ -51,12 +51,20 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.top_controls_visible_height());
   }
 
+  if (!data.ReadPreferredFrameInterval(&out->preferred_frame_interval))
+    return false;
+
+  // Preferred_frame_interval must be nullopt or non-negative.
+  if (out->preferred_frame_interval &&
+      *out->preferred_frame_interval < base::TimeDelta()) {
+    return false;
+  }
+
   return data.ReadLatencyInfo(&out->latency_info) &&
          data.ReadReferencedSurfaces(&out->referenced_surfaces) &&
          data.ReadDeadline(&out->deadline) &&
          data.ReadActivationDependencies(&out->activation_dependencies) &&
          data.ReadBeginFrameAck(&out->begin_frame_ack) &&
-         data.ReadPreferredFrameInterval(&out->preferred_frame_interval) &&
          data.ReadDisplayTransformHint(&out->display_transform_hint) &&
          data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
          data.ReadTransitionDirectives(&out->transition_directives);
