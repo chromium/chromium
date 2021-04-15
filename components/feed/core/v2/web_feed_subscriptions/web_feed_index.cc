@@ -4,49 +4,377 @@
 
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 
+#include <memory>
 #include <ostream>
+#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/url_matcher/string_pattern.h"
+#include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
-
 namespace feed {
-
 namespace {
 using Entry = WebFeedIndex::Entry;
-void AddEntries(std::vector<Entry>& entries,
-                std::vector<std::pair<std::string, int>>& domain_list,
-                const ::google::protobuf::RepeatedPtrField<
-                    feedwire::webfeed::WebFeedMatcher>& matchers,
-                bool is_recommended,
-                const std::string& web_feed_id) {
-  int index = static_cast<int>(entries.size());
-  entries.push_back({web_feed_id, is_recommended});
-  for (const feedwire::webfeed::WebFeedMatcher& matcher : matchers) {
-    // TODO(crbug/1152592): This code is wrong! We need to match ALL criteria
-    // provided. Also, we need to support the initial set of criteria types.
-    if (!web_feed_id.empty()) {
-      for (const auto& criteria : matcher.criteria()) {
-        if (criteria.criteria_type() == feedwire::webfeed::WebFeedMatcher::
-                                            Criteria::PAGE_URL_HOST_SUFFIX &&
-            !criteria.text().empty()) {
-          domain_list.emplace_back(criteria.text(), index);
-        }
-      }
+
+// Given a host and a list of host suffixes, efficiently finds which host
+// suffixes match.
+class HostSuffixMatcher {
+ public:
+  // A host suffix to search for.
+  struct Entry {
+    bool operator<(const Entry& rhs) const {
+      return host_suffix < rhs.host_suffix;
+    }
+    bool operator<(base::StringPiece other_host_suffix) const {
+      return host_suffix < other_host_suffix;
+    }
+    std::string host_suffix;
+    int condition_id;
+  };
+
+  explicit HostSuffixMatcher(std::vector<Entry> entries) {
+    entries_ = std::move(entries);
+    std::sort(entries_.begin(), entries_.end());
+  }
+
+  // Find all host suffixes that match `host_string`, and add the match IDs to
+  // `match_set`.
+  void FindMatches(const std::string& host_string, std::set<int>& match_set) {
+    base::StringPiece host(host_string);
+    if (host.empty())
+      return;
+    // Ignore a trailing dot for a FQDN.
+    if (host[host.size() - 1] == '.')
+      host = host.substr(0, host.size() - 1);
+
+    // Given a `host_string` of 'sub.foo.com', search for 'sub.foo.com',
+    // 'foo.com', and then finally 'com'.
+    FindExactMatches(host, match_set);
+    for (size_t i = 0; i < host.size(); ++i) {
+      if (host[i] == '.')
+        FindExactMatches(host.substr(i + 1), match_set);
     }
   }
-}
+
+ private:
+  void FindExactMatches(base::StringPiece prefix, std::set<int>& match_set) {
+    auto iter = std::lower_bound(entries_.begin(), entries_.end(), prefix);
+    while (iter != entries_.end() && iter->host_suffix == prefix) {
+      match_set.insert(iter->condition_id);
+      ++iter;
+    }
+  }
+
+  std::vector<Entry> entries_;
+};
+
+constexpr int kFirstConditionId = 1;
+
+// References a set of conditions that all must be true to identify a Web Feed.
+// Conditions in this context are represented by unique integer IDs. Each
+// MultiConditionSet represents a set of sequential contion IDs, and an entry
+// index which points to the Web Feed with these associated match conditions.
+// See its use in EntrySet::Search() for context.
+struct MultiConditionSet {
+  // The number of conditions that must be true. Because MultiConditionSet is
+  // always stored as a vector<MultiConditionSet>, this alone uniquely
+  // identifies the condition IDs that must be met, given the following
+  // assumptions:
+  // 1. The first MultiConditionSet starts with kFirstConditionId.
+  // 2. Each MultiConditionSet claims sequential condition IDs.
+  //
+  // For example, given the list of MultiConditionSets with the condition
+  // counts [2,3,1], the condition sets correspond to the condition IDs: [{1,2},
+  // {3,4,5}, {6}].
+  int condition_count = 0;
+  // The index of the Web Feed entry which is identified by these conditions.
+  int entry_index;
+};
 
 }  // namespace
 
-WebFeedIndex::EntrySet::EntrySet() = default;
-WebFeedIndex::EntrySet::~EntrySet() = default;
-WebFeedIndex::EntrySet::EntrySet(const EntrySet&) = default;
-WebFeedIndex::EntrySet& WebFeedIndex::EntrySet::operator=(const EntrySet&) =
-    default;
-WebFeedIndex::WebFeedIndex() = default;
+namespace web_feed_index_internal {
+class EntrySetBuilder;
+
+// A set of WebFeedIndex::Entry objects.
+class EntrySet {
+ public:
+  EntrySet() = default;
+  // Returns the Web Feed entry for the Web Feed that matches `page_url` and
+  // `rss_urls`. Returns an invalid Entry if none is found.
+  Entry Search(const GURL& page_url, const std::vector<GURL>& rss_urls) {
+    // Search each 'vertical slice' independently: page URL, page host suffix,
+    // page suffix, and RSS URL. Collect set of matching IDs.
+
+    std::set<int> matching_ids = page_url_matcher_.MatchURL(page_url);
+    for (const GURL& rss_url : rss_urls) {
+      auto ids = rss_url_matcher_.MatchURL(rss_url);
+      matching_ids.insert(ids.begin(), ids.end());
+    }
+    page_host_matcher_.Match(page_url.host(), &matching_ids);
+    host_suffix_matcher_.FindMatches(page_url.host(), matching_ids);
+    page_path_matcher_.Match(page_url.path(), &matching_ids);
+
+    // Iterate through `condition_sets_` to find any which has all conditions
+    // met. Because condition IDs used in condition_sets_ and matching_ids
+    // are both sorted, this can be done in a single O(N) pass.
+    // Note: If we make the assumption that `matching_ids` is very small, we can
+    // do better by binary searching for each of `matching_ids`. But a linear
+    // scan is easier and likely pretty fast since condition_sets_ is dense and
+    // flat.
+
+    int mcs_first_condition_id = kFirstConditionId;
+    int matches_for_mcs = 0;
+    auto match_iter = matching_ids.begin();
+    for (size_t i = 0;
+         i < condition_sets_.size() && match_iter != matching_ids.end();) {
+      MultiConditionSet& mcs = condition_sets_[i];
+      if (*match_iter < mcs_first_condition_id) {
+        ++match_iter;
+        matches_for_mcs = 0;
+        continue;
+      }
+      if (mcs_first_condition_id + mcs.condition_count <= *match_iter) {
+        matches_for_mcs = 0;
+        mcs_first_condition_id += mcs.condition_count;
+        ++i;
+        continue;
+      }
+      ++matches_for_mcs;
+      ++match_iter;
+      if (mcs.condition_count == matches_for_mcs) {
+        return entries_[mcs.entry_index];
+      }
+    }
+    return {};
+  }
+
+  const std::vector<Entry>& entries() const { return entries_; }
+
+ private:
+  friend class EntrySetBuilder;
+
+  // Web Feeds in this set.
+  std::vector<Entry> entries_;
+
+  // Members that just hold on to memory used in matchers.
+  url_matcher::URLMatcherConditionFactory condition_factory_;
+  std::vector<url_matcher::StringPattern> host_match_patterns_;
+  std::vector<url_matcher::StringPattern> path_match_patterns_;
+
+  // List of `MultiConditionSet`. Each one knows how to aggregate match IDs
+  // reported from matchers below into a WebFeed match.
+  std::vector<MultiConditionSet> condition_sets_;
+
+  // Each of the following matcher have the capability to match different
+  // things, and report integer IDs for each match.
+  url_matcher::URLMatcher page_url_matcher_;
+  url_matcher::RegexSetMatcher page_host_matcher_;
+  url_matcher::RegexSetMatcher page_path_matcher_;
+  HostSuffixMatcher host_suffix_matcher_{{}};
+  url_matcher::URLMatcher rss_url_matcher_;
+};
+
+class EntrySetBuilder {
+ public:
+  void AddSubscribed(const feedstore::WebFeedInfo& web_feed_info) {
+    int index = static_cast<int>(entry_set_->entries_.size());
+    entry_set_->entries_.push_back(
+        {web_feed_info.web_feed_id(), /*is_recommended=*/false});
+    for (const auto& matcher : web_feed_info.matchers()) {
+      CreateMatcherConditions(matcher, index);
+    }
+  }
+
+  void AddRecommended(const feedstore::RecommendedWebFeedIndex::Entry& entry) {
+    int index = static_cast<int>(entry_set_->entries_.size());
+    entry_set_->entries_.push_back(
+        {entry.web_feed_id(), /*is_recommended=*/true});
+    for (const auto& matcher : entry.matchers()) {
+      CreateMatcherConditions(matcher, index);
+    }
+  }
+
+  std::unique_ptr<EntrySet> Build() && {
+    DCHECK(entry_set_) << "Build can only be called once";
+    entry_set_->page_url_matcher_.AddConditionSets(page_conditions_);
+    entry_set_->rss_url_matcher_.AddConditionSets(rss_conditions_);
+    entry_set_->page_host_matcher_.AddPatterns(
+        MakeVectorOfPointers(entry_set_->host_match_patterns_));
+    entry_set_->page_path_matcher_.AddPatterns(
+        MakeVectorOfPointers(entry_set_->path_match_patterns_));
+
+    entry_set_->host_suffix_matcher_ =
+        HostSuffixMatcher(std::move(host_suffix_entries_));
+    return std::move(entry_set_);
+  }
+
+ private:
+  bool CreateMatcherConditions(
+      const feedwire::webfeed::WebFeedMatcher& web_feed_matcher,
+      int web_feed_entry_index) {
+    // Interpret all of the criteria first. If there are any errors, or unknown
+    // criteria types, abort adding the conditions by returning early.
+    if (web_feed_matcher.criteria_size() == 0)
+      return false;
+    for (const auto& criteria : web_feed_matcher.criteria()) {
+      const std::string* text = nullptr;
+      const std::string* regex = nullptr;
+      switch (criteria.match_case()) {
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kRegex:
+          regex = &criteria.regex();
+          if (regex->empty())
+            return false;
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kText:
+          text = &criteria.text();
+          if (text->empty())
+            return false;
+          break;
+        default:
+          return false;
+      }
+
+      switch (criteria.criteria_type()) {
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX:
+          if (!text)
+            return false;
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_MATCH:
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_PATH_MATCH:
+        case feedwire::webfeed::WebFeedMatcher::Criteria::RSS_URL_MATCH:
+          if (text || regex)
+            break;
+          return false;
+        default:
+          return false;
+      }
+    }
+
+    // All criteria were understood, so create a `MultiConditionSet`
+    // representing them.
+    std::set<url_matcher::URLMatcherCondition> page_matcher_conditions;
+    MultiConditionSet mcs;
+    mcs.entry_index = web_feed_entry_index;
+
+    for (const auto& criteria : web_feed_matcher.criteria()) {
+      const std::string* text = nullptr;
+      const std::string* regex = nullptr;
+      switch (criteria.match_case()) {
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kRegex:
+          regex = &criteria.regex();
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::MatchCase::kText:
+          text = &criteria.text();
+          break;
+        default:
+          return false;
+      }
+
+      switch (criteria.criteria_type()) {
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_MATCH:
+          if (text) {
+            page_matcher_conditions.insert(
+                entry_set_->condition_factory_.CreateHostEqualsCondition(
+                    *text));
+            break;
+          }
+          DCHECK(regex);
+          entry_set_->host_match_patterns_.emplace_back(
+              std::move(*regex), next_condition_set_id++);
+          ++mcs.condition_count;
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX:
+          DCHECK(text);
+          host_suffix_entries_.push_back({*text, next_condition_set_id++});
+          ++mcs.condition_count;
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_PATH_MATCH:
+          if (text) {
+            page_matcher_conditions.insert(
+                entry_set_->condition_factory_.CreatePathEqualsCondition(
+                    *text));
+            break;
+          }
+          DCHECK(regex);
+          entry_set_->path_match_patterns_.emplace_back(
+              *regex, next_condition_set_id++);
+          ++mcs.condition_count;
+          break;
+        case feedwire::webfeed::WebFeedMatcher::Criteria::RSS_URL_MATCH: {
+          url_matcher::URLMatcherCondition condition;
+          if (text) {
+            condition =
+                entry_set_->condition_factory_.CreateURLEqualsCondition(*text);
+          } else {
+            DCHECK(regex);
+            condition =
+                entry_set_->condition_factory_.CreateURLMatchesCondition(
+                    *regex);
+          }
+          rss_conditions_.push_back(
+              base::MakeRefCounted<url_matcher::URLMatcherConditionSet>(
+                  next_condition_set_id++,
+                  std::set<url_matcher::URLMatcherCondition>(
+                      {std::move(condition)})));
+          ++mcs.condition_count;
+        } break;
+        default:
+          DCHECK(false);
+          break;
+      }
+    }
+
+    if (!page_matcher_conditions.empty()) {
+      page_conditions_.push_back(
+          base::MakeRefCounted<url_matcher::URLMatcherConditionSet>(
+              next_condition_set_id++, page_matcher_conditions));
+      ++mcs.condition_count;
+    }
+    DCHECK_GE(mcs.condition_count, 0);
+    entry_set_->condition_sets_.push_back(mcs);
+    return true;
+  }
+
+  static std::vector<const url_matcher::StringPattern*> MakeVectorOfPointers(
+      const std::vector<url_matcher::StringPattern>& patterns) {
+    std::vector<const url_matcher::StringPattern*> result(patterns.size());
+    for (size_t i = 0; i < patterns.size(); ++i) {
+      result[i] = &patterns[i];
+    }
+    return result;
+  }
+
+  // The `EntrySet` being built.
+  std::unique_ptr<EntrySet> entry_set_ = std::make_unique<EntrySet>();
+
+  // Temporary state for building `entry_set_`.
+  int next_condition_set_id = kFirstConditionId;
+  std::vector<scoped_refptr<url_matcher::URLMatcherConditionSet>>
+      page_conditions_;
+  std::vector<scoped_refptr<url_matcher::URLMatcherConditionSet>>
+      rss_conditions_;
+  std::vector<HostSuffixMatcher::Entry> host_suffix_entries_;
+};
+
+}  // namespace web_feed_index_internal
+
+namespace {
+
+using EntrySetBuilder = web_feed_index_internal::EntrySetBuilder;
+
+}  // namespace
+
+WebFeedIndex::WebFeedIndex() {
+  recommended_ = std::make_unique<EntrySet>();
+  subscribed_ = std::make_unique<EntrySet>();
+}
+
 WebFeedIndex::~WebFeedIndex() = default;
 
 void WebFeedIndex::Populate(
@@ -56,17 +384,15 @@ void WebFeedIndex::Populate(
       update_time_millis <= 0
           ? base::Time()
           : feedstore::FromTimestampMillis(update_time_millis);
-  recommended_ = {};
-  std::vector<std::pair<std::string, int>> domain_list;
+
+  EntrySetBuilder builder;
 
   for (const feedstore::RecommendedWebFeedIndex::Entry& entry :
        recommended_feed_index.entries()) {
-    AddEntries(recommended_.entries, domain_list, entry.matchers(),
-               /*is_recommended=*/true, entry.web_feed_id());
+    builder.AddRecommended(entry);
   }
 
-  recommended_.domains =
-      base::flat_map<std::string, int>(std::move(domain_list));
+  recommended_ = std::move(builder).Build();
 }
 
 void WebFeedIndex::Populate(
@@ -76,70 +402,41 @@ void WebFeedIndex::Populate(
       update_time_millis <= 0
           ? base::Time()
           : feedstore::FromTimestampMillis(update_time_millis);
-  subscribed_ = {};
-  std::vector<std::pair<std::string, int>> domain_list;
+
+  EntrySetBuilder builder;
+
   // TODO(crbug/1152592): Record UMA for subscribed and recommended lists.
   // Note that flat_map will keep only the first entry with a given key.
   for (const auto& info : subscribed_feeds.feeds()) {
-    AddEntries(subscribed_.entries, domain_list, info.matchers(),
-               /*is_recommended=*/false, info.web_feed_id());
+    builder.AddSubscribed(info);
   }
-
-  subscribed_.domains =
-      base::flat_map<std::string, int>(std::move(domain_list));
-}
-
-// For host a.b.c.d.com ->
-// Lookup, in this order: a.b.c.d.com, b.c.d.com, c.d.com, d.com, com.
-WebFeedIndex::Entry WebFeedIndex::FindWebFeedForUrl(const GURL& url) {
-  std::string host_string = url.host();
-  base::StringPiece host(host_string);
-  if (host.empty())
-    return empty_entry_;
-  // Ignore a trailing dot for a FQDN.
-  if (host[host.size() - 1] == '.')
-    host = host.substr(0, host.size() - 1);
-
-  const Entry* result = &FindWebFeedForDomain(host);
-  for (size_t i = 0; i < host.size() && result->web_feed_id.empty(); ++i) {
-    if (host[i] == '.')
-      result = &FindWebFeedForDomain(host.substr(i + 1));
-  }
-  return *result;
+  subscribed_ = std::move(builder).Build();
 }
 
 WebFeedIndex::Entry WebFeedIndex::FindWebFeed(const std::string& web_feed_id) {
-  for (const Entry& e : subscribed_.entries) {
+  for (const Entry& e : subscribed_->entries()) {
     if (e.web_feed_id == web_feed_id)
       return e;
   }
-  for (const Entry& e : recommended_.entries) {
+  for (const Entry& e : recommended_->entries()) {
     if (e.web_feed_id == web_feed_id)
       return e;
   }
   return {};
 }
 
-const WebFeedIndex::Entry& WebFeedIndex::FindWebFeedForDomain(
-    base::StringPiece domain) {
-  const Entry& result = FindWebFeedForDomain(subscribed_, domain);
-  if (!result.web_feed_id.empty())
-    return result;
-  return FindWebFeedForDomain(recommended_, domain);
-}
-
-const WebFeedIndex::Entry& WebFeedIndex::FindWebFeedForDomain(
-    const EntrySet& entry_set,
-    base::StringPiece domain) {
-  auto iter = entry_set.domains.find(domain);
-  return (iter != entry_set.domains.end()) ? entry_set.entries[iter->second]
-                                           : empty_entry_;
+Entry WebFeedIndex::FindWebFeed(const WebFeedPageInformation& page_info) {
+  Entry result = subscribed_->Search(page_info.url(), page_info.GetRssUrls());
+  if (!result) {
+    result = recommended_->Search(page_info.url(), page_info.GetRssUrls());
+  }
+  return result;
 }
 
 bool WebFeedIndex::IsRecommended(const std::string& web_feed_id) const {
   if (web_feed_id.empty())
     return false;
-  for (const Entry& e : recommended_.entries) {
+  for (const Entry& e : recommended_->entries()) {
     if (e.web_feed_id == web_feed_id)
       return true;
   }
@@ -148,7 +445,7 @@ bool WebFeedIndex::IsRecommended(const std::string& web_feed_id) const {
 
 std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()
     const {
-  return recommended_.entries;
+  return recommended_->entries();
 }
 
 std::ostream& operator<<(std::ostream& os, const WebFeedIndex::Entry& entry) {

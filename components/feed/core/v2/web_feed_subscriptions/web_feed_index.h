@@ -13,12 +13,15 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/url_matcher/url_matcher.h"
 
-class GURL;
 namespace feedstore {
 class UriMatcher;
 }
 namespace feed {
+namespace web_feed_index_internal {
+class EntrySet;
+}  // namespace web_feed_index_internal
 
 // Tracks followed web feeds, and recommended web feeds.
 class WebFeedIndex {
@@ -43,10 +46,9 @@ class WebFeedIndex {
   // Populate the recommended feed index.
   void Populate(const feedstore::RecommendedWebFeedIndex& recommended_feeds);
 
-  // Returns the `Entry` for `url`. If more than one web feed matches,
-  // this returns only one. Subscribed feeds, and more specific URL matches are
-  // returned preferentially.
-  Entry FindWebFeedForUrl(const GURL& url);
+  // Returns the Web Feed `Entry` which matches `page_info`. If there's more
+  // than one match, preferentially returns subscribed Web Feed entries.
+  Entry FindWebFeed(const WebFeedPageInformation& page_info);
 
   Entry FindWebFeed(const std::string& id);
   bool IsRecommended(const std::string& web_feed_id) const;
@@ -61,28 +63,17 @@ class WebFeedIndex {
   std::vector<Entry> GetRecommendedEntriesForTesting() const;
 
  private:
-  // TODO(crbug/1152592): This code is temporary, we will need to have
-  // additional matching criteria. Plan to use url_matcher.h instead.
-  struct EntrySet {
-    EntrySet();
-    ~EntrySet();
-    EntrySet(const EntrySet&);
-    EntrySet& operator=(const EntrySet&);
-    // Maps from domain -> entries_ index.
-    base::flat_map<std::string, int> domains;
-    std::vector<Entry> entries;
-  };
+  using EntrySet = web_feed_index_internal::EntrySet;
+
   void AddMatcher(const std::string& web_feed_id,
                   const feedstore::UriMatcher& matcher);
-  const Entry& FindWebFeedForDomain(base::StringPiece domain);
-  const Entry& FindWebFeedForDomain(const EntrySet& entry_set,
-                                    base::StringPiece domain);
 
   base::Time recommended_feeds_update_time_;
   base::Time subscribed_feeds_update_time_;
-  EntrySet subscribed_;
-  EntrySet recommended_;
   Entry empty_entry_;
+
+  std::unique_ptr<EntrySet> recommended_;
+  std::unique_ptr<EntrySet> subscribed_;
 };
 
 // For tests.

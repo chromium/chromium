@@ -100,6 +100,7 @@ source_set("feed_core_v2") {
     "//components/offline_pages/task:task",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/url_matcher:url_matcher",
     "//components/variations",
     "//components/variations/net",
     "//components/version_info:channel",

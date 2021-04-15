@@ -13,10 +13,24 @@ WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(const WebFeedMetadata&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(WebFeedMetadata&&) = default;
 
+WebFeedPageInformation::WebFeedPageInformation() = default;
+WebFeedPageInformation::~WebFeedPageInformation() = default;
+WebFeedPageInformation::WebFeedPageInformation(const WebFeedPageInformation&) =
+    default;
+WebFeedPageInformation::WebFeedPageInformation(WebFeedPageInformation&&) =
+    default;
+WebFeedPageInformation& WebFeedPageInformation::operator=(
+    const WebFeedPageInformation&) = default;
+WebFeedPageInformation& WebFeedPageInformation::operator=(
+    WebFeedPageInformation&&) = default;
 void WebFeedPageInformation::SetUrl(const GURL& url) {
   url::Replacements<char> clear_ref;
   clear_ref.ClearRef();
   url_ = url.ReplaceComponents(clear_ref);
+}
+
+void WebFeedPageInformation::SetRssUrls(const std::vector<GURL>& rss_urls) {
+  rss_urls_ = rss_urls;
 }
 
 // operator<< functions below are for test purposes, and shouldn't be called

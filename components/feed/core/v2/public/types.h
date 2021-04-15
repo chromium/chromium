@@ -95,15 +95,26 @@ base::Optional<DebugStreamData> DeserializeDebugStreamData(
 // feed.
 class WebFeedPageInformation {
  public:
-  WebFeedPageInformation() = default;
+  WebFeedPageInformation();
+  ~WebFeedPageInformation();
+  WebFeedPageInformation(const WebFeedPageInformation&);
+  WebFeedPageInformation(WebFeedPageInformation&&);
+  WebFeedPageInformation& operator=(const WebFeedPageInformation&);
+  WebFeedPageInformation& operator=(WebFeedPageInformation&&);
+
   // The URL for the page. `url().has_ref()` is always false.
-  GURL url() const { return url_; }
+  const GURL& url() const { return url_; }
+  // The list of RSS urls embedded in the page with the <link> tag.
+  const std::vector<GURL>& GetRssUrls() const { return rss_urls_; }
 
   // Set the URL for the page. Trims off the URL ref.
   void SetUrl(const GURL& url);
 
+  void SetRssUrls(const std::vector<GURL>& rss_urls);
+
  private:
   GURL url_;
+  std::vector<GURL> rss_urls_;
   // TODO(crbug/1152592): There will be additional optional information.
 };
 
