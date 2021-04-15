@@ -73,6 +73,11 @@ class BrowserList {
   static void AddBrowser(Browser* browser);
   static void RemoveBrowser(Browser* browser);
 
+  // Appends active browser windows to |last_active_browsers_|, and prepends
+  // minimized browser windows to |last_active_browsers_|, i.e., treat
+  // minimized windows as least recently active.
+  static void AddBrowserToActiveList(Browser* browser);
+
   // Adds and removes |observer| from the observer list for all desktops.
   // Observers are responsible for making sure the notifying browser is relevant
   // to them (e.g., on the specific desktop they care about if any).
@@ -181,7 +186,8 @@ class BrowserList {
   // A vector of the browsers in this list, in the order they were added.
   BrowserVector browsers_;
   // A vector of the browsers in this list that have been activated, in the
-  // reverse order in which they were last activated.
+  // reverse order in which they were last activated. Minimized browser windows,
+  // (e.g., created by session restore) are inserted at the front of the list.
   BrowserVector last_active_browsers_;
   // A vector of the browsers that are currently in the closing state.
   BrowserSet currently_closing_browsers_;

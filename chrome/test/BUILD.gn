@@ -4664,6 +4664,7 @@ test("unit_tests") {
       "../browser/ui/browser_close_unittest.cc",
       "../browser/ui/browser_command_controller_unittest.cc",
       "../browser/ui/browser_instant_controller_unittest.cc",
+      "../browser/ui/browser_list_unittest.cc",
       "../browser/ui/browser_unittest.cc",
       "../browser/ui/browser_window_state_unittest.cc",
       "../browser/ui/commander/commander_controller_unittest.cc",

@@ -60,7 +60,7 @@ base::LazyInstance<base::ObserverList<BrowserListObserver>::Unchecked>::Leaky
     BrowserList::observers_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
-BrowserList* BrowserList::instance_ = NULL;
+BrowserList* BrowserList::instance_ = nullptr;
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserList, public:
@@ -68,7 +68,7 @@ BrowserList* BrowserList::instance_ = NULL;
 Browser* BrowserList::GetLastActive() const {
   if (!last_active_browsers_.empty())
     return *(last_active_browsers_.rbegin());
-  return NULL;
+  return nullptr;
 }
 
 // static
@@ -91,8 +91,7 @@ void BrowserList::AddBrowser(Browser* browser) {
   for (BrowserListObserver& observer : observers_.Get())
     observer.OnBrowserAdded(browser);
 
-  if (browser->window()->IsActive())
-    SetLastActive(browser);
+  AddBrowserToActiveList(browser);
 
   if (browser->profile()->IsGuestSession() ||
       browser->profile()->IsEphemeralGuestProfile()) {
@@ -131,6 +130,23 @@ void BrowserList::RemoveBrowser(Browser* browser) {
     // SessionService is created and notified.
     browser_shutdown::NotifyAppTerminating();
     chrome::OnAppExiting();
+  }
+}
+
+// static
+void BrowserList::AddBrowserToActiveList(Browser* browser) {
+  if (browser->window()->IsActive()) {
+    SetLastActive(browser);
+  } else if (browser->window()->IsMinimized()) {
+    // Put minimized windows at the start of the active browsers vector, so that
+    // GetIndexAndBrowserOfExistingTab will find them, but prefer active
+    // windows, when it is searching from the end of |last_active_browsers_| to
+    // the beginning. |last_active_browsers_| is in reverse order of most
+    // recently active, i.e., most recently active browsers are at the end of
+    // the vector. We check IsMinimized because SHOW_STATE_INACTIVE windows are
+    // not supposed to be in the active list.
+    BrowserVector* active_browsers = &GetInstance()->last_active_browsers_;
+    active_browsers->insert(active_browsers->begin(), browser);
   }
 }
 

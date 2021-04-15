@@ -215,6 +215,8 @@ class TestBrowserWindow : public BrowserWindow {
   void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {
     visible_on_all_workspaces_ = visible_on_all_workspaces;
   }
+  void set_is_active(bool active) { is_active_ = active; }
+  void set_is_minimized(bool minimized) { is_minimized_ = minimized; }
 
  protected:
   void DestroyBrowser() override {}
@@ -252,6 +254,8 @@ class TestBrowserWindow : public BrowserWindow {
 
   std::string workspace_;
   bool visible_on_all_workspaces_ = false;
+  bool is_minimized_ = false;
+  bool is_active_ = false;
 
   std::unique_ptr<FeaturePromoController> feature_promo_controller_;
 
