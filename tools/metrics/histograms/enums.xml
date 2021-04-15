@@ -24150,6 +24150,7 @@ Called by update_document_policy_enum.py.-->
   <int value="850" label="DeviceDebugPacketCaptureAllowed"/>
   <int value="851" label="SuggestLogoutAfterClosingLastWindow"/>
   <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
+  <int value="853" label="LensCameraAssistedSearchEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -43030,10 +43031,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Lens Search And Shop Supported"/>
   <int value="9" label="Camera Not Available"/>
   <int value="10" label="Disabled on Low End Device"/>
-  <int value="11" label="Disabled by Feature Flag"/>
-  <int value="12" label="AGSA Version Not Supported"/>
-  <int value="13" label="Disabled on Incognito"/>
-  <int value="14" label="Disabled on Tablet"/>
+  <int value="11" label="AGSA Version Not Supported"/>
+  <int value="12" label="Disabled on Incognito"/>
+  <int value="13" label="Disabled on Tablet"/>
+  <int value="14" label="Disabled for Enterprise user"/>
 </enum>
 
 <enum name="LevelDBCorruptionRestoreValue">
