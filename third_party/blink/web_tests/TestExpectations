@@ -6755,3 +6755,6 @@ crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Pass
 # Sheriff 2021-04-13
 crbug.com/1198515 [ Mac ] external/wpt/web-animations/timing-model/animations/playing-an-animation.html [ Pass Failure ]
 crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
+
+# Sheriff 2021-04-14
+crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Pass Failure ]
