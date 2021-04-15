@@ -11,7 +11,7 @@
 
 #define TRACE_APPLICATION_STATE(state)                                  \
   TRACE_EVENT_INSTANT(                                                  \
-      "Java", "ApplicationState", perfetto::ProcessTrack::Current(),    \
+      "Java", "ApplicationState", perfetto::Track::Global(0),           \
       [state](perfetto::EventContext ctx) {                             \
         ctx.event()                                                     \
             ->set_chrome_application_state_info()                       \

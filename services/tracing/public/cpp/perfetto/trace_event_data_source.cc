@@ -86,8 +86,11 @@ namespace {
 
 TraceEventMetadataSource* g_trace_event_metadata_source_for_testing = nullptr;
 
-void EmitRecurringUpdates(ChromeProcessDescriptor::ProcessType process_type) {
+void EmitRecurringUpdates() {
 #if defined(OS_ANDROID)
+  static const ChromeProcessDescriptor::ProcessType process_type =
+      GetProcessType(
+          base::trace_event::TraceLog::GetInstance()->process_name());
   if (process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
     auto state = base::android::ApplicationStatusListener::GetState();
     TRACE_APPLICATION_STATE(state);
@@ -878,6 +881,7 @@ void TraceEventDataSource::StartTracingInternal(
   EmitTrackDescriptor();
 
   TraceLog::GetInstance()->SetEnabled(trace_config, TraceLog::RECORDING_MODE);
+  EmitRecurringUpdates();
   ResetHistograms(trace_config);
 
   if (trace_config.IsCategoryGroupEnabled(
@@ -1356,7 +1360,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   trace_packet = TracePacketHandle();
 
-  EmitRecurringUpdates(process_type);
+  EmitRecurringUpdates();
 
   writer->Flush();
 }
