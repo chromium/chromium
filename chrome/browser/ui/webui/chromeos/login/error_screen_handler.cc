@@ -61,12 +61,22 @@ void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {
 
 void ErrorScreenHandler::SetErrorStateCode(
     NetworkError::ErrorState error_state) {
-  CallJS("login.ErrorMessageScreen.setErrorState",
-         static_cast<int>(error_state));
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
+  if (IsJavascriptAllowed()) {
+    CallJS("login.ErrorMessageScreen.setErrorState",
+           static_cast<int>(error_state));
+  } else {
+    LOG(ERROR) << "Silently dropping SetErrorStateNetwork request.";
+  }
 }
 
 void ErrorScreenHandler::SetErrorStateNetwork(const std::string& network_name) {
-  CallJS("login.ErrorMessageScreen.setErrorStateNetwork", network_name);
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
+  if (IsJavascriptAllowed()) {
+    CallJS("login.ErrorMessageScreen.setErrorStateNetwork", network_name);
+  } else {
+    LOG(ERROR) << "Silently dropping SetErrorStateNetwork request.";
+  }
 }
 
 void ErrorScreenHandler::SetGuestSigninAllowed(bool value) {
