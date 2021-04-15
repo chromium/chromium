@@ -514,25 +514,19 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     return drag_controller_.get();
   }
 
-  void OwnDragController(TabDragController* controller) override {
-    // Typically, ReleaseDragController() and OwnDragController() calls are
-    // paired via corresponding calls to TabDragController::Detach() and
-    // TabDragController::Attach(). There is one exception to that rule: when a
-    // drag might start, we create a TabDragController that is owned by the
-    // potential source tabstrip in MaybeStartDrag(). If a drag actually starts,
-    // we then call Attach() on the source tabstrip, but since the source
-    // tabstrip already owns the TabDragController, so we don't need to do
-    // anything.
-    if (drag_controller_.get() != controller)
-      drag_controller_.reset(controller);
+  void OwnDragController(
+      std::unique_ptr<TabDragController> controller) override {
+    DCHECK(controller);
+    DCHECK(!drag_controller_);
+    drag_controller_ = std::move(controller);
   }
 
   void DestroyDragController() override {
     drag_controller_.reset();
   }
 
-  TabDragController* ReleaseDragController() override {
-    return drag_controller_.release();
+  std::unique_ptr<TabDragController> ReleaseDragController() override {
+    return std::move(drag_controller_);
   }
 
   bool IsDragSessionActive() const override {

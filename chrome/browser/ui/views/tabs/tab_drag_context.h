@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_DRAG_CONTEXT_H_
 
+#include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/optional.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,10 +49,12 @@ class TabDragContext {
   virtual TabDragController* GetDragController() = 0;
 
   // Takes ownership of |controller|.
-  virtual void OwnDragController(TabDragController* controller) = 0;
+  virtual void OwnDragController(
+      std::unique_ptr<TabDragController> controller) = 0;
 
   // Releases ownership of the current TabDragController.
-  virtual TabDragController* ReleaseDragController() = 0;
+  virtual std::unique_ptr<TabDragController> ReleaseDragController()
+      WARN_UNUSED_RESULT = 0;
 
   // Destroys the current TabDragController. This cancel the existing drag
   // operation.

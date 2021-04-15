@@ -559,7 +559,10 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         return;
     }
     current_state_ = DragState::kDraggingTabs;
-    Attach(source_context_, gfx::Point());
+    // |source_context_| already owns |this| (it created us, even), so no need
+    // to hand off ownership.
+    DCHECK_EQ(source_context_->GetDragController(), this);
+    Attach(source_context_, gfx::Point(), nullptr);
     if (num_dragging_tabs() == source_context_->GetTabStripModel()->count()) {
       views::Widget* widget = GetAttachedBrowserWidget();
       gfx::Rect new_bounds;
@@ -900,6 +903,9 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // it to lose capture so skip it.
     browser_widget->Hide();
 #endif
+    // Does not immediately exit the move loop - that only happens when control
+    // returns to the event loop. The rest of this method will complete before
+    // control returns to RunMoveLoop().
     browser_widget->EndMoveLoop();
 
     // Ideally we would always swap the tabs now, but on non-ash Windows, it
@@ -912,8 +918,10 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
       tab_strip_to_attach_to_after_exit_ = target_context;
       current_state_ = DragState::kWaitingToDragTabs;
     } else {
-      Detach(DONT_RELEASE_CAPTURE);
-      Attach(target_context, point_in_screen);
+      // We already transferred ownership of |this| above, before we released
+      // capture.
+      DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context,
+                                  point_in_screen);
       current_state_ = DragState::kDraggingTabs;
       // Move the tabs into position.
       MoveAttached(point_in_screen, true);
@@ -922,8 +930,13 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
 
     return DRAG_BROWSER_RESULT_STOP;
   }
-  Detach(DONT_RELEASE_CAPTURE);
-  Attach(target_context, point_in_screen);
+
+  // In this case we're inserting into a new tabstrip directly from another,
+  // without going through any intervening stage of dragging a window. This is
+  // possible if the cursor goes over the target tabstrip but isn't far enough
+  // from the attached tabstrip to trigger dragging a window.
+  DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context,
+                              point_in_screen);
   MoveAttached(point_in_screen, true);
   return DRAG_BROWSER_RESULT_CONTINUE;
 }
@@ -1095,6 +1108,17 @@ TabDragController::DetachPosition TabDragController::GetDetachPosition(
   return DETACH_ABOVE_OR_BELOW;
 }
 
+void TabDragController::DetachAndAttachToNewContext(
+    ReleaseCapture release_capture,
+    TabDragContext* target_context,
+    const gfx::Point& point_in_screen,
+    bool set_capture) {
+  std::unique_ptr<TabDragController> me = Detach(release_capture);
+  DCHECK_EQ(me.get(), this);
+  DCHECK(!target_context->GetDragController());
+  Attach(target_context, point_in_screen, std::move(me), set_capture);
+}
+
 TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
     const gfx::Point& point_in_screen,
     TabDragContext** context) {
@@ -1160,12 +1184,22 @@ bool TabDragController::DoesTabStripContain(
 
 void TabDragController::Attach(TabDragContext* attached_context,
                                const gfx::Point& point_in_screen,
+                               std::unique_ptr<TabDragController> controller,
                                bool set_capture) {
   TRACE_EVENT1("views", "TabDragController::Attach", "point_in_screen",
                point_in_screen.ToString());
 
   DCHECK(!attached_context_);  // We should already have detached by the time
                                // we get here.
+
+  if (controller) {
+    // |this| may be owned by |controller|.
+    DCHECK_EQ(this, controller.get());
+    DCHECK(!attached_context->GetDragController());
+  } else {
+    // Or |this| may be owned by |attached_context|
+    DCHECK_EQ(this, attached_context->GetDragController());
+  }
 
   attached_context_ = attached_context;
 
@@ -1256,7 +1290,8 @@ void TabDragController::Attach(TabDragContext* attached_context,
   // drag isn't prematurely canceled.
   if (set_capture)
     SetCapture(attached_context_);
-  attached_context_->OwnDragController(this);
+  if (controller)
+    attached_context_->OwnDragController(std::move(controller));
   SetTabDraggingInfo();
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
@@ -1266,7 +1301,8 @@ void TabDragController::Attach(TabDragContext* attached_context,
     UpdateGroupForDraggedTabs();
 }
 
-void TabDragController::Detach(ReleaseCapture release_capture) {
+std::unique_ptr<TabDragController> TabDragController::Detach(
+    ReleaseCapture release_capture) {
   TRACE_EVENT1("views", "TabDragController::Detach", "release_capture",
                release_capture);
 
@@ -1278,8 +1314,11 @@ void TabDragController::Detach(ReleaseCapture release_capture) {
   move_behavior_ = REORDER;
 
   // Release ownership of the drag controller and mouse capture. When we
-  // reattach ownership is transfered.
-  attached_context_->ReleaseDragController();
+  // reattach ownership is transferred.
+  std::unique_ptr<TabDragController> me =
+      attached_context_->ReleaseDragController();
+  DCHECK(me.get() == this);
+
   if (release_capture == RELEASE_CAPTURE)
     attached_context_->AsView()->GetWidget()->ReleaseCapture();
 
@@ -1323,6 +1362,8 @@ void TabDragController::Detach(ReleaseCapture release_capture) {
   attached_context_->DraggedTabsDetached();
   attached_context_ = nullptr;
   attached_views_.clear();
+
+  return me;
 }
 
 void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
@@ -1358,20 +1399,23 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       ui::TransferTouchesBehavior::kDontCancel);
 #endif
 
+  dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
+  dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, Detach should release capture; |can_release_capture_| is
   // false on ChromeOS because it can cancel touches, but for this cases
   // the touches are already transferred, so releasing is fine. Without
   // releasing, the capture remains and further touch events can be sent to a
   // wrong target.
-  Detach(RELEASE_CAPTURE);
+  const ReleaseCapture release_capture = RELEASE_CAPTURE;
 #else
-  Detach(can_release_capture_ ? RELEASE_CAPTURE : DONT_RELEASE_CAPTURE);
+  const ReleaseCapture release_capture =
+      can_release_capture_ ? RELEASE_CAPTURE : DONT_RELEASE_CAPTURE;
 #endif
-
-  dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
-  dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
-  Attach(dragged_browser_view->tabstrip()->GetDragContext(), gfx::Point());
+  DetachAndAttachToNewContext(
+      release_capture, dragged_browser_view->tabstrip()->GetDragContext(),
+      gfx::Point());
   AdjustBrowserAndTabBoundsForDrag(tab_area_width, point_in_screen,
                                    &drag_offset, &drag_bounds);
   browser->window()->Show();
@@ -1404,9 +1448,11 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
     // Running the move loop releases mouse capture, which triggers destroying
     // the drag loop. Release mouse capture now while the DragController is not
     // owned by the TabDragContext.
-    attached_context_->ReleaseDragController();
+    std::unique_ptr<TabDragController> me =
+        attached_context_->ReleaseDragController();
+    DCHECK_EQ(me.get(), this);
     attached_context_->AsView()->GetWidget()->ReleaseCapture();
-    attached_context_->OwnDragController(this);
+    attached_context_->OwnDragController(std::move(me));
   }
   const views::Widget::MoveLoopSource move_loop_source =
       event_source_ == EVENT_SOURCE_MOUSE
@@ -1416,6 +1462,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
       is_dragging_new_browser_
           ? views::Widget::MoveLoopEscapeBehavior::kHide
           : views::Widget::MoveLoopEscapeBehavior::kDontHide;
+
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
       drag_offset, move_loop_source, escape_behavior);
   content::NotificationService::current()->Notify(
@@ -1439,8 +1486,9 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   if (current_state_ == DragState::kWaitingToDragTabs) {
     DCHECK(tab_strip_to_attach_to_after_exit_);
     gfx::Point point_in_screen(GetCursorScreenPoint());
-    Detach(DONT_RELEASE_CAPTURE);
-    Attach(tab_strip_to_attach_to_after_exit_, point_in_screen);
+    DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE,
+                                tab_strip_to_attach_to_after_exit_,
+                                point_in_screen);
     current_state_ = DragState::kDraggingTabs;
     // Move the tabs into position.
     MoveAttached(point_in_screen, true);
@@ -1569,19 +1617,16 @@ void TabDragController::PerformDeferredAttach() {
   // after the drag ends.
   did_restore_window_ = false;
 
-  // GetCursorScreenPoint() needs to be called before Detach() is called as
-  // GetCursorScreenPoint() may use the current attached tabstrip to get the
-  // touch event position but Detach() sets attached tabstrip to nullptr.
   // On ChromeOS, the gesture state is already cleared and so
   // GetCursorScreenPoint() will fail to obtain the last touch location.
   // Therefore it uses the last remembered location instead.
   const gfx::Point current_screen_point = (event_source_ == EVENT_SOURCE_TOUCH)
                                               ? last_point_in_screen_
                                               : GetCursorScreenPoint();
-  Detach(DONT_RELEASE_CAPTURE);
   // If we're attaching the dragged tabs to an overview window's tabstrip, the
   // tabstrip should not have focus.
-  Attach(deferred_target_context, current_screen_point, /*set_capture=*/false);
+  DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, deferred_target_context,
+                              current_screen_point, /*set_capture=*/false);
 
   SetDeferredTargetTabstrip(nullptr);
   deferred_target_context_observer_.reset();
