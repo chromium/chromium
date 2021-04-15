@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.background_sync;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -38,7 +36,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -181,11 +178,7 @@ public final class PeriodicBackgroundSyncTest {
     @Test
     @MediumTest
     @Feature({"PeriodicBackgroundSync"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
-    @DisableIf.Build(message = "Flaky on Android M tablets, see https://crbug.com/1163581",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
-    public void
-    unregisterCancelsBrowserWakeup() throws Exception {
+    public void unregisterCancelsBrowserWakeup() throws Exception {
         // Schedule and cancel expected once each.
         addSchedulerObserver(/* scheduleCount= */ 1, /* cancelCount= */ 1);
 
