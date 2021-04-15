@@ -124,6 +124,14 @@ base::TimeDelta GetActiveTabsStalenessTolerance();
 // Service that should be allowed.
 size_t MaxConcurrentPageNavigationFetches();
 
+// Returns the minimum number of seconds to randomly delay before starting to
+// fetch for hints for active tabs.
+int ActiveTabsHintsFetchRandomMinDelaySecs();
+
+// Returns the maximum number of seconds to randomly delay before starting to
+// fetch for hints for active tabs.
+int ActiveTabsHintsFetchRandomMaxDelaySecs();
+
 // The amount of time host model features will be considered fresh enough
 // to be used and remain in the OptimizationGuideStore.
 base::TimeDelta StoredHostModelFeaturesFreshnessDuration();

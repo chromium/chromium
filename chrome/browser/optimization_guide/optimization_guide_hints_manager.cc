@@ -68,10 +68,9 @@ constexpr char kManualConfigComponentVersion[] = "0.0.0";
 // Provides a random time delta in seconds between |kFetchRandomMinDelay| and
 // |kFetchRandomMaxDelay|.
 base::TimeDelta RandomFetchDelay() {
-  constexpr int kFetchRandomMinDelaySecs = 30;
-  constexpr int kFetchRandomMaxDelaySecs = 60;
-  return base::TimeDelta::FromSeconds(
-      base::RandInt(kFetchRandomMinDelaySecs, kFetchRandomMaxDelaySecs));
+  return base::TimeDelta::FromSeconds(base::RandInt(
+      optimization_guide::features::ActiveTabsHintsFetchRandomMinDelaySecs(),
+      optimization_guide::features::ActiveTabsHintsFetchRandomMaxDelaySecs()));
 }
 
 void MaybeRunUpdateClosure(base::OnceClosure update_closure) {
