@@ -50,7 +50,7 @@ source_set("signin_impl") {
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin",

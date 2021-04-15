@@ -39,6 +39,7 @@ source_set("policy") {
   ]
 
   deps = [
+    ":policy_util",
     "//base",
     "//components/autofill/core/browser",
     "//components/bookmarks/common",

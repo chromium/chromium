@@ -15,7 +15,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
@@ -149,9 +149,9 @@ bool IsSigninAllowedByPolicy() {
     return true;
   }
 
-  policy::BrowserSigninMode signin_mode;
+  BrowserSigninMode signin_mode;
   [value getValue:&signin_mode];
-  return signin_mode == policy::BrowserSigninMode::kEnabled;
+  return signin_mode == BrowserSigninMode::kEnabled;
 }
 
 }  // namespace signin

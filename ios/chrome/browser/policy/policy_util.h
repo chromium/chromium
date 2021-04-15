@@ -7,6 +7,14 @@
 
 class PrefService;
 
+// Values for the BrowserSignin policy.
+// VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+enum class BrowserSigninMode {
+  kDisabled = 0,
+  kEnabled = 1,
+  kForced = 2,
+};
+
 // The enum class for IncognitoModeAvalibility pref value, explains the meaning
 // of each value.
 enum class IncognitoModePrefs {
