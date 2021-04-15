@@ -29,5 +29,6 @@ assert_approx_equals(pixel[1], pixel_expected[1], 2);
 assert_approx_equals(pixel[2], pixel_expected[2], 2);
 assert_approx_equals(pixel[3], pixel_expected[3], 2);
 t.done();
+
 });
 done();
