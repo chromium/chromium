@@ -98,6 +98,19 @@ void PerformWithTextValue(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
+// Resolve the |client_id| and run the |perform| callback. Run the |done|
+// callback with an error status if the |client_id| could not be resolved.
+// Run the |done| callback with the result status of |perform| otherwise.
+void PerformWithElementValue(
+    const ActionDelegate* delegate,
+    const ClientIdProto& client_id,
+    base::OnceCallback<void(const ElementFinder::Result&,
+                            const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done);
+
 // Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
 // not add it. For |REPORT_STEP_RESULT| it adds the step ignoring a potential
 // failure. For |REQUIRE_STEP_SUCCESS| it binds the step as is.

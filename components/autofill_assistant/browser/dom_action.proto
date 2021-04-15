@@ -105,3 +105,13 @@ message SelectFieldValueProto {
 message FocusFieldProto {
   optional ClientIdProto client_id = 1;
 }
+
+// Select the |option| of a |select| element. This only sets the option in JS,
+// it does not fire a "change" event. If a "change" event is required, use in
+// combination with |SendChangeEventProto|. If the element in |option| is
+// not an option of the element in |select|, an |OPTION_VALUE_NOT_FOUND| error
+// is returned.
+message SelectOptionElementProto {
+  optional ClientIdProto select_id = 1;
+  optional ClientIdProto option_id = 2;
+}

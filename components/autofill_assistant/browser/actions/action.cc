@@ -222,6 +222,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSendKeyEvent:
       out << "SendKeyEvent";
       break;
+    case ActionProto::ActionInfoCase::kSelectOptionElement:
+      out << "SelectOptionElement";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

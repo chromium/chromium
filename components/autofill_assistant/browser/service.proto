@@ -752,6 +752,7 @@ message ActionProto {
     ReleaseElementsProto release_elements = 70;
     DispatchJsEventProto dispatch_js_event = 72;
     SendKeyEventProto send_key_event = 73;
+    SelectOptionElementProto select_option_element = 74;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1110,6 +1111,9 @@ message WebControllerErrorInfoProto {
 
     // Send a single key event.
     SEND_KEY_EVENT = 21;
+
+    // Set the selected option index of an element.
+    SELECT_OPTION_ELEMENT = 22;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

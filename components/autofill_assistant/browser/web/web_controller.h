@@ -148,6 +148,12 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Set the selected |option| of the |element|.
+  virtual void SelectOptionElement(
+      const ElementFinder::Result& option,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Highlight an |element|.
   virtual void HighlightElement(
       const ElementFinder::Result& element,

@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -226,6 +227,31 @@ void PerformWithTextValue(
   }
 
   std::move(perform).Run(value, element, std::move(done));
+}
+
+void PerformWithElementValue(
+    const ActionDelegate* delegate,
+    const ClientIdProto& client_id,
+    base::OnceCallback<void(const ElementFinder::Result&,
+                            const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  std::unique_ptr<ElementFinder::Result> element_result =
+      std::make_unique<ElementFinder::Result>();
+  ElementFinder::Result* element_result_ptr = element_result.get();
+  ClientStatus element_status = delegate->GetElementStore()->GetElement(
+      client_id.identifier(), element_result_ptr);
+  if (!element_status.ok()) {
+    std::move(done).Run(element_status);
+    return;
+  }
+
+  std::move(perform).Run(
+      *element_result_ptr, element,
+      base::BindOnce(&RetainElementAndExecuteCallback,
+                     std::move(element_result), std::move(done)));
 }
 
 void AddOptionalStep(OptionalStep optional_step,

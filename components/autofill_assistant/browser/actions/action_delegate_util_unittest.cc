@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -71,6 +72,11 @@ class ActionDelegateUtilTest : public content::RenderViewHostTestHarness {
 
   MOCK_METHOD3(MockValueAction,
                void(const std::string& value,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> done));
+
+  MOCK_METHOD3(MockElementAction,
+               void(const ElementFinder::Result& parameter_element,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> done));
 
@@ -397,6 +403,48 @@ TEST_F(ActionDelegateUtilTest, PerformWithClientMemoryKey) {
                        *element,
                        base::BindOnce(&ActionDelegateUtilTest::MockDone,
                                       base::Unretained(this)));
+}
+
+TEST_F(ActionDelegateUtilTest, PerformWithExistingElementValue) {
+  auto element = std::make_unique<ElementFinder::Result>();
+
+  ElementFinder::Result option;
+  option.dom_object.object_data.object_id = "option";
+  mock_action_delegate_.GetElementStore()->AddElement("o", option.dom_object);
+
+  EXPECT_CALL(*this, MockElementAction(EqualsElement(option), _, _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(*this, MockDone(EqualsStatus(OkClientStatus())));
+
+  ClientIdProto option_id;
+  option_id.set_identifier("o");
+
+  PerformWithElementValue(
+      &mock_action_delegate_, option_id,
+      base::BindOnce(&ActionDelegateUtilTest::MockElementAction,
+                     base::Unretained(this)),
+      *element,
+      base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                     base::Unretained(this)));
+}
+
+TEST_F(ActionDelegateUtilTest, PerformWithMissingElementValue) {
+  auto element = std::make_unique<ElementFinder::Result>();
+
+  EXPECT_CALL(*this, MockElementAction(_, _, _)).Times(0);
+  EXPECT_CALL(
+      *this, MockDone(EqualsStatus(ClientStatus(CLIENT_ID_RESOLUTION_FAILED))));
+
+  ClientIdProto option_id;
+  option_id.set_identifier("o");
+
+  PerformWithElementValue(
+      &mock_action_delegate_, option_id,
+      base::BindOnce(&ActionDelegateUtilTest::MockElementAction,
+                     base::Unretained(this)),
+      *element,
+      base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                     base::Unretained(this)));
 }
 
 }  // namespace

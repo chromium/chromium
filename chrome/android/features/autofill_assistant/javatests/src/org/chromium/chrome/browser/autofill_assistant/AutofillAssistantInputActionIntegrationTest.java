@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.ReleaseElementsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
@@ -609,6 +610,72 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("Value"));
+    }
+
+    @Test
+    @MediumTest
+    public void selectOptionWithMiniActions() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto select = SelectorProto.newBuilder()
+                                       .addFilters(Filter.newBuilder().setCssSelector("#select"))
+                                       .build();
+        ClientIdProto selectId = ClientIdProto.newBuilder().setIdentifier("s").build();
+        SelectorProto option = SelectorProto.newBuilder()
+                                       .addFilters(Filter.newBuilder().setCssSelector(
+                                               "#select option:nth-child(3)"))
+                                       .build();
+        ClientIdProto optionId = ClientIdProto.newBuilder().setIdentifier("o").build();
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(select)
+                                                 .setClientId(selectId)))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(option)
+                                                 .setClientId(optionId)))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDocumentToBecomeInteractive(
+                                 WaitForDocumentToBecomeInteractiveProto.newBuilder()
+                                         .setClientId(selectId)
+                                         .setTimeoutInMs(1000))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(selectId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSelectOptionElement(SelectOptionElementProto.newBuilder()
+                                                         .setSelectId(selectId)
+                                                         .setOptionId(optionId))
+                         .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setSendChangeEvent(SendChangeEventProto.newBuilder().setClientId(selectId))
+                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setReleaseElements(ReleaseElementsProto.newBuilder()
+                                                     .addClientIds(selectId)
+                                                     .addClientIds(optionId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(
+                                 Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

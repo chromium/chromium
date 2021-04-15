@@ -359,6 +359,37 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                        std::move(done_callback), result_output));
   }
 
+  ClientStatus SelectOptionElement(const Selector& selector,
+                                   const ElementFinder::Result& option) {
+    base::RunLoop run_loop;
+    ClientStatus result;
+
+    web_controller_->FindElement(
+        selector, /* strict= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindSelectOptionElementElementCallback,
+            base::Unretained(this), option, run_loop.QuitClosure(), &result));
+
+    run_loop.Run();
+    return result;
+  }
+
+  void FindSelectOptionElementElementCallback(
+      const ElementFinder::Result& option,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+    ASSERT_TRUE(element_result != nullptr);
+    const ElementFinder::Result* element_result_ptr = element_result.get();
+    web_controller_->SelectOptionElement(
+        option, *element_result_ptr,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output));
+  }
+
   void OnClientStatus(base::OnceClosure done_callback,
                       ClientStatus* result_output,
                       const ClientStatus& status) {
@@ -2843,6 +2874,31 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, UniqueElementSelector) {
             GetUniqueElementSelector(element, &query, &index).proto_status());
   EXPECT_EQ("INPUT", query);
   EXPECT_EQ(2, index);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionElement) {
+  ClientStatus option_status;
+  ElementFinder::Result option;
+  FindElement(Selector({"#select option:nth-child(2)"}), &option_status,
+              &option);
+  ASSERT_EQ(ACTION_APPLIED, option_status.proto_status());
+
+  Selector selector({"#select"});
+
+  GetFieldsValue({selector}, {"one"});
+  EXPECT_EQ(ACTION_APPLIED,
+            SelectOptionElement(selector, option).proto_status());
+  GetFieldsValue({selector}, {"two"});
+
+  // Using on a non-<select> element.
+  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+            SelectOptionElement(Selector({"#input1"}), option).proto_status());
+
+  // Random element that is certainly not an option in the <select>.
+  FindElement(Selector({"#input1"}), &option_status, &option);
+  ASSERT_EQ(ACTION_APPLIED, option_status.proto_status());
+  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+            SelectOptionElement(selector, option).proto_status());
 }
 
 }  // namespace autofill_assistant
