@@ -504,15 +504,13 @@ void ExtensionManagement::Refresh() {
     global_settings_->has_restricted_allowed_types = true;
     for (auto it = allowed_types_pref->begin(); it != allowed_types_pref->end();
          ++it) {
-      int int_value;
-      std::string string_value;
-      if (it->GetAsInteger(&int_value) && int_value >= 0 &&
-          int_value < Manifest::Type::NUM_LOAD_TYPES) {
+      if (it->is_int() && it->GetInt() >= 0 &&
+          it->GetInt() < Manifest::Type::NUM_LOAD_TYPES) {
         global_settings_->allowed_types.push_back(
-            static_cast<Manifest::Type>(int_value));
-      } else if (it->GetAsString(&string_value)) {
+            static_cast<Manifest::Type>(it->GetInt()));
+      } else if (it->is_string()) {
         Manifest::Type manifest_type =
-            schema_constants::GetManifestType(string_value);
+            schema_constants::GetManifestType(it->GetString());
         if (manifest_type != Manifest::TYPE_UNKNOWN)
           global_settings_->allowed_types.push_back(manifest_type);
       }
