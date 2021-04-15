@@ -104,8 +104,15 @@ history_clusters::mojom::MemoryPtr ValueToMemory(
     const base::Value& value) {
   auto memory = history_clusters::mojom::Memory::New();
   memory->id = base::UnguessableToken::Create();
+
   memory->top_visits = FindListKeyAndCast<history_clusters::mojom::VisitPtr>(
       value, "visitIds", base::BindRepeating(&ValueToVisit, visits));
+
+  memory->keywords = FindListKeyAndCast<std::string>(
+      value, "keywords", base::BindRepeating([](const base::Value& value) {
+        return value.GetIfString() ? *value.GetIfString() : "";
+      }));
+
   // TODO(manukh) fill out:
   //  |id|
   //  |related_searches|

@@ -130,14 +130,18 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
+      // This "expect" block is not run until after the fake response is sent
+      // further down in this method.
       base::BindLambdaForTesting(
           [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
               std::vector<history_clusters::mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
+
             // Verify the parsed response.
             ASSERT_EQ(memories.size(), 2u);
             EXPECT_FALSE(memories[0]->id.is_empty());
+
             ASSERT_EQ(memories[0]->top_visits.size(), 2u);
             EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
             EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
@@ -149,13 +153,20 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
             EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[1]->page_title),
                       "Github title");
-            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
+
+            ASSERT_EQ(memories[0]->keywords.size(), 2u);
+            EXPECT_EQ(memories[0]->keywords[0], "topic 1");
+            EXPECT_EQ(memories[0]->keywords[1], "topic 2");
+
             EXPECT_FALSE(memories[1]->id.is_empty());
+            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
             EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
             EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
             EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
             EXPECT_EQ(base::UTF16ToUTF8(memories[1]->top_visits[0]->page_title),
                       "Github title");
+            EXPECT_TRUE(memories[1]->keywords.empty());
+
             run_loop_quit_.Run();
           }));
 
@@ -189,13 +200,14 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
         ]
       })"));
 
-  // Fake a response from the endpoint.
+  // Fake a response from the endpoint. There's a 'description' field even
+  // though we don't parse it. This is to test that we can handle extra fields.
   test_url_loader_factory_.AddResponse(endpoint, R"(
       {
         "clusters": [
           {
-            "description": "description",
-            "topics": [
+            "description": "description 1",
+            "keywords": [
               "topic 1",
               "topic 2"
             ],
@@ -205,11 +217,6 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             ]
           },
           {
-            "description": "description 2",
-            "topics": [
-              "topic 3",
-              "topic 4"
-            ],
             "visitIds": [
               4
             ]

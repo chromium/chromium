@@ -70,14 +70,22 @@ struct Visit {
 struct Memory {
   // Memory identifier.
   mojo_base.mojom.UnguessableToken id;
+
+  // Top constituent visits; starting with the most recent.
+  array<Visit> top_visits;
+
+  // The content "topics", or keywords, that the memory contains/is related to.
+  // These strings should never be exposed to the user directly in case they are
+  // offensively wrong, but may be queried over with search terms to find
+  // memories.
+  array<string> keywords;
+
   // Search queries related to the constituent visits.
   array<SearchQuery> related_searches;
   // Tab groups containing one or more of the visited URLs in the Memory.
   array<TabGroup> related_tab_groups;
   // Bookmarked visited pages in the Memory.
   array<WebPage> bookmarks;
-  // Top constituent visits; starting with the most recent.
-  array<Visit> top_visits;
   // Time of the most recent visit in the Memory. Used for extracting Memories.
   mojo_base.mojom.Time last_visit_time;
   // A calculated engagement score based on engagement scores of constituent
