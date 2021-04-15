@@ -59,6 +59,8 @@ viz_test("viz_perftests") {
     "//skia",
   ]
 
+  data = [ "test/data/" ]
+
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
 
