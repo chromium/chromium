@@ -4064,6 +4064,30 @@ TEST_P(PasswordManagerTest, GuestProfileTypeMetricSubmission) {
       "PasswordManager.FormSubmission.PerProfileType", 1);
 }
 
+// Tests that the login is not detected twice.
+TEST_P(PasswordManagerTest, SubmittedManagerClearingOnSuccessfulLogin) {
+  PasswordForm saved_match(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_match)));
+
+  PasswordForm observed_form(MakeSimpleForm());
+  std::vector<FormData> observed_forms = {observed_form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed_forms);
+  manager()->OnPasswordFormsRendered(&driver_, observed_forms, true);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(observed_form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(observed_form.form_data);
+
+  // Simulate observing no forms, which leads to a successful login detection.
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+  observed_forms.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed_forms);
+  manager()->OnPasswordFormsRendered(&driver_, observed_forms, true);
+
+  // There should be no submitted manager after the login detection.
+  EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());
 
 }  // namespace password_manager

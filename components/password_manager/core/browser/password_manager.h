@@ -276,6 +276,10 @@ class PasswordManager : public PasswordManagerInterface {
   // gone.
   PasswordFormManager* GetSubmittedManager() const;
 
+  // Resets the form manager that corresponds to the submitted form, if it's
+  // available.
+  void ResetSubmittedManager();
+
   // Returns the form manager that corresponds to the submitted form. It also
   // sets |submitted_form_manager_| to nullptr.
   // TODO(https://crbug.com/831123): Remove when the old PasswordFormManager is

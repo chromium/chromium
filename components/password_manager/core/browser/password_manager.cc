@@ -867,7 +867,7 @@ void PasswordManager::OnPasswordFormsRendered(
     if (logger)
       logger->LogMessage(Logger::STRING_DECISION_DROP);
     submitted_manager->GetMetricsRecorder()->LogSubmitFailed();
-    owned_submitted_form_manager_.reset();
+    ResetSubmittedManager();
     return;
   }
 
@@ -912,7 +912,7 @@ void PasswordManager::OnPasswordFormsRendered(
                               form_data);
           logger->LogMessage(Logger::STRING_DECISION_DROP);
         }
-        owned_submitted_form_manager_.reset();
+        ResetSubmittedManager();
         // Clear visible_forms_data_ once we found the match.
         visible_forms_data_.clear();
         return;
@@ -979,7 +979,7 @@ void PasswordManager::OnLoginSuccessful() {
     RecordProvisionalSaveFailure(
         PasswordManagerMetricsRecorder::SYNC_CREDENTIAL,
         submitted_manager->GetURL(), logger.get());
-    owned_submitted_form_manager_.reset();
+    ResetSubmittedManager();
     return;
   }
 
@@ -1014,7 +1014,7 @@ void PasswordManager::OnLoginSuccessful() {
     if (submitted_manager->HasGeneratedPassword())
       client_->AutomaticPasswordSave(MoveOwnedSubmittedManager());
   }
-  owned_submitted_form_manager_.reset();
+  ResetSubmittedManager();
 }
 
 void PasswordManager::MaybeSavePasswordHash(
@@ -1142,6 +1142,18 @@ PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   }
 
   return nullptr;
+}
+
+void PasswordManager::ResetSubmittedManager() {
+  if (owned_submitted_form_manager_) {
+    owned_submitted_form_manager_.reset();
+    return;
+  }
+
+  auto submitted_manager =
+      base::ranges::find_if(form_managers_, &PasswordFormManager::is_submitted);
+  if (submitted_manager != form_managers_.end())
+    form_managers_.erase(submitted_manager);
 }
 
 std::unique_ptr<PasswordFormManagerForUI>
