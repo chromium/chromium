@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_HELP_APP_UI_DELEGATE_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_HELP_APP_UI_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
 
 #include "base/optional.h"
 #include "chromeos/components/help_app_ui/help_app_ui_delegate.h"
@@ -33,4 +33,4 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   content::WebUI* web_ui_;  // Owns |this|.
 };
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_HELP_APP_UI_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_

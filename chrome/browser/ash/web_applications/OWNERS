@@ -5,7 +5,6 @@ dstockwell@google.com
 bugsnash@chromium.org
 
 per-file chrome_camera_app*=file://chromeos/components/camera_app_ui/OWNERS
-per-file chrome_help_app*=carpenterr@chromium.org
 per-file chrome_file_manager*=file://chromeos/components/file_manager/OWNERS
 per-file crosh*=joelhockey@chromium.org
 per-file file_manager*=file://chromeos/components/file_manager/OWNERS
