@@ -473,8 +473,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(http://crbug.com/1164574): Very flaky on win10_chromium_x64_rel_ng.
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_AllInfoTypes DISABLED_InvokeUi_AllInfoTypes
+#else
+#define MAYBE_InvokeUi_AllInfoTypes InvokeUi_AllInfoTypes
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_AllInfoTypes) {
+                       MAYBE_InvokeUi_AllInfoTypes) {
   AddPermission("Example permission");
   AddPermissionWithDetails(
       "This permission has details",
