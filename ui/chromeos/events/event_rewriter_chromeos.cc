@@ -1132,9 +1132,6 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
 EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
     const KeyEvent& key_event,
     std::unique_ptr<Event>* rewritten_event) {
-  if (delegate_ && delegate_->IsExtensionCommandRegistered(key_event.key_code(),
-                                                           key_event.flags()))
-    return EVENT_REWRITE_CONTINUE;
   if (key_event.source_device_id() != ED_UNKNOWN_DEVICE)
     DeviceKeyPressedOrReleased(key_event.source_device_id());
 
@@ -1151,12 +1148,27 @@ EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
   // Do not rewrite an event sent by ui_controls::SendKeyPress(). See
   // crbug.com/136465.
   if (!(key_event.flags() & EF_FINAL)) {
+    // If RewriteModifierKeys() returns true there should be no more processing
+    // done to the key event. It will only return true if the key event is
+    // rewritten to ALTGR. A false return is not an error.
     if (RewriteModifierKeys(key_event, &state)) {
       // Early exit with completed event.
       BuildRewrittenKeyEvent(key_event, state, rewritten_event);
       return EVENT_REWRITE_REWRITTEN;
     }
     RewriteNumPadKeys(key_event, &state);
+  }
+
+  if (delegate_ &&
+      delegate_->IsExtensionCommandRegistered(state.key_code, state.flags)) {
+    // If |state| and |key_event| have any different fields, a rewrite has
+    // occurred. Build the rewritten key event and return early.
+    if (MutableKeyState(&key_event) != state) {
+      BuildRewrittenKeyEvent(key_event, state, rewritten_event);
+      return EVENT_REWRITE_REWRITTEN;
+    }
+    // The key event was not modified, forward the event downstream.
+    return EVENT_REWRITE_CONTINUE;
   }
 
   EventRewriteStatus status = EVENT_REWRITE_CONTINUE;

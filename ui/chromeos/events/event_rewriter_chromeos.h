@@ -81,6 +81,17 @@ class EventRewriterChromeOS : public EventRewriter {
                     DomKey::Base input_key,
                     KeyboardCode input_key_code);
 
+    friend bool operator==(const MutableKeyState& lhs,
+                           const MutableKeyState& rhs) {
+      return lhs.flags == rhs.flags && lhs.code == rhs.code &&
+             lhs.key == rhs.key && lhs.key_code == rhs.key_code;
+    }
+
+    friend bool operator!=(const MutableKeyState& lhs,
+                           const MutableKeyState& rhs) {
+      return !(lhs == rhs);
+    }
+
     int flags;
     DomCode code;
     DomKey::Base key;
@@ -92,7 +103,9 @@ class EventRewriterChromeOS : public EventRewriter {
     Delegate() {}
     virtual ~Delegate() {}
 
-    // Returns true if we want to rewrite modifier keys.
+    // Returns true only if the the key event was rewritten to ALTGR. For most
+    // cases, it is expected that this function returns false as most key events
+    // do not involve ALTGR.
     virtual bool RewriteModifierKeys() = 0;
 
     // Returns true if get keyboard remapped preference value successfully and

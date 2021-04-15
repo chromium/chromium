@@ -9,6 +9,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
@@ -4367,6 +4370,151 @@ TEST_F(StickyKeysOverlayTest, ModifierVisibility) {
   sticky_keys_controller_->SetModifiersEnabled(false, false);
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
+}
+
+class ExtensionRewriterInputTest : public EventRewriterAshTest,
+                                   public ui::EventRewriterChromeOS::Delegate {
+ public:
+  ExtensionRewriterInputTest() = default;
+  ExtensionRewriterInputTest(const ExtensionRewriterInputTest&) = delete;
+  ExtensionRewriterInputTest& operator=(const ExtensionRewriterInputTest&) =
+      delete;
+  ~ExtensionRewriterInputTest() override {}
+
+  void SetUp() override {
+    EventRewriterAshTest::SetUp();
+    event_rewriter_chromeos_ =
+        std::make_unique<ui::EventRewriterChromeOS>(this, nullptr, false);
+  }
+
+  void SetModifierRemapping(const std::string& pref_name,
+                            ui::chromeos::ModifierKey value) {
+    modifier_remapping_[pref_name] = static_cast<int>(value);
+  }
+
+  void RegisterExtensionShortcut(ui::KeyboardCode key_code, int flags) {
+    constexpr int kModifierMasks = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
+    // No other masks should be present aside from the ones speicifed in
+    // kModifierMasks.
+    DCHECK((flags & kModifierMasks) == flags);
+    registered_extension_shortcuts_.emplace(key_code, flags);
+  }
+
+  void RemoveAllExtensionShortcuts() {
+    registered_extension_shortcuts_.clear();
+  }
+
+  void ExpectEventRewrittenTo(const KeyTestCase& test) {
+    CheckKeyTestCase(event_rewriter_chromeos_.get(), test);
+  }
+
+ protected:
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+
+ private:
+  // ui::EventRewriterChromeOS::Delegate:
+  bool RewriteModifierKeys() override { return true; }
+
+  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                    int* value) const override {
+    auto it = modifier_remapping_.find(pref_name);
+    if (it == modifier_remapping_.end()) {
+      return false;
+    }
+
+    *value = it->second;
+    return true;
+  }
+
+  bool TopRowKeysAreFunctionKeys() const override { return false; }
+
+  bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
+                                    int flags) const override {
+    return base::Contains(registered_extension_shortcuts_,
+                          ui::Accelerator(key_code, flags));
+  }
+
+  bool IsSearchKeyAcceleratorReserved() const override { return false; }
+  bool NotifyDeprecatedRightClickRewrite() override { return false; }
+  bool NotifyDeprecatedFKeyRewrite() override { return false; }
+  bool NotifyDeprecatedAltBasedKeyRewrite(ui::KeyboardCode key_code) override {
+    return false;
+  }
+
+  std::map<std::string, int> modifier_remapping_;
+  base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
+};
+
+TEST_F(ExtensionRewriterInputTest, RewrittenModifier) {
+  // Register Control + B as an extension shortcut.
+  RegisterExtensionShortcut(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+
+  // Check that standard extension input has no rewritten modifiers.
+  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character},
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character}});
+
+  // Remap Control -> Alt.
+  SetModifierRemapping(prefs::kLanguageRemapControlKeyTo,
+                       ui::chromeos::ModifierKey::kAltKey);
+  // Pressing Control + B should now be remapped to Alt + B.
+  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character},
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
+                           ui::DomKey::Constant<'b'>::Character}});
+
+  // Remap Alt -> Control.
+  SetModifierRemapping(prefs::kLanguageRemapAltKeyTo,
+                       ui::chromeos::ModifierKey::kControlKey);
+  // Pressing Alt + B should now be remapped to Control + B.
+  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
+                           ui::DomKey::Constant<'b'>::Character},
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character}});
+
+  // Remove all extension shortcuts and still expect the remapping to work.
+  RemoveAllExtensionShortcuts();
+
+  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character},
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
+                           ui::DomKey::Constant<'b'>::Character}});
+  ExpectEventRewrittenTo({ui::ET_KEY_PRESSED,
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
+                           ui::DomKey::Constant<'b'>::Character},
+                          {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
+                           ui::DomKey::Constant<'b'>::Character}});
+}
+
+TEST_F(ExtensionRewriterInputTest, RewriteNumpadExtensionCommand) {
+  // Register Control + NUMPAD1 as an extension shortcut.
+  RegisterExtensionShortcut(ui::VKEY_NUMPAD1, ui::EF_CONTROL_DOWN);
+  // Check that extension shortcuts that involve numpads keys are properly
+  // rewritten. Note that VKEY_END is associated with NUMPAD1 if Num Lock is
+  // disabled. The result should be "NumPad 1 with Control".
+  ExpectEventRewrittenTo(
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
+        ui::DomKey::END},
+       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
+        ui::DomKey::Constant<'1'>::Character}});
+
+  // Remove the extension shortcut and expect the numpad event to still be
+  // rewritten.
+  RemoveAllExtensionShortcuts();
+  ExpectEventRewrittenTo(
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
+        ui::DomKey::END},
+       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
+        ui::DomKey::Constant<'1'>::Character}});
 }
 
 }  // namespace chromeos
