@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -518,6 +519,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      */
     public static @WebDisplayMode int getDisplayMode(
             BrowserServicesIntentDataProvider intentDataProvider) {
+        if (intentDataProvider.getTwaDisplayMode() instanceof ImmersiveMode) {
+            return WebDisplayMode.FULLSCREEN;
+        }
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         if (webappExtras != null) {
             return webappExtras.displayMode;

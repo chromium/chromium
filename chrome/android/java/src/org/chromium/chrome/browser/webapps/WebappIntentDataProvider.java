@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -11,12 +13,16 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode.DefaultMode;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -28,6 +34,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final int mToolbarColor;
     private final boolean mHasCustomToolbarColor;
     private final Drawable mCloseButtonIcon;
+    private final TrustedWebActivityDisplayMode mTwaDisplayMode;
     private final ShareData mShareData;
     private final @NonNull WebappExtras mWebappExtras;
     private final @Nullable WebApkExtras mWebApkExtras;
@@ -49,6 +56,9 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         mHasCustomToolbarColor = hasCustomToolbarColor;
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(
                 ContextUtils.getApplicationContext(), R.drawable.btn_close);
+        mTwaDisplayMode = (webappExtras.displayMode == WebDisplayMode.FULLSCREEN)
+                ? new ImmersiveMode(false /* sticky */, LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+                : new DefaultMode();
         mShareData = shareData;
         mWebappExtras = webappExtras;
         mWebApkExtras = webApkExtras;
@@ -120,6 +130,11 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     @Override
     public boolean shouldShowDownloadButton() {
         return false;
+    }
+
+    @Override
+    public TrustedWebActivityDisplayMode getTwaDisplayMode() {
+        return mTwaDisplayMode;
     }
 
     @Override

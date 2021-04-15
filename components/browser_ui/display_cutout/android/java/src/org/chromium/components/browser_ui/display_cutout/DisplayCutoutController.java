@@ -60,6 +60,9 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
 
         /** Returns whether the user can interact with the associated WebContents/UI element. */
         boolean isInteractable();
+
+        /** Whether the activity is in browser (not-HTML) fullscreen. */
+        boolean isInBrowserFullscreen();
     }
     private final Delegate mDelegate;
 
@@ -99,7 +102,8 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
         if (value != ViewportFit.AUTO) {
-            assert mDelegate.getWebContents().isFullscreenForCurrentTab();
+            assert mDelegate.getWebContents().isFullscreenForCurrentTab()
+                    || mDelegate.isInBrowserFullscreen();
         }
 
         if (value == mViewportFit) return;

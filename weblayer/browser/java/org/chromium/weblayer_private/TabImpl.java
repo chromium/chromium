@@ -1198,6 +1198,11 @@ public final class TabImpl extends ITab.Stub {
                     public boolean isInteractable() {
                         return isVisible();
                     }
+
+                    @Override
+                    public boolean isInBrowserFullscreen() {
+                        return false;
+                    }
                 });
     }
 

@@ -8,10 +8,12 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -91,6 +93,17 @@ public class DisplayCutoutTabHelper implements UserData {
         @Override
         public boolean isInteractable() {
             return mTab.isUserInteractable();
+        }
+
+        @Override
+        public boolean isInBrowserFullscreen() {
+            Activity activity = getAttachedActivity();
+            if (!(activity instanceof BaseCustomTabActivity)) {
+                return false;
+            }
+            BaseCustomTabActivity baseCustomTabActivity = (BaseCustomTabActivity) activity;
+            return (baseCustomTabActivity.getIntentDataProvider().getTwaDisplayMode()
+                            instanceof TrustedWebActivityDisplayMode.ImmersiveMode);
         }
     }
 
