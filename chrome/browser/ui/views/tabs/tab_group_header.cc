@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -370,12 +370,18 @@ int TabGroupHeader::GetDesiredWidth() const {
 
 void TabGroupHeader::LogCollapseTime() {
   base::TimeTicks current_time = base::TimeTicks::Now();
+  const int kMinSample = 1;
+  const int kMaxSample = 86400;
+  const int kBucketCount = 50;
+  base::TimeDelta time_delta = current_time - last_modified_expansion_;
   if (tab_strip_->controller()->IsGroupCollapsed(group().value())) {
-    UMA_HISTOGRAM_LONG_TIMES_100("TabGroups.TimeSpentExpanded",
-                                 current_time - last_modified_expansion_);
+    base::UmaHistogramCustomCounts("TabGroups.TimeSpentExpanded2",
+                                   time_delta.InSeconds(), kMinSample,
+                                   kMaxSample, kBucketCount);
   } else {
-    UMA_HISTOGRAM_LONG_TIMES_100("TabGroups.TimeSpentCollapsed",
-                                 current_time - last_modified_expansion_);
+    base::UmaHistogramCustomCounts("TabGroups.TimeSpentCollapsed2",
+                                   time_delta.InSeconds(), kMinSample,
+                                   kMaxSample, kBucketCount);
   }
   last_modified_expansion_ = current_time;
 }
