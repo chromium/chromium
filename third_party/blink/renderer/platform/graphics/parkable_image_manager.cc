@@ -219,14 +219,18 @@ void ParkableImageManager::MaybeParkImages() {
   // synchronously, which calls back into the manager.
   lock_.unlock();
 
-  for (auto image : unparked_images)
+  bool unfrozen_images = false;
+  for (auto image : unparked_images) {
+    if (!image->is_frozen())
+      unfrozen_images = true;
     image->MaybePark();
+  }
 
   lock_.lock();
 
   has_pending_parking_task_ = false;
 
-  if (unparked_images_.size() > 0)
+  if (unfrozen_images)
     ScheduleDelayedParkingTaskIfNeeded();
 }
 

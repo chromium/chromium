@@ -765,4 +765,45 @@ TEST_F(ParkableImageTest, ManagerNotUnlocked) {
   Unlock(pi);
 }
 
+// Tests that the manager only reschedules the parking task  when there are
+// unfrozen ParkableImages.
+TEST_F(ParkableImageTest, ManagerRescheduleUnfrozen) {
+  const size_t kDataSize = 3.5 * 4096;
+  char data[kDataSize];
+  PrepareReferenceData(data, kDataSize);
+
+  auto& manager = ParkableImageManager::Instance();
+  EXPECT_EQ(0u, manager.Size());
+
+  auto pi = MakeParkableImageForTesting(data, kDataSize);
+
+  // This is the delayed
+  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|, and
+  // the parking task.
+  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+
+  // Fast forward enough for both to run.
+  Wait5MinForStatistics();
+  WaitForDelayedParking();
+
+  // Unfrozen ParkableImages are never parked.
+  ASSERT_FALSE(is_on_disk(pi));
+
+  // We have rescheduled the task because we have unfrozen ParkableImages.
+  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
+
+  pi->Freeze();
+  Lock(pi);
+
+  WaitForDelayedParking();
+
+  // Locked ParkableImages are never parked.
+  ASSERT_FALSE(is_on_disk(pi));
+
+  // We do no reschedule because there are no un-frozen ParkableImages.
+  EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
+
+  Unlock(pi);
+}
+
 }  // namespace blink
