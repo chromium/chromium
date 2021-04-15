@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <cstddef>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -366,8 +368,8 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                           weak_factory_.GetWeakPtr()));
-  multi_profile_user_controller_.reset(
-      new MultiProfileUserController(this, GetLocalState()));
+  multi_profile_user_controller_ =
+      std::make_unique<MultiProfileUserController>(this, GetLocalState());
 
   policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
       g_browser_process->platform_part()
@@ -708,8 +710,8 @@ void ChromeUserManagerImpl::PerformPostUserLoggedInActions(
     bool browser_restart) {
   // Initialize the session length limiter and start it only if
   // session limit is defined by the policy.
-  session_length_limiter_.reset(
-      new SessionLengthLimiter(NULL, browser_restart));
+  session_length_limiter_ =
+      base::WrapUnique(new SessionLengthLimiter(nullptr, browser_restart));
 }
 
 bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(
@@ -1173,7 +1175,7 @@ bool ChromeUserManagerImpl::IsUserAllowed(
 UserFlow* ChromeUserManagerImpl::GetDefaultUserFlow() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!default_flow_.get())
-    default_flow_.reset(new DefaultUserFlow());
+    default_flow_ = std::make_unique<DefaultUserFlow>();
   return default_flow_.get();
 }
 

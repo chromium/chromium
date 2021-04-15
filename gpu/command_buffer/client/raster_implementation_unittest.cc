@@ -16,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
@@ -97,17 +98,17 @@ class RasterImplementationTest : public testing::Test {
                     bool transfer_buffer_initialize_fail,
                     bool sync_query) {
       SharedMemoryLimits limits = SharedMemoryLimitsForTesting();
-      command_buffer_.reset(new StrictMock<MockClientCommandBuffer>());
+      command_buffer_ = std::make_unique<StrictMock<MockClientCommandBuffer>>();
 
-      transfer_buffer_.reset(new MockTransferBuffer(
+      transfer_buffer_ = base::WrapUnique(new MockTransferBuffer(
           command_buffer_.get(), kTransferBufferSize,
           RasterImplementation::kStartingOffset,
           RasterImplementation::kAlignment, transfer_buffer_initialize_fail));
 
-      helper_.reset(new RasterCmdHelper(command_buffer()));
+      helper_ = std::make_unique<RasterCmdHelper>(command_buffer());
       helper_->Initialize(limits.command_buffer_size);
 
-      gpu_control_.reset(new StrictMock<MockClientGpuControl>());
+      gpu_control_ = std::make_unique<StrictMock<MockClientGpuControl>>();
       capabilities_.max_combined_texture_image_units =
           kMaxCombinedTextureImageUnits;
       capabilities_.max_texture_image_units = kMaxTextureImageUnits;
@@ -123,10 +124,10 @@ class RasterImplementationTest : public testing::Test {
       {
         InSequence sequence;
 
-        gl_.reset(new RasterImplementation(
+        gl_ = std::make_unique<RasterImplementation>(
             helper_.get(), transfer_buffer_.get(),
             bind_generates_resource_client, lose_context_when_out_of_memory,
-            gpu_control_.get(), nullptr /* image_decode_accelerator */));
+            gpu_control_.get(), nullptr /* image_decode_accelerator */);
       }
 
       // The client should be set to something non-null.

@@ -592,13 +592,13 @@ LegacyCacheStorage::LegacyCacheStorage(
       owner_(owner),
       cache_storage_manager_(cache_storage_manager) {
   if (memory_only) {
-    cache_loader_.reset(new MemoryLoader(
+    cache_loader_ = base::WrapUnique<CacheLoader>(new MemoryLoader(
         cache_task_runner_.get(), std::move(scheduler_task_runner),
         quota_manager_proxy, blob_storage_context_, this, origin, owner));
     return;
   }
 
-  cache_loader_.reset(new SimpleCacheLoader(
+  cache_loader_ = base::WrapUnique<CacheLoader>(new SimpleCacheLoader(
       origin_path_, cache_task_runner_.get(), std::move(scheduler_task_runner),
       quota_manager_proxy, blob_storage_context_, this, origin, owner));
 

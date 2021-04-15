@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
@@ -163,7 +164,7 @@ class DragAndDropSimulator {
     gfx::PointF event_location;
     gfx::PointF event_root_location;
     CalculateEventLocations(location, &event_location, &event_root_location);
-    active_drag_event_.reset(new ui::DropTargetEvent(
+    active_drag_event_ = base::WrapUnique(new ui::DropTargetEvent(
         data, event_location, event_root_location, kDefaultSourceOperations));
 
     delegate->OnDragEntered(*active_drag_event_);
@@ -580,7 +581,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
-    drag_simulator_.reset(new DragAndDropSimulator(web_contents()));
+    drag_simulator_ = std::make_unique<DragAndDropSimulator>(web_contents());
   }
 
   void TearDownOnMainThread() override {
@@ -1068,9 +1069,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragImageBetweenFrames) {
 
   // Setup test expectations.
   DragAndDropBrowserTest::DragImageBetweenFrames_TestState state;
-  state.left_frame_events_counter.reset(new DOMDragEventCounter(left_frame()));
-  state.right_frame_events_counter.reset(
-      new DOMDragEventCounter(right_frame()));
+  state.left_frame_events_counter =
+      std::make_unique<DOMDragEventCounter>(left_frame());
+  state.right_frame_events_counter =
+      std::make_unique<DOMDragEventCounter>(right_frame());
   state.expected_dom_event_data.set_expected_client_position("(55, 50)");
   state.expected_dom_event_data.set_expected_drop_effect("none");
   // (dragstart event handler in image_source.html is asking for "copy" only).
@@ -1194,9 +1196,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
                    {"dragstart", "dragleave", "drop", "dragend"}));
 
   // Release the mouse button to end the drag.
-  state->drop_event_waiter.reset(new DOMDragEventWaiter("drop", right_frame()));
-  state->dragend_event_waiter.reset(
-      new DOMDragEventWaiter("dragend", left_frame()));
+  state->drop_event_waiter =
+      std::make_unique<DOMDragEventWaiter>("drop", right_frame());
+  state->dragend_event_waiter =
+      std::make_unique<DOMDragEventWaiter>("dragend", left_frame());
   state->left_frame_events_counter->Reset();
   state->right_frame_events_counter->Reset();
   SimulateMouseUp();
@@ -1353,7 +1356,8 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
   }
 
   // Release the mouse button to end the drag.
-  state->drop_event_waiter.reset(new DOMDragEventWaiter("drop", right_frame()));
+  state->drop_event_waiter =
+      std::make_unique<DOMDragEventWaiter>("drop", right_frame());
   SimulateMouseUp();
   // The test will continue in DragImageFromDisappearingFrame_Step3.
 }
@@ -1401,9 +1405,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossSiteDrag) {
 
   // Setup test expectations.
   DragAndDropBrowserTest::CrossSiteDrag_TestState state;
-  state.left_frame_events_counter.reset(new DOMDragEventCounter(left_frame()));
-  state.right_frame_events_counter.reset(
-      new DOMDragEventCounter(right_frame()));
+  state.left_frame_events_counter =
+      std::make_unique<DOMDragEventCounter>(left_frame());
+  state.right_frame_events_counter =
+      std::make_unique<DOMDragEventCounter>(right_frame());
 
   // Start the drag in the left frame.
   DragStartWaiter drag_start_waiter(web_contents());
@@ -1450,8 +1455,8 @@ void DragAndDropBrowserTest::CrossSiteDrag_Step2(
   }
 
   // Release the mouse button to end the drag.
-  state->dragend_event_waiter.reset(
-      new DOMDragEventWaiter("dragend", left_frame()));
+  state->dragend_event_waiter =
+      std::make_unique<DOMDragEventWaiter>("dragend", left_frame());
   SimulateMouseUp();
   // The test will continue in DragImageBetweenFrames_Step3.
 }

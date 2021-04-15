@@ -349,8 +349,8 @@ TEST_F(BookmarkContextMenuControllerTest, CutCopyPasteNode) {
   // Copy the URL.
   controller->ExecuteCommand(IDC_COPY, 0);
 
-  controller.reset(new BookmarkContextMenuController(
-      NULL, NULL, NULL, profile_.get(), NullNavigatorGetter(),
+  controller = base::WrapUnique(new BookmarkContextMenuController(
+      nullptr, nullptr, nullptr, profile_.get(), NullNavigatorGetter(),
       BOOKMARK_LAUNCH_LOCATION_NONE, nodes[0]->parent(), nodes));
   size_t old_count = bb_node->children().size();
   controller->ExecuteCommand(IDC_PASTE, 0);
@@ -359,8 +359,8 @@ TEST_F(BookmarkContextMenuControllerTest, CutCopyPasteNode) {
   ASSERT_EQ(old_count + 1, bb_node->children().size());
   ASSERT_EQ(bb_node->children()[0]->url(), bb_node->children()[1]->url());
 
-  controller.reset(new BookmarkContextMenuController(
-      NULL, NULL, NULL, profile_.get(), NullNavigatorGetter(),
+  controller = base::WrapUnique(new BookmarkContextMenuController(
+      nullptr, nullptr, nullptr, profile_.get(), NullNavigatorGetter(),
       BOOKMARK_LAUNCH_LOCATION_NONE, nodes[0]->parent(), nodes));
   // Cut the URL.
   controller->ExecuteCommand(IDC_CUT, 0);

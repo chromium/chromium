@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/cryptauth_client_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -185,10 +186,10 @@ class DeviceSyncCryptAuthClientTest : public testing::Test {
 
     identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(kEmail);
 
-    client_.reset(
-        new CryptAuthClientImpl(base::WrapUnique(api_call_flow_),
-                                identity_test_environment_.identity_manager(),
-                                shared_factory_, device_classifier));
+    client_ = std::make_unique<CryptAuthClientImpl>(
+        base::WrapUnique(api_call_flow_),
+        identity_test_environment_.identity_manager(), shared_factory_,
+        device_classifier);
   }
 
   // Sets up an expectation and captures a CryptAuth API POST request to

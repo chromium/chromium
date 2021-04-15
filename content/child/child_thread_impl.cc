@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/ptr_util.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -702,8 +703,8 @@ void ChildThreadImpl::Init(const Options& options) {
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).
   if (!IsInBrowserProcess()) {
-    field_trial_syncer_.reset(
-        new variations::ChildProcessFieldTrialSyncer(this));
+    field_trial_syncer_ =
+        base::WrapUnique(new variations::ChildProcessFieldTrialSyncer(this));
     field_trial_syncer_->InitFieldTrialObserving(
         *base::CommandLine::ForCurrentProcess());
   }

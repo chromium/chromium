@@ -4,6 +4,9 @@
 
 #include <stddef.h>
 
+#include <memory>
+
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "gpu/config/gpu_info.h"
@@ -146,9 +149,10 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
         std::make_unique<MockMojoVideoEncodeAccelerator>(),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
-    mojo_vea_.reset(new MojoVideoEncodeAccelerator(
-        std::move(mojo_vea),
-        media::VideoEncodeAccelerator::SupportedProfiles()));
+    mojo_vea_ =
+        base::WrapUnique<VideoEncodeAccelerator>(new MojoVideoEncodeAccelerator(
+            std::move(mojo_vea),
+            media::VideoEncodeAccelerator::SupportedProfiles()));
   }
 
   void TearDown() override {

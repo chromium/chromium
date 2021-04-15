@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/install_tracker.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,8 +44,8 @@ scoped_refptr<const Extension> CreateDummyExtension(const std::string& id) {
 class InstallTrackerTest : public testing::Test {
  public:
   InstallTrackerTest() {
-    profile_.reset(new TestingProfile());
-    tracker_.reset(new InstallTracker(profile_.get(), NULL));
+    profile_ = std::make_unique<TestingProfile>();
+    tracker_ = base::WrapUnique(new InstallTracker(profile_.get(), nullptr));
   }
 
   ~InstallTrackerTest() override {}
@@ -110,8 +113,8 @@ TEST_F(InstallTrackerTest, ScopedActiveInstallDeregister) {
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
 
   // Verify the constructor that doesn't register the install.
-  scoped_active_install.reset(
-      new ScopedActiveInstall(tracker(), kExtensionId1));
+  scoped_active_install =
+      std::make_unique<ScopedActiveInstall>(tracker(), kExtensionId1);
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
 
   tracker_->AddActiveInstall(install_data);

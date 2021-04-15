@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -130,7 +131,8 @@ bool PPB_VideoDecoder_Impl::Init(PP_Resource graphics_context,
   // This is not synchronous, but subsequent IPC messages will be buffered, so
   // it is okay to immediately send IPC messages.
   if (command_buffer->channel()) {
-    decoder_.reset(new media::GpuVideoDecodeAcceleratorHost(command_buffer));
+    decoder_ = base::WrapUnique<media::VideoDecodeAccelerator>(
+        new media::GpuVideoDecodeAcceleratorHost(command_buffer));
     media::VideoDecodeAccelerator::Config config(PPToMediaProfile(profile));
     config.supported_output_formats.assign(
         {media::PIXEL_FORMAT_XRGB, media::PIXEL_FORMAT_ARGB});

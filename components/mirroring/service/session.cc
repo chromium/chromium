@@ -14,6 +14,7 @@
 #include "base/cpu.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -548,8 +549,9 @@ void Session::CreateVideoEncodeAccelerator(
     vea_provider_->CreateVideoEncodeAccelerator(
         vea.InitWithNewPipeAndPassReceiver());
     // std::make_unique doesn't work to create a unique pointer of the subclass.
-    mojo_vea.reset(new media::MojoVideoEncodeAccelerator(std::move(vea),
-                                                         supported_profiles_));
+    mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
+        new media::MojoVideoEncodeAccelerator(std::move(vea),
+                                              supported_profiles_));
   }
   std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
                           std::move(mojo_vea));
