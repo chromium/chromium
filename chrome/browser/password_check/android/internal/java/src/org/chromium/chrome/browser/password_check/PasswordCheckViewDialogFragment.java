@@ -8,9 +8,11 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.view.WindowManager.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -36,6 +38,7 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        getActivity().getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
         View dialogContent = getActivity().getLayoutInflater().inflate(
                 R.layout.password_check_view_credential_dialog, null);
         TextView passwordView = dialogContent.findViewById(R.id.view_dialog_compromised_password);
@@ -70,5 +73,11 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
             // ensure the user goes through reauth again.
             dismiss();
         }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        getActivity().getWindow().clearFlags(LayoutParams.FLAG_SECURE);
     }
 }
