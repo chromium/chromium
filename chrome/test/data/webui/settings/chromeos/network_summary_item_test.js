@@ -245,9 +245,9 @@ suite('NetworkSummaryItem', function() {
   test('eSIM enabled locked device, show SIM locked UI, flag on', function() {
     initWithESimLocked(/*flag_enabled = */ true);
     assertFalse(doesElementExist('network-siminfo'));
-    assertTrue(netSummaryItem.$$('#networkState')
-                   .classList.contains('locked-warning-message'));
-    assertFalse(
+    assertFalse(netSummaryItem.$$('#networkState')
+                    .classList.contains('locked-warning-message'));
+    assertTrue(
         netSummaryItem.$$('#networkState').classList.contains('network-state'));
   });
 

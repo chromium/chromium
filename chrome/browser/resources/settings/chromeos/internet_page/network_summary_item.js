@@ -252,6 +252,12 @@ Polymer({
       return false;
     }
 
+    // If the device is eSIM capable, never show message.
+    const {eSimSlots} = getSimSlotCount(deviceState);
+    if (eSimSlots > 0) {
+      return false;
+    }
+
     return !!deviceState.simLockStatus.lockType;
   },
 
