@@ -1,0 +1,6 @@
+native_client_sdk/doc_generated/*
+third_party/axe-core/axe.min.js
+*test*
+third_party/mako/*
+third_party/google-closure-library/*
+

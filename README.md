@@ -36,6 +36,7 @@ Add the following settings:
 ```
 is_debug = false
 enable_nacl = false
+use_allocator = "none"
 ```
 
 Build:
