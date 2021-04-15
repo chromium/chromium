@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.payments.AddressEditor;
+import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 
 import java.util.List;

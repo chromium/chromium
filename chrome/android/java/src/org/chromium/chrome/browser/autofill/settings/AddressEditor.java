@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.autofill.settings;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
@@ -22,11 +22,10 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.payments.mojom.AddressErrors;
+import org.chromium.chrome.browser.payments.AutofillAddress;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,17 +39,13 @@ import java.util.UUID;
 
 /**
  * An address editor. Can be used for either shipping or billing address editing.
- *
- * Note that this class is used by PaymentRequest only and will be removed when not needed any more.
- * Please use {@link org.chromium.chrome.browser.autofill.settings.AddressEditor} instead.
  */
-@Deprecated
 public class AddressEditor
         extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
-    @IntDef({Purpose.PAYMENT_REQUEST, Purpose.AUTOFILL_SETTINGS})
+    @IntDef({Purpose.AUTOFILL_ASSISTANT, Purpose.AUTOFILL_SETTINGS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Purpose {
-        int PAYMENT_REQUEST = 1;
+        int AUTOFILL_ASSISTANT = 1;
         int AUTOFILL_SETTINGS = 2;
     }
 
@@ -81,14 +76,12 @@ public class AddressEditor
     private AutofillProfile mProfile;
     private EditorModel mEditor;
     private ProgressDialog mProgressDialog;
-    @Nullable
-    private AddressErrors mAddressErrors;
 
     /**
      * Builds an address editor.
      *
      * @param purpose    The purpose of this address editor. One of
-     *                   Purpose.PAYMENT_REQUEST or Purpose.AUTOFILL_SETTINGS.
+     *                   Purpose.AUTOFILL_ASSISTANT or Purpose.AUTOFILL_SETTINGS.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditor(@Purpose int purpose, boolean saveToDisk) {
@@ -110,45 +103,9 @@ public class AddressEditor
         if (!TextUtils.isEmpty(phoneNumber)) mPhoneNumbers.add(phoneNumber.toString());
     }
 
-    /**
-     * Sets the address errors to indicate error messages from merchant's retry() call.
-     *
-     * @param errors The address errors from merchant's retry() call.
-     */
-    public void setAddressErrors(@Nullable AddressErrors errors) {
-        mAddressErrors = errors;
-    }
-
     private boolean isUIForHonorificPrefixesEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES);
-    }
-
-    private String getAddressError(int field) {
-        if (mAddressErrors == null) return null;
-
-        switch (field) {
-            case AddressField.COUNTRY:
-                return mAddressErrors.country;
-            case AddressField.ADMIN_AREA:
-                return mAddressErrors.region;
-            case AddressField.LOCALITY:
-                return mAddressErrors.city;
-            case AddressField.DEPENDENT_LOCALITY:
-                return mAddressErrors.dependentLocality;
-            case AddressField.SORTING_CODE:
-                return mAddressErrors.sortingCode;
-            case AddressField.POSTAL_CODE:
-                return mAddressErrors.postalCode;
-            case AddressField.STREET_ADDRESS:
-                return mAddressErrors.addressLine;
-            case AddressField.ORGANIZATION:
-                return mAddressErrors.organization;
-            case AddressField.RECIPIENT:
-                return mAddressErrors.recipient;
-        }
-        assert false : "Unrecognized address field code";
-        return null;
     }
 
     /**
@@ -204,8 +161,7 @@ public class AddressEditor
         if (mCountryField == null) {
             mCountryField = EditorFieldModel.createDropdown(
                     mContext.getString(R.string.autofill_profile_editor_country),
-                    AutofillProfileBridge.getSupportedCountries(),
-                    null /* hint */);
+                    AutofillProfileBridge.getSupportedCountries(), null /* hint */);
         }
 
         // Changing the country will update which fields are in the model. The actual fields are not
@@ -233,8 +189,8 @@ public class AddressEditor
         // that's being edited. This will not fire the dropdown callback.
         mCountryField.setValue(AutofillAddress.getCountryCode(mProfile));
 
-        // Phone number validator and formatter are cached, so their contry code needs to be updated
-        // for the new profile that's being edited.
+        // Phone number validator and formatter are cached, so their country code needs to be
+        // updated for the new profile that's being edited.
         assert mCountryField.getValue() != null;
         mPhoneValidator.setCountryCode(mCountryField.getValue().toString());
         mPhoneFormatter.setCountryCode(mCountryField.getValue().toString());
@@ -260,18 +216,21 @@ public class AddressEditor
 
             // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
             // the keyboard, if possible.
-            mAddressFields.put(AddressField.SORTING_CODE, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
-            mAddressFields.put(AddressField.POSTAL_CODE, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+            mAddressFields.put(AddressField.SORTING_CODE,
+                    EditorFieldModel.createTextInput(
+                            EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+            mAddressFields.put(AddressField.POSTAL_CODE,
+                    EditorFieldModel.createTextInput(
+                            EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
 
             // Street line field can contain \n to indicate line breaks.
-            mAddressFields.put(AddressField.STREET_ADDRESS, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
+            mAddressFields.put(AddressField.STREET_ADDRESS,
+                    EditorFieldModel.createTextInput(
+                            EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
 
             // Android has special formatting rules for names.
-            mAddressFields.put(AddressField.RECIPIENT, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
+            mAddressFields.put(AddressField.RECIPIENT,
+                    EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
         }
 
         // Phone number is present for all countries.
@@ -334,7 +293,6 @@ public class AddressEditor
         });
 
         loadAdminAreasForCountry(mCountryField.getValue().toString());
-        if (mAddressErrors != null) mEditorDialog.validateForm();
     }
 
     private void showProgressDialog() {
@@ -463,11 +421,11 @@ public class AddressEditor
                 (adminAreaCodes != null && adminAreaNames != null && adminAreaCodes.length != 0
                         && adminAreaCodes.length == adminAreaNames.length)
                         ? EditorFieldModel.createDropdown(null /* label */,
-                                  AutofillProfileBridge.getAdminAreaDropdownList(
-                                          adminAreaCodes, adminAreaNames),
-                                  mContext.getString(R.string.select))
+                                AutofillProfileBridge.getAdminAreaDropdownList(
+                                        adminAreaCodes, adminAreaNames),
+                                mContext.getString(R.string.select))
                         : EditorFieldModel.createTextInput(
-                                  EditorFieldModel.INPUT_TYPE_HINT_REGION));
+                                EditorFieldModel.INPUT_TYPE_HINT_REGION));
 
         // Admin areas need to be fetched in two cases:
         // 1. Initial loading of the form.
@@ -491,15 +449,6 @@ public class AddressEditor
                     mCountryField.getValue().toString(), mProfile.getLanguageCode());
             mEditorDialog.show(mEditor);
         }
-    }
-
-    private static boolean contains(String[] haystack, String needle) {
-        if (haystack == null || haystack.length == 0) return false;
-        if (TextUtils.isEmpty(needle)) return true;
-        for (int i = 0; i < haystack.length; ++i) {
-            if (TextUtils.equals(haystack[i], needle)) return true;
-        }
-        return false;
     }
 
     /** Requests the list of admin areas. */
@@ -529,7 +478,6 @@ public class AddressEditor
         mAddressUiComponents =
                 mAutofillProfileBridge.getAddressUiComponents(countryCode, languageCode);
         // In terms of order, country must be the first field.
-        mCountryField.setCustomErrorMessage(getAddressError(AddressField.COUNTRY));
         mEditor.addField(mCountryField);
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
@@ -547,8 +495,7 @@ public class AddressEditor
             field.setIsFullLine(component.isFullLine || component.id == AddressField.LOCALITY
                     || component.id == AddressField.DEPENDENT_LOCALITY);
 
-            // Libaddressinput formats do not always require the full name (RECIPIENT), but
-            // PaymentRequest does.
+            // Libaddressinput formats do not always require the full name (RECIPIENT), but we do.
             field.setRequiredErrorMessage(mCheckRequiredFields
                                     && (component.isRequired
                                             || component.id == AddressField.RECIPIENT)
@@ -556,11 +503,9 @@ public class AddressEditor
                                     R.string.pref_edit_dialog_field_required_validation_message)
                             : null);
 
-            field.setCustomErrorMessage(getAddressError(component.id));
             mEditor.addField(field);
         }
         // Phone number (and email if applicable) are the last fields of the address.
-        mPhoneField.setCustomErrorMessage(mAddressErrors != null ? mAddressErrors.phone : null);
         mEditor.addField(mPhoneField);
         if (mEmailField != null) mEditor.addField(mEmailField);
     }
@@ -569,7 +514,7 @@ public class AddressEditor
     private static class CountryAwarePhoneNumberValidator implements EditorFieldValidator {
         @Nullable
         private String mCountryCode;
-        private boolean mAllowEmptyValue;
+        private final boolean mAllowEmptyValue;
 
         /**
          * Builds a country based phone number validator.
@@ -591,8 +536,6 @@ public class AddressEditor
 
         @Override
         public boolean isValid(@Nullable CharSequence value) {
-            // TODO(gogerald): Warn users when the phone number is a possible number but may be
-            // invalid, crbug.com/736387.
             // Note that isPossibleNumber is used since the metadata in libphonenumber has to be
             // updated frequently (daily) to do more strict validation.
             return TextUtils.isEmpty(value)
