@@ -7348,16 +7348,7 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
 
   FocusedNodeDetails details = {frame->has_focused_editable_element(),
                                 bounds_in_screen, focus_type};
-
-  // TODO(ekaramad): We should replace this with an observer notification
-  // (https://crbug.com/675975).
-  NotificationService::current()->Notify(
-      NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-      Source<RenderViewHost>(GetRenderViewHost()),
-      Details<FocusedNodeDetails>(&details));
-
   BrowserAccessibilityStateImpl::GetInstance()->OnFocusChangedInPage(details);
-
   observers_.NotifyObservers(&WebContentsObserver::OnFocusChangedInPage,
                              &details);
 }

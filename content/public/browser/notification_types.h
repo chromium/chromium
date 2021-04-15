@@ -113,12 +113,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174771): Remove.
   NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
 
-  // The focused element inside a page has changed.  The source is the
-  // RenderViewHost. The details is a Details<const bool> that indicates whether
-  // or not an editable node was focused.
-  // TODO(https://crbug.com/1174772): Remove.
-  NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-
   // Notification from WebContents that we have received a response from the
   // renderer in response to a dom automation controller action. The source is
   // the RenderViewHost, and the details is a string with the response.
