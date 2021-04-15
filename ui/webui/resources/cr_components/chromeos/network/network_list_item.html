@@ -91,7 +91,7 @@
         color: var(--google-green-500);
       }
 
-      .locked {
+      .warning {
         color: var(--google-yellow-700);
       }
 
@@ -160,11 +160,14 @@
             [[getSubtitle(subtitle_)]]
           </div>
           <div id="networkStateText"
-              class$="[[getNetworkStateTextClass_(networkState.*)]]"
-              hidden$="[[!isStateTextVisible_(networkState.*)]]"
+              class$="[[getNetworkStateTextClass_(networkState.*,
+                  isPSimUnavailableNetwork_)]]"
+              hidden$="[[!isStateTextVisible_(networkState.*,
+                  isPSimUnavailableNetwork_)]]"
               active$="[[isStateTextActive_(networkState.*,
                            activationUnavailable)]]">
-            [[getNetworkStateText_(networkState.*, activationUnavailable, deviceState.*)]]
+            [[getNetworkStateText_(networkState.*, activationUnavailable,
+                deviceState.*, isPSimUnavailableNetwork_)]]
           </div>
         </div>
         <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
@@ -173,7 +176,7 @@
           </cr-policy-indicator>
         </template>
         <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
-        <template is="dom-if" if="[[isPSimUnactivatedNetwork_]]" restamp>
+        <template is="dom-if" if="[[isPSimPendingActivationNetwork_]]" restamp>
           <!-- TODO(crbug.com/1196507) Add on-click listener to button-->
           <cr-button id="activateButton"
               aria-label$="[[getActivateBtnA11yLabel_(item)]]"
@@ -191,7 +194,8 @@
         </template>
         <template is="dom-if"
             if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
-              networkState.typeState.cellular.simLocked, isPSimUnactivatedNetwork_)]]" restamp>
+              networkState.typeState.cellular.simLocked,
+              isPSimPendingActivationNetwork_)]]" restamp>
           <div>
             <cr-icon-button class="subpage-arrow"
                 id="subpageButton"
