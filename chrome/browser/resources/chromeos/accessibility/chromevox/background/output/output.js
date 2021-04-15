@@ -20,6 +20,7 @@ goog.require('OutputAction');
 goog.require('OutputContextOrder');
 goog.require('OutputEarconAction');
 goog.require('OutputEventType');
+goog.require('OutputFormatParser');
 goog.require('OutputFormatTree');
 goog.require('OutputNodeSpan');
 goog.require('OutputRulesStr');
@@ -673,136 +674,144 @@ Output = class {
    */
   format_(params) {
     const node = params['node'];
-    const formatTrees = OutputFormatTree.parseFormat(params['outputFormat']);
+    const format = params['outputFormat'];
     const buff = params['outputBuffer'];
     const ruleStr = params['outputRuleString'];
     const prevNode = params['opt_prevNode'];
     let speechProps = params['opt_speechProps'];
+    const owner = this;
+    const observer =
+        new /** @implements {OutputFormatParserObserver} */ (class {
+          /** @override */
+          onTokenStart() {}
 
-    formatTrees.forEach(function(tree) {
-      // Obtain the operator token.
-      let token = tree.value;
+          /** @override */
+          onNodeAttributeOrSpecialToken(token, tree, options) {
+            if (owner.suppressions_[token]) {
+              return true;
+            }
 
-      // Set suffix options.
-      const options = {};
-      options.annotation = [];
-      options.isUnique = token[token.length - 1] === '=';
-      if (options.isUnique) {
-        token = token.substring(0, token.length - 1);
-      }
+            if (token === 'value') {
+              owner.formatValue_(node, token, buff, options, ruleStr);
+            } else if (token === 'name') {
+              owner.formatName_(node, prevNode, token, buff, options, ruleStr);
+            } else if (token === 'description') {
+              owner.formatDescription_(node, token, buff, options, ruleStr);
+            } else if (token === 'urlFilename') {
+              owner.formatUrlFilename_(node, token, buff, options, ruleStr);
+            } else if (token === 'nameFromNode') {
+              owner.formatNameFromNode_(node, token, buff, options, ruleStr);
+            } else if (token === 'nameOrDescendants') {
+              // This token is similar to nameOrTextContent except it gathers
+              // rich output for descendants. It also lets name from contents
+              // override the descendants text if |node| has only static text
+              // children.
+              owner.formatNameOrDescendants_(
+                  node, token, buff, options, ruleStr);
+            } else if (token === 'indexInParent') {
+              owner.formatIndexInParent_(
+                  node, token, tree, buff, options, ruleStr);
+            } else if (token === 'restriction') {
+              owner.formatRestriction_(node, token, buff, ruleStr);
+            } else if (token === 'checked') {
+              owner.formatChecked_(node, token, buff, ruleStr);
+            } else if (token === 'pressed') {
+              owner.formatPressed_(node, token, buff, ruleStr);
+            } else if (token === 'state') {
+              owner.formatState_(node, token, buff, ruleStr);
+            } else if (token === 'find') {
+              owner.formatFind_(node, token, tree, buff, ruleStr);
+            } else if (token === 'descendants') {
+              owner.formatDescendants_(node, token, buff, ruleStr);
+            } else if (token === 'joinedDescendants') {
+              owner.formatJoinedDescendants_(
+                  node, token, buff, options, ruleStr);
+            } else if (token === 'role') {
+              if (localStorage['useVerboseMode'] === 'false') {
+                return true;
+              }
+              if (owner.formatOptions_.auralStyle) {
+                speechProps = new OutputSpeechProperties();
+                speechProps.properties['relativePitch'] = -0.3;
+              }
 
-      // Process token based on prefix.
-      const prefix = token[0];
-      token = token.slice(1);
-
-      // All possible tokens based on prefix.
-      if (prefix === '$') {
-        if (this.suppressions_[token]) {
-          return;
-        }
-
-        if (token === 'value') {
-          this.formatValue_(node, token, buff, options, ruleStr);
-        } else if (token === 'name') {
-          this.formatName_(node, prevNode, token, buff, options, ruleStr);
-        } else if (token === 'description') {
-          this.formatDescription_(node, token, buff, options, ruleStr);
-        } else if (token === 'urlFilename') {
-          this.formatUrlFilename_(node, token, buff, options, ruleStr);
-        } else if (token === 'nameFromNode') {
-          this.formatNameFromNode_(node, token, buff, options, ruleStr);
-        } else if (token === 'nameOrDescendants') {
-          // This token is similar to nameOrTextContent except it gathers rich
-          // output for descendants. It also lets name from contents override
-          // the descendants text if |node| has only static text children.
-          this.formatNameOrDescendants_(node, token, buff, options, ruleStr);
-        } else if (token === 'indexInParent') {
-          this.formatIndexInParent_(node, token, tree, buff, options, ruleStr);
-        } else if (token === 'restriction') {
-          this.formatRestriction_(node, token, buff, ruleStr);
-        } else if (token === 'checked') {
-          this.formatChecked_(node, token, buff, ruleStr);
-        } else if (token === 'pressed') {
-          this.formatPressed_(node, token, buff, ruleStr);
-        } else if (token === 'state') {
-          this.formatState_(node, token, buff, ruleStr);
-        } else if (token === 'find') {
-          this.formatFind_(node, token, tree, buff, ruleStr);
-        } else if (token === 'descendants') {
-          this.formatDescendants_(node, token, buff, ruleStr);
-        } else if (token === 'joinedDescendants') {
-          this.formatJoinedDescendants_(node, token, buff, options, ruleStr);
-        } else if (token === 'role') {
-          if (localStorage['useVerboseMode'] === 'false') {
-            return;
+              owner.formatRole_(node, token, buff, options, ruleStr);
+            } else if (token === 'inputType') {
+              owner.formatInputType_(node, token, buff, options, ruleStr);
+            } else if (
+                token === 'tableCellRowIndex' ||
+                token === 'tableCellColumnIndex') {
+              owner.formatTableCellIndex_(node, token, buff, options, ruleStr);
+            } else if (token === 'cellIndexText') {
+              owner.formatCellIndexText_(node, token, buff, options, ruleStr);
+            } else if (token === 'node') {
+              owner.formatNode_(
+                  node, prevNode, token, tree, buff, options, ruleStr);
+            } else if (
+                token === 'nameOrTextContent' || token === 'textContent') {
+              owner.formatTextContent_(node, token, buff, options, ruleStr);
+            } else if (node[token] !== undefined) {
+              owner.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
+            } else if (Output.STATE_INFO_[token]) {
+              owner.formatAsStateValue_(node, token, buff, options, ruleStr);
+            } else if (token === 'phoneticReading') {
+              owner.formatPhoneticReading_(node, buff);
+            } else if (tree.firstChild) {
+              owner.formatCustomFunction_(
+                  node, token, tree, buff, options, ruleStr);
+            }
           }
-          if (this.formatOptions_.auralStyle) {
+
+          /** @override */
+          onMessageToken(token, tree, options) {
+            ruleStr.write(' @');
+            if (owner.formatOptions_.auralStyle) {
+              if (!speechProps) {
+                speechProps = new OutputSpeechProperties();
+              }
+              speechProps.properties['relativePitch'] = -0.2;
+            }
+            owner.formatMessage_(node, token, tree, buff, options, ruleStr);
+          }
+
+          /** @override */
+          onSpeechPropertyToken(token, tree, options) {
+            ruleStr.write(' ! ' + token + '\n');
             speechProps = new OutputSpeechProperties();
-            speechProps.properties['relativePitch'] = -0.3;
+            speechProps.properties[token] = true;
+            if (tree.firstChild) {
+              if (!owner.formatOptions_.auralStyle) {
+                speechProps = undefined;
+                return true;
+              }
+
+              let value = tree.firstChild.value;
+
+              // Currently, speech params take either attributes or floats.
+              let float = 0;
+              if (float = parseFloat(value)) {
+                value = float;
+              } else {
+                value = parseFloat(node[value]) / -10.0;
+              }
+              speechProps.properties[token] = value;
+              return true;
+            }
           }
 
-          this.formatRole_(node, token, buff, options, ruleStr);
-        } else if (token === 'inputType') {
-          this.formatInputType_(node, token, buff, options, ruleStr);
-        } else if (
-            token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
-          this.formatTableCellIndex_(node, token, buff, options, ruleStr);
-        } else if (token === 'cellIndexText') {
-          this.formatCellIndexText_(node, token, buff, options, ruleStr);
-        } else if (token === 'node') {
-          this.formatNode_(node, prevNode, token, tree, buff, options, ruleStr);
-        } else if (token === 'nameOrTextContent' || token === 'textContent') {
-          this.formatTextContent_(node, token, buff, options, ruleStr);
-        } else if (node[token] !== undefined) {
-          this.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
-        } else if (Output.STATE_INFO_[token]) {
-          this.formatAsStateValue_(node, token, buff, options, ruleStr);
-        } else if (token === 'phoneticReading') {
-          this.formatPhoneticReading_(node, buff);
-        } else if (tree.firstChild) {
-          this.formatCustomFunction_(node, token, tree, buff, options, ruleStr);
-        }
-      } else if (prefix === '@') {
-        ruleStr.write(' @');
-        if (this.formatOptions_.auralStyle) {
-          if (!speechProps) {
-            speechProps = new OutputSpeechProperties();
+          /** @override */
+          onTokenEnd() {
+            // Post processing.
+            if (speechProps) {
+              if (buff.length > 0) {
+                buff[buff.length - 1].setSpan(speechProps, 0, 0);
+                speechProps = null;
+              }
+            }
           }
-          speechProps.properties['relativePitch'] = -0.2;
-        }
-        this.formatMessage_(node, token, tree, buff, options, ruleStr);
-      } else if (prefix === '!') {
-        ruleStr.write(' ! ' + token + '\n');
-        speechProps = new OutputSpeechProperties();
-        speechProps.properties[token] = true;
-        if (tree.firstChild) {
-          if (!this.formatOptions_.auralStyle) {
-            speechProps = undefined;
-            return;
-          }
+        });
 
-          let value = tree.firstChild.value;
-
-          // Currently, speech params take either attributes or floats.
-          let float = 0;
-          if (float = parseFloat(value)) {
-            value = float;
-          } else {
-            value = parseFloat(node[value]) / -10.0;
-          }
-          speechProps.properties[token] = value;
-          return;
-        }
-      }
-
-      // Post processing.
-      if (speechProps) {
-        if (buff.length > 0) {
-          buff[buff.length - 1].setSpan(speechProps, 0, 0);
-          speechProps = null;
-        }
-      }
-    }.bind(this));
+    new OutputFormatParser(observer).parse(format);
   }
 
   /**
