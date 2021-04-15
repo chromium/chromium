@@ -115,7 +115,7 @@
             android:icon="@drawable/help_outline" />
         <item android:id="@+id/enter_vr_id"
             android:title="@string/enter_vr"
-            android:icon="@drawable/vr_headset" />
+            android:icon="@drawable/gm_filled_cardboard_24" />
         <item android:id="@+id/managed_by_menu_id"
             android:title="@string/managed" />
     </group>

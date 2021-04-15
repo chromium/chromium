@@ -641,10 +641,10 @@ public class StatusMediator
         if (permission == ContentSettingsType.DEFAULT) return;
         mLastPermission = permission;
 
-        Drawable permissionIcon =
-                ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
-        PermissionIconResource statusIcon =
-                new PermissionIconResource(permissionIcon, mLocationBarDataProvider.isIncognito());
+        boolean isIncognito = mLocationBarDataProvider.isIncognito();
+        Drawable permissionIcon = ContentSettingsResources.getIconForOmnibox(
+                mContext, mLastPermission, result, isIncognito);
+        PermissionIconResource statusIcon = new PermissionIconResource(permissionIcon, isIncognito);
         statusIcon.setTransitionType(IconTransitionType.ROTATE);
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);

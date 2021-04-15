@@ -61,7 +61,7 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
         TextView messageTextView = customView.findViewById(R.id.text);
         messageTextView.setText(R.string.nfc_disabled_on_device_message);
         TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                messageTextView, R.drawable.settings_nfc, 0, 0, 0);
+                messageTextView, R.drawable.gm_filled_nfc_24, 0, 0, 0);
 
         Resources resources = activity.getResources();
         PropertyModel model = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

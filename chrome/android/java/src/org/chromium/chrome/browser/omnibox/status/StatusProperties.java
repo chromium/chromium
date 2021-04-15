@@ -9,14 +9,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -26,6 +24,7 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -133,6 +132,11 @@ public class StatusProperties {
      * highlight.
      */
     static class PermissionIconResource extends StatusIconResource {
+        // Size of the drawable in the omnibox. This class creates a circle of this size
+        // and draw a icon of size INNER_ICON_DP centered in the circle.
+        public static final int OMNIBOX_ICON_DP = 24;
+        public static final int INNER_ICON_DP = 20;
+
         private boolean mIsIncognito;
 
         PermissionIconResource(Drawable drawable, boolean isIncognito) {
@@ -147,43 +151,28 @@ public class StatusProperties {
             if (icon == null) {
                 return null;
             }
-            // Use the dark mode color if in incognito mode.
-            icon.setColorFilter(ApiCompatibilityUtils.getColor(resources,
-                                        mIsIncognito ? R.color.default_icon_color_blue_light
-                                                     : R.color.default_icon_color_blue),
-                    PorterDuff.Mode.SRC_IN);
-            Bitmap circleCopy = createCircleBackground(resources, icon.getIntrinsicWidth());
-            Canvas canvas = new Canvas(circleCopy);
-            float radius = 0.5f * canvas.getWidth();
-            Bitmap iconBitmap = createScaledIcon(icon, 0.9f);
-            canvas.drawBitmap(iconBitmap, radius - iconBitmap.getWidth() / 2,
-                    radius - iconBitmap.getHeight() / 2, null);
-            return new BitmapDrawable(resources, circleCopy);
+            assert icon.getIntrinsicWidth() == icon.getIntrinsicHeight();
+            int width = ViewUtils.dpToPx(context, OMNIBOX_ICON_DP);
+            Bitmap bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawCircleBackground(canvas, resources);
+            drawCenteredIcon(context, canvas, icon);
+            return new BitmapDrawable(resources, bitmap);
         }
 
-        /** Returns a scaled bitmap of the icon passed in. */
-        private Bitmap createScaledIcon(@NonNull Drawable icon, float scaleFactor) {
-            // Create bitmap and canvas from icon.
-            Bitmap iconBitmap = Bitmap.createBitmap(
-                    icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(iconBitmap);
-            int side = canvas.getWidth();
-            assert side == canvas.getHeight();
-            icon.setBounds(0, 0, side, side);
+        /** Draws the provided icon at INNER_ICON_DP on the canvas. */
+        private void drawCenteredIcon(Context context, Canvas canvas, Drawable icon) {
+            int width = canvas.getWidth();
+            int iconWidth = ViewUtils.dpToPx(context, INNER_ICON_DP);
+            int boundOffset = (width - iconWidth) / 2;
+            icon.setBounds(
+                    boundOffset, boundOffset, boundOffset + iconWidth, boundOffset + iconWidth);
             icon.draw(canvas);
-
-            // Scale bitmap
-            int scaledWidth = Math.round(icon.getIntrinsicWidth() * scaleFactor);
-            int scaledHeight = Math.round(icon.getIntrinsicHeight() * scaleFactor);
-            return Bitmap.createScaledBitmap(iconBitmap, scaledWidth, scaledHeight, false);
         }
 
-        /** Returns a bitmap of the circle icon to be used for the Drawable. */
-        private Bitmap createCircleBackground(Resources resources, int width) {
-            // Recreate circle every time due to changing dpi and light/dark themes.
-            float radius = 0.5f * width;
-            Bitmap circleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(circleBackground);
+        /** Draws a circle background on canvas. */
+        private void drawCircleBackground(Canvas canvas, Resources resources) {
+            float radius = 0.5f * canvas.getWidth();
             Paint paint = new Paint();
             // Use the dark mode color if in incognito mode.
             paint.setColor(ApiCompatibilityUtils.getColor(resources,
@@ -191,7 +180,6 @@ public class StatusProperties {
                                  : R.color.toolbar_background_primary));
             paint.setAntiAlias(true);
             canvas.drawCircle(radius, radius, radius, paint);
-            return circleBackground;
         }
     }
 

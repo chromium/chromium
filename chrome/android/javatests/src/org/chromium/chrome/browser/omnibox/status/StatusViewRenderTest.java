@@ -150,8 +150,8 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
     public void testStatusViewWithLocationPermissionIcon() throws IOException {
         runOnUiThreadBlocking(() -> {
             Drawable locationIcon =
-                    ContentSettingsResources.getContentSettingsIcon(mStatusView.getContext(),
-                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
+                    ContentSettingsResources.getIconForOmnibox(mStatusView.getContext(),
+                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW, false);
             PermissionIconResource statusIcon = new PermissionIconResource(locationIcon, false);
             statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
