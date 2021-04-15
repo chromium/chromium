@@ -734,12 +734,19 @@ Polymer({
     if (!this.isUpdatedCellularUiEnabled_) {
       return false;
     }
-    if (!managedProperties || !managedProperties.typeProperties.cellular) {
+    if (!managedProperties) {
       return false;
     }
-    const paymentPortal =
-        managedProperties.typeProperties.cellular.paymentPortal;
-    if (paymentPortal && paymentPortal.url) {
+    const cellularProperties = managedProperties.typeProperties.cellular;
+    if (!cellularProperties || cellularProperties.eid) {
+      return false;
+    }
+    if (cellularProperties.activationState !==
+        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated) {
+      return false;
+    }
+    if (cellularProperties.paymentPortal &&
+        cellularProperties.paymentPortal.url) {
       return true;
     }
     return false;

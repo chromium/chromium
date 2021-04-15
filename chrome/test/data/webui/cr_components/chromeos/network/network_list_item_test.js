@@ -133,10 +133,32 @@ suite('NetworkListItemTest', function() {
         mojom.NetworkType.kCellular, 'cellular');
     managedPropertiesActivated.typeProperties.cellular.activationState =
         mojom.ActivationStateType.kActivated;
+    managedPropertiesActivated.typeProperties.cellular.paymentPortal = {
+      url: 'url'
+    };
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivated);
 
     listItem.item =
         OncMojo.managedPropertiesToNetworkState(managedPropertiesActivated);
+    await flushAsync();
+
+    // Activate button should not be showing.
+    assertFalse(!!listItem.$$('#activateButton'));
+
+    // Set item to an unactivated eSIM network with a payment URL.
+    const managedPropertiesESimNotActivated =
+        OncMojo.getDefaultManagedProperties(
+            mojom.NetworkType.kCellular, 'cellular');
+    managedPropertiesESimNotActivated.typeProperties.cellular.eid = 'eid';
+    managedPropertiesESimNotActivated.typeProperties.cellular.activationState =
+        mojom.ActivationStateType.kNotActivated;
+    managedPropertiesESimNotActivated.typeProperties.cellular.paymentPortal = {
+      url: 'url'
+    };
+    mojoApi_.setManagedPropertiesForTest(managedPropertiesESimNotActivated);
+
+    listItem.item = OncMojo.managedPropertiesToNetworkState(
+        managedPropertiesESimNotActivated);
     await flushAsync();
 
     // Activate button should not be showing.
