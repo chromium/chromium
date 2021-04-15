@@ -27,3 +27,9 @@ crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incum
 
 # Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
+
+# OOPIF tests need site isolation
+virtual/synchronous_html_parser/http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
+virtual/synchronous_html_parser/http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]

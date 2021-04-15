@@ -232,7 +232,6 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
   scoped_refptr<DevToolsAgentHost> agent_host =
       RenderFrameDevToolsAgentHost::FindForDangling(frame_tree_node);
 
-  bool has_host_attached = !!agent_host;
   bool is_portal_main_frame =
       frame_tree_node->IsMainFrame() &&
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
@@ -240,21 +239,25 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
   bool needs_host_attached =
       new_host->is_local_root_subframe() || is_portal_main_frame;
 
-  if (has_host_attached == needs_host_attached)
-    return nullptr;
-
   if (needs_host_attached) {
-    agent_host =
-        RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
-            navigation_request);
-    AttachToAgentHost(agent_host.get());
-    return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
+    if (!agent_host) {
+      agent_host =
+          RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
+              navigation_request);
+    }
+    if (auto_attached_hosts_.find(agent_host) == auto_attached_hosts_.end()) {
+      AttachToAgentHost(agent_host.get());
+      return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
+    }
+    return nullptr;
   }
 
-  DCHECK(has_host_attached);
+  if (!agent_host)
+    return nullptr;
+
+  // At this point we don't need a host, so we must auto detach if we auto
+  // attached earlier.
   auto it = auto_attached_hosts_.find(agent_host);
-  // This should not happen in theory, but error pages are sometimes not
-  // picked up. See https://crbug.com/836511 and https://crbug.com/817881.
   if (it == auto_attached_hosts_.end())
     return nullptr;
   auto_attached_hosts_.erase(it);
