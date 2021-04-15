@@ -3933,6 +3933,9 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
 }
 
 void RenderFrameImpl::DidClearWindowObject() {
+  v8::MicrotasksScope microtasks(blink::MainThreadIsolate(),
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
+
   if (enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
     WebUIExtension::Install(frame_);
 
