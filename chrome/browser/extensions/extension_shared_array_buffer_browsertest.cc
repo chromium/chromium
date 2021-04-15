@@ -9,8 +9,7 @@ namespace extensions {
 
 using SharedArrayBufferTest = ExtensionApiTest;
 
-// Ensures that an extension background context can use SharedArrayBuffers and
-// can transfer it to a worker.
+// Ensures extensions can use the SharedArrayBuffer API.
 IN_PROC_BROWSER_TEST_F(SharedArrayBufferTest, TransferToWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("shared_array_buffers")) << message_;

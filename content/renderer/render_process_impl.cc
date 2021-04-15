@@ -171,8 +171,7 @@ RenderProcessImpl::RenderProcessImpl()
   // site isolation.
   if (enable_wasm_threads || enable_shared_array_buffer ||
       cross_origin_isolated) {
-    constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
-    v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
+    blink::WebV8Features::EnableWasmThreads();
   }
   // SharedArrayBuffer requires feature flags, or site isolation.
   if (enable_shared_array_buffer || cross_origin_isolated) {
