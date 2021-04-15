@@ -5,10 +5,7 @@
 import("//ios/web/js_compile.gni")
 
 source_set("browser") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_agent.h",
     "autofill_agent.mm",

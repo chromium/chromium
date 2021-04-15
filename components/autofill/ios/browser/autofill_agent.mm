@@ -764,6 +764,7 @@ autofillManagerFromWebState:(web::WebState*)webState
 - (void)webState:(web::WebState*)webState
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
+  DCHECK_EQ(_webState, webState);
   if (![self isAutofillEnabled])
     return;
 
@@ -795,24 +796,22 @@ autofillManagerFromWebState:(web::WebState*)webState
     return;
   }
 
-  // Necessary so the string can be used inside the block.
-  std::string fieldIdentifier = params.field_identifier;
-
+  // The completion block is executed asynchronously, thus it cannot refer
+  // directly to `params.field_identifier` (as params is passed by reference
+  // and may have been destroyed by the point the block is executed) nor to
+  // web::WebFrame* (as it can be deallocated before the block execution).
+  //
+  // Copy the `field_identifier` to a local variable that can be captured
+  // and save the frame identifier that will be used to get the WebFrame in
+  // -onFormsFetched:formsData:webFrameId:fieldIdentifier.
   __weak AutofillAgent* weakSelf = self;
-  id completionHandler = ^(BOOL success, const FormDataVector& forms) {
-    if (!success || forms.size() != 1)
-      return;
-
-    DCHECK_EQ(_webState, webState);
-    autofill::AutofillManager* autofillManager =
-        [weakSelf autofillManagerFromWebState:webState webFrame:frame];
-    if (!autofillManager)
-      return;
-
-    autofill::FormFieldData field;
-    GetFormField(&field, forms[0], base::UTF8ToUTF16(fieldIdentifier));
-    autofillManager->OnTextFieldDidChange(
-        forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
+  __block const std::string webFrameId = frame->GetFrameId();
+  __block const std::string fieldIdentifier = params.field_identifier;
+  auto completionHandler = ^(BOOL success, const FormDataVector& forms) {
+    [weakSelf onFormsFetched:success
+                   formsData:forms
+                  webFrameId:webFrameId
+             fieldIdentifier:fieldIdentifier];
   };
 
   // Extract the active form and field only. There is no minimum field
@@ -960,6 +959,37 @@ autofillManagerFromWebState:(web::WebState*)webState
         if (suggestionHandledCompletionCopy)
           suggestionHandledCompletionCopy();
       }));
+}
+
+// Helper method used to implement the aynchronous completion block of
+// -webState:didRegisterFormActivity:inFrame:. Due to the asynchronous
+// invocation, WebState* and WebFrame* may both have been destroyed, so
+// the method needs to check for those edge cases.
+- (void)onFormsFetched:(BOOL)success
+             formsData:(const FormDataVector&)forms
+            webFrameId:(const std::string&)webFrameId
+       fieldIdentifier:(const std::string&)fieldIdentifier {
+  if (!success || forms.size() != 1)
+    return;
+
+  if (!_webState)
+    return;
+
+  DCHECK(_webState->GetWebFramesManager());
+  web::WebFrame* webFrame =
+      _webState->GetWebFramesManager()->GetFrameWithId(webFrameId);
+  if (!webFrame)
+    return;
+
+  autofill::AutofillManager* autofillManager =
+      [self autofillManagerFromWebState:_webState webFrame:webFrame];
+  if (!autofillManager)
+    return;
+
+  autofill::FormFieldData field;
+  GetFormField(&field, forms[0], base::UTF8ToUTF16(fieldIdentifier));
+  autofillManager->OnTextFieldDidChange(
+      forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
 }
 
 @end
