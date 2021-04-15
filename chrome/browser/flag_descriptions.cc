@@ -5006,6 +5006,11 @@ const char kDirectManipulationStylusName[] = "Direct Manipulation Stylus";
 const char kDirectManipulationStylusDescription[] =
     "If enabled, Chrome will scroll web pages on stylus drag.";
 
+const char kWebuiFeedbackName[] = "WebUI Feedback";
+const char kWebuiFeedbackDescription[] =
+    "If enabled, Chrome will show the Feedback WebUI, as opposed to Chrome "
+    "App Feedback UI, when clicking on \"Report an issue...\"";
+
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

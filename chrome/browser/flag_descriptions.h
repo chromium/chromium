@@ -2916,6 +2916,9 @@ extern const char kRemoteCopyProgressNotificationDescription[];
 extern const char kDirectManipulationStylusName[];
 extern const char kDirectManipulationStylusDescription[];
 
+extern const char kWebuiFeedbackName[];
+extern const char kWebuiFeedbackDescription[];
+
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

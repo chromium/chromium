@@ -4655,6 +4655,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDirectManipulationStylusDescription,
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDirectManipulationStylus)},
+
+    {"webui-feedback", flag_descriptions::kWebuiFeedbackName,
+     flag_descriptions::kWebuiFeedbackDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUIFeedback)},
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
