@@ -751,9 +751,7 @@ bool TranslateManager::ShouldOverrideMatchesPreviousLanguageDecision() {
       translate_driver_->GetUkmSourceId(), translate_event_.get());
 }
 
-bool TranslateManager::ShouldSuppressBubbleUI(
-    bool triggered_from_menu,
-    const std::string& source_language) {
+bool TranslateManager::ShouldSuppressBubbleUI() {
   // Suppress the UI if the user navigates to a page with
   // the same language as the previous page. In the new UI,
   // continue offering translation after the user navigates

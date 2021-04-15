@@ -219,8 +219,7 @@ class TranslateManager {
   bool ShouldOverrideMatchesPreviousLanguageDecision();
 
   // Returns true if the BubbleUI should be suppressed.
-  bool ShouldSuppressBubbleUI(bool triggered_from_menu,
-                              const std::string& source_language);
+  bool ShouldSuppressBubbleUI();
 
   // Sets target language.
   void SetPredefinedTargetLanguage(const std::string& language_code);

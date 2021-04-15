@@ -874,8 +874,7 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Default) {
   PrepareTranslateManager();
   SetHasLanguageChanged(true);
   base::HistogramTester histogram_tester;
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(true, "en"));
+  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI());
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
 }
 
@@ -886,19 +885,10 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_HasLanguageChangedFalse) {
               ShouldOverrideMatchesPreviousLanguageDecision(_, _))
       .WillOnce(Return(false));
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
+  EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI());
   histogram_tester.ExpectUniqueSample(
       kInitiationStatusName,
       metrics::INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE, 1);
-
-  EXPECT_CALL(mock_translate_ranker_,
-              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
-      .WillOnce(Return(false));
-
-  EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI(true, "en"));
-  histogram_tester.ExpectUniqueSample(
-      kInitiationStatusName,
-      metrics::INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE, 2);
 }
 
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Override) {
@@ -908,7 +898,7 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Override) {
               ShouldOverrideMatchesPreviousLanguageDecision(_, _))
       .WillOnce(Return(true));
   SetHasLanguageChanged(false);
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI(false, "en"));
+  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI());
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
 }
 

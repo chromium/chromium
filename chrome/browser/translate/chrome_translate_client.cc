@@ -190,7 +190,7 @@ translate::TranslateManager* ChromeTranslateClient::GetManagerFromWebContents(
   ChromeTranslateClient* chrome_translate_client =
       FromWebContents(web_contents);
   if (!chrome_translate_client)
-    return NULL;
+    return nullptr;
   return chrome_translate_client->GetTranslateManager();
 }
 
@@ -198,8 +198,8 @@ void ChromeTranslateClient::GetTranslateLanguages(
     content::WebContents* web_contents,
     std::string* source,
     std::string* target) {
-  DCHECK(source != NULL);
-  DCHECK(target != NULL);
+  DCHECK(source != nullptr);
+  DCHECK(target != nullptr);
 
   *source = translate::TranslateDownloadManager::GetLanguageCode(
       GetLanguageState().original_language());
@@ -257,8 +257,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
   DCHECK(TranslateService::IsTranslateBubbleEnabled());
   // Bubble UI.
   if (step == translate::TRANSLATE_STEP_BEFORE_TRANSLATE &&
-      translate_manager_->ShouldSuppressBubbleUI(triggered_from_menu,
-                                                 source_language)) {
+      translate_manager_->ShouldSuppressBubbleUI()) {
     return false;
   }
 
@@ -401,7 +400,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
   // |browser| might be NULL when testing. In this case, Show(...) should be
   // called because the implementation for testing is used.
   if (!browser) {
-    return TranslateBubbleFactory::Show(NULL, web_contents(), step,
+    return TranslateBubbleFactory::Show(nullptr, web_contents(), step,
                                         source_language, target_language,
                                         error_type, is_user_gesture);
   }
