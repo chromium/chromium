@@ -32,7 +32,7 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
                          int* target,
                          bool is_valid_container,
                          std::u16string* error) {
-  const base::Value* temp = NULL;
+  const base::Value* temp = nullptr;
   if (manifest->Get(key, &temp)) {
     if (!is_valid_container) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -40,13 +40,14 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
           key);
       return false;
     }
-    if (!temp->GetAsInteger(target) || *target < 0) {
+    if (!temp->is_int() || temp->GetInt() < 0) {
       *target = 0;
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           key);
       return false;
     }
+    *target = temp->GetInt();
   }
   return true;
 }
