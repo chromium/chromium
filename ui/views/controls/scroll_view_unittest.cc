@@ -1137,9 +1137,12 @@ TEST_F(ScrollViewTest, CornerViewVisibility) {
   EXPECT_TRUE(corner_view->GetVisible());
 }
 
-TEST_F(ScrollViewTest, ChildWithLayerTest) {
-  View* contents = InstallContents();
-  ScrollViewTestApi test_api(scroll_view_.get());
+// This test needs a widget so that color changes will be reflected.
+TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
+  auto contents_ptr = std::make_unique<View>();
+  auto* contents = contents_ptr.get();
+  ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents_ptr));
+  ScrollViewTestApi test_api(scroll_view);
 
   if (test_api.contents_viewport()->layer())
     return;
@@ -1153,7 +1156,7 @@ TEST_F(ScrollViewTest, ChildWithLayerTest) {
   EXPECT_TRUE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
   // Setting a base::nullopt color should make fills opaquely false.
-  scroll_view_->SetBackgroundColor(base::nullopt);
+  scroll_view->SetBackgroundColor(base::nullopt);
   EXPECT_FALSE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
   child->DestroyLayer();

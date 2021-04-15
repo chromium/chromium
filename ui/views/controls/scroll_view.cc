@@ -232,7 +232,6 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
     more_content_right_->SetPaintToLayer();
     more_content_bottom_->SetPaintToLayer();
   }
-  UpdateBackground();
 
   focus_ring_ = FocusRing::Install(this);
   focus_ring_->SetHasFocusPredicate([](View* view) -> bool {
@@ -784,8 +783,7 @@ void ScrollView::OnGestureEvent(ui::GestureEvent* event) {
 void ScrollView::OnThemeChanged() {
   View::OnThemeChanged();
   UpdateBorder();
-  if (background_color_id_)
-    UpdateBackground();
+  UpdateBackground();
 }
 
 void ScrollView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -1107,6 +1105,9 @@ void ScrollView::UpdateBorder() {
 }
 
 void ScrollView::UpdateBackground() {
+  if (!GetWidget())
+    return;
+
   const base::Optional<SkColor> background_color = GetBackgroundColor();
 
   auto create_background = [background_color]() {
@@ -1124,7 +1125,6 @@ void ScrollView::UpdateBackground() {
   if (contents_viewport_->layer()) {
     contents_viewport_->layer()->SetFillsBoundsOpaquely(!!background_color);
   }
-  SchedulePaint();
 }
 
 base::Optional<SkColor> ScrollView::GetBackgroundColor() const {
