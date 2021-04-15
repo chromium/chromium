@@ -6,9 +6,12 @@
 
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/bind.h"
+#include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
@@ -120,4 +123,51 @@ void AutocompleteMatch::DestroyJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutocompleteMatch_destroy(env, java_match_);
   java_match_.Reset();
+}
+
+void AutocompleteMatch::UpdateWithClipboardContent(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  DCHECK(provider) << "No provider available";
+  DCHECK(provider->type() == AutocompleteProvider::TYPE_CLIPBOARD)
+      << "Invalid provider type: " << provider->type();
+
+  ClipboardProvider* clipboard_provider =
+      static_cast<ClipboardProvider*>(provider);
+  clipboard_provider->UpdateClipboardMatchWithContent(
+      this,
+      base::BindOnce(&AutocompleteMatch::OnClipboardSuggestionContentUpdated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void AutocompleteMatch::OnClipboardSuggestionContentUpdated(
+    const base::android::JavaRef<jobject>& j_callback) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  UpdateClipboardContent(env);
+  RunRunnableAndroid(j_callback);
+}
+
+void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
+  if (!java_match_)
+    return;
+
+  std::string clipboard_image_data;
+  if (search_terms_args.get()) {
+    clipboard_image_data = search_terms_args->image_thumbnail_content;
+  }
+
+  ScopedJavaLocalRef<jstring> j_post_content_type;
+  ScopedJavaLocalRef<jbyteArray> j_post_content;
+  if (post_content && !post_content->first.empty() &&
+      !post_content->second.empty()) {
+    j_post_content_type = ConvertUTF8ToJavaString(env, post_content->first);
+    j_post_content = ToJavaByteArray(env, post_content->second);
+  }
+
+  Java_AutocompleteMatch_updateClipboardContent(
+      env, java_match_, ConvertUTF16ToJavaString(env, description),
+      url::GURLAndroid::FromNativeGURL(env, destination_url),
+      j_post_content_type, j_post_content,
+      ToJavaByteArray(env, clipboard_image_data));
 }
