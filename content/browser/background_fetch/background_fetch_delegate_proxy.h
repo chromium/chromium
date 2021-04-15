@@ -39,6 +39,9 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy {
   // these methods will be called on the service worker core thread.
   using DispatchClickEventCallback =
       base::RepeatingCallback<void(const std::string& unique_id)>;
+  using GetPermissionForOriginCallback =
+      base::OnceCallback<void(BackgroundFetchPermission)>;
+
   class Controller {
    public:
     // Called when the given |request| has started fetching.
@@ -84,10 +87,9 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy {
       BackgroundFetchDelegate::GetIconDisplaySizeCallback callback);
 
   // Checks if the provided origin has permission to start a Background Fetch.
-  void GetPermissionForOrigin(
-      const url::Origin& origin,
-      const WebContents::Getter& wc_getter,
-      BackgroundFetchDelegate::GetPermissionForOriginCallback callback);
+  void GetPermissionForOrigin(const url::Origin& origin,
+                              const WebContents::Getter& wc_getter,
+                              GetPermissionForOriginCallback callback);
 
   // Creates a new download grouping described by |fetch_description|. Further
   // downloads started by StartRequest will also use

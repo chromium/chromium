@@ -10,11 +10,14 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/permission_type.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,30 +44,49 @@ class BackgroundFetchDelegateProxy::Core
   }
 
   void ForwardGetPermissionForOriginCallbackToParentThread(
-      BackgroundFetchDelegate::GetPermissionForOriginCallback callback,
+      GetPermissionForOriginCallback callback,
       BackgroundFetchPermission permission) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
                           base::BindOnce(std::move(callback), permission));
   }
 
-  void GetPermissionForOrigin(
-      const url::Origin& origin,
-      const WebContents::Getter& wc_getter,
-      BackgroundFetchDelegate::GetPermissionForOriginCallback callback) {
+  void GetPermissionForOrigin(const url::Origin& origin,
+                              const WebContents::Getter& wc_getter,
+                              GetPermissionForOriginCallback callback) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    if (auto* delegate = browser_context_->GetBackgroundFetchDelegate()) {
-      delegate->GetPermissionForOrigin(
-          origin, wc_getter,
-          base::BindOnce(
-              &Core::ForwardGetPermissionForOriginCallbackToParentThread,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    } else {
-      RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                            base::BindOnce(std::move(callback),
-                                           BackgroundFetchPermission::BLOCKED));
+    BackgroundFetchPermission result = BackgroundFetchPermission::BLOCKED;
+
+    if (auto* controller =
+            PermissionControllerImpl::FromBrowserContext(browser_context_)) {
+      content::WebContents* web_contents =
+          wc_getter ? wc_getter.Run() : nullptr;
+      content::RenderFrameHost* rfh =
+          web_contents ? web_contents->GetMainFrame() : nullptr;
+      blink::mojom::PermissionStatus permission_status =
+          rfh ? controller->GetPermissionStatusForFrame(
+                    PermissionType::BACKGROUND_FETCH, rfh,
+                    /*requesting_origin=*/origin.GetURL())
+              : controller->GetPermissionStatus(
+                    PermissionType::BACKGROUND_FETCH,
+                    /*requesting_origin=*/origin.GetURL(),
+                    /*embedding_origin=*/origin.GetURL());
+      switch (permission_status) {
+        case blink::mojom::PermissionStatus::GRANTED:
+          result = BackgroundFetchPermission::ALLOWED;
+          break;
+        case blink::mojom::PermissionStatus::DENIED:
+          result = BackgroundFetchPermission::BLOCKED;
+          break;
+        case blink::mojom::PermissionStatus::ASK:
+          result = BackgroundFetchPermission::ASK;
+          break;
+      }
     }
+
+    RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+                          base::BindOnce(std::move(callback), result));
   }
 
   void ForwardGetIconDisplaySizeCallbackToParentThread(
@@ -345,7 +367,7 @@ void BackgroundFetchDelegateProxy::GetIconDisplaySize(
 void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     const url::Origin& origin,
     const WebContents::Getter& wc_getter,
-    BackgroundFetchDelegate::GetPermissionForOriginCallback callback) {
+    GetPermissionForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   RunOrPostTaskOnThread(
       FROM_HERE, BrowserThread::UI,

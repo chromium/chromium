@@ -52,40 +52,6 @@ void BackgroundFetchDelegateBase::GetIconDisplaySize(
   std::move(callback).Run(display_size);
 }
 
-void BackgroundFetchDelegateBase::GetPermissionForOrigin(
-    const url::Origin& origin,
-    const content::WebContents::Getter& wc_getter,
-    GetPermissionForOriginCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (wc_getter) {
-    // The fetch should be thought of as one download. So the origin will be
-    // used as the URL, and the |request_method| is set to GET.
-    content::BrowserContext::GetDownloadManager(context_)
-        ->GetDelegate()
-        ->CheckDownloadAllowed(
-            wc_getter, origin.GetURL(), "GET", base::nullopt,
-            false /* from_download_cross_origin_redirect */,
-            true /* content_initiated */,
-            base::BindOnce(&BackgroundFetchDelegateBase::
-                               DidGetPermissionFromDownloadRequestLimiter,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
-    return;
-  }
-
-  GetPermissionForOriginWithoutWebContents(origin, std::move(callback));
-}
-
-void BackgroundFetchDelegateBase::DidGetPermissionFromDownloadRequestLimiter(
-    GetPermissionForOriginCallback callback,
-    bool has_permission) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::move(callback).Run(has_permission
-                              ? content::BackgroundFetchPermission::ALLOWED
-                              : content::BackgroundFetchPermission::BLOCKED);
-}
-
 void BackgroundFetchDelegateBase::CreateDownloadJob(
     base::WeakPtr<Client> client,
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description) {

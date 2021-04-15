@@ -4,7 +4,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/serviceworker/resources/test-helpers.js"></script>
-<script src="/serviceworker/resources/shared-utils.js"></script>
 <script src="resources/utils.js"></script>
 <script>
 'use strict';
@@ -16,6 +15,8 @@
 
 // This is not a comprehensive test of CORS preflight detection - it is just
 // intended to check that detection is enabled.
+
+// TODO(crbug.com/1198604): convert to WPT.
 
 backgroundFetchTest((t, bgFetch) => {
   return bgFetch.fetch(uniqueTag(), new Request('https://example.com', {

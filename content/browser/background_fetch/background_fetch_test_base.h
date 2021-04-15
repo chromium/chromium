@@ -73,7 +73,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
   }
 
   // Returns the browser context that should be used for the tests.
-  BrowserContext* browser_context() { return &browser_context_; }
+  TestBrowserContext* browser_context() { return &browser_context_; }
 
   // Returns the once-initialized default storage partition to be used in tests.
   StoragePartition* storage_partition() { return storage_partition_; }

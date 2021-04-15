@@ -43,9 +43,6 @@ class BackgroundFetchDelegateImpl
 
  protected:
   // BackgroundFetchDelegateBase:
-  void GetPermissionForOriginWithoutWebContents(
-      const url::Origin& origin,
-      GetPermissionForOriginCallback callback) override;
   download::DownloadService* GetDownloadService() override;
   void OnJobDetailsCreated(const std::string& job_id) override;
   void DoShowUi(const std::string& job_id) override;

@@ -42,9 +42,6 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
 
   // BackgroundFetchDelegate implementation:
   void GetIconDisplaySize(GetIconDisplaySizeCallback callback) override;
-  void GetPermissionForOrigin(const url::Origin& origin,
-                              const content::WebContents::Getter& wc_getter,
-                              GetPermissionForOriginCallback callback) override;
   void CreateDownloadJob(base::WeakPtr<Client> client,
                          std::unique_ptr<content::BackgroundFetchDescription>
                              fetch_description) override;
@@ -108,12 +105,6 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
   void OnUiFinished(const std::string& job_id, bool activated);
 
  protected:
-  // Called to determine the permission setting in the case where no associated
-  // WebContents is provided.
-  virtual void GetPermissionForOriginWithoutWebContents(
-      const url::Origin& origin,
-      GetPermissionForOriginCallback callback) = 0;
-
   // Return the download service for `context_`.
   virtual download::DownloadService* GetDownloadService() = 0;
 
@@ -147,11 +138,6 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
 
   void OnDownloadReceived(const std::string& guid,
                           download::DownloadParams::StartResult result);
-
-  // The callback passed to DownloadRequestLimiter::CanDownload().
-  void DidGetPermissionFromDownloadRequestLimiter(
-      GetPermissionForOriginCallback callback,
-      bool has_permission);
 
   void DidGetUploadData(const std::string& job_id,
                         const std::string& download_guid,

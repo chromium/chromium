@@ -68,7 +68,7 @@ TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithFrame) {
             CONTENT_SETTING_ALLOW);
 }
 
-// Test that Background Fetch permission is "allow" when queried from a worker
+// Test that Background Fetch permission is "prompt" when queried from a worker
 // context, if the Automatic Downloads content setting is set to
 // CONTENT_SETTING_ALLOW.
 TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithoutFrame) {
@@ -79,7 +79,7 @@ TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithoutFrame) {
   BackgroundFetchPermissionContext permission_context(profile());
 
   EXPECT_EQ(GetPermissonStatus(url, &permission_context, /*with_frame =*/false),
-            CONTENT_SETTING_ALLOW);
+            CONTENT_SETTING_ASK);
 }
 
 // Test that Background Fetch permission is "deny" when queried from a worker

@@ -19,7 +19,6 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
 class Profile;
@@ -73,9 +72,6 @@ class BackgroundFetchDelegateImpl
 
  protected:
   // BackgroundFetchDelegateBase:
-  void GetPermissionForOriginWithoutWebContents(
-      const url::Origin& origin,
-      GetPermissionForOriginCallback callback) override;
   download::DownloadService* GetDownloadService() override;
   void OnJobDetailsCreated(const std::string& job_id) override;
   void DoShowUi(const std::string& job_id) override;

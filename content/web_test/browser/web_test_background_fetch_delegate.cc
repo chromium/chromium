@@ -241,14 +241,6 @@ void WebTestBackgroundFetchDelegate::GetIconDisplaySize(
   std::move(callback).Run(gfx::Size(192, 192));
 }
 
-void WebTestBackgroundFetchDelegate::GetPermissionForOrigin(
-    const url::Origin& origin,
-    const WebContents::Getter& wc_getter,
-    GetPermissionForOriginCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(BackgroundFetchPermission::ALLOWED);
-}
-
 void WebTestBackgroundFetchDelegate::CreateDownloadJob(
     base::WeakPtr<Client> client,
     std::unique_ptr<BackgroundFetchDescription> fetch_description) {

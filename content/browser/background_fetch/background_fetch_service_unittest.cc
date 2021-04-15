@@ -26,6 +26,12 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/background_fetch/background_fetch_types.h"
+#include "content/public/browser/permission_type.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -285,11 +291,25 @@ class BackgroundFetchServiceTest
     embedded_worker_test_helper()->context_wrapper()->AddObserver(this);
     devtools_context()->AddObserver(this);
 
+    web_contents_ = base::WrapUnique(WebContentsTester::CreateTestWebContents(
+        WebContents::CreateParams(browser_context(), nullptr)));
+    std::unique_ptr<MockPermissionManager> mock_permission_manager(
+        new testing::NiceMock<MockPermissionManager>());
+    ON_CALL(*mock_permission_manager,
+            GetPermissionStatus(PermissionType::BACKGROUND_FETCH, _, _))
+        .WillByDefault(
+            testing::Return(blink::mojom::PermissionStatus::GRANTED));
+    browser_context()->SetPermissionControllerDelegate(
+        std::move(mock_permission_manager));
+
     context_->InitializeOnCoreThread();
     service_ = std::make_unique<BackgroundFetchServiceImpl>(
         context_, origin(),
         /* render_frame_tree_node_id= */ 0,
-        /* wc_getter= */ base::NullCallback());
+        /* wc_getter= */
+        base::BindRepeating(
+            [](content::WebContents* web_contents) { return web_contents; },
+            web_contents_.get()));
   }
 
   void TearDown() override {
@@ -412,6 +432,10 @@ class BackgroundFetchServiceTest
     }
     std::move(quit_closure).Run();
   }
+
+  RenderViewHostTestEnabler enabler_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<BackgroundFetchServiceImpl> service_;
 

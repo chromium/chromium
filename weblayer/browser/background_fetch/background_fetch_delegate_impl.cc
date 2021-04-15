@@ -75,13 +75,6 @@ void BackgroundFetchDelegateImpl::UpdateUI(
     client->OnUIUpdated(job_id);
 }
 
-void BackgroundFetchDelegateImpl::GetPermissionForOriginWithoutWebContents(
-    const url::Origin& origin,
-    GetPermissionForOriginCallback callback) {
-  // TODO(estade): handle the case where there's no WebContents.
-  std::move(callback).Run(content::BackgroundFetchPermission::BLOCKED);
-}
-
 download::DownloadService* BackgroundFetchDelegateImpl::GetDownloadService() {
   return DownloadServiceFactory::GetForBrowserContext(context());
 }
