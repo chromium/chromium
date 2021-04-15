@@ -1573,7 +1573,7 @@
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
-          'shards': 3,
+          'shards': 6,
         },
       },
     },
@@ -2797,7 +2797,7 @@
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
-          'shards': 3,
+          'shards': 14,
         },
       },
     },
