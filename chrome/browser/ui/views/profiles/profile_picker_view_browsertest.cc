@@ -333,6 +333,17 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     handler->HandleLaunchSelectedProfile(open_settings, &args);
   }
 
+  // Simulates a click on "Browse as Guest".
+  void OpenGuestFromPicker() {
+    ProfilePickerHandler* handler = web_contents()
+                                        ->GetWebUI()
+                                        ->GetController()
+                                        ->GetAs<ProfilePickerUI>()
+                                        ->GetProfilePickerHandlerForTesting();
+    base::ListValue args;
+    handler->HandleLaunchGuestProfile(&args);
+  }
+
  private:
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
@@ -811,6 +822,42 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
                     GURL("chrome://settings/manageProfile"));
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
+  WaitForPickerClosed();
+  // IPH is not shown.
+  EXPECT_FALSE(ProfileSwitchPromoHasBeenShown(new_browser));
+}
+
+// Regression test for https://crbug.com/1199035
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       OpenProfile_Guest) {
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+      base::TimeDelta::FromSeconds(0));
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  // Create a second profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      other_path,
+      base::BindLambdaForTesting(
+          [&run_loop](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              run_loop.Quit();
+            }
+          }));
+  run_loop.Run();
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  // Open a Guest profile.
+  OpenGuestFromPicker();
+  // Browser for the guest profile is displayed.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://newtab"));
+  EXPECT_TRUE(new_browser->profile()->IsGuestSession() ||
+              new_browser->profile()->IsEphemeralGuestProfile());
   WaitForPickerClosed();
   // IPH is not shown.
   EXPECT_FALSE(ProfileSwitchPromoHasBeenShown(new_browser));
