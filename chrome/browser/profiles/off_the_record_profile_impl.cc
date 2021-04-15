@@ -407,10 +407,6 @@ const PrefService* OffTheRecordProfileImpl::GetPrefs() const {
   return prefs_.get();
 }
 
-PrefService* OffTheRecordProfileImpl::GetOffTheRecordPrefs() {
-  return prefs_.get();
-}
-
 DownloadManagerDelegate* OffTheRecordProfileImpl::GetDownloadManagerDelegate() {
   return DownloadCoreServiceFactory::GetForBrowserContext(this)
       ->GetDownloadManagerDelegate();

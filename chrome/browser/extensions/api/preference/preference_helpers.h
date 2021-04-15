@@ -12,6 +12,7 @@
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 
+class PrefService;
 class Profile;
 
 namespace base {
@@ -44,6 +45,12 @@ void DispatchEventToExtensions(Profile* profile,
                                mojom::APIPermissionID permission,
                                bool incognito,
                                const std::string& browser_pref);
+
+// Returns preferences service of the given profile. If |incognito| is true and
+// |profile| has an Incognito profile, the preferenecs of the Incognito profile
+// is returned and otherwise a read-only copy of |profile|'s preferences is
+// given.
+PrefService* GetProfilePrefService(Profile* profile, bool incognito);
 
 }  // namespace preference_helpers
 }  // namespace extensions

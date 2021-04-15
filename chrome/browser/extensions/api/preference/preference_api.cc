@@ -673,8 +673,9 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
               pref_key));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const PrefService* prefs =
-      incognito ? profile->GetOffTheRecordPrefs() : profile->GetPrefs();
+  PrefService* prefs =
+      extensions::preference_helpers::GetProfilePrefService(profile, incognito);
+
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);
   CHECK(pref);
 

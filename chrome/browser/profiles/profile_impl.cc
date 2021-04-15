@@ -1204,21 +1204,7 @@ ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
 }
 #endif  // !defined(OS_ANDROID)
 
-PrefService* ProfileImpl::GetOffTheRecordPrefs() {
-  if (HasPrimaryOTRProfile()) {
-    return GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs();
-  } else {
-    // The extensions preference API and many tests call this method even when
-    // there's no OTR profile, in order to figure out what a pref value would
-    // have been returned if an OTR profile existed. To support that case we
-    // return a dummy PrefService here.
-    //
-    // TODO(crbug.com/734484): Don't call this method when there's no OTR
-    // profile (and return null for such calls).
-    return GetReadOnlyOffTheRecordPrefs();
-  }
-}
-
+// TODO(crbug.com/734484): Remove this function.
 PrefService* ProfileImpl::GetReadOnlyOffTheRecordPrefs() {
   if (!dummy_otr_prefs_) {
     dummy_otr_prefs_ = CreateIncognitoPrefServiceSyncable(

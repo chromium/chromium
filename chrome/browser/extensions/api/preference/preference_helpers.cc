@@ -54,13 +54,24 @@ bool StringToScope(const std::string& s,
   return true;
 }
 
+PrefService* GetProfilePrefService(Profile* profile, bool incognito) {
+  if (incognito) {
+    if (profile->HasPrimaryOTRProfile()) {
+      return profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+          ->GetPrefs();
+    }
+    return profile->GetReadOnlyOffTheRecordPrefs();
+  }
+
+  return profile->GetPrefs();
+}
+
 const char* GetLevelOfControl(
     Profile* profile,
     const std::string& extension_id,
     const std::string& browser_pref,
     bool incognito) {
-  PrefService* prefs = incognito ? profile->GetOffTheRecordPrefs()
-                                 : profile->GetPrefs();
+  PrefService* prefs = GetProfilePrefService(profile, incognito);
   bool from_incognito = false;
   bool* from_incognito_ptr = incognito ? &from_incognito : nullptr;
   const PrefService::Preference* pref = prefs->FindPreference(browser_pref);

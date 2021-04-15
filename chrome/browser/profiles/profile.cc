@@ -252,10 +252,6 @@ ChromeZoomLevelPrefs* Profile::GetZoomLevelPrefs() {
 }
 #endif  // !defined(OS_ANDROID)
 
-PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
-  return GetOffTheRecordPrefs();
-}
-
 Profile::Delegate::~Delegate() {
 }
 
@@ -406,6 +402,10 @@ bool Profile::IsGuestSession() const {
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
+  return nullptr;
 }
 
 bool Profile::IsEphemeralGuestProfile() const {

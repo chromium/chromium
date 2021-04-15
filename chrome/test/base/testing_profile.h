@@ -390,8 +390,6 @@ class TestingProfile : public Profile {
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
-  PrefService* GetOffTheRecordPrefs() override;
-
   void RecordMainFrameNavigation() override {}
 
   void set_profile_name(const std::string& profile_name) {

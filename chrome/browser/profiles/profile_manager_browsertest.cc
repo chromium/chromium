@@ -755,12 +755,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, IncognitoProfile) {
   // Check that a default save path is not empty, since it's taken from the
   // main profile preferences, set it to empty and verify that it becomes
   // empty.
-  EXPECT_FALSE(profile->GetOffTheRecordPrefs()
+  EXPECT_FALSE(incognito_profile->GetPrefs()
                    ->GetFilePath(prefs::kSaveFileDefaultDirectory)
                    .empty());
-  profile->GetOffTheRecordPrefs()->SetFilePath(prefs::kSaveFileDefaultDirectory,
-                                               base::FilePath());
-  EXPECT_TRUE(profile->GetOffTheRecordPrefs()
+  incognito_profile->GetPrefs()->SetFilePath(prefs::kSaveFileDefaultDirectory,
+                                             base::FilePath());
+  EXPECT_TRUE(incognito_profile->GetPrefs()
                   ->GetFilePath(prefs::kSaveFileDefaultDirectory)
                   .empty());
 
@@ -773,7 +773,9 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, IncognitoProfile) {
   EXPECT_EQ(initial_profile_count, profile_manager->GetNumberOfProfiles());
   // After destroying the incognito profile incognito preferences should be
   // cleared so the default save path should be taken from the main profile.
-  EXPECT_FALSE(profile->GetOffTheRecordPrefs()
+  // When Incognito profile does not exist, GetReadOnlyOffTheRecordPrefs gives
+  // the OTR prefs.
+  EXPECT_FALSE(profile->GetReadOnlyOffTheRecordPrefs()
                    ->GetFilePath(prefs::kSaveFileDefaultDirectory)
                    .empty());
 }

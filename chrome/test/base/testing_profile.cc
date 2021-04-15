@@ -417,8 +417,7 @@ void TestingProfile::Init() {
       this, base::BindRepeating(&web_app::TestWebAppProvider::BuildDefault));
 #endif
 
-  // Prefs for incognito profiles are set in CreateIncognitoPrefService() by
-  // simulating ProfileImpl::GetOffTheRecordPrefs().
+  // Prefs for incognito profiles are set in CreateIncognitoPrefService().
   SimpleFactoryKey* key = GetProfileKey();
   if (!IsOffTheRecord()) {
     DCHECK(!original_profile_);
@@ -939,10 +938,6 @@ GURL TestingProfile::GetHomePage() {
 
 void TestingProfile::SetCreationTimeForTesting(base::Time creation_time) {
   start_time_ = creation_time;
-}
-
-PrefService* TestingProfile::GetOffTheRecordPrefs() {
-  return nullptr;
 }
 
 bool TestingProfile::IsSignedIn() {

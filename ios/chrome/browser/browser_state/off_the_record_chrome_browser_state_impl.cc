@@ -82,10 +82,6 @@ PrefService* OffTheRecordChromeBrowserStateImpl::GetPrefs() {
   return prefs_.get();
 }
 
-PrefService* OffTheRecordChromeBrowserStateImpl::GetOffTheRecordPrefs() {
-  return GetPrefs();
-}
-
 bool OffTheRecordChromeBrowserStateImpl::IsOffTheRecord() const {
   return true;
 }

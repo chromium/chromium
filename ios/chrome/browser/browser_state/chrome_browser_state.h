@@ -83,10 +83,6 @@ class ChromeBrowserState : public web::BrowserState {
   // Retrieves a pointer to the PrefService that manages the preferences.
   virtual PrefService* GetPrefs() = 0;
 
-  // Retrieves a pointer to the PrefService that manages the preferences
-  // for OffTheRecord browser states.
-  virtual PrefService* GetOffTheRecordPrefs() = 0;
-
   // Allows access to ChromeBrowserStateIOData without going through
   // ResourceContext that is not compiled on iOS. This method must be called on
   // UI thread, but the returned object must only be accessed on the IO thread.

@@ -315,18 +315,8 @@ class Profile : public content::BrowserContext {
   virtual ChromeZoomLevelPrefs* GetZoomLevelPrefs();
 #endif
 
-  // Retrieves a pointer to the PrefService that manages the preferences
-  // for OffTheRecord Profiles.  This PrefService is lazily created the first
-  // time that this method is called.
-  // TODO(https://crbug.com/1065444): Investigate whether it's possible to
-  // remove.
-  virtual PrefService* GetOffTheRecordPrefs() = 0;
-
-  // Like GetOffTheRecordPrefs but gives a read-only view of prefs that can be
-  // used even if there's no OTR profile at the moment
-  // (i.e. HasOffTheRecordProfile is false).
-  // TODO(https://crbug.com/1065444): Investigate whether it's possible to
-  // remove.
+  // Gives a read-only view of prefs that can be used even if there's no OTR
+  // profile at the moment (i.e. HasOffTheRecordProfile is false).
   virtual PrefService* GetReadOnlyOffTheRecordPrefs();
 
   // Returns the main URLLoaderFactory.

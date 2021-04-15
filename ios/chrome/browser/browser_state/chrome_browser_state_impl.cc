@@ -196,13 +196,6 @@ void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(
   otr_state_ = std::move(otr_state);
 }
 
-PrefService* ChromeBrowserStateImpl::GetOffTheRecordPrefs() {
-  if (otr_state_) {
-    return otr_state_->GetPrefs();
-  }
-  return nullptr;
-}
-
 ChromeBrowserStateIOData* ChromeBrowserStateImpl::GetIOData() {
   return io_data_->io_data();
 }

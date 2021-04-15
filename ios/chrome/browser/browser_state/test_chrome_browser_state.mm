@@ -245,10 +245,6 @@ PrefService* TestChromeBrowserState::GetPrefs() {
   return prefs_.get();
 }
 
-PrefService* TestChromeBrowserState::GetOffTheRecordPrefs() {
-  return nullptr;
-}
-
 ChromeBrowserStateIOData* TestChromeBrowserState::GetIOData() {
   return nullptr;
 }
