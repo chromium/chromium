@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/test/fake_compositor_frame_reporting_controller.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -361,8 +362,7 @@ class SchedulerTest : public testing::Test {
  public:
   SchedulerTest()
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
-        fake_external_begin_frame_source_(nullptr),
-        fake_compositor_timing_history_(nullptr) {}
+        fake_external_begin_frame_source_(nullptr) {}
 
   ~SchedulerTest() override = default;
 
@@ -397,10 +397,14 @@ class SchedulerTest : public testing::Test {
         fake_compositor_timing_history = FakeCompositorTimingHistory::Create(
             scheduler_settings_.using_synchronous_renderer_compositor);
     fake_compositor_timing_history_ = fake_compositor_timing_history.get();
+    reporting_controller =
+        std::make_unique<FakeCompositorFrameReportingController>();
+    reporting_controller->SetDroppedFrameCounter(&dropped_counter);
 
     scheduler_ = std::make_unique<TestScheduler>(
         task_runner_->GetMockTickClock(), client_.get(), scheduler_settings_, 0,
-        task_runner_.get(), std::move(fake_compositor_timing_history));
+        task_runner_.get(), std::move(fake_compositor_timing_history),
+        reporting_controller.get());
     client_->set_scheduler(scheduler_.get());
     scheduler_->SetBeginFrameSource(frame_source);
 
@@ -589,6 +593,8 @@ class SchedulerTest : public testing::Test {
   std::unique_ptr<FakeSchedulerClient> client_;
   std::unique_ptr<TestScheduler> scheduler_;
   FakeCompositorTimingHistory* fake_compositor_timing_history_;
+  DroppedFrameCounter dropped_counter;
+  std::unique_ptr<CompositorFrameReportingController> reporting_controller;
 };
 
 TEST_F(SchedulerTest, InitializeLayerTreeFrameSinkDoesNotBeginImplFrame) {

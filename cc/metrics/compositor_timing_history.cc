@@ -15,7 +15,6 @@
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/metrics/compositor_frame_reporting_controller.h"
 
 namespace cc {
 
@@ -383,8 +382,7 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
 CompositorTimingHistory::CompositorTimingHistory(
     bool using_synchronous_renderer_compositor,
     UMACategory uma_category,
-    RenderingStatsInstrumentation* rendering_stats_instrumentation,
-    CompositorFrameReportingController* compositor_frame_reporting_controller)
+    RenderingStatsInstrumentation* rendering_stats_instrumentation)
     : using_synchronous_renderer_compositor_(
           using_synchronous_renderer_compositor),
       enabled_(false),
@@ -403,9 +401,7 @@ CompositorTimingHistory::CompositorTimingHistory(
       draw_duration_history_(kDurationHistorySize),
       begin_main_frame_on_critical_path_(false),
       uma_reporter_(CreateUMAReporter(uma_category)),
-      rendering_stats_instrumentation_(rendering_stats_instrumentation),
-      compositor_frame_reporting_controller_(
-          compositor_frame_reporting_controller) {}
+      rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
 
 CompositorTimingHistory::~CompositorTimingHistory() = default;
 
@@ -530,32 +526,24 @@ void CompositorTimingHistory::WillBeginImplFrame(
   viz::BeginFrameArgs::BeginFrameArgsType frame_type = args.type;
   base::TimeTicks frame_time = args.frame_time;
 
-  compositor_frame_reporting_controller_->WillBeginImplFrame(args);
-
   if (frame_type == viz::BeginFrameArgs::NORMAL)
     uma_reporter_->AddBeginImplFrameLatency(now - frame_time);
 
   did_send_begin_main_frame_ = false;
 }
 
-void CompositorTimingHistory::WillFinishImplFrame(bool needs_redraw,
-                                                  const viz::BeginFrameId& id) {
+void CompositorTimingHistory::WillFinishImplFrame(bool needs_redraw) {
   if (!needs_redraw)
     SetCompositorDrawingContinuously(false);
-
-  compositor_frame_reporting_controller_->OnFinishImplFrame(id);
 }
 
 void CompositorTimingHistory::BeginImplFrameNotExpectedSoon() {
   SetCompositorDrawingContinuously(false);
-  compositor_frame_reporting_controller_->OnStoppedRequestingBeginFrames();
 }
 
 void CompositorTimingHistory::WillBeginMainFrame(
     const viz::BeginFrameArgs& args) {
   DCHECK_EQ(base::TimeTicks(), begin_main_frame_sent_time_);
-
-  compositor_frame_reporting_controller_->WillBeginMainFrame(args);
 
   begin_main_frame_on_critical_path_ = args.on_critical_path;
   begin_main_frame_sent_time_ = Now();
@@ -570,45 +558,25 @@ void CompositorTimingHistory::BeginMainFrameStarted(
   begin_main_frame_start_time_ = main_thread_start_time;
 }
 
-void CompositorTimingHistory::BeginMainFrameAborted(
-    const viz::BeginFrameId& id,
-    CommitEarlyOutReason reason) {
-  compositor_frame_reporting_controller_->BeginMainFrameAborted(id);
-  switch (reason) {
-    case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
-    case CommitEarlyOutReason::FINISHED_NO_UPDATES:
-      compositor_frame_reporting_controller_->DidNotProduceFrame(
-          id, FrameSkippedReason::kNoDamage);
-      break;
-    case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
-    case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
-      break;
-  }
-
+void CompositorTimingHistory::BeginMainFrameAborted() {
   base::TimeTicks begin_main_frame_end_time = Now();
   DidBeginMainFrame(begin_main_frame_end_time);
 }
 
-void CompositorTimingHistory::NotifyReadyToCommit(
-    std::unique_ptr<BeginMainFrameMetrics> details) {
+void CompositorTimingHistory::NotifyReadyToCommit() {
   DCHECK_NE(begin_main_frame_start_time_, base::TimeTicks());
-  compositor_frame_reporting_controller_->SetBlinkBreakdown(
-      std::move(details), begin_main_frame_start_time_);
   begin_main_frame_start_to_ready_to_commit_duration_history_.InsertSample(
       Now() - begin_main_frame_start_time_);
 }
 
 void CompositorTimingHistory::WillCommit() {
   DCHECK_NE(begin_main_frame_start_time_, base::TimeTicks());
-  compositor_frame_reporting_controller_->WillCommit();
   commit_start_time_ = Now();
 }
 
 void CompositorTimingHistory::DidCommit() {
   DCHECK_EQ(pending_tree_creation_time_, base::TimeTicks());
   DCHECK_NE(commit_start_time_, base::TimeTicks());
-
-  compositor_frame_reporting_controller_->DidCommit();
 
   base::TimeTicks begin_main_frame_end_time = Now();
   DidBeginMainFrame(begin_main_frame_end_time);
@@ -659,7 +627,6 @@ void CompositorTimingHistory::WillInvalidateOnImplSide() {
   DCHECK(!pending_tree_is_impl_side_);
   DCHECK_EQ(pending_tree_creation_time_, base::TimeTicks());
 
-  compositor_frame_reporting_controller_->WillInvalidateOnImplSide();
   pending_tree_is_impl_side_ = true;
   pending_tree_creation_time_ = base::TimeTicks::Now();
 }
@@ -714,7 +681,6 @@ void CompositorTimingHistory::ReadyToActivate() {
 void CompositorTimingHistory::WillActivate() {
   DCHECK_EQ(base::TimeTicks(), activate_start_time_);
 
-  compositor_frame_reporting_controller_->WillActivate();
   activate_start_time_ = Now();
 
   pending_tree_is_impl_side_ = false;
@@ -724,7 +690,6 @@ void CompositorTimingHistory::WillActivate() {
 
 void CompositorTimingHistory::DidActivate() {
   DCHECK_NE(base::TimeTicks(), activate_start_time_);
-  compositor_frame_reporting_controller_->DidActivate();
   base::TimeDelta activate_duration = Now() - activate_start_time_;
 
   if (enabled_)
@@ -783,30 +748,6 @@ void CompositorTimingHistory::DidDraw(bool used_new_active_tree,
   if (used_new_active_tree)
     new_active_tree_draw_end_time_prev_ = draw_end_time;
   draw_start_time_ = base::TimeTicks();
-}
-
-void CompositorTimingHistory::DidSubmitCompositorFrame(
-    uint32_t frame_token,
-    const viz::BeginFrameId& current_frame_id,
-    const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics,
-    bool has_missing_content) {
-  compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
-      frame_token, current_frame_id, last_activated_frame_id,
-      std::move(events_metrics), has_missing_content);
-}
-
-void CompositorTimingHistory::DidNotProduceFrame(
-    const viz::BeginFrameId& id,
-    FrameSkippedReason skip_reason) {
-  compositor_frame_reporting_controller_->DidNotProduceFrame(id, skip_reason);
-}
-
-void CompositorTimingHistory::DidPresentCompositorFrame(
-    uint32_t frame_token,
-    const viz::FrameTimingDetails& details) {
-  compositor_frame_reporting_controller_->DidPresentCompositorFrame(frame_token,
-                                                                    details);
 }
 
 void CompositorTimingHistory::SetTreePriority(TreePriority priority) {

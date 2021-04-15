@@ -29,7 +29,10 @@ class FakeCompositorFrameReportingController
       const FakeCompositorFrameReportingController& controller) = delete;
 
   void WillBeginMainFrame(const viz::BeginFrameArgs& args) override;
-  void BeginMainFrameAborted(const viz::BeginFrameId& id) override;
+  void BeginMainFrameAborted(
+      const viz::BeginFrameId& id,
+      CommitEarlyOutReason reason =
+          CommitEarlyOutReason::ABORTED_NOT_VISIBLE) override;
   void WillCommit() override;
   void DidCommit() override;
   void WillActivate() override;

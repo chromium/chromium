@@ -42,6 +42,7 @@ struct FrameTimingDetails;
 namespace cc {
 struct BeginMainFrameMetrics;
 class CompositorTimingHistory;
+class CompositorFrameReportingController;
 
 enum class FrameSkippedReason {
   kRecoverLatency,
@@ -100,7 +101,9 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
             base::SingleThreadTaskRunner* task_runner,
             std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
             gfx::RenderingPipeline* main_thread_pipeline,
-            gfx::RenderingPipeline* compositor_thread_pipeline);
+            gfx::RenderingPipeline* compositor_thread_pipeline,
+            CompositorFrameReportingController*
+                compositor_frame_reporting_controller);
   Scheduler(const Scheduler&) = delete;
   ~Scheduler() override;
 
@@ -283,6 +286,10 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   bool skipped_last_frame_to_reduce_latency_ = false;
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history_;
+
+  // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
+  // destroyed.
+  CompositorFrameReportingController* compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.
   base::TimeTicks deadline_;

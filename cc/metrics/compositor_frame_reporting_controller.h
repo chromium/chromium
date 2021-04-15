@@ -54,7 +54,8 @@ class CC_EXPORT CompositorFrameReportingController {
   // Events to signal Beginning/Ending of phases.
   virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args);
   virtual void WillBeginMainFrame(const viz::BeginFrameArgs& args);
-  virtual void BeginMainFrameAborted(const viz::BeginFrameId& id);
+  virtual void BeginMainFrameAborted(const viz::BeginFrameId& id,
+                                     CommitEarlyOutReason reason);
   virtual void WillInvalidateOnImplSide();
   virtual void WillCommit();
   virtual void DidCommit();
@@ -74,8 +75,7 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::FrameTimingDetails& details);
   void OnStoppedRequestingBeginFrames();
 
-  void SetBlinkBreakdown(std::unique_ptr<BeginMainFrameMetrics> details,
-                         base::TimeTicks main_thread_start_time);
+  void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
 
   void SetUkmManager(UkmManager* manager);
 
@@ -98,6 +98,10 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
     dropped_frame_counter_ = counter;
+  }
+
+  void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {
+    begin_main_frame_start_time_ = begin_main_frame_start_time;
   }
 
  protected:
@@ -182,6 +186,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   // The latest frame that was started.
   viz::BeginFrameArgs previous_frame_;
+
+  base::TimeTicks begin_main_frame_start_time_;
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 

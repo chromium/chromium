@@ -89,13 +89,13 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
       new CompositorTimingHistory(
           scheduler_settings.using_synchronous_renderer_compositor,
           CompositorTimingHistory::RENDERER_UMA,
-          layer_tree_host->rendering_stats_instrumentation(),
-          host_impl_->compositor_frame_reporting_controller()));
+          layer_tree_host->rendering_stats_instrumentation()));
   scheduler_ = std::make_unique<Scheduler>(
       this, scheduler_settings, layer_tree_host_id_,
       task_runner_provider_->ImplThreadTaskRunner(),
       std::move(compositor_timing_history), layer_tree_host->TakeMainPipeline(),
-      layer_tree_host->TakeCompositorPipeline());
+      layer_tree_host->TakeCompositorPipeline(),
+      host_impl_->compositor_frame_reporting_controller());
 
   DCHECK_EQ(scheduler_->visible(), host_impl_->visible());
 }

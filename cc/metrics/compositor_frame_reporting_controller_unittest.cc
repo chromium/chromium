@@ -15,6 +15,7 @@
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/total_frame_counter.h"
+#include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -146,8 +147,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     CHECK(
         reporting_controller_.reporters()[CompositorFrameReportingController::
                                               PipelineStage::kBeginMainFrame]);
-    reporting_controller_.SetBlinkBreakdown(std::move(blink_breakdown),
-                                            begin_main_start_time_);
+    reporting_controller_.BeginMainFrameStarted(begin_main_start_time_);
+    reporting_controller_.NotifyReadyToCommit(std::move(blink_breakdown));
     begin_commit_time_ = AdvanceNowByMs(10);
     reporting_controller_.WillCommit();
     end_commit_time_ = AdvanceNowByMs(10);
@@ -476,7 +477,8 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
 
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.WillBeginMainFrame(args_1);
-  reporting_controller_.BeginMainFrameAborted(current_id_1);
+  reporting_controller_.BeginMainFrameAborted(
+      current_id_1, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.OnFinishImplFrame(current_id_1);
   reporting_controller_.DidNotProduceFrame(current_id_1,
                                            FrameSkippedReason::kNoDamage);
@@ -484,7 +486,8 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
   reporting_controller_.WillBeginImplFrame(args_2);
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
-  reporting_controller_.BeginMainFrameAborted(current_id_2);
+  reporting_controller_.BeginMainFrameAborted(
+      current_id_2, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.DidNotProduceFrame(current_id_2,
                                            FrameSkippedReason::kNoDamage);
 
@@ -614,7 +617,8 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted) {
 
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.WillBeginMainFrame(args_);
-  reporting_controller_.BeginMainFrameAborted(current_id_);
+  reporting_controller_.BeginMainFrameAborted(
+      current_id_, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(
       1, current_id_, last_activated_id_, {}, /*has_missing_content=*/false);
@@ -670,7 +674,8 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   reporting_controller_.WillBeginImplFrame(args_2);
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
-  reporting_controller_.BeginMainFrameAborted(current_id_2);
+  reporting_controller_.BeginMainFrameAborted(
+      current_id_2, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.DidSubmitCompositorFrame(
       1, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
@@ -1529,7 +1534,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, dropped_counter_.total_compositor_dropped());
   EXPECT_EQ(0u, dropped_counter_.total_frames());
 
-  reporting_controller_.BeginMainFrameAborted(args_1.frame_id);
+  reporting_controller_.BeginMainFrameAborted(
+      args_1.frame_id, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kNoDamage);
   EXPECT_EQ(0u, dropped_counter_.total_compositor_dropped());
@@ -1626,6 +1632,31 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, dropped_counter_.total_main_dropped());
   EXPECT_EQ(kTotalFrames - kThrottledFrames,
             dropped_counter_.total_compositor_dropped());
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       DroppedFrameCountOnMainFrameAbort) {
+  // Start a few begin-main-frames, but abort the main-frames due to no damage.
+  for (int i = 0; i < 5; ++i) {
+    SimulateBeginImplFrame();
+    SimulateBeginMainFrame();
+    reporting_controller_.OnFinishImplFrame(current_id_);
+    reporting_controller_.BeginMainFrameAborted(
+        current_id_, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  }
+  EXPECT_EQ(0u, dropped_counter_.total_compositor_dropped());
+
+  // Start a few begin-main-frames, but abort the main-frames due to no damage.
+  for (int i = 0; i < 5; ++i) {
+    SimulateBeginImplFrame();
+    SimulateBeginMainFrame();
+    reporting_controller_.OnFinishImplFrame(current_id_);
+    reporting_controller_.BeginMainFrameAborted(
+        current_id_, CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+    SimulateSubmitCompositorFrame({});
+  }
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(5u, dropped_counter_.total_compositor_dropped());
 }
 
 // Verifies that presentation feedbacks that arrive out of order are handled

@@ -24,7 +24,8 @@ void FakeCompositorFrameReportingController::WillBeginMainFrame(
 }
 
 void FakeCompositorFrameReportingController::BeginMainFrameAborted(
-    const viz::BeginFrameId& id) {
+    const viz::BeginFrameId& id,
+    CommitEarlyOutReason reason) {
   if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
     viz::BeginFrameArgs args = viz::BeginFrameArgs();
     args.frame_id = id;
@@ -32,7 +33,7 @@ void FakeCompositorFrameReportingController::BeginMainFrameAborted(
     args.interval = INTERVAL;
     WillBeginMainFrame(args);
   }
-  CompositorFrameReportingController::BeginMainFrameAborted(id);
+  CompositorFrameReportingController::BeginMainFrameAborted(id, reason);
 }
 
 void FakeCompositorFrameReportingController::WillCommit() {

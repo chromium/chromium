@@ -130,11 +130,15 @@ void CompositorFrameReportingController::WillBeginMainFrame(
 }
 
 void CompositorFrameReportingController::BeginMainFrameAborted(
-    const viz::BeginFrameId& id) {
+    const viz::BeginFrameId& id,
+    CommitEarlyOutReason reason) {
   auto& reporter = reporters_[PipelineStage::kBeginMainFrame];
   DCHECK(reporter);
   DCHECK_EQ(reporter->frame_id(), id);
   reporter->OnAbortBeginMainFrame(Now());
+
+  if (reason == CommitEarlyOutReason::FINISHED_NO_UPDATES)
+    DidNotProduceFrame(id, FrameSkippedReason::kNoDamage);
 }
 
 void CompositorFrameReportingController::WillCommit() {
@@ -469,12 +473,11 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
   previous_frame_ = {};
 }
 
-void CompositorFrameReportingController::SetBlinkBreakdown(
-    std::unique_ptr<BeginMainFrameMetrics> details,
-    base::TimeTicks main_thread_start_time) {
+void CompositorFrameReportingController::NotifyReadyToCommit(
+    std::unique_ptr<BeginMainFrameMetrics> details) {
   DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
   reporters_[PipelineStage::kBeginMainFrame]->SetBlinkBreakdown(
-      std::move(details), main_thread_start_time);
+      std::move(details), begin_main_frame_start_time_);
 }
 
 void CompositorFrameReportingController::AddActiveTracker(
