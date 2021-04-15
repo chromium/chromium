@@ -393,28 +393,42 @@ suite('cr-slider', function() {
     return wait;
   });
 
-  test('out of range value updated back into min/max range', () => {
-    crSlider.min = 0;
-    crSlider.max = 100;
-    crSlider.value = 50;
-    assertEquals(50, crSlider.value);
-    crSlider.value = 150;
-    assertEquals(100, crSlider.value);
-    crSlider.value = -50;
-    assertEquals(0, crSlider.value);
-    crSlider.min = 25;
-    assertEquals(25, crSlider.value);
-    crSlider.value = 100;
-    crSlider.max = 50;
-    assertEquals(50, crSlider.value);
-  });
+  test(
+      'out of range value updated back into min/max range with debounce',
+      async () => {
+        crSlider.min = -100;
+        crSlider.max = 1000;
+        crSlider.value = -50;
+        await flushTasks();
+        assertEquals(-50, crSlider.value);
 
-  test('container hidden until value set', () => {
+        crSlider.min = 0;
+        crSlider.max = 100;
+        crSlider.value = 150;
+        // Clamping value should happen async, not sync, in order to not race
+        // when min/max and value change at the same time.
+        assertEquals(150, crSlider.value);
+
+        await flushTasks();
+        assertEquals(100, crSlider.value);
+
+        crSlider.max = 25;
+        await flushTasks();
+        assertEquals(25, crSlider.value);
+
+        crSlider.min = 50;
+        crSlider.max = 100;
+        await flushTasks();
+        assertEquals(50, crSlider.value);
+      });
+
+  test('container hidden until value set', async () => {
     document.body.innerHTML = '<cr-slider></cr-slider>';
     crSlider = /** @type {!CrSliderElement} */ (
         document.body.querySelector('cr-slider'));
     assertTrue(crSlider.$$('#container').hidden);
     crSlider.value = 0;
+    await flushTasks();
     assertFalse(crSlider.$$('#container').hidden);
   });
 });
