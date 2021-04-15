@@ -11,10 +11,6 @@
 
 namespace flag_descriptions {
 
-// Title and description for the flag to control the autofill query cache.
-extern const char kAutofillCacheQueryResponsesName[];
-extern const char kAutofillCacheQueryResponsesDescription[];
-
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];

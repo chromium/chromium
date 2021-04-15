@@ -303,11 +303,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "autofill-cache-query-responses",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 72
-  },
-  {
     "name": "autofill-enable-company-name",
     "owners": [ "sebsg" ],
     "expiry_milestone": 73

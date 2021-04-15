@@ -257,9 +257,6 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
 };
 
 TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(features::kAutofillCacheQueryResponses);
-
   FormData form;
 
   FormFieldData field;
@@ -495,28 +492,6 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
             AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
   responses_.pop_front();
   histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_HIT, 1);
-
-  // Test query with caching disabled.
-  base::test::ScopedFeatureList fl2;
-  fl2.InitAndDisableFeature(features::kAutofillCacheQueryResponses);
-
-  // Don't hit the in-mem cache.
-  field.label = u"Address line 3";
-  field.name = u"address3";
-  field.form_control_type = "text";
-  form.fields.push_back(field);
-  form_structures.push_back(std::make_unique<FormStructure>(form));
-
-  // Request with id 6
-  EXPECT_TRUE(
-      download_manager.StartQueryRequest(ToRawPointerVector(form_structures)));
-  histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                              AutofillMetrics::QUERY_SENT, 4);
-  histogram.ExpectBucketCount("Autofill.Query.Method", METHOD_POST, 1);
-  request = test_url_loader_factory_.GetPendingRequest(6);
-  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request, responses[0]);
-  histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_MISS, 2);
 }
 
 TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
@@ -1394,8 +1369,7 @@ class AutofillServerCommunicationTest
 
     scoped_feature_list_1_.InitWithFeatures(
         // Enabled
-        {features::kAutofillCacheQueryResponses,
-         features::kAutofillUploadThrottling},
+        {features::kAutofillUploadThrottling},
         // Disabled
         {});
 

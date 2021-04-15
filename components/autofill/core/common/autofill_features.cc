@@ -53,11 +53,6 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls the use of GET (instead of POST) to fetch cacheable autofill query
-// responses.
-const base::Feature kAutofillCacheQueryResponses{
-    "AutofillCacheQueryResponses", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
