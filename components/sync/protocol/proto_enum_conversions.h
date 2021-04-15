@@ -108,6 +108,8 @@ const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer);
 const char* ProtoEnumToString(
     sync_pb::WalletMetadataSpecifics::Type wallet_metadata_type);
 
+const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose);
+
 const char* ProtoEnumToString(
     sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode);
 

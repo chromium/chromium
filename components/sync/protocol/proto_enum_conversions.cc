@@ -525,6 +525,17 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WebAppIconInfo, Purpose, UNSPECIFIED, MASKABLE);
+  switch (purpose) {
+    ENUM_CASE(sync_pb::WebAppIconInfo, UNSPECIFIED);
+    ENUM_CASE(sync_pb::WebAppIconInfo, ANY);
+    ENUM_CASE(sync_pb::WebAppIconInfo, MASKABLE);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(
     sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode) {
   ASSERT_ENUM_BOUNDS(sync_pb::WebAppSpecifics, UserDisplayMode, UNSPECIFIED,
