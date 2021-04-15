@@ -111,7 +111,7 @@ class DragWindowController::DragWindowDetails {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.layer_type = ui::LAYER_NOT_DRAWN;
     params.name = "DragWindow";
-    params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.accept_events = false;
     const int parent_id = original_window->parent()->id();
     params.parent = root_window_->GetChildById(parent_id);

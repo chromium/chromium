@@ -441,7 +441,7 @@ void BackdropController::EnsureBackdropWidget() {
   params.name = "Backdrop";
   // To disallow the MRU list from picking this window up it should not be
   // activateable.
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   DCHECK_NE(kShellWindowId_Invalid, container_->id());
   params.parent = container_;
   params.init_properties_container.SetProperty(kHideInOverviewKey, true);

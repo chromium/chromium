@@ -136,7 +136,7 @@ void MenuHost::InitMenuHost(Widget* parent,
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
   if (parent == nullptr)
-    params.activatable = Widget::InitParams::ACTIVATABLE_YES;
+    params.activatable = Widget::InitParams::Activatable::kYes;
 #if defined(OS_WIN)
   // On Windows use the software compositor to ensure that we don't block
   // the UI thread blocking issue during command buffer creation. We can

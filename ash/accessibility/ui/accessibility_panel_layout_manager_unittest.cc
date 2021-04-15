@@ -37,7 +37,7 @@ std::unique_ptr<views::Widget> CreateChromeVoxPanel() {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   params.parent = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.bounds = gfx::Rect(0, 0, root_window->bounds().width(),
                             root_window->bounds().height());
   widget->Init(std::move(params));

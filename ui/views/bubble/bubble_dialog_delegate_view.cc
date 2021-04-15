@@ -127,8 +127,8 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     }
   }
   bubble_params.activatable = bubble->CanActivate()
-                                  ? Widget::InitParams::ACTIVATABLE_YES
-                                  : Widget::InitParams::ACTIVATABLE_NO;
+                                  ? Widget::InitParams::Activatable::kYes
+                                  : Widget::InitParams::Activatable::kNo;
   bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget);
   DCHECK(bubble_params.parent || !bubble->has_parent());
   bubble_widget->Init(std::move(bubble_params));

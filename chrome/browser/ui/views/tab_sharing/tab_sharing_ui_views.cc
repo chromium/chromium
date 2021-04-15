@@ -59,7 +59,7 @@ void InitContentsBorderWidget(content::WebContents* contents) {
   params.remove_standard_frame = true;
   // Let events go through to underlying view.
   params.accept_events = false;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
 #if defined(OS_WIN)
   params.native_widget = new views::NativeWidgetAura(widget);
 #endif

@@ -70,7 +70,7 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
       &params, ShellWindowId::kShellWindowId_AccessibilityPanelContainer);
   params.bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   params.delegate = this;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.name = widget_name;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
   widget_->Init(std::move(params));

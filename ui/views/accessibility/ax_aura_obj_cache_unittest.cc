@@ -147,7 +147,7 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   widget->Init(std::move(params));
   widget->Show();
 
@@ -253,7 +253,7 @@ TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {
 
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.delegate = delegate;
   widget->Init(std::move(params));
   widget->Show();

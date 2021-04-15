@@ -345,7 +345,7 @@ void UserNoticeView::InitButtonBar() {
 
 void UserNoticeView::InitWidget() {
   views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.type = views::Widget::InitParams::TYPE_POPUP;

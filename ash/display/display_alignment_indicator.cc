@@ -144,7 +144,7 @@ views::Widget::InitParams CreateInitParams(int64_t display_id,
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership =
       views::Widget::InitParams::Ownership::WIDGET_OWNS_NATIVE_WIDGET;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.name = target_name;
 

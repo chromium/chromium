@@ -880,7 +880,7 @@ TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  init_params.activatable = Widget::InitParams::ACTIVATABLE_NO;
+  init_params.activatable = Widget::InitParams::Activatable::kNo;
   widget.Init(std::move(init_params));
 
   widget.Show();
@@ -939,7 +939,7 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
   Widget widget1;
   Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_POPUP);
   params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params1.activatable = Widget::InitParams::ACTIVATABLE_YES;
+  params1.activatable = Widget::InitParams::Activatable::kYes;
   widget1.Init(std::move(params1));
 
   View* view1 = new View();
@@ -958,7 +958,7 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
   Widget widget2;
   Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_POPUP);
   params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params2.activatable = Widget::InitParams::ACTIVATABLE_YES;
+  params2.activatable = Widget::InitParams::Activatable::kYes;
   widget2.Init(std::move(params2));
 
   View* view2 = new View();

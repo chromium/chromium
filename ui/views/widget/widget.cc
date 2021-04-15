@@ -147,8 +147,8 @@ Widget::InitParams::InitParams(InitParams&& other) = default;
 Widget::InitParams::~InitParams() = default;
 
 bool Widget::InitParams::CanActivate() const {
-  if (activatable != InitParams::ACTIVATABLE_DEFAULT)
-    return activatable == InitParams::ACTIVATABLE_YES;
+  if (activatable != InitParams::Activatable::kDefault)
+    return activatable == InitParams::Activatable::kYes;
   return type != InitParams::TYPE_CONTROL && type != InitParams::TYPE_POPUP &&
          type != InitParams::TYPE_MENU && type != InitParams::TYPE_TOOLTIP &&
          type != InitParams::TYPE_DRAG;
@@ -342,8 +342,8 @@ void Widget::Init(InitParams params) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
 
   bool can_activate = params.CanActivate();
-  params.activatable =
-      can_activate ? InitParams::ACTIVATABLE_YES : InitParams::ACTIVATABLE_NO;
+  params.activatable = can_activate ? InitParams::Activatable::kYes
+                                    : InitParams::Activatable::kNo;
 
   widget_delegate_->SetCanActivate(can_activate);
 

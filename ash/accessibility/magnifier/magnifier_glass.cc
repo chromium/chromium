@@ -179,7 +179,7 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
   host_widget_ = new views::Widget;
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.bounds = GetBounds(params_, location_in_root);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

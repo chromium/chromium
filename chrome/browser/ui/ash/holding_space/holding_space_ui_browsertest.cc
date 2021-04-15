@@ -371,7 +371,7 @@ class DropSenderView : public views::WidgetDelegateView,
   void InitWidget(aura::Window* context) {
     views::Widget::InitParams params;
     params.accept_events = true;
-    params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
     params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
@@ -425,7 +425,7 @@ class DropTargetView : public views::WidgetDelegateView {
   void InitWidget(aura::Window* context) {
     views::Widget::InitParams params;
     params.accept_events = true;
-    params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
     params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;

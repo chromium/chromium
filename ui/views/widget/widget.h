@@ -190,12 +190,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       kTranslucent,
     };
 
-    enum Activatable {
+    enum class Activatable {
       // Infer whether the window should be activatable from the window type.
-      ACTIVATABLE_DEFAULT,
+      kDefault,
 
-      ACTIVATABLE_YES,
-      ACTIVATABLE_NO
+      kYes,
+      kNo
     };
 
     enum Ownership {
@@ -229,7 +229,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     InitParams& operator=(InitParams&& rhs) = default;
 
     // Returns the activatablity based on |activatable|, but also handles the
-    // case where |activatable| is |ACTIVATABLE_DEFAULT|.
+    // case where |activatable| is |kDefault|.
     bool CanActivate() const;
 
     // Returns the z-order level, based on the overriding |z_order| but also
@@ -262,7 +262,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     bool accept_events = true;
 
-    Activatable activatable = ACTIVATABLE_DEFAULT;
+    Activatable activatable = Activatable::kDefault;
 
     // The class of window and its overall z-order.
     base::Optional<ui::ZOrderLevel> z_order;

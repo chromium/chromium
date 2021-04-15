@@ -1049,7 +1049,7 @@ void TryChromeDialog::OnContextInitialized() {
   const gfx::Size logo_size = logo->GetPreferredSize();
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   // An approximate window size. Layout() can adjust.
   params.bounds = gfx::Rect(kToastWidth, 120);
   params.name = "TryChromeDialog";

@@ -85,7 +85,7 @@ views::Widget::InitParams GetWidgetInitParams() {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kNormal;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = kBubbleName;
   params.layer_type = ui::LAYER_NOT_DRAWN;

@@ -346,7 +346,7 @@ void BackGestureAffordance::CreateAffordanceWidget(const gfx::Point& location) {
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "BackGestureAffordance";
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = window_util::GetRootWindowAt(location)->GetChildById(
       kShellWindowId_OverlayContainer);
 

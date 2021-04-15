@@ -90,7 +90,7 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
   params.name = kWidgetName;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);

@@ -1192,8 +1192,7 @@ void OverviewItem::CreateItemWidget() {
   params.visible_on_all_workspaces = true;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.name = "OverviewModeLabel";
-  params.activatable =
-      views::Widget::InitParams::Activatable::ACTIVATABLE_DEFAULT;
+  params.activatable = views::Widget::InitParams::Activatable::kDefault;
   params.accept_events = true;
   params.parent = transform_window_.window()->parent();
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);

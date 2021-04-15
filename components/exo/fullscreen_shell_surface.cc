@@ -267,7 +267,7 @@ void FullscreenShellSurface::CreateFullscreenShellSurfaceWidget(
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.show_state = show_state;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.parent = WMHelper::GetInstance()->GetRootWindowForNewWindows();
   params.bounds = gfx::Rect(params.parent->bounds().size());
 

@@ -43,8 +43,8 @@ void CalculateWindowStylesFromInitParams(
     *style |= WS_MINIMIZE;
   if (!params.accept_events)
     *ex_style |= WS_EX_TRANSPARENT;
-  DCHECK_NE(Widget::InitParams::ACTIVATABLE_DEFAULT, params.activatable);
-  if (params.activatable == Widget::InitParams::ACTIVATABLE_NO)
+  DCHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable);
+  if (params.activatable == Widget::InitParams::Activatable::kNo)
     *ex_style |= WS_EX_NOACTIVATE;
   if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal)
     *ex_style |= WS_EX_TOPMOST;

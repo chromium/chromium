@@ -874,7 +874,7 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
     params.parent = parent->GetNativeView();
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.activatable = Widget::InitParams::ACTIVATABLE_YES;
+    params.activatable = Widget::InitParams::Activatable::kYes;
     child->Init(std::move(params));
     child->SetContentsView(std::make_unique<View>());
     return child;

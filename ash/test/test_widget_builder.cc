@@ -82,8 +82,8 @@ TestWidgetBuilder& TestWidgetBuilder::SetContext(aura::Window* context) {
 TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
   DCHECK(!built_);
   widget_init_params_.activatable =
-      activatable ? views::Widget::InitParams::ACTIVATABLE_YES
-                  : views::Widget::InitParams::ACTIVATABLE_NO;
+      activatable ? views::Widget::InitParams::Activatable::kYes
+                  : views::Widget::InitParams::Activatable::kNo;
   return *this;
 }
 

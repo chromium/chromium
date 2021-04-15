@@ -137,7 +137,7 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
 
   // Make the widget activatable so it can receive focus when cycling through
   // windows (i.e. pressing ctrl + forward/back).
-  init_params->activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
   Shell::Get()->focus_cycler()->AddWidget(widget);
   widget->AddObserver(this);

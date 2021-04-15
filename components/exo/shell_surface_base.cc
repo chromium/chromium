@@ -622,7 +622,7 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   if (overlay_params.focusable)
-    params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
 
   params.delegate = new views::WidgetDelegate();
   params.delegate->SetContentsView(std::move(overlay_params.contents_view));
@@ -1059,8 +1059,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   // Transient child needs to have an application id to be activatable.
   if (parent_)
     activatable &= application_id_.has_value();
-  params.activatable = activatable ? views::Widget::InitParams::ACTIVATABLE_YES
-                                   : views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = activatable
+                           ? views::Widget::InitParams::Activatable::kYes
+                           : views::Widget::InitParams::Activatable::kNo;
 
   OverrideInitParams(&params);
 

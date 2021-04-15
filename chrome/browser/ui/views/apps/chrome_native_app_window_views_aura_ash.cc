@@ -126,7 +126,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
       // This ensures calls to Activate() don't attempt to activate the window
       // locally, which can have side effects that should be avoided (such as
       // changing focus). See https://crbug.com/935274 for more details.
-      init_params->activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+      init_params->activatable = views::Widget::InitParams::Activatable::kNo;
     }
   }
 

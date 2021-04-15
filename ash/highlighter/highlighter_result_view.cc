@@ -176,7 +176,7 @@ views::UniqueWidgetPtr HighlighterResultView::Create(
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "HighlighterResult";
   params.accept_events = false;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);

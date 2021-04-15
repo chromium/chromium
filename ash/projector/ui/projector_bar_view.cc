@@ -53,7 +53,7 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
   auto bar_view = std::make_unique<ProjectorBarView>(projector_controller);
 
   views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;

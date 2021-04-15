@@ -29,7 +29,7 @@ views::UniqueWidgetPtr FastInkView::CreateWidgetWithContents(
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "FastInkOverlay";
   params.accept_events = false;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = container;
   params.layer_type = ui::LAYER_SOLID_COLOR;

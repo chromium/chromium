@@ -110,7 +110,7 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   ui::PlatformWindowInitProperties properties;
   properties.type = GetPlatformWindowType(params.type);
   properties.activatable =
-      params.activatable == Widget::InitParams::ACTIVATABLE_YES;
+      params.activatable == Widget::InitParams::Activatable::kYes;
   properties.force_show_in_taskbar = params.force_show_in_taskbar;
   properties.keep_on_top =
       params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal;

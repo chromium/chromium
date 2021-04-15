@@ -163,7 +163,7 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = "ClipboardContextualNudge";
   params.layer_type = ui::LAYER_NOT_DRAWN;

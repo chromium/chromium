@@ -1096,7 +1096,7 @@ void WindowCycleList::InitWindowCycleView() {
   // activated window continue to be in the foreground. This may affect
   // things such as video automatically pausing/playing.
   if (!spoken_feedback_enabled)
-    params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = true;
   params.name = "WindowCycleList (Alt+Tab)";
   // TODO(estade): make sure nothing untoward happens when the lock screen
