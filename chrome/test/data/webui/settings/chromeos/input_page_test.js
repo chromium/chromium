@@ -65,6 +65,10 @@ suite('input page', () => {
             // in intl.accept_languages. We won't "normalize" it here as it is
             // extremely difficult to do in JavaScript, and should not matter
             // for tests.
+            // Disabled for LSV2 Update 2.
+            if (inputPage.languageSettingsV2Update2Enabled_) {
+              break;
+            }
 
             // Normally, getting prefs is an asynchronous action with callbacks,
             // but we can cheat in tests using FakeSettingsPrivate.
@@ -487,6 +491,10 @@ suite('input page', () => {
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
       inputPage.languageSettingsV2Update2Enabled_ = false;
+      // However, we should still set loadTimeData as some other code may use
+      // it (such as languages.js).
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
+
       Polymer.dom.flush();
       // spell check is initially on
       spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
@@ -809,6 +817,9 @@ suite('input page', () => {
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
       inputPage.languageSettingsV2Update2Enabled_ = true;
+      // However, we should still set loadTimeData as some other code may use
+      // it (such as languages.js).
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       Polymer.dom.flush();
 
       // Spell check is initially on.
@@ -1051,6 +1062,44 @@ suite('input page', () => {
       assertTrue(spellCheckToggle.checked);
     });
 
+    test('changing Accept-Language does not change spellcheck', () => {
+      // Remove en-US from Accept-Language, which is also an enabled spell check
+      // language.
+      languageHelper.disableLanguage('en-US');
+      Polymer.dom.flush();
+
+      // en-US should still be there.
+      let newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(1 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+
+      // Add a spell check language not in Accept-Language.
+      languageHelper.toggleSpellCheck('nb', true);
+      Polymer.dom.flush();
+
+      // The spell check list should now have en-US, nb and "add languages".
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(2 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+
+      // Add an arbitrary language to Accept-Language.
+      languageHelper.enableLanguage('tk');
+      Polymer.dom.flush();
+
+      // The spell check list should remain the same.
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(2 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+    });
+
     test('error handling', () => {
       // Enable Swahili so we have two languages for testing.
       languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
@@ -1135,6 +1184,9 @@ suite('input page', () => {
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
       inputPage.languageSettingsV2Update2Enabled_ = true;
+      // However, we should still set loadTimeData as some other code may use
+      // it (such as languages.js).
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       Polymer.dom.flush();
 
       assertFalse(
