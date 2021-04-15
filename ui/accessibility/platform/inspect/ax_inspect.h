@@ -52,9 +52,7 @@ struct AX_EXPORT AXTreeSelector {
 // For example, :1,:3;AXDOMClassList=*
 // will query a AXDOMClassList attribute on accessible objects placed at 1st
 // and 3rd lines in the output accessible tree.
-// Also see
-// DumpAccessibilityTestBase::ParseHtmlForExtraDirectives() for more
-// information.
+// Also see AXInspectScenario::From() for more information.
 struct AX_EXPORT AXPropertyFilter {
   enum Type { ALLOW, ALLOW_EMPTY, DENY, SCRIPT };
 
