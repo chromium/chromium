@@ -6,9 +6,11 @@
 
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace enterprise_reporting {
 
@@ -19,16 +21,29 @@ ExtensionRequestPolicyHandler::ExtensionRequestPolicyHandler()
 
 ExtensionRequestPolicyHandler::~ExtensionRequestPolicyHandler() = default;
 
-void ExtensionRequestPolicyHandler::ApplyPolicySettings(
+bool ExtensionRequestPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
-    PrefValueMap* prefs) {
+    policy::PolicyErrorMap* errors) {
+  if (!policies.GetValue(policy_name()))
+    return true;
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+    return false;
   const base::Value* cloud_reporting_policy_value =
       policies.GetValue(policy::key::kCloudReportingEnabled);
   if (!cloud_reporting_policy_value ||
       !cloud_reporting_policy_value->is_bool() ||
-      !cloud_reporting_policy_value->GetBool())
-    return;
+      !cloud_reporting_policy_value->GetBool()) {
+    errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR,
+                     policy::key::kCloudReportingEnabled, "Enabled");
+    return false;
+  }
 
+  return true;
+}
+
+void ExtensionRequestPolicyHandler::ApplyPolicySettings(
+    const policy::PolicyMap& policies,
+    PrefValueMap* prefs) {
   const base::Value* extension_request_policy_value =
       policies.GetValue(policy_name());
 

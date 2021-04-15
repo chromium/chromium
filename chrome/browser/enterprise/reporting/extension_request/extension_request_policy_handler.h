@@ -18,7 +18,9 @@ class ExtensionRequestPolicyHandler : public policy::TypeCheckingPolicyHandler {
   ExtensionRequestPolicyHandler();
   ~ExtensionRequestPolicyHandler() override;
 
- private:
+  // policy::TypeCheckingPolicyHandler
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 };

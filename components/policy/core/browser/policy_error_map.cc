@@ -4,6 +4,7 @@
 
 #include "components/policy/core/browser/policy_error_map.h"
 
+#include <string>
 #include <utility>
 
 #include "base/macros.h"
@@ -37,27 +38,50 @@ namespace {
 
 class SimplePendingError : public PolicyErrorMap::PendingError {
  public:
+  SimplePendingError(const std::string& policy_name, int message_id)
+      : SimplePendingError(policy_name,
+                           message_id,
+                           std::string(),
+                           std::string()) {}
   SimplePendingError(const std::string& policy_name,
                      int message_id,
-                     const std::string& replacement)
+                     const std::string& replacement_a)
+      : SimplePendingError(policy_name,
+                           message_id,
+                           replacement_a,
+                           std::string()) {}
+
+  SimplePendingError(const std::string& policy_name,
+                     int message_id,
+                     const std::string& replacement_a,
+                     const std::string& replacement_b)
       : PendingError(policy_name),
         message_id_(message_id),
-        replacement_(replacement) {}
-  ~SimplePendingError() override {}
+        replacement_a_(replacement_a),
+        replacement_b_(replacement_b) {
+    DCHECK(replacement_b.empty() || !replacement_a.empty());
+  }
+  ~SimplePendingError() override = default;
 
   std::u16string GetMessage() const override {
     if (message_id_ >= 0) {
-      if (replacement_.empty())
+      if (replacement_a_.empty() && replacement_b_.empty())
         return l10n_util::GetStringUTF16(message_id_);
+      if (replacement_b_.empty()) {
+        return l10n_util::GetStringFUTF16(message_id_,
+                                          base::ASCIIToUTF16(replacement_a_));
+      }
       return l10n_util::GetStringFUTF16(message_id_,
-                                        base::ASCIIToUTF16(replacement_));
+                                        base::ASCIIToUTF16(replacement_a_),
+                                        base::ASCIIToUTF16(replacement_b_));
     }
-    return base::ASCIIToUTF16(replacement_);
+    return base::ASCIIToUTF16(replacement_a_);
   }
 
  private:
   int message_id_;
-  std::string replacement_;
+  std::string replacement_a_;
+  std::string replacement_b_;
 
   DISALLOW_COPY_AND_ASSIGN(SimplePendingError);
 };
@@ -129,19 +153,16 @@ class SchemaValidatingPendingError : public SimplePendingError {
 
 }  // namespace
 
-PolicyErrorMap::PolicyErrorMap() {
-}
+PolicyErrorMap::PolicyErrorMap() = default;
 
-PolicyErrorMap::~PolicyErrorMap() {
-}
+PolicyErrorMap::~PolicyErrorMap() = default;
 
 bool PolicyErrorMap::IsReady() const {
   return ui::ResourceBundle::HasSharedInstance();
 }
 
 void PolicyErrorMap::AddError(const std::string& policy, int message_id) {
-  AddError(
-      std::make_unique<SimplePendingError>(policy, message_id, std::string()));
+  AddError(std::make_unique<SimplePendingError>(policy, message_id));
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
@@ -163,6 +184,14 @@ void PolicyErrorMap::AddError(const std::string& policy,
                               const std::string& replacement) {
   AddError(
       std::make_unique<SimplePendingError>(policy, message_id, replacement));
+}
+
+void PolicyErrorMap::AddError(const std::string& policy,
+                              int message_id,
+                              const std::string& replacement_a,
+                              const std::string& replacement_b) {
+  AddError(std::make_unique<SimplePendingError>(policy, message_id,
+                                                replacement_a, replacement_b));
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
