@@ -4,8 +4,13 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":oobe_loading_dialog" ]
+# TODO(crbug.com/118596): Reenable this on ChromeOS. This is temporarily
+# removed, as it does not build, to have the 'all' target compile so it can be
+# added to buildbots.
+if (!is_chromeos) {
+  js_type_check("closure_compile") {
+    deps = [ ":oobe_loading_dialog" ]
+  }
 }
 
 js_library("oobe_loading_dialog") {

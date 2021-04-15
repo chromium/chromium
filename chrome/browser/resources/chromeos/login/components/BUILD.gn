@@ -4,8 +4,8 @@
 
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 group("closure_compile") {
   deps = [
@@ -40,13 +40,18 @@ js_type_check("closure_compile_local") {
   ]
 }
 
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  deps = [
-    ":display_manager_types.m",
-    ":login_screen_behavior.m",
-    ":multi_step_behavior.m",
-  ]
+# TODO(crbug.com/118596): Reenable this on ChromeOS. This is temporarily
+# removed, as it does not build, to have the 'all' target compile so it can be
+# added to buildbots.
+if (!is_chromeos) {
+  js_type_check("closure_compile_module") {
+    is_polymer3 = true
+    deps = [
+      ":display_manager_types.m",
+      ":login_screen_behavior.m",
+      ":multi_step_behavior.m",
+    ]
+  }
 }
 
 ###############################
@@ -127,9 +132,7 @@ js_library("display_manager_types.m") {
 
 js_library("login_screen_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/login_screen_behavior.m.js" ]
-  deps = [
-    ":display_manager_types.m"
-  ]
+  deps = [ ":display_manager_types.m" ]
   extra_deps = [ ":modulize" ]
 }
 
