@@ -99,7 +99,7 @@ def ci_builder(
     experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
 
     # Migrate executable to bbagent incrementally.
-    experiments.setdefault("luci.buildbucket.use_bbagent", 25)
+    experiments.setdefault("luci.buildbucket.use_bbagent", 50)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
