@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -52,28 +51,6 @@ public class StartSurfaceConfiguration {
     public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_NTP_INSTEAD_OF_START =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", false);
-
-    private static final String TRENDY_ENABLED_PARAM = "trendy_enabled";
-    public static final BooleanCachedFieldTrialParameter TRENDY_ENABLED =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, TRENDY_ENABLED_PARAM, false);
-
-    private static final String SUCCESS_MIN_PERIOD_MS_PARAM = "trendy_success_min_period_ms";
-    public static final IntCachedFieldTrialParameter TRENDY_SUCCESS_MIN_PERIOD_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    SUCCESS_MIN_PERIOD_MS_PARAM, 86400_000);
-
-    private static final String FAILURE_MIN_PERIOD_MS_PARAM = "trendy_failure_min_period_ms";
-    public static final IntCachedFieldTrialParameter TRENDY_FAILURE_MIN_PERIOD_MS =
-            new IntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, FAILURE_MIN_PERIOD_MS_PARAM, 7200_000);
-
-    private static final String TRENDY_ENDPOINT_PARAM = "trendy_endpoint";
-    public static final StringCachedFieldTrialParameter TRENDY_ENDPOINT =
-            new StringCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    TRENDY_ENDPOINT_PARAM,
-                    "https://trends.google.com/trends/trendingsearches/daily/rss"
-                            + "?lite=true&safe=true&geo=");
 
     private static final String OMNIBOX_FOCUSED_ON_NEW_TAB_PARAM = "omnibox_focused_on_new_tab";
     public static final BooleanCachedFieldTrialParameter OMNIBOX_FOCUSED_ON_NEW_TAB =
