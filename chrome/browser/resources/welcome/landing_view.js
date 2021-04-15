@@ -45,6 +45,11 @@ Polymer({
   onRouteEnter() {
     this.finalized_ = false;
     this.landingViewProxy_.recordPageShown();
+    /** @type {!OnboardingBackgroundElement} */ (this.$.background).play();
+  },
+
+  onRouteExit() {
+    /** @type {!OnboardingBackgroundElement} */ (this.$.background).pause();
   },
 
   onRouteUnload() {

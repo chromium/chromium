@@ -41,6 +41,7 @@ Polymer({
   onRouteEnter() {
     this.finalized_ = false;
     this.signinViewProxy_.recordPageShown();
+    /** @type {!OnboardingBackgroundElement} */ (this.$.background).play();
   },
 
   onRouteExit() {
@@ -49,6 +50,7 @@ Polymer({
     }
     this.finalized_ = true;
     this.signinViewProxy_.recordNavigatedAwayThroughBrowserHistory();
+    /** @type {!OnboardingBackgroundElement} */ (this.$.background).pause();
   },
 
   onRouteUnload() {

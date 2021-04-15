@@ -54,50 +54,71 @@
     width: 250px;
   }
 
-  .line {
+  .line-container {
     border-radius: 8px;
     height: 6px;
+    overflow: hidden;
     position: absolute;
     transform-origin: center left;
   }
 
+  .line {
+    border-radius: 8px;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    transform-origin: center left;
+    width: 100%;
+  }
+
+  .line-fill {
+    background-color: var(--line-color);
+    border-radius: 8px;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
   #blue-line {
-    background-color: var(--welcome-blue);
-    left: 1186px;
-    top: 233px;
-    transform: rotate(49deg);
+    --line-color: var(--welcome-blue);
+    left: 1225px;
+    top: 278px;
+    transform: rotate(225deg);
     width: 60px;
   }
 
   #green-line {
-    background-color: var(--welcome-green);
-    left: 1105px;
-    top: 543px;
-    transform: rotate(-23deg);
+    --line-color: var(--welcome-green);
+    left: 1170px;
+    top: 517px;
+    transform: rotate(-203deg);
     width: 68px;
   }
 
   #red-line {
-    background-color: var(--welcome-red);
-    left: 1614px;
-    top: 319px;
-    transform: rotate(-206deg);
+    --line-color: var(--welcome-red);
+    left: 1574px;
+    top: 339px;
+    transform: rotate(-24deg);
     width: 45px;
   }
 
   #grey-line {
-    background-color: var(--welcome-grey);
-    left: 1415px;
-    top: 169px;
-    transform: rotate(100deg);
+    --line-color: var(--welcome-grey);
+    left: 1403px;
+    top: 235px;
+    transform: rotate(280deg);
     width: 68px;
   }
 
   #yellow-line {
-    background-color: var(--welcome-yellow);
-    left: 1298px;
-    top: 703px;
-    transform: rotate(-76deg);
+    --line-color: var(--welcome-yellow);
+    left: 1308px;
+    top: 655px;
+    transform: rotate(104deg);
     width: 49px;
   }
 
@@ -387,11 +408,21 @@
     <div class="shape" id="logo"></div>
 
     <!-- Lines surrounding logo. -->
-    <div class="line" id="blue-line"></div>
-    <div class="line" id="green-line"></div>
-    <div class="line" id="red-line"></div>
-    <div class="line" id="grey-line"></div>
-    <div class="line" id="yellow-line"></div>
+    <div class="line-container" id="blue-line">
+      <div class="line"><div class="line-fill"></div></div>
+    </div>
+    <div class="line-container" id="green-line">
+      <div class="line"><div class="line-fill"></div></div>
+    </div>
+    <div class="line-container" id="red-line">
+      <div class="line"><div class="line-fill"></div></div>
+    </div>
+    <div class="line-container" id="grey-line">
+      <div class="line"><div class="line-fill"></div></div>
+    </div>
+    <div class="line-container" id="yellow-line">
+      <div class="line"><div class="line-fill"></div></div>
+    </div>
 
     <!-- Grey dotted lines surrounding logo. -->
     <div class="shape dotted-line" id="dotted-line-1"></div>

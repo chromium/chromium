@@ -13,4 +13,109 @@ Polymer({
   is: 'onboarding-background',
 
   _template: html`{__html_template__}`,
+
+  /** @private @const {!Array<!Animation>} */
+  animations_: [],
+
+  attached() {
+    [['blue-line', 60],
+     ['green-line', 68],
+     ['red-line', 45],
+     ['grey-line', 68],
+     ['yellow-line', 49],
+    ].forEach(([id, width]) => {
+      this.createLineAnimation_(
+          /** @type{!HTMLElement} */ (this.$$(`#${id}`)), width);
+    });
+  },
+
+  /**
+   * @param {!HTMLElement} lineContainer
+   * @param {number} width
+   * @private
+   */
+  createLineAnimation_(lineContainer, width) {
+    const line = lineContainer.firstElementChild;
+    const lineFill = line.firstElementChild;
+    const pointOptions = {
+      endDelay: 3250,
+      fill: 'forwards',
+      duration: 750,
+    };
+
+    const startPointAnimation = lineFill.animate(
+        [
+          {width: '0px'},
+          {width: `${width}px`},
+        ],
+        Object.assign({}, pointOptions, {easing: 'cubic-bezier(.6,0,0,1)'}),
+    );
+    startPointAnimation.pause();
+    this.animations_.push(startPointAnimation);
+    this.loopAnimation_(startPointAnimation);
+
+    const endPointWidthAnimation = line.animate(
+        [
+          {width: `${width}px`},
+          {width: '0px'},
+        ],
+        Object.assign(
+            {}, pointOptions, {easing: 'cubic-bezier(.66,0,.86,.25)'}),
+    );
+    endPointWidthAnimation.pause();
+    this.animations_.push(endPointWidthAnimation);
+    this.loopAnimation_(endPointWidthAnimation);
+
+    const endPointTransformAnimation = line.animate(
+        [
+          {transform: `translateX(0)`},
+          {transform: `translateX(${width}px)`},
+        ],
+        Object.assign({}, pointOptions, {
+          easing: 'cubic-bezier(.66,0,.86,.25)',
+        }),
+    );
+    endPointTransformAnimation.pause();
+    this.animations_.push(endPointTransformAnimation);
+    this.loopAnimation_(endPointTransformAnimation);
+
+    const lineTransformAnimation = lineContainer.animate(
+        [
+          {transform: `translateX(0)`},
+          {transform: `translateX(40px)`},
+        ],
+        {
+          composite: 'add',  // There is already a rotate on the line.
+          duration: 1500,
+          easing: 'cubic-bezier(0,.56,.46,1)',
+          endDelay: 2500,
+          fill: 'forwards',
+        },
+    );
+    lineTransformAnimation.pause();
+    this.animations_.push(lineTransformAnimation);
+    this.loopAnimation_(lineTransformAnimation);
+  },
+
+  /**
+   * @param {!Animation} animation
+   * @private
+   */
+  loopAnimation_(animation) {
+    // Animations that have a delay after them can only be looped by re-playing
+    // them as soon as they finish. The |endDelay| property of JS animations
+    // only works if |iterations| is 1, and the |delay| property runs before
+    // the animation even plays.
+    animation.onfinish = () => {
+      animation.play();
+    };
+  },
+
+  pause() {
+    this.animations_.forEach(animation => animation.pause());
+  },
+
+  play() {
+    this.animations_.forEach(animation => animation.play());
+  },
 });

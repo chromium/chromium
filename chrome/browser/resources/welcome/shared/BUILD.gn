@@ -11,6 +11,7 @@ js_type_check("closure_compile") {
     ":bookmark_proxy",
     ":module_metrics_proxy",
     ":nux_types",
+    ":onboarding_background",
     ":step_indicator",
   ]
 }
@@ -28,6 +29,12 @@ js_library("module_metrics_proxy") {
 }
 
 js_library("nux_types") {
+}
+
+js_library("onboarding_background") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("step_indicator") {
