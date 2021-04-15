@@ -289,7 +289,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
 
   switch (first_arg->type()) {
     case base::Value::Type::INTEGER:
-      CHECK(first_arg->GetAsInteger(&tab_id_));
+      tab_id_ = first_arg->GetInt();
       break;
 
     case base::Value::Type::DICTIONARY: {
@@ -303,7 +303,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
             // OK; tabId is optional, leave it default.
             return true;
           case base::Value::Type::INTEGER:
-            CHECK(tab_id_value->GetAsInteger(&tab_id_));
+            tab_id_ = tab_id_value->GetInt();
             return true;
           default:
             // Boom.
