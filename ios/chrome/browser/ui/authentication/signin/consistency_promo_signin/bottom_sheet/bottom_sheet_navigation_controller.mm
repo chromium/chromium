@@ -8,7 +8,6 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/child_bottom_sheet_view_controller.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,21 +21,14 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 }  // namespace
 
+@interface BottomSheetNavigationController ()
+
+// View to get transparent blurred background.
+@property(nonatomic, strong, readwrite) UIVisualEffectView* visualEffectView;
+
+@end
+
 @implementation BottomSheetNavigationController
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-}
-
-- (void)pushViewController:(UIViewController*)viewController
-                  animated:(BOOL)animated {
-  // |viewController.view| has to be a UIScrollView.
-  DCHECK([viewController.view isKindOfClass:[UIScrollView class]]);
-  DCHECK([viewController
-      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
-  [super pushViewController:viewController animated:animated];
-}
 
 - (CGSize)layoutFittingSize {
   CGFloat width = self.view.frame.size.width;
@@ -52,6 +44,56 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
   CGFloat maxViewHeight =
       self.view.window.frame.size.height * kMaxBottomSheetHeightRatioWithWindow;
   return CGSizeMake(width, std::min(height, maxViewHeight));
+}
+
+- (void)didUpdateControllerViewFrame {
+  self.visualEffectView.frame = self.view.bounds;
+  // The dimmer view should never be under the bottom sheet view, since the
+  // background of the botther sheet is transparent.
+  CGRect dimmerViewFrame = self.backgroundDimmerView.superview.bounds;
+  dimmerViewFrame.size.height = self.view.frame.origin.y;
+  self.backgroundDimmerView.frame = dimmerViewFrame;
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  UIVisualEffect* blurEffect = nil;
+  if (@available(iOS 13, *)) {
+    blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  } else {
+    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+  }
+  self.visualEffectView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  [self.view insertSubview:self.visualEffectView atIndex:0];
+  self.visualEffectView.frame = self.view.bounds;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
+                           forBarMetrics:UIBarMetricsDefault];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self didUpdateControllerViewFrame];
+}
+
+#pragma mark - UINavigationController
+
+- (void)pushViewController:(UIViewController*)viewController
+                  animated:(BOOL)animated {
+  // |viewController.view| has to be a UIScrollView since the bottom sheet
+  // navigation might be not fit on the screen (related to big fonts for
+  // accessibility).
+  DCHECK([viewController.view isKindOfClass:[UIScrollView class]]);
+  DCHECK([viewController
+      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
+  [super pushViewController:viewController animated:animated];
 }
 
 @end

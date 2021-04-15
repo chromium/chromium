@@ -84,6 +84,8 @@ const CGFloat kAnimationDuration = 0.25;
                                   animations:^{
                                     self.navigationController.view.frame =
                                         navigationFrameAfterAnimation;
+                                    [self.navigationController
+                                            didUpdateControllerViewFrame];
                                     toView.frame = toViewFrameAfterAnimation;
                                     fromView.frame =
                                         fromViewFrameAfterAnimation;

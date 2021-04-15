@@ -15,13 +15,20 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Alpha for the background dimmer view.
+constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
+
+}  // namespace
+
 @interface BottomSheetPresentationController ()
 
 // View controller to present.
 @property(nonatomic, strong)
     BottomSheetNavigationController* navigationController;
-// View to dim the background.
-@property(nonatomic, strong) UIView* backgroundDimmerView;
+// YES if the presented view is presented.
+@property(nonatomic, assign) BOOL presented;
 
 @end
 
@@ -50,26 +57,21 @@
 }
 
 - (void)presentationTransitionWillBegin {
+  [super presentationTransitionWillBegin];
   DCHECK(self.navigationController == self.presentedViewController);
-  DCHECK(!self.backgroundDimmerView);
+  DCHECK(!self.navigationController.backgroundDimmerView);
+  DCHECK(!self.presented);
+  self.presented = YES;
 
   // Accessibility.
   self.containerView.accessibilityViewIsModal = YES;
 
-  // Add dim effect.
-  self.backgroundDimmerView = [[UIView alloc] init];
-  self.backgroundDimmerView.backgroundColor = [UIColor clearColor];
-  self.backgroundDimmerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.containerView addSubview:self.backgroundDimmerView];
-  AddSameConstraints(self.containerView, self.backgroundDimmerView);
-  __weak __typeof(self) weakSelf = self;
-  [self.presentedViewController.transitionCoordinator
-      animateAlongsideTransition:^(
-          id<UIViewControllerTransitionCoordinatorContext> context) {
-        weakSelf.backgroundDimmerView.backgroundColor =
-            [UIColor colorWithWhite:0 alpha:0.4];
-      }
-                      completion:nil];
+  // Add dimmer effect.
+  self.navigationController.backgroundDimmerView = [[UIView alloc] init];
+  self.navigationController.backgroundDimmerView.backgroundColor =
+      [UIColor clearColor];
+  [self.containerView
+      addSubview:self.navigationController.backgroundDimmerView];
 
   // Add close button view.
   UIButton* closeButton =
@@ -83,29 +85,54 @@
 
   // Add presented view controller.
   [self.containerView addSubview:self.presentedViewController.view];
-  self.presentedViewController.view.frame =
-      [self frameOfPresentedViewInContainerView];
+  CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
+  presentedFrame.origin.y = self.containerView.bounds.size.height;
+  self.presentedViewController.view.frame = presentedFrame;
+
+  // Update the dimmer view and background transparency view.
+  [self.navigationController didUpdateControllerViewFrame];
+  __weak __typeof(self) weakSelf = self;
+
+  // Animate dimmer view color, and the dimmer view and background view
+  // positions.
+  [self.presentedViewController.transitionCoordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.navigationController didUpdateControllerViewFrame];
+        weakSelf.navigationController.backgroundDimmerView.backgroundColor =
+            [UIColor colorWithWhite:0 alpha:kBackgroundDimmerViewAlpha];
+      }
+                      completion:nil];
 }
 
 - (void)dismissalTransitionWillBegin {
-  DCHECK(self.backgroundDimmerView);
-
-  // Remove dim effect.
+  [super dismissalTransitionWillBegin];
+  DCHECK(self.navigationController.backgroundDimmerView);
+  DCHECK(self.presented);
+  self.presented = NO;
+  // Remove dimmer color and update the views.
   __weak __typeof(self) weakSelf = self;
   [self.presentedViewController.transitionCoordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        weakSelf.backgroundDimmerView.backgroundColor = UIColor.clearColor;
+        weakSelf.navigationController.backgroundDimmerView.backgroundColor =
+            UIColor.clearColor;
+        [self.navigationController didUpdateControllerViewFrame];
       }
-      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        weakSelf.backgroundDimmerView = nil;
-      }];
+                      completion:nil];
 }
 
 - (void)containerViewDidLayoutSubviews {
   [super containerViewDidLayoutSubviews];
-  self.presentedViewController.view.frame =
-      [self frameOfPresentedViewInContainerView];
+  if (!self.presented) {
+    // By updating the dimmer view frame in |dismissalTransitionWillBegin|, this
+    // method is called. This method should not update the presented view frame,
+    // while being dismissed, to avoid unwanted glitches.
+    return;
+  }
+  CGRect presentedFrame = [self frameOfPresentedViewInContainerView];
+  self.presentedViewController.view.frame = presentedFrame;
+  [self.navigationController didUpdateControllerViewFrame];
 }
 
 #pragma mark - Private

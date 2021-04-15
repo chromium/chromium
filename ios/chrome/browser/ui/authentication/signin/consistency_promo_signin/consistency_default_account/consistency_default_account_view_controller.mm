@@ -173,9 +173,12 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
         systemLayoutSizeFittingSize:size
       withHorizontalFittingPriority:UILayoutPriorityRequired
             verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+  // Safe area insets needs to be based on the window since the |self.view|
+  // might not be part of the window hierarchy when the animation is configured.
   return size.height +
          self.navigationController.navigationBar.frame.size.height +
-         self.view.safeAreaInsets.bottom + kContentMargin * 2;
+         self.navigationController.view.window.safeAreaInsets.bottom +
+         kContentMargin * 2;
 }
 
 #pragma mark - ConsistencyDefaultAccountConsumer
