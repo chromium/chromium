@@ -2616,6 +2616,64 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
+#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
+// Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// These were flaking on all macs, so commented out ARCH_ above for
+// crbug.com/1160917 too.
+#define MAYBE_DragAllToSeparateWindowWithPinnedTabs \
+  DISABLED_DragAllToSeparateWindowWithPinnedTabs
+#else
+// TODO(https://crbug.com/1163775): Flaky on Windows and Linux.
+#define MAYBE_DragAllToSeparateWindowWithPinnedTabs \
+  DISABLED_DragAllToSeparateWindowWithPinnedTabs
+#endif
+
+// Creates two browsers, selects all tabs in first, drags into second, then hits
+// escape.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_DragAllToSeparateWindowWithPinnedTabs) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  // Open a second tab.
+  AddTabsAndResetBrowser(browser(), 1);
+  // Re-select the first one.
+  browser()->tab_strip_model()->ToggleSelectionAt(0);
+
+  // Create another browser.
+  Browser* target_browser = CreateAnotherBrowserAndResize();
+  TabStrip* target_tab_strip = GetTabStripForBrowser(target_browser);
+
+  // Pin the tab in the target tabstrip.
+  target_browser->tab_strip_model()->SetTabPinned(0, true);
+
+  // Drag the selected tabs to |target_tab_strip|.
+  DragTabAndNotify(
+      tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2, this, tab_strip,
+                                target_tab_strip));
+
+  // Should now be attached to |target_tab_strip|.
+  ASSERT_TRUE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_EQ(1u, browser_list->size());
+
+  // Drag to the trailing end of the tabstrip to ensure we're in a consistent
+  // spot within the strip.
+  StopAnimating(target_tab_strip);
+  ASSERT_TRUE(
+      DragInputTo(GetCenterInScreenCoordinates(target_tab_strip->tab_at(1))));
+
+  // Release the mouse, stopping the drag session.
+  ASSERT_TRUE(ReleaseInput());
+  ASSERT_FALSE(target_tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ("100 0 1", IDString(target_browser->tab_strip_model()));
+
+  EXPECT_FALSE(GetIsDragged(target_browser));
+
+  // Remaining browser window should not be maximized
+  EXPECT_FALSE(target_browser->window()->IsMaximized());
+}
+
 // Creates two browsers, drags from first into the second in such a way that
 // no detaching should happen.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
