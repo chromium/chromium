@@ -43,6 +43,7 @@ Generally it varies by
 The default location is in the local app data folder:
 
 * [Chrome] `%LOCALAPPDATA%\Google\Chrome\User Data`
+* [Chrome Beta] `%LOCALAPPDATA%\Google\Chrome Beta\User Data`
 * [Chrome Canary] `%LOCALAPPDATA%\Google\Chrome SxS\User Data`
 * [Chromium] `%LOCALAPPDATA%\Chromium\User Data`
 
@@ -54,6 +55,7 @@ The default location is in the local app data folder:
 The default location is in the `Application Support` folder:
 
 * [Chrome] `~/Library/Application Support/Google/Chrome`
+* [Chrome Beta] `~/Library/Application Support/Google/Chrome Beta`
 * [Chrome Canary] `~/Library/Application Support/Google/Chrome Canary`
 * [Chromium] `~/Library/Application Support/Chromium`
 
