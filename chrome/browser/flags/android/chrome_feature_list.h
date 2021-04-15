@@ -24,6 +24,7 @@ extern const base::Feature kAssistantIntentExperimentId;
 extern const base::Feature kAssistantIntentPageUrl;
 extern const base::Feature kAssistantIntentTranslateInfo;
 extern const base::Feature kAppLaunchpad;
+extern const base::Feature kAppMenuMobileSiteOption;
 extern const base::Feature kBackgroundTaskComponentUpdate;
 extern const base::Feature kBackgroundThreadPool;
 extern const base::Feature kBentoOffline;

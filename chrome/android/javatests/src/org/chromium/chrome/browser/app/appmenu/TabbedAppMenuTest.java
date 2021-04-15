@@ -35,7 +35,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -43,6 +45,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -274,6 +277,40 @@ public class TabbedAppMenuTest {
         int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
         Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
         mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
+    public void testRequestDesktopSiteMenuItem() throws IOException {
+        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        boolean isRequestDesktopSite =
+                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+        Assert.assertFalse("Default to request mobile site.", isRequestDesktopSite);
+
+        int requestDesktopSiteIndex =
+                findIndexOfMenuItemById(R.id.request_desktop_site_row_menu_id);
+        Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
+        mRenderTestRule.render(
+                getListView().getChildAt(requestDesktopSiteIndex), "request_desktop_site");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
+                                true /* useDesktop */, true /* reloadOnChange */));
+        ChromeTabUtils.waitForTabPageLoaded(tab, TEST_URL);
+        isRequestDesktopSite =
+                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+        Assert.assertTrue("Should request desktop site.", isRequestDesktopSite);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        mRenderTestRule.render(
+                getListView().getChildAt(requestDesktopSiteIndex), "request_mobile_site");
     }
 
     private void showAppMenuAndAssertMenuShown() {

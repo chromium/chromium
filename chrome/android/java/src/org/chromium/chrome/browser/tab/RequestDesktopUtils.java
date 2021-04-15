@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.ukm.UkmRecorder;
 
 import java.lang.annotation.Retention;
@@ -39,7 +41,13 @@ public class RequestDesktopUtils {
      * @param tab The current activity {@link Tab}.
      */
     public static void recordUserChangeUserAgent(boolean isDesktop, @Nullable Tab tab) {
-        RecordUserAction.record("MobileMenuRequestDesktopSite");
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
+                && !isDesktop) {
+            RecordUserAction.record("MobileMenuRequestMobileSite");
+        } else {
+            RecordUserAction.record("MobileMenuRequestDesktopSite");
+        }
+
         RecordHistogram.recordBooleanHistogram(
                 "Android.RequestDesktopSite.UserSwitchToDesktop", isDesktop);
 

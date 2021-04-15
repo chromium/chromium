@@ -247,6 +247,7 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_REFRESH_STYLE_ANDROID = "AutofillRefreshStyleAndroid";
     public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory";
     public static final String APP_LAUNCHPAD = "AppLaunchpad";
+    public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BENTO_OFFLINE = "BentoOffline";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";

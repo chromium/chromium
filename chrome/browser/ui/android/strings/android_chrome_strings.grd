@@ -3013,6 +3013,12 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_FOLLOWING" desc="Menu item indicating the current website is followed, allowing users to unfollow the current website. [CHAR-LIMIT=27]">
         Following
       </message>
+      <message name="IDS_MENU_ITEM_REQUEST_DESKTOP_SITE" desc="Menu item allowing users to change the website from the mobile site to desktop site. [CHAR-LIMIT=27]">
+        Request desktop site
+      </message>
+      <message name="IDS_MENU_ITEM_REQUEST_MOBILE_SITE" desc="Menu item allowing users to change the website from the desktop site to mobile site. [CHAR-LIMIT=27]">
+        Request mobile site
+      </message>
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR-LIMIT=27]" translateable="false">
         Show Paint Preview
       </message>
