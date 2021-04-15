@@ -117,9 +117,10 @@ void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
                                             password_type(), response);
 }
 
-void PasswordProtectionRequestContent::MaybeAddPingToWebUI() {
-  web_ui_token_ =
-      WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
+void PasswordProtectionRequestContent::MaybeAddPingToWebUI(
+    const std::string& oauth_token) {
+  web_ui_token_ = WebUIInfoSingleton::GetInstance()->AddToPGPings(
+      *request_proto_, oauth_token);
 }
 
 void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(

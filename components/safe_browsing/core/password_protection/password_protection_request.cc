@@ -332,7 +332,7 @@ void PasswordProtectionRequest::SendRequestWithToken(
     const std::string& access_token) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
 
-  MaybeAddPingToWebUI();
+  MaybeAddPingToWebUI(access_token);
 
   std::string serialized_request;
   // TODO(crbug.com/1158582): Return early if request serialization fails.

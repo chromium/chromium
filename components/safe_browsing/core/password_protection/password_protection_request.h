@@ -153,7 +153,7 @@ class PasswordProtectionRequest
       const LoginReputationClientResponse* response) = 0;
 
   // Subclasses may override this method to add pings to the WebUI.
-  virtual void MaybeAddPingToWebUI() {}
+  virtual void MaybeAddPingToWebUI(const std::string& oauth_token) {}
 
   // Subclasses may override this method to add responses to the WebUI.
   virtual void MaybeAddResponseToWebUI(

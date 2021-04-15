@@ -190,14 +190,17 @@ void WebUIInfoSingleton::ClearSecurityEvents() {
 }
 
 int WebUIInfoSingleton::AddToPGPings(
-    const LoginReputationClientRequest& request) {
+    const LoginReputationClientRequest& request,
+    const std::string oauth_token) {
   if (!HasListener())
     return -1;
 
-  for (auto* webui_listener : webui_instances_)
-    webui_listener->NotifyPGPingJsListener(pg_pings_.size(), request);
+  LoginReputationClientRequestAndToken ping = {request, oauth_token};
 
-  pg_pings_.push_back(request);
+  for (auto* webui_listener : webui_instances_)
+    webui_listener->NotifyPGPingJsListener(pg_pings_.size(), ping);
+
+  pg_pings_.push_back(ping);
 
   return pg_pings_.size() - 1;
 }
@@ -215,7 +218,7 @@ void WebUIInfoSingleton::AddToPGResponses(
 }
 
 void WebUIInfoSingleton::ClearPGPings() {
-  std::vector<LoginReputationClientRequest>().swap(pg_pings_);
+  std::vector<LoginReputationClientRequestAndToken>().swap(pg_pings_);
   std::map<int, LoginReputationClientResponse>().swap(pg_responses_);
 }
 
@@ -1296,8 +1299,11 @@ base::Value SerializeReferringAppInfo(
   return std::move(dict);
 }
 
-std::string SerializePGPing(const LoginReputationClientRequest& request) {
+std::string SerializePGPing(
+    const LoginReputationClientRequestAndToken& request_and_token) {
   base::DictionaryValue request_dict;
+
+  const LoginReputationClientRequest& request = request_and_token.request;
 
   request_dict.SetKey("page_url", base::Value(request.page_url()));
 
@@ -1357,6 +1363,9 @@ std::string SerializePGPing(const LoginReputationClientRequest& request) {
         "referring_app_info",
         SerializeReferringAppInfo(request.referring_app_info()));
   }
+
+  request_dict.SetKey("scoped_oauth_token",
+                      base::Value(request_and_token.token));
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -1948,7 +1957,7 @@ void SafeBrowsingUIHandler::GetSecurityEvents(const base::ListValue* args) {
 }
 
 void SafeBrowsingUIHandler::GetPGPings(const base::ListValue* args) {
-  const std::vector<LoginReputationClientRequest> requests =
+  const std::vector<LoginReputationClientRequestAndToken> requests =
       WebUIInfoSingleton::GetInstance()->pg_pings();
 
   base::ListValue pings_sent;
@@ -2156,7 +2165,7 @@ void SafeBrowsingUIHandler::NotifySecurityEventJsListener(
 
 void SafeBrowsingUIHandler::NotifyPGPingJsListener(
     int token,
-    const LoginReputationClientRequest& request) {
+    const LoginReputationClientRequestAndToken& request) {
   base::ListValue request_list;
   request_list.Append(base::Value(token));
   request_list.Append(base::Value(SerializePGPing(request)));

@@ -86,7 +86,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
       RequestOutcome outcome,
       const LoginReputationClientResponse* response) override;
 
-  void MaybeAddPingToWebUI() override;
+  void MaybeAddPingToWebUI(const std::string& oauth_token) override;
 
   void MaybeAddResponseToWebUI(
       const LoginReputationClientResponse& response) override;

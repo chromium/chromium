@@ -155,6 +155,7 @@ constexpr struct {
     {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionReferringAppEnabledAndroid, true},
     {&kPasswordProtectionForSignedInUsers, true},
+    {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupEnabled, true},
     {&kRealTimeUrlLookupEnabledForEnterprise, true},
     {&kRealTimeUrlLookupEnterpriseGaEndpoint, true},

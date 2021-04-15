@@ -52,6 +52,15 @@ struct DeepScanDebugData {
 };
 #endif
 
+// The struct to combine a PhishGuard request and the token associated
+// with it. The token is not part of the request proto because it is sent in the
+// header. The token will be displayed along with the request in the safe
+// browsing page.
+struct LoginReputationClientRequestAndToken {
+  LoginReputationClientRequest request;
+  std::string token;
+};
+
 // The struct to combine a real time lookup request and the token associated
 // with it. The token is not part of the request proto because it is sent in the
 // header. The token will be displayed along with the request in the safe
@@ -199,8 +208,9 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
   // Called when any new PhishGuard pings are sent while one or more WebUI tabs
   // are open.
-  void NotifyPGPingJsListener(int token,
-                              const LoginReputationClientRequest& request);
+  void NotifyPGPingJsListener(
+      int token,
+      const LoginReputationClientRequestAndToken& request);
 
   // Called when any new PhishGuard responses are received while one or more
   // WebUI tabs are open.
@@ -321,10 +331,11 @@ class WebUIInfoSingleton {
   // Clear the list of sent Security events.
   void ClearSecurityEvents();
 
-  // Add the new ping to |pg_pings_| and send it to all the open
-  // chrome://safe-browsing tabs. Returns a token that can be used in
-  // |AddToPGReponses| to correlate a ping and response.
-  int AddToPGPings(const LoginReputationClientRequest& request);
+  // Add the new ping (with oauth token) to |pg_pings_| and send it to all the
+  // open chrome://safe-browsing tabs. Returns a token that can be used in
+  // |AddToPGResponses| to correlate a ping and response.
+  int AddToPGPings(const LoginReputationClientRequest& request,
+                   const std::string oauth_token);
 
   // Add the new response to |pg_responses_| and send it to all the open
   // chrome://safe-browsing tabs.
@@ -444,9 +455,9 @@ class WebUIInfoSingleton {
     return security_event_log_;
   }
 
-  // Get the list of PhishGuard pings since the oldest currently open
+  // Get the list of PhishGuard pings and tokens since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  const std::vector<LoginReputationClientRequest>& pg_pings() const {
+  const std::vector<LoginReputationClientRequestAndToken>& pg_pings() const {
     return pg_pings_;
   }
 
@@ -554,9 +565,9 @@ class WebUIInfoSingleton {
   // chrome://safe-browsing tab was opened.
   std::vector<sync_pb::GaiaPasswordReuse> security_event_log_;
 
-  // List of PhishGuard pings sent since the oldest currently open
+  // List of PhishGuard pings and tokens sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<LoginReputationClientRequest> pg_pings_;
+  std::vector<LoginReputationClientRequestAndToken> pg_pings_;
 
   // List of PhishGuard responses received since the oldest currently open
   // chrome://safe-browsing tab was opened.
