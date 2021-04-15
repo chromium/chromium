@@ -4,7 +4,9 @@
 
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/chromeos/nearby/bluetooth_adapter_util.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/webrtc/ice_config_fetcher.h"
@@ -108,6 +110,12 @@ NearbyConnectionsDependenciesProvider::GetDependencies() {
     dependencies->bluetooth_adapter = mojo::NullRemote();
 
   dependencies->webrtc_dependencies = GetWebRtcDependencies();
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kNearbyShareVerboseLogging)) {
+    dependencies->min_log_severity =
+        location::nearby::api::LogMessage::Severity::kVerbose;
+  }
 
   return dependencies;
 }

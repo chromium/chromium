@@ -25,4 +25,18 @@ mojom("mojom") {
     "//services/network/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "location.nearby.connections.mojom.LogSeverity"
+          cpp = "api::LogMessage::Severity"
+        },
+      ]
+      traits_headers = [ "nearby_connections_mojom_traits.h" ]
+      traits_sources = [ "nearby_connections_mojom_traits.cc" ]
+      traits_deps = [ "//third_party/nearby:platform_api_types" ]
+    },
+  ]
 }

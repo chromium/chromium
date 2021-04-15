@@ -66,7 +66,8 @@ class SharingImplTest : public testing::Test {
             std::move(webrtc_signaling_messenger));
     auto dependencies =
         location::nearby::connections::mojom::NearbyConnectionsDependencies::
-            New(std::move(bluetooth_adapter), std::move(webrtc_dependencies));
+            New(std::move(bluetooth_adapter), std::move(webrtc_dependencies),
+                location::nearby::api::LogMessage::Severity::kInfo);
     base::RunLoop run_loop;
     service_->Connect(std::move(dependencies), std::move(connections_receiver),
                       std::move(decoder_receiver));

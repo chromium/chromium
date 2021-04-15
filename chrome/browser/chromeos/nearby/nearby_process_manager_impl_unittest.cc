@@ -118,7 +118,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
                       .BindNewPipeAndPassRemote(),
                   webrtc_dependencies_->ice_config_fetcher_
                       .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()));
+                  webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
+              location::nearby::api::LogMessage::Severity::kInfo);
     }
 
    private:

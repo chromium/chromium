@@ -386,4 +386,6 @@ struct NearbyConnectionsDependencies {
   pending_remote<bluetooth.mojom.Adapter>? bluetooth_adapter;
 
   WebRtcDependencies webrtc_dependencies;
+
+  LogSeverity min_log_severity = LogSeverity.kInfo;
 };
