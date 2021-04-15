@@ -138,7 +138,7 @@
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
-      'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard',
+      'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
     },
 
     'chromium.angle': {
@@ -803,7 +803,7 @@
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_google',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
-      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard',
+      'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
       'android-weblayer-pie-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
@@ -1400,9 +1400,10 @@
       'webview_google',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard': [
+    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
       'android', 'release_bot', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard'
+      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
+      'chrome_google'
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google': [
@@ -1475,9 +1476,10 @@
       'strip_debug_info', 'android_fastbuild', 'webview_google',
     ],
 
-    'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard': [
+    'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
       'android', 'release_trybot', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard'
+      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
+      'chrome_google'
     ],
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [
@@ -2904,6 +2906,10 @@
 
     'cfm': {
       'gn_args': 'is_cfm=true',
+    },
+
+    'chrome_google': {
+      'gn_args': 'chrome_public_manifest_package="com.android.chrome"',
     },
 
     'chrome_with_codecs': {

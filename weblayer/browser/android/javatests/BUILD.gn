@@ -224,8 +224,8 @@ weblayer_instrumentation("weblayer_private_instrumentation_test_apk") {
   deps = [ ":weblayer_private_java_tests" ]
 }
 
-# Runs WebLayer instrumentation tests against arbitrary versions of tests, the
-# client, and the implementation.
+# Runs WebLayer instrumentation tests against arbitrary versions of the
+# client and implementation libraries.
 #
 # Example usage, testing M80 tests and client against master implementation:
 #   autoninja -C out/Release weblayer_instrumentation_test_versions_apk
@@ -252,6 +252,36 @@ copy("weblayer_instrumentation_test_versions_apk") {
   deps = [ ":weblayer_instrumentation_test_apk" ]
 
   data_deps = [ ":weblayer_instrumentation_test_apk" ]
+}
+
+# Runs WebLayer instrumentation tests against arbitrary versions of the
+# client and implementation libraries. This target also compiles
+# Chrome for devices that do not come with Chrome installed. For usage
+# please see the comment above.
+copy("weblayer_instrumentation_test_versions_with_chrome_apk") {
+  testonly = true
+
+  sources = [ "weblayer_instrumentation_test_versions.py" ]
+
+  outputs =
+      [ "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_with_chrome_apk" ]
+
+  # Also explicitly list the output as data so it gets isolated on bots.
+  data = [
+    "$root_build_dir/bin/run_weblayer_instrumentation_test_versions_with_chrome_apk",
+    "//third_party/catapult/third_party/typ/",
+    "//weblayer/browser/android/javatests/skew/expectations.txt",
+  ]
+
+  deps = [
+    ":weblayer_instrumentation_test_apk",
+    "//chrome/android/:chrome_public_apk",
+  ]
+
+  data_deps = [
+    ":weblayer_instrumentation_test_apk",
+    "//chrome/android/:chrome_public_apk",
+  ]
 }
 
 android_test_apk("weblayer_bundle_test_apk") {

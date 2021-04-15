@@ -408,6 +408,7 @@
   },
   "android-weblayer-marshmallow-x86-rel-tests": {
     "gn_args": {
+      "chrome_public_manifest_package": "com.android.chrome",
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "enable_proguard_obfuscation": false,

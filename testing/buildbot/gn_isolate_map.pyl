@@ -1971,6 +1971,14 @@
     "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk",
     "type": "console_test_launcher",
   },
+  "weblayer_instrumentation_test_versions_with_chrome_apk": {
+    "args":  [
+      "--replace-system-package",
+      "org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
+    ],
+    "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_with_chrome_apk",
+    "type": "console_test_launcher",
+  },
   "weblayer_junit_tests": {
     "label": "//weblayer/browser/java:weblayer_junit_tests",
     "type": "junit_test",

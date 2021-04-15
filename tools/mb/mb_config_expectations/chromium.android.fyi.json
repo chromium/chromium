@@ -104,6 +104,7 @@
   },
   "android-weblayer-with-aosp-webview-x86-fyi-rel": {
     "gn_args": {
+      "chrome_public_manifest_package": "com.android.chrome",
       "disable_android_lint": true,
       "enable_proguard_obfuscation": false,
       "enable_resource_allowlist_generation": true,
