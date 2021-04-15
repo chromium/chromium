@@ -64,7 +64,7 @@ class MediaSuspendTest : public MediaBrowserTest {
       const std::u16string kEnded = base::ASCIIToUTF16(media::kEnded);
       TitleWatcher title_watcher(shell()->web_contents(), kEnded);
       title_watcher.AlsoWaitForTitle(kError);
-      ASSERT_TRUE(ExecuteScript(shell(), "video.play();"));
+      ASSERT_TRUE(ExecJs(shell(), "video.play();"));
       ASSERT_EQ(kEnded, title_watcher.WaitAndGetTitle());
     }
 

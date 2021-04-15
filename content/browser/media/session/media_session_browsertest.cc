@@ -122,14 +122,9 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   }
 
   bool IsPlaying(Shell* shell, const std::string& id) {
-    bool result;
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractBool(shell->web_contents(),
-                                    "window.domAutomationController.send("
-                                    "!document.querySelector('#" +
-                                        id + "').paused);",
-                                    &result));
-    return result;
+    return EvalJs(shell->web_contents(),
+                  "!document.querySelector('#" + id + "').paused;")
+        .ExtractBool();
   }
 
   bool WasURLVisited(const GURL& url) {

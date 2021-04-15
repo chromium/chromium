@@ -33,11 +33,7 @@ class MediaCanPlayTypeTest : public MediaBrowserTest {
   }
 
   void ExecuteTest(const std::string& command) {
-    bool result;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(" + command + ");",
-        &result));
-    EXPECT_TRUE(result);
+    EXPECT_EQ(true, EvalJs(shell(), command));
   }
 
  private:

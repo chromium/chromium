@@ -86,14 +86,14 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
   // Set gain to 1 to start audible audio and verify we got the
   // playback started message.
   {
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 1;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
     WaitForAudioContextAudible wait(shell()->web_contents());
   }
 
   // Set gain to 0 to stop audible audio and verify we got the
   // playback stopped message.
   {
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 0;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
     WaitForAudioContextSilent wait(shell()->web_contents());
   }
 }
@@ -117,10 +117,10 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
 
   // Play/pause something audible, it should lead to new Ukm entry.
   {
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 1;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
     WaitForAudioContextAudible wait_audible(shell()->web_contents());
 
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 0;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
     WaitForAudioContextSilent wait_silent(shell()->web_contents());
   }
 
@@ -148,10 +148,10 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
 
   // Play/pause again and check that there is a new entry.
   {
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 1;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
     WaitForAudioContextAudible wait_audible(shell()->web_contents());
 
-    ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "gain.gain.value = 0;"));
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
     WaitForAudioContextSilent wait_silent(shell()->web_contents());
   }
 

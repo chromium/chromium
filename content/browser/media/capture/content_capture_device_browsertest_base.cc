@@ -59,7 +59,7 @@ void ContentCaptureDeviceBrowserTestBase::ChangePageContentColor(
   script.replace(script.find("123456"), 6,
                  base::StringPrintf("%02x%02x%02x", SkColorGetR(color),
                                     SkColorGetG(color), SkColorGetB(color)));
-  CHECK(ExecuteScript(shell()->web_contents(), script));
+  CHECK(ExecJs(shell()->web_contents(), script));
 }
 
 gfx::Size ContentCaptureDeviceBrowserTestBase::GetExpectedSourceSize() {

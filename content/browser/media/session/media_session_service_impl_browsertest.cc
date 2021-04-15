@@ -148,8 +148,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     return nullptr;
   }
 
-  bool ExecuteScriptToSetUpMediaSessionSync() {
-    bool result = ExecuteScript(shell(), kSetUpMediaSessionScript);
+  void ExecuteScriptToSetUpMediaSessionSync() {
+    ASSERT_TRUE(ExecJs(shell(), kSetUpMediaSessionScript));
     media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
 
     std::set<media_session::mojom::MediaSessionAction> expected_actions;
@@ -162,7 +162,6 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
         media_session::mojom::MediaSessionAction::kSeekForward);
 
     observer.WaitForExpectedActions(expected_actions);
-    return result;
   }
 
  private:
@@ -208,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
@@ -239,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   // Start a fragment navigation and check the playback state, metadata,
   // actions are not reset.
@@ -263,8 +262,8 @@ class MediaSessionServiceImplWebRTCBrowserTest
     feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
   }
 
-  bool ExecuteScriptToSetUpWebRTCMediaSessionSync() {
-    bool result = ExecuteScript(shell(), kSetUpWebRTCMediaSessionScript);
+  void ExecuteScriptToSetUpWebRTCMediaSessionSync() {
+    ASSERT_TRUE(ExecJs(shell(), kSetUpWebRTCMediaSessionScript));
     media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
 
     std::set<media_session::mojom::MediaSessionAction> expected_actions;
@@ -280,7 +279,6 @@ class MediaSessionServiceImplWebRTCBrowserTest
     expected_actions.insert(media_session::mojom::MediaSessionAction::kHangUp);
 
     observer.WaitForExpectedActions(expected_actions);
-    return result;
   }
 
  private:
@@ -292,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+  ExecuteScriptToSetUpMediaSessionSync();
 
   media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
   observer.WaitForMicrophoneState(
@@ -305,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
-  EXPECT_TRUE(ExecuteScriptToSetUpWebRTCMediaSessionSync());
+  ExecuteScriptToSetUpWebRTCMediaSessionSync();
 
   media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
   observer.WaitForMicrophoneState(

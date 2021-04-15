@@ -38,10 +38,8 @@ class MidiBrowserTest : public ContentBrowserTest {
     // NotSupportedError.
     EXPECT_TRUE(result == failed || result == expected);
     if (result == failed) {
-      std::string error_message;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          shell(), "domAutomationController.send(error_message)",
-          &error_message));
+      std::string error_message =
+          EvalJs(shell(), "error_message").ExtractString();
       EXPECT_TRUE("Platform dependent initialization failed." ==
                       error_message ||
                   "The implementation did not support the requested type of "

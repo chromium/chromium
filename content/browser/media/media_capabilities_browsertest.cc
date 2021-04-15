@@ -139,7 +139,7 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     command.append(content_type);
     command.append(");");
 
-    EXPECT_TRUE(ExecuteScript(shell(), command));
+    EXPECT_TRUE(ExecJs(shell(), command));
 
     TitleWatcher title_watcher(shell()->web_contents(),
                                base::ASCIIToUTF16(kSupported));
