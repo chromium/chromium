@@ -67,6 +67,7 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   bool CryptoConnect() override;
   bool encryption_established() const override;
   bool one_rtt_keys_available() const override;
+  quic::HandshakeState GetHandshakeState() const override;
   const quic::QuicCryptoNegotiatedParameters& crypto_negotiated_params()
       const override;
   quic::CryptoMessageParser* crypto_message_parser() override;

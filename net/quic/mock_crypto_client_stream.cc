@@ -258,6 +258,11 @@ bool MockCryptoClientStream::one_rtt_keys_available() const {
   return handshake_confirmed_;
 }
 
+quic::HandshakeState MockCryptoClientStream::GetHandshakeState() const {
+  return handshake_confirmed_ ? quic::HANDSHAKE_CONFIRMED
+                              : quic::HANDSHAKE_START;
+}
+
 bool MockCryptoClientStream::EarlyDataAccepted() const {
   // This value is only used for logging. The return value doesn't matter.
   return false;

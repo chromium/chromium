@@ -2945,8 +2945,11 @@ void QuicChromiumClientSession::NotifyRequestsOfConfirmation(int net_error) {
 void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
   DCHECK(allow_port_migration_ && !migrate_session_early_v2_);
 
-  // Migration before handshake is not allowed.
-  if (!OneRttKeysAvailable()) {
+  // Migration before handshake confirmed is not allowed.
+  const bool is_handshake_confirmed = version().UsesHttp3()
+                                          ? connection()->IsHandshakeConfirmed()
+                                          : OneRttKeysAvailable();
+  if (!is_handshake_confirmed) {
     HistogramAndLogMigrationFailure(
         MIGRATION_STATUS_PATH_DEGRADING_BEFORE_HANDSHAKE_CONFIRMED,
         connection_id(), "Path degrading before handshake confirmed");
@@ -2997,7 +3000,10 @@ void QuicChromiumClientSession::
 
   LogHandshakeStatusOnMigrationSignal();
 
-  if (!OneRttKeysAvailable()) {
+  const bool is_handshake_confirmed = version().UsesHttp3()
+                                          ? connection()->IsHandshakeConfirmed()
+                                          : OneRttKeysAvailable();
+  if (!is_handshake_confirmed) {
     HistogramAndLogMigrationFailure(
         MIGRATION_STATUS_PATH_DEGRADING_BEFORE_HANDSHAKE_CONFIRMED,
         connection_id(), "Path degrading before handshake confirmed");
