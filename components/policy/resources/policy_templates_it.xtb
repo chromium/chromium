@@ -1353,9 +1353,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
-<translation id="2764964245640818227">Controlla se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> può aggiungere annotazioni sui PDF
+<translation id="2764964245640818227">Controlla se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> può aggiungere annotazioni nei PDF.
 
-      Quando questo criterio non è impostato o è impostato su vero, il visualizzatore PDF può aggiungere annotazioni sui PDF.
+      Quando questo criterio non è impostato o è impostato su vero, il visualizzatore PDF può aggiungere annotazioni nei PDF.
 
       Quando questo criterio è impostato su falso, il visualizzatore PDF non può aggiungere annotazioni sui PDF.</translation>
 <translation id="2769952903507981510">Configura il nome di dominio richiesto per gli host di accesso remoto</translation>
@@ -1569,7 +1569,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
         Il criterio non ha effetto su quelli già pubblicati.</translation>
 <translation id="3016255526521614822">Autorizza l'uso di app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni sui PDF</translation>
+<translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni nei PDF</translation>
 <translation id="3020953534071988875">Se configuri questo criterio, l'autenticazione ambientale verrà attivata o disattivata per i profili Ospite e in modalità in incognito in <ph name="PRODUCT_NAME" />.
 
       L'autenticazione ambientale è l'autenticazione http con credenziali predefinite, se non sono fornite credenziali esplicite tramite schemi NTLM/Kerberos/Negotiate challenge/response.
@@ -2549,7 +2549,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       Se la norma è impostata su false, il browser non mostrerà di nuovo la pagina di benvenuto in occasione del primo avvio successivo a un upgrade del sistema operativo.</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
-<translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni sui PDF</translation>
+<translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
 <translation id="443454694385851356">Precedente (non sicuro)</translation>
 <translation id="443665821428652897">Cancella i dati del sito alla chiusura del browser (obsoleta)</translation>

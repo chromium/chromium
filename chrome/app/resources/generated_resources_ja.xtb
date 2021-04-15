@@ -446,7 +446,7 @@
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
 <translation id="1481537595330271162">ディスクのサイズ変更中にエラーが発生しました</translation>
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
-<translation id="1483272013430662157">ファイル形式が関連付けられたプログラムを開くよう求めることをウェブアプリに許可する</translation>
+<translation id="1483272013430662157">該当するファイル形式を開くよう求めることをウェブアプリに許可する</translation>
 <translation id="1483493594462132177">送信</translation>
 <translation id="1484979925941077974">サイトで Bluetooth が使用されています</translation>
 <translation id="1485015260175968628">次の権限に現在アクセス可能:</translation>
@@ -5399,7 +5399,7 @@
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7025895441903756761">セキュリティとプライバシー</translation>
-<translation id="7026552751317161576">ファイル形式が関連付けられたプログラムを開くことをウェブアプリに許可しない</translation>
+<translation id="7026552751317161576">該当するファイル形式を開くことをウェブアプリに許可しない</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
@@ -5966,7 +5966,7 @@
 <translation id="7680416688940118410">タッチスクリーンの調整</translation>
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
-<translation id="7683164815270164555">ファイル形式が関連付けられたプログラムを開くようウェブアプリが求めたときに確認する</translation>
+<translation id="7683164815270164555">該当するファイル形式を開くようウェブアプリが求めたときに確認する</translation>
 <translation id="7683373461016844951">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、<ph name="DOMAIN" /> のメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="7683593009096723900">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
@@ -6973,7 +6973,7 @@
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800004011501252845">送信先を表示しています:</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
-<translation id="880004380809002950">ファイル形式が関連付けられたプログラムを開くことをウェブアプリに許可しない</translation>
+<translation id="880004380809002950">該当するファイル形式を開くことをウェブアプリに許可しない</translation>
 <translation id="8803953437405899238">新しいタブをワンクリックで開くことができます</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="8805140816472474147">同期を開始するには同期設定を確認してください。</translation>

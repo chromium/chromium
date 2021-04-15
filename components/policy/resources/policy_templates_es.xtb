@@ -1947,15 +1947,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
 <translation id="3480961938508521469">Carga totalmente la batería a velocidad estándar.</translation>
-<translation id="348110646151632565">Habilita la función de accesibilidad Enunciar Selección en la pantalla de inicio de sesión.
+<translation id="348110646151632565">Habilita la función de accesibilidad Enunciar selección en la pantalla de inicio de sesión.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará habilitada en la pantalla de inicio de sesión.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará habilitada en la pantalla de inicio de sesión.
 
-          Si se le asigna el valor "False", la función Enunciar Selección siempre estará inhabilitada en la pantalla de inicio de sesión.
+          Si se le asigna el valor "False", la función Enunciar selección siempre estará inhabilitada en la pantalla de inicio de sesión.
 
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
-          Si no se le asigna ningún valor, la función Enunciar Selección se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
+          Si no se le asigna ningún valor, la función Enunciar selección se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="348495353354674884">Habilitar teclado virtual</translation>
 <translation id="3485200437120267231">Inhabilitar interceptación de inicio de sesión</translation>
 <translation id="3487651201232258606">Mensajes nativos</translation>
@@ -2025,15 +2025,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3584722841530002134">Si se define esta política, asignará los servidores en los que puede delegar <ph name="PRODUCT_NAME" />. Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> no delegará las credenciales de usuario aunque se detecte una intranet como servidor.</translation>
-<translation id="3585177699591644295">Habilita la función de accesibilidad Enunciar Selección.
+<translation id="3585177699591644295">Habilita la función de accesibilidad Enunciar selección.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará habilitada.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará habilitada.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará inhabilitada.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará inhabilitada.
 
           Además, los usuarios no podrán cambiarla ni anularla.
 
-          Si no se le asigna ningún valor, la función Enunciar Selección se inhabilitará al inicio, pero el usuario podrá habilitarla en cualquier momento.</translation>
+          Si no se le asigna ningún valor, la función Enunciar selección se inhabilitará al inicio, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="3591527072193107424">Habilitar la función de compatibilidad con navegadores antiguos.</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
@@ -4879,7 +4879,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7433714841194914373">Habilitar Instant</translation>
 <translation id="7434202861148928348">Configurar los nombres de dominio requeridos para los clientes de acceso remoto</translation>
 <translation id="7443356543619955157">Establecer esta política permite aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
-<translation id="7448430478749155471">Habilita la función Enunciar Selección en la pantalla de inicio de sesión</translation>
+<translation id="7448430478749155471">Habilita la función Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="7458437477941640506">No vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. También inhabilita las actualizaciones.</translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
@@ -5761,7 +5761,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8653561013005884087">Si se le asigna el valor "true" a esta política, los mensajes de voz permanecen activados. Si se le asigna el valor "false", los mensajes de voz permanecen desactivados.
 
        Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, los mensajes de voz están en un principio desactivados, pero los usuarios pueden activarlos en cualquier momento.</translation>
-<translation id="8656110680728938054">Habilita Enunciar Selección</translation>
+<translation id="8656110680728938054">Habilita Enunciar selección</translation>
 <translation id="8661297125441579970">No permitir la migración de datos ni ARC.</translation>
 <translation id="8665314828727504286">Nivel de protección de Navegación segura</translation>
 <translation id="8669313549017524373">Si se le asigna el valor RestoreOnStartupIsURLs a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />, al establecer <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> en una lista de URLs, se especificarán las URL que se abren.
