@@ -5,8 +5,6 @@
 declare_args() {
   # This enables build with TFLite library.
   # Currently only available for Desktop and Android.
-  # Disable tflite build on Windows on ARM
-  # http://crbug.com/1169611
-  build_with_tflite_lib = is_android || (is_win && target_cpu != "arm64") ||
-                          is_linux || is_mac || is_chromeos
+  build_with_tflite_lib =
+      is_android || is_win || is_linux || is_mac || is_chromeos
 }
