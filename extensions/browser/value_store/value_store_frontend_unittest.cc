@@ -78,16 +78,14 @@ TEST_F(ValueStoreFrontendTest, GetExistingData) {
   // Test existing keys in the DB.
   {
     ASSERT_TRUE(Get("key1", &value));
-    std::string result;
-    ASSERT_TRUE(value->GetAsString(&result));
-    EXPECT_EQ("value1", result);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ("value1", value->GetString());
   }
 
   {
     ASSERT_TRUE(Get("key2", &value));
-    int result;
-    ASSERT_TRUE(value->GetAsInteger(&result));
-    EXPECT_EQ(2, result);
+    ASSERT_TRUE(value->is_int());
+    EXPECT_EQ(2, value->GetInt());
   }
 }
 
@@ -102,16 +100,14 @@ TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
   std::unique_ptr<base::Value> value;
   {
     ASSERT_TRUE(Get("key0", &value));
-    int result;
-    ASSERT_TRUE(value->GetAsInteger(&result));
-    EXPECT_EQ(0, result);
+    ASSERT_TRUE(value->is_int());
+    EXPECT_EQ(0, value->GetInt());
   }
 
   {
     ASSERT_TRUE(Get("key1", &value));
-    std::string result;
-    ASSERT_TRUE(value->GetAsString(&result));
-    EXPECT_EQ("new1", result);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ("new1", value->GetString());
   }
 
   ASSERT_FALSE(Get("key2", &value));
