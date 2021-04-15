@@ -899,6 +899,19 @@ def main():
       cmake_args += ['-DCMAKE_OSX_ARCHITECTURES=arm64',
                      '-DLLVM_USE_HOST_TOOLS=ON']
 
+  # The default LLVM_DEFAULT_TARGET_TRIPLE depends on the host machine.
+  # Set it explicitly to make the build of clang more hermetic, and also to
+  # set it to arm64 when cross-building clang for mac/arm.
+  if sys.platform == 'darwin':
+    if args.build_mac_arm or platform.machine() == 'arm64':
+      cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=arm64-apple-darwin')
+    else:
+      cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-apple-darwin')
+  elif sys.platform.startswith('linux'):
+    cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu')
+  elif sys.platform == 'win32':
+    cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-windows-msvc')
+
   # TODO(crbug.com/962988): Use -DLLVM_EXTERNAL_PROJECTS instead.
   CreateChromeToolsShim()
 
