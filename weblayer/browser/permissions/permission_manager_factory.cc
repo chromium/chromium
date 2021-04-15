@@ -17,6 +17,7 @@
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "weblayer/browser/background_fetch/background_fetch_permission_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/geolocation_permission_context_delegate.h"
 #include "weblayer/browser/permissions/weblayer_nfc_permission_context_delegate.h"
@@ -115,6 +116,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
           blink::mojom::PermissionsPolicyFeature::kCamera);
+  permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
+      std::make_unique<BackgroundFetchPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
 
