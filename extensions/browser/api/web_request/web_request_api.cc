@@ -947,11 +947,13 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
         }
       }
     } else if (it.key() == "tabId") {
-      if (!it.value().GetAsInteger(&tab_id))
+      if (!it.value().is_int())
         return false;
+      tab_id = it.value().GetInt();
     } else if (it.key() == "windowId") {
-      if (!it.value().GetAsInteger(&window_id))
+      if (!it.value().is_int())
         return false;
+      window_id = it.value().GetInt();
     } else {
       return false;
     }
