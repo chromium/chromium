@@ -244,12 +244,11 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 
 // static
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
-  bool childSpecificSigninEnabled = features::IsChildSpecificSigninEnabled() &&
-                                    !g_browser_process->platform_part()
-                                         ->browser_policy_connector_chromeos()
-                                         ->IsEnterpriseManaged();
-  return childSpecificSigninEnabled ? UserCreationView::kScreenId
-                                    : GaiaView::kScreenId;
+  bool isEnterpriseManaged = !g_browser_process->platform_part()
+                                  ->browser_policy_connector_chromeos()
+                                  ->IsEnterpriseManaged();
+  return isEnterpriseManaged ? UserCreationView::kScreenId
+                             : GaiaView::kScreenId;
 }
 
 void OobeBaseTest::MaybeWaitForLoginScreenLoad() {

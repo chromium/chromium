@@ -436,8 +436,6 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   }
 
   DCHECK(GetWizardController());
-  GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
-  gaia_screen->LoadOnline(prefilled_account);
 
   SetGaiaInputMethods(prefilled_account);
 
@@ -445,6 +443,8 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
       !prefilled_account.is_valid()) {
     StartWizard(UserCreationView::kScreenId);
   } else {
+    GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
+    gaia_screen->LoadOnline(prefilled_account);
     StartWizard(GaiaView::kScreenId);
   }
 }

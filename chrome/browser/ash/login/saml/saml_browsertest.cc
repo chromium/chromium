@@ -206,9 +206,6 @@ void SecretInterceptingFakeUserDataAuthClient::Mount(
 class SamlTest : public OobeBaseTest {
  public:
   SamlTest() {
-    // TODO(crbug.com/1121910): Fix tests.
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kChildSpecificSignin);
     fake_gaia_.set_initialize_fake_merge_session(false);
   }
   ~SamlTest() override {}
@@ -1549,6 +1546,19 @@ void SAMLDeviceAttestationTest::SetAllowedUrlsPolicy(
                           base::Value(std::move(allowed_urls_values)));
 }
 
+class SAMLDeviceAttestationEnrolledTest : public SAMLDeviceAttestationTest {
+ public:
+  SAMLDeviceAttestationEnrolledTest() {
+    device_state_.SetState(
+        DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture();
+    stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
+  }
+};
+
 // Verify that device attestation is not available when
 // DeviceWebBasedAttestationAllowedUrls policy is not set.
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, DefaultPolicy) {
@@ -1604,11 +1614,10 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, NotEnterpriseEnrolledError) {
 
 // Verify that device attestation is not available when device attestation is
 // not enabled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest,
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
                        DeviceAttestationNotEnabledError) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFourthUserCorpExampleTestEmail);
@@ -1624,10 +1633,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest,
 }
 
 // Verify that device attestation works when all policies configured correctly.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, Success) {
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, Success) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   settings_provider_->SetBoolean(chromeos::kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1647,10 +1655,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, Success) {
 
 // Verify that device attestation is not available for URLs that are not in the
 // allowed URLs list.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyNoMatchError) {
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyNoMatchError) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpDomain()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   settings_provider_->SetBoolean(chromeos::kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1669,10 +1676,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyNoMatchError) {
 
 // Verify that device attestation is available for URLs that match a pattern
 // from allowed URLs list.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyRegexSuccess) {
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, PolicyRegexSuccess) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"[*.]" + fake_saml_idp()->GetIdpDomain()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   settings_provider_->SetBoolean(chromeos::kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1692,10 +1698,10 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyRegexSuccess) {
 
 // Verify that device attestation works in case of multiple items in allowed
 // URLs list.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyTwoEntriesSuccess) {
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
+                       PolicyTwoEntriesSuccess) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   settings_provider_->SetBoolean(chromeos::kDeviceAttestationEnabled, true);
 
   StartSamlAndWaitForIdpPageLoad(
@@ -1713,10 +1719,9 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, PolicyTwoEntriesSuccess) {
       attestation::TpmChallengeKeyResultCode::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, TimeoutError) {
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
   base::HistogramTester histogram_tester;
   SetAllowedUrlsPolicy({"example2.com", fake_saml_idp()->GetIdpHost()});
-  stub_install_attributes_.Get()->SetCloudManaged("google.com", "device_id");
   settings_provider_->SetBoolean(chromeos::kDeviceAttestationEnabled, true);
 
   AttestationClient::Get()

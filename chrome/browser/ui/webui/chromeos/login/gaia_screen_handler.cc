@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -1153,6 +1154,11 @@ void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
   test_pass_ = password;
   test_services_ = services;
   test_expects_complete_login_ = true;
+
+  LoginDisplayHost::default_host()
+      ->GetWizardController()
+      ->get_wizard_context_for_testing()  // IN-TEST
+      ->skip_to_login_for_tests = true;
 
   // Submit login form for test if gaia is ready. If gaia is loading, login
   // will be attempted in HandleLoginWebuiReady after gaia is ready. Otherwise,

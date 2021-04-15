@@ -45,10 +45,7 @@ const test::UIPath kChildNextButton = {kUserCreationId, "childNextButton"};
 
 class UserCreationScreenTest : public OobeBaseTest {
  public:
-  UserCreationScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kChildSpecificSignin);
-  }
+  UserCreationScreenTest() = default;
   ~UserCreationScreenTest() override = default;
 
   void SetUpOnMainThread() override {

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -58,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, DefaultVisibility) {
 // are hidden when Gaia dialog is shown.
 IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
   EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  test::OobeGaiaPageWaiter().WaitUntilReady();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
@@ -69,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
 IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
   auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
   EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
-  test::OobeGaiaPageWaiter().WaitUntilReady();
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginDisplayHost::default_host()
       ->GetOobeUI()
       ->GetView<GaiaScreenHandler>()

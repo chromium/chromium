@@ -284,11 +284,7 @@ std::string GetCertSha1Fingerprint(const std::string& cert_name) {
 
 class WebviewLoginTest : public OobeBaseTest {
  public:
-  WebviewLoginTest() {
-    // TODO(https://crbug.com/1121910) Migrate to the kChildSpecificSignin
-    // enabled.
-    scoped_feature_list_.InitWithFeatures({}, {features::kChildSpecificSignin});
-  }
+  WebviewLoginTest() = default;
   ~WebviewLoginTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -538,28 +534,18 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   EXPECT_THAT(actual_keys, testing::ElementsAre(fake_gaia_keys.encryption_key));
 }
 
-class WebviewLoginTestWithChildSigninEnabled : public WebviewLoginTest {
- public:
-  WebviewLoginTestWithChildSigninEnabled() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({features::kChildSpecificSignin}, {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninEnabled,
-                       BackToUserCreationScreen) {
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   WaitForGaiaPageLoadAndPropertyUpdate();
-
-  // Start with identifier page.
   ExpectIdentifierPage();
 
-  // Back button reloads the gaia page since user creation screen is skipped.
-  // TODO(https://crbug.com/1121910) Fix this so back button brings back to
-  // user creation screen.
-  auto back_button_waiter = CreateGaiaPageEventWaiter("backButton");
+  // Make gaia landing page unreachable
+  fake_gaia_.fake_gaia()->SetErrorResponse(
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
+      net::HTTP_NOT_FOUND);
+
+  // Click back to reload (unreachable) identifier page.
   test::OobeJS().ClickOnPath(kBackButton);
-  back_button_waiter->Wait();
-  ExpectIdentifierPage();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
 // Create new account option should be available only if the settings allow it.
@@ -606,15 +592,12 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
  protected:
   ReauthEndpointWebviewLoginTest() {
-    // TODO(https://crbug.com/1121910) Migrate to the kChildSpecificSignin
-    // enabled.
     // TODO(https://crbug.com/1153912) Makes tests work with
     // kParentAccessCodeForOnlineLogin enabled.
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kGaiaReauthEndpoint},
-        {features::kChildSpecificSignin,
-         ::features::kParentAccessCodeForOnlineLogin});
+        {::features::kParentAccessCodeForOnlineLogin});
   }
   ~ReauthEndpointWebviewLoginTest() override = default;
 
@@ -858,11 +841,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Base class for tests of the client certificates in the sign-in frame.
 class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
  public:
-  WebviewClientCertsLoginTestBase() {
-    // TODO(crbug.com/1101318): Fix tests when kChildSpecificSignin is enabled.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({}, {features::kChildSpecificSignin});
-  }
+  WebviewClientCertsLoginTestBase() = default;
   WebviewClientCertsLoginTestBase(const WebviewClientCertsLoginTestBase&) =
       delete;
   WebviewClientCertsLoginTestBase& operator=(
@@ -1536,23 +1515,6 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
   // Expect that we got back to the identifier page, as there are no known users
   // so the sign-in screen will not display user pods.
   ExpectIdentifierPage();
-}
-
-using WebviewLoginTestWithChildSigninDisabled = WebviewLoginTest;
-
-IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninDisabled,
-                       ErrorScreenOnGaiaError) {
-  WaitForGaiaPageLoadAndPropertyUpdate();
-  ExpectIdentifierPage();
-
-  // Make gaia landing page unreachable
-  fake_gaia_.fake_gaia()->SetErrorResponse(
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
-      net::HTTP_NOT_FOUND);
-
-  // Click back to reload (unreachable) identifier page.
-  test::OobeJS().ClickOnPath(kBackButton);
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
 class WebviewChildLoginTest : public WebviewLoginTest {

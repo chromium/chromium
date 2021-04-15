@@ -35,10 +35,7 @@ const test::UIPath kContinueButton = {"family-link-notice", "continueButton"};
 
 class FamilyLinkNoticeScreenTest : public OobeBaseTest {
  public:
-  FamilyLinkNoticeScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kChildSpecificSignin);
-  }
+  FamilyLinkNoticeScreenTest() = default;
   ~FamilyLinkNoticeScreenTest() override = default;
 
   void SetUpOnMainThread() override {
