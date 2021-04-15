@@ -7,7 +7,7 @@
 
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
-package lpm_protoc_plugin_test_fuzzer;
+package lpm_test_fuzzer;
 
 // Test public imported files are handled properly.
 import public "imported_publicly.proto";
