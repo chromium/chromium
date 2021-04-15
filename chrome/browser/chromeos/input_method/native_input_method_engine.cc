@@ -169,7 +169,7 @@ void NativeInputMethodEngine::Initialize(
 
   auto suggestions_collector =
       base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)
-          ? std::make_unique<SuggestionsCollector>()
+          ? std::make_unique<SuggestionsCollector>(assistive_suggester_)
           : nullptr;
 
   chrome_keyboard_controller_client_observer_.Observe(

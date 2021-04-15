@@ -831,7 +831,11 @@ TEST_F(PersonalInfoSuggesterTest,
 
   suggester_->Suggest(u"my email is ");
   suggestion_handler_->VerifySuggestion(email_, 0);
-  EXPECT_FALSE(suggester_->GetSuggestions().empty());
+  EXPECT_EQ(suggester_->GetSuggestions(),
+            (std::vector<TextSuggestion>{
+                TextSuggestion{.mode = SuggestionMode::kPrediction,
+                               .type = SuggestionType::kAssistivePersonalInfo,
+                               .text = base::UTF16ToUTF8(email_)}}));
 }
 
 TEST_F(PersonalInfoSuggesterTest,

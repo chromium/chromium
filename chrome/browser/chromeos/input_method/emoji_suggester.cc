@@ -93,6 +93,12 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
                              delta);
 }
 
+TextSuggestion MapToTextSuggestion(std::u16string candidate_string) {
+  return {.mode = SuggestionMode::kPrediction,
+          .type = SuggestionType::kAssistiveEmoji,
+          .text = base::UTF16ToUTF8(candidate_string)};
+}
+
 }  // namespace
 
 EmojiSuggester::EmojiSuggester(SuggestionHandlerInterface* suggestion_handler,
@@ -345,10 +351,14 @@ bool EmojiSuggester::HasSuggestions() {
   return suggestion_shown_;
 }
 
-std::vector<std::u16string> EmojiSuggester::GetSuggestions() {
-  if (HasSuggestions())
-    return candidates_;
-  return {};
+std::vector<TextSuggestion> EmojiSuggester::GetSuggestions() {
+  std::vector<TextSuggestion> suggestions;
+  if (HasSuggestions()) {
+    for (const auto& candidate : candidates_) {
+      suggestions.emplace_back(MapToTextSuggestion(candidate));
+    }
+  }
+  return suggestions;
 }
 
 size_t EmojiSuggester::GetCandidatesSizeForTesting() const {

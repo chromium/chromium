@@ -97,6 +97,12 @@ void RecordAssistiveInsufficientData(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.InsufficientData", type);
 }
 
+TextSuggestion MapToTextSuggestion(std::u16string candidate_string) {
+  return {.mode = SuggestionMode::kPrediction,
+          .type = SuggestionType::kAssistivePersonalInfo,
+          .text = base::UTF16ToUTF8(candidate_string)};
+}
+
 }  // namespace
 
 AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
@@ -399,9 +405,9 @@ bool PersonalInfoSuggester::HasSuggestions() {
   return suggestion_shown_;
 }
 
-std::vector<std::u16string> PersonalInfoSuggester::GetSuggestions() {
+std::vector<TextSuggestion> PersonalInfoSuggester::GetSuggestions() {
   if (HasSuggestions())
-    return {suggestion_};
+    return {MapToTextSuggestion(suggestion_)};
   return {};
 }
 

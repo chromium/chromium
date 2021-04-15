@@ -27,6 +27,10 @@ struct TextSuggestion {
 
   // The suggested text
   std::string text;
+
+  bool operator==(const TextSuggestion& rhs) const {
+    return (mode == rhs.mode && type == rhs.type && text == rhs.text);
+  }
 };
 
 }  // namespace chromeos

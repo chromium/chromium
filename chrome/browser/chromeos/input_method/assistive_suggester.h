@@ -14,16 +14,20 @@
 #include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
 #include "chrome/browser/chromeos/input_method/suggester.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
+#include "chrome/browser/chromeos/input_method/suggestions_source.h"
 
 namespace chromeos {
 
 // An agent to suggest assistive information when the user types, and adopt or
 // dismiss the suggestion according to the user action.
-class AssistiveSuggester {
+class AssistiveSuggester : public SuggestionsSource {
  public:
   AssistiveSuggester(InputMethodEngine* engine, Profile* profile);
 
   bool IsAssistiveFeatureEnabled();
+
+  // SuggestionsSource overrides
+  std::vector<TextSuggestion> GetSuggestions() override;
 
   // Called when a text field gains focus, and suggester starts working.
   void OnFocus(int context_id);
@@ -53,10 +57,6 @@ class AssistiveSuggester {
 
   // Check if suggestion is being shown.
   bool IsSuggestionShown();
-
-  // Captures any suggestions currently showing, if there are none then an empty
-  // vector is returned.
-  std::vector<std::u16string> GetSuggestions();
 
   EmojiSuggester* get_emoji_suggester_for_testing() {
     return &emoji_suggester_;

@@ -6,13 +6,15 @@
 
 namespace chromeos {
 
+SuggestionsCollector::SuggestionsCollector(
+    SuggestionsSource* assistive_suggester)
+    : assistive_suggester_(assistive_suggester) {}
+
 void SuggestionsCollector::GatherSuggestions(
     const SuggestionContext& suggestion_context,
     GatherSuggestionsCallback callback) {
-  // TODO(crbug/1146266): Implement this by collecting any suggestions in the
-  // assistive suggesters currently, and requesting text suggestions to be
-  // generated from the text suggestion service.
-  std::move(callback).Run({});
+  // TODO(crbug/1146266): Fetch suggestions from suggestions service as well.
+  std::move(callback).Run(assistive_suggester_->GetSuggestions());
 }
 
 }  // namespace chromeos
