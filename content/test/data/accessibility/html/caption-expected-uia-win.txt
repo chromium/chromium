@@ -1,3 +1,4 @@
+#<skip -- https://crbug.com/1199033>
 Document
 ++Table Name='Browser and Engine' Grid.ColumnCount=2 Grid.RowCount=3 Table.RowOrColumnMajor='RowMajor'
 ++++Text IsControlElement=false
@@ -17,3 +18,11 @@ Document
 ++++++++Text Name='Safari' IsControlElement=false
 ++++++DataItem Name='WebKit' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 GridItem.ContainingGrid='Browser and Engine'
 ++++++++Text Name='WebKit' IsControlElement=false
+++Table Name='Name' FullDescription='Description' Grid.ColumnCount=2 Grid.RowCount=1
+++++Text IsControlElement=false
+++++++Text Name='Description'
+++++DataItem IsControlElement=false
+++++++DataItem Name='A' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 GridItem.ContainingGrid='Name'
+++++++++Text Name='A' IsControlElement=false
+++++++DataItem Name='B' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 GridItem.ContainingGrid='Name'
+++++++++Text Name='B' IsControlElement=false

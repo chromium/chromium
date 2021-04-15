@@ -1498,14 +1498,18 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
   switch (description_from) {
     case ax::mojom::DescriptionFrom::kNone:
       return "none";
-    case ax::mojom::DescriptionFrom::kUninitialized:
-      return "uninitialized";
-    case ax::mojom::DescriptionFrom::kAttribute:
-      return "attribute";
-    case ax::mojom::DescriptionFrom::kContents:
-      return "contents";
+    case ax::mojom::DescriptionFrom::kAriaDescription:
+      return "ariaDescription";
+    case ax::mojom::DescriptionFrom::kButtonLabel:
+      return "buttonLabel";
     case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
+    case ax::mojom::DescriptionFrom::kRubyAnnotation:
+      return "rubyAnnotation";
+    case ax::mojom::DescriptionFrom::kSummary:
+      return "summary";
+    case ax::mojom::DescriptionFrom::kTableCaption:
+      return "tableCaption";
     case ax::mojom::DescriptionFrom::kTitle:
       return "title";
   }

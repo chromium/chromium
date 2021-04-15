@@ -1,10 +1,10 @@
 [document web]
-++[section] description='ruby text' described-by
+++[section] description='ruby text' described-by description-from:ruby-annotation
 ++++[static] name='ruby base'
 ++[paragraph]
-++++[section] description='ruby text' described-by
+++++[section] description='ruby text' described-by description-from:ruby-annotation
 ++++++[static] name='ruby base'
 ++[paragraph]
 ++++[static] name='Hi! '
-++++[section] description='ruby text' described-by
+++++[section] description='ruby text' described-by description-from:ruby-annotation
 ++++++[static] name='ruby base'

@@ -1,12 +1,19 @@
 <!--
+@BLINK-ALLOW:description*
 @BLINK-ALLOW:inputType=*
 @WIN-ALLOW:ia2_hypertext=*
 @WIN-ALLOW:xml-roles:*
+@WIN-ALLOW:description*
 @AURALINUX-ALLOW:xml-roles:*
+@AURALINUX-ALLOW:description*
+@UIA-WIN-ALLOW:FullDescription*
+@MAC-ALLOW:AXDescription
 -->
 <!DOCTYPE html>
 <html>
   <body>
     <input type="button" value="Button">
+    <!-- If there's already a name, then the value should become the description -->
+    <input type="button" aria-label="Name" value="Description">
   </body>
 </html>

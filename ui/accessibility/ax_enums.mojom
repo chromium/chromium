@@ -505,7 +505,7 @@ enum StringAttribute {
   kClassName,
   kContainerLiveRelevant,
   kContainerLiveStatus,
-  kDescription,
+  kDescription,  // Any description, from any description source.
   kDisplay,
   // Only present when different from parent.
   kFontFamily,
@@ -1079,11 +1079,13 @@ enum NameFrom {
 
 enum DescriptionFrom {
   kNone,
-  kUninitialized,
-  kAttribute,
-  kContents,
+  kAriaDescription,
+  kButtonLabel,  // HTML-AAM 5.2.2
   kRelatedElement,
-  kTitle,
+  kRubyAnnotation,
+  kSummary,  // HTML-AAM 5.8.2
+  kTableCaption,  // HTML-AAM 5.9.2
+  kTitle
 };
 
 enum EventFrom {

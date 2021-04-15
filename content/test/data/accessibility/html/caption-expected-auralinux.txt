@@ -17,3 +17,11 @@
 ++++++++[static] name='Safari'
 ++++++[table cell] name='WebKit' (row=2, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
 ++++++++[static] name='WebKit'
+++[table] name='Name' description='Description' described-by description-from:table-caption cols=2 headers=(NONE); rows=1 headers=(NONE); caption=true; spans=(all: 1x1)
+++++[caption] description-for
+++++++[static] name='Description'
+++++[table row]
+++++++[table cell] name='A' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='A'
+++++++[table cell] name='B' (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='B'
