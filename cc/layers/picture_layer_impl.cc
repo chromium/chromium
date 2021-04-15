@@ -1654,15 +1654,15 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // a layer of size 10000px does not exceed 0.001px.
   static constexpr float kPixelErrorThreshold = 0.001f;
   static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
-  auto is_raster_scale = [this](float scale) -> bool {
-    return std::abs(scale - raster_contents_scale_.x()) <=
+  auto is_raster_scale = [this](const SkMatrix44& matrix) -> bool {
+    // The matrix has the X scale at (0,0), and the Y scale at (1,1).
+    return std::abs(matrix.getFloat(0, 0) - raster_contents_scale_.x()) <=
                kScaleErrorThreshold &&
-           std::abs(scale - raster_contents_scale_.y()) <= kScaleErrorThreshold;
+           std::abs(matrix.getFloat(1, 1) - raster_contents_scale_.y()) <=
+               kScaleErrorThreshold;
   };
-  if (!is_raster_scale(screen_transform.matrix().getFloat(0, 0)) ||
-      !is_raster_scale(screen_transform.matrix().getFloat(1, 1)) ||
-      !is_raster_scale(draw_transform.matrix().getFloat(0, 0)) ||
-      !is_raster_scale(draw_transform.matrix().getFloat(1, 1))) {
+  if (!is_raster_scale(screen_transform.matrix()) ||
+      !is_raster_scale(draw_transform.matrix())) {
     return false;
   }
 

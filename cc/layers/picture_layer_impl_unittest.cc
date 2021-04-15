@@ -149,27 +149,46 @@ class PictureLayerImplTest : public TestLayerTreeHostBase {
   }
 
   void SetupDrawProperties(FakePictureLayerImpl* layer,
-                           float ideal_contents_scale,
+                           const gfx::Vector2dF& ideal_contents_scale,
                            float device_scale_factor,
                            float page_scale_factor) {
     layer->layer_tree_impl()->SetDeviceScaleFactor(device_scale_factor);
     host_impl()->active_tree()->SetPageScaleOnActiveTree(page_scale_factor);
 
     gfx::Transform scale_transform;
-    scale_transform.Scale(ideal_contents_scale, ideal_contents_scale);
+    scale_transform.Scale(ideal_contents_scale.x(), ideal_contents_scale.y());
     layer->draw_properties().screen_space_transform = scale_transform;
     layer->draw_properties().target_space_transform = scale_transform;
     layer->set_contributes_to_drawn_render_surface(true);
-    DCHECK_EQ(layer->GetIdealContentsScaleKey(), ideal_contents_scale);
+    DCHECK_EQ(layer->GetIdealContentsScale(), ideal_contents_scale);
+  }
+
+  void SetupDrawProperties(FakePictureLayerImpl* layer,
+                           float ideal_contents_scale,
+                           float device_scale_factor,
+                           float page_scale_factor) {
+    SetupDrawProperties(
+        layer, gfx::Vector2dF(ideal_contents_scale, ideal_contents_scale),
+        device_scale_factor, page_scale_factor);
+  }
+
+  void SetupDrawPropertiesAndUpdateTiles(
+      FakePictureLayerImpl* layer,
+      const gfx::Vector2dF& ideal_contents_scale,
+      float device_scale_factor,
+      float page_scale_factor) {
+    SetupDrawProperties(layer, ideal_contents_scale, device_scale_factor,
+                        page_scale_factor);
+    layer->UpdateTiles();
   }
 
   void SetupDrawPropertiesAndUpdateTiles(FakePictureLayerImpl* layer,
                                          float ideal_contents_scale,
                                          float device_scale_factor,
                                          float page_scale_factor) {
-    SetupDrawProperties(layer, ideal_contents_scale, device_scale_factor,
-                        page_scale_factor);
-    layer->UpdateTiles();
+    SetupDrawPropertiesAndUpdateTiles(
+        layer, gfx::Vector2dF(ideal_contents_scale, ideal_contents_scale),
+        device_scale_factor, page_scale_factor);
   }
 
   static void VerifyAllPrioritizedTilesExistAndHaveRasterSource(
@@ -5234,6 +5253,44 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
 
   SetupPendingTree(FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200)));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), page_scale, 1.0f,
+                                    page_scale);
+  pending_layer()->SetContentsOpaque(false);
+  pending_layer()->UpdateTiles();
+  EXPECT_FALSE(pending_layer()->can_use_lcd_text());
+  EXPECT_FALSE(pending_layer()->HighResTiling()->can_use_lcd_text());
+  ActivateTree();
+
+  EXPECT_FALSE(active_layer()->can_use_lcd_text());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_TRUE(active_layer()->HighResTiling()->has_tiles());
+  for (Tile* tile : active_layer()->HighResTiling()->AllTilesForTesting())
+    EXPECT_FALSE(tile->can_use_lcd_text());
+  for (Tile* tile : active_layer()->LowResTiling()->AllTilesForTesting())
+    EXPECT_FALSE(tile->can_use_lcd_text());
+}
+
+TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
+  SetupPendingTree(FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200)));
+  gfx::Vector2dF ideal_scale(4.f, 2.f);
+  float page_scale = 4.f;
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), ideal_scale, 1.0f,
+                                    page_scale);
+  EXPECT_TRUE(pending_layer()->can_use_lcd_text());
+  EXPECT_TRUE(pending_layer()->HighResTiling()->can_use_lcd_text());
+  ActivateTree();
+
+  EXPECT_TRUE(active_layer()->can_use_lcd_text());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_TRUE(active_layer()->HighResTiling()->has_tiles());
+  std::vector<Tile*> tiles =
+      active_layer()->HighResTiling()->AllTilesForTesting();
+  for (Tile* tile : tiles)
+    EXPECT_TRUE(tile->can_use_lcd_text());
+  for (Tile* tile : active_layer()->LowResTiling()->AllTilesForTesting())
+    EXPECT_FALSE(tile->can_use_lcd_text());
+
+  SetupPendingTree(FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200)));
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), ideal_scale, 1.0f,
                                     page_scale);
   pending_layer()->SetContentsOpaque(false);
   pending_layer()->UpdateTiles();
