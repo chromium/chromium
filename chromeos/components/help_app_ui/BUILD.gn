@@ -24,6 +24,10 @@ static_library("help_app_ui") {
     "help_app_untrusted_ui.h",
     "search/search_handler.cc",
     "search/search_handler.h",
+    "search/search_metadata.cc",
+    "search/search_metadata.h",
+    "search/search_tag_registry.cc",
+    "search/search_tag_registry.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -60,12 +64,16 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "search/search_handler_unittest.cc" ]
+  sources = [
+    "search/search_handler_unittest.cc",
+    "search/search_tag_registry_unittest.cc",
+  ]
 
   deps = [
     ":help_app_ui",
     "//base/test:test_support",
     "//chromeos/components/help_app_ui/search:mojo_bindings",
+    "//chromeos/components/local_search_service/public/mojom:mojom",
     "//mojo/public/cpp/bindings:bindings",
     "//testing/gtest",
   ]
