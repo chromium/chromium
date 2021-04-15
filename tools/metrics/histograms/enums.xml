@@ -6728,6 +6728,10 @@ others/histograms.xml -->
   <int value="41" label="Navigation was cancelled while restoring"/>
   <int value="42" label="Disabled for Prerender"/>
   <int value="43" label="User-agent override differs"/>
+  <int value="44" label="Network request data pipe drained as data pipe"/>
+  <int value="45" label="Network request data pipe drained as byte consumer"/>
+  <int value="46" label="Foreground cache limit"/>
+  <int value="47" label="Browsing instance not swapped"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">
