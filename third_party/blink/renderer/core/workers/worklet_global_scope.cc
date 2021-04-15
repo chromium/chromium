@@ -99,7 +99,9 @@ WorkletGlobalScope::WorkletGlobalScope(
       worker_thread_(worker_thread),
       // Worklets should always have a parent LocalFrameToken.
       frame_token_(
-          creation_params->parent_context_token->GetAs<LocalFrameToken>()) {
+          creation_params->parent_context_token->GetAs<LocalFrameToken>()),
+      parent_cross_origin_isolated_capability_(
+          creation_params->parent_cross_origin_isolated_capability) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
 
@@ -276,6 +278,10 @@ KURL WorkletGlobalScope::CompleteURL(const String& url) const {
     return KURL();
   // Always use UTF-8 in Worklets.
   return KURL(BaseURL(), url);
+}
+
+bool WorkletGlobalScope::CrossOriginIsolatedCapability() const {
+  return parent_cross_origin_isolated_capability_;
 }
 
 ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {

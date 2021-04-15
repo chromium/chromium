@@ -4614,7 +4614,6 @@ crbug.com/1194557 external/wpt/wasm/jsapi/memory/constructor-shared.tentative.an
 crbug.com/1194557 external/wpt/wasm/jsapi/memory/grow.any.html [ Failure Timeout ]
 crbug.com/1194557 external/wpt/wasm/jsapi/memory/grow.any.worker.html [ Failure Timeout ]
 crbug.com/1194557 external/wpt/webaudio/the-audio-api/the-audiobuffer-interface/audiobuffer-copy-channel.html [ Failure Timeout ]
-crbug.com/1194557 external/wpt/webaudio/the-audio-api/the-audioworklet-interface/audioworklet-postmessage-sharedarraybuffer.https.html [ Failure Timeout ]
 crbug.com/1194557 external/wpt/xhr/send-data-sharedarraybuffer.any.html [ Failure Timeout ]
 crbug.com/1194557 external/wpt/xhr/send-data-sharedarraybuffer.any.worker.html [ Failure Timeout ]
 crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Timeout ]

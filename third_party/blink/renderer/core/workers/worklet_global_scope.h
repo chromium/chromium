@@ -64,7 +64,7 @@ class CORE_EXPORT WorkletGlobalScope
   CoreProbeSink* GetProbeSink() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;
-  bool CrossOriginIsolatedCapability() const final { return false; }
+  bool CrossOriginIsolatedCapability() const final;
   ukm::UkmRecorder* UkmRecorder() final;
 
   // WorkerOrWorkletGlobalScope
@@ -184,6 +184,11 @@ class CORE_EXPORT WorkletGlobalScope
   const LocalFrameToken frame_token_;
 
   std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
+
+  // This is inherited at construction to make sure it is possible to used
+  // restricted API between the document and the worklet (e.g.
+  // SharedArrayBuffer passing via postMessage).
+  const bool parent_cross_origin_isolated_capability_;
 };
 
 template <>
