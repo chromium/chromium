@@ -6,7 +6,7 @@
 #define BASE_WIN_SHORTCUT_H_
 
 #include <windows.h>
-
+#include <commctrl.h>
 #include <stdint.h>
 
 #include "base/base_export.h"
@@ -63,15 +63,13 @@ struct BASE_EXPORT ShortcutProperties {
   }
 
   void set_arguments(const std::wstring& arguments_in) {
-    // Size restriction as per MSDN at http://goo.gl/TJ7q5.
-    DCHECK(arguments_in.size() < MAX_PATH);
     arguments = arguments_in;
     options |= PROPERTIES_ARGUMENTS;
   }
 
   void set_description(const std::wstring& description_in) {
     // Size restriction as per MSDN at http://goo.gl/OdNQq.
-    DCHECK(description_in.size() < MAX_PATH);
+    DCHECK_LE(description_in.size(), static_cast<size_t>(INFOTIPSIZE));
     description = description_in;
     options |= PROPERTIES_DESCRIPTION;
   }
@@ -103,10 +101,9 @@ struct BASE_EXPORT ShortcutProperties {
   // The name of the working directory when launching the shortcut.
   FilePath working_dir;
   // The arguments to be applied to |target| when launching from this shortcut.
-  // The length of this string must be less than MAX_PATH.
   std::wstring arguments;
   // The localized description of the shortcut.
-  // The length of this string must be less than MAX_PATH.
+  // The length of this string must be no larger than INFOTIPSIZE.
   std::wstring description;
   // The path to the icon (can be a dll or exe, in which case |icon_index| is
   // the resource id).
