@@ -12,7 +12,7 @@ template("ts_library") {
                            [
                              "deps",
                              "extra_deps",
-                             "sources",
+                             "in_files",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
@@ -21,23 +21,25 @@ template("ts_library") {
       "$target_gen_dir/tsconfig.tsbuildinfo",
     ]
 
-    assert(defined(sources) || defined(invoker.definitions))
-
-    if (defined(sources)) {
-      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
-      foreach(_source, sources) {
-        _filename =
-            get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
-        outputs += [
-          "$target_gen_dir/$_filename.js",
-          "$target_gen_dir/$_filename.d.ts",
-        ]
-      }
-    }
+    assert(defined(in_files) || defined(invoker.definitions))
 
     root_dir = "."
     if (defined(invoker.root_dir)) {
       root_dir = invoker.root_dir
+    }
+
+    if (defined(in_files)) {
+      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
+      foreach(_source, in_files) {
+        inputs += [ "$root_dir/$_source" ]
+        _dirname =
+            rebase_path(get_path_info(_source, "gen_dir"), target_gen_dir)
+        _filename = get_path_info(_source, "name")
+        outputs += [
+          "$target_gen_dir/$_dirname/$_filename.js",
+          "$target_gen_dir/$_dirname/$_filename.d.ts",
+        ]
+      }
     }
 
     args = [
@@ -47,8 +49,8 @@ template("ts_library") {
       rebase_path(target_gen_dir, root_build_dir),
     ]
 
-    if (defined(sources)) {
-      args += [ "--sources" ] + sources
+    if (defined(in_files)) {
+      args += [ "--in_files" ] + in_files
     }
 
     if (defined(invoker.definitions)) {

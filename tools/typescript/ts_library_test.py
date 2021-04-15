@@ -41,7 +41,7 @@ class TsLibraryTest(unittest.TestCase):
         os.path.join(_HERE_DIR, 'tests', 'project1'),
         '--gen_dir',
         gen_dir,
-        '--sources',
+        '--in_files',
         'foo.ts',
         '--definitions',
         'legacy_file.d.ts',
@@ -71,7 +71,7 @@ class TsLibraryTest(unittest.TestCase):
         os.path.join(_HERE_DIR, 'tests', 'project2'),
         '--gen_dir',
         gen_dir,
-        '--sources',
+        '--in_files',
         'bar.ts',
         '--deps',
         os.path.join(project1_gen_dir, 'tsconfig.json'),
@@ -135,7 +135,7 @@ class TsLibraryTest(unittest.TestCase):
           os.path.join(_HERE_DIR, 'tests', 'project1'),
           '--gen_dir',
           os.path.join(self._out_folder, 'project1'),
-          '--sources',
+          '--in_files',
           'errors.ts',
       ])
     except RuntimeError as err:

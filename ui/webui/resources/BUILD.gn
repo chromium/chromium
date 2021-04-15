@@ -126,7 +126,7 @@ generate_grd("build_ts_grdp") {
 }
 
 ts_library("library") {
-  sources = [
+  in_files = [
     "js/cr/world.ts",
     "js/hello_world.ts",
   ]
