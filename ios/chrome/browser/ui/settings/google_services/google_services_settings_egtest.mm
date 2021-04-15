@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_app_interface.h"
@@ -312,8 +316,9 @@ using chrome_test_util::SyncSettingsConfirmButton;
 }
 
 // Tests that the sign-in button can't be used when sign-in is disabled.
-- (void)testSigninDisabled {
+- (void)testSigninDisabledByPolicy {
   // Disable browser sign-in.
+  [self setUpSigninDisabledEnterprisePolicy];
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
 
   // Open Google services settings and verify the sign-in cell shows the
@@ -341,6 +346,8 @@ using chrome_test_util::SyncSettingsConfirmButton;
 
   // Prefs clean-up.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowed];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
 #pragma mark - Helpers
@@ -360,6 +367,19 @@ using chrome_test_util::SyncSettingsConfirmButton;
   [[EarlGrey selectElementWithMatcher:self.scrollViewMatcher]
       performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
                                                            0.1f, 0.1f)];
+}
+
+// Enables the Enterprise policy that disables sign-in entry points across
+// Chrome.
+- (void)setUpSigninDisabledEnterprisePolicy {
+  NSDictionary* policy = @{
+    base::SysUTF8ToNSString(policy::key::kBrowserSignin) :
+        [NSNumber numberWithInt:(int)BrowserSigninMode::kDisabled]
+  };
+
+  [[NSUserDefaults standardUserDefaults]
+      setObject:policy
+         forKey:kPolicyLoaderIOSConfigurationKey];
 }
 
 // Returns grey matcher for a cell with |titleID| and |detailTextID|.

@@ -37,6 +37,18 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
                     grey_accessibilityID(kSettingsGoogleServicesCellId), nil);
 }
 
+// Dismisses the sign-out dialog.
+void DismissSignOut() {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Tap the tools menu to dismiss the popover.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+        performAction:grey_tap()];
+  }
+}
+
 }  // namespace
 
 // Integration tests using the Google services settings screen with
@@ -101,6 +113,59 @@ id<GREYMatcher> GoogleServicesSettingsButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that canceling the "Allow Chrome sign-in" option does not change the
+// user's sign-in state.
+- (void)testCancelAllowChromeSignin {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+
+  // Turn off "Allow Chrome Sign-in" feature.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Dismiss the sign-out dialog.
+  DismissSignOut();
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Turn off "Allow Chrome Sign-in" feature.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Select "sign out" option then dismiss the sign-out dialog.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+      performAction:grey_tap()];
+  DismissSignOut();
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAllowSigninItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 @end
