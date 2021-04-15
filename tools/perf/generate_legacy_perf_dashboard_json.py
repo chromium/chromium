@@ -92,7 +92,7 @@ class LegacyResultsProcessor(object):
 
     def IsImportant(self):
       """A graph is considered important if any of its traces is important."""
-      for trace in self.traces.itervalues():
+      for trace in self.traces.values():
         if trace.important:
           return True
       return False

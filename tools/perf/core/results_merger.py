@@ -191,8 +191,8 @@ def _merge_json_test_result_format(shard_results_list, test_cross_device=False):
 
     if result_json:
       raise MergeException(  # pragma: no cover (covered by
-                             # results_merger_unittest).
-          'Unmergable values %s' % result_json.keys())
+          # results_merger_unittest).
+          'Unmergable values %s' % list(result_json.keys()))
 
   return merged_results
 

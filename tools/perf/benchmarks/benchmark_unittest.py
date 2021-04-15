@@ -18,9 +18,11 @@ from telemetry.testing import progress_reporter
 from py_utils import discover
 
 def _GetAllPerfBenchmarks():
-  return discover.DiscoverClasses(
-      path_util.GetOfficialBenchmarksDir(), path_util.GetPerfDir(),
-      benchmark_module.Benchmark, index_by_class_name=True).values()
+  return list(
+      discover.DiscoverClasses(path_util.GetOfficialBenchmarksDir(),
+                               path_util.GetPerfDir(),
+                               benchmark_module.Benchmark,
+                               index_by_class_name=True).values())
 
 
 def _BenchmarkOptionsTestGenerator(benchmark):

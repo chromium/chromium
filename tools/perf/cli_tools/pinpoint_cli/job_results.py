@@ -26,7 +26,7 @@ def IterTestOutputIsolates(job, only_differences=False):
   quests = job['quests']
   for change_state in job['state']:
     if only_differences and not any(
-        v == 'different' for v in change_state['comparisons'].itervalues()):
+        v == 'different' for v in change_state['comparisons'].values()):
       continue
     change_id = ChangeToStr(change_state['change'])
     for attempt in change_state['attempts']:

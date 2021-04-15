@@ -407,10 +407,11 @@ def MeasurementToHistogram(name, measurement):
     unit = info.name
     samples = [s * info.conversion_factor for s in samples]
   if unit not in histogram.UNIT_NAMES:
-    raise ValueError(('Unknown unit: "%s". Valid options include:\n%s\n'
-                      'Valid legacy options include:\n%s') %
-                     (unit, pprint.pformat(histogram.UNIT_NAMES),
-                      pprint.pformat(legacy_unit_info.LEGACY_UNIT_INFO.keys())))
+    raise ValueError(
+        ('Unknown unit: "%s". Valid options include:\n%s\n'
+         'Valid legacy options include:\n%s') %
+        (unit, pprint.pformat(histogram.UNIT_NAMES),
+         pprint.pformat(list(legacy_unit_info.LEGACY_UNIT_INFO.keys()))))
   return histogram.Histogram.Create(name, unit, samples,
                                     description=description)
 

@@ -81,7 +81,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
         any_order=True,
       )
 
-    for artifact in test_result['outputArtifacts'].itervalues():
+    for artifact in test_result['outputArtifacts'].values():
       self.assertEqual(artifact['fetchUrl'], 'gs://bucket/path')
       self.assertEqual(
           artifact['viewUrl'],
@@ -127,7 +127,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
 
     artifacts = test_result['outputArtifacts']
     self.assertEqual(len(artifacts), 1)
-    self.assertEqual(artifacts.keys()[0], 'trace.html')
+    self.assertEqual(list(artifacts.keys())[0], 'trace.html')
 
   def testMeasurementToHistogram(self):
     hist = processor.MeasurementToHistogram('a', {

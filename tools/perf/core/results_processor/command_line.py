@@ -22,7 +22,7 @@ from core.results_processor import util
 
 def ArgumentParser(standalone=False):
   """Create an ArgumentParser defining options required by the processor."""
-  all_output_formats = formatters.FORMATTERS.keys()
+  all_output_formats = list(formatters.FORMATTERS.keys())
   if not standalone:
     all_output_formats.append('none')
   parser, group = _CreateTopLevelParser(standalone)

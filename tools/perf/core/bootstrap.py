@@ -29,7 +29,7 @@ def ListAllDepsPaths(deps_file):
 
   exec open(deps_file).read()  # pylint: disable=exec-used
 
-  deps_paths = deps.keys()
+  deps_paths = list(deps.keys())
 
   for path in deps_includes.keys():
     # Need to localize the paths.

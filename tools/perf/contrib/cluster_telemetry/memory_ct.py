@@ -15,7 +15,7 @@ class MemoryClusterTelemetry(perf_benchmark.PerfBenchmark):
 
   options = {'upload_results': True}
 
-  _ALL_NET_CONFIGS = traffic_setting.NETWORK_CONFIGS.keys()
+  _ALL_NET_CONFIGS = list(traffic_setting.NETWORK_CONFIGS.keys())
   enable_heap_profiling = True
 
   @classmethod
