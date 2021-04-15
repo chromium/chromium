@@ -14,6 +14,8 @@
 // SceneActivationLevel changes.
 @interface DefaultBrowserSceneAgent : ObservingSceneAgent
 
+- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher;
+
 // Command Dispatcher.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -20,10 +21,12 @@
 
 @implementation DefaultBrowserSceneAgent
 
-- (instancetype)init {
+- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
   if ([super init]) {
+    _dispatcher = dispatcher;
     if (NonModalPromosEnabled()) {
       _nonModalScheduler = [[DefaultBrowserPromoNonModalScheduler alloc] init];
+      _nonModalScheduler.dispatcher = _dispatcher;
     }
   }
   return self;

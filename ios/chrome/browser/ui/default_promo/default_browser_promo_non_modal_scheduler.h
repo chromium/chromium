@@ -7,9 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class CommandDispatcher;
+
 // A scheduler that determines when to show the non-modal default browser
 // promo based on many sources of data.
 @interface DefaultBrowserPromoNonModalScheduler : NSObject
+
+@property(nonatomic, weak) CommandDispatcher* dispatcher;
 
 // Handles the user pasting in the omnibox and schedules a promo if necessary.
 - (void)logUserPastedInOmnibox;

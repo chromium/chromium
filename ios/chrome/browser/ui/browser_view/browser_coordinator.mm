@@ -48,6 +48,8 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
@@ -207,6 +209,10 @@
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
 
+// Coordinator for the non-modal default promo.
+@property(nonatomic, strong)
+    DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
+
 // The coordinator that manages the prompt for when the user is signed out due
 // to policy.
 @property(nonatomic, strong)
@@ -243,10 +249,11 @@
   // handlers.
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
+    @protocol(DefaultPromoCommands),
+    @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
-    @protocol(TextZoomCommands), @protocol(DefaultPromoCommands),
-    @protocol(PolicySignoutPromptCommands)
+    @protocol(TextZoomCommands), @protocol(PolicySignoutPromptCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1064,6 +1071,25 @@
 - (void)hidePolicySignoutPrompt {
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
+}
+
+#pragma mark - DefaultBrowserPromoNonModalCommands
+
+- (void)showDefaultBrowserNonModalPromo {
+  self.nonModalPromoCoordinator =
+      [[DefaultBrowserPromoNonModalCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.nonModalPromoCoordinator start];
+  self.nonModalPromoCoordinator.browser = self.browser;
+  self.nonModalPromoCoordinator.baseViewController = self.viewController;
+  [self.nonModalPromoCoordinator presentInfobarBannerAnimated:YES
+                                                   completion:nil];
+}
+
+- (void)defaultBrowserNonModalPromoWasDismissed {
+  [self.nonModalPromoCoordinator stop];
+  self.nonModalPromoCoordinator = nil;
 }
 
 @end

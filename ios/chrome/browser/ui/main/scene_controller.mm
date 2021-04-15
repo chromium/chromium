@@ -760,9 +760,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   // Add scene agents that require CommandDispatcher.
   DefaultBrowserSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserSceneAgent alloc] init];
+      [[DefaultBrowserSceneAgent alloc]
+          initWithCommandDispatcher:mainCommandDispatcher];
   [self.sceneState addAgent:defaultBrowserAgent];
-  defaultBrowserAgent.dispatcher = mainCommandDispatcher;
 
   [self.sceneState
       addAgent:[[PolicySignoutSceneAgent alloc]
