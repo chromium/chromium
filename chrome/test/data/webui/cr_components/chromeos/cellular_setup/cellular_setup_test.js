@@ -38,68 +38,48 @@ suite('CrComponentsCellularSetupTest', function() {
   }
 
   function init() {
+    const mojom = chromeos.networkConfig.mojom;
+    networkConfigRemote.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
+    });
+    eSimManagerRemote.addEuiccForTest(2);
+    Polymer.dom.flush();
+
     cellularSetupPage = document.createElement('cellular-setup');
     cellularSetupPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
     document.body.appendChild(cellularSetupPage);
     Polymer.dom.flush();
   }
 
-  test('Show pSim flow ui if now esim network is available', async function() {
-    const mojom = chromeos.networkConfig.mojom;
-    networkConfigRemote.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-    });
-    eSimManagerRemote.addEuiccForTest(2);
-    await flushAsync();
+  test('Show pSim flow ui', async function() {
     init();
-
     await flushAsync();
-    const eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    let eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    let pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+
+    assertTrue(!!eSimFlow);
+    assertFalse(!!pSimFlow);
+
+    cellularSetupPage.currentPageName =
+        cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+    await flushAsync();
+    eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+
     assertFalse(!!eSimFlow);
-    const pSimFlow = cellularSetupPage.$$('psim-flow-ui');
     assertTrue(!!pSimFlow);
   });
 
-  test('Show eSIM flow ui if no pSIM networks is available', async function() {
-    const mojom = chromeos.networkConfig.mojom;
-    networkConfigRemote.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-      simInfos: [{eid: '2221111112222', slot_id: 0, iccid: '1111111111111111'}],
-    });
-    eSimManagerRemote.addEuiccForTest(2);
-    await flushAsync();
-
+  test('Show eSIM flow ui', async function() {
     init();
     await flushAsync();
-    const pSimFlow = cellularSetupPage.$$('psim-flow-ui');
-    assertFalse(!!pSimFlow);
-    const eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    let eSimFlow = cellularSetupPage.$$('esim-flow-ui');
+    let pSimFlow = cellularSetupPage.$$('psim-flow-ui');
+
+    // By default eSIM flow is always shown
     assertTrue(!!eSimFlow);
-  });
-
-  test('Page selection change', async function() {
-    const mojom = chromeos.networkConfig.mojom;
-    networkConfigRemote.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-    });
-    eSimManagerRemote.addEuiccForTest(2);
-    await flushAsync();
-    init();
-
-    const selectionFlow = cellularSetupPage.$$('setup-selection-flow');
-    assertTrue(!!selectionFlow);
-
-    const psimBtn = selectionFlow.$$('#psimFlowUiBtn');
-    assertTrue(!!psimBtn);
-
-    psimBtn.click();
-    assertTrue(
-        cellularSetupPage.selectedFlow_ ===
-        cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
+    assertFalse(!!pSimFlow);
   });
 });

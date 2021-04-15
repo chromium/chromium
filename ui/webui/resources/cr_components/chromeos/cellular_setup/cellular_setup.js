@@ -75,44 +75,10 @@ Polymer({
 
   /** @override */
   attached() {
+    // By default eSIM flow is selected.
     if (!this.currentPageName) {
-      this.setCurrentPage_();
+      this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
     }
-  },
-
-  /**
-   * Sets current cellular setup flow, one of eSIM flow, pSIM flow or
-   * selection flow, depending on available pSIM and eSIM slots.
-   * @private
-   */
-  setCurrentPage_() {
-    const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
-    networkConfig.getDeviceStateList().then(response => {
-      const deviceStateList = response.result;
-
-      const deviceState = deviceStateList.find(
-          (device) => device.type ===
-              chromeos.networkConfig.mojom.NetworkType.kCellular);
-
-      if (!deviceState) {
-        this.currentPageName =
-            cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
-        return;
-      }
-
-      const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
-
-      if (pSimSlots > 0 && eSimSlots === 0) {
-        this.currentPageName = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
-        return;
-      } else if (pSimSlots === 0 && eSimSlots > 0) {
-        this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
-        return;
-      }
-      this.currentPageName =
-          cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
-    });
   },
 
   /** @private */
@@ -128,11 +94,9 @@ Polymer({
     const isNavHandled = this.currentPage_.attemptBackwardNavigation();
 
     // Subflow returns false in a state where it cannot perform backward
-    // navigation any more. Switch back to the selection flow in this case so
-    // that the user can select a flow again.
+    // navigation any more. Close dialog.
     if (!isNavHandled) {
-      this.currentPageName =
-          cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+      this.fire('exit-cellular-setup');
     }
   },
 
@@ -166,7 +130,7 @@ Polymer({
    * @param {string} currentPage
    * @private
    */
-  isPSimSelected_(currentPage) {
+  shouldShowPsimFlow_(currentPage) {
     return currentPage === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
   },
 
@@ -174,7 +138,7 @@ Polymer({
    * @param {string} currentPage
    * @private
    */
-  isESimSelected_(currentPage) {
+  shouldShowEsimFlow_(currentPage) {
     return currentPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
   }
 });

@@ -379,62 +379,112 @@ cr.define('cellular_setup', function() {
       }
     },
 
+    /**
+     * @param {boolean} enableForwardBtn
+     * @param {!cellularSetup.ButtonState} cancelButtonStateIfEnabled
+     * @param {boolean} isInstalling
+     * @return {!cellularSetup.ButtonBarState}
+     * @private
+     */
+    generateButtonStateForActivationPage_(
+        enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
+      this.forwardButtonLabel = this.i18n('next');
+      let backBtnState = cellularSetup.ButtonState.HIDDEN;
+      if (this.pendingProfiles_.length > 1) {
+        backBtnState = isInstalling ? cellularSetup.ButtonState.DISABLED :
+                                      cellularSetup.ButtonState.ENABLED;
+      }
+      return {
+        backward: backBtnState,
+        cancel: cancelButtonStateIfEnabled,
+        forward: enableForwardBtn ? cellularSetup.ButtonState.ENABLED :
+                                    cellularSetup.ButtonState.DISABLED,
+      };
+    },
+
+    /**
+     * @param {boolean} enableForwardBtn
+     * @param {!cellularSetup.ButtonState} cancelButtonStateIfEnabled
+     * @param {boolean} isInstalling
+     * @return {!cellularSetup.ButtonBarState}
+     * @private
+     */
+    generateButtonStateForConfirmationPage_(
+        enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
+      this.forwardButtonLabel = this.i18n('confirm');
+      let backBtnState = cellularSetup.ButtonState.ENABLED;
+      if (this.pendingProfiles_.length === 1) {
+        backBtnState = cellularSetup.ButtonState.HIDDEN;
+      } else if (isInstalling) {
+        backBtnState = cellularSetup.ButtonState.DISABLED;
+      }
+      return {
+        backward: backBtnState,
+        cancel: cancelButtonStateIfEnabled,
+        forward: enableForwardBtn ? cellularSetup.ButtonState.ENABLED :
+                                    cellularSetup.ButtonState.DISABLED,
+      };
+    },
+
     /** @private */
     updateButtonBarState_() {
       let buttonState;
       const cancelButtonStateIfEnabled =
           this.delegate.shouldShowCancelButton() ?
           cellularSetup.ButtonState.ENABLED :
-          undefined;
+          cellularSetup.ButtonState.HIDDEN;
       switch (this.state_) {
         case ESimUiState.PROFILE_SEARCH:
-        case ESimUiState.ACTIVATION_CODE_ENTRY:
           this.forwardButtonLabel = this.i18n('next');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.DISABLED,
           };
+          break;
+        case ESimUiState.ACTIVATION_CODE_ENTRY:
+          buttonState = this.generateButtonStateForActivationPage_(
+              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*isInstalling*/ false);
           break;
         case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
-          this.forwardButtonLabel = this.i18n('next');
-          buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
-            cancel: cancelButtonStateIfEnabled,
-            forward: cellularSetup.ButtonState.ENABLED,
-          };
+          buttonState = this.generateButtonStateForActivationPage_(
+              /*enableForwardBtn*/ true, cancelButtonStateIfEnabled,
+              /*isInstalling*/ false);
+          break;
+        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
+          buttonState = this.generateButtonStateForActivationPage_(
+              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*isInstalling*/ true);
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY:
-          this.forwardButtonLabel = this.i18n('confirm');
-          buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
-            cancel: cancelButtonStateIfEnabled,
-            forward: cellularSetup.ButtonState.DISABLED,
-          };
+          buttonState = this.generateButtonStateForConfirmationPage_(
+              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*isInstalling*/ false);
           break;
         case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
-          this.forwardButtonLabel = this.i18n('confirm');
-          buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
-            cancel: cancelButtonStateIfEnabled,
-            forward: cellularSetup.ButtonState.ENABLED,
-          };
+          buttonState = this.generateButtonStateForConfirmationPage_(
+              /*enableForwardBtn*/ true, cancelButtonStateIfEnabled,
+              /*isInstalling*/ false);
+          break;
+        case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
+          buttonState = this.generateButtonStateForConfirmationPage_(
+              /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
+              /*isInstalling*/ true);
           break;
         case ESimUiState.PROFILE_SELECTION:
           this.forwardButtonLabel = this.selectedProfile_ ?
               this.i18n('next') :
               this.i18n('skipDiscovery');
           buttonState = {
-            backward: cellularSetup.ButtonState.ENABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.ENABLED,
           };
           break;
-        case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
         case ESimUiState.PROFILE_SELECTION_INSTALLING:
-        case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
           buttonState = {
-            backward: cellularSetup.ButtonState.DISABLED,
+            backward: cellularSetup.ButtonState.HIDDEN,
             cancel: cancelButtonStateIfEnabled,
             forward: cellularSetup.ButtonState.DISABLED,
           };
@@ -510,7 +560,6 @@ cr.define('cellular_setup', function() {
     /** SubflowBehavior override */
     navigateForward() {
       this.showError_ = false;
-
       switch (this.state_) {
         case ESimUiState.ACTIVATION_CODE_ENTRY_READY:
           // Assume installing the profile doesn't require a confirmation
