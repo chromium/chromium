@@ -1806,8 +1806,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor
-[Worker]     method createImageBitmap
-[Worker]     method destroy
 [Worker] interface WakeLock
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

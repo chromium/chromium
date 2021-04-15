@@ -87,19 +87,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // This effectively "destroys" all frames sharing the same Handle.
   void close();
 
-  // DEPRECATED. Alias for close().
-  void destroy(ExecutionContext*);
-
   // Creates a clone of |this|, with a new Handle, referencing the same
   // media::VideoFrame. The cloned frame will not be closed when |this| is,
   // and its lifetime should be independently managed.
   VideoFrame* clone(ExceptionState&);
-
-  // TODO(crbug.com/1175907): Remove this method. window.createImageBitmap() is
-  // the preferred mechanism.
-  ScriptPromise createImageBitmap(ScriptState*,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&);
 
   // Convenience functions
   scoped_refptr<VideoFrameHandle> handle() const { return handle_; }

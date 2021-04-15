@@ -9058,8 +9058,6 @@ interface VideoFrame
     method clone
     method close
     method constructor
-    method createImageBitmap
-    method destroy
 interface VideoPlaybackQuality
     attribute @@toStringTag
     getter corruptedVideoFrames

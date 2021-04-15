@@ -56,23 +56,11 @@ WebCodecsLogger::GetCloseAuditor() {
   return close_auditor_;
 }
 
-void WebCodecsLogger::LogVideoFrameCreateImageBitmapDeprecation() {
-  LogDeprecation(Deprecation::kVideoFrameCreateImageBitmap,
-                 "VideoFrame.createImageBitmap() is deprecated; please use "
-                 "createImageBitmap(VideoFrame).");
-}
-
 void WebCodecsLogger::LogCropDeprecation() {
   LogDeprecation(
       Deprecation::kCrop,
       "cropTop, cropLeft, cropWidth, and cropHeight are deprecated; please "
       "use visibleRegion.");
-}
-
-void WebCodecsLogger::LogVideoFrameDestroyDeprecation() {
-  LogDeprecation(
-      Deprecation::kVideoFrameDestroy,
-      "VideoFrame.destroy() is deprecated; please use VideoFrame.close().");
 }
 
 void WebCodecsLogger::LogCloseErrors(TimerBase*) {

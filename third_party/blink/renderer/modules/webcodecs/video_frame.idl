@@ -53,11 +53,4 @@
   [CallWith=ExecutionContext] readonly attribute unsigned long cropTop;
   [CallWith=ExecutionContext] readonly attribute unsigned long cropWidth;
   [CallWith=ExecutionContext] readonly attribute unsigned long cropHeight;
-
-  // DEPRECATED: Use Window.createImageBitmap().
-  [CallWith=ScriptState, RaisesException] Promise<ImageBitmap>
-  createImageBitmap(optional ImageBitmapOptions options = {});
-
-  // DEPRECATED: Use close().
-  [CallWith=ExecutionContext] void destroy();
 };

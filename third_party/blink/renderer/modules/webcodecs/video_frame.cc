@@ -793,11 +793,6 @@ void VideoFrame::close() {
   handle_->Invalidate();
 }
 
-void VideoFrame::destroy(ExecutionContext* execution_context) {
-  WebCodecsLogger::From(*execution_context).LogVideoFrameDestroyDeprecation();
-  close();
-}
-
 VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
   auto handle = handle_->Clone();
   if (!handle) {
@@ -807,20 +802,6 @@ VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
   }
 
   return MakeGarbageCollected<VideoFrame>(std::move(handle));
-}
-
-ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,
-                                            const ImageBitmapOptions* options,
-                                            ExceptionState& exception_state) {
-  WebCodecsLogger::From(*ExecutionContext::From(script_state))
-      .LogVideoFrameCreateImageBitmapDeprecation();
-
-  base::Optional<IntRect> crop_rect;
-  if (auto local_frame = handle_->frame())
-    crop_rect = IntRect(local_frame->visible_rect());
-
-  return ImageBitmapFactories::CreateImageBitmap(script_state, this, crop_rect,
-                                                 options, exception_state);
 }
 
 scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(

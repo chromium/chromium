@@ -62,18 +62,13 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
   // Returns |close_auditor_| and starts |timer_| if needed.
   scoped_refptr<VideoFrameCloseAuditor> GetCloseAuditor();
 
-  void LogVideoFrameCreateImageBitmapDeprecation();
   void LogCropDeprecation();
-  void LogPlaneInitRowsDeprecation();
-  void LogVideoFrameDestroyDeprecation();
 
   void Trace(Visitor*) const override;
 
  private:
   enum class Deprecation {
-    kVideoFrameCreateImageBitmap = 1 << 0,
-    kCrop = 1 << 1,
-    kVideoFrameDestroy = 1 << 2,
+    kCrop = 1 << 0,
   };
 
   void LogCloseErrors(TimerBase*);

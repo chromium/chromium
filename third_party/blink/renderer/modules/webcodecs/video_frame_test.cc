@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
@@ -240,8 +241,11 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   EXPECT_EQ(video_frame->handle()->sk_image(), original_image);
 
   {
-    auto promise = video_frame->createImageBitmap(
-        scope.GetScriptState(), default_options, scope.GetExceptionState());
+    ImageBitmapSourceUnion ibs_source;
+    ibs_source.SetVideoFrame(video_frame);
+    auto promise = ImageBitmapFactories::CreateImageBitmap(
+        scope.GetScriptState(), ibs_source, default_options,
+        scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
