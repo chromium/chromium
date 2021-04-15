@@ -39,7 +39,6 @@ class SodaInstallerImpl : public SodaInstaller,
   base::FilePath GetLanguagePath() const override;
 
   // SodaInstaller:
-  void InstallSoda(PrefService* global_prefs) override;
   void InstallLanguage(PrefService* profile_prefs,
                        PrefService* global_prefs) override;
   bool IsSodaInstalled() const override;
@@ -48,6 +47,7 @@ class SodaInstallerImpl : public SodaInstaller,
 
  private:
   // SodaInstaller:
+  void InstallSoda(PrefService* global_prefs) override;
   void UninstallSoda(PrefService* global_prefs) override;
 
   // component_updater::ServiceObserver:
