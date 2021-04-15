@@ -223,10 +223,11 @@ export function onKeyPressed(event) {
 }
 
 /**
- * Handles resized window on current all visible views.
+ * Handles when the window state or size changed.
  */
-export function onWindowResized() {
-  // All visible views need being relayout after window is resized.
+export function onWindowStatusChanged() {
+  // All visible views need being relayout after window is resized or state
+  // changed.
   for (let i = allViews.length - 1; i >= 0; i--) {
     if (isShown(i)) {
       allViews[i].layout();

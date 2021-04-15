@@ -77,7 +77,9 @@ export class Preview {
      */
     this.scanner_ = null;
 
-    windowController.addListener(() => this.onWindowResize_());
+    window.addEventListener('resize', () => this.onWindowStatusChanged_());
+
+    windowController.addListener(() => this.onWindowStatusChanged_());
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
       state.addObserver(s, this.updateShowMetadata_.bind(this));
@@ -530,11 +532,11 @@ export class Preview {
   }
 
   /**
-   * Handles resizing the window for preview's aspect ratio changes.
+   * Handles the the window state or window size changed.
    * @private
    */
-  onWindowResize_() {
-    nav.onWindowResized();
+  onWindowStatusChanged_() {
+    nav.onWindowStatusChanged();
   }
 
   /**
@@ -544,7 +546,7 @@ export class Preview {
    */
   async onIntrinsicSizeChanged_() {
     if (this.video_.videoWidth && this.video_.videoHeight) {
-      this.onWindowResize_();
+      this.onWindowStatusChanged_();
     }
     this.cancelFocus_();
   }
