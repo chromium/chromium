@@ -81,8 +81,7 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
                                    *base::JSONReader::Read(kPref));
   browser_task_environment.RunUntilIdle();
   delegate.VerifyAndClearExpectations();
-  // Each scheduled removal is called once every lowest time_to_live_in_hours,
-  // ere every 1 hour.
+  // Each scheduled removal is called once every hour.
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now(), remove_mask_1_filterable, 0);
   delegate.ExpectCallDontCareAboutFilterBuilder(

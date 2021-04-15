@@ -41,7 +41,8 @@
 
 namespace {
 
-constexpr int kInitialCleanupDelayInMinutes = 2;
+constexpr int kInitialCleanupDelayInSeconds = 15;
+constexpr int kDefaultCleanupPeriodInHours = 1;
 
 using ScheduledRemovalSettings =
     ChromeBrowsingDataLifetimeManager::ScheduledRemovalSettings;
@@ -192,6 +193,7 @@ std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
         setting.FindListKey(browsing_data::policy_fields::kDataTypes);
     const auto time_to_live_in_hours =
         setting.FindIntKey(browsing_data::policy_fields::kTimeToLiveInHours);
+
     scheduled_removals_settings.push_back({GetRemoveMask(*data_types),
                                            GetOriginTypeMask(*data_types),
                                            *time_to_live_in_hours});
@@ -260,7 +262,7 @@ ChromeBrowsingDataLifetimeManager::ChromeBrowsingDataLifetimeManager(
           base::BindOnce(&ChromeBrowsingDataLifetimeManager::
                              UpdateScheduledRemovalSettings,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMinutes(kInitialCleanupDelayInMinutes));
+          base::TimeDelta::FromSeconds(kInitialCleanupDelayInSeconds));
 }
 
 ChromeBrowsingDataLifetimeManager::~ChromeBrowsingDataLifetimeManager() =
@@ -317,13 +319,9 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
   content::BrowsingDataRemover* remover =
       content::BrowserContext::GetBrowsingDataRemover(profile_);
 
-  int smallest_time_to_live = std::numeric_limits<int>::max();
-  for (const auto& removal_settings : scheduled_removals_settings_) {
+  for (auto& removal_settings : scheduled_removals_settings_) {
     if (removal_settings.time_to_live_in_hours <= 0)
       continue;
-
-    smallest_time_to_live =
-        std::min(removal_settings.time_to_live_in_hours, smallest_time_to_live);
 
     if (ProfileSyncServiceFactory::IsSyncAllowed(profile_))
       continue;
@@ -362,16 +360,15 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
                     remover, /*filterable_deletion=*/false, profile_));
     }
   }
-  if (smallest_time_to_live < std::numeric_limits<int>::max()) {
-    content::GetUIThreadTaskRunner(
-        {
-            base::TaskPriority::BEST_EFFORT,
-            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-        })
-        ->PostDelayedTask(FROM_HERE,
-                          base::BindOnce(&ChromeBrowsingDataLifetimeManager::
-                                             StartScheduledBrowsingDataRemoval,
-                                         weak_ptr_factory_.GetWeakPtr()),
-                          base::TimeDelta::FromHours(smallest_time_to_live));
-  }
+  content::GetUIThreadTaskRunner(
+      {
+          base::TaskPriority::BEST_EFFORT,
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      })
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ChromeBrowsingDataLifetimeManager::
+                             StartScheduledBrowsingDataRemoval,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::TimeDelta::FromHours(kDefaultCleanupPeriodInHours));
 }
