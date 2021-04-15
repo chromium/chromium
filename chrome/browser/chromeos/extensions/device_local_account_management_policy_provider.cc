@@ -770,14 +770,13 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
       }
     // Require v2 because that's the only version we understand.
     } else if (it.key() == emk::kManifestVersion) {
-      int version;
-      if (!it.value().GetAsInteger(&version)) {
+      if (!it.value().is_int()) {
         LOG(ERROR) << extension->id() << ": " << emk::kManifestVersion
                    << " is not an integer.";
         safe = false;
         continue;
       }
-      if (version != 2) {
+      if (it.value().GetInt() != 2) {
         LOG(ERROR) << extension->id()
                    << " has non-whitelisted manifest version.";
         safe = false;
