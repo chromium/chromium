@@ -120,10 +120,12 @@ StyleEngine::StyleEngine(Document& document)
   if (document.GetFrame()) {
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
-    global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
     if (const auto* owner = document.GetFrame()->Owner())
       owner_color_scheme_ = owner->GetColorScheme();
   }
+  // TODO(crbug.com/1198601) This should only be needed for documents
+  // with a frame, but there are currently issues with that.
+  global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
   if (document.IsInMainFrame())
     viewport_resolver_ = MakeGarbageCollected<ViewportStyleResolver>(document);
   if (auto* settings = GetDocument().GetSettings()) {
