@@ -121,7 +121,7 @@ class NET_EXPORT UDPSocketPosixSender
 
 class NET_EXPORT UDPSocketPosix {
  public:
-  // Performance helper for NetworkActivityMonitor, it batches
+  // Performance helper for net::activity_monitor, it batches
   // throughput samples, subject to a byte limit threshold (64 KB) or
   // timer (100 ms), whichever comes first.  The batching is subject
   // to a minimum number of samples (2) required by NQE to update its
@@ -131,7 +131,7 @@ class NET_EXPORT UDPSocketPosix {
     ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
     ~ReceivedActivityMonitor() = default;
     // Provided by sent/received subclass.
-    // Update throughput, but batch to limit overhead of NetworkActivityMonitor.
+    // Update throughput, but batch to limit overhead of net::activity_monitor.
     void Increment(uint32_t bytes);
     // For flushing cached values.
     void OnClose();
@@ -602,6 +602,13 @@ class NET_EXPORT UDPSocketPosix {
 
   // Network that this socket is bound to via BindToNetwork().
   NetworkChangeNotifier::NetworkHandle bound_network_;
+
+  // Whether net::activity_monitor should be updated every time bytes are
+  // received, without batching through |received_activity_monitor_|. This is
+  // initialized with the state of the "UdpSocketPosixAlwaysUpdateBytesReceived"
+  // feature. It is cached to avoid accessing the FeatureList every time bytes
+  // are received.
+  const bool always_update_bytes_received_;
 
   // Used to lower the overhead updating activity monitor.
   ReceivedActivityMonitor received_activity_monitor_;

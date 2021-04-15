@@ -233,5 +233,11 @@ const base::Feature kDocumentReporting{"DocumentReporting",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived{
+    "UdpSocketPosixAlwaysUpdateBytesReceived",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+
 }  // namespace features
 }  // namespace net

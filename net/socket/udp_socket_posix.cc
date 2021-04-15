@@ -19,6 +19,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,6 +32,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -174,6 +176,8 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       write_buf_len_(0),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
       bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
+      always_update_bytes_received_(base::FeatureList::IsEnabled(
+          features::kUdpSocketPosixAlwaysUpdateBytesReceived)),
       experimental_recv_optimization_enabled_(false) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
@@ -746,7 +750,10 @@ void UDPSocketPosix::LogRead(int result,
                           bytes, is_address_valid ? &address : nullptr);
   }
 
-  received_activity_monitor_.Increment(result);
+  if (always_update_bytes_received_)
+    activity_monitor::IncrementBytesReceived(result);
+  else
+    received_activity_monitor_.Increment(result);
 }
 
 void UDPSocketPosix::DidCompleteWrite() {

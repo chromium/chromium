@@ -339,6 +339,15 @@ NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
 NET_EXPORT extern const base::Feature kDocumentReporting;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+// When enabled, UDPSocketPosix increments the global counter of bytes received
+// every time bytes are received, instead of using a timer to batch updates.
+// This should reduce the number of wake ups and improve battery consumption.
+// TODO(https://crbug.com/1189805): Cleanup the feature after verifying that it
+// doesn't negatively affect performance.
+NET_EXPORT extern const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived;
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+
 }  // namespace features
 }  // namespace net
 
