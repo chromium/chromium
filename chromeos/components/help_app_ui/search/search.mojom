@@ -53,6 +53,15 @@ struct SearchConcept {
   string locale;
 };
 
+// Used to observe changes to search results.
+interface SearchResultsObserver {
+  // Called when the availability of one or more search results has changed.
+  // An example of when this gets called is when the search index first updates
+  // from empty to populated. Clients can use this function to ensure that they
+  // always show up to date search results.
+  OnSearchResultAvailabilityChanged();
+};
+
 // Provides help app search results. Implemented in the browser process;
 // intended to be called from the Launcher C++.
 interface SearchHandler {
@@ -67,4 +76,14 @@ interface SearchHandler {
   Search(mojo_base.mojom.String16 query,
          uint32 max_num_results) =>
              (array<SearchResult> results);
+
+  // Replaces the content in the launcher search index and metadata cache.
+  // Callbacks on completion. Note that the list of concepts and all the fields
+  // inside each concept come from an untrusted source:
+  // chrome-untrusted://help-app.
+  Update(array<SearchConcept> concepts) => ();
+
+  // Adds an observer of search results. Disconnected observers are discarded;
+  // to stop observing, close the connection.
+  Observe(pending_remote<SearchResultsObserver> observer);
 };

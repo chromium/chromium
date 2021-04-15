@@ -18,6 +18,7 @@ class LocalSearchServiceProxy;
 namespace help_app {
 
 class SearchHandler;
+class SearchTagRegistry;
 
 // Manager for the Chrome OS help app. This class is implemented as a
 // KeyedService, so one instance of the class is intended to be active for the
@@ -43,8 +44,7 @@ class HelpAppManager : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // TODO(b/182857903): Add a SearchTagRegistry.
-  // std::unique_ptr<SearchTagRegistry> search_tag_registry_;
+  std::unique_ptr<SearchTagRegistry> search_tag_registry_;
   std::unique_ptr<SearchHandler> search_handler_;
 };
 

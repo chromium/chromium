@@ -15,15 +15,21 @@ namespace chromeos {
 namespace help_app {
 
 SearchHandler::SearchHandler(
-    local_search_service::LocalSearchServiceProxy* local_search_service_proxy) {
+    SearchTagRegistry* search_tag_registry,
+    local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
+    : search_tag_registry_(search_tag_registry) {
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kHelpAppLauncher,
       local_search_service::Backend::kInvertedIndex,
       index_remote_.BindNewPipeAndPassReceiver());
   DCHECK(index_remote_.is_bound());
+
+  search_tag_registry_->AddObserver(this);
 }
 
-SearchHandler::~SearchHandler() = default;
+SearchHandler::~SearchHandler() {
+  search_tag_registry_->RemoveObserver(this);
+}
 
 void SearchHandler::BindInterface(
     mojo::PendingReceiver<mojom::SearchHandler> pending_receiver) {
@@ -46,18 +52,35 @@ void SearchHandler::Search(const std::u16string& query,
                                      std::move(callback), max_num_results));
 }
 
+void SearchHandler::Update(std::vector<mojom::SearchConceptPtr> concepts,
+                           UpdateCallback callback) {
+  search_tag_registry_->Update(concepts, std::move(callback));
+}
+
+void SearchHandler::Observe(
+    mojo::PendingRemote<mojom::SearchResultsObserver> observer) {
+  observers_.Add(std::move(observer));
+}
+
+void SearchHandler::OnRegistryUpdated() {
+  for (auto& observer : observers_)
+    observer->OnSearchResultAvailabilityChanged();
+}
+
 std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
     const std::vector<local_search_service::Result>&
         local_search_service_results,
     uint32_t max_num_results) const {
   std::vector<mojom::SearchResultPtr> search_results;
-  // TODO(b/182857903): Implement conversion from LSS result to search result.
-
+  for (const auto& result : local_search_service_results) {
+    mojom::SearchResultPtr result_ptr = ResultToSearchResult(result);
+    if (result_ptr)
+      search_results.push_back(std::move(result_ptr));
+  }
   // TODO(b/182855408): Sort the search results.
 
   // Now that the results have been sorted, limit the size of to
   // |max_num_results|.
-  // TODO(b/182857903): Test that limiting the number of results works.
   search_results.resize(
       std::min(static_cast<size_t>(max_num_results), search_results.size()));
   return search_results;
@@ -76,6 +99,23 @@ void SearchHandler::OnFindComplete(
 
   std::move(callback).Run(GenerateSearchResultsArray(
       local_search_service_results.value(), max_num_results));
+}
+
+mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
+    const local_search_service::Result& result) const {
+  const auto& metadata = search_tag_registry_->GetTagMetadata(result.id);
+  // This should not happen because there isn't a way to remove metadata.
+  if (&metadata == &SearchTagRegistry::not_found_) {
+    return nullptr;
+  }
+
+  // Empty locale because we assume the locale always matches the system locale.
+  return mojom::SearchResult::New(
+      /*id=*/result.id,
+      /*title=*/metadata.title,
+      /*main_category=*/metadata.main_category,
+      /*url_path_with_parameters=*/metadata.url_path_with_parameters,
+      /*locale=*/"");
 }
 
 }  // namespace help_app
