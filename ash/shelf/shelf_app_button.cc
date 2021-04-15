@@ -681,7 +681,9 @@ void ShelfAppButton::Layout() {
   }
 
   // The indicators should be aligned with the icon, not the icon + shadow.
-  gfx::Point indicator_midpoint = icon_view_bounds.CenterPoint();
+  // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
+  // can incorrectly move the midpoint.
+  gfx::Point indicator_midpoint = GetIconViewBounds(1.0).CenterPoint();
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
@@ -849,8 +851,8 @@ void ShelfAppButton::OnRippleTimer() {
 }
 
 gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
-  gfx::RectF pre_scaling_bounds(GetIconViewBounds(1.0f));
-  gfx::RectF target_bounds(GetIconViewBounds(icon_scale));
+  gfx::RectF pre_scaling_bounds(GetMirroredRect(GetIconViewBounds(1.0f)));
+  gfx::RectF target_bounds(GetMirroredRect(GetIconViewBounds(icon_scale)));
   return gfx::TransformBetweenRects(target_bounds, pre_scaling_bounds);
 }
 
@@ -876,8 +878,9 @@ void ShelfAppButton::ScaleAppIcon(bool scale_up) {
 
   // Animate the notification indicator alongside the |icon_view_|.
   if (notification_indicator_) {
-    gfx::RectF pre_scale(GetNotificationIndicatorBounds(1.0));
-    gfx::RectF post_scale(GetNotificationIndicatorBounds(kAppIconScale));
+    gfx::RectF pre_scale(GetMirroredRect(GetNotificationIndicatorBounds(1.0)));
+    gfx::RectF post_scale(
+        GetMirroredRect(GetNotificationIndicatorBounds(kAppIconScale)));
     gfx::Transform scale_transform =
         gfx::TransformBetweenRects(post_scale, pre_scale);
 
