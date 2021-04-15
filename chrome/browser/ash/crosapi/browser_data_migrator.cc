@@ -8,14 +8,15 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/user_manager/user_manager.h"
@@ -43,6 +44,7 @@ void BrowserDataMigrator::MaybeMigrate(const UserContext& user_context,
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
   if (!user || !IsMigrationRequiredOnUI(user)) {
     // If lacros isn't enabled, skip migration and move on to the next step.
+    RecordStatus(FinalStatus::kSkipped);
     std::move(callback).Run();
     return;
   }
@@ -50,6 +52,7 @@ void BrowserDataMigrator::MaybeMigrate(const UserContext& user_context,
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     LOG(ERROR) << "Could not get the original UDD path. Aborting migration.";
+    RecordStatus(FinalStatus::kGetPathFailed);
     std::move(callback).Run();
     return;
   }
@@ -81,15 +84,35 @@ BrowserDataMigrator::BrowserDataMigrator(const base::FilePath& from)
 
 BrowserDataMigrator::~BrowserDataMigrator() = default;
 
+// static
+void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
+                                       const TargetInfo* target_info,
+                                       const base::ElapsedTimer* timer) {
+  // Record final status enum.
+  UMA_HISTOGRAM_ENUMERATION(kFinalStatus, final_status);
+
+  if (!target_info)
+    return;
+  // Record byte size. Range 0 ~ 10GB in MBs.
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kCopiedDataSize,
+                              target_info->total_byte_count / 1024 / 1024, 1,
+                              10000, 100);
+
+  if (!timer || final_status != FinalStatus::kSuccess)
+    return;
+  // Record elapsed time only for successful cases.
+  UMA_HISTOGRAM_MEDIUM_TIMES(kTotalTime, timer->Elapsed());
+}
+
 // TODO(crbug.com/1178702): Once testing phase is over and lacros become the
 // only web browser, update the underlying logic of migration from copy to move.
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
 bool BrowserDataMigrator::MigrateInternal() {
-  if (!IsMigrationRequiredOnWorker())
+  if (!IsMigrationRequiredOnWorker()) {
+    RecordStatus(FinalStatus::kSkipped);
     return false;
-
-  base::ElapsedTimer timer;
+  }
 
   // Check if tmp directory already exists and delete if it does.
   if (base::PathExists(tmp_dir_)) {
@@ -97,22 +120,33 @@ bool BrowserDataMigrator::MigrateInternal() {
                  << " already exists indicating migration was aborted on the"
                     "previous attempt.";
     if (!base::DeletePathRecursively(tmp_dir_)) {
+      PLOG(ERROR) << "Failed to delete tmp dir";
+      RecordStatus(FinalStatus::kDeleteTmpDirFailed);
       return false;
     }
   }
 
   TargetInfo target_info = GetTargetInfo();
+  base::ElapsedTimer timer;
 
-  if (!HasEnoughDiskSpace(target_info))
+  if (!HasEnoughDiskSpace(target_info)) {
+    RecordStatus(FinalStatus::kNotEnoughSpace, &target_info);
     return false;
+  }
 
   if (!CopyToTmpDir(target_info)) {
-    base::DeletePathRecursively(tmp_dir_);
+    if (base::PathExists(tmp_dir_)) {
+      base::DeletePathRecursively(tmp_dir_);
+    }
+    RecordStatus(FinalStatus::kCopyFailed, &target_info);
     return false;
   }
 
   if (!MoveTmpToTargetDir()) {
-    base::DeletePathRecursively(tmp_dir_);
+    if (base::PathExists(tmp_dir_)) {
+      base::DeletePathRecursively(tmp_dir_);
+    }
+    RecordStatus(FinalStatus::kMoveFailed, &target_info);
     return false;
   }
 
@@ -121,6 +155,7 @@ bool BrowserDataMigrator::MigrateInternal() {
   LOG(WARNING) << "BrowserDataMigrator::Migrate took "
                << timer.Elapsed().InMilliseconds() << " ms and migrated "
                << target_info.total_byte_count / (1000 * 1000) << " MBs.";
+  RecordStatus(FinalStatus::kSuccess, &target_info, &timer);
   return true;
 }
 
@@ -193,6 +228,9 @@ bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(tmp_dir_, &error)) {
     PLOG(ERROR) << "CreateDirectoryFailed " << error;
+    // Maps to histogram enum PlatformFileError.
+    UMA_HISTOGRAM_ENUMERATION(kCreateDirectoryFail, -error,
+                              -base::File::FILE_ERROR_MAX);
     return false;
   }
 

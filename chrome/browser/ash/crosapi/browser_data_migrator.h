@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/login/auth/user_context.h"
 
 namespace ash {
@@ -18,6 +19,13 @@ namespace ash {
 // directory location. More concretely the new location will be
 // `/home/chronos/u-<hash>/lacros/Default`.
 constexpr char kLacrosProfileDir[] = "lacros/Default";
+
+// The following are UMA names.
+constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
+constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
+constexpr char kTotalTime[] = "Ash.BrowserDataMigrator.TotalTimeTakenMS";
+constexpr char kCreateDirectoryFail[] =
+    "Ash.BrowserDataMigrator.CreateDirectoryFailure";
 
 // BrowserDataMigrator is responsible for one time browser data migration from
 // ash-chrome to lacros-chrome. The static method MaybeMigrate() instantiates
@@ -34,6 +42,22 @@ class BrowserDataMigrator {
     std::vector<base::FilePath> file_paths;
     std::vector<base::FilePath> dir_paths;
     int64_t total_byte_count;
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // This enum corresponds to BrowserDataMigratorFinalStatus in hisograms.xml
+  // and enums.xml.
+  enum class FinalStatus {
+    kSkipped = 0,
+    kSuccess = 1,
+    kGetPathFailed = 2,
+    kDeleteTmpDirFailed = 3,
+    kNotEnoughSpace = 4,
+    kCopyFailed = 5,
+    kMoveFailed = 6,
+    kMaxValue = kMoveFailed
   };
 
   // The class is instantiated on UI thread, bound to MigrateInternal and then
@@ -55,6 +79,7 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
   // Handles the migration on a worker thread. Returns whether a migration
@@ -63,6 +88,11 @@ class BrowserDataMigrator {
   // Called when the migration is finished on the UI thread.
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
                                               bool did_migrate);
+  // Records to UMA histograms. Note that if target_info is nullptr, timer will
+  // be ignored.
+  static void RecordStatus(const FinalStatus& final_status,
+                           const TargetInfo* target_info = nullptr,
+                           const base::ElapsedTimer* timer = nullptr);
   // Checks if migration should happen. Called on UI thread.
   static bool IsMigrationRequiredOnUI(const user_manager::User* user);
   // Checks if migration should happen. Called on worker thread.

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,35 +146,87 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
   EXPECT_EQ(target_info.dir_paths[0], expected_dir_path);
 }
 
+TEST_F(BrowserDataMigratorTest, RecordStatus) {
+  {
+    // If FinalStatus::kSkipped, only record the status and do not record copied
+    // data size or total time.
+    base::HistogramTester histogram_tester;
+
+    BrowserDataMigrator::RecordStatus(
+        BrowserDataMigrator::FinalStatus::kSkipped);
+
+    histogram_tester.ExpectTotalCount(kFinalStatus, 1);
+    histogram_tester.ExpectTotalCount(kCopiedDataSize, 0);
+    histogram_tester.ExpectTotalCount(kTotalTime, 0);
+
+    histogram_tester.ExpectBucketCount(
+        kFinalStatus, BrowserDataMigrator::FinalStatus::kSkipped, 1);
+  }
+
+  {
+    // If FInalStatus::kSuccess, the three UMA kFinalStatus,
+    // kCopiedDataSize, kTotalTime should be recorded.
+    base::HistogramTester histogram_tester;
+    BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+
+    BrowserDataMigrator::TargetInfo target_info;
+    target_info.total_byte_count = /* 200 MBs */ 200 * 1024 * 1024;
+
+    base::ElapsedTimer timer;
+
+    BrowserDataMigrator::RecordStatus(
+        BrowserDataMigrator::FinalStatus::kSuccess, &target_info, &timer);
+
+    histogram_tester.ExpectTotalCount(kFinalStatus, 1);
+    histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
+    histogram_tester.ExpectTotalCount(kTotalTime, 1);
+
+    histogram_tester.ExpectBucketCount(
+        kFinalStatus, BrowserDataMigrator::FinalStatus::kSuccess, 1);
+    histogram_tester.ExpectBucketCount(
+        kCopiedDataSize, target_info.total_byte_count / (1024 * 1024), 1);
+  }
+}
+
 TEST_F(BrowserDataMigratorTest, Migrate) {
-  BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
+  base::HistogramTester histogram_tester;
 
-  BrowserDataMigrator::TargetInfo target_info =
-      browser_data_migrator.GetTargetInfo();
+  {
+    BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
 
-  ASSERT_TRUE(browser_data_migrator.CopyToTmpDir(target_info));
-  ASSERT_TRUE(browser_data_migrator.MoveTmpToTargetDir());
+    browser_data_migrator.MigrateInternal();
 
-  // Expected dir structure.
-  //  |- Downloads/file
-  //  |- lacros/Default
-  //      |- file
-  //      |- directory
-  //         |- file
-  //         |- Downloads/file
+    // Expected dir structure after migration.
+    //  |- Downloads/file
+    //  |- lacros/Default
+    //      |- file
+    //      |- directory
+    //         |- file
+    //         |- Downloads/file
 
-  EXPECT_TRUE(base::PathExists(
-      from_dir_.GetPath().Append(kDownloads).Append(kFileName)));
-  EXPECT_TRUE(base::PathExists(
-      from_dir_.GetPath().Append(kLacrosProfileDir).Append(kFileName)));
-  EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
-                                   .Append(kLacrosProfileDir)
-                                   .Append(kDirName)
-                                   .Append(kFileName)));
-  EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
-                                   .Append(kLacrosProfileDir)
-                                   .Append(kDirName)
-                                   .Append(kDownloads)
-                                   .Append(kFileName)));
+    EXPECT_TRUE(base::PathExists(
+        from_dir_.GetPath().Append(kDownloads).Append(kFileName)));
+    EXPECT_TRUE(base::PathExists(
+        from_dir_.GetPath().Append(kLacrosProfileDir).Append(kFileName)));
+    EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
+                                     .Append(kLacrosProfileDir)
+                                     .Append(kDirName)
+                                     .Append(kFileName)));
+    EXPECT_TRUE(base::PathExists(from_dir_.GetPath()
+                                     .Append(kLacrosProfileDir)
+                                     .Append(kDirName)
+                                     .Append(kDownloads)
+                                     .Append(kFileName)));
+  }  // browser_data_migrator is destructed and RecordStatus is called.
+
+  histogram_tester.ExpectTotalCount(kFinalStatus, 1);
+  histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
+  histogram_tester.ExpectTotalCount(kTotalTime, 1);
+  histogram_tester.ExpectTotalCount(kCreateDirectoryFail, 0);
+
+  histogram_tester.ExpectBucketCount(
+      kFinalStatus, BrowserDataMigrator::FinalStatus::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(kCopiedDataSize,
+                                     kFileSize * 3 / (1024 * 1024), 1);
 }
 }  // namespace ash

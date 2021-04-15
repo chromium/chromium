@@ -9580,6 +9580,22 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="App provided items"/>
 </enum>
 
+<enum name="BrowserDataMigratorFinalStatus">
+  <int value="0" label="Skipped"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Find user data dir failed"/>
+  <int value="3" label="Detete tmp dir failed"/>
+  <int value="4" label="Not enough space">
+    Migration did not run because there was not enough free space.
+  </int>
+  <int value="5" label="Copy failed">
+    Migration did not complete since copy stage did not complete.
+  </int>
+  <int value="6" label="Move failed">
+    Migration did not complete since move stage did not complete.
+  </int>
+</enum>
+
 <enum name="BrowserGestureActionType">
   <int value="0" label="Tab switched tap"/>
   <int value="1" label="Active tab tap"/>
