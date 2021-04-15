@@ -45,8 +45,10 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PROT_READ | PROT_WRITE;
     case PageReadWriteTagged:
       return PROT_READ | PROT_WRITE | (has_mte ? PROT_MTE : 0u);
-    case PageReadExecute:
+    case PageReadExecuteProtected:
       return PROT_READ | PROT_EXEC | (has_bti ? PROT_BTI : 0u);
+    case PageReadExecute:
+      return PROT_READ | PROT_EXEC;
     case PageReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
     default:

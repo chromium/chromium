@@ -23,6 +23,9 @@ enum PageAccessibilityConfiguration {
   // This flag is mapped to PageReadWrite on systems that
   // don't support MTE.
   PageReadWriteTagged,
+  // This flag is mapped to PageReadExecute on systems
+  // that don't support Arm's BTI.
+  PageReadExecuteProtected,
   PageReadExecute,
   // This flag is deprecated and will go away soon.
   // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.

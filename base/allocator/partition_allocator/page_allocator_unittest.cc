@@ -196,7 +196,8 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadExecuteConfirmCFI) {
          function_range);
   uint32_t* bufferi = reinterpret_cast<uint32_t*>(buffer);
   // Next re-protect the page.
-  SetSystemPagesAccess(buffer, PageAllocationGranularity(), PageReadExecute);
+  SetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                       PageReadExecuteProtected);
   // Attempt to call the function through the BTI-enabled entrypoint. Confirm
   // that it works.
   int64_t (*bti_enabled_fn)(int64_t) =
