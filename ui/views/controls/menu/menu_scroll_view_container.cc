@@ -237,6 +237,9 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   arrow_ = BubbleBorderTypeFromAnchor(
       content_view_->GetMenuItem()->GetMenuController()->GetAnchorPosition());
 
+  // The correct insets must be set before returning, since the menu creation
+  // code needs to know the final size of the menu.  Calling CreateBorder() is
+  // the easiest way to do that.
   CreateBorder();
 }
 
@@ -264,8 +267,7 @@ gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
 
 void MenuScrollViewContainer::OnThemeChanged() {
   View::OnThemeChanged();
-  if (!HasBubbleBorder())
-    CreateDefaultBorder();
+  CreateBorder();
 }
 
 void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
@@ -361,10 +363,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
   if (menu_config.use_outer_border) {
-    SkColor color = GetNativeTheme()
-                        ? GetNativeTheme()->GetSystemColor(
-                              ui::NativeTheme::kColorId_MenuBorderColor)
-                        : gfx::kPlaceholderColor;
+    SkColor color = GetWidget() ? GetNativeTheme()->GetSystemColor(
+                                      ui::NativeTheme::kColorId_MenuBorderColor)
+                                : gfx::kPlaceholderColor;
     SetBorder(views::CreateBorderPainter(
         std::make_unique<views::RoundRectPainter>(color, corner_radius_),
         gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
@@ -376,8 +377,10 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
-  const SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_MenuBackgroundColor);
+  const SkColor color = GetWidget()
+                            ? GetNativeTheme()->GetSystemColor(
+                                  ui::NativeTheme::kColorId_MenuBackgroundColor)
+                            : gfx::kPlaceholderColor;
   bubble_border_ =
       new BubbleBorder(arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()
