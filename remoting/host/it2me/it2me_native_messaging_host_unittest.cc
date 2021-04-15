@@ -430,7 +430,7 @@ void It2MeNativeMessagingHostTest::VerifyConnectResponses(int request_id) {
     std::string type;
     ASSERT_TRUE(response->GetString(kMessageType, &type));
 
-    if (type == kConnectResponseConnect) {
+    if (type == kConnectResponse) {
       EXPECT_FALSE(connect_response_received);
       connect_response_received = true;
       VerifyId(std::move(response), request_id);

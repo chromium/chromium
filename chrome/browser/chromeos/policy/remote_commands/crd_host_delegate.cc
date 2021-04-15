@@ -22,59 +22,13 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
 namespace {
-
-// TODO(https://crbug.com/864455): move these constants to some place
-// that they can be reused by both this code and It2MeNativeMessagingHost.
-
-// Communication with CRD Host, messages sent to host:
-constexpr char kCRDMessageTypeKey[] = "type";
-
-constexpr char kCRDMessageHello[] = "hello";
-constexpr char kCRDMessageConnect[] = "connect";
-constexpr char kCRDMessageDisconnect[] = "disconnect";
-
-// Communication with CRD Host, messages received from host:
-constexpr char kCRDResponseHello[] = "helloResponse";
-constexpr char kCRDResponseConnect[] = "connectResponse";
-constexpr char kCRDStateChanged[] = "hostStateChanged";
-constexpr char kCRDResponseDisconnect[] = "disconnectResponse";
-constexpr char kCRDResponseError[] = "error";
-
-// Connect message parameters:
-constexpr char kCRDConnectUserName[] = "userName";
-constexpr char kCRDConnectAuth[] = "authServiceWithToken";
-constexpr char kCRDConnectXMPPServer[] = "xmppServerAddress";
-constexpr char kCRDConnectXMPPTLS[] = "xmppServerUseTls";
-constexpr char kCRDConnectDirectoryBot[] = "directoryBotJid";
-constexpr char kCRDConnectSuppressUserDialogs[] = "suppressUserDialogs";
-constexpr char kCRDConnectSuppressNotifications[] = "suppressNotifications";
-constexpr char kCRDTerminateUponInput[] = "terminateUponInput";
-
-// Connect message parameter values:
-constexpr char kCRDConnectXMPPServerValue[] = "talk.google.com:443";
-constexpr char kCRDConnectDirectoryBotValue[] = "remoting@bot.talk.google.com";
-
-// CRD host states we care about:
-constexpr char kCRDStateKey[] = "state";
-constexpr char kCRDStateError[] = "ERROR";
-constexpr char kCRDStateStarting[] = "STARTING";
-constexpr char kCRDStateAccessCodeRequested[] = "REQUESTED_ACCESS_CODE";
-constexpr char kCRDStateDomainError[] = "INVALID_DOMAIN_ERROR";
-constexpr char kCRDStateAccessCode[] = "RECEIVED_ACCESS_CODE";
-constexpr char kCRDStateRemoteDisconnected[] = "DISCONNECTED";
-constexpr char kCRDStateRemoteConnected[] = "CONNECTED";
-
-constexpr char kCRDErrorCodeKey[] = "error_code";
-constexpr char kCRDAccessCodeKey[] = "accessCode";
-constexpr char kCRDAccessCodeLifetimeKey[] = "accessCodeLifetime";
-
-constexpr char kCRDConnectClientKey[] = "client";
 
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
@@ -217,16 +171,12 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   // migrated to be the Gaia ID on ChromeOS. Fix it.
   std::string username = account_id.ToString();
 
-  connect_params.SetKey(kCRDConnectUserName, base::Value(username));
-  connect_params.SetKey(kCRDConnectAuth, base::Value("oauth2:" + oauth_token));
-  connect_params.SetKey(kCRDConnectXMPPServer,
-                        base::Value(kCRDConnectXMPPServerValue));
-  connect_params.SetKey(kCRDConnectXMPPTLS, base::Value(true));
-  connect_params.SetKey(kCRDConnectDirectoryBot,
-                        base::Value(kCRDConnectDirectoryBotValue));
-  connect_params.SetKey(kCRDConnectSuppressUserDialogs, base::Value(true));
-  connect_params.SetKey(kCRDConnectSuppressNotifications, base::Value(true));
-  connect_params.SetKey(kCRDTerminateUponInput,
+  connect_params.SetKey(remoting::kUserName, base::Value(username));
+  connect_params.SetKey(remoting::kAuthServiceWithToken,
+                        base::Value("oauth2:" + oauth_token));
+  connect_params.SetKey(remoting::kSuppressUserDialogs, base::Value(true));
+  connect_params.SetKey(remoting::kSuppressNotifications, base::Value(true));
+  connect_params.SetKey(remoting::kTerminateUponInput,
                         base::Value(terminate_upon_input));
   connect_params_ = std::move(connect_params);
 
@@ -243,7 +193,7 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   host_->Start(this);
 
   base::Value params(base::Value::Type::DICTIONARY);
-  SendMessageToHost(kCRDMessageHello, params);
+  SendMessageToHost(remoting::kHelloMessage, params);
 }
 
 void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
@@ -254,7 +204,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
     return;
   }
 
-  auto* type_value = message_value->FindKeyOfType(kCRDMessageTypeKey,
+  auto* type_value = message_value->FindKeyOfType(remoting::kMessageType,
                                                   base::Value::Type::STRING);
   if (!type_value) {
     OnProtocolBroken("Message without type");
@@ -262,35 +212,37 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
   }
   std::string type = type_value->GetString();
 
-  if (type == kCRDResponseHello) {
+  if (type == remoting::kHelloResponse) {
     OnHelloResponse();
     return;
-  } else if (type == kCRDResponseConnect) {
+  } else if (type == remoting::kConnectResponse) {
     // Ok, just ignore.
     return;
-  } else if (type == kCRDResponseDisconnect) {
+  } else if (type == remoting::kDisconnectResponse) {
     OnDisconnectResponse();
     return;
-  } else if (type == kCRDStateChanged || type == kCRDResponseError) {
+  } else if (type == remoting::kHostStateChangedMessage ||
+             type == remoting::kErrorMessage) {
     // Handle CRD host state changes
-    auto* state_value =
-        message_value->FindKeyOfType(kCRDStateKey, base::Value::Type::STRING);
+    auto* state_value = message_value->FindKeyOfType(remoting::kState,
+                                                     base::Value::Type::STRING);
     if (!state_value) {
       OnProtocolBroken("No state in message");
       return;
     }
     std::string state = state_value->GetString();
 
-    if (state == kCRDStateAccessCode) {
+    if (state == remoting::kHostStateReceivedAccessCode) {
       OnStateReceivedAccessCode(*message_value);
-    } else if (state == kCRDStateRemoteConnected) {
+    } else if (state == remoting::kHostStateConnected) {
       OnStateRemoteConnected(*message_value);
-    } else if (state == kCRDStateRemoteDisconnected) {
+    } else if (state == remoting::kHostStateDisconnected) {
       OnStateRemoteDisconnected();
-    } else if (state == kCRDStateError || state == kCRDStateDomainError) {
+    } else if (state == remoting::kHostStateError ||
+               state == remoting::kHostStateDomainError) {
       OnStateError(state, *message_value);
-    } else if (state == kCRDStateStarting ||
-               state == kCRDStateAccessCodeRequested) {
+    } else if (state == remoting::kHostStateStarting ||
+               state == remoting::kHostStateRequestedAccessCode) {
       // Just ignore these states.
     } else {
       LOG(WARNING) << "Unhandled state :" << type;
@@ -302,7 +254,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
 
 void CRDHostDelegate::OnHelloResponse() {
   // Host is initialized, start connection.
-  SendMessageToHost(kCRDMessageConnect, connect_params_);
+  SendMessageToHost(remoting::kConnectMessage, connect_params_);
 }
 
 void CRDHostDelegate::OnDisconnectResponse() {
@@ -317,11 +269,11 @@ void CRDHostDelegate::OnDisconnectResponse() {
 void CRDHostDelegate::OnStateError(std::string error_state,
                                    base::Value& message) {
   std::string error_message;
-  if (error_state == kCRDStateDomainError) {
+  if (error_state == remoting::kHostStateDomainError) {
     error_message = "CRD Error : Invalid domain";
   } else {
-    auto* error_code_value =
-        message.FindKeyOfType(kCRDErrorCodeKey, base::Value::Type::STRING);
+    auto* error_code_value = message.FindKeyOfType(remoting::kErrorMessageCode,
+                                                   base::Value::Type::STRING);
     if (error_code_value)
       error_message = error_code_value->GetString();
     else
@@ -335,7 +287,7 @@ void CRDHostDelegate::OnStateError(std::string error_state,
              "CRD Error state " + error_state);
     code_success_callback_.Reset();
   }
-  // Shut down host, if any
+  // Shut down host, if any.
   ShutdownHost();
 }
 
@@ -343,7 +295,7 @@ void CRDHostDelegate::OnStateRemoteConnected(base::Value& message) {
   remote_connected_ = true;
   // TODO(antrim): set up watchdog timer (session duration).
   auto* client_value =
-      message.FindKeyOfType(kCRDConnectClientKey, base::Value::Type::STRING);
+      message.FindKeyOfType(remoting::kClient, base::Value::Type::STRING);
   if (client_value) {
     VLOG(1) << "Remote connection by " << client_value->GetString();
   }
@@ -358,7 +310,7 @@ void CRDHostDelegate::OnStateRemoteDisconnected() {
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
   base::Value params(base::Value::Type::DICTIONARY);
-  SendMessageToHost(kCRDMessageDisconnect, params);
+  SendMessageToHost(remoting::kDisconnectMessage, params);
 }
 
 void CRDHostDelegate::OnStateReceivedAccessCode(base::Value& message) {
@@ -369,15 +321,15 @@ void CRDHostDelegate::OnStateReceivedAccessCode(base::Value& message) {
       // access code. Assuming that the old access code is no longer valid, we
       // can only terminate the current CRD session.
       base::Value params(base::Value::Type::DICTIONARY);
-      SendMessageToHost(kCRDMessageDisconnect, params);
+      SendMessageToHost(remoting::kDisconnectMessage, params);
     }
     return;
   }
 
   auto* code_value =
-      message.FindKeyOfType(kCRDAccessCodeKey, base::Value::Type::STRING);
-  auto* code_lifetime_value = message.FindKeyOfType(kCRDAccessCodeLifetimeKey,
-                                                    base::Value::Type::INTEGER);
+      message.FindKeyOfType(remoting::kAccessCode, base::Value::Type::STRING);
+  auto* code_lifetime_value = message.FindKeyOfType(
+      remoting::kAccessCodeLifetime, base::Value::Type::INTEGER);
   if (!code_value || !code_lifetime_value) {
     OnProtocolBroken("Can not obtain access code");
     return;
@@ -404,7 +356,7 @@ void CRDHostDelegate::CloseChannel(const std::string& error_message) {
 void CRDHostDelegate::SendMessageToHost(const std::string& type,
                                         base::Value& params) {
   std::string message_json;
-  params.SetKey(kCRDMessageTypeKey, base::Value(type));
+  params.SetKey(remoting::kMessageType, base::Value(type));
   base::JSONWriter::Write(params, &message_json);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&CRDHostDelegate::DoSendMessage,

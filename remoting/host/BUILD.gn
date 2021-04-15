@@ -665,6 +665,7 @@ source_set("unit_tests") {
     "//remoting/host/file_transfer:unit_tests",
     "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
+    "//remoting/host/it2me:constants",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",

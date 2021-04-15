@@ -25,7 +25,7 @@ const char kTerminateUponInput[] = "terminateUponInput";
 const char kUseElevatedHost[] = "useElevatedHost";
 const char kUseSignalingProxy[] = "useSignalingProxy";
 const char kIceConfig[] = "iceConfig";
-const char kConnectResponseConnect[] = "connectResponse";
+const char kConnectResponse[] = "connectResponse";
 
 const char kHostStateChangedMessage[] = "hostStateChanged";
 const char kState[] = "state";

@@ -17,13 +17,18 @@ if (is_mac) {
   import("//third_party/icu/config.gni")
 }
 
+source_set("constants") {
+  sources = [
+    "it2me_constants.cc",
+    "it2me_constants.h",
+  ]
+}
+
 source_set("common") {
   sources = [
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",
     "it2me_confirmation_dialog_proxy.h",
-    "it2me_constants.cc",
-    "it2me_constants.h",
     "it2me_host.cc",
     "it2me_host.h",
     "it2me_native_messaging_host.cc",
@@ -50,6 +55,8 @@ source_set("common") {
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
   ]
+
+  public_deps = [ ":constants" ]
 
   deps = [
     "//base:i18n",
@@ -96,6 +103,8 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         ":common",
         "//skia",
       ]
+
+      public_deps = [ ":constants" ]
 
       if (use_ozone) {
         deps += [ "//ui/ozone" ]

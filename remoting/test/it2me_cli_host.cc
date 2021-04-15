@@ -105,7 +105,7 @@ void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
 
   if (type == kHelloResponse) {
     OnHelloResponse();
-  } else if (type == kConnectResponseConnect) {
+  } else if (type == kConnectResponse) {
     // Ok, just ignore.
   } else if (type == kDisconnectResponse) {
     OnDisconnectResponse();

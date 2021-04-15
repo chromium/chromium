@@ -38,7 +38,7 @@ extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];
 extern const char kIceConfig[];
 // Response sent back to the client after the Connect message has been handled.
-extern const char kConnectResponseConnect[];
+extern const char kConnectResponse[];
 
 // Message sent from the host to the client when the connection state changes.
 // No response from the client is returned for this message.
