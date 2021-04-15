@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "chrome/app_shim/app_shim_controller.h"
+#include "net/base/mac/url_conversions.h"
 
 @implementation AppShimDelegate
 
@@ -31,6 +32,14 @@
   for (NSString* filename in filenames)
     filePaths.push_back(base::mac::NSStringToFilePath(filename));
   _appShimController->OpenFiles(filePaths);
+  [app replyToOpenOrPrint:NSApplicationDelegateReplySuccess];
+}
+
+- (void)application:(NSApplication*)app openURLs:(NSArray<NSURL*>*)urls {
+  std::vector<GURL> urls_to_open;
+  for (NSURL* url in urls)
+    urls_to_open.push_back(net::GURLWithNSURL(url));
+  _appShimController->OpenUrls(urls_to_open);
   [app replyToOpenOrPrint:NSApplicationDelegateReplySuccess];
 }
 

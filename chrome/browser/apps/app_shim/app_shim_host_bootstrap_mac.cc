@@ -119,6 +119,10 @@ AppShimHostBootstrap::GetLoginItemRestoreState() const {
   return app_shim_info_->login_item_restore_state;
 }
 
+const std::vector<GURL>& AppShimHostBootstrap::GetLaunchUrls() const {
+  return app_shim_info_->urls;
+}
+
 bool AppShimHostBootstrap::IsMultiProfile() const {
   // PWAs and bookmark apps are multi-profile capable.
   return app_shim_info_->app_url.is_valid();
