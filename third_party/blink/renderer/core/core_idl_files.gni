@@ -78,6 +78,7 @@ core_interface_idl_files_core_only =
                     "css/css_style_sheet.idl",
                     "css/css_supports_rule.idl",
                     "css/cssom/css_color_value.idl",
+                    "css/cssom/css_hsl.idl",
                     "css/cssom/css_image_value.idl",
                     "css/cssom/css_keyword_value.idl",
                     "css/cssom/css_math_invert.idl",

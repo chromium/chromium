@@ -3,45 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/cssom/css_rgb.h"
-#include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
-
-namespace {
-
-CSSNumericValue* NumberishToColorComponent(const CSSNumberish& input,
-                                           ExceptionState& exception_state) {
-  CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
-  DCHECK(value);
-  if (CSSOMTypes::IsCSSStyleValueNumber(*value) ||
-      CSSOMTypes::IsCSSStyleValuePercentage(*value)) {
-    return value;
-  }
-
-  exception_state.ThrowTypeError(
-      "Color channel must be a number or percentage.");
-  return nullptr;
-}
-
-CSSNumericValue* NumberishToAlphaComponent(const CSSNumberish& input,
-                                           ExceptionState& exception_state) {
-  CSSNumericValue* value = CSSNumericValue::FromPercentish(input);
-  DCHECK(value);
-  if (CSSOMTypes::IsCSSStyleValuePercentage(*value))
-    return value;
-
-  exception_state.ThrowTypeError("Alpha must be a percentage.");
-  return nullptr;
-}
-
-float ComponentToColorInput(CSSNumericValue* input) {
-  if (CSSOMTypes::IsCSSStyleValuePercentage(*input))
-    return input->to(CSSPrimitiveValue::UnitType::kPercentage)->value() / 100;
-  return input->to(CSSPrimitiveValue::UnitType::kNumber)->value();
-}
-
-}  // namespace
 
 CSSRGB::CSSRGB(const Color& input_color) {
   double r, g, b, a;
@@ -69,14 +34,16 @@ CSSRGB* CSSRGB::Create(const CSSNumberish& red,
   CSSNumericValue* b;
   CSSNumericValue* a;
 
-  if (!(r = NumberishToColorComponent(red, exception_state)))
+  if (!(r = ToNumberOrPercentage(red)) || !(g = ToNumberOrPercentage(green)) ||
+      !(b = ToNumberOrPercentage(blue))) {
+    exception_state.ThrowTypeError(
+        "Color channel must be a number or percentage.");
     return nullptr;
-  if (!(g = NumberishToColorComponent(green, exception_state)))
+  }
+  if (!(a = ToPercentage(alpha))) {
+    exception_state.ThrowTypeError("Alpha must be a percentage.");
     return nullptr;
-  if (!(b = NumberishToColorComponent(blue, exception_state)))
-    return nullptr;
-  if (!(a = NumberishToAlphaComponent(alpha, exception_state)))
-    return nullptr;
+  }
   return MakeGarbageCollected<CSSRGB>(r, g, b, a);
 }
 
@@ -86,24 +53,38 @@ Color CSSRGB::ToColor() const {
 }
 
 void CSSRGB::setR(const CSSNumberish& red, ExceptionState& exception_state) {
-  if (auto* value = NumberishToColorComponent(red, exception_state))
+  if (auto* value = ToNumberOrPercentage(red)) {
     r_ = value;
+  } else {
+    exception_state.ThrowTypeError(
+        "Color channel must be a number or percentage.");
+  }
 }
 
 void CSSRGB::setG(const CSSNumberish& green, ExceptionState& exception_state) {
-  if (auto* value = NumberishToColorComponent(green, exception_state))
+  if (auto* value = ToNumberOrPercentage(green)) {
     g_ = value;
+  } else {
+    exception_state.ThrowTypeError(
+        "Color channel must be a number or percentage.");
+  }
 }
 
 void CSSRGB::setB(const CSSNumberish& blue, ExceptionState& exception_state) {
-  if (auto* value = NumberishToColorComponent(blue, exception_state))
+  if (auto* value = ToNumberOrPercentage(blue)) {
     b_ = value;
+  } else {
+    exception_state.ThrowTypeError(
+        "Color channel must be a number or percentage.");
+  }
 }
 
 void CSSRGB::setAlpha(const CSSNumberish& alpha,
                       ExceptionState& exception_state) {
-  if (auto* value = NumberishToAlphaComponent(alpha, exception_state))
+  if (auto* value = ToPercentage(alpha))
     alpha_ = value;
+  else
+    exception_state.ThrowTypeError("Alpha must be a percentage.");
 }
 
 }  // namespace blink

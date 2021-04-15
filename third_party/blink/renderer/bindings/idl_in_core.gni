@@ -64,6 +64,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/css/css_style_sheet_init.idl",
           "//third_party/blink/renderer/core/css/css_supports_rule.idl",
           "//third_party/blink/renderer/core/css/cssom/css_color_value.idl",
+          "//third_party/blink/renderer/core/css/cssom/css_hsl.idl",
           "//third_party/blink/renderer/core/css/cssom/css_image_value.idl",
           "//third_party/blink/renderer/core/css/cssom/css_keyword_value.idl",
           "//third_party/blink/renderer/core/css/cssom/css_math_invert.idl",

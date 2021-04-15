@@ -645,6 +645,7 @@ interface CSSAnimation : Animation
 interface CSSColorValue
     attribute @@toStringTag
     method constructor
+    method toHSL
     method toRGB
 interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
@@ -685,6 +686,17 @@ interface CSSGroupingRule : CSSRule
     method constructor
     method deleteRule
     method insertRule
+interface CSSHSL : CSSColorValue
+    attribute @@toStringTag
+    getter alpha
+    getter h
+    getter l
+    getter s
+    method constructor
+    setter alpha
+    setter h
+    setter l
+    setter s
 interface CSSImageValue : CSSStyleValue
     attribute @@toStringTag
     method constructor

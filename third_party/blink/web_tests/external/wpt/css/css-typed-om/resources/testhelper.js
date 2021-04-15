@@ -25,7 +25,11 @@ function assert_color_channel_approx_equals(a, b) {
     case 'CSSMathProduct':
     case 'CSSMathMin':
     case 'CSSMathMax':
-      assert_style_value_array_equals(a.values, b.values);
+      assert_equals(a.values.length, b.values.length);
+      for (let i = 0; i < a.length; i++) {
+        assert_equals(a.unit, b.unit);
+        assert_approx_equals(a[i].value, b[i].value, epsilonForUnitType(a.unit));
+      }
       break;
     default:
       assert_equals(a.unit, b.unit);

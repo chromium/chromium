@@ -10,4 +10,5 @@
     RuntimeEnabled=CSSColorTypedOM
 ] interface CSSColorValue {
   CSSRGB toRGB();
+  CSSHSL toHSL();
 };
