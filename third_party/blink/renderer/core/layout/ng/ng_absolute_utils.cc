@@ -117,8 +117,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
                          const Length& margin_end_length,
                          const Length& inset_start_length,
                          const Length& inset_end_length,
-                         const LayoutUnit min_size,
-                         const LayoutUnit max_size,
+                         const MinMaxSizes& min_max_length_sizes,
                          const LayoutUnit static_position_offset,
                          StaticPositionEdge static_position_edge,
                          bool is_start_dominant,
@@ -290,15 +289,16 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
 
   // If calculated |size| is outside of min/max constraints, rerun the
   // algorithm with the constrained |size|.
-  LayoutUnit constrained_size = ConstrainByMinMax(*size, min_size, max_size);
+  LayoutUnit constrained_size =
+      min_max_length_sizes.ClampSizeToMinAndMax(*size);
   if (size != constrained_size) {
     // Because this function only changes "size" when it's not already set, it
     // is safe to recursively call ourselves here because on the second call it
-    // is guaranteed to be within |min_size| and |max_size|.
+    // is guaranteed to be within |min_max_length_sizes|.
     ComputeAbsoluteSize(
         border_padding_size, min_max_sizes, margin_percentage_resolution_size,
         available_size, margin_start_length, margin_end_length,
-        inset_start_length, inset_end_length, min_size, max_size,
+        inset_start_length, inset_end_length, min_max_length_sizes,
         static_position_offset, static_position_edge, is_start_dominant,
         is_block_direction, is_table, is_shrink_to_fit, constrained_size,
         size_out, inset_start_out, inset_end_out, margin_start_out,
@@ -390,33 +390,6 @@ void ComputeOutOfFlowInlineDimensions(
   const bool is_shrink_to_fit = is_table || node.ShouldBeConsideredAsReplaced();
 
   Length min_inline_length = style.LogicalMinWidth();
-  base::Optional<MinMaxSizes> min_size_minmax = minmax_content_sizes;
-  // We don't need to check for IsInlineSizeComputableFromBlockSize; this is
-  // done by the caller.
-  if (minmax_intrinsic_sizes_for_ar) {
-    min_inline_length = Length::MinIntrinsic();
-    min_size_minmax = minmax_intrinsic_sizes_for_ar;
-  }
-  LayoutUnit min_inline_size = ResolveMinInlineLength(
-      space, style, border_padding, min_size_minmax, min_inline_length);
-  LayoutUnit max_inline_size =
-      ResolveMaxInlineLength(space, style, border_padding, minmax_content_sizes,
-                             style.LogicalMaxWidth());
-
-  // This implements the transferred min/max sizes per
-  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  if (!style.AspectRatio().IsAuto() &&
-      dimensions->size.block_size == kIndefiniteSize) {
-    MinMaxSizes sizes =
-        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
-    min_inline_size = std::max(sizes.min_size, min_inline_size);
-    max_inline_size = std::min(sizes.max_size, max_inline_size);
-  }
-
-  // Tables are never allowed to go below their min-content size.
-  if (is_table)
-    min_inline_size = std::max(min_inline_size, minmax_content_sizes->min_size);
-
   base::Optional<LayoutUnit> inline_size;
   if (replaced_size.has_value()) {
     inline_size = replaced_size->inline_size;
@@ -428,6 +401,36 @@ void ComputeOutOfFlowInlineDimensions(
     DCHECK(minmax_content_sizes.has_value());
     inline_size = minmax_content_sizes->min_size;
   }
+
+  base::Optional<MinMaxSizes> min_size_minmax = minmax_content_sizes;
+  // We don't need to check for IsInlineSizeComputableFromBlockSize; this is
+  // done by the caller.
+  if (minmax_intrinsic_sizes_for_ar) {
+    min_inline_length = Length::MinIntrinsic();
+    min_size_minmax = minmax_intrinsic_sizes_for_ar;
+  }
+
+  MinMaxSizes min_max_length_sizes = {
+      ResolveMinInlineLength(space, style, border_padding, min_size_minmax,
+                             min_inline_length),
+      ResolveMaxInlineLength(space, style, border_padding, minmax_content_sizes,
+                             style.LogicalMaxWidth())};
+
+  // This implements the transferred min/max sizes per
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
+  if (!style.AspectRatio().IsAuto() &&
+      dimensions->size.block_size == kIndefiniteSize) {
+    MinMaxSizes sizes =
+        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
+    min_max_length_sizes.min_size =
+        std::max(sizes.min_size, min_max_length_sizes.min_size);
+    min_max_length_sizes.max_size =
+        std::min(sizes.max_size, min_max_length_sizes.max_size);
+  }
+
+  // Tables are never allowed to go below their min-content size.
+  if (is_table)
+    min_max_length_sizes.Encompass(minmax_content_sizes->min_size);
 
   const auto writing_direction = style.GetWritingDirection();
   bool is_start_dominant;
@@ -443,8 +446,8 @@ void ComputeOutOfFlowInlineDimensions(
       border_padding.InlineSum(), minmax_content_sizes,
       space.PercentageResolutionInlineSizeForParentWritingMode(),
       space.AvailableSize().inline_size, style.MarginStart(), style.MarginEnd(),
-      style.LogicalInlineStart(), style.LogicalInlineEnd(), min_inline_size,
-      max_inline_size, static_position.offset.inline_offset,
+      style.LogicalInlineStart(), style.LogicalInlineEnd(),
+      min_max_length_sizes, static_position.offset.inline_offset,
       GetStaticPositionEdge(static_position.inline_edge), is_start_dominant,
       false /* is_block_direction */, is_table, is_shrink_to_fit, inline_size,
       &dimensions->size.inline_size, &dimensions->inset.inline_start,
@@ -475,26 +478,21 @@ void ComputeOutOfFlowBlockDimensions(
   if (child_block_size.has_value())
     min_max_sizes = MinMaxSizes{*child_block_size, *child_block_size};
 
-  LayoutUnit child_block_size_or_indefinite =
-      child_block_size.value_or(kIndefiniteSize);
-
-  LayoutUnit min_block_size = ResolveMinBlockLength(
-      space, style, border_padding, style.LogicalMinHeight());
-  LayoutUnit max_block_size = ResolveMaxBlockLength(
-      space, style, border_padding, style.LogicalMaxHeight());
-
-  // Tables are never allowed to go below their "auto" block-size.
-  if (is_table)
-    min_block_size = std::max(min_block_size, min_max_sizes->min_size);
-
   base::Optional<LayoutUnit> block_size;
   if (replaced_size.has_value()) {
     block_size = replaced_size->block_size;
   } else if (!style.LogicalHeight().IsAuto()) {
-    block_size = ResolveMainBlockLength(space, style, border_padding,
-                                        style.LogicalHeight(),
-                                        child_block_size_or_indefinite);
+    block_size = ResolveMainBlockLength(
+        space, style, border_padding, style.LogicalHeight(),
+        child_block_size.value_or(kIndefiniteSize));
   }
+
+  MinMaxSizes min_max_length_sizes =
+      ComputeMinMaxBlockSizes(space, style, border_padding);
+
+  // Tables are never allowed to go below their "auto" block-size.
+  if (is_table)
+    min_max_length_sizes.Encompass(min_max_sizes->min_size);
 
   const auto writing_direction = style.GetWritingDirection();
   bool is_start_dominant;
@@ -511,7 +509,7 @@ void ComputeOutOfFlowBlockDimensions(
       space.PercentageResolutionInlineSizeForParentWritingMode(),
       space.AvailableSize().block_size, style.MarginBefore(),
       style.MarginAfter(), style.LogicalTop(), style.LogicalBottom(),
-      min_block_size, max_block_size, static_position.offset.block_offset,
+      min_max_length_sizes, static_position.offset.block_offset,
       GetStaticPositionEdge(static_position.block_edge), is_start_dominant,
       true /* is_block_direction */, is_table, is_shrink_to_fit, block_size,
       &dimensions->size.block_size, &dimensions->inset.block_start,
