@@ -433,16 +433,6 @@ void AmbientController::OnKeyEvent(ui::KeyEvent* event) {
   DismissUI();
 }
 
-void AmbientController::AddAmbientViewDelegateObserver(
-    AmbientViewDelegateObserver* observer) {
-  delegate_.AddObserver(observer);
-}
-
-void AmbientController::RemoveAmbientViewDelegateObserver(
-    AmbientViewDelegateObserver* observer) {
-  delegate_.RemoveObserver(observer);
-}
-
 void AmbientController::ShowUi() {
   DVLOG(1) << __func__;
 

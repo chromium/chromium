@@ -1347,8 +1347,6 @@ class AutotestPrivateWaitForAmbientPhotoAnimationFunction
   // Called when photo transition animations fail to finish in a certain amount
   // of time. We will respond with an error.
   void Timeout();
-
-  base::OneShotTimer timeout_timer_;
 };
 
 class AutotestPrivateDisableSwitchAccessDialogFunction

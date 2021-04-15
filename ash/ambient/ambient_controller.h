@@ -44,7 +44,6 @@ namespace ash {
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
-class AmbientViewDelegateObserver;
 
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
@@ -96,9 +95,6 @@ class ASH_EXPORT AmbientController
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  void AddAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
-  void RemoveAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
-
   void ShowUi();
   // Ui will be enabled but not shown immediately. If there is no user activity
   // Ui will be shown after a short delay.
@@ -129,6 +125,8 @@ class ASH_EXPORT AmbientController
   }
 
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
+
+  AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
 
  private:
   friend class AmbientAshTestBase;

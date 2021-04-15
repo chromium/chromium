@@ -22,6 +22,9 @@ class ASH_EXPORT AmbientViewDelegate {
  public:
   virtual ~AmbientViewDelegate() = default;
 
+  virtual void AddObserver(AmbientViewDelegateObserver* observer) = 0;
+  virtual void RemoveObserver(AmbientViewDelegateObserver* observer) = 0;
+
   // Returns the model store stores all the information we get from the backdrop
   // server to render the photo frame and the glanceable weather information on
   // Ambient Mode.

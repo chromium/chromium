@@ -4921,14 +4921,12 @@ AutotestPrivateWaitForAmbientPhotoAnimationFunction::Run() {
 
   // Wait for photo transition animation completed in ambient mode.
   ash::AutotestAmbientApi().WaitForPhotoTransitionAnimationCompleted(
-      params->num_completions,
+      params->num_completions, base::TimeDelta::FromSeconds(params->timeout),
+      /*on_complete=*/
       base::BindOnce(&AutotestPrivateWaitForAmbientPhotoAnimationFunction::
                          OnPhotoTransitionAnimationCompleted,
-                     this));
-
-  // Set up a timer to finish waiting after |timeout_s|.
-  timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(params->timeout),
+                     this),
+      /*on_timeout=*/
       base::BindOnce(
           &AutotestPrivateWaitForAmbientPhotoAnimationFunction::Timeout, this));
 
@@ -4947,7 +4945,7 @@ void AutotestPrivateWaitForAmbientPhotoAnimationFunction::Timeout() {
   if (did_respond())
     return;
 
-  Respond(Error("No enough animations completed before time out."));
+  Respond(Error("Not enough animations completed before time out."));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
