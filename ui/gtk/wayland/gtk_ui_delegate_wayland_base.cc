@@ -46,8 +46,8 @@ bool GtkUiDelegateWaylandBase::SetGtkWidgetTransientFor(
     gfx::AcceleratedWidget parent) {
   if (!gtk::GtkCheckVersion(3, 22)) {
     LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
-                 << GTK_MAJOR_VERSION << '.' << GTK_MINOR_VERSION << '.'
-                 << GTK_MICRO_VERSION;
+                 << gtk_get_major_version() << '.' << gtk_get_minor_version()
+                 << '.' << gtk_get_micro_version();
     return false;
   }
 

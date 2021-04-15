@@ -19,9 +19,9 @@ namespace gtk {
 
 namespace {
 
-void* DlOpen(const char* library_name) {
+void* DlOpen(const char* library_name, bool check = true) {
   void* library = dlopen(library_name, RTLD_LAZY | RTLD_GLOBAL);
-  CHECK(library);
+  CHECK(!check || library);
   return library;
 }
 
@@ -51,8 +51,8 @@ void* GetLibGdk3() {
   return libgdk3;
 }
 
-void* GetLibGtk3() {
-  static void* libgtk3 = DlOpen("libgtk-3.so.0");
+void* GetLibGtk3(bool check = true) {
+  static void* libgtk3 = DlOpen("libgtk-3.so.0", check);
   return libgtk3;
 }
 
@@ -68,7 +68,8 @@ void* GetLibGtk() {
 }
 
 bool LoadGtkImpl(int gtk_version) {
-  if (gtk_version < 4) {
+  // Prefer GTK3 for now as the GTK4 ecosystem is still immature.
+  if (GetLibGtk3(false)) {
     ui_gtk::InitializeGdk_pixbuf(GetLibGdkPixbuf());
     ui_gtk::InitializeGdk(GetLibGdk3());
     ui_gtk::InitializeGtk(GetLibGtk3());
