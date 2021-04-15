@@ -54,7 +54,7 @@ ParseInfo RulesetSource::IndexRules(
 
       IndexedRule indexed_rule;
       ParseResult parse_result = IndexedRule::CreateIndexedRule(
-          std::move(rule), base_url, &indexed_rule);
+          std::move(rule), base_url, id(), &indexed_rule);
 
       if (parse_result == ParseResult::ERROR_REGEX_TOO_LARGE) {
         large_regex_rule_ids.push_back(rule_id);

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -590,6 +591,8 @@ const flat::UrlRule* FindMatchAmongCandidates(
     flat::RequestMethod request_method,
     bool is_third_party,
     bool disable_generic_rules,
+    const UrlPatternIndexMatcher::EmbedderConditionsMatcher&
+        embedder_conditions_matcher,
     std::vector<const flat::UrlRule*>* matched_rules) {
   if (!sorted_candidates)
     return nullptr;
@@ -601,9 +604,11 @@ const flat::UrlRule* FindMatchAmongCandidates(
     DCHECK_NE(rule, nullptr);
     DCHECK_NE(rule->url_pattern_type(), flat::UrlPatternType_REGEXP);
     if (!DoesRuleFlagsMatch(*rule, element_type, activation_type,
-                            request_method, is_third_party)) {
+                            request_method, is_third_party,
+                            embedder_conditions_matcher)) {
       continue;
     }
+
     if (!UrlPattern(*rule).MatchesUrl(url))
       continue;
 
@@ -633,6 +638,8 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
     flat::RequestMethod request_method,
     bool is_third_party,
     bool disable_generic_rules,
+    const UrlPatternIndexMatcher::EmbedderConditionsMatcher&
+        embedder_conditions_matcher,
     UrlPatternIndexMatcher::FindRuleStrategy strategy,
     std::vector<const flat::UrlRule*>* matched_rules) {
   using FindRuleStrategy = UrlPatternIndexMatcher::FindRuleStrategy;
@@ -678,7 +685,8 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
       continue;
     const flat::UrlRule* rule = FindMatchAmongCandidates(
         entry->rule_list(), url, document_origin, element_type, activation_type,
-        request_method, is_third_party, disable_generic_rules, matched_rules);
+        request_method, is_third_party, disable_generic_rules,
+        embedder_conditions_matcher, matched_rules);
     if (!rule)
       continue;
 
@@ -698,7 +706,7 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
   const flat::UrlRule* rule = FindMatchAmongCandidates(
       index.fallback_rules(), url, document_origin, element_type,
       activation_type, request_method, is_third_party, disable_generic_rules,
-      matched_rules);
+      embedder_conditions_matcher, matched_rules);
 
   switch (strategy) {
     case FindRuleStrategy::kAny:
@@ -743,7 +751,9 @@ bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
                         flat::ElementType element_type,
                         flat::ActivationType activation_type,
                         flat::RequestMethod request_method,
-                        bool is_third_party) {
+                        bool is_third_party,
+                        const UrlPatternIndexMatcher::EmbedderConditionsMatcher&
+                            embedder_conditions_matcher) {
   DCHECK((element_type == flat::ElementType_NONE) !=
          (activation_type == flat::ActivationType_NONE));
 
@@ -766,6 +776,11 @@ bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
   }
   if (!is_third_party &&
       !(rule.options() & flat::OptionFlag_APPLIES_TO_FIRST_PARTY)) {
+    return false;
+  }
+
+  if (rule.embedder_conditions() && !embedder_conditions_matcher.is_null() &&
+      !embedder_conditions_matcher.Run(*rule.embedder_conditions())) {
     return false;
   }
 
@@ -813,11 +828,13 @@ const flat::UrlRule* UrlPatternIndexMatcher::FindMatch(
     proto::ActivationType activation_type,
     bool is_third_party,
     bool disable_generic_rules,
+    const EmbedderConditionsMatcher& embedder_conditions_matcher,
     FindRuleStrategy strategy) const {
   return FindMatch(
       url, first_party_origin, ProtoToFlatElementType(element_type),
       ProtoToFlatActivationType(activation_type), flat::RequestMethod_NONE,
-      is_third_party, disable_generic_rules, strategy);
+      is_third_party, disable_generic_rules, embedder_conditions_matcher,
+      strategy);
 }
 
 const flat::UrlRule* UrlPatternIndexMatcher::FindMatch(
@@ -828,6 +845,7 @@ const flat::UrlRule* UrlPatternIndexMatcher::FindMatch(
     flat::RequestMethod request_method,
     bool is_third_party,
     bool disable_generic_rules,
+    const EmbedderConditionsMatcher& embedder_conditions_matcher,
     FindRuleStrategy strategy) const {
   // Ignore URLs that are greater than the max URL length. Since those will be
   // disallowed elsewhere in the loading stack, we can save compute time by
@@ -847,7 +865,7 @@ const flat::UrlRule* UrlPatternIndexMatcher::FindMatch(
   auto* rule = FindMatchInFlatUrlPatternIndex(
       *flat_index_, UrlPattern::UrlInfo(url), first_party_origin, element_type,
       activation_type, request_method, is_third_party, disable_generic_rules,
-      strategy, nullptr /* matched_rules */);
+      embedder_conditions_matcher, strategy, nullptr /* matched_rules */);
   if (rule) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                  "UrlPatternIndexMatcher::FindMatch", "pattern",
@@ -862,11 +880,12 @@ std::vector<const flat::UrlRule*> UrlPatternIndexMatcher::FindAllMatches(
     proto::ElementType element_type,
     proto::ActivationType activation_type,
     bool is_third_party,
-    bool disable_generic_rules) const {
+    bool disable_generic_rules,
+    const EmbedderConditionsMatcher& embedder_conditions_matcher) const {
   return FindAllMatches(
       url, first_party_origin, ProtoToFlatElementType(element_type),
       ProtoToFlatActivationType(activation_type), flat::RequestMethod_NONE,
-      is_third_party, disable_generic_rules);
+      is_third_party, disable_generic_rules, embedder_conditions_matcher);
 }
 
 std::vector<const flat::UrlRule*> UrlPatternIndexMatcher::FindAllMatches(
@@ -876,7 +895,8 @@ std::vector<const flat::UrlRule*> UrlPatternIndexMatcher::FindAllMatches(
     flat::ActivationType activation_type,
     flat::RequestMethod request_method,
     bool is_third_party,
-    bool disable_generic_rules) const {
+    bool disable_generic_rules,
+    const EmbedderConditionsMatcher& embedder_conditions_matcher) const {
   // Ignore URLs that are greater than the max URL length. Since those will be
   // disallowed elsewhere in the loading stack, we can save compute time by
   // avoiding matching here.
@@ -893,7 +913,7 @@ std::vector<const flat::UrlRule*> UrlPatternIndexMatcher::FindAllMatches(
   FindMatchInFlatUrlPatternIndex(
       *flat_index_, UrlPattern::UrlInfo(url), first_party_origin, element_type,
       activation_type, request_method, is_third_party, disable_generic_rules,
-      FindRuleStrategy::kAll, &rules);
+      embedder_conditions_matcher, FindRuleStrategy::kAll, &rules);
 
   return rules;
 }

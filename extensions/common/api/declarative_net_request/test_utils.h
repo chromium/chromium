@@ -47,6 +47,8 @@ struct TestRuleCondition : public DictionarySource {
   base::Optional<std::vector<std::string>> excluded_request_methods;
   base::Optional<std::vector<std::string>> resource_types;
   base::Optional<std::vector<std::string>> excluded_resource_types;
+  base::Optional<std::vector<int>> tab_ids;
+  base::Optional<std::vector<int>> excluded_tab_ids;
   base::Optional<std::string> domain_type;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;

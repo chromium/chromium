@@ -171,6 +171,16 @@ std::string GetError(ParseResult error_reason, const int* rule_id) {
       return ErrorUtils::FormatErrorMessage(
           kErrorInvalidAllowAllRequestsResourceType,
           base::NumberToString(*rule_id));
+    case ParseResult::ERROR_EMPTY_TAB_IDS_LIST:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorEmptyList, base::NumberToString(*rule_id), kTabIdsKey);
+    case ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE:
+      return ErrorUtils::FormatErrorMessage(kErrorTabIdsOnNonSessionRule,
+                                            base::NumberToString(*rule_id),
+                                            kTabIdsKey, kExcludedTabIdsKey);
+    case ParseResult::ERROR_TAB_ID_DUPLICATED:
+      return ErrorUtils::FormatErrorMessage(kErrorTabIdDuplicated,
+                                            base::NumberToString(*rule_id));
   }
   NOTREACHED();
   return std::string();

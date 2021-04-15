@@ -121,6 +121,10 @@ table UrlRule {
 
   // Priority of the rule. Larger the value, greater the priority.
   priority : uint64;
+
+  // Binary blob for any embedder specific rule conditions. When specified,
+  // these should be interpreted by the url_pattern_index embedder.
+  embedder_conditions : [ubyte];
 }
 
 // Contains an N-gram (acting as a key in a hash table) and a list of URL rules
