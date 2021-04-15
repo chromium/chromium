@@ -232,8 +232,8 @@ class WebNavigationApiTestWithContextType
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Api) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
+IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
+  ASSERT_TRUE(RunTest("webnavigation/api")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
