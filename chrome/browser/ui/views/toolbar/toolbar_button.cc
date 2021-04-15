@@ -184,8 +184,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   // allocate the property once and modify the value.
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
 
-  UpdateColorsAndInsets();
-
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
@@ -422,6 +420,8 @@ void ToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 void ToolbarButton::OnThemeChanged() {
+  UpdateColorsAndInsets();
+
   if (installable_ink_drop_)
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
   UpdateIcon();

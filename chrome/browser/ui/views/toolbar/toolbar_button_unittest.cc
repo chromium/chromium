@@ -99,6 +99,8 @@ using ToolbarButtonViewsTest = ChromeViewsTestBase;
 TEST_F(ToolbarButtonViewsTest, NoDefaultLayoutInsets) {
   ToolbarButton button;
   gfx::Insets default_insets = ::GetLayoutInsets(TOOLBAR_BUTTON);
+  // Colors and insets are not ready until OnThemeChanged()
+  button.OnThemeChanged();
   EXPECT_FALSE(button.GetLayoutInsets().has_value());
   EXPECT_EQ(default_insets, button.GetInsets());
 }
