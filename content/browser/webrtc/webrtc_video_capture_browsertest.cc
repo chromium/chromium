@@ -72,11 +72,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
   GURL url(embedded_test_server()->GetURL(kVideoCaptureHtmlFile));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  std::string result;
   // Start video capture and wait until it started rendering
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(), kStartVideoCaptureAndVerifySize, &result));
-  ASSERT_EQ("OK", result);
+  ASSERT_EQ("OK", EvalJs(shell(), kStartVideoCaptureAndVerifySize,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Simulate crash in video capture process
   mojo::Remote<video_capture::mojom::TestingControls> service_controls;
@@ -85,17 +83,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
   service_controls->Crash();
 
   // Wait for video element to turn black
-  ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), kWaitForVideoToTurnBlack,
-                                            &result));
-  ASSERT_EQ("OK", result);
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(), kVerifyHasReceivedTrackEndedEvent, &result));
-  ASSERT_EQ("OK", result);
+  ASSERT_EQ("OK", EvalJs(shell(), kWaitForVideoToTurnBlack,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ("OK", EvalJs(shell(), kVerifyHasReceivedTrackEndedEvent,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Start capturing again and expect it to work.
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(), kStartVideoCaptureAndVerifySize, &result));
-  ASSERT_EQ("OK", result);
+  ASSERT_EQ("OK", EvalJs(shell(), kStartVideoCaptureAndVerifySize,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 }  // namespace content

@@ -480,11 +480,9 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
 
     std::string javascript_to_execute = base::StringPrintf(
         kStartVideoCaptureAndVerify, video_size_.width(), video_size_.height());
-    std::string result;
     // Start video capture and wait until it started rendering
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(), javascript_to_execute, &result));
-    ASSERT_EQ("OK", result);
+    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute,
+                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
     std::move(finish_test_cb).Run();
   }

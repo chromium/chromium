@@ -277,14 +277,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(NavigateToURL(shell2, url));
   ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell2, "call({video: true, audio: true});", &result));
-  ASSERT_STREQ("OK", result.c_str());
+  EXPECT_EQ("OK", EvalJs(shell2, "call({video: true, audio: true});",
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   ExecuteJavascriptAndWaitForOk("hangup();");
-  EXPECT_TRUE(ExecuteScriptAndExtractString(shell2, "hangup();", &result));
-  ASSERT_STREQ("OK", result.c_str());
+  EXPECT_EQ("OK", EvalJs(shell2, "hangup();", EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   WebRTCInternals::GetInstance()->DisableAudioDebugRecordings();
 

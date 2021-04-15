@@ -128,9 +128,9 @@ class WebRtcImageCaptureBrowserTestBase
 
     LookupAndLogNameAndIdOfFirstCamera();
 
-    std::string result;
-    if (!ExecuteScriptAndExtractString(shell(), command, &result))
-      return false;
+    std::string result =
+        EvalJs(shell(), command, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString();
     DLOG_IF(ERROR, result != "OK") << result;
     return result == "OK";
   }

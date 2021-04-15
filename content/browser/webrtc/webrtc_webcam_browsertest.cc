@@ -80,9 +80,10 @@ IN_PROC_BROWSER_TEST_F(UsingRealWebcam_WebRtcWebcamBrowserTest,
     return;
   }
 
-  std::string result;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(), "getUserMediaAndReturnVideoDimensions({video: true})", &result));
+  std::string result =
+      EvalJs(shell(), "getUserMediaAndReturnVideoDimensions({video: true})",
+             EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+          .ExtractString();
 
   if (result == "640x480" || result == "480x640") {
     // Don't care if the device happens to be in landscape or portrait mode
