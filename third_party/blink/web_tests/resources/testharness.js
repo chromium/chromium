@@ -1190,9 +1190,9 @@ policies and contribution forms [3].
                     console.debug("ASSERT", name, tests.current_test && tests.current_test.name, args);
                 }
                 if (tests.output) {
-                    tests.set_assert(name, ...args);
+                    tests.set_assert(name, args);
                 }
-                const rv = f(...args);
+                const rv = f.apply(undefined, args);
                 status = Test.statuses.PASS;
                 return rv;
             } catch(e) {
@@ -2725,7 +2725,7 @@ policies and contribution forms [3].
         return this.formats[this.status];
     }
 
-    function AssertRecord(test, assert_name, ...args) {
+    function AssertRecord(test, assert_name, args = []) {
         this.assert_name = assert_name;
         this.test = test;
         // Avoid keeping complex objects alive
@@ -3032,8 +3032,8 @@ policies and contribution forms [3].
                   all_complete);
     };
 
-    Tests.prototype.set_assert = function(assert_name, ...args) {
-        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, ...args))
+    Tests.prototype.set_assert = function(assert_name, args) {
+        this.asserts_run.push(new AssertRecord(this.current_test, assert_name, args))
     }
 
     Tests.prototype.set_assert_status = function(status, stack) {
@@ -3541,10 +3541,9 @@ policies and contribution forms [3].
                 if (assert.stack) {
                     output_location = assert.stack.split("\n", 1)[0].replace(/@?\w+:\/\/[^ "\/]+(?::\d+)?/g, " ");
                 }
-                return "<tr><td class=" +
-                    status_class(Test.prototype.status_formats[assert.status]) + ">" +
+                return "<tr><td class='" +
+                    status_class(Test.prototype.status_formats[assert.status]) + "'>" +
                     Test.prototype.status_formats[assert.status] + "</td>" +
-                    "</td>" +
                     "<td><pre>" +
                     output_fn +
                     (output_location ? "\n" + escape_html(output_location) : "") +
