@@ -11,6 +11,7 @@
 #include "base/debug/activity_tracker.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -47,9 +48,14 @@ namespace base {
 // -----------------------------------------------------------------------------
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
-    : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {}
+    : kernel_(new WaitableEventKernel(reset_policy, initial_state)) {
+  // Pointer registration is needed for sorting in WaitSet.user_events_
+  recordreplay::RegisterPointer(this);
+}
 
-WaitableEvent::~WaitableEvent() = default;
+WaitableEvent::~WaitableEvent() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void WaitableEvent::Reset() {
   base::AutoLock locked(kernel_->lock_);

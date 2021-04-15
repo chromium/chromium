@@ -13,12 +13,6 @@ namespace internal {
 InterfacePtrStateBase::InterfacePtrStateBase() = default;
 
 InterfacePtrStateBase::~InterfacePtrStateBase() {
-  if (recordreplay::IsRecordingOrReplaying()) {
-    // Leak resources to avoid problems during GC...
-    endpoint_client_.release();
-    return;
-  }
-
   endpoint_client_.reset();
   if (router_)
     router_->CloseMessagePipe();

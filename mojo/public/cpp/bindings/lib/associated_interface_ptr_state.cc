@@ -12,12 +12,7 @@ namespace internal {
 
 AssociatedInterfacePtrStateBase::AssociatedInterfacePtrStateBase() = default;
 
-AssociatedInterfacePtrStateBase::~AssociatedInterfacePtrStateBase() {
-  if (recordreplay::IsRecordingOrReplaying()) {
-    // Leak pointer to avoid non-deterministic destruction.
-    (void)endpoint_client_.release();
-  }
-}
+AssociatedInterfacePtrStateBase::~AssociatedInterfacePtrStateBase() = default;
 
 void AssociatedInterfacePtrStateBase::QueryVersion(
     base::OnceCallback<void(uint32_t)> callback) {
