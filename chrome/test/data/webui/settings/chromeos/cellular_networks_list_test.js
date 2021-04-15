@@ -325,4 +325,28 @@ suite('CellularNetworksList', function() {
     addESimButton.click();
     await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
   });
+
+  test('Disable no esim link when cellular device is inhibited', async () => {
+    eSimManagerRemote.addEuiccForTest(0);
+    init();
+    cellularNetworkList.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
+    };
+
+    await flushAsync();
+
+    const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
+                                  .querySelector('settings-localized-link');
+    assertFalse(esimLocalizedLink.linkDisabled);
+
+    cellularNetworkList.cellularDeviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile
+    };
+    await flushAsync();
+    assertTrue(esimLocalizedLink.linkDisabled);
+  });
 });

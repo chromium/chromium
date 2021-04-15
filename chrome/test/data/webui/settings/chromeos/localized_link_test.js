@@ -30,7 +30,7 @@ suite('localized_link', function() {
         document.body.querySelector('settings-localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a id="id0" aria-labelledby="id0 id1">first link</a>` +
+        `<a id="id0" aria-labelledby="id0 id1" tabindex="0">first link</a>` +
             `<span id="id1" aria-hidden="true">then text</span>`);
   });
 
@@ -42,7 +42,7 @@ suite('localized_link', function() {
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text </span>` +
-            `<a id="id1" aria-labelledby="id0 id1 id2">then link</a>` +
+            `<a id="id1" aria-labelledby="id0 id1 id2" tabindex="0">then link</a>` +
             `<span id="id2" aria-hidden="true"> then more text</span>`);
   });
 
@@ -54,7 +54,7 @@ suite('localized_link', function() {
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text</span>` +
-            `<a id="id1" aria-labelledby="id0 id1">then link</a>`);
+            `<a id="id1" aria-labelledby="id0 id1" tabindex="0">then link</a>`);
   });
 
   test('PopulatedLink', function() {
@@ -65,7 +65,7 @@ suite('localized_link', function() {
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0" href="http://google.com" ` +
-            `target="_blank">populated link</a>`);
+            `target="_blank" tabindex="0">populated link</a>`);
   });
 
   test('PrepopulatedLink', function() {
@@ -75,7 +75,7 @@ suite('localized_link', function() {
         document.body.querySelector('settings-localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a href="http://google.com" id="id0" aria-labelledby="id0">` +
+        `<a href="http://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
             `pre-populated link</a>`);
   });
 
@@ -105,5 +105,21 @@ suite('localized_link', function() {
       anchorTag.click();
       await Promise.all([localizedLinkPromise, test_util.flushTasks()]);
     });
+  });
+
+  test('link disabled', async function() {
+    document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
+        `Text with a <a href='#'>link</a>`, ``);
+
+    await flushAsync();
+    const localizedLink =
+        document.body.querySelector('settings-localized-link');
+    assertTrue(!!localizedLink);
+    const anchorTag = localizedLink.$$('a');
+    assertTrue(!!anchorTag);
+    assertEquals(anchorTag.getAttribute('tabindex'), '0');
+    localizedLink.linkDisabled = true;
+    await flushAsync();
+    assertEquals(anchorTag.getAttribute('tabindex'), '-1');
   });
 });

@@ -124,6 +124,8 @@
         <div id="eSimNoNetworkFound"
             class="cellular-network-content cellular-not-setup">
           <settings-localized-link
+              link-disabled = "[[isDeviceInhibited_(cellularDeviceState,
+              cellularDeviceState.inhibitReason)]]"
               on-link-clicked="onEsimLearnMoreClicked_"
               localized-string="$i18n{eSimNetworkNotSetup}">
           </settings-localized-link>
