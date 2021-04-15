@@ -655,6 +655,8 @@ Polymer({
       this.onUnlockButtonClick_();
     } else if (this.item && this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
+    } else if (this.isPSimPendingActivationNetwork_) {
+      this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
       this.focusRequested_ = true;
@@ -796,6 +798,17 @@ Polymer({
    */
   getActivateBtnA11yLabel_() {
     return this.i18n('networkListItemActivateA11yLabel', this.getItemName_());
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onActivateButtonClick_(event) {
+    this.fire(
+        'show-cellular-setup',
+        {pageName: cellularSetup.CellularSetupPageName.PSIM_FLOW_UI});
+    event.stopPropagation();
   },
 
   /**
