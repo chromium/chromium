@@ -299,7 +299,7 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
-VideoDecoderTraits::OutputType* VideoDecoderTraits::MakeOutput(
+media::StatusOr<VideoDecoderTraits::OutputType*> VideoDecoderTraits::MakeOutput(
     scoped_refptr<MediaOutputType> output,
     ExecutionContext* context) {
   return MakeGarbageCollected<VideoDecoderTraits::OutputType>(std::move(output),

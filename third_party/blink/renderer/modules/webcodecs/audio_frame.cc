@@ -27,11 +27,8 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   buffer_ = AudioBuffer::CreateUninitialized(
       buffer->channel_count(), buffer->frame_count(), buffer->sample_rate());
 
-  // AudioBuffer::CreateUninitialized() can fail. This can be the result of
-  // running out of memory, or having parameters that exceed some of WebAudio's
-  // limits. Crash here to prevent accessing uninitialized data below.
-  // TODO(crbug.com/1179079): Add upstream checks to prevent initializing
-  // |buffer_| with parameters outside of WebAudio's limits.
+  // AudioBuffer::CreateUninitialized() can fail if we run out of memory.
+  // Crash here to prevent accessing uninitialized data below.
   CHECK(buffer_);
 
   auto converted_data =
@@ -57,11 +54,8 @@ AudioFrame::AudioFrame(AudioFrameSerializationData* data)
   buffer_ = AudioBuffer::CreateUninitialized(
       data_bus->channels(), data_bus->frames(), data->sample_rate());
 
-  // AudioBuffer::CreateUninitialized() can fail. This can be the result of
-  // running out of memory, or having parameters that exceed some of WebAudio's
-  // limits. Crash here to prevent accessing uninitialized data below.
-  // TODO(crbug.com/1179079): Add upstream checks to prevent initializing
-  // |buffer_| with parameters outside of WebAudio's limits.
+  // AudioBuffer::CreateUninitialized() can fail if we run out of memory.
+  // Crash here to prevent accessing uninitialized data below.
   CHECK(buffer_);
 
   // Copy the frames.

@@ -75,8 +75,8 @@ class MODULES_EXPORT VideoDecoderTraits {
   static void UpdateDecoderLog(const MediaDecoderType& decoder,
                                const MediaConfigType& media_config,
                                media::MediaLog* media_log);
-  static OutputType* MakeOutput(scoped_refptr<MediaOutputType>,
-                                ExecutionContext*);
+  static media::StatusOr<OutputType*> MakeOutput(scoped_refptr<MediaOutputType>,
+                                                 ExecutionContext*);
 };
 
 class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
