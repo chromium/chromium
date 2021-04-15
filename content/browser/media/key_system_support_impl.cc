@@ -36,9 +36,9 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
 }
 
 bool MatchKeySystem(const CdmInfo& cdm_info, const std::string& key_system) {
-  return cdm_info.supported_key_system == key_system ||
+  return cdm_info.key_system == key_system ||
          (cdm_info.supports_sub_key_systems &&
-          media::IsSubKeySystemOf(key_system, cdm_info.supported_key_system));
+          media::IsSubKeySystemOf(key_system, cdm_info.key_system));
 }
 
 template <typename T>
@@ -172,10 +172,11 @@ std::unique_ptr<CdmInfo> KeySystemSupportImpl::GetCdmInfo(
     bool use_hw_secure_codecs) {
   DVLOG(2) << __func__ << ": key_system = " << key_system;
   for (const auto& cdm : CdmRegistry::GetInstance()->GetAllRegisteredCdms()) {
-    if (cdm.use_hw_secure_codecs == use_hw_secure_codecs &&
-        MatchKeySystem(cdm, key_system)) {
+    auto robustness = use_hw_secure_codecs
+                          ? CdmInfo::Robustness::kHardwareSecure
+                          : CdmInfo::Robustness::kSoftwareSecure;
+    if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system))
       return std::make_unique<CdmInfo>(cdm);
-    }
   }
 
   return nullptr;

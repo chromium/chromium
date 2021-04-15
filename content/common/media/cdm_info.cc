@@ -22,24 +22,33 @@ CdmCapability::CdmCapability(const CdmCapability& other) = default;
 
 CdmCapability::~CdmCapability() = default;
 
-CdmInfo::CdmInfo(const std::string& name,
+CdmInfo::CdmInfo(const std::string& key_system,
+                 Robustness robustness,
+                 CdmCapability capability,
+                 bool supports_sub_key_systems,
+                 const std::string& name,
                  const base::Token& guid,
                  const base::Version& version,
                  const base::FilePath& path,
-                 const std::string& file_system_id,
-                 CdmCapability capability,
-                 const std::string& supported_key_system,
-                 bool supports_sub_key_systems,
-                 bool use_hw_secure_codecs)
-    : name(name),
+                 const std::string& file_system_id)
+    : key_system(key_system),
+      robustness(robustness),
+      capability(std::move(capability)),
+      supports_sub_key_systems(supports_sub_key_systems),
+      name(name),
       guid(guid),
       version(version),
       path(path),
-      file_system_id(file_system_id),
-      capability(std::move(capability)),
-      supported_key_system(supported_key_system),
-      supports_sub_key_systems(supports_sub_key_systems),
-      use_hw_secure_codecs(use_hw_secure_codecs) {
+      file_system_id(file_system_id) {
+  DCHECK(!capability.encryption_schemes.empty());
+}
+
+CdmInfo::CdmInfo(const std::string& key_system,
+                 Robustness robustness,
+                 CdmCapability capability)
+    : key_system(key_system),
+      robustness(robustness),
+      capability(std::move(capability)) {
   DCHECK(!capability.encryption_schemes.empty());
 }
 

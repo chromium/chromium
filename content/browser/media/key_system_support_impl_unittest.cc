@@ -30,7 +30,9 @@ namespace {
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
+using Robustness = CdmInfo::Robustness;
 
+const char kTestCdmName[] = "Test Content Decryption Module";
 const base::Token kTestCdmGuid{1234, 5678};
 const char kVersion[] = "1.1.1.1";
 const char kTestPath[] = "/aa/bb";
@@ -87,15 +89,15 @@ class KeySystemSupportTest : public testing::Test {
   // Registers |key_system| with |capability|. All other values for CdmInfo have
   // some default value as they're not returned by IsKeySystemSupported().
   void Register(const std::string& key_system,
-                bool use_hw_secure_codecs,
-                CdmCapability capability) {
+                CdmCapability capability,
+                Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 
     CdmRegistry::GetInstance()->RegisterCdm(
-        CdmInfo(key_system, kTestCdmGuid, base::Version(kVersion),
-                base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
-                std::move(capability), key_system,
-                /*supports_sub_key_systems=*/false, use_hw_secure_codecs));
+        CdmInfo(key_system, robustness, std::move(capability),
+                /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmGuid,
+                base::Version(kVersion),
+                base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId));
   }
 
   // Determines if |key_system| is registered. If it is, updates |codecs_|
@@ -122,7 +124,7 @@ TEST_F(KeySystemSupportTest, NoKeySystems) {
 }
 
 TEST_F(KeySystemSupportTest, SoftwareSecureCapability) {
-  Register("KeySystem", /*use_hw_secure_codecs=*/false, TestCdmCapability());
+  Register("KeySystem", TestCdmCapability());
 
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
@@ -134,14 +136,14 @@ TEST_F(KeySystemSupportTest, SoftwareSecureCapability) {
 TEST_F(KeySystemSupportTest,
        HardwareSecureCapability_HardwareSecureDecryptionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
-  Register("KeySystem", /*use_hw_secure_codecs=*/true, TestCdmCapability());
+  Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));
 }
 
 TEST_F(KeySystemSupportTest, HardwareSecureCapability) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
-  Register("KeySystem", /*use_hw_secure_codecs=*/true, TestCdmCapability());
+  Register("KeySystem", TestCdmCapability(), Robustness::kHardwareSecure);
 
   EXPECT_TRUE(IsSupported("KeySystem"));
   EXPECT_HW_SECURE_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
@@ -152,15 +154,15 @@ TEST_F(KeySystemSupportTest, HardwareSecureCapability) {
 }
 
 TEST_F(KeySystemSupportTest, MultipleKeySystems) {
-  Register("KeySystem1", /*use_hw_secure_codecs=*/false, TestCdmCapability());
-  Register("KeySystem2", /*use_hw_secure_codecs=*/false, TestCdmCapability());
+  Register("KeySystem1", TestCdmCapability());
+  Register("KeySystem2", TestCdmCapability());
 
   EXPECT_TRUE(IsSupported("KeySystem1"));
   EXPECT_TRUE(IsSupported("KeySystem2"));
 }
 
 TEST_F(KeySystemSupportTest, MissingKeySystem) {
-  Register("KeySystem", /*use_hw_secure_codecs=*/false, TestCdmCapability());
+  Register("KeySystem", TestCdmCapability());
 
   EXPECT_FALSE(IsSupported("KeySystem1"));
   EXPECT_FALSE(capability_);

@@ -69,13 +69,13 @@ class CdmRegistryImplTest : public testing::Test {
  protected:
   CdmInfo GetTestCdmInfo() {
     return CdmInfo(
-        kTestCdmName, kTestCdmGuid, base::Version(kVersion1),
-        base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
+        kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
         CdmCapability(
             {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
             {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense}),
-        kTestKeySystem, /*supports_sub_key_systems=*/true,
-        /*use_hw_secure_codecs=*/false);
+        /*supports_sub_key_systems=*/true, kTestCdmName, kTestCdmGuid,
+        base::Version(kVersion1), base::FilePath::FromUTF8Unsafe(kTestPath),
+        kTestFileSystemId);
   }
 
   void Register(CdmInfo cdm_info) {
@@ -117,9 +117,9 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
                        CdmSessionType::kPersistentLicense);
-  EXPECT_EQ(kTestKeySystem, cdm.supported_key_system);
+  EXPECT_EQ(kTestKeySystem, cdm.key_system);
   EXPECT_TRUE(cdm.supports_sub_key_systems);
-  EXPECT_FALSE(cdm.use_hw_secure_codecs);
+  EXPECT_EQ(cdm.robustness, CdmInfo::Robustness::kSoftwareSecure);
 }
 
 TEST_F(CdmRegistryImplTest, ReRegister) {

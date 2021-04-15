@@ -44,17 +44,44 @@ struct CONTENT_EXPORT CdmCapability {
 
 // Represents a Content Decryption Module implementation and its capabilities.
 struct CONTENT_EXPORT CdmInfo {
-  CdmInfo(const std::string& name,
+  enum class Robustness {
+    kHardwareSecure,
+    kSoftwareSecure,
+  };
+
+  CdmInfo(const std::string& key_system,
+          Robustness robustness,
+          CdmCapability capability,
+          bool supports_sub_key_systems,
+          const std::string& name,
           const base::Token& guid,
           const base::Version& version,
           const base::FilePath& path,
-          const std::string& file_system_id,
-          CdmCapability capability,
-          const std::string& supported_key_system,
-          bool supports_sub_key_systems,
-          bool use_hw_secure_codecs);
+          const std::string& file_system_id);
+  CdmInfo(const std::string& key_system,
+          Robustness robustness,
+          CdmCapability capability);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
+
+  // The key system supported by this CDM.
+  std::string key_system;
+
+  // Whether this CdmInfo is for the hardware secure pipeline. Even for the
+  // same `key_system`, the software and hardware secure pipeline (specified as
+  // `robustness` in EME) could be supported by different CDMs, or having
+  // different CDM capabilities. Therefore, we use this flag to differentiate
+  // between the software and hardware secure pipelines.
+  Robustness robustness;
+
+  // CDM capability, e.g. video codecs, encryption schemes and session types.
+  CdmCapability capability;
+
+  // Whether we also support sub key systems of the `key_system`.
+  // A sub key system to a key system is like a sub domain to a domain.
+  // For example, com.example.somekeysystem.a and com.example.somekeysystem.b
+  // are both sub key systems of com.example.somekeysystem.
+  bool supports_sub_key_systems = false;
 
   // Display name of the CDM (e.g. Widevine Content Decryption Module).
   std::string name;
@@ -73,25 +100,6 @@ struct CONTENT_EXPORT CdmInfo {
   // stored by this CDM. Valid identifiers only contain letters (A-Za-z),
   // digits(0-9), or "._-".
   std::string file_system_id;
-
-  // CDM capability, e.g. video codecs, encryption schemes and session types.
-  CdmCapability capability;
-
-  // The key system supported by this CDM.
-  std::string supported_key_system;
-
-  // Whether we also support sub key systems of the |supported_key_system|.
-  // A sub key system to a key system is like a sub domain to a domain.
-  // For example, com.example.somekeysystem.a and com.example.somekeysystem.b
-  // are both sub key systems of com.example.somekeysystem.
-  bool supports_sub_key_systems;
-
-  // Whether this CdmInfo is for the hardware secure pipeline. Even for the
-  // same `key_system`, the software and hardware secure pipeline (specified as
-  // `robustness` in EME) could be supported by different CDMs, or having
-  // different CDM capabilities. Therefore, we use this flag to differentiate
-  // between the software and hardware secure pipelines.
-  bool use_hw_secure_codecs;
 };
 
 }  // namespace content

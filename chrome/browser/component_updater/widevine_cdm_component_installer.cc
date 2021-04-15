@@ -121,9 +121,10 @@ void RegisterWidevineCdmWithChrome(
 
   VLOG(1) << "Register Widevine CDM with Chrome";
   content::CdmInfo cdm_info(
+      kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
+      std::move(capability), /*supports_sub_key_systems=*/false,
       kWidevineCdmDisplayName, kWidevineCdmGuid, cdm_version, cdm_path,
-      kWidevineCdmFileSystemId, std::move(capability), kWidevineKeySystem,
-      /*supports_sub_key_systems=*/false, /*use_hw_secure_codecs=*/false);
+      kWidevineCdmFileSystemId);
   CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 #endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)

@@ -37,6 +37,8 @@
 
 namespace {
 
+using Robustness = content::CdmInfo::Robustness;
+
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #if (BUILDFLAG(BUNDLE_WIDEVINE_CDM) ||            \
      BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)) && \
@@ -48,9 +50,9 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
     const base::FilePath& cdm_library_path,
     content::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
-      kWidevineCdmDisplayName, kWidevineCdmGuid, version, cdm_library_path,
-      kWidevineCdmFileSystemId, std::move(capability), kWidevineKeySystem,
-      /*supports_sub_key_systems=*/false, /*use_hw_secure_codecs=*/false);
+      kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability),
+      /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
+      kWidevineCdmGuid, version, cdm_library_path, kWidevineCdmFileSystemId);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,10 +242,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // MediaInterfaceProxy to use it.
 
   cdms->push_back(content::CdmInfo(
-      kWidevineCdmDisplayName, /*guid=*/base::Token(), base::Version(),
-      base::FilePath(), /*file_system_id=*/"", std::move(capability),
-      kWidevineKeySystem, /*supports_sub_key_systems=*/false,
-      /*use_hw_secure_codecs=*/true));
+      kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability)));
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 
@@ -280,20 +279,18 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
   // Otherwise, it'll be treated as a sub-key-system of normal
   // kExternalClearKeyKeySystem. See MultipleCdmTypes test in
   // ECKEncryptedMediaTest.
-  cdms->push_back(content::CdmInfo(media::kClearKeyCdmDisplayName,
-                                   media::kClearKeyCdmDifferentGuid,
-                                   base::Version("0.1.0.0"), clear_key_cdm_path,
-                                   media::kClearKeyCdmFileSystemId, capability,
-                                   kExternalClearKeyDifferentGuidTestKeySystem,
-                                   /*supports_sub_key_systems=*/false,
-                                   /*use_hw_secure_codecs=*/false));
+  cdms->push_back(content::CdmInfo(
+      kExternalClearKeyDifferentGuidTestKeySystem, Robustness::kSoftwareSecure,
+      capability,
+      /*supports_sub_key_systems=*/false, media::kClearKeyCdmDisplayName,
+      media::kClearKeyCdmDifferentGuid, base::Version("0.1.0.0"),
+      clear_key_cdm_path, media::kClearKeyCdmFileSystemId));
 
   cdms->push_back(content::CdmInfo(
-      media::kClearKeyCdmDisplayName, media::kClearKeyCdmGuid,
-      base::Version("0.1.0.0"), clear_key_cdm_path,
-      media::kClearKeyCdmFileSystemId, capability, kExternalClearKeyKeySystem,
-      /*supports_sub_key_systems=*/true,
-      /*use_hw_secure_codecs=*/false));
+      kExternalClearKeyKeySystem, Robustness::kSoftwareSecure, capability,
+      /*supports_sub_key_systems=*/true, media::kClearKeyCdmDisplayName,
+      media::kClearKeyCdmGuid, base::Version("0.1.0.0"), clear_key_cdm_path,
+      media::kClearKeyCdmFileSystemId));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
