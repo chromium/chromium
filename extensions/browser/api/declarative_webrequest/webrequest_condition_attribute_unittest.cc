@@ -259,7 +259,7 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
       base::Value* entry = NULL;
       std::unique_ptr<base::Value> entry_owned;
       if (!dictionary->GetWithoutPathExpansion(*name, &entry))
-        return std::unique_ptr<base::DictionaryValue>();
+        return nullptr;
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
@@ -276,7 +276,7 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
           break;
         default:
           NOTREACHED();  // We never put other Values here.
-          return std::unique_ptr<base::DictionaryValue>();
+          return nullptr;
       }
     } else {
       dictionary->SetString(*name, *value);

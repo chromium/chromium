@@ -63,7 +63,7 @@ std::unique_ptr<BluetoothManifestData> BluetoothManifestData::FromValue(
   std::unique_ptr<BluetoothManifestPermission> permission =
       BluetoothManifestPermission::FromValue(value, error);
   if (!permission)
-    return std::unique_ptr<BluetoothManifestData>();
+    return nullptr;
 
   return std::make_unique<BluetoothManifestData>(std::move(permission));
 }

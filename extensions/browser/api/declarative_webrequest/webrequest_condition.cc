@@ -123,18 +123,18 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
   const base::DictionaryValue* condition_dict = NULL;
   if (!condition.GetAsDictionary(&condition_dict)) {
     *error = kExpectedDictionary;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   // Verify that we are dealing with a Condition whose type we understand.
   std::string instance_type;
   if (!condition_dict->GetString(keys::kInstanceTypeKey, &instance_type)) {
     *error = kConditionWithoutInstanceType;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
   if (instance_type != keys::kRequestMatcherType) {
     *error = kExpectedOtherConditionType;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   WebRequestConditionAttributes attributes;
@@ -169,7 +169,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
         attributes.push_back(attribute);
     }
     if (!error->empty())
-      return std::unique_ptr<WebRequestCondition>();
+      return nullptr;
   }
 
   auto result = std::make_unique<WebRequestCondition>(url_matcher_condition_set,
@@ -177,7 +177,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
 
   if (!result->stages()) {
     *error = kConditionCannotBeFulfilled;
-    return std::unique_ptr<WebRequestCondition>();
+    return nullptr;
   }
 
   return result;

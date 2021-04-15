@@ -127,7 +127,7 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
   if (!value.GetAsList(&list)) {
     error_builder.Append("'event_rules' expected list, got %s",
                          base::Value::GetTypeName(value.type()));
-    return std::unique_ptr<DeclarativeManifestData>();
+    return nullptr;
   }
 
   for (const auto& element : *list) {
@@ -135,22 +135,22 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
     if (!element.GetAsDictionary(&dict)) {
       error_builder.Append("expected dictionary, got %s",
                            base::Value::GetTypeName(element.type()));
-      return std::unique_ptr<DeclarativeManifestData>();
+      return nullptr;
     }
     std::string event;
     if (!dict->GetString("event", &event)) {
       error_builder.Append("'event' is required");
-      return std::unique_ptr<DeclarativeManifestData>();
+      return nullptr;
     }
 
     Rule rule;
     if (!Rule::Populate(*dict, &rule)) {
       error_builder.Append("rule failed to populate");
-      return std::unique_ptr<DeclarativeManifestData>();
+      return nullptr;
     }
 
     if (!ConvertManifestRule(rule, &error_builder))
-      return std::unique_ptr<DeclarativeManifestData>();
+      return nullptr;
 
     result->event_rules_map_[event].push_back(std::move(rule));
   }

@@ -39,7 +39,7 @@ UserScriptSetManager::GetInjectionForDeclarativeScript(
   UserScriptSet* user_script_set = GetProgrammaticScriptsByHostID(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id));
   if (!user_script_set)
-    return std::unique_ptr<ScriptInjection>();
+    return nullptr;
 
   return user_script_set->GetDeclarativeScriptInjection(
       script_id, render_frame, tab_id, mojom::RunLocation::kBrowserDriven, url,

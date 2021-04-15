@@ -293,7 +293,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                            run_loop.QuitClosure()));
     run_loop.Run();
     if (!properties)
-      return std::unique_ptr<base::DictionaryValue>();
+      return nullptr;
     return base::DictionaryValue::From(
         base::Value::ToUniquePtrValue(std::move(*properties)));
   }

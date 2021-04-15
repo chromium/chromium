@@ -28,7 +28,7 @@ std::unique_ptr<const InjectionHost> ExtensionInjectionHost::Create(
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)
-    return std::unique_ptr<const ExtensionInjectionHost>();
+    return nullptr;
   return std::unique_ptr<const ExtensionInjectionHost>(
       new ExtensionInjectionHost(extension));
 }

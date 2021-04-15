@@ -79,7 +79,7 @@ ContentVerifier* MockExtensionSystem::content_verifier() {
 
 std::unique_ptr<ExtensionSet> MockExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return std::unique_ptr<ExtensionSet>();
+  return nullptr;
 }
 
 void MockExtensionSystem::InstallUpdate(

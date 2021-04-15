@@ -51,7 +51,7 @@ struct RecordingCondition {
     const base::DictionaryValue* dict = nullptr;
     if (condition.GetAsDictionary(&dict) && dict->HasKey("bad_key")) {
       *error = "Found error key";
-      return std::unique_ptr<RecordingCondition>();
+      return nullptr;
     }
 
     std::unique_ptr<RecordingCondition> result(new RecordingCondition());

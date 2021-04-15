@@ -61,7 +61,7 @@ std::unique_ptr<StackFrame> StackFrame::CreateFromText(
       !re2::RE2::FullMatch(text,
                            "([^\\(\\)]+):(\\d+):(\\d+)",
                            &source, &line, &column)) {
-    return std::unique_ptr<StackFrame>();
+    return nullptr;
   }
 
   return std::make_unique<StackFrame>(line, column, base::UTF8ToUTF16(source),

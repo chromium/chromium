@@ -375,12 +375,12 @@ std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
   for (auto it = tests->begin(); it != tests->end(); ++it) {
     const base::DictionaryValue* tests = nullptr;
     if (!it->GetAsDictionary(&tests))
-      return std::unique_ptr<const HeaderMatcher>();
+      return nullptr;
 
     std::unique_ptr<const HeaderMatchTest> header_test(
         HeaderMatchTest::Create(tests));
     if (header_test.get() == nullptr)
-      return std::unique_ptr<const HeaderMatcher>();
+      return nullptr;
     header_tests.push_back(std::move(header_test));
   }
 
@@ -488,7 +488,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
       match_type = StringMatchTest::kEquals;
     } else {
       NOTREACHED();  // JSON schema type checking should prevent this.
-      return std::unique_ptr<const HeaderMatchTest>();
+      return nullptr;
     }
     const base::Value* content = &it.value();
 
@@ -510,7 +510,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
       }
       default: {
         NOTREACHED();  // JSON schema type checking should prevent this.
-        return std::unique_ptr<const HeaderMatchTest>();
+        return nullptr;
       }
     }
   }
@@ -556,7 +556,7 @@ std::unique_ptr<const HeaderMatcher> PrepareHeaderMatcher(
   const base::ListValue* value_as_list = nullptr;
   if (!value->GetAsList(&value_as_list)) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
-    return std::unique_ptr<const HeaderMatcher>();
+    return nullptr;
   }
 
   std::unique_ptr<const HeaderMatcher> header_matcher(

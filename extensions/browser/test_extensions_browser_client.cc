@@ -166,7 +166,7 @@ ProcessManagerDelegate* TestExtensionsBrowserClient::GetProcessManagerDelegate()
 
 std::unique_ptr<ExtensionHostDelegate>
 TestExtensionsBrowserClient::CreateExtensionHostDelegate() {
-  return std::unique_ptr<ExtensionHostDelegate>();
+  return nullptr;
 }
 
 bool TestExtensionsBrowserClient::DidVersionUpdate(BrowserContext* context) {

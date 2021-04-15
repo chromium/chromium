@@ -155,7 +155,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
     std::u16string* error) {
   std::unique_ptr<Sockets> sockets = Sockets::FromValue(value, error);
   if (!sockets)
-    return std::unique_ptr<SocketsManifestPermission>();
+    return nullptr;
 
   std::unique_ptr<SocketsManifestPermission> result(
       new SocketsManifestPermission());
@@ -164,19 +164,19 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::UDP_BIND,
                            sockets->udp->bind,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
     if (!ParseHostPatterns(result.get(),
                            SocketPermissionRequest::UDP_SEND_TO,
                            sockets->udp->send,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
     if (!ParseHostPatterns(result.get(),
                            SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
                            sockets->udp->multicast_membership,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   if (sockets->tcp) {
@@ -184,7 +184,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::TCP_CONNECT,
                            sockets->tcp->connect,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   if (sockets->tcp_server) {
@@ -192,7 +192,7 @@ std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
                            SocketPermissionRequest::TCP_LISTEN,
                            sockets->tcp_server->listen,
                            error)) {
-      return std::unique_ptr<SocketsManifestPermission>();
+      return nullptr;
     }
   }
   return result;

@@ -1523,7 +1523,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     bool include_component_extensions) const {
   int location_value;
   if (!extension->GetInteger(kPrefLocation, &location_value))
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
 
   ManifestLocation location = static_cast<ManifestLocation>(location_value);
   if (location == ManifestLocation::kComponent &&
@@ -1533,7 +1533,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     // (by ComponentLoader) and shouldn't be populated into the result of
     // GetInstalledExtensionsInfo, otherwise InstalledLoader would also want to
     // load them.
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
   }
 
   // Only the following extension types have data saved in the preferences.
@@ -1542,7 +1542,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
       !Manifest::IsUnpackedLocation(location) &&
       !Manifest::IsExternalLocation(location)) {
     NOTREACHED();
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
   }
 
   const base::DictionaryValue* manifest = NULL;
@@ -1554,7 +1554,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
 
   std::string path;
   if (!extension->GetString(kPrefPath, &path))
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path);
 
   // Make path absolute. Most (but not all) extension types have relative paths.
@@ -1572,14 +1572,15 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
   const base::DictionaryValue* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
   if (!extensions ||
-      !extensions->GetDictionaryWithoutPathExpansion(extension_id, &ext))
-    return std::unique_ptr<ExtensionInfo>();
+      !extensions->GetDictionaryWithoutPathExpansion(extension_id, &ext)) {
+    return nullptr;
+  }
   int state_value;
   // TODO(devlin): Remove this once all clients are updated with
   // MigrateToNewExternalUninstallPref().
   if (ext->GetInteger(kPrefState, &state_value) &&
       state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED) {
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
   }
 
   return GetInstalledInfoHelper(extension_id, ext,
@@ -1688,11 +1689,11 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
   const base::DictionaryValue* extension_prefs =
       GetExtensionPref(extension_id);
   if (!extension_prefs)
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
 
   const base::DictionaryValue* ext = NULL;
   if (!extension_prefs->GetDictionary(kDelayedInstallInfo, &ext))
-    return std::unique_ptr<ExtensionInfo>();
+    return nullptr;
 
   return GetInstalledInfoHelper(extension_id, ext,
                                 /*include_component_extensions = */ false);

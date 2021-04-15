@@ -102,7 +102,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   std::unique_ptr<ExternallyConnectable> externally_connectable =
       ExternallyConnectable::FromValue(value, error);
   if (!externally_connectable)
-    return std::unique_ptr<ExternallyConnectableInfo>();
+    return nullptr;
 
   URLPatternSet matches;
 
@@ -115,7 +115,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       if (pattern.Parse(*it) != URLPattern::ParseResult::kSuccess) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             externally_connectable_errors::kErrorInvalidMatchPattern, *it);
-        return std::unique_ptr<ExternallyConnectableInfo>();
+        return nullptr;
       }
 
       bool matches_all_hosts =
@@ -169,7 +169,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
       } else {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             externally_connectable_errors::kErrorInvalidId, *it);
-        return std::unique_ptr<ExternallyConnectableInfo>();
+        return nullptr;
       }
     }
   }

@@ -69,13 +69,13 @@ BluetoothManifestPermission::FromValue(const base::Value& value,
   std::unique_ptr<api::extensions_manifest_types::Bluetooth> bluetooth =
       api::extensions_manifest_types::Bluetooth::FromValue(value, error);
   if (!bluetooth)
-    return std::unique_ptr<BluetoothManifestPermission>();
+    return nullptr;
 
   std::unique_ptr<BluetoothManifestPermission> result(
       new BluetoothManifestPermission());
   if (bluetooth->uuids) {
     if (!ParseUuidArray(result.get(), bluetooth->uuids, error)) {
-      return std::unique_ptr<BluetoothManifestPermission>();
+      return nullptr;
     }
   }
   if (bluetooth->socket) {

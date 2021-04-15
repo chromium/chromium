@@ -44,7 +44,7 @@ std::unique_ptr<SocketsManifestData> SocketsManifestData::FromValue(
   std::unique_ptr<SocketsManifestPermission> permission =
       SocketsManifestPermission::FromValue(value, error);
   if (!permission)
-    return std::unique_ptr<SocketsManifestData>();
+    return nullptr;
 
   return std::make_unique<SocketsManifestData>(std::move(permission));
 }

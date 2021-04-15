@@ -373,7 +373,7 @@ DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
     scoped_refptr<const ActionT> action =
         ActionT::Create(browser_context, extension, *value, error, bad_message);
     if (!error->empty() || *bad_message)
-      return std::unique_ptr<DeclarativeActionSet>();
+      return nullptr;
     result.push_back(action);
   }
 

@@ -21,7 +21,7 @@ std::unique_ptr<FormDataParser> InitParser(
   std::unique_ptr<FormDataParser> parser(
       FormDataParser::CreateFromContentTypeHeader(&content_type_header));
   if (parser.get() == NULL)
-    return std::unique_ptr<FormDataParser>();
+    return nullptr;
   return parser;
 }
 

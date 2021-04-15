@@ -199,7 +199,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetDeclarativeScriptInjection(
                                    true /* is_declarative */, log_activity);
     }
   }
-  return std::unique_ptr<ScriptInjection>();
+  return nullptr;
 }
 
 std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(

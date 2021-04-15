@@ -343,7 +343,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
       size_t offset = content_type_header->find(kBoundaryString);
       if (offset == std::string::npos) {
         // Malformed header.
-        return std::unique_ptr<FormDataParser>();
+        return nullptr;
       }
       offset += sizeof(kBoundaryString) - 1;
       boundary = content_type_header->substr(
@@ -361,10 +361,10 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
       return std::unique_ptr<FormDataParser>(
           new FormDataParserMultipart(boundary));
     case ERROR_CHOICE:
-      return std::unique_ptr<FormDataParser>();
+      return nullptr;
   }
   NOTREACHED();  // Some compilers do not believe this is unreachable.
-  return std::unique_ptr<FormDataParser>();
+  return nullptr;
 }
 
 FormDataParser::FormDataParser() {}

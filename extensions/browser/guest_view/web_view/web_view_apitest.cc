@@ -75,13 +75,14 @@ static std::unique_ptr<net::test_server::HttpResponse> UserAgentResponseHandler(
     const GURL& redirect_target,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   auto it = request.headers.find("User-Agent");
   EXPECT_TRUE(it != request.headers.end());
   if (!base::StartsWith("foobar", it->second, base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+    return nullptr;
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -121,8 +122,9 @@ std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
     const GURL& redirect_target,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(path, request.relative_url,
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -141,7 +143,7 @@ std::unique_ptr<net::test_server::HttpResponse> EmptyResponseHandler(
         new net::test_server::RawHttpResponse("", ""));
   }
 
-  return std::unique_ptr<net::test_server::HttpResponse>();
+  return nullptr;
 }
 
 }  // namespace
