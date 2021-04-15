@@ -111,36 +111,30 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest,
-                       PolicyEnablesSharingCrossOrigin) {
+                       PolicyEnablesSharing) {
   SetPolicyAndRestartBrowser();
 
   GURL main_url = embedded_test_server()->GetURL("a.com", "/empty.html");
-  GURL sub_url = embedded_test_server()->GetURL("b.com", "/empty.html");
+  GURL sub_url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  base::StringPiece doc_js = R"(
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+
+  EXPECT_TRUE(content::ExecJs(main_document, content::JsReplace(R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+
     g_iframe = document.createElement('iframe');
     g_iframe.src = $1;
     document.body.appendChild(g_iframe);
-  )";
+  )",
+                                                                sub_url)));
   WaitForLoadStop(web_contents());
-
-  EXPECT_TRUE(
-      content::ExecJs(web_contents(), content::JsReplace(doc_js, sub_url)));
-
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
   content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
 
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
-
-  std::string main_js = R"(
-    g_sab_size = new Promise(resolve => {
-      addEventListener("message", event => resolve(event.data.byteLength));
-    });
-  )";
-  EXPECT_TRUE(ExecJs(main_document, main_js,
-                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   EXPECT_TRUE(ExecJs(sub_document, R"(
     let sab = new SharedArrayBuffer(1234);
@@ -150,35 +144,28 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest,
   EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest,
-                       NoPolicyNoSharingCrossOrigin) {
+IN_PROC_BROWSER_TEST_F(ChromeSharedArrayBufferBrowserTest, NoPolicyNoSharing) {
   GURL main_url = embedded_test_server()->GetURL("a.com", "/empty.html");
-  GURL sub_url = embedded_test_server()->GetURL("b.com", "/empty.html");
+  GURL sub_url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
-  base::StringPiece doc_js = R"(
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), content::JsReplace(R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+
     g_iframe = document.createElement('iframe');
     g_iframe.src = $1;
     document.body.appendChild(g_iframe);
-  )";
+  )",
+                                                                 sub_url)));
   WaitForLoadStop(web_contents());
-
-  EXPECT_TRUE(
-      content::ExecJs(web_contents(), content::JsReplace(doc_js, sub_url)));
-
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
   content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
 
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
-
-  std::string main_js = R"(
-    g_sab_size = new Promise(resolve => {
-      addEventListener("message", event => resolve(event.data.byteLength));
-    });
-  )";
-  EXPECT_TRUE(ExecJs(main_document, main_js,
-                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   auto postSharedArrayBuffer = EvalJs(main_document, R"(
     // Create a WebAssembly Memory to bypass the SAB constructor restriction.
