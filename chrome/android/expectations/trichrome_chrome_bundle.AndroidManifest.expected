@@ -169,6 +169,17 @@
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 9af505d2
+    <activity  # DIFF-ANCHOR: 78326aaf
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: 0afe8981
+        <action android:name="org.chromium.chrome.browser.app.followmanagement.FollowManagementActivity.ACTIVATE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 0afe8981
+    </activity>  # DIFF-ANCHOR: 78326aaf
     <activity  # DIFF-ANCHOR: 50c7105b
         android:excludeFromRecents="true"
         android:exported="false"

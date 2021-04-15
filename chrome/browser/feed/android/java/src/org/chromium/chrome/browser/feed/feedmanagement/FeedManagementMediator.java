@@ -32,14 +32,24 @@ import org.chromium.ui.modelutil.PropertyModel;
  * edit#heading=h.p79wagdgjgx6
  */
 
-class FeedManagementMediator {
+public class FeedManagementMediator {
     private static final String TAG = "FeedManagementMdtr";
     private ModelList mModelList;
     private final Context mContext;
+    private final FollowManagementLauncher mFollowManagementLauncher;
 
-    FeedManagementMediator(Context context, ModelList modelList) {
+    /**
+     * Interface to supply a method which can launch the FollowManagementActivity.
+     */
+    public interface FollowManagementLauncher {
+        public void launch(Context mContext);
+    }
+
+    FeedManagementMediator(
+            Context context, ModelList modelList, FollowManagementLauncher launcher) {
         mModelList = modelList;
         mContext = context;
+        mFollowManagementLauncher = launcher;
         PropertyModel activityModel = generateListItem(R.string.feed_manage_activity,
                 R.string.feed_manage_activity_description, this::handleActivityClick);
         PropertyModel interestsModel = generateListItem(R.string.feed_manage_interests,
@@ -128,6 +138,6 @@ class FeedManagementMediator {
 
     private void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
-        // TODO(petewil): Launch a new activity for the following management page.
+        mFollowManagementLauncher.launch(mContext);
     }
 }

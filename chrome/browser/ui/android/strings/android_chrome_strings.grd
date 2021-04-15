@@ -2810,6 +2810,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_FEED_MANAGE_FOLLOWING_DESCRIPTION" desc="Content description to manage followed sites.">
         Manage the sites that you're following
       </message>
+      <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
+        FOLLOWING
+      </message>
       <message name="IDS_NTP_TURN_OFF_FEED" desc="Content description to turn off the feed from the feed header overflow menu.">
         Turn off
       </message>

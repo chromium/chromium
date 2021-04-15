@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layoutDirection="locale">
+
+  <!-- Header: we want back_arrow.icon, then "Following". -->
+  <TextView
+      android:id="@+id/follow_management_page_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:drawableStartCompat="@drawable/ic_arrow_back_24dp"
+      android:text="@string/follow_manage_following" />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/follow_management_list"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+  <!-- TODO(petewil) - After UXR, show all button -->
+
+  <!-- TODO(petewil) - After UXR, "Updates Unavailable" section. -->
+
+</LinearLayout>

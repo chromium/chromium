@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -21,7 +22,8 @@ public class FeedManagementCoordinator {
     private FeedManagementMediator mMediator;
     private final View mView;
 
-    public FeedManagementCoordinator(Context context) {
+    public FeedManagementCoordinator(
+            Context context, FollowManagementLauncher followManagementLauncher) {
         ModelList listItems = new ModelList();
 
         // Once this is attached to the ListView, there is no need to hold a reference to it.
@@ -35,7 +37,7 @@ public class FeedManagementCoordinator {
         ListView listView = (ListView) mView.findViewById(R.id.feed_management_menu);
         listView.setAdapter(adapter);
 
-        mMediator = new FeedManagementMediator(context, listItems);
+        mMediator = new FeedManagementMediator(context, listItems, followManagementLauncher);
     }
 
     public View getView() {

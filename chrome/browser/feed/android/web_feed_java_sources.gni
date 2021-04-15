@@ -32,6 +32,11 @@ web_feed_java_sources = [
   "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemView.java",
   "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemViewBinder.java",
   "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementMediator.java",
+  "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinator.java",
+  "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementItemProperties.java",
+  "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementItemView.java",
+  "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementItemViewBinder.java",
+  "//chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediator.java",
 ]
 
 web_feed_srcjar_deps = []
