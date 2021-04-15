@@ -1546,9 +1546,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest, UrlNotCaptured) {
 }
 #endif
 
-// These tests are only applicable to Windows currently, as Protocol Handler OS
-// registration has not landed for other platforms yet (crbug/1019239).
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
  protected:
