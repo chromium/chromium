@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -175,8 +176,11 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
                                  config->displayHeight());
   }
 
-  if (config->hasFramerate())
-    result->options.framerate = config->framerate();
+  // Clamp to a reasonable range to avoid overlflows in downstream usage.
+  if (config->hasFramerate()) {
+    result->options.framerate =
+        base::ClampToRange(config->framerate(), .0001, 1'000'000'000.0);
+  }
 
   if (config->hasBitrate())
     result->options.bitrate = config->bitrate();
