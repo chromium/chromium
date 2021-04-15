@@ -1,0 +1,26 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Shortcut Customization App is Chrome OS only")
+
+static_library("shortcut_customization_ui") {
+  sources = [
+    "shortcut_customization_app_ui.cc",
+    "shortcut_customization_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/components/resources:shortcut_customization_app_resources",
+    "//content/public/browser",
+    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/resources:webui_resources_grd_grit",
+    "//ui/webui",
+  ]
+}
+
+group("closure_compile") {
+  deps = [ "resources:closure_compile" ]
+}

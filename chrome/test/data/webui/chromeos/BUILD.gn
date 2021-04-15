@@ -29,6 +29,7 @@ group("closure_compile") {
       "gaia_action_buttons:closure_compile",
       "personalization_app:closure_compile",
       "scanning:closure_compile",
+      "shortcut_customization:closure_compile",
     ]
   }
 }

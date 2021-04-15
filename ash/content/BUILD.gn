@@ -21,5 +21,8 @@ test("ash_content_unittests") {
 
 group("closure_compile") {
   testonly = true
-  deps = [ "//ash/content/scanning:closure_compile" ]
+  deps = [
+    "//ash/content/scanning:closure_compile",
+    "//ash/content/shortcut_customization_ui:closure_compile",
+  ]
 }

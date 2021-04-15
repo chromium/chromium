@@ -592,6 +592,10 @@
   "ash/ash_strings.grd": {
     "messages": [3060],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/content/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
+    "META": {"sizes": {"includes": [200],}},
+    "includes": [3070],
+  },
   "ash/shortcut_viewer/shortcut_viewer_strings.grd": {
     "messages": [3080],
   },

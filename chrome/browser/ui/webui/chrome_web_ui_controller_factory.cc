@@ -92,6 +92,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
@@ -151,6 +152,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/content/scanning/scanning_ui.h"
 #include "ash/content/scanning/url_constants.h"
+#include "ash/content/shortcut_customization_ui/shortcut_customization_app_ui.h"
+#include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -787,6 +790,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::ScanningUI>;
   if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
     return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
+  if (features::IsShortcutCustomizationAppEnabled()) {
+    if (url.host_piece() == ash::kChromeUIShortcutCustomizationAppHost)
+      return &NewWebUI<ash::ShortcutCustomizationAppUI>;
+  }
   if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
       profile->IsRegularProfile()) {
     return &NewWebUI<chromeos::multidevice::ProximityAuthUI>;

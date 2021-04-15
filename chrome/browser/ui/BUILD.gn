@@ -2674,6 +2674,7 @@ static_library("ui") {
       "//ash/components/pcie_peripheral",
       "//ash/constants",
       "//ash/content/scanning",
+      "//ash/content/shortcut_customization_ui",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//ash/public/cpp/app_list/vector_icons",

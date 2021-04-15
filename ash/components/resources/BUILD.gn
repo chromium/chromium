@@ -23,3 +23,21 @@ grit("scanning_app_resources") {
 
   output_dir = "$root_gen_dir/ash"
 }
+
+grit("shortcut_customization_app_resources") {
+  enable_input_discovery_for_gn_analyze = false
+  shortcut_customization_app_gen_dir =
+      "$root_gen_dir/ash/content/shortcut_customization_ui/resources"
+  source = "$shortcut_customization_app_gen_dir/ash_shortcut_customization_app_resources.grd"
+
+  deps = [ "../../content/shortcut_customization_ui/resources:build_grd" ]
+
+  outputs = [
+    "grit/ash_shortcut_customization_app_resources.h",
+    "grit/ash_shortcut_customization_app_resources_map.cc",
+    "grit/ash_shortcut_customization_app_resources_map.h",
+    "ash_shortcut_customization_app_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
