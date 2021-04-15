@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/display/quirks_manager_delegate_impl.h"
+#include "chrome/browser/ash/display/quirks_manager_delegate_impl.h"
 
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
