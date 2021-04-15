@@ -1,3 +1,7 @@
+# As the README.md discusses, worklets run by this service are subject to
+# stringent isolation requirements.  Before pulling in any dependencies
+# to this service, make sure they're not inadvertently breaking these
+# isolation requirements.  Please thoroughly discuss additions with OWNERS.
 include_rules = [
   "+gin",
   "+net",

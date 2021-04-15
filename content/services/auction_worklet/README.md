@@ -10,4 +10,7 @@ worklets. These worklets execute JavaScript functions that do not have access to
 networking, storage, or any other part of a web page (e.g. DOM).  Due to the
 execution of downloaded code and these isolation requirements they're run in
 a separate process.  The Auction Worklet Service orchestrates and controls the
-execution of these auction worklets.
+execution of these auction worklets.  Before making changes to this service
+please thoroughly consult the
+[OWNERS](https://chromium.googlesource.com/chromium/src/+/main/content/services/auction_worklet/OWNERS)
+to ensure changes do not violate the isolation requirements.
