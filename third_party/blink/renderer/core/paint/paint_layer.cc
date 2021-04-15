@@ -3455,13 +3455,25 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
       // context, in order to generate new paint chunks in the correct order.
       // Raster invalidation will be issued if needed during paint.
       SetNeedsRepaint();
-    } else if (old_style &&
-               !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // Change of PaintedOutputInvisible() will affect existence of paint
-      // chunks, so needs repaint.
+    } else if (old_style) {
+      bool new_painted_output_invisible =
+          PaintLayerPainter::PaintedOutputInvisible(new_style);
       if (PaintLayerPainter::PaintedOutputInvisible(*old_style) !=
-          PaintLayerPainter::PaintedOutputInvisible(new_style))
-        SetNeedsRepaint();
+          new_painted_output_invisible) {
+        if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+          // Though CompositeAfterPaint ignores PaintedOutputInvisible during
+          // paint, we still force repaint to ensure FCP/LCP will be reported.
+          // See crbug.com/1184903. Only SetNeedsRepaint() won't work because
+          // we won't repaint the display items which are already in the old
+          // painted result. TODO(crbug.com/1104218): Optimize this.
+          if (!new_painted_output_invisible)
+            GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
+        } else {
+          // Change of PaintedOutputInvisible() will affect existence of paint
+          // chunks, so needs repaint.
+          SetNeedsRepaint();
+        }
+      }
     }
   }
 }

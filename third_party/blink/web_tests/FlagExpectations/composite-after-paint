@@ -13,10 +13,6 @@ compositing/overflow/scrolls-with-respect-to-nested.html [ Skip ]
 compositing/overflow/scrolls-with-respect-to-transform.html [ Skip ]
 compositing/overflow/scrolls-with-respect-to.html [ Skip ]
 
-# We don't repaint when opacity changes from zero to non-zero, so miss the FCP.
-crbug.com/1184903 external/wpt/paint-timing/fcp-only/fcp-opacity.html [ Timeout ]
-crbug.com/1184903 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-opacity.html [ Timeout ]
-
 # Can't rebaseline because the file path is too long.
 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Skip ]
 
@@ -32,6 +28,7 @@ crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.htm
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 crbug.com/1183814 external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Pass ]
 crbug.com/1167352 external/wpt/css/css-will-change/will-change-transform-add-content.html [ Pass ]
+crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Pass ]
 
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
