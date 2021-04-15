@@ -274,7 +274,25 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
 }
 
 - (void)updateWithStatus:(StatusItemState)state text:(NSString*)text {
-  if (!_statusItem) {
+  // As per a crash analysis in https://crbug.com/1193779#c15, there were
+  // situations where the collectionViewModel contained a StatusItem but
+  // the view showed a CVCCell (probably due to some asynchronous update
+  // of the view that is outside of our control). In this situation,
+  // clobber the current model's and view's entries by setting hasStatusCell
+  // to NO.
+  BOOL collectionViewShouldReload = !_statusItem;
+  if (_statusItem && [self.collectionViewModel hasItem:_statusItem]) {
+    NSIndexPath* indexPath =
+        [self.collectionViewModel indexPathForItem:_statusItem];
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:indexPath];
+    if (cell) {
+      collectionViewShouldReload = ![cell isKindOfClass:[StatusCell class]];
+    }
+  }
+
+  // Create or update the status cell.
+  if (collectionViewShouldReload) {
     _statusItem = [[StatusItem alloc] initWithType:ItemTypeStatus];
     _statusItem.text = text;
     _statusItem.state = state;
