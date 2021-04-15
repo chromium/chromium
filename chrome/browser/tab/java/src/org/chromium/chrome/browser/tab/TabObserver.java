@@ -68,8 +68,10 @@ public interface TabObserver {
      * @param params   The params describe the page being loaded.
      * @param loadType The type of load that was performed.
      *
-     * @see Tab$TabLoadStatus#PAGE_LOAD_FAILED
-     * @see Tab$TabLoadStatus#DEFAULT_PAGE_LOAD
+     * @see TabLoadStatus#PAGE_LOAD_FAILED
+     * @see TabLoadStatus#DEFAULT_PAGE_LOAD
+     * @see TabLoadStatus#PARTIAL_PRERENDERED_PAGE_LOAD
+     * @see TabLoadStatus#FULL_PRERENDERED_PAGE_LOAD
      */
     void onLoadUrl(Tab tab, LoadUrlParams params, int loadType);
 

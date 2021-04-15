@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -19,9 +18,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content
  * from network but also other types of content such as NTP, navigation history, etc) and
@@ -29,13 +25,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Tab extends TabLifecycle {
     public static final int INVALID_TAB_ID = -1;
-
-    @IntDef({TabLoadStatus.PAGE_LOAD_FAILED, TabLoadStatus.DEFAULT_PAGE_LOAD})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TabLoadStatus {
-        int PAGE_LOAD_FAILED = 0;
-        int DEFAULT_PAGE_LOAD = 1;
-    }
 
     /**
      * Adds a {@link TabObserver} to be notified on {@link Tab} changes.
@@ -213,7 +202,8 @@ public interface Tab extends TabLifecycle {
      * @param params parameters describing the url load. Note that it is important to set correct
      *         page transition as it is used for ranking URLs in the history so the omnibox
      *         can report suggestions correctly.
-     * @return PAGE_LOAD_FAILED if the URL could not be loaded, otherwise DEFAULT_PAGE_LOAD.
+     * @return FULL_PRERENDERED_PAGE_LOAD or PARTIAL_PRERENDERED_PAGE_LOAD if the page has been
+     *         prerendered. DEFAULT_PAGE_LOAD if it had not.
      */
     int loadUrl(LoadUrlParams params);
 
