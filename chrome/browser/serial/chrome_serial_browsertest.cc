@@ -11,6 +11,7 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -74,15 +75,7 @@ class SerialTest : public InProcessBrowserTest {
   SerialChooserContext* context_;
 };
 
-// TODO(crbug/1069695): Flaky on linux-chromeos-chrome.
-// TODO(crbug/1116072): Flaky on Linux Ozone Tester (X11).
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
-#define MAYBE_NavigateWithChooserCrossOrigin \
-  DISABLED_NavigateWithChooserCrossOrigin
-#else
-#define MAYBE_NavigateWithChooserCrossOrigin NavigateWithChooserCrossOrigin
-#endif
-IN_PROC_BROWSER_TEST_F(SerialTest, MAYBE_NavigateWithChooserCrossOrigin) {
+IN_PROC_BROWSER_TEST_F(SerialTest, NavigateWithChooserCrossOrigin) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -90,12 +83,23 @@ IN_PROC_BROWSER_TEST_F(SerialTest, MAYBE_NavigateWithChooserCrossOrigin) {
       web_contents, 1 /* number_of_navigations */,
       content::MessageLoopRunner::QuitMode::DEFERRED);
 
+  auto waiter = test::ChooserBubbleUiWaiter::Create();
+
+  EXPECT_TRUE(content::ExecJs(web_contents, "navigator.serial.requestPort({})",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the chooser to be displayed before navigating to avoid a race
+  // between the two IPCs.
+  waiter->WaitForChange();
+  EXPECT_TRUE(waiter->has_shown());
+
   EXPECT_TRUE(content::ExecJs(web_contents,
-                              R"(navigator.serial.requestPort({});
-         document.location.href = "https://google.com";)"));
+                              "document.location.href = 'https://google.com'"));
 
   observer.Wait();
-  EXPECT_FALSE(chrome::IsDeviceChooserShowingForTesting(browser()));
+  waiter->WaitForChange();
+  EXPECT_TRUE(waiter->has_closed());
+  EXPECT_EQ(GURL("https://google.com"), web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
