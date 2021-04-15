@@ -478,8 +478,7 @@ class MediaStreamConstraintsUtilAudioTestBase {
   const AudioDeviceCaptureCapability* system_echo_canceller_device_ = nullptr;
   const AudioDeviceCaptureCapability* four_channels_device_ = nullptr;
   const AudioDeviceCaptureCapability* variable_latency_device_ = nullptr;
-  std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_ =
-      nullptr;
+  std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_;
   const std::vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
 
   // TODO(grunell): Store these as separate constants and compare against those

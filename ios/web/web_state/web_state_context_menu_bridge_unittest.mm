@@ -87,8 +87,7 @@ class WebStateContextMenuBridgeTest : public web::WebTestWithWebController {
   }
 
  private:
-  std::unique_ptr<web::WebStateDelegateBridge> web_state_delegate_bridge_ =
-      nullptr;
+  std::unique_ptr<web::WebStateDelegateBridge> web_state_delegate_bridge_;
 };
 
 TEST_F(WebStateContextMenuBridgeTest, IOS13ContextMenuDelegateBridgeTest) {

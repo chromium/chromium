@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // Will be moved into |assistant_manager_service_| when the service is
   // supposed to be created.
   std::unique_ptr<AssistantManagerService>
-      assistant_manager_service_for_testing_ = nullptr;
+      assistant_manager_service_for_testing_;
 
   base::Optional<std::string> access_token_;
 

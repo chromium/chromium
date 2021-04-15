@@ -138,7 +138,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
         protocol::Array<v8_inspector::protocol::Runtime::API::RemoteObject>>();
     for (DOMNodeId node_id : message->Nodes()) {
       std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
-          remote_object = nullptr;
+          remote_object;
       Node* node = DOMNodeIds::NodeForId(node_id);
       if (node) {
         remote_object =

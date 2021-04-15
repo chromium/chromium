@@ -501,7 +501,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
   policy::MockCloudPolicyClient cloud_policy_client_;
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>
-      key_permissions_manager_ = nullptr;
+      key_permissions_manager_;
 };
 
 // Checks that the worker makes all necessary requests to other modules during

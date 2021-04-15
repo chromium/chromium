@@ -89,8 +89,7 @@ class ProfileReportGenerator {
   bool extensions_enabled_ = true;
   bool policies_enabled_ = true;
 
-  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> report_ =
-      nullptr;
+  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> report_;
 };
 
 }  // namespace enterprise_reporting

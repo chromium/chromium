@@ -142,7 +142,7 @@ class WilcoDtcSupportdBridge final
   // The wilco_dtc_supportd notification controller in charge of sending
   // appropriate UI notifications.
   std::unique_ptr<WilcoDtcSupportdNotificationController>
-      notification_controller_ = nullptr;
+      notification_controller_;
 
   // The Wilco DTC configuration data blob, passed from the device policy, is
   // stored and owned by |WilcoDtcSupportdManager|.

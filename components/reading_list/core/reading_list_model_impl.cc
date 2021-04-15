@@ -337,7 +337,7 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
   std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
-      scoped_model_batch_updates = nullptr;
+      scoped_model_batch_updates;
   if (GetEntryByURL(url)) {
     scoped_model_batch_updates = BeginBatchUpdates();
     RemoveEntryByURL(url);

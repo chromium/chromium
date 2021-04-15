@@ -379,10 +379,9 @@ void LastDownloadFinder::RemoveProfileAndReportIfDone(
 void LastDownloadFinder::ReportResults() {
   DCHECK(profile_states_.empty());
 
-  std::unique_ptr<ClientIncidentReport_DownloadDetails> binary_details =
-      nullptr;
+  std::unique_ptr<ClientIncidentReport_DownloadDetails> binary_details;
   std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
-      non_binary_details = nullptr;
+      non_binary_details;
 
   if (details_) {
     binary_details =
