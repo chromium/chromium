@@ -20,9 +20,11 @@ const char kOptimizationGuideServiceGetModelsDefaultURL[] =
 const char kLoadedHintLocalHistogramString[] =
     "OptimizationGuide.LoadedHint.Result";
 
-const char kOptimizationGuideHintStore[] = "previews_hint_cache_store";
+const base::FilePath::CharType kOptimizationGuideHintStore[] =
+    FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
-const char kOptimizationGuidePredictionModelAndFeaturesStore[] =
-    "optimization_guide_model_and_features_store";
+const base::FilePath::CharType
+    kOptimizationGuidePredictionModelAndFeaturesStore[] =
+        FILE_PATH_LITERAL("optimization_guide_model_and_features_store");
 
 }  // namespace optimization_guide

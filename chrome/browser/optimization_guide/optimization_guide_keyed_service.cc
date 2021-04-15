@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -101,6 +102,24 @@ void LogOptimizationTargetDecisionAndPassOptimizationGuideDecision(
           optimization_target_decision));
 }
 
+const char kOldOptimizationGuideHintStore[] = "previews_hint_cache_store";
+
+// Deletes old store paths that were written in incorrect locations.
+void DeleteOldStorePaths(const base::FilePath& profile_path) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          base::GetDeletePathRecursivelyCallback(),
+          profile_path.AddExtensionASCII(kOldOptimizationGuideHintStore)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          base::GetDeletePathRecursivelyCallback(),
+          profile_path.AddExtension(
+              optimization_guide::
+                  kOptimizationGuidePredictionModelAndFeaturesStore)));
+}
+
 }  // namespace
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -168,7 +187,7 @@ void OptimizationGuideKeyedService::Initialize() {
         optimization_guide::features::ShouldPersistHintsToDisk()
             ? std::make_unique<optimization_guide::OptimizationGuideStore>(
                   proto_db_provider,
-                  profile_path.AddExtensionASCII(
+                  profile_path.Append(
                       optimization_guide::kOptimizationGuideHintStore),
                   base::ThreadPool::CreateSequencedTaskRunner(
                       {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
@@ -178,7 +197,7 @@ void OptimizationGuideKeyedService::Initialize() {
     prediction_model_and_features_store_ =
         std::make_unique<optimization_guide::OptimizationGuideStore>(
             proto_db_provider,
-            profile_path.AddExtensionASCII(
+            profile_path.Append(
                 optimization_guide::
                     kOptimizationGuidePredictionModelAndFeaturesStore),
             base::ThreadPool::CreateSequencedTaskRunner(
@@ -193,6 +212,11 @@ void OptimizationGuideKeyedService::Initialize() {
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, top_host_provider_.get(),
       url_loader_factory, profile->GetPrefs(), profile);
+
+  // The previous store paths were written in incorrect locations. Delete the
+  // old paths. Remove this code in 04/2022 since it should be assumed that all
+  // clients that had the previous path have had their previous stores deleted.
+  DeleteOldStorePaths(profile_path);
 }
 
 OptimizationGuideHintsManager*

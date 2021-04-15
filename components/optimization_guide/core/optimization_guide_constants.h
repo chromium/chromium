@@ -26,11 +26,12 @@ extern const char kOptimizationGuideServiceGetModelsDefaultURL[];
 extern const char kLoadedHintLocalHistogramString[];
 
 // The folder where the hint data will be stored on disk.
-extern const char kOptimizationGuideHintStore[];
+extern const base::FilePath::CharType kOptimizationGuideHintStore[];
 
 // The folder where the prediction model and host model features data will be
 // stored on disk.
-extern const char kOptimizationGuidePredictionModelAndFeaturesStore[];
+extern const base::FilePath::CharType
+    kOptimizationGuidePredictionModelAndFeaturesStore[];
 
 }  // namespace optimization_guide
 
