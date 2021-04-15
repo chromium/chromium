@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import six
+
 from page_sets.rendering import story_tags
 from page_sets.system_health import platforms
 
@@ -22,9 +24,8 @@ class _MetaRenderingStory(type):
     return cls.__dict__.get('ABSTRACT_STORY', False)
 
 
-class RenderingStory(page.Page):
+class RenderingStory(six.with_metaclass(_MetaRenderingStory, page.Page)):
   """Abstract base class for Rendering user stories."""
-  __metaclass__ = _MetaRenderingStory
 
   BASE_NAME = NotImplemented
   URL = NotImplemented
