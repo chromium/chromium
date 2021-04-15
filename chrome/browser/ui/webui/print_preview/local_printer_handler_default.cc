@@ -103,8 +103,8 @@ void OnDidFetchCapabilities(
   VLOG(1) << "Received printer info & capabilities for " << device_name;
   PrinterSemanticCapsAndDefaults caps = caps_and_defaults.value();
   base::Value settings = AssemblePrinterSettings(
-      device_name, std::move(printer_info.value()),
-      std::move(user_defined_papers.value()), has_secure_protocol, &caps);
+      device_name, printer_info.value(), user_defined_papers.value(),
+      has_secure_protocol, &caps);
   std::move(callback).Run(std::move(settings));
 }
 
