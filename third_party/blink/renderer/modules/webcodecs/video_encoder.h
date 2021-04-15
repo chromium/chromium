@@ -14,6 +14,7 @@
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
+#include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
@@ -90,15 +91,13 @@ class MODULES_EXPORT VideoEncoder final
 
   void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
 
-  void OnReceivedGpuFactories(Request*, media::GpuVideoAcceleratorFactories*);
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*,
                             ExceptionState&) override;
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
   VideoFrame* CloneFrame(VideoFrame*, ExceptionState&) override;
 
-  void CreateAndInitializeEncoderWithoutAcceleration(Request* request);
-  void CreateAndInitializeEncoderOnEncoderSupportKnown(
+  void ContinueConfigureWithGpuFactories(
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
   std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(

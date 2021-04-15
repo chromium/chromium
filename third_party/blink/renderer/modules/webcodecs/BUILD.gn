@@ -36,6 +36,8 @@ blink_modules_sources("webcodecs") {
     "encoded_video_chunk.h",
     "encoder_base.cc",
     "encoder_base.h",
+    "gpu_factories_retriever.cc",
+    "gpu_factories_retriever.h",
     "hardware_preference.cc",
     "hardware_preference.h",
     "image_decoder_core.cc",
