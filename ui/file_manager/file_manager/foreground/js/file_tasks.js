@@ -947,7 +947,10 @@
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
-      item.message = strf('ARCHIVE_MOUNT_FAILED', filename);
+      const msgId = error === VolumeManagerCommon.VolumeError.INVALID_PATH ?
+          'ARCHIVE_MOUNT_INVALID_PATH' :
+          'ARCHIVE_MOUNT_FAILED';
+      item.message = strf(msgId, filename);
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
