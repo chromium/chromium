@@ -78,10 +78,11 @@ ChosenObjectView::ChosenObjectView(
       display_name, views::style::CONTEXT_DIALOG_BODY_TEXT);
   layout->AddView(std::move(label));
 
-  // Create the delete button.
+  // Create the delete button. It is safe to use base::Unretained here
+  // because the button is owned by this object.
   std::unique_ptr<views::ImageButton> delete_button =
       views::CreateVectorImageButton(base::BindRepeating(
-          [](ChosenObjectView* view) { view->ExecuteDeleteCommand(); }, this));
+          &ChosenObjectView::ExecuteDeleteCommand, base::Unretained(this)));
 
   views::SetImageFromVectorIcon(
       delete_button.get(), vector_icons::kCloseRoundedIcon,
@@ -137,9 +138,18 @@ void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
 ChosenObjectView::~ChosenObjectView() {}
 
 void ChosenObjectView::ExecuteDeleteCommand() {
+  // Policy-managed permissions cannot be deleted. This isn't normally
+  // reachable but views::test::ButtonTestApi::NotifyClick doesn't check
+  // before executing the PressedCallback.
+  if (info_->chooser_object->source ==
+      content_settings::SettingSource::SETTING_SOURCE_POLICY) {
+    return;
+  }
+
   // Change the icon to reflect the selected setting.
   UpdateIconImage(/*is_deleted=*/true);
 
+  DCHECK(delete_button_->GetEnabled());
   DCHECK(delete_button_->GetVisible());
   delete_button_->SetVisible(false);
 

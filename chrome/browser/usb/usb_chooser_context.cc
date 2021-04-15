@@ -78,12 +78,13 @@ std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
   const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
   if (vendor_name) {
     if (product_id == kDeviceIdWildcard) {
-      return l10n_util::GetStringFUTF16(IDS_DEVICE_DESCRIPTION_FOR_VENDOR_NAME,
-                                        base::UTF8ToUTF16(vendor_name));
+      return l10n_util::GetStringFUTF16(
+          IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_VENDOR_NAME,
+          base::UTF8ToUTF16(vendor_name));
     }
 
     return l10n_util::GetStringFUTF16(
-        IDS_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_NAME,
+        IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_NAME,
         base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
         base::UTF8ToUTF16(vendor_name));
   }
@@ -91,15 +92,16 @@ std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
 
   if (product_id == kDeviceIdWildcard) {
     if (vendor_id == kDeviceIdWildcard)
-      return l10n_util::GetStringUTF16(IDS_DEVICE_DESCRIPTION_FOR_ANY_VENDOR);
+      return l10n_util::GetStringUTF16(
+          IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_ANY_VENDOR);
 
     return l10n_util::GetStringFUTF16(
-        IDS_DEVICE_DESCRIPTION_FOR_VENDOR_ID,
+        IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_VENDOR_ID,
         base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id)));
   }
 
   return l10n_util::GetStringFUTF16(
-      IDS_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_ID,
+      IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_ID,
       base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
       base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id)));
 }

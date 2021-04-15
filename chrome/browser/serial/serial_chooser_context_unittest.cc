@@ -473,7 +473,7 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
                         ReadJson(R"([
                {
-                 "devices": [{ "vendor_id": 1234, "product_id": 5678 }],
+                 "devices": [{ "vendor_id": 6353, "product_id": 19985 }],
                  "urls": [ "https://bar.origin" ]
                }
              ])"));
@@ -484,16 +484,16 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   auto usb_port1 = device::mojom::SerialPortInfo::New();
   usb_port1->token = base::UnguessableToken::Create();
   usb_port1->has_vendor_id = true;
-  usb_port1->vendor_id = 1234;
+  usb_port1->vendor_id = 0x18D1;
   usb_port1->has_product_id = true;
-  usb_port1->product_id = 5678;
+  usb_port1->product_id = 0x4E11;
 
   auto usb_port2 = device::mojom::SerialPortInfo::New();
   usb_port2->token = base::UnguessableToken::Create();
   usb_port2->has_vendor_id = true;
-  usb_port2->vendor_id = 1234;
+  usb_port2->vendor_id = 0x18D1;
   usb_port2->has_product_id = true;
-  usb_port2->product_id = 8765;
+  usb_port2->product_id = 0x4E12;
 
   EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *platform_port));
@@ -505,9 +505,93 @@ TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
   EXPECT_TRUE(context()->HasPortPermission(kBarOrigin, *usb_port1));
   EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *usb_port2));
 
-  // TODO(crbug.com/1001242): Add tests for GetGrantedObjects() and
-  // GetAllGrantedObjects() once those have been updated to include device
-  // permissions granted by policy.
+  auto foo_objects = context()->GetGrantedObjects(kFooOrigin);
+  EXPECT_EQ(1u, foo_objects.size());
+  const auto& foo_object = foo_objects.front();
+  EXPECT_EQ(kFooOrigin.GetURL(), foo_object->origin);
+  EXPECT_EQ(u"Any serial port",
+            context()->GetObjectDisplayName(foo_object->value));
+  EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, foo_object->source);
+  EXPECT_FALSE(foo_object->incognito);
+
+  auto bar_objects = context()->GetGrantedObjects(kBarOrigin);
+  EXPECT_EQ(1u, bar_objects.size());
+  const auto& bar_object = bar_objects.front();
+  EXPECT_EQ(kBarOrigin.GetURL(), bar_object->origin);
+  EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(bar_object->value));
+  EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, bar_object->source);
+  EXPECT_FALSE(bar_object->incognito);
+
+  auto all_objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(2u, all_objects.size());
+  bool found_foo_object = false, found_bar_object = false;
+  for (const auto& object : all_objects) {
+    if (object->origin == kFooOrigin.GetURL()) {
+      EXPECT_FALSE(found_foo_object);
+      found_foo_object = true;
+      EXPECT_EQ(u"Any serial port",
+                context()->GetObjectDisplayName(object->value));
+    } else if (object->origin == kBarOrigin.GetURL()) {
+      EXPECT_FALSE(found_bar_object);
+      found_bar_object = true;
+      EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(object->value));
+    }
+    EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, object->source);
+    EXPECT_FALSE(object->incognito);
+  }
+  EXPECT_TRUE(found_foo_object);
+  EXPECT_TRUE(found_bar_object);
+}
+
+TEST_F(SerialChooserContextTest, PolicyAllowForUrlsDescriptionStrings) {
+  const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
+  const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
+
+  auto* prefs = profile()->GetTestingPrefService();
+  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                        ReadJson(R"([
+               {
+                 "devices": [{ "vendor_id": 6353 }],
+                 "urls": [ "https://google.com" ]
+               },
+               {
+                 "devices": [{ "vendor_id": 6354 }],
+                 "urls": [ "https://unknown-vendor.com" ]
+               },
+               {
+                 "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
+                 "urls": [ "https://unknown-product.google.com" ]
+               },
+               {
+                 "devices": [{ "vendor_id": 6354, "product_id": 5678 }],
+                 "urls": [ "https://unknown-product.unknown-vendor.com" ]
+               }
+             ])"));
+
+  auto google_objects = context()->GetGrantedObjects(
+      url::Origin::Create(GURL("https://google.com")));
+  EXPECT_EQ(1u, google_objects.size());
+  EXPECT_EQ(u"USB devices from Google Inc.",
+            context()->GetObjectDisplayName(google_objects[0]->value));
+
+  auto unknown_vendor_objects = context()->GetGrantedObjects(
+      url::Origin::Create(GURL("https://unknown-vendor.com")));
+  EXPECT_EQ(1u, unknown_vendor_objects.size());
+  EXPECT_EQ(u"USB devices from vendor 0x18D2",
+            context()->GetObjectDisplayName(unknown_vendor_objects[0]->value));
+
+  auto unknown_product_objects = context()->GetGrantedObjects(
+      url::Origin::Create(GURL("https://unknown-product.google.com")));
+  EXPECT_EQ(1u, unknown_product_objects.size());
+  EXPECT_EQ(u"USB devices with product ID 0x162E from Google Inc.",
+            context()->GetObjectDisplayName(unknown_product_objects[0]->value));
+
+  auto unknown_product_and_vendor_objects = context()->GetGrantedObjects(
+      url::Origin::Create(GURL("https://unknown-product.unknown-vendor.com")));
+  EXPECT_EQ(1u, unknown_product_and_vendor_objects.size());
+  EXPECT_EQ(u"USB devices with product ID 0x162E from vendor 0x18D2",
+            context()->GetObjectDisplayName(
+                unknown_product_and_vendor_objects[0]->value));
 }
 
 TEST_F(SerialChooserContextTest, PolicyAllowOverridesGuard) {

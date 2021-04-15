@@ -10414,19 +10414,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Device descriptions for devices defined by policy with wildcards. -->
-    <message name="IDS_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_NAME" desc="String describing a device by its vendor name when only the numeric product ID is available.">
+    <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_NAME" desc="String describing a device by its vendor name when only the numeric product ID is available.">
       Unknown product <ph name="PRODUCT_ID">$1<ex>123</ex></ph> from <ph name="VENDOR_NAME">$2<ex>Google</ex></ph>
     </message>
-    <message name="IDS_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_ID" desc="String describing a device when only the numeric product ID and vendor ID are available.">
+    <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_ID" desc="String describing a device when only the numeric product ID and vendor ID are available.">
       Unknown product <ph name="PRODUCT_ID">$1<ex>123</ex></ph> from vendor <ph name="VENDOR_ID">$2<ex>123</ex></ph>
     </message>
-    <message name="IDS_DEVICE_DESCRIPTION_FOR_VENDOR_ID" desc="String describing devices from a vendor by ID.">
+    <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_VENDOR_ID" desc="String describing devices from a vendor by ID.">
       Devices from vendor <ph name="VENDOR_ID">$1<ex>123</ex></ph>
     </message>
-    <message name="IDS_DEVICE_DESCRIPTION_FOR_VENDOR_NAME" desc="String describing devices from a vendor.">
+    <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_VENDOR_NAME" desc="String describing devices from a vendor.">
       Devices from <ph name="VENDOR_NAME">$1<ex>Google</ex></ph>
     </message>
-    <message name="IDS_DEVICE_DESCRIPTION_FOR_ANY_VENDOR" desc="String describing devices from any vendor.">
+    <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_ANY_VENDOR" desc="String describing devices from any vendor.">
       Devices from any vendor
     </message>
 
@@ -10452,6 +10452,21 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_SERIAL_PORT_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of serial devices.">
         Finding serial devices...
+      </message>
+      <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME" desc="String describing a USB device permission granted by enterprise policy to a site when the vendor name is available by a numeric product ID must be used.">
+        USB devices with product ID <ph name="PRODUCT_ID">$1<ex>0x12AB</ex></ph> from <ph name="VENDOR_NAME">$2<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID" desc="String describing a USB device permission granted by enterprise policy to a site when only the numeric product ID and vendor ID are available.">
+        USB devices with product ID <ph name="PRODUCT_ID">$1<ex>0x12AB</ex></ph> from vendor <ph name="VENDOR_ID">$2<ex>0x12AB</ex></ph>
+      </message>
+      <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID" desc="String describing a USB device permission granted by enterprise policy to a site for all devices from a single vendor when only the numeric vendor ID is available.">
+        USB devices from vendor <ph name="VENDOR_ID">$1<ex>123</ex></ph>
+      </message>
+      <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME" desc="String describing a USB device permission granted by enterprise policy to a site for all devices from a single vendor.">
+        USB devices from <ph name="VENDOR_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT" desc="String describing a serial port permission granted by enterprise policy for all ports.">
+        Any serial port
       </message>
     </if>
 

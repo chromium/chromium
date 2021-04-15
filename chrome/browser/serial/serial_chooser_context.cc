@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -15,8 +16,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/cpp/usb/usb_ids.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -84,6 +88,52 @@ base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
 #endif  // defined(OS_MAC)
 #endif  // defined(OS_WIN)
   return value;
+}
+
+base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
+                                       uint16_t product_id) {
+  base::Value object(base::Value::Type::DICTIONARY);
+  const char* product_name =
+      device::UsbIds::GetProductName(vendor_id, product_id);
+  if (product_name) {
+    object.SetStringKey(kPortNameKey, product_name);
+  } else {
+    const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
+    if (vendor_name) {
+      object.SetStringKey(
+          kPortNameKey,
+          l10n_util::GetStringFUTF16(
+              IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_NAME,
+              base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
+              base::UTF8ToUTF16(vendor_name)));
+    } else {
+      object.SetStringKey(
+          kPortNameKey,
+          l10n_util::GetStringFUTF16(
+              IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID,
+              base::ASCIIToUTF16(base::StringPrintf("0x%04X", product_id)),
+              base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id))));
+    }
+  }
+  return object;
+}
+
+base::Value VendorIdToValue(uint16_t vendor_id) {
+  base::Value object(base::Value::Type::DICTIONARY);
+  const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
+  if (vendor_name) {
+    object.SetStringKey(kPortNameKey,
+                        l10n_util::GetStringFUTF16(
+                            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_NAME,
+                            base::UTF8ToUTF16(vendor_name)));
+  } else {
+    object.SetStringKey(
+        kPortNameKey,
+        l10n_util::GetStringFUTF16(
+            IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_VENDOR_ID,
+            base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id))));
+  }
+  return object;
 }
 
 void RecordPermissionRevocation(SerialPermissionRevoked type) {
@@ -154,6 +204,39 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
   }
 
+  for (const auto& entry : policy_.usb_device_policy()) {
+    if (!base::Contains(entry.second, origin)) {
+      continue;
+    }
+
+    base::Value object =
+        VendorAndProductIdsToValue(entry.first.first, entry.first.second);
+    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+        origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
+        is_incognito_));
+  }
+
+  for (const auto& entry : policy_.usb_vendor_policy()) {
+    if (!base::Contains(entry.second, origin)) {
+      continue;
+    }
+
+    base::Value object = VendorIdToValue(entry.first);
+    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+        origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
+        is_incognito_));
+  }
+
+  if (base::Contains(policy_.all_ports_policy(), origin)) {
+    base::Value object(base::Value::Type::DICTIONARY);
+    object.SetStringKey(
+        kPortNameKey,
+        l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+        origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
+        is_incognito_));
+  }
+
   return objects;
 }
 
@@ -176,6 +259,39 @@ SerialChooserContext::GetAllGrantedObjects() {
           origin, it->second.Clone(),
           content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
+  }
+
+  for (const auto& entry : policy_.usb_device_policy()) {
+    base::Value object =
+        VendorAndProductIdsToValue(entry.first.first, entry.first.second);
+
+    for (const auto& origin : entry.second) {
+      objects.push_back(
+          std::make_unique<permissions::ChooserContextBase::Object>(
+              origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
+              is_incognito_));
+    }
+  }
+
+  for (const auto& entry : policy_.usb_vendor_policy()) {
+    base::Value object = VendorIdToValue(entry.first);
+
+    for (const auto& origin : entry.second) {
+      objects.push_back(
+          std::make_unique<permissions::ChooserContextBase::Object>(
+              origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
+              is_incognito_));
+    }
+  }
+
+  base::Value object(base::Value::Type::DICTIONARY);
+  object.SetStringKey(
+      kPortNameKey,
+      l10n_util::GetStringUTF16(IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
+  for (const auto& origin : policy_.all_ports_policy()) {
+    objects.push_back(std::make_unique<permissions::ChooserContextBase::Object>(
+        origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
+        is_incognito_));
   }
 
   return objects;

@@ -459,6 +459,9 @@
     <message name="IDS_PAGE_INFO_SERIAL_PORT_SECONDARY_LABEL" desc="The label displayed underneath the port name to inform the user that the permission listed refers to a serial port.">
       Serial port
     </message>
+    <message name="IDS_PAGE_INFO_SERIAL_PORT_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a serial port explicitly allowed by the user's enterprise policy.">
+      Serial port allowed by your administrator
+    </message>
     <message name="IDS_PAGE_INFO_DELETE_SERIAL_PORT" desc="The tooltip displayed when hovering over the button that will remove permission to access a serial port that the user previously granted to the site.">
       Revoke access
     </message>
