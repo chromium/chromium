@@ -55,7 +55,7 @@ void RecordPrinterList(size_t& call_count,
   printers_out.reset(printers.DeepCopy());
 }
 
-// Used as a callback to StartGetPrinters in tests.
+// Used as a callback to `StartGetPrinters` in tests.
 // Records that the test is done.
 void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
@@ -100,15 +100,11 @@ Printer CreateEnterprisePrinter(const std::string& id,
   return printer;
 }
 
-// Converts JSON string to base::ListValue object.
-// On failure, returns NULL and fills `error` string.
-std::unique_ptr<base::ListValue> GetJSONAsListValue(const std::string& json,
-                                                    std::string& error) {
-  auto ret = base::ListValue::From(
+// Converts JSON string to `base::Value` object.
+// On failure, fills `error` string and the return value is not a list.
+base::Value GetJSONAsValue(const std::string& json, std::string& error) {
+  return base::Value::FromUniquePtrValue(
       JSONStringValueDeserializer(json).Deserialize(nullptr, &error));
-  if (!ret)
-    error = "Value is not a list.";
-  return ret;
 }
 
 // Fake `PpdProvider` backend. This fake `PpdProvider` is used to fake fetching
@@ -295,10 +291,10 @@ TEST_F(LocalPrinterHandlerChromeosTest, GetPrinters) {
     ]
   )";
   std::string error;
-  std::unique_ptr<base::ListValue> expected_printers(
-      GetJSONAsListValue(expected_list, std::ref(error)));
-  ASSERT_TRUE(expected_printers) << "Error deserializing printers: " << error;
-  EXPECT_EQ(*printers, *expected_printers);
+  base::Value expected_printers(GetJSONAsValue(expected_list, error));
+  ASSERT_TRUE(expected_printers.is_list())
+      << "Error deserializing printers: " << error;
+  EXPECT_EQ(*printers, expected_printers);
 }
 
 // Tests that fetching capabilities for an existing installed printer is

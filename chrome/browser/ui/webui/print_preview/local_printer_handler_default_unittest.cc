@@ -46,7 +46,7 @@ void RecordPrinterList(size_t& call_count,
   printers_out.reset(printers.DeepCopy());
 }
 
-// Used as a callback to StartGetPrinters in tests.
+// Used as a callback to `StartGetPrinters` in tests.
 // Records that the test is done.
 void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
@@ -57,16 +57,11 @@ void RecordGetCapability(base::Value& capabilities_out,
   capabilities_out = std::move(capability);
 }
 
-// Converts JSON string to base::ListValue object.
-// On failure, returns nullptr and fills `error` string.
-std::unique_ptr<base::ListValue> GetJSONAsListValue(
-    const base::StringPiece& json,
-    std::string& error) {
-  auto ret = base::ListValue::From(
+// Converts JSON string to `base::Value` object.
+// On failure, fills `error` string and the return value is not a list.
+base::Value GetJSONAsValue(const base::StringPiece& json, std::string& error) {
+  return base::Value::FromUniquePtrValue(
       JSONStringValueDeserializer(json).Deserialize(nullptr, &error));
-  if (!ret)
-    error = "Value is not a list.";
-  return ret;
 }
 
 }  // namespace
@@ -210,10 +205,10 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
     ]
   )";
   std::string error;
-  std::unique_ptr<base::ListValue> expected_printers(
-      GetJSONAsListValue(expected_list, error));
-  ASSERT_TRUE(expected_printers) << "Error deserializing printers: " << error;
-  EXPECT_EQ(*printers, *expected_printers);
+  base::Value expected_printers(GetJSONAsValue(expected_list, error));
+  ASSERT_TRUE(expected_printers.is_list())
+      << "Error deserializing printers: " << error;
+  EXPECT_EQ(*printers, expected_printers);
 }
 
 TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
