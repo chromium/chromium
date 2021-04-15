@@ -514,6 +514,7 @@ class ServerProc(object):
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_address,
                       config, **kwargs):
+        ensure_logger(config)
         if sys.platform == "darwin":
             # on Darwin, NOFILE starts with a very low limit (256), so bump it up a little
             # by way of comparison, Debian starts with a limit of 1024, Windows 512
@@ -1065,6 +1066,13 @@ class MpContext(object):
     def __getattr__(self, name):
         return getattr(multiprocessing, name)
 
+def ensure_logger(config):
+    global logger
+    try:
+        logger
+    except NameError:
+        logger = config.logger
+        set_logger(logger)
 
 def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs):
     received_signal = threading.Event()
@@ -1078,9 +1086,7 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, **kwargs)
     with build_config(os.path.join(repo_root, "config.json"),
                       config_cls=config_cls,
                       **kwargs) as config:
-        global logger
-        logger = config.logger
-        set_logger(logger)
+        ensure_logger(config)
         # Configure the root logger to cover third-party libraries.
         logging.getLogger().setLevel(config.log_level)
 
