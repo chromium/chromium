@@ -21,7 +21,7 @@ destUrl += `&final_resource=/resource-timing/resources/blue-with-tao.png`;
 destUrl += '&tao_steps=3';
 
 attribute_test(
-  () => load.image(destUrl),
+  load.image, destUrl,
   invariants.assert_tao_enabled_cross_origin_redirected_resource,
   "Verify that cross origin resources' timings are exposed when cross-origin " +
   "redirects have `Timing-Allow-Origin: *` headers");

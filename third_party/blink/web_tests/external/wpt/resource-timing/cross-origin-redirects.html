@@ -19,7 +19,7 @@ const blank_page = `/resource-timing/resources/blank_page_green.htm`;
 const destUrl = `/common/redirect.py?location=${REMOTE_ORIGIN}/${blank_page}`;
 
 attribute_test(
-  () => load.iframe(destUrl),
+  load.iframe, destUrl,
   invariants.assert_cross_origin_redirected_resource,
   "Verify that cross origin resources' timings aren't exposed when even as " +
   "targets of HTTP redirects.");

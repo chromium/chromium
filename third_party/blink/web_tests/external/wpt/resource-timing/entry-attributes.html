@@ -10,7 +10,7 @@
 <script src="resources/entry-invariants.js"></script>
 <script>
 attribute_test(
-  () => load.image("resources/fake_responses.py#hash=1"),
+  load.image, "resources/fake_responses.py#hash=1",
   entry => {
     assert_true(entry.name.includes('#hash=1'),
       "There should be a hash in the resource name");
@@ -19,12 +19,12 @@ attribute_test(
   "Image resources should generate conformant entries");
 
 attribute_test(
-  () => load.font("/fonts/Ahem.ttf"),
+  load.font, "/fonts/Ahem.ttf",
   invariants.assert_http_resource,
   "Font resources should generate conformant entries");
 
 attribute_test(
-  () => load.image("/common/redirect.py?location=resources/fake_responses.py"),
+  load.image, "/common/redirect.py?location=resources/fake_responses.py",
   invariants.assert_same_origin_redirected_resource,
   "Same-origin redirects should populate redirectStart/redirectEnd");
 </script>
