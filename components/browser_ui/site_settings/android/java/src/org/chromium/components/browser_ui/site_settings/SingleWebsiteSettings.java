@@ -678,6 +678,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             // regular Preference that takes users to OS settings on click.
             ChromeImageViewPreference newPreference =
                     createReadOnlyCopyOf(preference, overrideSummary, value);
+            newPreference.setImageView(R.drawable.permission_popups, 0,
+                    unused -> launchOsChannelSettingsFromPreference(preference));
+            newPreference.setImageColor(R.color.default_icon_color_secondary);
             newPreference.setDefaultValue(value);
 
             newPreference.setOnPreferenceClickListener(unused -> {
