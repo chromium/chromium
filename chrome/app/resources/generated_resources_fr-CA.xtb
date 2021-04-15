@@ -1974,6 +1974,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="313205617302240621">Mot de passe oublié?</translation>
 <translation id="3132277757485842847">Nous n'avons pas pu maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
+<translation id="3134393957315651797">Sélectionner l'état de la fonctionnalité expérimentale <ph name="EXPERIMENT_NAME" />. Description de la fonctionnalité expérimentale : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="313963229645891001">Téléchargement en cours : <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
@@ -3304,7 +3305,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4635398712689569051">Les utilisateurs invités n'ont pas accès à la page <ph name="PAGE_NAME" />.</translation>
 <translation id="4635427303840967665">Connexion au profil en cours… Cette opération peut prendre jusqu'à 30 secondes.</translation>
 <translation id="4635444580397524003">La sauvegarde Linux a été restaurée.</translation>
-<translation id="4636682061478263818">Fichiers Disque</translation>
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4637083375689622795">Autres actions, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Élément de texte}one{# élément de texte}other{# éléments de texte}}</translation>
@@ -4513,7 +4513,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> partage un onglet Chrome et du son avec <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter et de vous reconnecter.</translation>
-<translation id="6049004884579590341">Maintenez le doigt sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran</translation>
 <translation id="6051354611314852653">Oups… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6052976518993719690">Autorité de certification SSL</translation>
 <translation id="6053401458108962351">&amp;Effacer les données de navigation…</translation>

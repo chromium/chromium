@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">Забыли пароль?</translation>
 <translation id="3132277757485842847">Не удалось сохранить подключение к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="3132996321662585180">Обновлять ежедневно</translation>
+<translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">Недействительный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Скачивание: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
@@ -3303,7 +3304,6 @@
 <translation id="4635398712689569051">Страница "<ph name="PAGE_NAME" />" недоступна в гостевом режиме</translation>
 <translation id="4635427303840967665">Выполняется подключение к профилю. На это может уйти до 30 секунд.</translation>
 <translation id="4635444580397524003">Данные из резервной копии Linux восстановлены.</translation>
-<translation id="4636682061478263818">Файлы на Диске</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Другие действия в аккаунте <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{SMS}one{# SMS}few{# SMS}many{# SMS}other{# SMS}}</translation>
@@ -4513,7 +4513,6 @@
 <translation id="6044805581023976844">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к вкладке Chrome и к аудио.</translation>
 <translation id="6045114302329202345">Основная кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Ошибка синхронизации. Выйдите из системы и войдите снова.</translation>
-<translation id="6049004884579590341">Чтобы выйти из полноэкранного режима, нажмите и удерживайте клавишу |<ph name="ACCELERATOR" />|</translation>
 <translation id="6051354611314852653">Не удалось предоставить доступ API на этом устройстве.</translation>
 <translation id="6052976518993719690">Центр сертификации SSL</translation>
 <translation id="6053401458108962351">&amp;Удаление данных о просмотренных страницах...</translation>
@@ -6797,7 +6796,7 @@
 <translation id="8620436878122366504">Ещё не одобрено родителями</translation>
 <translation id="8621866727807194849">На компьютере обнаружено вредоносное ПО. Chrome удалит его, восстановит настройки и отключит расширения. Это вернет браузер в обычное состояние.</translation>
 <translation id="8621979332865976405">Откройте доступ ко всему экрану</translation>
-<translation id="8624354461147303341">Получать скидки</translation>
+<translation id="8624354461147303341">Разрешить</translation>
 <translation id="862542460444371744">Расширения</translation>
 <translation id="8625663000550647058">Запретить сайтам использовать микрофон</translation>
 <translation id="8625916342247441948">Запретить сайтам подключаться к HID-устройствам</translation>

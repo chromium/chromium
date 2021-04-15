@@ -1349,6 +1349,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">Toque em |<ph name="ACCELERATOR" />| e mantenha essa tecla pressionada para sair do modo tela cheia</translation>
 <translation id="6049488691372270142">Entrega de página</translation>
 <translation id="6051221802930200923">Não é possível acessar <ph name="SITE" /> no momento, porque o site usa bloqueio de certificados. Como os ataques e erros de rede são geralmente temporários, esta pagina provavelmente funcionará mais tarde.</translation>
 <translation id="6051898664905071243">Contagem de páginas:</translation>
@@ -1426,6 +1427,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6390200185239044127">Dobra sanfona simples</translation>
 <translation id="6390662030813198813">Engineering E</translation>
 <translation id="6393956493820063117">A política do administrador bloqueou a opção de colar conteúdo de <ph name="ORIGIN_NAME" /> neste local</translation>
+<translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>

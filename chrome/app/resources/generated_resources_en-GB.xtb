@@ -1973,6 +1973,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="313205617302240621">Forgot password?</translation>
 <translation id="3132277757485842847">We were unable to maintain a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
+<translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Invalid PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="313963229645891001">Downloading, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
@@ -3303,7 +3304,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is not available to Guest users.</translation>
 <translation id="4635427303840967665">Connecting to profile. This may take up to 30 seconds.</translation>
 <translation id="4635444580397524003">Linux backup has been successfully restored.</translation>
-<translation id="4636682061478263818">Drive files</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">More actions, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# texts}}</translation>
@@ -4513,7 +4513,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> is sharing a Chrome tab and audio with <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primary TrackPoint button</translation>
 <translation id="6047632800149092791">Sync isn't working. Try signing out and back in again.</translation>
-<translation id="6049004884579590341">Press and hold |<ph name="ACCELERATOR" />| to exit full screen</translation>
 <translation id="6051354611314852653">Oops!  The system failed to authorise API access for this device.</translation>
 <translation id="6052976518993719690">SSL Certification Authority</translation>
 <translation id="6053401458108962351">&amp;Clear browsing data...</translation>

@@ -1973,6 +1973,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="313205617302240621">Сырсөздү унутуп калдыңызбы?</translation>
 <translation id="3132277757485842847">Телефонуңузга туташпай калды. Телефонуңуз жакын жерде турганын жана анын кулпусу ачык болуп, Bluetooth менен Wi-Fi күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3132996321662585180">Күндө жаңыртылсын</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> тажрыйбасы үчүн абалды тандаңыз. Тажрыйбанын сүрөттөмөсү: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN код жараксыз. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="313963229645891001">Жүктөлүп алынууда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Демейки сары аватар</translation>
@@ -3303,7 +3304,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> Конок режиминдеги колдонуучулар үчүн жеткиликсиз.</translation>
 <translation id="4635427303840967665">Профилге туташууда. Бул 30 секундга созулушу мүмкүн.</translation>
 <translation id="4635444580397524003">Linux камдык көчүрмөсү калыбына келтирилди.</translation>
-<translation id="4636682061478263818">Drive файлдары</translation>
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="4637083375689622795">Көбүрөөк аракеттер, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текст}other{# текст}}</translation>
@@ -4513,7 +4513,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6044805581023976844"><ph name="APP_NAME" /> колдонмосу Chrome өтмөгүн жана аудио файлын <ph name="TAB_NAME" /> менен бөлүп жатат.</translation>
 <translation id="6045114302329202345">Негизги TrackPoint баскычы</translation>
 <translation id="6047632800149092791">Шайкештирүү иштебей жатат. Чыгып, кайра кирип көрүңүз.</translation>
-<translation id="6049004884579590341">Толук экандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басып, кармап туруңуз</translation>
 <translation id="6051354611314852653">Ой! Тутум бул түзмөктүн API'не кирүүгө уруксат бере алган жок.</translation>
 <translation id="6052976518993719690">SSL тастыктама борбору</translation>
 <translation id="6053401458108962351">&amp;Серептөө дайындарын тазалап салуу…</translation>

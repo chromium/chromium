@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">கடவுச்சொல்லை மறந்துவிட்டீர்களா?</translation>
 <translation id="3132277757485842847">உங்கள் மொபைலுடன் இணைப்பில் இருக்க முடியவில்லை. உங்கள் மொபைல் அன்லாக் செய்யப்பட்டு அருகில் இருப்பதையும் அதில் புளூடூத், வைஃபை இயக்கப்பட்டிருப்பதையும் உறுதிப்படுத்திக் கொள்ளவும்.</translation>
 <translation id="3132996321662585180">தினமும் புதுப்பி</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> பரிசோதனைக்கான பரிசோதனை நிலையைத் தேர்ந்தெடுக்கவும். பரிசோதனை விளக்கம்: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">தவறான பின். <ph name="RETRIES" /> முயற்சிகள் மீதமுள்ளன.</translation>
 <translation id="313963229645891001">பதிவிறக்குகிறது, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">இயல்பு மஞ்சள்நிற அவதார்</translation>
@@ -3302,7 +3303,6 @@
 <translation id="4635398712689569051">கெஸ்ட் பயனர்களுக்கு <ph name="PAGE_NAME" /> கிடைக்காது.</translation>
 <translation id="4635427303840967665">நெட்வொர்க் சுயவிவரத்துடன் இணைக்கிறது. இதற்கு 30 வினாடிகள் வரை ஆகலாம்.</translation>
 <translation id="4635444580397524003">Linux காப்புப் பிரதி மீட்டெடுக்கப்பட்டது.</translation>
-<translation id="4636682061478263818">Drive கோப்புகள்</translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4637083375689622795">கூடுதல் செயல்கள், <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{உரை}other{# உரைகள்}}</translation>
@@ -4512,7 +4512,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> <ph name="TAB_NAME" /> உடன் Chrome தாவலையும் ஆடியோவையும் பகிர்கிறது.</translation>
 <translation id="6045114302329202345">முதன்மை TrackPoint பட்டன்</translation>
 <translation id="6047632800149092791">ஒத்திசைவு செயல்படவில்லை. வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
-<translation id="6049004884579590341">முழுத் திரையிலிருந்து வெளியேற, |<ph name="ACCELERATOR" />| என்பதை அழுத்திப் பிடித்திருக்கவும்</translation>
 <translation id="6051354611314852653">அச்சச்சோ! இந்தச் சாதனத்திற்கான API அணுகலை சிஸ்டம் அங்கீகரிக்கத் தவறியது.</translation>
 <translation id="6052976518993719690">SSL சான்றிதழ் அங்கீகாரம்</translation>
 <translation id="6053401458108962351">&amp;உலாவல் தரவை அழி...</translation>
@@ -6125,7 +6124,7 @@
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">முடிவு நேரம்</translation>
-<translation id="783229689197954457">தள்ளுபடியில் உள்ள தயாரிப்புகளை Google கண்டறிந்தால் அவை இந்தப் பக்கத்தில் காட்டப்படும்</translation>
+<translation id="783229689197954457">அந்தத் தயாரிப்புகளுக்கான தள்ளுபடியை Google கண்டறிந்தால் அவை இந்தப் பக்கத்தில் காட்டப்படும்</translation>
 <translation id="7833720883933317473">சேமித்த பிரத்தியேக சொற்கள் இங்கே தோன்றும்</translation>
 <translation id="7835178595033117206">புக்மார்க் அகற்றப்பட்டது</translation>
 <translation id="7836850009646241041">உங்கள் பாதுகாப்பு விசையை மீண்டும் தொடவும்</translation>

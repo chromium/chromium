@@ -1029,6 +1029,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> flikar har återställts</translation>
 <translation id="780301667611848630">Nej tack</translation>
+<translation id="7808889146555843082">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas. Skydda kontot genom att ändra lösenordet eller ta bort ditt konto på <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
 <translation id="7821588508402923572">Här visas hur mycket data du har sparat</translation>

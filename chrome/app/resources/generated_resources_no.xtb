@@ -1970,6 +1970,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="313205617302240621">Glemt passordet?</translation>
 <translation id="3132277757485842847">Vi kunne ikke opprettholde tilkoblingen til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på.</translation>
 <translation id="3132996321662585180">Oppdater daglig</translation>
+<translation id="3134393957315651797">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet. Beskrivelse av eksperimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ugyldig PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="313963229645891001">Laster ned, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gult standardbrukerbilde</translation>
@@ -3298,7 +3299,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ikke tilgjengelig for gjestebrukere.</translation>
 <translation id="4635427303840967665">Kobler til profilen. Dette kan ta opptil 30 sekunder.</translation>
 <translation id="4635444580397524003">Linux-sikkerhetskopien er gjenopprettet.</translation>
-<translation id="4636682061478263818">Disk-filer</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Flere handlinger, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekst}other{# tekster}}</translation>
@@ -4508,7 +4508,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deler lyd og en fane fra Chrome med <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primær TrackPoint-knapp</translation>
 <translation id="6047632800149092791">Synkroniseringen fungerer ikke. Prøv å logge ut og inn igjen.</translation>
-<translation id="6049004884579590341">Trykk og hold på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm</translation>
 <translation id="6051354611314852653">Beklager. Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="6052976518993719690">SSL-sertifiseringsinstans</translation>
 <translation id="6053401458108962351">&amp;Tøm logg</translation>

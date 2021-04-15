@@ -1978,6 +1978,7 @@
 <translation id="313205617302240621">هل نسيت كلمة المرور؟</translation>
 <translation id="3132277757485842847">‏تعذَّر علينا المحافظة على الاتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
+<translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="313963229645891001">جارٍ التنزيل، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
@@ -3306,7 +3307,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> غير متاحة للمستخدمين الضيوف.</translation>
 <translation id="4635427303840967665">جارٍ الاتصال بالملف الشخصي، وقد يستغرق ذلك مدة تصل إلى 30 ثانية.</translation>
 <translation id="4635444580397524003">‏تمت استعادة نسخة احتياطية من Linux بنجاح.</translation>
-<translation id="4636682061478263818">‏ملفات Drive</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4637083375689622795">مزيد من الإجراءات، <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
@@ -4516,7 +4516,6 @@
 <translation id="6044805581023976844">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome والصوت من خلال <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">‏زر TrackPoint الأساسي</translation>
 <translation id="6047632800149092791">المزامنة لا تعمل على نحو سليم جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
-<translation id="6049004884579590341">الضغط مع الاستمرار على |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة</translation>
 <translation id="6051354611314852653">عفوًا! تعذّر النظام في السماح بالدخول إلى واجهة برمجة التطبيقات على هذا الجهاز.</translation>
 <translation id="6052976518993719690">‏صلاحية شهادة SSL (طبقة المقابس الآمنة)</translation>
 <translation id="6053401458108962351">&amp;محو بيانات التصفح...</translation>

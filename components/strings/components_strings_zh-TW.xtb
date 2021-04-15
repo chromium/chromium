@@ -1349,6 +1349,7 @@
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果你瞭解安全性風險，也可以選擇在有害應用程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
 <translation id="6047927260846328439">這項內容可能會試圖誘使你安裝軟體或提供個人資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可結束全螢幕模式</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
 <translation id="6051221802930200923">目前無法造訪 <ph name="SITE" />，因為這個網站使用憑證鎖定功能。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
 <translation id="6051898664905071243">頁數：</translation>
@@ -1426,6 +1427,7 @@
 <translation id="6390200185239044127">對折後的彈簧二摺</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6393956493820063117">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容貼到這個位置</translation>
+<translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">這項政策目前已淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406765186087300643">C0 (信封)</translation>

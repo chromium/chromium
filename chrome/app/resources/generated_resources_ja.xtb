@@ -446,7 +446,7 @@
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
 <translation id="1481537595330271162">ディスクのサイズ変更中にエラーが発生しました</translation>
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
-<translation id="1483272013430662157">ファイル形式が関連付けられたプログラムを開くよう求めることをウェブアプリに許可する</translation>
+<translation id="1483272013430662157">該当するファイル形式を開くよう求めることをウェブアプリに許可する</translation>
 <translation id="1483493594462132177">送信</translation>
 <translation id="1484979925941077974">サイトで Bluetooth が使用されています</translation>
 <translation id="1485015260175968628">次の権限に現在アクセス可能:</translation>
@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">パスワードを忘れた場合</translation>
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="313963229645891001">ダウンロードしています。<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
@@ -3303,7 +3304,6 @@
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
 <translation id="4635427303840967665">プロファイルに接続しています。これには 30 秒ほどかかります。</translation>
 <translation id="4635444580397524003">Linux のバックアップが復元されました。</translation>
-<translation id="4636682061478263818">ドライブのファイル</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4637083375689622795">その他の操作（<ph name="EMAIL" />）</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{テキスト}other{# 件のテキスト}}</translation>
@@ -4513,7 +4513,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の Chrome タブと音声を共有しています。</translation>
 <translation id="6045114302329202345">メインの TrackPoint ボタン</translation>
 <translation id="6047632800149092791">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
-<translation id="6049004884579590341">全画面表示を終了するには |<ph name="ACCELERATOR" />| キーを押し続けます</translation>
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="6052976518993719690">SSL 認証局</translation>
 <translation id="6053401458108962351">閲覧履歴を消去(&amp;C)...</translation>
@@ -5037,7 +5036,7 @@
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
 <translation id="6635956300022133031">テキスト読み上げ用の音声を選択してカスタマイズします</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
-<translation id="6640268266988685324">タブを開く</translation>
+<translation id="6640268266988685324">開いているタブ</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
 <translation id="664290675870910564">ネットワークの選択</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -5398,7 +5397,7 @@
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7025895441903756761">セキュリティとプライバシー</translation>
-<translation id="7026552751317161576">ファイル形式が関連付けられたプログラムを開くことをウェブアプリに許可しない</translation>
+<translation id="7026552751317161576">該当するファイル形式を開くことをウェブアプリに許可しない</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
@@ -5965,7 +5964,7 @@
 <translation id="7680416688940118410">タッチスクリーンの調整</translation>
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
-<translation id="7683164815270164555">ファイル形式が関連付けられたプログラムを開くようウェブアプリが求めたときに確認する</translation>
+<translation id="7683164815270164555">該当するファイル形式を開くようウェブアプリが求めたときに確認する</translation>
 <translation id="7683373461016844951">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、<ph name="DOMAIN" /> のメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="7683593009096723900">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
@@ -6974,7 +6973,7 @@
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800004011501252845">送信先を表示しています:</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
-<translation id="880004380809002950">ファイル形式が関連付けられたプログラムを開くことをウェブアプリに許可しない</translation>
+<translation id="880004380809002950">該当するファイル形式を開くことをウェブアプリに許可しない</translation>
 <translation id="8803953437405899238">新しいタブをワンクリックで開くことができます</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="8805140816472474147">同期を開始するには同期設定を確認してください。</translation>

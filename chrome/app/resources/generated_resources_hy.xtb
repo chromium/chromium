@@ -1974,6 +1974,7 @@
 <translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը:</translation>
 <translation id="3132277757485842847">Ձեր հեռախոսի հետ կապն ընդհատվել է։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
+<translation id="3134393957315651797">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։ Փորձարկման նկարագրությունը՝ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="313963229645891001">Ներբեռնում, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Կանխադրված դեղին ավատար</translation>
@@ -3304,7 +3305,6 @@
 <translation id="4635398712689569051">«<ph name="PAGE_NAME" />» էջը հասանելի չէ հյուրի ռեժիմում:</translation>
 <translation id="4635427303840967665">Միացում պրոֆիլին։ Սա կարող է տևել մինչև 30 վայրկյան։</translation>
 <translation id="4635444580397524003">Լինուքսի պահուստավորված տվյալները վերականգնվեցին։</translation>
-<translation id="4636682061478263818">Drive-ի ֆայլեր</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4637083375689622795">Այլ գործողություններ, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Տեքստ}one{# տեքստ}other{# տեքստ}}</translation>
@@ -4517,7 +4517,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով և ձայնով <ph name="TAB_NAME" />-ի հետ:</translation>
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
 <translation id="6047632800149092791">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից և նորից մտեք։</translation>
-<translation id="6049004884579590341">Սեղմեք և պահեք |<ph name="ACCELERATOR" />| ստեղնը՝ լիաէկրան ռեժիմից դուրս գալու համար</translation>
 <translation id="6051354611314852653">Չհաջողվեց API-ին մուտք շնորհել այս սարքում:</translation>
 <translation id="6052976518993719690">SSL հավաստագրման կենտրոն</translation>
 <translation id="6053401458108962351">&amp;Մաքրել դիտարկումների տվյալները…</translation>

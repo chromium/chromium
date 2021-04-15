@@ -1967,6 +1967,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="313205617302240621">Şifrəni unutdunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantını itirdik. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="3132996321662585180">Gündəlik yeniləyin</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin. Təcrübə təsviri: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="313963229645891001">Endirilir, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Defolt sarı avatar</translation>
@@ -3295,7 +3296,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> Qonaq istifadəçilər üçün əlçatan deyil.</translation>
 <translation id="4635427303840967665">Profilə qoşulur. Bu, 30 dəqiqə çəkə bilər.</translation>
 <translation id="4635444580397524003">Linux yedəkləməsi uğurla bərpa edildi.</translation>
-<translation id="4636682061478263818">Disk faylları</translation>
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4637083375689622795">Daha çox əməliyyat, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Mətn}other{# mətn}}</translation>
@@ -4503,7 +4503,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6044805581023976844"><ph name="APP_NAME" /> tətbiqi Chrome paneli və audionu <ph name="TAB_NAME" /> ilə paylaşır.</translation>
 <translation id="6045114302329202345">Əsas TrackPoint düyməsi</translation>
 <translation id="6047632800149092791">Sinxronlaşdırma işləmir. Çıxın və yenidən daxil olun.</translation>
-<translation id="6049004884579590341">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsinə basıb saxlayın</translation>
 <translation id="6051354611314852653">Vay! Sistem bu cihaza olan API girişini doğrulaya bilmədi.</translation>
 <translation id="6052976518993719690">SSL Sertifikatlaşdırma Təşkilatı</translation>
 <translation id="6053401458108962351">Baxış datasını silin...</translation>

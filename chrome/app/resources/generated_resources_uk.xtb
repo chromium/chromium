@@ -1976,6 +1976,7 @@
 <translation id="313205617302240621">Забули пароль?</translation>
 <translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132996321662585180">Оновлювати щодня</translation>
+<translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Недійсний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Завантаження: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
@@ -3037,7 +3038,7 @@
 <translation id="4348766275249686434">Збирати повідомлення про помилки</translation>
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Завжди забороняти сайту <ph name="HOST" /> доступ до ваших геоданих</translation>
-<translation id="4350782034419308508">Hey Google</translation>
+<translation id="4350782034419308508">Ok Google</translation>
 <translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> хоче шукати пристрої Bluetooth поруч. Виявлено такі пристрої:</translation>
 <translation id="4354073718307267720">Запитувати, коли сайт хоче створити 3D-карту вашого оточення або відстежувати положення камери</translation>
 <translation id="4354344420232759511">Відвідані вами сайти з’являтимуться тут</translation>
@@ -3306,7 +3307,6 @@
 <translation id="4635398712689569051">Сторінка "<ph name="PAGE_NAME" />" недоступна гостям.</translation>
 <translation id="4635427303840967665">Триває підключення до профілю. Це може зайняти до 30 секунд.</translation>
 <translation id="4635444580397524003">Дані з резервної копії Linux відновлено.</translation>
-<translation id="4636682061478263818">Файли на Диску</translation>
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4637083375689622795">Інші дії, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текст}one{# текст}few{# тексти}many{# текстів}other{# тексту}}</translation>
@@ -4516,7 +4516,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> транслює вкладку Chrome і аудіо на вкладку <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Основна кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Синхронізація не працює. Вийдіть зі свого облікового запису та ввійдіть у нього знову.</translation>
-<translation id="6049004884579590341">Щоб вийти з повноекранного режиму, утримуйте клавішу |<ph name="ACCELERATOR" />|,</translation>
 <translation id="6051354611314852653">Помилка. Системі на вдалося надати API доступ до цього пристрою.</translation>
 <translation id="6052976518993719690">Центр сертифікації SSL</translation>
 <translation id="6053401458108962351">&amp;Очистити дані веб-перегляду...</translation>

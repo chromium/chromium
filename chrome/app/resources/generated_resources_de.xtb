@@ -1969,6 +1969,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Passwort vergessen?</translation>
 <translation id="3132277757485842847">Die Verbindung zu Ihrem Smartphone konnte nicht aufrechterhalten werden. Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
+<translation id="3134393957315651797">Wählen Sie den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ungültige PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="313963229645891001">Wird heruntergeladen, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
@@ -3298,7 +3299,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ist für Gastnutzer nicht verfügbar.</translation>
 <translation id="4635427303840967665">Verbindung zum Profil wird hergestellt. Das kann bis zu 30 Sekunden dauern.</translation>
 <translation id="4635444580397524003">Die Linux-Sicherung wurde erfolgreich wiederhergestellt.</translation>
-<translation id="4636682061478263818">Drive-Dateien</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Weitere Aktionen, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# Texte}}</translation>
@@ -4507,7 +4507,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> teilt einen Chrome-Tab und Audio mit <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primäre TrackPoint-Taste</translation>
 <translation id="6047632800149092791">Synchronisierung funktioniert nicht. Melden Sie sich ab und dann wieder an.</translation>
-<translation id="6049004884579590341">|<ph name="ACCELERATOR" />| gedrückt halten, um den Vollbildmodus zu beenden</translation>
 <translation id="6051354611314852653">Hoppla! Das System konnte das Gerät nicht für den API-Zugriff autorisieren.</translation>
 <translation id="6052976518993719690">SSL-Zertifizierungsstelle</translation>
 <translation id="6053401458108962351">&amp;Browserdaten löschen...</translation>
@@ -6654,7 +6653,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8449008133205184768">Einsetzen und Stil anpassen</translation>
 <translation id="8449036207308062757">Speicherplatz verwalten</translation>
 <translation id="8452135315243592079">Keine SIM-Karte vorhanden</translation>
-<translation id="8454502708934796641">Möchten Sie Google bitten, Rabatte zu den Artikeln in Ihren Einkaufswägen zu finden?</translation>
+<translation id="8454502708934796641">Möchten Sie, dass Google nach Rabatten zu den Artikeln in Ihren Einkaufswagen sucht?</translation>
 <translation id="8455026683977728932">Fehler bei der Aktivierung der ADB-Illustration</translation>
 <translation id="8456512334795994339">Apps für Arbeit und Freizeit</translation>
 <translation id="845702320058262034">Verbindung nicht möglich. Kontrollieren Sie, ob Bluetooth auf Ihrem Smartphone aktiviert ist.</translation>

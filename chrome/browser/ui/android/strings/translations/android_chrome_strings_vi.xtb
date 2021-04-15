@@ -266,7 +266,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
-<translation id="279827439955962619">Xóa nội dung được đánh dấu</translation>
+<translation id="279827439955962619">Xóa nội dung được làm nổi bật</translation>
 <translation id="2801022321632964776">Hãy cập nhật để dùng ngôn ngữ của bạn trong phiên bản Chrome mới nhất</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
@@ -919,7 +919,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="702463548815491781">Khuyên dùng khi dịch vụ TalkBack hoặc Tiếp cận bằng công tắc đang bật</translation>
 <translation id="7027549951530753705">Đã khôi phục <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
-<translation id="7040531500313579672">Chia sẻ nội dung được đánh dấu</translation>
+<translation id="7040531500313579672">Chia sẻ nội dung được làm nổi bật</translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7055152154916055070">Liên kết chuyển hướng đã chặn:</translation>
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>
@@ -1029,6 +1029,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7798392620021911922">Đã khôi phục <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
+<translation id="7808889146555843082">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" />. Hãy đổi mật khẩu hoặc xóa tài khoản của bạn trên <ph name="SITE" /> để giữ an toàn cho tài khoản của bạn.</translation>
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
 <translation id="7821588508402923572">Mức tiết kiệm dữ liệu sẽ hiển thị tại đây</translation>

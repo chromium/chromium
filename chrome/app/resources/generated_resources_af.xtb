@@ -1973,6 +1973,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="313205617302240621">Het jy jou wagwoord vergeet?</translation>
 <translation id="3132277757485842847">Ons kon nie 'n verbinding met jou foon behou nie. Maak seker dat jou foon in die omtrek is en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
+<translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ongeldige PIN. Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="313963229645891001">Laai nou af: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
@@ -3303,7 +3304,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is nie vir gasgebruikers beskikbaar nie.</translation>
 <translation id="4635427303840967665">Koppel tans aan profiel. Dit kan tot 30 sekondes neem.</translation>
 <translation id="4635444580397524003">Linux-rugsteun is suksesvol teruggestel.</translation>
-<translation id="4636682061478263818">Drive-lêers</translation>
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4637083375689622795">Nog handelinge, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Teks}other{# tekste}}</translation>
@@ -4514,7 +4514,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie en oudio met <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
 <translation id="6047632800149092791">Sinkronisering werk nie. Probeer afmeld en weer aanmeld.</translation>
-<translation id="6049004884579590341">Druk en hou |<ph name="ACCELERATOR" />| om volskerm te verlaat</translation>
 <translation id="6051354611314852653">Oeps! Die stelsel kon nie API-toegang vir hierdie toestel magtig nie.</translation>
 <translation id="6052976518993719690">SSL-sertifikaatoutoriteit</translation>
 <translation id="6053401458108962351">Vee blaaidata uit …</translation>

@@ -770,6 +770,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
           reiniciar el navegador para asegurarse de que todas las pestañas cargadas reciban una
           configuración de política coherente. Distintos procesos pueden tener valores diferentes para esta política
           sin efectos adversos.</translation>
+<translation id="2026547141364626978">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.
+
+      En la versión M91, se quitó esta política.</translation>
 <translation id="2030905906517501646">Palabra clave del proveedor de búsqueda predeterminado</translation>
 <translation id="203096360153626918">Esta política no tiene efecto en las apps de Android. Podrán implementar el modo de pantalla completa, incluso si esta política se establece como <ph name="FALSE" />.</translation>
 <translation id="2032848225007871645">Si estableces la política, se controla qué modos de desbloqueo rápido pueden desbloquear la pantalla de bloqueo.
@@ -1182,13 +1185,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no la estableces, la función de resaltar el signo de intercalación estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="2509919237512982967">Utilizar los controles de formulario heredados hasta M84.</translation>
 <translation id="2515699738406900920">Disponibilidad del selector de perfiles en el inicio</translation>
-<translation id="2515914624025258624">Esta configuración permite que los usuarios creen perfiles secundarios y usen el modo de invitado en el navegador <ph name="LACROS_NAME" />.
-
-      Si estableces esta política como falsa o no la estableces, el usuario no podrá crear perfiles secundarios ni usar el modo de invitado, de modo similar que con las políticas BrowserAddPersonEnabled y BrowserGuestModeEnabled.
-
-      Si estableces esta política como verdadera, el usuario podrá crear perfiles secundarios y usar el modo de invitado.
-
-      Ten en cuenta que, si estableces esta política como verdadera, pero BrowserAddPersonEnabled está establecida como falsa, el usuario no podrá crear perfiles secundarios. Del mismo modo, si BrowserGuestModeEnabled está establecida como falsa, el usuario tampoco podrá usar el modo de invitado.</translation>
 <translation id="2517466659416174529">Permite la inmovilización de pestañas en segundo plano</translation>
 <translation id="2518231489509538392">Permitir la reproducción de audio</translation>
 <translation id="2520551905471951523">Usa la prioridad alta para el proceso de audio</translation>
@@ -2803,7 +2799,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán decidir si se oculta la biblioteca de forma automática.</translation>
 <translation id="4812714598405913256">Configura el mensaje sobre el vencimiento de las actualizaciones automáticas para la política DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Permitir que el usuario de empresa sea principal y secundario (comportamiento predeterminado para usuarios no administrados)</translation>
-<translation id="4818228398115369966">Inhabilitar la cámara, la configuración del navegador y del SO, el escaneo, Web Store y las funciones de Canvas, Explorar y Google Noticias</translation>
+<translation id="4818228398115369966">Inhabilitar la cámara; la configuración del navegador y del SO; el escaneo; Web Store, y las funciones de Canvas, Explorar y Google Noticias</translation>
 <translation id="4820432864264617413">Impide que se ejecute <ph name="BOREALIS_NAME" /> para un usuario</translation>
 <translation id="4826326557828204741">Acción a realizar si se alcanza la demora de inactividad mientras el dispositivo funciona con batería</translation>
 <translation id="482803100714220060">Muestra las URL completas</translation>
@@ -3310,7 +3306,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
           Si la inhabilitas, se desactivará esta función de forma forzosa.
           </translation>
-<translation id="5432043531153963184">Impide que los usuarios creen perfiles secundarios y usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las Opciones para desarrolladores de Android. Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no pueden acceder a las Opciones para desarrolladores. Si la estableces con otro valor o la dejas sin establecer, los usuarios pueden acceder a las Opciones para desarrolladores al presionar siete veces el número de versión en la app de Configuración de Android.</translation>
 <translation id="5445596354079213552">Esta política solo es válida si se alcanzó la fecha de vencimiento de las actualizaciones automáticas para el dispositivo y no se cumple el requisito de versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> que se estableció en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3829,7 +3824,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6132506775968708399">Bloquea cookies de terceros</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Se activó la Navegación segura en el modo mejorado. Este modo es más seguro, pero requiere que compartas con Google más datos sobre la navegación.</translation>
-<translation id="6135895880862759946">Permite que los usuarios creen perfiles secundarios y usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="6138636318340561140">Verifica en tiempo real el estado de la Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Usar siempre la detección amplia de la zona horaria</translation>
 <translation id="6144046700495610112">Si habilitas la política, se importarán los datos para autocompletar formularios del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún dato para autocompletar formularios en la primera ejecución.
@@ -4120,7 +4114,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si no estableces la política, no se aplicará de forma forzosa ninguna longitud máxima.</translation>
 <translation id="6553143066970470539">Porcentaje del brillo de pantalla</translation>
-<translation id="6558362593755624474">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara ni al micrófono</translation>
 <translation id="6559221564468029245">Si habilitas la política o no la estableces, no se considerará que el usuario está inactivo cuando se esté reproduciendo audio. Esto evitará que se alcance el tiempo de espera de inactividad y se tome la medida de inactividad. Sin embargo, la pantalla aún se atenuará, apagará y bloqueará después de los tiempos de espera configurados, independientemente de la actividad del audio.
 

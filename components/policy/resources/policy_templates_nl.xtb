@@ -761,6 +761,9 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
           Als dit beleid niet is ingesteld, wordt de functie beheerd door de eigen interne logica die handmatig kan worden geconfigureerd door gebruikers.
 
           Houd er rekening mee dat het beleid wordt toegepast per weergaveprogrammaproces en dat de meest recente waarde van de beleidsinstelling van kracht is als een weergaveprogrammaproces wordt gestart. Volledig opnieuw opstarten is vereist om ervoor te zorgen dat op alle geladen tabbladen een consistente beleidsinstelling wordt toegepast. Dit heeft geen negatieve invloed op processen die met andere waarden van dit beleid worden uitgevoerd.</translation>
+<translation id="2026547141364626978">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.
+
+      Dit beleid is verwijderd in M91.</translation>
 <translation id="2030905906517501646">Zoekwoord voor standaardzoekprovider</translation>
 <translation id="203096360153626918">Dit beleid is niet van invloed op de Android-apps. Deze hebben toegang tot de modus voor volledig scherm, zelfs als dit beleid is ingesteld op <ph name="FALSE" /> (Onwaar).</translation>
 <translation id="2032848225007871645">Met dit beleid bepaal je welke standen voor snel ontgrendelen kunnen worden gebruikt om het vergrendelscherm te ontgrendelen.
@@ -1165,13 +1168,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
           Als dit beleid niet is ingesteld, staat de functie voor markering van het caret-teken in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="2509919237512982967">Verouderde formulierbesturingselementen gebruiken tot M84.</translation>
 <translation id="2515699738406900920">Beschikbaarheid van profielkiezer bij opstarten</translation>
-<translation id="2515914624025258624">Met deze instelling kunnen gebruikers secundaire profielen maken en de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser.
-
-      Als je dit beleid instelt op False of niet instelt, kunnen gebruikers geen secundaire profielen maken en de gastmodus niet gebruiken. Dit is vergelijkbaar met BrowserAddPersonEnabled en BrowserGuestModeEnabled.
-
-      Als je dit beleid instelt op True, kunnen gebruikers secundaire profielen maken en de gastmodus gebruiken.
-
-      Als je dit beleid instelt op True maar BrowserAddPersonEnabled is ingesteld op False, kunnen gebruikers geen secundaire profielen maken. Hetzelfde geldt voor BrowserGuestModeEnabled en de gastmodus.</translation>
 <translation id="2517466659416174529">Toestaan dat tabbladen op de achtergrond worden vastgezet</translation>
 <translation id="2518231489509538392">Het afspelen van audio toestaan</translation>
 <translation id="2520551905471951523">Hoge prioriteit gebruiken voor audioproces</translation>
@@ -2778,7 +2774,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers zelf aangeven of de plank automatisch moet worden verborgen.</translation>
 <translation id="4812714598405913256">Bericht voor vervaldatum voor automatische updates configureren voor het beleid DeviceMinimumVersion</translation>
 <translation id="4816674326202173458">Toestaan dat Enterprise-gebruiker zowel primair als secundair is (standaardgedrag voor niet-beheerde gebruikers)</translation>
-<translation id="4818228398115369966">De camera, browserinstellingen, OS-instellingen en functies voor scannen, Web Store, canvas, Google Nieuws en Ontdekken instellen die moeten worden uitgezet</translation>
+<translation id="4818228398115369966">Instellen welke functies moeten worden uitgezet in de camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas, Google Nieuws en Ontdekken</translation>
 <translation id="4820432864264617413">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
 <translation id="4826326557828204741">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op accuvermogen</translation>
 <translation id="482803100714220060">Volledige URL's tonen</translation>
@@ -3282,7 +3278,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
          wordt de <ph name="PRODUCT_NAME" />-functie aangezet.
 
           Als je dit beleid niet toepast, wordt de functie verplicht uitgezet.</translation>
-<translation id="5432043531153963184">Voorkomen dat gebruikers secundaire profielen maken en de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="5442026853063570579">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op een andere waarde of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="5445596354079213552">Dit beleid is alleen van kracht als het apparaat de vervaldatum voor automatische updates heeft bereikt en niet voldoet aan de toegestane minimum versie van <ph name="PRODUCT_OS_NAME" /> die is ingesteld via het beleid <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3777,7 +3772,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
 <translation id="6133088669883929098">Alle sites toestaan sleutels te genereren</translation>
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
-<translation id="6135895880862759946">Toestaan dat gebruikers secundaire profielen maken en de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>
 <translation id="6141402445226505817">Altijd minder nauwkeurige tijdzonedetectie gebruiken</translation>
 <translation id="6144046700495610112">Als je het beleid toepast, worden de formuliergegevens voor automatisch invullen van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden formuliergegevens voor automatisch invullen niet geïmporteerd bij de eerste uitvoering.
@@ -4063,7 +4057,6 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
 <translation id="6553143066970470539">Percentage voor helderheid van scherm</translation>
-<translation id="6558362593755624474">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 

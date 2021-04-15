@@ -1972,6 +1972,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="313205617302240621">Pasahitza ahaztu zaizu?</translation>
 <translation id="3132277757485842847">Ezin izan dugu mantendu gailua telefonoarekin konektatuta. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetooth-a eta wifia aktibatuta dauzkala.</translation>
 <translation id="3132996321662585180">Freskatu egunero</translation>
+<translation id="3134393957315651797">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera. Probaren azalpena: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN kodeak ez du balio. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="313963229645891001">Deskargatzen (<ph name="STATUS" />)</translation>
 <translation id="3139925690611372679">Abatar hori lehenetsia</translation>
@@ -3302,7 +3303,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4635398712689569051">Gonbidatuek ezin dute erabili <ph name="PAGE_NAME" /> orria.</translation>
 <translation id="4635427303840967665">Profilera konekatzen. Baliteke 30 segundoraino behar izatea.</translation>
 <translation id="4635444580397524003">Leheneratu da Linux-en babeskopia.</translation>
-<translation id="4636682061478263818">Drive-ko fitxategiak</translation>
 <translation id="4636930964841734540">Informazioa</translation>
 <translation id="4637083375689622795">Ekintza gehiago, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Testua}other{# testu}}</translation>
@@ -4512,7 +4512,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome-ko fitxa bat eta audioa partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="6045114302329202345">TrackPoint botoi nagusia</translation>
 <translation id="6047632800149092791">Sinkronizazioa ez dabil. Amaitu eta hasi berriro saioa.</translation>
-<translation id="6049004884579590341">Pantaila osotik irteteko, eduki sakatuta |<ph name="ACCELERATOR" />|</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
 <translation id="6052976518993719690">SSL ziurtagiri-emailea</translation>
 <translation id="6053401458108962351">&amp;Garbitu arakatze-datuak…</translation>
@@ -5047,7 +5046,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6647228709620733774">Netscape autoritate ziurtagiri-emailearen atzera botatzeko URLa</translation>
 <translation id="6647838571840953560">Une honetan <ph name="CHANNEL_NAME" /> kanalean</translation>
 <translation id="6648911618876616409">Ezinbesteko eguneratze bat instalatzeko prest dago. Hasi saioa instalatzen hasteko.</translation>
-<translation id="6649018507441623493">Itxaron pixkat bat…</translation>
+<translation id="6649018507441623493">Itxaron unetxo batean…</translation>
 <translation id="6649563841575838401">Artxiboaren formatua ez da onartzen edo hondatuta dago fitxategia.</translation>
 <translation id="6650234781371031356">Gailu honetan eta Google-ko kontuan dago gordeta <ph name="WEBSITE" /> webguneko pasahitza. Nongoa ezabatu nahi duzu?</translation>
 <translation id="665061930738760572">Ireki leiho &amp;berrian</translation>

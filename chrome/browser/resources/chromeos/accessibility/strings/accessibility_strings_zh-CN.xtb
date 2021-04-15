@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">关闭 ChromeVox 教程</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{1个左圆括号}other{#个左圆括号}}</translation>
+<translation id="270523456882008230">提示：用 1 根手指点按两次即可启用当前项。</translation>
 <translation id="2705875883745373140">未按下</translation>
 <translation id="2708078563826046398">粉扑桃色</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">提示</translation>
 <translation id="2976476721782829799">您还可通过在屏幕上随意拖动 1 根手指来四处移动。这称为“触摸浏览”。不妨尝试在屏幕上拖动手指，让 ChromeVox 读出本节课的其余内容。</translation>
 <translation id="297825089465017871">向左滑动两根手指</translation>
+<translation id="2988364959384217951">提示：如果您想退出此教程，请用 2 根手指从右向左滑动屏幕。</translation>
 <translation id="2998131015536248178">上一个字符</translation>
 <translation id="2999559350546931576">调低音高</translation>
 <translation id="3009352964623081324">搜索键 + O，然后按 S。用于安装、管理和自定义语音功能。</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">打开 ChromeVox 菜单</translation>
 <translation id="7799302833060027366">按向上、向下、向左或向右箭头键即可探索数学表达式</translation>
 <translation id="7800558923657349506">结语</translation>
+<translation id="7801768143868631306">提示：用 1 根手指向左或向右滑动屏幕即可浏览。</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7810781339813764006">下一个群组</translation>
 <translation id="7813616274030162878">“开关控制”菜单</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">字体：<ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">循环标点符号回显</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">有多项可执行的操作。按搜索键+Ctrl+A 即可查看</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">辅助键</translation>
 <translation id="8943282376843390568">绿黄色</translation>

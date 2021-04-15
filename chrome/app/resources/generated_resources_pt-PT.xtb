@@ -1973,6 +1973,7 @@ Pretende pará-lo?</translation>
 <translation id="313205617302240621">Esqueceu-se da palavra-passe?</translation>
 <translation id="3132277757485842847">Não foi possível manter uma ligação ao seu telemóvel. Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134393957315651797">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />. Descrição da experiência: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN inválido. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="313963229645891001">A transferir… <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predefinido</translation>
@@ -3296,14 +3297,13 @@ Pretende pará-lo?</translation>
 <translation id="4629521233550547305">Abrir perfil <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Personalizar cartões</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com, pelo menos, a versão "<ph name="IMPORT_VERSION" />", mas apenas está instalada a versão "<ph name="INSTALLED_VERSION" />".</translation>
-<translation id="4633757335284074492">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança.</translation>
+<translation id="4633757335284074492">Faça uma cópia no Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança.</translation>
 <translation id="4634575639321169635">Configure este dispositivo para utilização profissional ou pessoal.</translation>
 <translation id="4634771451598206121">Iniciar sessão novamente...</translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051">A página <ph name="PAGE_NAME" /> não está disponível para os utilizadores convidados.</translation>
 <translation id="4635427303840967665">A estabelecer ligação ao perfil. Esta operação pode demorar até 30 segundos.</translation>
 <translation id="4635444580397524003">A cópia de segurança do Linux foi restaurada com êxito.</translation>
-<translation id="4636682061478263818">Ficheiros do Drive</translation>
 <translation id="4636930964841734540">Informações</translation>
 <translation id="4637083375689622795">Mais ações, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
@@ -4514,7 +4514,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> está a partilhar um separador do Chrome e o áudio com <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botão do TrackPoint principal</translation>
 <translation id="6047632800149092791">A sincronização não está a funcionar. Experimente terminar e iniciar sessão novamente.</translation>
-<translation id="6049004884579590341">Prima |<ph name="ACCELERATOR" />| sem soltar para sair do modo de ecrã inteiro.</translation>
 <translation id="6051354611314852653">Ups! O sistema não conseguiu autorizar o acesso da API para este dispositivo.</translation>
 <translation id="6052976518993719690">Autoridade de certificação SSL</translation>
 <translation id="6053401458108962351">&amp;Limpar dados de navegação...</translation>
@@ -5898,7 +5897,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7609148976235050828">Ligue-se à Internet e tente novamente.</translation>
 <translation id="7612655942094160088">Ativar funcionalidades do telemóvel associado.</translation>
 <translation id="7614260613810441905">Perguntar quando um site pretender editar ficheiros ou pastas no seu dispositivo (recomendado)</translation>
-<translation id="761530003705945209">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
+<translation id="761530003705945209">Faça uma cópia no Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="7615365294369022248">Ocorreu um erro ao adicionar uma conta</translation>
 <translation id="7616214729753637086">A inscrever o dispositivo…</translation>
 <translation id="7617263010641145920">Ativar Play Store</translation>
@@ -7181,7 +7180,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9012122671773859802">Mover o ecrã continuamente à medida que o rato se move</translation>
 <translation id="9013037634206938463">É necessário <ph name="INSTALL_SIZE" /> de espaço livre para instalar o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="9013707997379828817">O administrador reverteu este dispositivo. Guarde os ficheiros importantes e reinicie. Todos os dados no dispositivo serão eliminados.</translation>
-<translation id="901668144954885282">Faça uma cópia de segurança para o Google Drive</translation>
+<translation id="901668144954885282">Faça uma cópia no Google Drive</translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9019062154811256702">Ler e alterar as definições de preenchimento automático</translation>
@@ -7202,7 +7201,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9030515284705930323">A sua entidade não ativou a Google Play Store para a sua conta. Contacte o gestor para obter mais informações.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">O <ph name="PLUGIN_NAME" /> já não é suportado</translation>
-<translation id="9031549947500880805">Faça uma cópia de segurança para o Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps.</translation>
+<translation id="9031549947500880805">Faça uma cópia no Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">C&amp;olar</translation>
 <translation id="9037818663270399707">A sua ligação não é privada para todo o tráfego de rede.</translation>

@@ -1972,6 +1972,7 @@
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132996321662585180">每天重新整理</translation>
+<translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN 碼無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="313963229645891001">下載中，<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
@@ -3301,7 +3302,6 @@
 <translation id="4635398712689569051">訪客使用者無法使用<ph name="PAGE_NAME" />。</translation>
 <translation id="4635427303840967665">正在連線至設定檔。這項作業最多可能需要 30 秒才能完成。</translation>
 <translation id="4635444580397524003">已成功復原 Linux 備份資料。</translation>
-<translation id="4636682061478263818">雲端硬碟檔案</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4637083375689622795">更多動作 (<ph name="EMAIL" />)</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
@@ -4511,7 +4511,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> 正在與 <ph name="TAB_NAME" /> 共用 Chrome 分頁和音訊。</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，再重新登入。</translation>
-<translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可結束全螢幕模式</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這個裝置。</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽資料(&amp;C)...</translation>

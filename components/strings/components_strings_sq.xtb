@@ -1355,6 +1355,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6045164183059402045">Shablloni i vendosjes</translation>
 <translation id="6047233362582046994">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë sajt<ph name="END_LINK" /> para se të jenë hequr aplikacionet e dëmshme.</translation>
 <translation id="6047927260846328439">Kjo përmbajtje mund të përpiqet të të mashtrojë që të instalosh softuerë ose të zbulosh informacionet e tua personale. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">Shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë</translation>
 <translation id="6049488691372270142">Dorëzimi i faqes</translation>
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
@@ -1431,6 +1432,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6390200185239044127">Palosje Z në gjysmë</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6393956493820063117">Ngjitja nga <ph name="ORIGIN_NAME" /> te kjo vendndodhje është bllokuar nga politika e administratorit</translation>
+<translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>

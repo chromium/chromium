@@ -1974,6 +1974,7 @@
 <translation id="313205617302240621">စကားဝှက်မေ့နေပါသလား?</translation>
 <translation id="3132277757485842847">သင့်ဖုန်းနှင့် ချိတ်ဆက်ထား၍မရပါ။ သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ဖွင့်ထားကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="3132996321662585180">နေ့စဉ် ပြန်လည် စတင်ရန်</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။ စမ်းသပ်မှု ဖော်ပြချက်- <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="313963229645891001">ဒေါင်းလုဒ်လုပ်နေသည်၊ <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">မူရင်းအဝါရောင်ချန်နယ်ပုံ</translation>
@@ -3303,7 +3304,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> သည် 'ဧည့်သည်' အသုံးပြုသူများအတွက် မရနိုင်ပါ။</translation>
 <translation id="4635427303840967665">ပရိုဖိုင်ကို ချိတ်ဆက်နေသည်။ ၎င်းသည် စက္ကန့် ၃၀ အထိ ကြာနိုင်သည်။</translation>
 <translation id="4635444580397524003">Linux မိတ္တူကို ပြန်လည်ရယူပြီးပါပြီ။</translation>
-<translation id="4636682061478263818">Drive ဖိုင်များ</translation>
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4637083375689622795">နောက်ထပ် လုပ်ဆောင်ချက်များ၊ <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{စာတို}other{စာတို # စောင်}}</translation>
@@ -4512,7 +4512,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> သည် Chrome တဘ်နှင့် အသံကို <ph name="TAB_NAME" /> ဖြင့်မျှဝေနေသည်။</translation>
 <translation id="6045114302329202345">ပင်မ TrackPoint ခလုတ်</translation>
 <translation id="6047632800149092791">စင့်ခ်လုပ်၍ မရပါ။ ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
-<translation id="6049004884579590341">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် <ph name="ACCELERATOR" /> ကို နှိပ်ထားပါ</translation>
 <translation id="6051354611314852653">အူးပ်စ်! စနစ်က ဒီကိရိယာ အတွက် API ရယူသုံးမှုကို ခွင့်ပြု မရခဲ့ပါ။</translation>
 <translation id="6052976518993719690">SSL အသိမှတ်ပြုလက်မှတ် အာဏာ</translation>
 <translation id="6053401458108962351">&amp;ဘရောင်ဇာ ဒေတ ရှင်းရန်...</translation>

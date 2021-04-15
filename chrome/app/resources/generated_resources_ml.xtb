@@ -1970,6 +1970,7 @@
 <translation id="313205617302240621">പാസ്‌വേഡ് മറന്നോ?</translation>
 <translation id="3132277757485842847">നിങ്ങളുടെ ഫോണുമായുള്ള കണക്ഷൻ നിലനിർത്താൻ ഞങ്ങൾക്കാവുന്നില്ല. നിങ്ങളുടെ ഫോൺ സമീപത്തുണ്ടെന്നും അൺലോക്ക് ചെയ്തിട്ടുണ്ടെന്നും Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="3132996321662585180">പ്രതിദിനം പുതുക്കുക</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക. പരീക്ഷണത്തിന്റെ വിവരണം: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">പിൻ അസാധുവാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="313963229645891001">ഡൗൺലോഡ് ചെയ്യുന്നു, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ഡിഫോൾട്ടായ മഞ്ഞ അവതാർ</translation>
@@ -3298,7 +3299,6 @@
 <translation id="4635398712689569051">അതിഥി ഉപയോക്താക്കൾക്ക്, <ph name="PAGE_NAME" /> ലഭ്യമല്ല.</translation>
 <translation id="4635427303840967665">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. ഇതിന് 30 സെക്കൻഡ് വരെ എടുത്തേക്കാം.</translation>
 <translation id="4635444580397524003">Linux ബാക്കപ്പ് പുനഃസ്ഥാപിച്ചു.</translation>
-<translation id="4636682061478263818">Drive ഫയലുകൾ</translation>
 <translation id="4636930964841734540">വിവരം</translation>
 <translation id="4637083375689622795">കൂടുതൽ പ്രവര്‍ത്തനങ്ങൾ, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ടെക്‌സ്റ്റ്}other{# ടെക്‌സ്റ്റുകൾ}}</translation>
@@ -4508,7 +4508,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> എന്നതുമായി Chrome ടാബും ഓഡിയോയും പങ്കിടുന്നു.</translation>
 <translation id="6045114302329202345">പ്രാഥമിക TrackPoint ബട്ടൺ</translation>
 <translation id="6047632800149092791">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സൈൻ ഔട്ട് ചെയ്‌ത ശേഷം വീണ്ടും സൈൻ ഇൻ ചെയ്‌ത് നോക്കുക.</translation>
-<translation id="6049004884579590341">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, |<ph name="ACCELERATOR" />| അമർത്തിപ്പിടിക്കുക‌</translation>
 <translation id="6051354611314852653">ക്ഷമിക്കണം! ഈ ഉപകരണത്തിന്റെ API ആക്‌സസ് അംഗീകൃതമാക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
 <translation id="6052976518993719690">SSL സര്‍‌ട്ടിഫിക്കേഷന്‍‌ അതോറിറ്റി</translation>
 <translation id="6053401458108962351">&amp;ബ്രൌസിംഗ് ഡാറ്റാ മായ്ക്കുക...</translation>

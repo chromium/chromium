@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">पासवर्ड भूल गए?</translation>
 <translation id="3132277757485842847">डिवाइस आपके फ़ोन से बार-बार डिसकनेक्ट हो रहा है. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
+<translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="313963229645891001">फ़ाइल डाउनलोड हो रही है, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
@@ -3302,7 +3303,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> मेहमान उपयोगकर्ताओं के लिए उपलब्ध नहीं है.</translation>
 <translation id="4635427303840967665">प्रोफ़ाइल से कनेक्ट किया जा रहा है. इसमें 30 सेकंड लग सकते हैं.</translation>
 <translation id="4635444580397524003">Linux का बैक अप पहले जैसा कर दिया गया है.</translation>
-<translation id="4636682061478263818">Drive फ़ाइलें</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4637083375689622795">ज़्यादा कार्रवाइयां, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{टेक्स्ट}one{# टेक्स्ट}other{# टेक्स्ट}}</translation>
@@ -4512,7 +4512,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> के साथ Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
 <translation id="6045114302329202345">मुख्य TrackPoint बटन</translation>
 <translation id="6047632800149092791">सिंक करने की सुविधा काम नहीं कर रही. साइन आउट करके फिर से साइन इन करें.</translation>
-<translation id="6049004884579590341">पूरी स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाकर रखें</translation>
 <translation id="6051354611314852653">ओह!  सिस्टम इस डिवाइस के लिए API (एपीआई) एक्सेस की मंज़ूरी नहीं दे सका.</translation>
 <translation id="6052976518993719690">SSL सत्यापन प्रधिकरण</translation>
 <translation id="6053401458108962351">ब्राउज़िंग डेटा &amp;साफ़ करें...</translation>
@@ -5376,7 +5375,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
 <translation id="7004402701596653846">साइट 'मिडी' का इस्तेमाल कर सकती है</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
-<translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> तक छूट है</translation>
+<translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> तक की छूट है</translation>
 <translation id="7005496624875927304">अन्य अनुमतियां</translation>
 <translation id="7005812687360380971">विफलता</translation>
 <translation id="7005848115657603926">अमान्य पेज श्रेणी, <ph name="EXAMPLE_PAGE_RANGE" /> का उपयोग करें</translation>
@@ -5964,7 +5963,7 @@
 <translation id="7680416688940118410">टचस्क्रीन कैलिब्रेशन</translation>
 <translation id="7681095912841365527">साइट ब्लूटूथ का इस्तेमाल कर सकती है</translation>
 <translation id="7681597159868843240">आम तौर पर साइटें, वर्चुअल रियलिटी या फ़िटनेस ट्रैकिंग जैसी सुविधाओं के लिए आपके डिवाइस के मोशन सेंसर इस्तेमाल करती हैं</translation>
-<translation id="7683164815270164555">जब कोई वेब ऐप्लिकेशन आपके डिवाइस पर अलग-अलग तरह की फ़ाइलें खोलना चाहे, तो इसके लिए पूछे</translation>
+<translation id="7683164815270164555">जब कोई वेब ऐप्लिकेशन डिवाइस पर अलग-अलग तरह की फ़ाइलें खोलना चाहे, तो इसके लिए अनुमति ले</translation>
 <translation id="7683373461016844951">जारी रखने के लिए, 'ठीक' पर क्लिक करें, फिर 'व्‍यक्ति जोड़ें' पर क्लिक करें, ताकि आप अपने <ph name="DOMAIN" /> ईमेल पते के लिए नई प्रोफ़ाइल बना सकें.</translation>
 <translation id="7683593009096723900">{COUNT,plural, =0{सभी यूआरएल को &amp;गुप्त विंडो में खोलें}=1{यूआरएल को &amp;गुप्त विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;गुप्त विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;गुप्त विंडो में खोलें}}</translation>
 <translation id="7684212569183643648">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>

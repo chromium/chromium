@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">Ξεχάσατε τον κωδικό πρόσβασης;</translation>
 <translation id="3132277757485842847">Δεν ήταν δυνατή η διατήρηση της σύνδεσης με το τηλέφωνό σας. Βεβαιωθείτε ότι το τηλέφωνο βρίσκεται κοντά σας, είναι ξεκλειδωμένο και έχει ενεργοποιημένες τις λειτουργίες Bluetooth και Wi-Fi.</translation>
 <translation id="3132996321662585180">Ανανέωση καθημερινά</translation>
+<translation id="3134393957315651797">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />. Περιγραφή πειράματος: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Μη έγκυρο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="313963229645891001">Λήψη: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Προεπιλεγμένο κίτρινο avatar</translation>
@@ -3303,7 +3304,6 @@
 <translation id="4635398712689569051">Η σελίδα <ph name="PAGE_NAME" /> δεν είναι διαθέσιμη σε επισκέπτες.</translation>
 <translation id="4635427303840967665">Η σύνδεση στο προφίλ βρίσκεται σε εξέλιξη. Μπορεί να χρειαστούν έως 30 δευτερόλεπτα.</translation>
 <translation id="4635444580397524003">Έγινε επιτυχής επαναφορά του αντιγράφου ασφαλείας Linux.</translation>
-<translation id="4636682061478263818">Αρχεία Drive</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
 <translation id="4637083375689622795">Περισσότερες ενέργειες, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Κείμενο}other{# κείμενα}}</translation>
@@ -4514,7 +4514,6 @@
 <translation id="6044805581023976844">Η εφαρμογή <ph name="APP_NAME" /> μοιράζεται μια καρτέλα Chrome και ήχο με το <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Κύριο κουμπί TrackPoint</translation>
 <translation id="6047632800149092791">Ο συγχρονισμός δεν λειτουργεί. Δοκιμάστε να αποσυνδεθείτε και να συνδεθείτε ξανά.</translation>
-<translation id="6049004884579590341">Πατήστε παρατεταμένα το πλήκτρο |<ph name="ACCELERATOR" />|, για να εξέλθετε από την πλήρη οθόνη</translation>
 <translation id="6051354611314852653">Ωχ!  Το σύστημα δεν κατάφερε να εξουσιοδοτήσει την πρόσβαση API για την παρούσα συσκευή.</translation>
 <translation id="6052976518993719690">Αρχή έκδοσης πιστοποιητικών SSL</translation>
 <translation id="6053401458108962351">&amp;Διαγραφή δεδομένων περιήγησης...</translation>

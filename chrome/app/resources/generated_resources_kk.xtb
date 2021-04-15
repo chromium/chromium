@@ -1969,6 +1969,7 @@
 <translation id="313205617302240621">Құпия сөзді ұмытып қалдыңыз ба?</translation>
 <translation id="3132277757485842847">Телефоныңызбен байланыс орнату мүмкін болмады. Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="3132996321662585180">Күнделікті жаңарту</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз. Эксперименттің сипаттамасы: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">PIN коды жарамсыз. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="313963229645891001">Жүктеп алынуда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Әдепкі сары түсті аватар</translation>
@@ -3299,7 +3300,6 @@
 <translation id="4635398712689569051">Қонақ пайдаланушылар <ph name="PAGE_NAME" /> бетіне кіре алмайды.</translation>
 <translation id="4635427303840967665">Профильге қосылуда. Оған 30 секундтай уақыт кетуі мүмкін.</translation>
 <translation id="4635444580397524003">Linux cақтық көшірмесі қалпына келтірілді.</translation>
-<translation id="4636682061478263818">Drive файлдары</translation>
 <translation id="4636930964841734540">Ақпарат</translation>
 <translation id="4637083375689622795">Қосымша әрекеттер, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Мәтін}other{# мәтін}}</translation>
@@ -4509,7 +4509,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> қолданбасы <ph name="TAB_NAME" /> сайтымен Chrome қойындысын және аудионы бөлісуде.</translation>
 <translation id="6045114302329202345">Негізгі TrackPoint түймесі</translation>
 <translation id="6047632800149092791">Синхрондалмай жатыр. Шығып, қайта кіріп көріңіз.</translation>
-<translation id="6049004884579590341">Толық экраннан шығу үшін |<ph name="ACCELERATOR" />| түймесін басып тұрыңыз</translation>
 <translation id="6051354611314852653">Жүйенің API осы құрылғыға кіру құқығын авторизациялауы сәтсіз аяқталды.</translation>
 <translation id="6052976518993719690">SSL сертификат беру органы</translation>
 <translation id="6053401458108962351">&amp;Шолу деректерін өшіру…</translation>

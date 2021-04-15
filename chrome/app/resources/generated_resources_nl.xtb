@@ -1972,6 +1972,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="313205617302240621">Wachtwoord vergeten?</translation>
 <translation id="3132277757485842847">We kunnen de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
+<translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ongeldige pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="313963229645891001">Downloaden: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
@@ -3302,7 +3303,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is niet beschikbaar voor gastgebruikers.</translation>
 <translation id="4635427303840967665">Verbinding maken met profiel. Dit kan tot 30 seconden duren.</translation>
 <translation id="4635444580397524003">Back-up voor Linux is hersteld.</translation>
-<translation id="4636682061478263818">Drive-bestanden</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Meer acties, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekstfragment}other{# tekstfragmenten}}</translation>
@@ -4512,7 +4512,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deelt een Chrome-tabblad en audio met <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Primaire TrackPoint-knop</translation>
 <translation id="6047632800149092791">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
-<translation id="6049004884579590341">Houd |<ph name="ACCELERATOR" />| ingedrukt om volledig scherm af te sluiten</translation>
 <translation id="6051354611314852653">Het systeem kan API-toegang voor dit apparaat niet verifiëren.</translation>
 <translation id="6052976518993719690">SSL-certificeringsinstantie</translation>
 <translation id="6053401458108962351">&amp;Browsegegevens wissen</translation>
@@ -6796,7 +6795,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8620436878122366504">Je ouders hebben dit nog niet goedgekeurd</translation>
 <translation id="8621866727807194849">Er staat schadelijke software op je computer. Chrome is bezig deze te verwijderen, je instellingen te herstellen en extensies uit te zetten. Hierdoor werkt je browser straks weer normaal.</translation>
 <translation id="8621979332865976405">Je volledige scherm delen</translation>
-<translation id="8624354461147303341">Kortingen krijgen</translation>
+<translation id="8624354461147303341">Kortingen zoeken</translation>
 <translation id="862542460444371744">&amp;Extensies</translation>
 <translation id="8625663000550647058">Geen toestemming om je microfoon te gebruiken</translation>
 <translation id="8625916342247441948">Niet toestaan dat sites verbinding maken met HID-apparaten</translation>

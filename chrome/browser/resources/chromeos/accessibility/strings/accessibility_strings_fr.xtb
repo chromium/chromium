@@ -241,7 +241,7 @@
 <translation id="2684412629217766642">Fermer le tutoriel ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouverte}one{# parenthèse ouverte}other{# parenthèses ouvertes}}</translation>
-<translation id="270523456882008230">Indice : Appuyez deux fois avec un doigt pour activer l'élément actuel.</translation>
+<translation id="270523456882008230">Conseil : Appuyez deux fois avec un doigt pour activer l'élément actuel.</translation>
 <translation id="2705875883745373140">Non appuyé</translation>
 <translation id="2708078563826046398">Rose pêche</translation>
 <translation id="2713444072780614174">Blanc</translation>
@@ -286,7 +286,7 @@
 <translation id="2972205263822847197">Info-bulle</translation>
 <translation id="2976476721782829799">Ce geste consiste à faire glisser un seul doigt sur l'écran pour vous y déplacer. Essayez de lire le reste de cette leçon en explorant l'écran au toucher.</translation>
 <translation id="297825089465017871">Balayer l'écran vers la gauche avec deux doigts</translation>
-<translation id="2988364959384217951">Indice : Balayez l'écran de droite à gauche avec deux doigts lorsque vous voulez quitter ce tutoriel.</translation>
+<translation id="2988364959384217951">Conseil : Balayez l'écran de droite à gauche avec deux doigts pour quitter ce tutoriel.</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer le timbre de la voix</translation>
 <translation id="3009352964623081324">Recherche+O, puis S. Utilisez ce raccourci pour installer, gérer et personnaliser des voix.</translation>
@@ -943,7 +943,7 @@
 <translation id="7776293189010177726">Ouvrir les menus ChromeVox</translation>
 <translation id="7799302833060027366">Appuyez sur la flèche vers le haut, vers le bas, vers la gauche ou vers la droite pour explorer le contenu mathématique</translation>
 <translation id="7800558923657349506">Épilogue</translation>
-<translation id="7801768143868631306">Indice : Balayez l'écran vers la gauche ou la droite avec un doigt pour naviguer sur l'écran.</translation>
+<translation id="7801768143868631306">Conseil : Balayez l'écran vers la gauche ou la droite avec un doigt pour naviguer sur l'écran.</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7810781339813764006">Groupe suivant</translation>
 <translation id="7813616274030162878">Menu Switch Access</translation>

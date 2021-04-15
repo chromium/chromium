@@ -1970,6 +1970,7 @@
 <translation id="313205617302240621">পাছৱৰ্ড পাহৰিলে নেকি?</translation>
 <translation id="3132277757485842847">আমি আপোনাৰ ফ’নটোৰ সৈতে সংযোগ বজাই ৰাখিব নোৱাৰিলোঁ। নিশ্চিত হৈ লওক যে আপোনাৰ ফ’নটো ওচৰত আছে, আনলক কৰা আছে আৰু ব্লুটুথ আৰু ৱাই-ফাই অন কৰা আছে।</translation>
 <translation id="3132996321662585180">দৈনিক ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পৰীক্ষণৰ বাবে পৰীক্ষণৰ স্থিতি বাছনি কৰক। পৰীক্ষণৰ বিৱৰণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">অমান্য পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="313963229645891001">ডাউনল'ড হৈ আছে, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ডিফ’ল্ট হালধীয়া অৱতাৰ</translation>
@@ -2188,6 +2189,7 @@
 <translation id="3406396172897554194">ভাষা অথবা ইনপুটৰ নাম অনুসৰি সন্ধান কৰক</translation>
 <translation id="3406605057700382950">বুকমার্ক বাৰ &amp;দেখুৱাওক</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো বিপজ্জনক হ’ব পাৰে}one{এই এক্সটেনশ্বনসমূহ বিপজ্জনক হ’ব পাৰে}other{এই এক্সটেনশ্বনসমূহ বিপজ্জনক হ’ব পাৰে}}</translation>
+<translation id="3408072735282270043">সক্ৰিয়, <ph name="NETWORK_NAME" /></translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">এই ব্যৱহাৰকাৰীজনক আঁতৰালে তেওঁৰ সৈতে জড়িত সকলো ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ'ব। <ph name="USER_EMAIL" />এ পাছত ছাইন ইন কৰিব পাৰিব।</translation>
 <translation id="3412265149091626468">বাছনিলৈ যাওক</translation>
@@ -2807,6 +2809,7 @@
 <translation id="4056908315660577142">আপোনাৰ অভিভাৱকে <ph name="APP_NAME" /> Chrome এপ্‌টোৰ বাবে ছেট কৰা সময়ৰ সীমাত আপুনি উপনীত হৈছে। আপুনি এইটো কাইলৈ <ph name="TIME_LIMIT" />ৰ বাবে ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Storeত চাওক</translation>
+<translation id="4057991113334098539">সক্ৰিয় কৰি থকা হৈছে...</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">এতিয়াই নথি পৰীক্ষা কৰক</translation>
 <translation id="406070391919917862">নেপথ্যৰ এপ্</translation>
@@ -3294,7 +3297,6 @@
 <translation id="4635398712689569051">অতিথি ব্যৱহাৰকাৰীৰ বাবে <ph name="PAGE_NAME" /> উপলব্ধ নহয়।</translation>
 <translation id="4635427303840967665">প্ৰ’ফাইলৰ সৈতে সংযোগ কৰি থকা হৈছে। এইটোৱে ৩০ ছেকেণ্ড পৰ্যন্ত সময় লগাব পাৰে।</translation>
 <translation id="4635444580397524003">Linuxৰ বেকআপ সফলতাৰে পুনঃস্থাপন কৰা হৈছে</translation>
-<translation id="4636682061478263818">Driveত থকা ফাইল</translation>
 <translation id="4636930964841734540">তথ্য</translation>
 <translation id="4637083375689622795">অধিক কার্য, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{পাঠ}one{# টা পাঠ}other{# টা পাঠ}}</translation>
@@ -3343,6 +3345,7 @@
 <translation id="4682551433947286597">ছাইন ইন কৰা স্ক্ৰীণত প্ৰদর্শন হোৱা ৱালপেপাৰ।</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ডিফ’ল্ট)</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
+<translation id="4684471265911890182"><ph name="APP_NAME" />এ কেমেৰা এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="4687613760714619596">অজ্ঞাত ডিভাইচ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ল’কেল লগ আইডি: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />।</translation>
 <translation id="4689235506267737042">আপোনাৰ ডেম’ অগ্ৰাধিকাৰ বাছনি কৰক</translation>
@@ -4501,7 +4504,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" />এ <ph name="TAB_NAME" />ৰ সৈতে এটা Chrome টেব আৰু অডিঅ’ শ্বেয়াৰ কৰি আছে৷</translation>
 <translation id="6045114302329202345">প্ৰাথমিক TrackPoint বুটাম</translation>
 <translation id="6047632800149092791">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই। ছাইন আউট কৰি পুনৰ ছাইন ইন কৰি চাওক।</translation>
-<translation id="6049004884579590341">সম্পূৰ্ণ স্ক্রীণৰ পৰা প্ৰস্থান কৰিবলৈ |<ph name="ACCELERATOR" />| স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="6051354611314852653">আমি দুঃখিত!  ছিষ্টেমটোৱে এই ডিভাইচটোৰ বাবে API এক্সেছৰ অনুমোদন দিব নোৱাৰিলে।</translation>
 <translation id="6052976518993719690">SSL প্ৰমাণপত্ৰ প্ৰদানকাৰী কৰ্তৃপক্ষ</translation>
 <translation id="6053401458108962351">&amp;ব্ৰাউজিং ডেটা মচক...</translation>
@@ -6671,6 +6673,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />এ ব্যৱহাৰ কৰা অজ্ঞাত ডিভাইচ</translation>
 <translation id="8481187309597259238">USBক অনুমতি প্ৰদান কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8481980314595922412">ট্ৰায়েলৰ সুবিধা অন আছে</translation>
+<translation id="848666842773560761">এটা এপে কেমেৰাটো এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="8487678622945914333">জুম ইন কৰক</translation>
 <translation id="8489156414266187072">ব্যক্তিগত পৰামৰ্শসমূহ কেৱল আপোনাৰ একাউণ্টত দেখুওৱা হয়</translation>
 <translation id="8490896350101740396">তলৰ কিঅ’স্ক এপসমূহ "<ph name="UPDATED_APPS" />" আপডে’ট কৰা হৈছে। আপডে’টৰ প্ৰক্ৰিয়া সম্পূর্ণ কৰিবলৈ ডিভাইচটো ৰিবুট কৰক।</translation>

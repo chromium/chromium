@@ -775,6 +775,9 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
           de política consistente. Ejecutar los procesos con diferentes valores de esta política no les afecta
           de forma negativa.
           </translation>
+<translation id="2026547141364626978">Si se le asigna un valor a esta política, se especificará la clave de licencia de <ph name="PLUGIN_VM_NAME" /> de este dispositivo.
+
+      Esta política se quitó en la versión M91.</translation>
 <translation id="2030905906517501646">Palabra clave de proveedor de búsquedas predeterminadas</translation>
 <translation id="203096360153626918">Esta política no influye en las aplicaciones para Android. Aunque se le asigne el valor <ph name="FALSE" />, las aplicaciones podrán acceder al modo de pantalla completa.</translation>
 <translation id="2032848225007871645">Esta política controla qué modos de desbloqueo rápido se pueden usar para desbloquear la pantalla de bloqueo.
@@ -1187,13 +1190,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación de texto se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="2509919237512982967">Utiliza los controles de formulario antiguos hasta la versión M84.</translation>
 <translation id="2515699738406900920">Disponibilidad del selector de perfil al iniciar</translation>
-<translation id="2515914624025258624">Esta opción permite que los usuarios creen perfiles secundarios y que usen el modo invitados en el navegador <ph name="LACROS_NAME" />.
-
-      Al igual que en el caso de BrowserAddPersonEnabled y BrowserGuestModeEnabled, si se asigna el valor false a esta política o no se establece, el usuario no podrá crear perfiles secundarios ni usar el modo invitados.
-
-      Si se asigna el valor true a esta política, el usuario podrá crear perfiles secundarios y usar el modo invitados.
-
-      Sin embargo, si se le asigna el valor true, pero BrowserAddPersonEnabled tiene asignado el valor false, el usuario no podrá crear perfiles secundarios. Ocurre lo mismo con BrowserGuestModeEnabled y el modo invitados.</translation>
 <translation id="2517466659416174529">Permite inmovilizar las pestañas que están en segundo plano</translation>
 <translation id="2518231489509538392">Permitir reproducción de audio</translation>
 <translation id="2520551905471951523">Utiliza la prioridad alta para el proceso de audio</translation>
@@ -1947,15 +1943,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
 <translation id="3480961938508521469">Carga totalmente la batería a velocidad estándar.</translation>
-<translation id="348110646151632565">Habilita la función de accesibilidad Enunciar Selección en la pantalla de inicio de sesión.
+<translation id="348110646151632565">Habilita la función de accesibilidad Enunciar selección en la pantalla de inicio de sesión.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará habilitada en la pantalla de inicio de sesión.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará habilitada en la pantalla de inicio de sesión.
 
-          Si se le asigna el valor "False", la función Enunciar Selección siempre estará inhabilitada en la pantalla de inicio de sesión.
+          Si se le asigna el valor "False", la función Enunciar selección siempre estará inhabilitada en la pantalla de inicio de sesión.
 
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
-          Si no se le asigna ningún valor, la función Enunciar Selección se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
+          Si no se le asigna ningún valor, la función Enunciar selección se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="348495353354674884">Habilitar teclado virtual</translation>
 <translation id="3485200437120267231">Inhabilitar interceptación de inicio de sesión</translation>
 <translation id="3487651201232258606">Mensajes nativos</translation>
@@ -2025,15 +2021,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3584722841530002134">Si se define esta política, asignará los servidores en los que puede delegar <ph name="PRODUCT_NAME" />. Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> no delegará las credenciales de usuario aunque se detecte una intranet como servidor.</translation>
-<translation id="3585177699591644295">Habilita la función de accesibilidad Enunciar Selección.
+<translation id="3585177699591644295">Habilita la función de accesibilidad Enunciar selección.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará habilitada.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará habilitada.
 
-          Si se asigna el valor "True" a esta política, la función Enunciar Selección siempre estará inhabilitada.
+          Si se asigna el valor "True" a esta política, la función Enunciar selección siempre estará inhabilitada.
 
           Además, los usuarios no podrán cambiarla ni anularla.
 
-          Si no se le asigna ningún valor, la función Enunciar Selección se inhabilitará al inicio, pero el usuario podrá habilitarla en cualquier momento.</translation>
+          Si no se le asigna ningún valor, la función Enunciar selección se inhabilitará al inicio, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="3591527072193107424">Habilitar la función de compatibilidad con navegadores antiguos.</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
@@ -3325,7 +3321,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
           Si se le asigna el valor "Inhabilitada", esta función se inhabilitará de forma forzosa.
           </translation>
-<translation id="5432043531153963184">Impide que los usuarios creen perfiles secundarios y que usen el modo invitados en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las opciones para desarrolladores de Android. Si se asigna a esta política el valor DeveloperToolsDisallowed (el valor 2), los usuarios no podrán acceder a las opciones para desarrolladores. Si se le asigna otro valor o no se le asigna ninguno, los usuarios podrán acceder a las opciones para desarrolladores tocando siete veces el número de compilación en la aplicación Ajustes de Android.</translation>
 <translation id="5445596354079213552">Esta política solo será efectiva cuando el dispositivo haya alcanzado la fecha de vencimiento de las actualizaciones automáticas y no tenga la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> establecida en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3845,7 +3840,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
-<translation id="6135895880862759946">Permite que los usuarios creen perfiles secundarios y que usen el modo invitados en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
@@ -4136,7 +4130,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se establece la política, no se aplicará ninguna longitud máxima.</translation>
 <translation id="6553143066970470539">Porcentaje de brillo de la pantalla</translation>
-<translation id="6558362593755624474">Establecer esta política permite especificar la clave de licencia de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara y al micrófono</translation>
 <translation id="6559221564468029245">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca audio. Esto impide que se alcance el tiempo de espera de inactividad y que se entre en modo de inactividad. Sin embargo, se llevarán a cabo la atenuación de pantalla, la desconexión de pantalla y el bloqueo de pantalla tras los tiempos de espera configurados, a pesar de la actividad del audio.
 
@@ -4885,7 +4878,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7433714841194914373">Habilitar Instant</translation>
 <translation id="7434202861148928348">Configurar los nombres de dominio requeridos para los clientes de acceso remoto</translation>
 <translation id="7443356543619955157">Establecer esta política permite aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
-<translation id="7448430478749155471">Habilita la función Enunciar Selección en la pantalla de inicio de sesión</translation>
+<translation id="7448430478749155471">Habilita la función Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="7458437477941640506">No vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. También inhabilita las actualizaciones.</translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
@@ -5768,7 +5761,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8653561013005884087">Si se le asigna el valor "true" a esta política, los mensajes de voz permanecen activados. Si se le asigna el valor "false", los mensajes de voz permanecen desactivados.
 
        Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, los mensajes de voz están en un principio desactivados, pero los usuarios pueden activarlos en cualquier momento.</translation>
-<translation id="8656110680728938054">Habilita Enunciar Selección</translation>
+<translation id="8656110680728938054">Habilita Enunciar selección</translation>
 <translation id="8661297125441579970">No permitir la migración de datos ni ARC.</translation>
 <translation id="8665314828727504286">Nivel de protección de Navegación segura</translation>
 <translation id="8669313549017524373">Si se le asigna el valor RestoreOnStartupIsURLs a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />, al establecer <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> en una lista de URLs, se especificarán las URL que se abren.

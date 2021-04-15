@@ -1348,6 +1348,7 @@
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果您瞭解安全性風險，也可以選擇在有害應用程式尚未移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個網站<ph name="END_LINK" />。</translation>
 <translation id="6047927260846328439">此內容可能會試圖誘使您安裝軟件或顯示個人資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可退出全螢幕模式</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
 <translation id="6051221802930200923">您目前無法瀏覽 <ph name="SITE" />，因為此網站使用憑證固定功能。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁可能稍後就能正常使用。</translation>
 <translation id="6051898664905071243">頁數：</translation>
@@ -1425,6 +1426,7 @@
 <translation id="6390200185239044127">風琴摺對摺</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6393956493820063117">管理員政策已禁止將內容由 <ph name="ORIGIN_NAME" /> 貼到此位置</translation>
+<translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406765186087300643">C0 (信封)</translation>

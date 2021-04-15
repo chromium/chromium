@@ -1360,6 +1360,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6045164183059402045">Šablon rasporeda stranice</translation>
 <translation id="6047233362582046994">Ako razumete bezbednosne rizike, možete da <ph name="BEGIN_LINK" />posetite ovaj sajt<ph name="END_LINK" /> pre nego što uklonimo štetne aplikacije.</translation>
 <translation id="6047927260846328439">Ovaj sadržaj će pokušati da vas prevari da instalirate softver ili otkrijete lične podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">Pritisnite i zadržite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="6049488691372270142">Isporuka stranica</translation>
 <translation id="6051221802930200923">Trenutno ne možete da posetite <ph name="SITE" /> jer veb-sajt koristi proveru sertifikata. Greške i napadi na mreži su obično privremeni, pa će ova stranica verovatno funkcionisati kasnije.</translation>
 <translation id="6051898664905071243">Broj stranica:</translation>
@@ -1436,6 +1437,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6390200185239044127">Presavijanje polovine u obliku slova Z</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6393956493820063117">Smernice za administratore blokiraju nalepljivanje sa <ph name="ORIGIN_NAME" /> na ovu lokaciju</translation>
+<translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="6401136357288658127">Ove smernice su zastarele. Umesto njih treba da koristite nove smernice <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Izmena obeleživača</translation>
 <translation id="6406765186087300643">C0 (koverat)</translation>

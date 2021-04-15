@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox টিউটোরিয়াল বন্ধ করুন</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{বাঁ বন্ধনী}one{#টি বাঁ বন্ধনী}other{# বাঁ বন্ধনী}}</translation>
+<translation id="270523456882008230">ইঙ্গিত: বর্তমান আইটেম অ্যাক্টিভেট করার জন্য একটি আঙুল দিয়ে ডবল ট্যাপ করুন।</translation>
 <translation id="2705875883745373140">টেপা হয়নি</translation>
 <translation id="2708078563826046398">পিচ পাফ</translation>
 <translation id="2713444072780614174">সাদা</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">টুল টিপ</translation>
 <translation id="2976476721782829799">এছাড়াও আপনি এক আঙুল দিয়ে ড্র্যাগ করে স্ক্রিনের চারপাশে নেভিগেট করতে পারেন। এটাই হল, টাচের মাধ্যমে এক্সপ্লোর করা। এই লেখার বাকী অংশের পড়া শুনতে স্ক্রিনের উপর আঙুল দিয়ে ড্র্যাগ করে দেখুন।</translation>
 <translation id="297825089465017871">দুই আঙ্গুল দিয়ে বাঁ দিকে সোয়াইপ করুন</translation>
+<translation id="2988364959384217951">ইঙ্গিত: এই টিউটোরিয়াল থেকে বেরিয়ে আসতে চাইলে দুটি আঙুল দিয়ে ডানদিকে থেকে বাঁদিকে সোয়াইপ করুন।</translation>
 <translation id="2998131015536248178">পূর্ববর্তী অক্ষর</translation>
 <translation id="2999559350546931576">পিচ কমান</translation>
 <translation id="3009352964623081324">'Search' ও 'O' বোতাম একসাথে প্রেস করুন, তারপরে 'S' বোতাম প্রেস করুন। ইনস্টল, ম্যানেজ ও ভয়েস কাস্টমাইজ করতে ব্যবহার করুন।</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox মেনুগুলি খুলুন</translation>
 <translation id="7799302833060027366">গণিত সম্পর্কে আরও জানতে উপরে, নিচে, বাঁ অথবা ডানদিকে প্রেস করুন</translation>
 <translation id="7800558923657349506">উপসংহার</translation>
+<translation id="7801768143868631306">ইঙ্গিত: নেভিগেট করতে একটি আঙুল দিয়ে বাঁদিক অথবা ডানদিকে সোয়াইপ করুন।</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7810781339813764006">পরবর্তী গ্রুপ</translation>
 <translation id="7813616274030162878">সুইচ অ্যাক্সেস মেনু</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">ফন্ট <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">আবর্ত যতিচিহ্ন ইকো</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">অ্যাকশন উপলভ্য আছে। দেখার জন্য Search+Ctrl+A প্রেস করুন</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">মডিফায়ার কী</translation>
 <translation id="8943282376843390568">লাইম</translation>

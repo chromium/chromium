@@ -1029,6 +1029,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> välilehteä palautettu</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
+<translation id="7808889146555843082">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta. Vaihda salasana tai poista tili (<ph name="SITE" />), jotta se pysyy turvassa muilta.</translation>
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7815484226266492798">Pitkä kuvakaappaus</translation>
 <translation id="7821588508402923572">Datasäästösi näkyvät täällä</translation>

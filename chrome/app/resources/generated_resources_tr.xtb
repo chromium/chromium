@@ -1972,6 +1972,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Şifrenizi mi unuttunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantıyı sürdüremedik. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile Kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="3132996321662585180">Günlük olarak yenile</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> denemesi için deneme durumu seçin. Deneme açıklaması: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Geçersiz PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="313963229645891001">İndiriliyor, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Varsayılan sarı avatar</translation>
@@ -3302,7 +3303,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" />, Davetli kullanıcılar için geçerli değildir.</translation>
 <translation id="4635427303840967665">Profile bağlanılıyor. Bu işlemin tamamlanması 30 saniyeyi bulabilir.</translation>
 <translation id="4635444580397524003">Linux yedeklemesi başarıyla geri yüklendi.</translation>
-<translation id="4636682061478263818">Drive dosyaları</translation>
 <translation id="4636930964841734540">Bilgi</translation>
 <translation id="4637083375689622795">Diğer işlemler, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Metin}other{# metin}}</translation>
@@ -4513,7 +4513,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" />, bir Chrome sekmesini ve sesi <ph name="TAB_NAME" /> ile paylaşıyor.</translation>
 <translation id="6045114302329202345">Birincil TrackPoint düğmesi</translation>
 <translation id="6047632800149092791">Senkronizasyon çalışmıyor. Oturumu kapatıp tekrar açmayı deneyin.</translation>
-<translation id="6049004884579590341">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="6051354611314852653">Hata!  Sistem bu cihaz için API erişimini yetkilendiremedi.</translation>
 <translation id="6052976518993719690">SSL Sertifika Yetkilisi</translation>
 <translation id="6053401458108962351">&amp;Tarama verilerini temizle...</translation>
@@ -5377,7 +5376,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="7004402701596653846">Sitede MIDI işlevi kullanılabilir</translation>
 <translation id="7004499039102548441">Son Sekmeler</translation>
-<translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" />'e varan indirim</translation>
+<translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> kadar indirim</translation>
 <translation id="7005496624875927304">Ek izinler</translation>
 <translation id="7005812687360380971">Hata</translation>
 <translation id="7005848115657603926">Geçersiz sayfa aralığı, şunu kullanın: <ph name="EXAMPLE_PAGE_RANGE" /></translation>

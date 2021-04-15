@@ -1970,6 +1970,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="313205617302240621">¿Olvidaste la contraseña?</translation>
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
+<translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">El PIN no es válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
@@ -3300,7 +3301,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> no está disponible para los usuarios invitados.</translation>
 <translation id="4635427303840967665">Se está estableciendo conexión con el perfil. Este proceso puede tardar hasta 30 segundos.</translation>
 <translation id="4635444580397524003">La copia de seguridad de Linux se restableció correctamente.</translation>
-<translation id="4636682061478263818">Archivos de Drive</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Más acciones, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
@@ -4510,7 +4510,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> comparte una pestaña de Chrome y audio con <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
 <translation id="6047632800149092791">La sincronización no funciona. Intenta salir y volver a acceder.</translation>
-<translation id="6049004884579590341">Mantén presionada la tecla |<ph name="ACCELERATOR" />| para salir de la pantalla completa</translation>
 <translation id="6051354611314852653">El sistema no pudo autorizar el acceso a la API para este dispositivo.</translation>
 <translation id="6052976518993719690">Entidad de certificación SSL</translation>
 <translation id="6053401458108962351">&amp;Borrar datos de navegación...</translation>

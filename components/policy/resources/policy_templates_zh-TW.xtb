@@ -758,6 +758,9 @@
           如果不設定這項政策，這項功能會由其本身的內部邏輯控管，使用者可手動設定這個內部邏輯。
 
           請注意，這項政策會分別套用至各個轉譯器程序，且轉譯器程序啟動時會使用這項政策最新的設定值。瀏覽器必須徹底重新啟動，以確保所有載入的分頁可收到一致的政策設定。即使不同程序採用不同的政策設定值，也不影響正常運作。</translation>
+<translation id="2026547141364626978">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。
+
+      這項政策已在 M91 版中移除。</translation>
 <translation id="2030905906517501646">預設搜尋引擎關鍵字</translation>
 <translation id="203096360153626918">這項政策對 Android 應用程式沒有影響。即使將這項政策設為 <ph name="FALSE" />，Android 應用程式仍可進入全螢幕模式。</translation>
 <translation id="2032848225007871645">你可以透過這項政策，控管可解鎖螢幕畫面的快速解鎖模式。
@@ -1163,13 +1166,6 @@
           如果未設定這項政策，系統預設會停用插入點醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2515699738406900920">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
-<translation id="2515914624025258624">這項設定可讓使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立次要設定檔，並使用訪客模式。
-
-      這項設定類似 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled；如果將這項政策設為 false 或未設定，使用者就無法建立次要設定檔及使用訪客模式。
-
-      如果將這項政策設為 true，使用者就能建立次要設定檔及使用訪客模式。
-
-      但請注意，如果將這項政策設為 true，但 BrowserAddPersonEnabled 設為 false，使用者便無法建立次要設定檔。這個原則也適用於 BrowserGuestModeEnabled 和訪客模式。</translation>
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
 <translation id="2518231489509538392">允許播放音訊</translation>
 <translation id="2520551905471951523">以高優先順序執行音訊程序</translation>
@@ -3272,7 +3268,6 @@
 
           如果將這項政策設為停用，系統會強制停用這項功能。
           </translation>
-<translation id="5432043531153963184">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立次要設定檔及使用訪客模式</translation>
 <translation id="5442026853063570579">這項政策也可以控制 Android 開發人員選項的存取權。如果將這項政策設為「DeveloperToolsDisallowed」(值 2)，使用者將無法存取開發人員選項。如果將這項政策設為其他值或不予設定，使用者只要在 Android 設定應用程式中輕觸版本號碼七次，即可存取開發人員選項。</translation>
 <translation id="5445596354079213552">只有在裝置的自動更新期限已結束，且裝置不符合透過 <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> 政策設定的 <ph name="PRODUCT_OS_NAME" />最低版本限制時，這項政策才會生效。
 
@@ -3757,7 +3752,6 @@
 <translation id="6132506775968708399">封鎖第三方 Cookie</translation>
 <translation id="6133088669883929098">允許所有網站使用金鑰產生功能</translation>
 <translation id="6135398260575578389">已啟用強化模式中的安全瀏覽功能。這個模式可提供更完善的安全防護機制，但使用者必須提供更多瀏覽資訊給 Google。</translation>
-<translation id="6135895880862759946">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立次要設定檔及使用訪客模式</translation>
 <translation id="6138636318340561140">即時檢查網址的安全瀏覽狀態</translation>
 <translation id="6141402445226505817">一律使用約略時區偵測功能</translation>
 <translation id="6144046700495610112">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入自動填入表單資料。如果將這項政策設為停用或不設定，瀏覽器首次執行時就不會匯入任何自動填入表單資料。
@@ -4044,7 +4038,6 @@
 
       如果不設定這項政策，系統將不會強制執行 PIN 碼長度上限。</translation>
 <translation id="6553143066970470539">螢幕亮度百分比</translation>
-<translation id="6558362593755624474">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
 <translation id="6559221564468029245">如果將這項政策設為啟用或不設定，系統在音訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置逾時限制，而採取閒置因應動作。不過，即使有音訊活動，系統在達到螢幕調暗、螢幕關閉和螢幕鎖定的逾時限制後，仍會觸發這些動作。
 

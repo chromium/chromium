@@ -1355,6 +1355,7 @@
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
 <translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="6047927260846328439">Bu kontent Sizi proqram təminatı quraşdırmaq və ya şəxsi məlumatı aşkar etmək üçün aldatmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsinə basıb saxlayın</translation>
 <translation id="6049488691372270142">Səhifə çatdırılması</translation>
 <translation id="6051221802930200923">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə sertifikat bağlantısı istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="6051898664905071243">Səhifə sayı:</translation>
@@ -1432,6 +1433,7 @@
 <translation id="6390200185239044127">Yarımçıq Z-qatlama</translation>
 <translation id="6390662030813198813">Texniki-E</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> mənbəyindən bu məkana əlavə etmək administrator siyasətinə əsasən bloklanıb</translation>
+<translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="6401136357288658127">Bu siyasət ləğv edilib. Əvəzinə <ph name="NEW_POLICY" /> siyasətindən istifadə edin.</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
 <translation id="6406765186087300643">C0 (Zərf)</translation>

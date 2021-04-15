@@ -1973,6 +1973,7 @@
 <translation id="313205617302240621">ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರುವಿರಾ?</translation>
 <translation id="3132277757485842847">ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕನೆಕ್ಷನ್ ಕಾಯ್ದುಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3132996321662585180">ಪ್ರತಿದಿನ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ಪ್ರಯೋಗಕ್ಕಾಗಿ, ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಪ್ರಯೋಗದ ವಿವರಣೆ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ಅಮಾನ್ಯ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="313963229645891001">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ಡಿಫಾಲ್ಟ್ ಹಳದಿ ಅವರಾರ್</translation>
@@ -3303,7 +3304,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ಅತಿಥಿ ಬಳಕೆದಾರರಿಗೆ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="4635427303840967665">ಪ್ರೊಫೈಲ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ ಇದು 30 ಸೆಕೆಂಡುಗಳವರೆಗೆ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="4635444580397524003">Linux ಬ್ಯಾಕಪ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ.</translation>
-<translation id="4636682061478263818">ಡ್ರೈವ್ ಫೈಲ್‌ಗಳು</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
 <translation id="4637083375689622795">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ಪಠ್ಯ}one{# ಪಠ್ಯಗಳು}other{# ಪಠ್ಯಗಳು}}</translation>
@@ -4514,7 +4514,6 @@
 <translation id="6044805581023976844"><ph name="TAB_NAME" /> ಜೊತೆಗೆ Chrome ಟ್ಯಾಬ್ ಮತ್ತು ಆಡಿಯೋ ಅನ್ನು <ph name="APP_NAME" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="6045114302329202345">ಪ್ರಾಥಮಿಕ TrackPoint ಬಟನ್</translation>
 <translation id="6047632800149092791">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="6049004884579590341">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಲು <ph name="ACCELERATOR" /> ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
 <translation id="6051354611314852653">ಓಹ್! ಈ ಸಾಧನಕ್ಕಾಗಿ API ಪ್ರವೇಶವನ್ನು ದೃಢೀಕರಿಸುವಾಗ ಸಿಸ್ಟಂ ವಿಫಲಗೊಂಡಿದೆ.</translation>
 <translation id="6052976518993719690">SSL ಪ್ರಮಾಣಪತ್ರ ಅಧಿಕಾರ</translation>
 <translation id="6053401458108962351">&amp;ಬ್ರೌಸಿಂಗ್ &amp;ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ...</translation>

@@ -1349,6 +1349,7 @@
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
 <translation id="6047927260846328439">이 콘텐츠는 사용자를 속여 소프트웨어를 설치하거나 개인정보를 유출할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">전체화면을 종료하려면 |<ph name="ACCELERATOR" />|을(를) 길게 누르기</translation>
 <translation id="6049488691372270142">페이지 제공</translation>
 <translation id="6051221802930200923">현재 <ph name="SITE" />에서 인증서 고정을 사용하기 때문에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="6051898664905071243">페이지 수:</translation>
@@ -1426,6 +1427,7 @@
 <translation id="6390200185239044127">Z 폴드 하프</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6393956493820063117">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 이 위치로 붙여넣는 작업이 차단되었습니다.</translation>
+<translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6401136357288658127">지원 중단된 정책입니다. <ph name="NEW_POLICY" /> 정책을 대신 사용해야 합니다.</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="6406765186087300643">C0(봉투)</translation>
@@ -1568,6 +1570,7 @@
 <translation id="7004583254764674281">Windows Hello를 사용하여 빠르게 카드 확인</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">크기 조절 설정</translation>
 <translation id="7014741021609395734">확대/축소 수준</translation>
 <translation id="7016992613359344582">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
@@ -1904,6 +1907,7 @@
 <translation id="825929999321470778">저장된 비밀번호 모두 표시</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8262952874573525464">하단 에지 스티치</translation>
+<translation id="826298712171642726">크기 조절을 사용 설정하시겠습니까?</translation>
 <translation id="8265992338205884890">표시되는 데이터</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />(으)로 로그인</translation>
 <translation id="8269242089528251720">별도 문서/모은 사본</translation>

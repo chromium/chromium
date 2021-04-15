@@ -266,7 +266,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
-<translation id="279827439955962619">Quitar el texto destacado</translation>
+<translation id="279827439955962619">Quitar destacado</translation>
 <translation id="2801022321632964776">Para obtener tu idioma, actualiza a la versión más reciente de Chrome</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
@@ -1029,6 +1029,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7798392620021911922">Se restablecieron <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="780301667611848630">No, gracias</translation>
+<translation id="7808889146555843082">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />. Cambia la contraseña o quita la cuenta de <ph name="SITE" /> para protegerla.</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7815484226266492798">Captura de pantalla completa</translation>
 <translation id="7821588508402923572">Aquí aparecerá tu ahorro de datos</translation>

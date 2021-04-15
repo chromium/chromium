@@ -1974,6 +1974,7 @@
 <translation id="313205617302240621">Ја заборавивте лозинката?</translation>
 <translation id="3132277757485842847">Не можевме да ја одржиме врската со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3132996321662585180">Освежувај дневно</translation>
+<translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="313963229645891001">Преземање, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
@@ -3304,7 +3305,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> не е достапна за гостинските корисници.</translation>
 <translation id="4635427303840967665">Се поврзува со профилот. Ова може да потрае до 30 секунди.</translation>
 <translation id="4635444580397524003">Бекапот на Linux е успешно вратен.</translation>
-<translation id="4636682061478263818">Датотеки на Drive</translation>
 <translation id="4636930964841734540">Информации</translation>
 <translation id="4637083375689622795">Повеќе дејства, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Текст}one{# текст}other{# текста}}</translation>
@@ -4514,7 +4514,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> споделува картичка на Chrome и аудио со <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Примарно копче TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизацијата не функционира. Обидете се да се одјавите и да се најавите повторно.</translation>
-<translation id="6049004884579590341">Притиснете и задржете |<ph name="ACCELERATOR" />| за да излезете од цел екран</translation>
 <translation id="6051354611314852653">Системот не успеа да овласти пристап до АПИ за овој уред.</translation>
 <translation id="6052976518993719690">Орган за сертифицирање на ССЛ</translation>
 <translation id="6053401458108962351">&amp;Исчисти податоци од прелистување…</translation>

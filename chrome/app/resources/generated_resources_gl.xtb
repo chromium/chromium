@@ -1971,6 +1971,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="313205617302240621">Esqueciches o contrasinal?</translation>
 <translation id="3132277757485842847">Non puidemos manter a conexión co teu teléfono. Asegúrate de que estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
+<translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">O PIN non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
@@ -3301,7 +3302,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> non está dispoñible para usuarios invitados.</translation>
 <translation id="4635427303840967665">Conectando co perfil. Este proceso pode tardar ata 30 segundos.</translation>
 <translation id="4635444580397524003">Restaurouse correctamente a copia de seguranza de Linux.</translation>
-<translation id="4636682061478263818">Ficheiros de Drive</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Máis accións, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Texto}other{# textos}}</translation>
@@ -3795,7 +3795,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5225324770654022472">Mostrar o atallo das aplicacións</translation>
 <translation id="52254442782792731">Configuración de visibilidade actual aínda sen definir</translation>
 <translation id="5225463052809312700">Acender cámara</translation>
-<translation id="5227679487546032910">Avatar azul verdoso predeterminado</translation>
+<translation id="5227679487546032910">Avatar verde azulado predeterminado</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5229189185761556138">Xestionar métodos de entrada</translation>
 <translation id="5230516054153933099">Ventá</translation>
@@ -4511,7 +4511,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6044805581023976844"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
 <translation id="6047632800149092791">A sincronización non funciona. Tenta pechar sesión e iniciala de novo.</translation>
-<translation id="6049004884579590341">Mantén premida a tecla |<ph name="ACCELERATOR" />| para saír do modo de pantalla completa</translation>
 <translation id="6051354611314852653">O sistema non puido autorizar o acceso á API para este dispositivo.</translation>
 <translation id="6052976518993719690">Autoridade de certificación SSL</translation>
 <translation id="6053401458108962351">&amp;Borrar datos de navegación...</translation>

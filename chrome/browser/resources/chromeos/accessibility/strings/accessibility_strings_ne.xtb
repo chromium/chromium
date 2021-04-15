@@ -241,6 +241,7 @@
 <translation id="2684412629217766642">ChromeVox को ट्यूटोरियल बन्द गर्नुहोस्</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ खुला प्यारेन}other{ # खुला प्यारेनहरू}}</translation>
+<translation id="270523456882008230">ध्यान दिनुहोस्: हालको पाठ खोलेर फेरि प्रयोग गर्न एक औँलाले डबल ट्याप गर्नुहोस्।</translation>
 <translation id="2705875883745373140">नथिचिएको</translation>
 <translation id="2708078563826046398">पिच पफ</translation>
 <translation id="2713444072780614174">सेतो</translation>
@@ -285,6 +286,7 @@
 <translation id="2972205263822847197">उपकरण टिप</translation>
 <translation id="2976476721782829799">तपाईं एक औँलाले ड्र्याग गरेर पनि स्क्रिनमा एक ठाउँबाट अर्को ठाउँमा जान सक्नुहुन्छ। यसलाई 'छोएर अन्वेषण गर्नु' भनिन्छ। यो पाठको बाँकी भाग पढ्न आफ्नो औँलाले स्क्रिनमा ड्र्याग गरी हेर्नुहोस्।</translation>
 <translation id="297825089465017871">दुई औँलाले बायाँ स्वाइप गर्नुहोस्</translation>
+<translation id="2988364959384217951">ध्यान दिनुहोस्: तपाईं यो ट्युटोरियलबाट बाहिरिन चाहनुहुन्छ भने दुई औँलाले दायाँदेखि बायाँतिर स्वाइप गर्नुहोस्।</translation>
 <translation id="2998131015536248178">अघिल्लो वर्ण</translation>
 <translation id="2999559350546931576">पिच घटाउनुहोस्</translation>
 <translation id="3009352964623081324">Search + O, त्यसपछि S आवाजहरू इन्स्टल गर्न, व्यवस्थापन गर्न र आफ्नो रोजाइ अनुकूल बनाउन यो किबोर्ड सर्टकट प्रयोग गरिन्छ।</translation>
@@ -941,6 +943,7 @@
 <translation id="7776293189010177726">ChromeVox का मेनुहरू खोल्नुहोस्</translation>
 <translation id="7799302833060027366">गणितीय सामग्रीको अन्वेषण गर्न माथि, तल, बाँया वा दायाँ तीर कुञ्जी थिच्नुहोस्</translation>
 <translation id="7800558923657349506">उपसंहार</translation>
+<translation id="7801768143868631306">ध्यान दिनुहोस्: नेभिगेट गर्न एउटा औँलाले बायाँ वा दायाँतिर स्वाइप गर्नुहोस्।</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7810781339813764006">अर्को समूह</translation>
 <translation id="7813616274030162878">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी मेनु</translation>
@@ -1080,6 +1083,7 @@
 <translation id="8897030325301866860">फन्ट <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">साइकल विराम प्रतिध्वनि</translation>
 <translation id="8908714597367957477">colhdr</translation>
+<translation id="8910180774920883033">कारबाहीहरू उपलब्ध छन्। ती कारबाहीहरू हेर्न खोज बटन+Ctrl+A थिच्नुहोस्</translation>
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">परिमार्जक कुञ्जी</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>

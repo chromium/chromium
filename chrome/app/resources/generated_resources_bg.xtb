@@ -1970,6 +1970,7 @@
 <translation id="313205617302240621">Забравили сте паролата си?</translation>
 <translation id="3132277757485842847">Връзката с телефона ви прекъсна. Проверете дали е наблизо, отключен е и Bluetooth и функцията за Wi-Fi са включени.</translation>
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
+<translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Невалиден ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="313963229645891001">Изтегля се, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
@@ -3301,7 +3302,6 @@
 <translation id="4635398712689569051">Страницата „<ph name="PAGE_NAME" />“ не е достъпна за гости.</translation>
 <translation id="4635427303840967665">Установява се връзка с профил за мобилна мрежа. Това може да отнеме до 30 секунди.</translation>
 <translation id="4635444580397524003">Възстановяването на резервното копие на Linux бе успешно.</translation>
-<translation id="4636682061478263818">Файлове в Диск</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4637083375689622795">Още действия, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{SMS съобщение}other{# SMS съобщения}}</translation>
@@ -4512,7 +4512,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> споделя раздел в Chrome и звук с/ъс „<ph name="TAB_NAME" />“.</translation>
 <translation id="6045114302329202345">Основен бутон за TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизирането не работи. Опитайте да излезете и отново да влезете в профила си.</translation>
-<translation id="6049004884579590341">Натиснете и задръжте |<ph name="ACCELERATOR" />| за изход от режима на цял екран</translation>
 <translation id="6051354611314852653">Ами сега!  Системата не успя да удостовери достъпа на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6052976518993719690">SSL сертифициращ орган</translation>
 <translation id="6053401458108962351">Из&amp;чистване на данните за сърфирането...</translation>

@@ -768,6 +768,9 @@ Se você desativar a política, essa rolagem será desativada.</translation>
           consistente da política. Não há problemas em executar processos com valores
           diferentes desta política.
           </translation>
+<translation id="2026547141364626978">A definição da política especifica a chave de licença de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.
+
+      Esta política foi removida na versão M91.</translation>
 <translation id="2030905906517501646">Palavra-chave do provedor de pesquisa padrão</translation>
 <translation id="203096360153626918">Esta política não tem nenhum efeito sobre os apps Android. Eles poderão entrar no modo tela cheia mesmo se a política estiver definida como <ph name="FALSE" />.</translation>
 <translation id="2032848225007871645">Se a política for definida, ela controlará quais modos de desbloqueio rápido podem desbloquear a tela.
@@ -1180,13 +1183,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="2509919237512982967">Usar controles de formulários legados até a M84.</translation>
 <translation id="2515699738406900920">Disponibilidade do seletor de perfil na inicialização</translation>
-<translation id="2515914624025258624">Esta configuração permite que usuários criem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" />.
-
-      De maneira semelhante à BrowserAddPersonEnabled e BrowserGuestModeEnabled, se esta política for definida como falsa ou for deixada sem definição, o usuário não poderá criar perfis secundários e usar o modo visitante.
-
-      Se ela for definida como verdadeira, o usuário poderá criar perfis secundários e usar o modo visitante.
-
-      No entanto, se esta política for definida como verdadeira, mas BrowserAddPersonEnabled for definida como falsa, a criação de perfis secundários não será permitida. O mesmo vale para o modo visitante na política BrowserGuestModeEnabled.</translation>
 <translation id="2517466659416174529">Permitir congelamento das guias em segundo plano</translation>
 <translation id="2518231489509538392">Permitir a reprodução de áudio</translation>
 <translation id="2520551905471951523">Usar a prioridade alta para o processo de áudio</translation>
@@ -3303,7 +3299,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
           Se ela for definida como "Desativada", o recurso será desativado à força.
           </translation>
-<translation id="5432043531153963184">Evitar que usuários criem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="5442026853063570579">Esta política também controla o acesso às Opções do desenvolvedor Android. Se esta política for definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar as Opções do desenvolvedor. Se for definida como falsa ou se não for definida, os usuários poderão acessar as Opções do desenvolvedor tocando sete vezes no número da versão no app de configurações do Android.</translation>
 <translation id="5445596354079213552">Esta política só será eficaz quando o dispositivo tiver atingido a data de expiração da atualização automática e não atender mais os requisitos mínimos permitidos pela versão do <ph name="PRODUCT_OS_NAME" /> definidos pela <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3821,7 +3816,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6132506775968708399">Bloquear cookies de terceiros</translation>
 <translation id="6133088669883929098">Permitir que todos os sites usem a geração de chaves</translation>
 <translation id="6135398260575578389">O "Navegação segura" está ativo no modo avançado. Esse modo oferece maior segurança, mas requer o compartilhamento de mais informações de navegação com o Google.</translation>
-<translation id="6135895880862759946">Permitir que os usuários criem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="6138636318340561140">Verifica em tempo real o status dos URLs no "Navegação segura"</translation>
 <translation id="6141402445226505817">Sempre usar detecção de fuso horário aproximada</translation>
 <translation id="6144046700495610112">Se a política for definida como ativada, os dados de preenchimento automático de formulários serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum dado de preenchimento automático de formulário será importado durante a primeira execução.
@@ -4109,7 +4103,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política não for definida, não haverá tamanho máximo aplicado.</translation>
 <translation id="6553143066970470539">Porcentagem de brilho da tela</translation>
-<translation id="6558362593755624474">A definição da política especifica a chave de licença de <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">Não permitir que nenhum site acesse minha câmera e meu microfone</translation>
 <translation id="6559221564468029245">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver tocando áudio. Isso impede que o tempo limite de inatividade seja atingido e que as ações correspondentes sejam realizadas. No entanto, o escurecimento, o desligamento e o bloqueio de tela ainda serão realizados após os limites de tempo configurados, independentemente da atividade de áudio.
 

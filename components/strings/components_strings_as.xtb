@@ -1354,6 +1354,7 @@
 <translation id="6045164183059402045">ইম্পজিশ্বন টেমপ্লে’ট</translation>
 <translation id="6047233362582046994">যদি আপুনি আপোনাৰ সুৰক্ষাৰ প্ৰতি সৃষ্টি হ‘ব পৰা ক্ষতিৰ কথা বুজি পাইছে তেন্তে ক্ষতিকাৰক এপ্‌সমূহ আঁতৰোৱাৰ আগেয়ে আপুনি <ph name="BEGIN_LINK" />এই ছাইটটো চাওক<ph name="END_LINK" /> খুলি চাব পাৰে।</translation>
 <translation id="6047927260846328439">এই সমলে আপোনাক ছল-চাতুৰিৰে কিছুমান ছফ্টৱেৰ ইনষ্টল কৰাবলৈ বা আপোনাৰ ব্যক্তিগত তথ্য ফাদিল কৰিবলৈ বাধ্য কৰাব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
+<translation id="6049004884579590341">সম্পূৰ্ণ স্ক্রীণৰ পৰা প্ৰস্থান কৰিবলৈ |<ph name="ACCELERATOR" />| স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="6049488691372270142">পৃষ্ঠা ডেলিভাৰী</translation>
 <translation id="6051221802930200923">আপুনি এই মুহূৰ্তত <ph name="SITE" /> চাব নোৱাৰে কাৰণ এই ৱেবছাইটটোৱে প্ৰমাণ পত্ৰ পিন কৰা সুবিধাটো ব্যৱহাৰ কৰে। নেটৱর্ক সম্পর্কীয় আসোঁৱাহ আৰু আক্ৰমণসমূহ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে কিছুসময়ৰ পাছত কাম কৰিব পাৰে।</translation>
 <translation id="6051898664905071243">পৃষ্ঠাৰ সংখ্যা:</translation>
@@ -1430,6 +1431,7 @@
 <translation id="6390200185239044127">Z-ফ'ল্ড আধা</translation>
 <translation id="6390662030813198813">অভিযান্ত্রিক-E</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" />ৰ পৰা এই অৱস্থানটোত পে’ষ্ট কৰাৰ সুবিধাটো প্রশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
+<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6401136357288658127">এই নীতিটো অপ্ৰচলিত। আপুনি তাৰ পৰিৱৰ্তে <ph name="NEW_POLICY" /> নীতিটো ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6406765186087300643">C0 (লেফাফা)</translation>
@@ -1572,6 +1574,7 @@
 <translation id="7004583254764674281">কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰিবলৈ Windows Hello ব্যৱহাৰ কৰক</translation>
 <translation id="7006930604109697472">তথাপি পঠিয়াওক</translation>
 <translation id="7012363358306927923">China Union Pay</translation>
+<translation id="7012404007611495949">আকাৰ সলনি কৰাৰছেটিং</translation>
 <translation id="7014741021609395734">জুমৰ স্তৰ</translation>
 <translation id="7016992613359344582">এই মাচুলটো এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেইটো সুনিৰ্দিষ্ট নহ’ব পাৰে।</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
@@ -1906,6 +1909,7 @@
 <translation id="825929999321470778">ছেভ কৰি থোৱা সকলো পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8262952874573525464">তলৰ অংশৰ কাষত চিলাওক</translation>
+<translation id="826298712171642726">আকাৰ সলনি কৰাটো সক্ষম কৰিবনে?</translation>
 <translation id="8265992338205884890">দৃশ্যমান ডেটা</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> হিচাপে ছাইন ইন কৰিছে</translation>
 <translation id="8269242089528251720">পৃথক নথি/মিলোৱা প্ৰতিলিপিসমূহ</translation>

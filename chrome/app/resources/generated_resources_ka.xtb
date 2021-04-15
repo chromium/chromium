@@ -1972,6 +1972,7 @@
 <translation id="313205617302240621">პაროლი დაგავიწყდათ?</translation>
 <translation id="3132277757485842847">თქვენს ტელეფონთან კავშირი ვერ შენარჩუნდა. დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ, განბლოკილია და მასზე ჩართულია Bluetooth/Wi-Fi.</translation>
 <translation id="3132996321662585180">ყოველდღიურად განახლება</translation>
+<translation id="3134393957315651797">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“. ექსპერიმენტის აღწერილობა: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="313963229645891001">მიმდინარეობს ჩამოტვირთვა, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ნაგულისხმევი ყვითელი ავატარი</translation>
@@ -3302,7 +3303,6 @@
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> მიუწვდომელია სტუმარი მომხმარებლებისთვის.</translation>
 <translation id="4635427303840967665">მიმდინარეობს პროფილთან დაკავშირება. ამას, შესაძლოა, 30 წამამდე დასჭირდეს.</translation>
 <translation id="4635444580397524003">Linux-ის სარეზერვო ასლი აღდგენილია.</translation>
-<translation id="4636682061478263818">Drive-ის ფაილები</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
 <translation id="4637083375689622795">სხვა ქმედებები, <ph name="EMAIL" /></translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{ტექსტი}other{# ტექსტი}}</translation>
@@ -4512,7 +4512,6 @@
 <translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome-ის ჩანართს და აუდიოს <ph name="TAB_NAME" />-ს უზიარებს.</translation>
 <translation id="6045114302329202345">ძირითადი TrackPoint-ის ღილაკი</translation>
 <translation id="6047632800149092791">სინქრონიზაცია არ მუშაობს. ცადეთ სისტემიდან გასვლა და ხელახლა შესვლა.</translation>
-<translation id="6049004884579590341">სრულეკრანიანი რეჟიმიდან გამოსასვლელად ხანგრძლივად დააჭირეთ კლავიშზე  |<ph name="ACCELERATOR" />|</translation>
 <translation id="6051354611314852653">უი! სისტემაში ვერ მოხერხდა API წვდომის ავტორიზაცია ამ მოწყობილობისთვის.</translation>
 <translation id="6052976518993719690">SSL სერტიფიცირების ორგანიზაცია</translation>
 <translation id="6053401458108962351">დათვალიერების მონაცემების &amp;გასუფთავება…</translation>

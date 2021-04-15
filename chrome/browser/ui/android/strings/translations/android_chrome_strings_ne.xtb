@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
 <translation id="2781151931089541271">१ सेकेन्ड बाँकी छ</translation>
+<translation id="279827439955962619">पाठमा गरिएको हाइलाइट हटाउनुहोस्</translation>
 <translation id="2801022321632964776">Chrome को नवीनतम संस्करणमा आफ्नो भाषा प्राप्त गर्न अपडेट गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome का एप सम्बन्धी सबै डेटा सदाका लागि मेटिने छन्। यस अन्तर्गत सबै फाइल, सेटिङ, खाता, डेटाबेसहरू आदि पर्दछन्।</translation>
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गरियोस्</translation>
 <translation id="4493497663118223949">लाइट मोड सक्रिय छ</translation>
+<translation id="4504667196171871375">Wi-Fi तथा मोबाइल डेटा अन हुँदा</translation>
 <translation id="4508528996305412043">फिड कार्ड मेनु खुला छ</translation>
 <translation id="4508642716788467538">आफ्नो भाषा छान्नुहोस्</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# दिन अघि}other{# दिन अघि}}</translation>
@@ -916,6 +918,7 @@
 <translation id="702463548815491781">TalkBack वा पहुँच स्विच गर्नुहोस् नामक सुविधा सक्रिय हुँदा मात्र सिफारिस गरिन्छ</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
+<translation id="7040531500313579672">हाइलाइट गरिएको पाठको लिंक सेयर गर्नुहोस्</translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>
@@ -1025,6 +1028,7 @@
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
+<translation id="7808889146555843082">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन। <ph name="SITE" /> मा रहेको तपाईंको खाता अन्य मान्छेहरूबाट सुरक्षित राख्न आफ्नो पासवर्ड परिवर्तन गर्नुहोस् वा उक्त खाता मेटाउनुहोस्।</translation>
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
 <translation id="7821588508402923572">तपाईंले बचत गर्नुभएको डेटा यहाँ देखिने छ</translation>

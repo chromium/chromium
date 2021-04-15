@@ -266,6 +266,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ସେକେଣ୍ଡ ଅବଶିଷ୍ଟ ଅଛି</translation>
 <translation id="2779651927720337254">ବିଫଳ ହେଲା</translation>
 <translation id="2781151931089541271">1 ସେକେଣ୍ଡ ବାକି ଅଛି</translation>
+<translation id="279827439955962619">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2801022321632964776">Chromeର ନବୀନତମ ସଂସ୍କରଣରେ ଆପଣଙ୍କ ଭାଷା ପାଇବା ନିମନ୍ତେ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="281504910091592009">ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" />ରେ ସେଭ୍ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ।</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chromeର ସମସ୍ତ ଆପ୍ ଡାଟା ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ୍ ହୋଇଯିବ। ଏଥିରେ ସମସ୍ତ ଫାଇଲ୍, ସେଟିଂସ୍, ଡାଟାବେସ୍, ଇତ୍ୟାଦି ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
 <translation id="449126573531210296">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ୍ ହୋଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4493497663118223949">ଲାଇଟ୍‍ ମୋଡ୍ ଅନ୍‌ ଅଛି</translation>
+<translation id="4504667196171871375">ୱାଇ-ଫାଇ ଏବଂ ମୋବାଇଲ ଡାଟାରେ</translation>
 <translation id="4508528996305412043">ଫିଡ୍ କାର୍ଡ ମେନୁ ଖୋଲା ଅଛି</translation>
 <translation id="4508642716788467538">ଆପଣଙ୍କର ଭାଷା ବାଛନ୍ତୁ</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ଦିନ ପୂର୍ବେ}other{# ଦିନ ପୂର୍ବେ}}</translation>
@@ -587,6 +589,7 @@
 <translation id="4941179133499732445">ଆପଣଙ୍କ ଭଏସ୍ ମାଧ୍ୟମରେ ସନ୍ଧାନ କରିବାକୁ ମାଇକରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="4943703118917034429">ଭର୍ଚୁଆଲ୍ ରିଅଲିଟି</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
+<translation id="4957722034734105353">ଅଧିକ ଜାଣନ୍ତୁ...</translation>
 <translation id="4961107849584082341">ଏହି ପୃଷ୍ଠାକୁ ଯେକୌଣସି ଭାଷାରେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4970824347203572753">ଆପଣଙ୍କର ଲୋକେସନ୍‌ରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4971735654804503942">ବିପଦଜନକ ୱେବସାଇଟ୍, ଡାଉନଲୋଡ୍ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକ ବିରୁଦ୍ଧରେ ଦ୍ରୁତ, ସକ୍ରିୟ ସୁରକ୍ଷା। ପାସୱାର୍ଡ ଚୋରି ବିଷୟରେ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। Googleକୁ ବ୍ରାଉଜିଂ ଡାଟା ପଠାଇବା ଆବଶ୍ୟକ କରେ।</translation>
@@ -916,6 +919,7 @@
 <translation id="702463548815491781">TalkBack କିମ୍ବା ଆକ୍ସେସ୍ ପରିବର୍ତ୍ତନ ଚାଲୁ ଥିଲେ ଏହା କରିବାକୁ ସୁପାରିଶ୍ କରାଯାଇଛି</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ରିଷ୍ଟୋର୍ କରାଯାଇଛି</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
+<translation id="7040531500313579672">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟକୁ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="7054588988317389591">ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="7055152154916055070">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି:</translation>
 <translation id="7063006564040364415">ସିଙ୍କ ସର୍ଭର ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
@@ -1025,6 +1029,7 @@
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
+<translation id="7808889146555843082">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଦ୍ଵାରା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ। ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ କିମ୍ବା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଅନ୍ୟମାନଙ୍କ ଠାରୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଏହାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="7810647596859435254">ଏଥିରେ ଖୋଲନ୍ତୁ…</translation>
 <translation id="7815484226266492798">ଲମ୍ବା ସ୍କ୍ରିନସଟ୍</translation>
 <translation id="7821588508402923572">ଆପଣଙ୍କର ଡାଟା ସେଭିଂ ଏଠାରେ ଦେଖାଯିବ</translation>
@@ -1149,6 +1154,7 @@
 <translation id="8559990750235505898">ଅନ୍ୟ ଭାଷାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବାକୁ ଅଫର୍ ଦିଅନ୍ତୁ</translation>
 <translation id="8560602726703398413">ବୁକମାର୍କରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଖୋଜନ୍ତୁ</translation>
 <translation id="8562452229998620586">ସେଭ୍ ଥିବା ପାସ୍‌ୱର୍ଡ ଏଠାରେ ଦେଖାଯିବ।</translation>
+<translation id="856481929701340285">ଡେସ୍କଟପ ସାଇଟ ପାଇଁ ଅନୁରୋଧ କର</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> ଠାରୁ</translation>
 <translation id="8571213806525832805">ବିଗତ 4 ସପ୍ତାହ</translation>
 <translation id="8572344201470131220">ଛବି କପି କରାଯାଇଛି</translation>

@@ -266,6 +266,7 @@
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
+<translation id="279827439955962619">撤消突出显示</translation>
 <translation id="2801022321632964776">更新即可在最新版本的 Chrome 中使用您的语言</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中保存的密码</translation>
@@ -503,6 +504,7 @@
 <translation id="4487967297491345095">Chrome 的所有应用数据都将被永久删除，其中包括所有文件、设置、帐号、数据库等。</translation>
 <translation id="449126573531210296">使用您的 Google 帐号加密已同步的密码</translation>
 <translation id="4493497663118223949">精简模式已开启</translation>
+<translation id="4504667196171871375">连接到 Wi-Fi 和移动数据网络时</translation>
 <translation id="4508528996305412043">动态卡片上的菜单已打开</translation>
 <translation id="4508642716788467538">选择您的语言</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 天前}other{# 天前}}</translation>
@@ -917,6 +919,7 @@
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
 <translation id="7027549951530753705">“<ph name="ITEM_TITLE" />”已恢复</translation>
 <translation id="7029809446516969842">密码</translation>
+<translation id="7040531500313579672">分享文本链接</translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7063006564040364415">无法连接到同步服务器。</translation>
@@ -1026,6 +1029,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="7808889146555843082">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号。如需保护您在 <ph name="SITE" /> 上的帐号免遭他人盗用，请更改您的密码或删除该帐号。</translation>
 <translation id="7810647596859435254">打开方式…</translation>
 <translation id="7815484226266492798">长屏幕截图</translation>
 <translation id="7821588508402923572">您的数据流量节省情况将显示在这里</translation>
