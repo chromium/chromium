@@ -632,8 +632,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
   return [[GREYCondition
       conditionWithName:@"Wait for received request"
                   block:^{
-                    return _responseProvider->last_request_url() == URL ? YES
-                                                                        : NO;
+                    return self->_responseProvider->last_request_url() == URL;
                   }] waitWithTimeout:10];
 }
 

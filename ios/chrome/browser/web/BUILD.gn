@@ -5,10 +5,7 @@
 import("//ios/web/js_compile.gni")
 
 source_set("web") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "dom_altering_lock.h",
     "dom_altering_lock.mm",
@@ -401,7 +398,6 @@ source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
-    "//build/config/ios:disable_implicit_retain_self_warning",
   ]
   testonly = true
 
