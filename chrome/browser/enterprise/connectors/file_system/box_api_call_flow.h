@@ -93,6 +93,35 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
   base::WeakPtrFactory<BoxCreateUpstreamFolderApiCallFlow> weak_factory_{this};
 };
 
+// Helper for performing preflight checks before uploading a file.
+class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
+ public:
+  BoxPreflightCheckApiCallFlow(TaskCallback callback,
+                               const base::FilePath& target_file_name,
+                               const std::string& folder_id);
+  ~BoxPreflightCheckApiCallFlow() override;
+
+ protected:
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  std::string CreateApiCallBody() override;
+  std::string GetRequestTypeForBody(const std::string& body) override;
+  bool IsExpectedSuccessCode(int code) const override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessApiCallFailure(int net_error,
+                             const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+
+ private:
+  // Callback from the controller to report success, http_code, folder_id.
+  TaskCallback callback_;
+  const base::FilePath target_file_name_;
+  const std::string folder_id_;
+
+  base::WeakPtrFactory<BoxPreflightCheckApiCallFlow> weak_factory_{this};
+};
+
 // Helper for uploading a small (<= kWholeFileUploadMaxSize) file to upstream
 // downloads folder in box.
 class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {

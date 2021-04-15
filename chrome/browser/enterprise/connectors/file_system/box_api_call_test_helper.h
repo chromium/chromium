@@ -13,6 +13,7 @@ namespace enterprise_connectors {
 extern const char kFileSystemBoxFindFolderUrl[];
 extern const char kFileSystemBoxCreateFolderUrl[];
 extern const char kFileSystemBoxWholeFileUploadUrl[];
+extern const char kFileSystemBoxPreflightCheckUrl[];
 
 // Expected responses for calls to Box endpoints.
 
@@ -29,6 +30,9 @@ extern const char kFileSystemBoxFindFolderResponseEmptyEntriesList[];
 extern const char kFileSystemBoxCreateFolderResponseBody[];
 // Expected folder id extracted from above.
 extern const char kFileSystemBoxCreateFolderResponseFolderId[];
+
+// Saved folder id extracted from the kFileSystemUploadFolderIdPref pref.
+extern const char kFileSystemBoxSavedInPrefFolderId[];
 
 // Expected url's for each of the Box mini classes for chunked file upload.
 extern const char kFileSystemBoxChunkedUploadCreateSessionUrl[];

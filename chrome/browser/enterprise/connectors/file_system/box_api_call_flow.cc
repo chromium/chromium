@@ -137,7 +137,8 @@ BoxApiCallFlow::GetNetworkTrafficAnnotationTag() {
           "No settings control."
         policy_exception_justification: "Not implemented yet."
       })");
-  // TODO(1157959): Add the policy that will turn on/off the connector here?
+  // TODO(https://crbug.com/1157959): Add the policy that will turn on/off the
+  // connector here?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -224,10 +225,7 @@ GURL BoxCreateUpstreamFolderApiCallFlow::CreateApiCallUrl() {
 std::string BoxCreateUpstreamFolderApiCallFlow::CreateApiCallBody() {
   base::Value val(base::Value::Type::DICTIONARY);
   val.SetStringKey("name", "ChromeDownloads");
-
-  base::Value parent_val(base::Value::Type::DICTIONARY);
-  parent_val.SetStringKey("id", kParentFolderId);
-  val.SetKey("parent", std::move(parent_val));
+  val.SetKey("parent", CreateSingleFieldDict("id", kParentFolderId));
 
   std::string body;
   base::JSONWriter::Write(val, &body);
@@ -272,6 +270,64 @@ void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(
   }
   std::move(callback_).Run(!folder_id.empty(), net::HTTP_CREATED, folder_id);
   return;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PreflightCheck
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/options-files-content/
+BoxPreflightCheckApiCallFlow::BoxPreflightCheckApiCallFlow(
+    TaskCallback callback,
+    const base::FilePath& target_file_name,
+    const std::string& folder_id)
+    : callback_(std::move(callback)),
+      target_file_name_(target_file_name),
+      folder_id_(folder_id) {}
+BoxPreflightCheckApiCallFlow::~BoxPreflightCheckApiCallFlow() = default;
+
+GURL BoxPreflightCheckApiCallFlow::CreateApiCallUrl() {
+  return BoxApiCallFlow::CreateApiCallUrl().Resolve("2.0/files/content");
+}
+
+std::string BoxPreflightCheckApiCallFlow::GetRequestTypeForBody(
+    const std::string& body) {
+  CHECK(!body.empty());
+  return "OPTIONS";
+}
+
+std::string BoxPreflightCheckApiCallFlow::CreateApiCallBody() {
+  base::Value val(base::Value::Type::DICTIONARY);
+  val.SetStringKey("name", target_file_name_.MaybeAsASCII());
+  val.SetKey("parent", CreateSingleFieldDict("id", folder_id_));
+
+  std::string body;
+  base::JSONWriter::Write(val, &body);
+  return body;
+}
+
+bool BoxPreflightCheckApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_OK;
+}
+
+void BoxPreflightCheckApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  CHECK_EQ(response_code, net::HTTP_OK);
+  std::move(callback_).Run(true, response_code);
+}
+
+void BoxPreflightCheckApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  DLOG(ERROR) << "[BoxApiCallFlow] PreflightCheck failed; net error = "
+              << net_error << "; response code = " << response_code << ": "
+              << body;
+  std::move(callback_).Run(false, response_code);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -352,7 +408,8 @@ void BoxWholeFileUploadApiCallFlow::OnFileRead(
     base::Optional<std::string> file_read) {
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
-    std::move(callback_).Run(false, 0);  // TODO(1165972): error handling
+    std::move(callback_).Run(
+        false, 0);  // TODO(https://crbug.com/1165972): error handling
     return;
   }
   DCHECK_LE(file_read->size(), kWholeFileUploadMaxSize);
@@ -438,8 +495,8 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
   if (!body->empty()) {
     DLOG(ERROR) << "Body: " << *body;
   }
-  // TODO(1165972): decide whether to queue up the file to retry later, or also
-  // delete like in ProcessApiCallSuccess()
+  // TODO(https://crbug.com/1165972): decide whether to queue up the file to
+  // retry later, or also delete like in ProcessApiCallSuccess()
   std::move(callback_).Run(false, response_code);
 }
 

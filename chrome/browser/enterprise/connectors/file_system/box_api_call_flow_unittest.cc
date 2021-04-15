@@ -292,6 +292,67 @@ TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Normal) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// PreflightCheck
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxPreflightCheckApiCallFlowForTest
+    : public BoxPreflightCheckApiCallFlow {
+ public:
+  using BoxPreflightCheckApiCallFlow::BoxPreflightCheckApiCallFlow;
+  using BoxPreflightCheckApiCallFlow::CreateApiCallBody;
+  using BoxPreflightCheckApiCallFlow::CreateApiCallBodyContentType;
+  using BoxPreflightCheckApiCallFlow::CreateApiCallUrl;
+  using BoxPreflightCheckApiCallFlow::IsExpectedSuccessCode;
+  using BoxPreflightCheckApiCallFlow::ProcessApiCallFailure;
+  using BoxPreflightCheckApiCallFlow::ProcessApiCallSuccess;
+};
+
+class BoxPreflightCheckApiCallFlowTest
+    : public BoxApiCallFlowTest<BoxPreflightCheckApiCallFlowForTest> {
+ protected:
+  void SetUp() override {
+    if (!temp_dir_.CreateUniqueTempDir()) {
+      FAIL() << "Failed to create temporary directory for testing";
+    }
+    file_path_ = temp_dir_.GetPath().Append(file_name_);
+
+    flow_ = std::make_unique<BoxPreflightCheckApiCallFlowForTest>(
+        base::BindOnce(&BoxPreflightCheckApiCallFlowTest::OnResponse,
+                       factory_.GetWeakPtr()),
+        file_name_, folder_id_);
+  }
+
+  void OnResponse(bool success, int response_code) {
+    processed_success_ = success;
+    response_code_ = response_code;
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+
+  const std::string folder_id_{"1337"};
+  const base::FilePath file_name_{
+      FILE_PATH_LITERAL("box_preflight_check_test.txt")};
+  base::FilePath file_path_;
+
+  base::ScopedTempDir temp_dir_;
+  base::test::TaskEnvironment task_environment_;
+  base::OnceClosure quit_closure_;
+  base::WeakPtrFactory<BoxPreflightCheckApiCallFlowTest> factory_{this};
+};
+
+TEST_F(BoxPreflightCheckApiCallFlowTest, CreateApiCallUrl) {
+  GURL url(kFileSystemBoxPreflightCheckUrl);
+  ASSERT_EQ(flow_->CreateApiCallUrl(), url);
+}
+
+TEST_F(BoxPreflightCheckApiCallFlowTest, IsExpectedSuccessCode) {
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(200));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(400));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(403));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
+}
+////////////////////////////////////////////////////////////////////////////////
 // WholeFileUpload
 ////////////////////////////////////////////////////////////////////////////////
 

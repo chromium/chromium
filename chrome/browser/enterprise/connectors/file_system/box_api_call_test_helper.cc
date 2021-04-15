@@ -10,6 +10,8 @@ namespace enterprise_connectors {
 const char kFileSystemBoxFindFolderUrl[] =
     "https://api.box.com/2.0/search?type=folder&query=ChromeDownloads";
 const char kFileSystemBoxCreateFolderUrl[] = "https://api.box.com/2.0/folders";
+const char kFileSystemBoxPreflightCheckUrl[] =
+    "https://api.box.com/2.0/files/content";
 const char kFileSystemBoxWholeFileUploadUrl[] =
     "https://upload.box.com/api/2.0/files/content";
 
@@ -29,6 +31,12 @@ const char kFileSystemBoxFindFolderResponseBody[] = R"({
 const char kFileSystemBoxFindFolderResponseFolderId[] = "12345";
 // Should match id in kFileSystemBoxFindFolderResponseBody, as it's used to
 // verify extracted folder_id from body above.
+
+const char kFileSystemBoxSavedInPrefFolderId[] = "1337";
+// This is the folder_id stored for the kFileSystemUploadFolderIdPref key in
+// PrefService for FileSystemDownloadControllerWithSavedFolderPrefTest. It is
+// intentionally distinct from kFileSystemBoxFindFolderResponseFolderId above
+// to identify where the test flow gets the folder_id from.
 
 const char kFileSystemBoxFindFolderResponseEmptyEntriesList[] = R"({
     "entries": [

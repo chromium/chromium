@@ -53,7 +53,12 @@ class FileSystemDownloadController {
   void OnCreateUpstreamFolderResponse(bool success,
                                       int response_code,
                                       const std::string& folder_id);
+  std::unique_ptr<OAuth2ApiCallFlow> CreatePreflightCheckApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> CreateUploadApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> CreateFindUpstreamFolderApiCall();
+
+  // Callbacks from BoxFlowApis
+  void OnPreflightCheckResponse(bool success, int response_code);
   void OnWholeFileUploadResponse(bool success, int response_code);
 
   // Callback when API call gives Authenetication Error.

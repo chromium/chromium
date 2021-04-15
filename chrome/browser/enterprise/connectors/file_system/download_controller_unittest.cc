@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -61,14 +62,7 @@ class FileSystemDownloadControllerTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     EXPECT_TRUE(profile_manager_.SetUp());
-    PrefService* prefs =
-        profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
-    controller_.Init(
-        base::BindRepeating(&FileSystemDownloadControllerTest::AuthenRetry,
-                            weak_factory_.GetWeakPtr()),
-        base::BindOnce(&FileSystemDownloadControllerTest::DownloadComplete,
-                       weak_factory_.GetWeakPtr()),
-        prefs);
+    prefs = profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
   }
 
   void SetUp() override {
@@ -79,6 +73,12 @@ class FileSystemDownloadControllerTest : public testing::Test {
       FAIL() << "Failed to create temporary file "
              << test_item_.GetTemporaryFilePath();
     }
+    controller_.Init(
+        base::BindRepeating(&FileSystemDownloadControllerTest::AuthenRetry,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&FileSystemDownloadControllerTest::DownloadComplete,
+                       weak_factory_.GetWeakPtr()),
+        prefs);
   }
 
   void AddFetchResult(const std::string& url,
@@ -98,6 +98,12 @@ class FileSystemDownloadControllerTest : public testing::Test {
     std::move(quit_closure_).Run();
   }
 
+  void RunWithQuitClosure() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
  protected:
   DownloadItemForTest test_item_;
   FileSystemDownloadController controller_;
@@ -112,6 +118,7 @@ class FileSystemDownloadControllerTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder decoder_;
   TestingProfileManager profile_manager_;
 
+  PrefService* prefs;
   base::OnceClosure quit_closure_;
 
   // For controller.TryTask().
@@ -124,13 +131,14 @@ TEST_F(FileSystemDownloadControllerTest, HasExistingFolder) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
   AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
       kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
       std::string());  // Dummy body since we are not reading from body.
 
   controller_.TryTask(url_factory_, "dummytoken");
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
-  run_loop.Run();
+  RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_EQ(controller_.GetFolderIdForTesting(),
@@ -145,13 +153,14 @@ TEST_F(FileSystemDownloadControllerTest, NoExistingFolder) {
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CREATED,
                  kFileSystemBoxCreateFolderResponseBody);
   AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
       kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
       std::string());  // Dummy body since we are not reading from body.
 
   controller_.TryTask(url_factory_, "dummytoken");
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
-  run_loop.Run();
+  RunWithQuitClosure();
 
   EXPECT_EQ(authentication_retry_, 0);
   EXPECT_EQ(controller_.GetFolderIdForTesting(),
@@ -166,9 +175,7 @@ TEST_F(FileSystemDownloadControllerTest, AuthenticationFailureInTryTask) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_UNAUTHORIZED,
                  std::string());
   controller_.TryTask(url_factory_, "dummytoken");
-  base::RunLoop run_loop1;
-  quit_closure_ = run_loop1.QuitClosure();
-  run_loop1.Run();
+  RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 1);
 
   // Should be retrying authentication, no report via callback yet.
@@ -177,15 +184,16 @@ TEST_F(FileSystemDownloadControllerTest, AuthenticationFailureInTryTask) {
   EXPECT_EQ(controller_.GetFolderIdForTesting(), "");
 
   // Check that it's able to continue after authentication has been refreshed.
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
   AddFetchResult(
       kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
       std::string());  // Dummy body since we are not reading from body.
   controller_.TryTask(url_factory_, "dummytoken");
-  base::RunLoop run_loop2;
-  quit_closure_ = run_loop2.QuitClosure();
-  run_loop2.Run();
+  RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 1);
   EXPECT_EQ(controller_.GetFolderIdForTesting(),
             kFileSystemBoxFindFolderResponseFolderId);
@@ -201,15 +209,167 @@ TEST_F(FileSystemDownloadControllerTest, UnexpectedFailureInTryTask) {
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_NOT_FOUND,
                  std::string());
   controller_.TryTask(url_factory_, "dummytoken");
-  base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
-  run_loop.Run();
+  RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 0);
 
   // Should just report failure via callback.
   EXPECT_TRUE(download_callback_called_);
   EXPECT_FALSE(upload_success_);
   EXPECT_EQ(controller_.GetFolderIdForTesting(), "");
+}
+
+class FileSystemDownloadControllerWithSavedFolderPrefTest
+    : public FileSystemDownloadControllerTest {
+ public:
+  void SetUp() override {
+    prefs->SetString(kFileSystemUploadFolderIdPref,
+                     kFileSystemBoxSavedInPrefFolderId);
+    FileSystemDownloadControllerTest::SetUp();
+  }
+};
+
+TEST_F(FileSystemDownloadControllerWithSavedFolderPrefTest,
+       IfPreflightCheckPasses) {
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
+      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
+      std::string());  // Dummy body since we are not reading from body.
+
+  controller_.TryTask(url_factory_, "dummytoken");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxSavedInPrefFolderId);
+  EXPECT_TRUE(download_callback_called_);
+  EXPECT_TRUE(upload_success_);
+}
+
+TEST_F(FileSystemDownloadControllerWithSavedFolderPrefTest,
+       IfPreflightCheckConflict) {
+  // TODO(https://crbug.com/1198617): This implies a conflict and currently we
+  // abandon the upload.
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_CONFLICT,
+      std::string());  // Dummy body since we are not reading from body.
+
+  controller_.TryTask(url_factory_, "dummytoken");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxSavedInPrefFolderId);
+  EXPECT_TRUE(download_callback_called_);
+  EXPECT_FALSE(upload_success_);
+}
+
+TEST_F(FileSystemDownloadControllerWithSavedFolderPrefTest,
+       IfPreflightCheck404ButBoxFolderExists) {
+  // The cached folder_id returns a 404, so we try to find or create the folder
+  // again
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND,
+      std::string());  // Dummy body since we are not reading from body.
+
+  controller_.TryTask(url_factory_, "dummytoken");
+
+  // TODO(https://crbug.com/1199194): Re-enable this check without modifying
+  // non-Test code much.
+  //  RunWithQuitClosure();
+  //
+  //  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+  //  kFileSystemBoxFindFolderUrl));
+  //  EXPECT_EQ(prefs->GetString(kFileSystemUploadFolderIdPref), std::string());
+
+  // We find the folder.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                 kFileSystemBoxFindFolderResponseBody);
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
+      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
+      std::string());  // Dummy body since we are not reading from body.
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxFindFolderResponseFolderId);
+  EXPECT_TRUE(download_callback_called_);
+  EXPECT_TRUE(upload_success_);
+}
+
+TEST_F(FileSystemDownloadControllerWithSavedFolderPrefTest,
+       IfPreflightCheck404AndFolderDoesNotExist) {
+  // The cached folder_id returns a 404, so we try to find or create the folder
+  // again
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND,
+      std::string());  // Dummy body since we are not reading from body.
+
+  controller_.TryTask(url_factory_, "dummytoken");
+
+  // TODO(https://crbug.com/1199194): Re-enable this check without modifying
+  // non-Test code much.
+  //  RunWithQuitClosure();
+  //
+  //  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+  //  kFileSystemBoxFindFolderUrl));
+  //  EXPECT_EQ(prefs->GetString(kFileSystemUploadFolderIdPref), std::string());
+
+  // We don't find the ChromeDownloads for and have to create it.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                 kFileSystemBoxFindFolderResponseEmptyEntriesList);
+  AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CREATED,
+                 kFileSystemBoxCreateFolderResponseBody);
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
+      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
+      std::string());  // Dummy body since we are not reading from body.
+  RunWithQuitClosure();
+
+  EXPECT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxCreateFolderResponseFolderId);
+  EXPECT_TRUE(download_callback_called_);
+  EXPECT_TRUE(upload_success_);
+}
+
+TEST_F(FileSystemDownloadControllerWithSavedFolderPrefTest,
+       AuthenticationFailureInPreflightCheck) {
+  // Check that authentication retry callback is called upon
+  // net::HTTP_UNAUTHORIZED.
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_UNAUTHORIZED,
+                 std::string());
+  controller_.TryTask(url_factory_, "dummytoken");
+  RunWithQuitClosure();
+  ASSERT_EQ(authentication_retry_, 1);
+
+  // Should be retrying authentication, no report via callback yet.
+  EXPECT_FALSE(download_callback_called_);
+  EXPECT_FALSE(upload_success_);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxSavedInPrefFolderId);
+
+  AddFetchResult(
+      kFileSystemBoxPreflightCheckUrl, net::HTTP_OK,
+      std::string());  // Dummy body since we are not reading from body.
+  AddFetchResult(
+      kFileSystemBoxWholeFileUploadUrl, net::HTTP_CREATED,
+      std::string());  // Dummy body since we are not reading from body.
+
+  controller_.TryTask(url_factory_, "dummytoken");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 1);
+  EXPECT_EQ(controller_.GetFolderIdForTesting(),
+            kFileSystemBoxSavedInPrefFolderId);
+  EXPECT_TRUE(download_callback_called_);
+  EXPECT_TRUE(upload_success_);
 }
 
 }  // namespace enterprise_connectors
