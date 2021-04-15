@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/reading_list/core/reading_list_entry.h"
-#include "components/reading_list/core/reading_list_model.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -67,11 +66,13 @@ ReadLaterPageHandler::ReadLaterPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       read_later_ui_(read_later_ui),
+      web_contents_(web_ui->GetWebContents()),
       clock_(base::DefaultClock::GetInstance()) {
   Profile* profile = Profile::FromWebUI(web_ui);
   DCHECK(profile);
 
   reading_list_model_ = ReadingListModelFactory::GetForBrowserContext(profile);
+  reading_list_model_scoped_observation_.Observe(reading_list_model_);
 }
 
 ReadLaterPageHandler::~ReadLaterPageHandler() = default;
@@ -101,12 +102,10 @@ void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
   reading_list_model_->SetReadStatus(url, read);
-  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
-  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
 }
 
 void ReadLaterPageHandler::ShowUI() {
@@ -119,6 +118,32 @@ void ReadLaterPageHandler::CloseUI() {
   auto embedder = read_later_ui_->embedder();
   if (embedder)
     embedder->CloseUI();
+}
+
+void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(
+    const ReadingListModel* model) {
+  DCHECK(model == reading_list_model_);
+  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN)
+    return;
+  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
+}
+
+void ReadLaterPageHandler::ReadingListModelBeingDeleted(
+    const ReadingListModel* model) {
+  DCHECK(model == reading_list_model_);
+  DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
+      reading_list_model_));
+  reading_list_model_scoped_observation_.Reset();
+  reading_list_model_ = nullptr;
+}
+
+void ReadLaterPageHandler::ReadingListDidApplyChanges(ReadingListModel* model) {
+  DCHECK(model == reading_list_model_);
+  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+      reading_list_model_->IsPerformingBatchUpdates()) {
+    return;
+  }
+  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
 }
 
 read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(

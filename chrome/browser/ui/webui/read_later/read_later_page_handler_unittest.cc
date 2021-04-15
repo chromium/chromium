@@ -121,6 +121,36 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
                                         base::ASCIIToUTF16(title));
   }
 
+  void GetAndVerifyReadLaterEntries(
+      size_t unread_size,
+      size_t read_size,
+      const std::vector<std::pair<GURL, std::string>>& expected_unread_data,
+      const std::vector<std::pair<GURL, std::string>>& expected_read_data) {
+    EXPECT_EQ(unread_size, expected_unread_data.size());
+    read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback =
+        base::BindLambdaForTesting(
+            [&](read_later::mojom::ReadLaterEntriesByStatusPtr
+                    entries_by_status) {
+              ASSERT_EQ(unread_size, entries_by_status->unread_entries.size());
+              ASSERT_EQ(read_size, entries_by_status->read_entries.size());
+
+              // Verify the entries appear in order of last added to first.
+              for (size_t i = 0u; i < expected_unread_data.size(); i++) {
+                auto* entry = entries_by_status->unread_entries[i].get();
+                ExpectNewReadLaterEntry(entry, expected_unread_data[i].first,
+                                        expected_unread_data[i].second);
+              }
+
+              // Verify the entries appear in order of last added to first.
+              for (size_t i = 0u; i < expected_read_data.size(); i++) {
+                auto* entry = entries_by_status->read_entries[i].get();
+                ExpectNewReadLaterEntry(entry, expected_read_data[i].first,
+                                        expected_read_data[i].second);
+              }
+            });
+    handler()->GetReadLaterEntries(std::move(callback));
+  }
+
   testing::StrictMock<MockPage> page_;
 
  private:
@@ -131,23 +161,16 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
+  // Expect ItemsChanged to be called twice from the two AddEntry calls in
+  // SetUp().
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
   // Get Read later entries.
-  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
-      base::BindLambdaForTesting(
-          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
-                  entries_by_status) {
-            ASSERT_EQ(2u, entries_by_status->unread_entries.size());
-            ASSERT_EQ(0u, entries_by_status->read_entries.size());
-
-            // Verify the entries appear in order of last added to first.
-            auto* entry1 = entries_by_status->unread_entries[0].get();
-            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl3), kTabName3);
-
-            auto* entry2 = entries_by_status->unread_entries[1].get();
-            ExpectNewReadLaterEntry(entry2, GURL(kTabUrl1), kTabName1);
-          });
-
-  handler()->GetReadLaterEntries(std::move(callback1));
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 2u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl3), kTabName3),
+       std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryOnNTP) {
@@ -159,22 +182,17 @@ TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryOnNTP) {
   handler()->OpenSavedEntry(GURL(kTabUrl3));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
+  // Expect ItemsChanged to be called 3 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the OpenSavedEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+
   // Get Read later entries.
-  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
-      base::BindLambdaForTesting(
-          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
-                  entries_by_status) {
-            ASSERT_EQ(1u, entries_by_status->unread_entries.size());
-            ASSERT_EQ(1u, entries_by_status->read_entries.size());
-
-            auto* entry1 = entries_by_status->unread_entries[0].get();
-            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl1), kTabName1);
-
-            auto* entry2 = entries_by_status->read_entries[0].get();
-            ExpectNewReadLaterEntry(entry2, GURL(kTabUrl3), kTabName3);
-          });
-
-  handler()->GetReadLaterEntries(std::move(callback1));
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 1u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryNotOnNTP) {
@@ -183,63 +201,115 @@ TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryNotOnNTP) {
   handler()->OpenSavedEntry(GURL(kTabUrl3));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
+  // Expect ItemsChanged to be called 3 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the OpenSavedEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+
   // Get Read later entries.
-  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
-      base::BindLambdaForTesting(
-          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
-                  entries_by_status) {
-            ASSERT_EQ(1u, entries_by_status->unread_entries.size());
-            ASSERT_EQ(1u, entries_by_status->read_entries.size());
-
-            auto* entry1 = entries_by_status->unread_entries[0].get();
-            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl1), kTabName1);
-
-            auto* entry2 = entries_by_status->read_entries[0].get();
-            ExpectNewReadLaterEntry(entry2, GURL(kTabUrl3), kTabName3);
-          });
-
-  handler()->GetReadLaterEntries(std::move(callback1));
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 1u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
   handler()->UpdateReadStatus(GURL(kTabUrl3), true);
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(1);
+
+  // Expect ItemsChanged to be called 3 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the OpenSavedEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
 
   // Get Read later entries.
-  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
-      base::BindLambdaForTesting(
-          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
-                  entries_by_status) {
-            ASSERT_EQ(1u, entries_by_status->unread_entries.size());
-            ASSERT_EQ(1u, entries_by_status->read_entries.size());
-
-            auto* entry1 = entries_by_status->unread_entries[0].get();
-            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl1), kTabName1);
-
-            auto* entry2 = entries_by_status->read_entries[0].get();
-            ExpectNewReadLaterEntry(entry2, GURL(kTabUrl3), kTabName3);
-          });
-
-  handler()->GetReadLaterEntries(std::move(callback1));
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 1u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {std::make_pair(GURL(kTabUrl3), kTabName3)});
 }
 
 TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
-  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(1);
+
+  // Expect ItemsChanged to be called 3 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the RemoveEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
 
   // Get Read later entries.
-  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
-      base::BindLambdaForTesting(
-          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
-                  entries_by_status) {
-            ASSERT_EQ(1u, entries_by_status->unread_entries.size());
-            ASSERT_EQ(0u, entries_by_status->read_entries.size());
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
+}
 
-            auto* entry1 = entries_by_status->unread_entries[0].get();
-            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl1), kTabName1);
-          });
+TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
+  EXPECT_FALSE(model()->IsPerformingBatchUpdates());
+  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->RemoveEntry(GURL(kTabUrl3));
+  EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
-  handler()->GetReadLaterEntries(std::move(callback1));
+  // Expect ItemsChanged to be called 4 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the OpenSavedEntry call above.
+  // Once for the RemoveEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+
+  // Get Read later entries.
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
+}
+
+TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
+  auto token = model()->BeginBatchUpdates();
+  EXPECT_TRUE(model()->IsPerformingBatchUpdates());
+  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->RemoveEntry(GURL(kTabUrl3));
+  token.reset();
+  EXPECT_FALSE(model()->IsPerformingBatchUpdates());
+
+  // Expect ItemsChanged to be called 3 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the two updates above performed during a batch update.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+
+  // Get Read later entries.
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
+}
+
+TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
+  // Set WebContents to be hidden.
+  content::WebContents::CreateParams params =
+      content::WebContents::CreateParams(profile());
+  params.initially_hidden = true;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(params);
+  handler()->set_web_contents_for_testing(web_contents.get());
+
+  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  handler()->RemoveEntry(GURL(kTabUrl3));
+
+  // Expect ItemsChanged to be called twice from the two AddEntry calls in
+  // SetUp() and the two above calls to not trigger an ItemsChanged call because
+  // the WebContents is not visible.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
+
+  // Get Read later entries. Calling GetReadLaterEntries will trigger an update.
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 1u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
 }
 
 }  // namespace
