@@ -18869,6 +18869,7 @@
         'chrome.*:72-',
         'ios:88-',
       ],
+      'future_on': ['android'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -20136,6 +20137,7 @@
         'chrome_os:81-',
         'ios:88-',
       ],
+      'future_on': ['android'],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting''',
       'example_value': True,
       'desc': '''This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting which uploads information about the browser operation to Google Admin console.
