@@ -20,8 +20,8 @@ SYSTEM_HEALTH_BENCHMARK_UMA = [
     'Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2',
     'Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2',
     'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
-    'Memory.GPU.PeakMemoryUsage.Scroll',
-    'Memory.GPU.PeakMemoryUsage.PageLoad',
+    'Memory.GPU.PeakMemoryUsage2.Scroll',
+    'Memory.GPU.PeakMemoryUsage2.PageLoad',
 ]
 
 

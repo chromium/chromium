@@ -32,10 +32,12 @@ constexpr int kAllocationSourceTypeCount =
 constexpr int kAllocationSourceHistogramIndex =
     kUsageTypeCount * kAllocationSourceTypeCount;
 
-// Histogram values based on UMA_HISTOGRAM_MEMORY_KB
-constexpr int kMemoryHistogramMin = 1000;
-constexpr int kMemoryHistogramMax = 500000;
-constexpr int kMemoryHistogramBucketCount = 50;
+// Histogram values based on MEMORY_METRICS_HISTOGRAM_MB, allowing this to match
+// Memory.Gpu.PrivateMemoryFootprint. Previously this was reported in KB, with a
+// maximum of 500 MB. However that maximum is too low for Mac.
+constexpr int kMemoryHistogramMin = 1;
+constexpr int kMemoryHistogramMax = 64000;
+constexpr int kMemoryHistogramBucketCount = 100;
 
 constexpr const char* GetUsageName(PeakGpuMemoryTracker::Usage usage) {
   switch (usage) {
@@ -65,13 +67,13 @@ constexpr const char* GetAllocationSourceName(
 }
 
 std::string GetPeakMemoryUsageUMAName(PeakGpuMemoryTracker::Usage usage) {
-  return base::StrCat({"Memory.GPU.PeakMemoryUsage.", GetUsageName(usage)});
+  return base::StrCat({"Memory.GPU.PeakMemoryUsage2.", GetUsageName(usage)});
 }
 
 std::string GetPeakMemoryAllocationSourceUMAName(
     PeakGpuMemoryTracker::Usage usage,
     gpu::GpuPeakMemoryAllocationSource source) {
-  return base::StrCat({"Memory.GPU.PeakMemoryAllocationSource.",
+  return base::StrCat({"Memory.GPU.PeakMemoryAllocationSource2.",
                        GetUsageName(usage), ".",
                        GetAllocationSourceName(source)});
 }
@@ -85,22 +87,22 @@ void PeakMemoryCallback(PeakGpuMemoryTracker::Usage usage,
                         const uint64_t peak_memory,
                         const base::flat_map<gpu::GpuPeakMemoryAllocationSource,
                                              uint64_t>& allocation_per_source) {
-  uint64_t memory_in_kb = peak_memory / 1024u;
+  uint64_t memory_in_mb = peak_memory / 1048576u;
   STATIC_HISTOGRAM_POINTER_GROUP(
       GetPeakMemoryUsageUMAName(usage), static_cast<int>(usage),
-      kUsageTypeCount, Add(memory_in_kb),
+      kUsageTypeCount, Add(memory_in_mb),
       base::Histogram::FactoryGet(
           GetPeakMemoryUsageUMAName(usage), kMemoryHistogramMin,
           kMemoryHistogramMax, kMemoryHistogramBucketCount,
           base::HistogramBase::kUmaTargetedHistogramFlag));
 
   for (auto& source : allocation_per_source) {
-    uint64_t source_memory_in_kb = source.second / 1024u;
+    uint64_t source_memory_in_mb = source.second / 1048576u;
     STATIC_HISTOGRAM_POINTER_GROUP(
         GetPeakMemoryAllocationSourceUMAName(usage, source.first),
         static_cast<int>(usage) * kAllocationSourceTypeCount +
             static_cast<int>(source.first),
-        kAllocationSourceHistogramIndex, Add(source_memory_in_kb),
+        kAllocationSourceHistogramIndex, Add(source_memory_in_mb),
         base::Histogram::FactoryGet(
             GetPeakMemoryAllocationSourceUMAName(usage, source.first),
             kMemoryHistogramMin, kMemoryHistogramMax,

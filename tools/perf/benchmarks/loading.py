@@ -22,11 +22,11 @@ class _LoadingBase(perf_benchmark.PerfBenchmark):
   def CreateCoreTimelineBasedMeasurementOptions(self):
     tbm_options = timeline_based_measurement.Options()
     loading_metrics_category.AugmentOptionsForLoadingMetrics(tbm_options)
-    # Enable "Memory.GPU.PeakMemoryUsage.PageLoad" so we can measure the GPU
+    # Enable "Memory.GPU.PeakMemoryUsage2.PageLoad" so we can measure the GPU
     # memory used throughout the page loading tests. Include "umaMetric" as a
     # timeline so that we can parse this UMA Histogram.
     tbm_options.config.chrome_trace_config.EnableUMAHistograms(
-        'Memory.GPU.PeakMemoryUsage.PageLoad',
+        'Memory.GPU.PeakMemoryUsage2.PageLoad',
         'PageLoad.PaintTiming.NavigationToLargestContentfulPaint',
         'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
         'PageLoad.LayoutInstability.CumulativeShiftScore')

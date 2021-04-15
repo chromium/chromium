@@ -1387,6 +1387,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Memory.GPU.PeakMemoryAllocationSource" units="KB"
     expires_after="2021-08-22">
+  <obsolete>
+    Removed in M92. Replaced by Memory.GPU.PeakMemoryAllocationSource2.
+  </obsolete>
+<!-- Name completed by a combination of the following two histogram_suffixes: -->
+
+<!-- histogram_suffixes name="GPU.PeakMemoryAllocationSourceBase" -->
+
+<!-- and histogram_suffixes name="GPU.PeakMemoryAllocationSource" -->
+
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    Replaced by Memory.GPU.PeakMemoryAllocationSource2.
+
+    The maximum amount of memory of the GPU process allocated by a particular
+    source during a user interaction (e.g. tab-switch, page-load, scroll etc.).
+    See Memory.GPU.PeakMemoryUsage.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Memory.GPU.PeakMemoryAllocationSource2" units="MB"
+    expires_after="2022-08-22">
 <!-- Name completed by a combination of the following two histogram_suffixes: -->
 
 <!-- histogram_suffixes name="GPU.PeakMemoryAllocationSourceBase" -->
@@ -1399,13 +1422,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The maximum amount of memory of the GPU process allocated by a particular
     source during a user interaction (e.g. tab-switch, page-load, scroll etc.).
-    See Memory.GPU.PeakMemoryUsage.
+    See Memory.GPU.PeakMemoryUsage2.
   </summary>
 </histogram>
 
 <histogram base="true" name="Memory.GPU.PeakMemoryUsage" units="KB"
     expires_after="2021-08-22">
-<!-- Name completed by histogram_suffixes name="GPU.PeakMemoryUsage" -->
+  <obsolete>
+    Removed in M92. Replaced by Memory.GPU.PeakMemoryUsage2.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="GPU_PeakMemoryUsage" -->
+
+  <owner>jonross@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Replaced by Memory.GPU.PeakMemoryUsage2.
+
+    The maximum amount of memory of the GPU process during a particular
+    interaction (e.g. tab-switch, page-load, scroll etc.).
+  </summary>
+</histogram>
+
+<histogram base="true" name="Memory.GPU.PeakMemoryUsage2" units="MB"
+    expires_after="2022-08-22">
+<!-- Name completed by histogram_suffixes name="GPU_PeakMemoryUsage" -->
 
   <owner>jonross@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>

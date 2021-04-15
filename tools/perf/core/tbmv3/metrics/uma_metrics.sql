@@ -159,11 +159,11 @@ SELECT UMAMetrics(
   'memory_gpu_peak_memory_usage_scroll', (
     SELECT RepeatedField(sample * 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Memory.GPU.PeakMemoryUsage.Scroll'
+    WHERE histogram_name = 'Memory.GPU.PeakMemoryUsage2.Scroll'
   ),
   'memory_gpu_peak_memory_usage_page_load', (
     SELECT RepeatedField(sample * 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Memory.GPU.PeakMemoryUsage.PageLoad'
+    WHERE histogram_name = 'Memory.GPU.PeakMemoryUsage2.PageLoad'
   )
 );

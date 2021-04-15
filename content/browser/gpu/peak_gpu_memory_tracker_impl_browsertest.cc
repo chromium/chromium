@@ -26,8 +26,8 @@ namespace content {
 
 namespace {
 
-const uint64_t kPeakMemoryKB = 42u;
-const uint64_t kPeakMemory = kPeakMemoryKB * 1024u;
+const uint64_t kPeakMemoryMB = 42u;
+const uint64_t kPeakMemory = kPeakMemoryMB * 1048576u;
 
 // Test implementation of viz::mojom::GpuService which only implements the peak
 // memory monitoring aspects.
@@ -214,9 +214,9 @@ IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   SetTestingCallback(tracker.get(), run_loop.QuitClosure());
   FlushRemoteForTesting();
   // No report in response to creation.
-  histogram.ExpectTotalCount("Memory.GPU.PeakMemoryUsage.PageLoad", 0);
+  histogram.ExpectTotalCount("Memory.GPU.PeakMemoryUsage2.PageLoad", 0);
   histogram.ExpectTotalCount(
-      "Memory.GPU.PeakMemoryAllocationSource.PageLoad.Unknown", 0);
+      "Memory.GPU.PeakMemoryAllocationSource2.PageLoad.Unknown", 0);
   // However the serive should have started monitoring.
   EXPECT_TRUE(gpu_service()->peak_memory_monitor_started());
 
@@ -227,10 +227,10 @@ IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   // Wait for callback to be ran on the IO thread, which will call the
   // QuitClosure.
   run_loop.Run();
-  histogram.ExpectUniqueSample("Memory.GPU.PeakMemoryUsage.PageLoad",
-                               kPeakMemoryKB, 1);
+  histogram.ExpectUniqueSample("Memory.GPU.PeakMemoryUsage2.PageLoad",
+                               kPeakMemoryMB, 1);
   histogram.ExpectUniqueSample(
-      "Memory.GPU.PeakMemoryAllocationSource.PageLoad.Unknown", kPeakMemoryKB,
+      "Memory.GPU.PeakMemoryAllocationSource2.PageLoad.Unknown", kPeakMemoryMB,
       1);
 }
 
