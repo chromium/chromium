@@ -7,26 +7,19 @@ module network.mojom;
 // Corresponds to Fetch request's "mode" and "use-CORS-preflight flag":
 // https://fetch.spec.whatwg.org/#concept-request-mode
 //
-// This enum is also used in histograms. Append-only.
-// See the "RequestMode" enum in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum RequestMode {
-  kSameOrigin,
-  kNoCors,
-  kCors,
-  kCorsWithForcedPreflight,
-  kNavigate,
-
-  // Add a new type here, then update enums.xml.
+  kSameOrigin = 0,
+  kNoCors = 1,
+  kCors = 2,
+  kCorsWithForcedPreflight = 3,
+  kNavigate = 4,
+  // Add a new type here, then update "FetchRequestMode" in enums.xml.
 };
 
 // Corresponds to Fetch request's "destination":
 // https://fetch.spec.whatwg.org/#concept-request-destination
-//
-// Note: some types like kIframe and kFrame are still in PR
-// as of Feb 2020: https://github.com/whatwg/fetch/pull/948
-//
-// Note: if destination is kDocument it should be a main
-// resource request for main frames, except for Portals cases.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -34,6 +27,7 @@ enum RequestDestination {
   kEmpty = 0,
   kAudio = 1,
   kAudioWorklet = 2,
+  // kDocument is for a main resource request in a main frame, or a Portal.
   kDocument = 3,
   kEmbed = 4,
   kFont = 5,
@@ -93,16 +87,16 @@ enum CredentialsMode {
 // Corresponds to response types from the Fetch spec:
 // https://fetch.spec.whatwg.org/#concept-response-type
 //
-// This enum is also used in histograms. Append-only.
-// See the "FetchResponseType" enum in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum FetchResponseType {
-  kBasic,
-  kCors,
-  kDefault,
-  kError,
-  kOpaque,
-  kOpaqueRedirect,
-  // Add a new type here, then update enums.xml.
+  kBasic = 0,
+  kCors = 1,
+  kDefault = 2,
+  kError = 3,
+  kOpaque = 4,
+  kOpaqueRedirect = 5,
+  // Add a new type here, then update "FetchResponseType" in enums.xml.
 };
 
 // Indicates the source of a response.
