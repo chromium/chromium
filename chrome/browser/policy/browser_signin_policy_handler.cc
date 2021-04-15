@@ -40,17 +40,17 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 #endif
 
   const base::Value* value = policies.GetValue(policy_name());
-  int int_value;
-  if (value && value->GetAsInteger(&int_value)) {
+  if (value && value->is_int()) {
     // TODO(pastarmovj): Replace this with a int range handler once the
     // deprecating handler can handle it.
-    if (static_cast<int>(BrowserSigninMode::kDisabled) > int_value ||
-        static_cast<int>(BrowserSigninMode::kForced) < int_value) {
-      SYSLOG(ERROR) << "Unexpected value for BrowserSigninMode: " << int_value;
+    if (static_cast<int>(BrowserSigninMode::kDisabled) > value->GetInt() ||
+        static_cast<int>(BrowserSigninMode::kForced) < value->GetInt()) {
+      SYSLOG(ERROR) << "Unexpected value for BrowserSigninMode: "
+                    << value->GetInt();
       NOTREACHED();
       return;
     }
-    switch (static_cast<BrowserSigninMode>(int_value)) {
+    switch (static_cast<BrowserSigninMode>(value->GetInt())) {
       case BrowserSigninMode::kForced:
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
         prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
