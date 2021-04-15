@@ -228,6 +228,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   zoom::ZoomController::CreateForWebContents(web_contents);
 #endif
 
+  // InfoBarService comes before common tab helpers since
+  // ChromeSubresourceFilterClient has it as a dependency.
+  InfoBarService::CreateForWebContents(web_contents);
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -261,7 +265,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents, TopSitesFactory::GetForProfile(profile).get());
   HistoryTabHelper::CreateForWebContents(web_contents);
   HistoryClustersTabHelper::CreateForWebContents(web_contents);
-  InfoBarService::CreateForWebContents(web_contents);
   webapps::InstallableManager::CreateForWebContents(web_contents);
   PrefetchProxyTabHelper::CreateForWebContents(web_contents);
   LiteVideoObserver::MaybeCreateForWebContents(web_contents);

@@ -55,7 +55,8 @@ GetDatabaseManagerFromSafeBrowsingService() {
 SubresourceFilterClientImpl::SubresourceFilterClientImpl(
     content::WebContents* web_contents)
 #if defined(OS_ANDROID)
-    : web_contents_(web_contents)
+    : web_contents_(web_contents),
+      infobar_service_(InfoBarService::FromWebContents(web_contents_))
 #endif
 {
 }
@@ -80,8 +81,7 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
 
 void SubresourceFilterClientImpl::ShowNotification() {
 #if defined(OS_ANDROID)
-  subresource_filter::AdsBlockedInfobarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents_));
+  subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service_);
 #endif
 }
 

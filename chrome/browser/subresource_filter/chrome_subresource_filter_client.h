@@ -8,7 +8,10 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
+
+class InfoBarService;
 
 namespace content {
 class WebContents;
@@ -40,6 +43,10 @@ class ChromeSubresourceFilterClient
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
+
+#if defined(OS_ANDROID)
+  InfoBarService* infobar_service_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

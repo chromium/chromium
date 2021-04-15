@@ -322,6 +322,12 @@ TabImpl::TabImpl(ProfileImpl* profile,
 
   TranslateClientImpl::CreateForWebContents(web_contents_.get());
 
+#if defined(OS_ANDROID)
+  // InfoBarService must be created before SubresourceFilterClientImpl as the
+  // latter depends on it.
+  InfoBarService::CreateForWebContents(web_contents_.get());
+#endif
+
   SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
       web_contents_.get());
 
@@ -347,7 +353,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
 
 #if defined(OS_ANDROID)
-  InfoBarService::CreateForWebContents(web_contents_.get());
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents_.get(),
       std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(

@@ -22,6 +22,8 @@ class ContentSubresourceFilterThrottleManager;
 
 namespace weblayer {
 
+class InfoBarService;
+
 // WebLayer implementation of SubresourceFilterClient. Instances are associated
 // with and owned by ContentSubresourceFilterThrottleManager instances.
 class SubresourceFilterClientImpl
@@ -44,10 +46,11 @@ class SubresourceFilterClientImpl
   void ShowNotification() override;
 
  private:
-  // This member is only used on Android, so it's necessary to ifdef it to avoid
-  // a compiler error on other platforms.
+  // These members are only used on Android, so it's necessary to ifdef them to
+  // avoid a compiler error on other platforms.
 #if defined(OS_ANDROID)
   content::WebContents* web_contents_;
+  InfoBarService* infobar_service_;
 #endif
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
