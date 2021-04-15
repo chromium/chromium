@@ -159,7 +159,7 @@ class SystemPerfettoTest : public TracingUnitTest {
         ->GetOrCreateTaskRunner()
         ->PostTaskAndReply(
             FROM_HERE, base::BindLambdaForTesting([&]() {
-              result.reset(new MockPosixSystemProducer(
+              result = std::make_unique<MockPosixSystemProducer>(
                   service->producer(), check_sdk_level,
                   num_data_sources_expected,
                   system_data_source_enabled_runloop
@@ -172,7 +172,7 @@ class SystemPerfettoTest : public TracingUnitTest {
                             [](base::RunLoop* loop) { loop->Quit(); },
                             system_data_source_disabled_runloop)
                       : base::OnceClosure(),
-                  sandbox_forbids_socket_connection));
+                  sandbox_forbids_socket_connection);
             }),
             loop_finished.QuitClosure());
     loop_finished.Run();

@@ -4,6 +4,7 @@
 
 #include "ash/system/power/dual_role_notification.h"
 
+#include <memory>
 #include <set>
 
 #include "ash/public/cpp/notification_utils.h"
@@ -63,13 +64,13 @@ void DualRoleNotification::Update() {
     }
 
     if (source.id == current_power_source_id) {
-      new_source.reset(new PowerStatus::PowerSource(source));
+      new_source = std::make_unique<PowerStatus::PowerSource>(source);
       continue;
     }
     num_sinks_found++;
     // The notification only shows the sink port if it is the only sink.
     if (num_sinks_found == 1)
-      new_sink.reset(new PowerStatus::PowerSource(source));
+      new_sink = std::make_unique<PowerStatus::PowerSource>(source);
     else
       new_sink.reset();
   }

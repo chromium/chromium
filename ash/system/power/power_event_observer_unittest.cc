@@ -33,7 +33,7 @@ class PowerEventObserverTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    observer_.reset(new PowerEventObserver());
+    observer_ = std::make_unique<PowerEventObserver>();
   }
 
   void TearDown() override {

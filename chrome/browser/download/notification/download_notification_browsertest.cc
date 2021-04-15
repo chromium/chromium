@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -328,7 +330,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     Profile* profile = browser()->profile();
 
     std::unique_ptr<TestChromeDownloadManagerDelegate> test_delegate;
-    test_delegate.reset(new TestChromeDownloadManagerDelegate(profile));
+    test_delegate =
+        std::make_unique<TestChromeDownloadManagerDelegate>(profile);
     test_delegate->GetDownloadIdReceiverCallback().Run(
         download::DownloadItem::kInvalidId + 1);
     DownloadCoreServiceFactory::GetForBrowserContext(profile)
@@ -348,8 +351,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     Profile* incognito_profile = incognito_browser_->profile();
 
     std::unique_ptr<TestChromeDownloadManagerDelegate> incognito_test_delegate;
-    incognito_test_delegate.reset(
-        new TestChromeDownloadManagerDelegate(incognito_profile));
+    incognito_test_delegate =
+        std::make_unique<TestChromeDownloadManagerDelegate>(incognito_profile);
     DownloadCoreServiceFactory::GetForBrowserContext(incognito_profile)
         ->SetDownloadManagerDelegateForTesting(
             std::move(incognito_test_delegate));

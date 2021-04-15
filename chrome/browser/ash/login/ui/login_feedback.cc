@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -176,7 +177,7 @@ void LoginFeedback::Request(const std::string& description,
                             base::OnceClosure finished_callback) {
   description_ = description;
   finished_callback_ = std::move(finished_callback);
-  feedback_window_handler_.reset(new FeedbackWindowHandler(this));
+  feedback_window_handler_ = std::make_unique<FeedbackWindowHandler>(this);
 
   // Do not call EnsureFeedbackUI() immediately. Otherwise, event listener is
   // possibly registered before extension installation is complete in

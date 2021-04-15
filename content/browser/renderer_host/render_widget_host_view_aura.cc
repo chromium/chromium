@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -320,13 +321,13 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
 
-  cursor_manager_.reset(new CursorManager(this));
+  cursor_manager_ = std::make_unique<CursorManager>(this);
 
   SetOverscrollControllerEnabled(
       base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation));
 
-  selection_controller_client_.reset(
-      new TouchSelectionControllerClientAura(this));
+  selection_controller_client_ =
+      std::make_unique<TouchSelectionControllerClientAura>(this);
   CreateSelectionController();
 
   RenderWidgetHostOwnerDelegate* owner_delegate = host()->owner_delegate();
@@ -506,7 +507,7 @@ void RenderWidgetHostViewAura::HandleParentBoundsChanged() {
 }
 
 void RenderWidgetHostViewAura::ParentHierarchyChanged() {
-  ancestor_window_observer_.reset(new WindowAncestorObserver(this));
+  ancestor_window_observer_ = std::make_unique<WindowAncestorObserver>(this);
   // Snap when we receive a hierarchy changed. http://crbug.com/388908.
   HandleParentBoundsChanged();
 }
@@ -2017,7 +2018,7 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   window_ = new aura::Window(this);
   window_->SetName("RenderWidgetHostViewAura");
   event_handler_->set_window(window_);
-  window_observer_.reset(new WindowObserver(this));
+  window_observer_ = std::make_unique<WindowObserver>(this);
 
   wm::SetTooltipText(window_, &tooltip_);
   wm::SetActivationDelegate(window_, this);
@@ -2223,8 +2224,8 @@ void RenderWidgetHostViewAura::SetTooltipsEnabled(bool enable) {
   if (enable) {
     tooltip_disabler_.reset();
   } else {
-    tooltip_disabler_.reset(
-        new wm::ScopedTooltipDisabler(window_->GetRootWindow()));
+    tooltip_disabler_ =
+        std::make_unique<wm::ScopedTooltipDisabler>(window_->GetRootWindow());
   }
 }
 
@@ -2243,7 +2244,7 @@ void RenderWidgetHostViewAura::SetOverscrollControllerEnabled(bool enabled) {
   if (!enabled)
     overscroll_controller_.reset();
   else if (!overscroll_controller_)
-    overscroll_controller_.reset(new OverscrollController());
+    overscroll_controller_ = std::make_unique<OverscrollController>();
 }
 
 void RenderWidgetHostViewAura::SetSelectionControllerClientForTest(
@@ -2412,8 +2413,8 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
   tsc_config.tap_slop = ui::GestureConfiguration::GetInstance()
                             ->max_touch_move_in_pixels_for_click();
   tsc_config.enable_longpress_drag_selection = false;
-  selection_controller_.reset(new ui::TouchSelectionController(
-      selection_controller_client_.get(), tsc_config));
+  selection_controller_ = std::make_unique<ui::TouchSelectionController>(
+      selection_controller_client_.get(), tsc_config);
 }
 
 void RenderWidgetHostViewAura::OnDidNavigateMainFrameToNewPage() {

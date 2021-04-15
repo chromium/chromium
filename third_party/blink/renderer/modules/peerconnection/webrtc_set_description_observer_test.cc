@@ -222,7 +222,8 @@ class WebRtcSetDescriptionObserverHandlerTest
 
   void SetUp() override {
     pc_ = new webrtc::MockPeerConnectionInterface;
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_adapter_map_ =
         base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(

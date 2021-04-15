@@ -210,15 +210,16 @@ bool ChannelPosix::GetReadPlatformHandles(const void* payload,
 void ChannelPosix::StartOnIOThread() {
   DCHECK(!read_watcher_);
   DCHECK(!write_watcher_);
-  read_watcher_.reset(new base::MessagePumpForIO::FdWatchController(FROM_HERE));
+  read_watcher_ =
+      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   base::CurrentThread::Get()->AddDestructionObserver(this);
   if (server_.is_valid()) {
     base::CurrentIOThread::Get()->WatchFileDescriptor(
         server_.platform_handle().GetFD().get(), false /* persistent */,
         base::MessagePumpForIO::WATCH_READ, read_watcher_.get(), this);
   } else {
-    write_watcher_.reset(
-        new base::MessagePumpForIO::FdWatchController(FROM_HERE));
+    write_watcher_ =
+        std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
     base::CurrentIOThread::Get()->WatchFileDescriptor(
         socket_.get(), true /* persistent */,
         base::MessagePumpForIO::WATCH_READ, read_watcher_.get(), this);

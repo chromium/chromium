@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/us.h"
 #include "chromeos/services/ime/public/cpp/rulebased/engine.h"
@@ -28,7 +30,7 @@ class RulebasedImeTest : public testing::Test {
   ~RulebasedImeTest() override = default;
 
   // testing::Test:
-  void SetUp() override { engine_.reset(new rulebased::Engine); }
+  void SetUp() override { engine_ = std::make_unique<rulebased::Engine>(); }
 
   void VerifyKeys(std::vector<KeyVerifyEntry> entries) {
     for (auto entry : entries) {

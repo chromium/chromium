@@ -38,8 +38,8 @@ class InputMethodConfiguration {
 
     DCHECK(InputMethodManager::Get());
 
-    accessibility_.reset(new Accessibility(impl));
-    input_method_persistence_.reset(new InputMethodPersistence(impl));
+    accessibility_ = std::make_unique<Accessibility>(impl);
+    input_method_persistence_ = std::make_unique<InputMethodPersistence>(impl);
 
     DVLOG(1) << "InputMethodManager initialized";
   }

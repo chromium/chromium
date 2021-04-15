@@ -47,7 +47,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
     NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(profile_manager_.SetUp());
-    network_pref_state_observer_.reset(new NetworkPrefStateObserver);
+    network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
   }
 
   void TearDown() override {

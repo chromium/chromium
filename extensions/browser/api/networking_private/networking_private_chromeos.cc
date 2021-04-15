@@ -145,7 +145,7 @@ void AppendDeviceState(
   properties->type = private_api::ParseNetworkType(type);
   properties->state = state;
   if (device && state == private_api::DEVICE_STATE_TYPE_ENABLED)
-    properties->scanning.reset(new bool(device->scanning()));
+    properties->scanning = std::make_unique<bool>(device->scanning());
   if (device && type == ::onc::network_config::kCellular) {
     bool sim_present = !device->IsSimAbsent();
     properties->sim_present = std::make_unique<bool>(sim_present);
@@ -153,7 +153,8 @@ void AppendDeviceState(
       auto sim_lock_status = std::make_unique<private_api::SIMLockStatus>();
       sim_lock_status->lock_enabled = device->sim_lock_enabled();
       sim_lock_status->lock_type = device->sim_lock_type();
-      sim_lock_status->retries_left.reset(new int(device->sim_retries_left()));
+      sim_lock_status->retries_left =
+          std::make_unique<int>(device->sim_retries_left());
       properties->sim_lock_status = std::move(sim_lock_status);
     }
   }

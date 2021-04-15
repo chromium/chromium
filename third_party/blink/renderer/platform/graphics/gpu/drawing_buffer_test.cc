@@ -353,8 +353,8 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
 
  protected:
   void SetUp() override {
-    platform_.reset(
-        new ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>);
+    platform_ = std::make_unique<
+        ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>>();
 
     IntSize initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();

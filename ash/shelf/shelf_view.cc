@@ -733,8 +733,8 @@ void ShelfView::ButtonPressed(views::Button* sender,
   // Slow down activation animations if Control key is pressed.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> slowing_animations;
   if (event.IsControlDown()) {
-    slowing_animations.reset(new ui::ScopedAnimationDurationScaleMode(
-        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
+    slowing_animations = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+        ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   }
 
   // Collect usage statistics before we decide what to do with the click.

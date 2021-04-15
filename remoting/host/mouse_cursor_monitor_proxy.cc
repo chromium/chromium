@@ -67,7 +67,7 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
   DCHECK(thread_checker_.CalledOnValidThread());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  mouse_cursor_monitor_.reset(new MouseCursorMonitorAura());
+  mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));

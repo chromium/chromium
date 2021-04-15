@@ -186,7 +186,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #if defined(OS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #else
-    sandbox_support_.reset(new WebSandboxSupportLinux(font_loader_));
+    sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
 #endif
   } else {
     DVLOG(1) << "Disabling sandbox support for testing.";

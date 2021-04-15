@@ -421,10 +421,10 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
       new MacPreferences(), bundle_id);
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
-  policy_loader.reset(new policy::ConfigDirPolicyLoader(
+  policy_loader = std::make_unique<policy::ConfigDirPolicyLoader>(
       file_task_runner,
       base::FilePath(FILE_PATH_LITERAL("/etc/opt/chrome/policies")),
-      policy::POLICY_SCOPE_MACHINE));
+      policy::POLICY_SCOPE_MACHINE);
 #elif defined(OS_ANDROID)
   NOTIMPLEMENTED();
   policy::PolicyServiceImpl::Providers providers;

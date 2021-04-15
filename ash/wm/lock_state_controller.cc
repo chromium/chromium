@@ -5,6 +5,7 @@
 #include "ash/wm/lock_state_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -428,7 +429,7 @@ void LockStateController::PreLockAnimationFinished(bool request_lock) {
   lock_fail_timer_.Start(FROM_HERE, kLockFailTimeout, this,
                          &LockStateController::OnLockFailTimeout);
 
-  lock_duration_timer_.reset(new base::ElapsedTimer());
+  lock_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void LockStateController::PostLockAnimationFinished() {
@@ -449,7 +450,7 @@ void LockStateController::UnlockAnimationAfterUIDestroyedFinished() {
 
 void LockStateController::StoreUnlockedProperties() {
   if (!unlocked_properties_) {
-    unlocked_properties_.reset(new UnlockedStateProperties());
+    unlocked_properties_ = std::make_unique<UnlockedStateProperties>();
     unlocked_properties_->wallpaper_is_hidden = animator_->IsWallpaperHidden();
   }
   if (unlocked_properties_->wallpaper_is_hidden) {

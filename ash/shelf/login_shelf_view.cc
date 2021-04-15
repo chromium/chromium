@@ -420,8 +420,8 @@ class KioskAppsButton : public views::MenuButton,
   void DisplayMenu() {
     const gfx::Point point = GetMenuPosition();
     const gfx::Point origin(point.x() - width(), point.y() - height());
-    menu_runner_.reset(
-        new views::MenuRunner(this, views::MenuRunner::HAS_MNEMONICS));
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        this, views::MenuRunner::HAS_MNEMONICS);
     menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(),
                             button_controller(), gfx::Rect(origin, gfx::Size()),
                             views::MenuAnchorPosition::kTopLeft,

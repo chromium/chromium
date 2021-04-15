@@ -33,8 +33,8 @@ class SessionStateNotificationBlockerTest
   // tests::AshTestBase overrides:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    blocker_.reset(new SessionStateNotificationBlocker(
-        message_center::MessageCenter::Get()));
+    blocker_ = std::make_unique<SessionStateNotificationBlocker>(
+        message_center::MessageCenter::Get());
     blocker_->AddObserver(this);
   }
 

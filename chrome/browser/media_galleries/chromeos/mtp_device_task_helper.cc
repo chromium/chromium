@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -180,7 +181,7 @@ void MTPDeviceTaskHelper::WriteDataIntoSnapshotFile(
   }
 
   if (!read_file_worker_)
-    read_file_worker_.reset(new MTPReadFileWorker(device_handle_));
+    read_file_worker_ = std::make_unique<MTPReadFileWorker>(device_handle_);
   read_file_worker_->WriteDataIntoSnapshotFile(std::move(request_info),
                                                snapshot_file_info);
 }

@@ -45,7 +45,7 @@ class EndToEndAsyncTest : public testing::Test {
     base::ThreadRestrictions::SetIOAllowed(false);
 
     // Start the D-Bus thread.
-    dbus_thread_.reset(new base::Thread("D-Bus Thread"));
+    dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
     ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
@@ -53,7 +53,7 @@ class EndToEndAsyncTest : public testing::Test {
     // Start the test service, using the D-Bus thread.
     TestService::Options options;
     options.dbus_task_runner = dbus_thread_->task_runner();
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_TRUE(test_service_->HasDBusThread());
@@ -78,7 +78,7 @@ class EndToEndAsyncTest : public testing::Test {
         base::BindOnce(&EndToEndAsyncTest::OnConnected,
                        base::Unretained(this)));
     // Wait until the object proxy is connected to the signal.
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
 
     // Connect to the "Test2" signal of "org.chromium.TestInterface" from
@@ -93,7 +93,7 @@ class EndToEndAsyncTest : public testing::Test {
         base::BindOnce(&EndToEndAsyncTest::OnConnected,
                        base::Unretained(this)));
     // Wait until the object proxy is connected to the signal.
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
 
     // Create a second object proxy for the root object.
@@ -110,7 +110,7 @@ class EndToEndAsyncTest : public testing::Test {
         base::BindOnce(&EndToEndAsyncTest::OnConnected,
                        base::Unretained(this)));
     // Wait until the root object proxy is connected to the signal.
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -172,7 +172,7 @@ class EndToEndAsyncTest : public testing::Test {
   // Wait for the give number of responses.
   void WaitForResponses(size_t num_responses) {
     while (response_strings_.size() < num_responses) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
   }
@@ -195,7 +195,7 @@ class EndToEndAsyncTest : public testing::Test {
   // Wait for the given number of errors.
   void WaitForErrors(size_t num_errors) {
     while (error_names_.size() < num_errors) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
   }
@@ -247,7 +247,7 @@ class EndToEndAsyncTest : public testing::Test {
   // Wait for the hey signal to be received.
   void WaitForTestSignal() {
     // OnTestSignal() will quit the message loop.
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -437,7 +437,7 @@ TEST_F(EndToEndAsyncTest, CancelPendingCalls) {
                           base::DoNothing());
 
   // We shouldn't receive any responses. Wait for a while just to make sure.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop_->Run();
@@ -539,7 +539,7 @@ TEST_F(EndToEndAsyncTest, EmptyResponseCallback) {
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
   object_proxy_->CallMethod(&method_call, timeout_ms, base::DoNothing());
   // Post a delayed task to quit the RunLoop.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop_->Run();
@@ -599,7 +599,7 @@ class SignalMultipleHandlerTest : public EndToEndAsyncTest {
         base::BindOnce(&SignalMultipleHandlerTest::OnAdditionalConnected,
                        base::Unretained(this)));
     // Wait until the object proxy is connected to the signal.
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

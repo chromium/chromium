@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -283,7 +284,7 @@ void UserCloudPolicyManagerChromeOS::OnAccessTokenAvailable(
   access_token_ = access_token;
 
   if (!wildcard_username_.empty()) {
-    wildcard_login_checker_.reset(new WildcardLoginChecker());
+    wildcard_login_checker_ = std::make_unique<WildcardLoginChecker>();
     // Safe to set a callback with an unretained pointer because the
     // WildcardLoginChecker is owned by this object and won't invoke the
     // callback after we destroy it.

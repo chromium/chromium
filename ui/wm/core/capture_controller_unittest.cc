@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/capture_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -63,8 +64,8 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
     second_host_->InitHost();
     second_host_->window()->Show();
     second_host_->SetBoundsInPixels(gfx::Rect(800, 600));
-    second_capture_controller_.reset(
-        new ScopedCaptureClient(second_host_->window()));
+    second_capture_controller_ =
+        std::make_unique<ScopedCaptureClient>(second_host_->window());
   }
 
   void TearDown() override {

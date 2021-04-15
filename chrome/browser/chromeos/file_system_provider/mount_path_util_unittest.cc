@@ -67,8 +67,8 @@ class FileSystemProviderMountPathUtilTest : public testing::Test {
   ~FileSystemProviderMountPathUtilTest() override {}
 
   void SetUp() override {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("testing-profile");
     user_manager_ = new FakeChromeUserManager();

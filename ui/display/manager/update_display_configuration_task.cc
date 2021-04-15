@@ -4,6 +4,8 @@
 
 #include "ui/display/manager/update_display_configuration_task.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -95,8 +97,8 @@ void UpdateDisplayConfigurationTask::EnterState(
     return;
   }
   if (!requests.empty()) {
-    configure_task_.reset(
-        new ConfigureDisplaysTask(delegate_, requests, std::move(callback)));
+    configure_task_ = std::make_unique<ConfigureDisplaysTask>(
+        delegate_, requests, std::move(callback));
     configure_task_->Run();
   } else {
     VLOG(2) << "No displays";

@@ -213,7 +213,8 @@ class TestArcVmBootNotificationServer
         << "bind failed with " << base::safe_strerror(errno);
     ASSERT_EQ(HANDLE_EINTR(listen(fd_.get(), 5)), 0)
         << "listen failed with " << base::safe_strerror(errno);
-    controller_.reset(new base::MessagePumpForUI::FdWatchController(FROM_HERE));
+    controller_ =
+        std::make_unique<base::MessagePumpForUI::FdWatchController>(FROM_HERE);
     ASSERT_TRUE(base::CurrentUIThread::Get()->WatchFileDescriptor(
         fd_.get(), true, base::MessagePumpForUI::WATCH_READ, controller_.get(),
         this));

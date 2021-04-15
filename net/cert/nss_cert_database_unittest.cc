@@ -66,11 +66,11 @@ class CertDatabaseNSSTest : public TestWithTaskEnvironment {
  public:
   void SetUp() override {
     ASSERT_TRUE(test_nssdb_.is_open());
-    cert_db_.reset(new NSSCertDatabase(
+    cert_db_ = std::make_unique<NSSCertDatabase>(
         crypto::ScopedPK11Slot(
             PK11_ReferenceSlot(test_nssdb_.slot())) /* public slot */,
         crypto::ScopedPK11Slot(
-            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */));
+            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */);
     public_slot_ = cert_db_->GetPublicSlot();
     crl_set_ = CRLSet::BuiltinCRLSet();
 

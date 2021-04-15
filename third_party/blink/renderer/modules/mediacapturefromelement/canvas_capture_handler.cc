@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -237,7 +238,8 @@ void CanvasCaptureHandler::StartVideoCapture(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK(params.requested_format.IsValid());
   capture_format_ = params.requested_format;
-  delegate_.reset(new CanvasCaptureHandlerDelegate(new_frame_callback));
+  delegate_ =
+      std::make_unique<CanvasCaptureHandlerDelegate>(new_frame_callback);
   DCHECK(delegate_);
   ask_for_new_frame_ = true;
   running_callback.Run(true);

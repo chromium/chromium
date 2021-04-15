@@ -140,9 +140,9 @@ void ShellBrowserMainParts::PostMainMessageLoopStart() {
   chromeos::disks::DiskMountManager::Initialize();
 
   chromeos::NetworkHandler::Initialize();
-  network_controller_.reset(new ShellNetworkController(
+  network_controller_ = std::make_unique<ShellNetworkController>(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-          switches::kAppShellPreferredNetwork)));
+          switches::kAppShellPreferredNetwork));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAppShellAllowRoaming)) {
@@ -207,7 +207,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
       std::move(media_controller_manager),
       base::MakeRefCounted<ash::AudioDevicesPrefHandlerImpl>(
           local_state_.get()));
-  audio_controller_.reset(new ShellAudioController());
+  audio_controller_ = std::make_unique<ShellAudioController>();
 #endif
 
   // Create BrowserContextKeyedServices now that we have an

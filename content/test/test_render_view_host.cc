@@ -75,8 +75,8 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
   }
 
 #if defined(USE_AURA)
-  window_.reset(new aura::Window(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate()));
+  window_ = std::make_unique<aura::Window>(
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
   window_->set_owned_by_parent(false);
   window_->Init(ui::LayerType::LAYER_NOT_DRAWN);
 #endif

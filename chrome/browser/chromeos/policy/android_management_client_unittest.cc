@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -55,8 +56,8 @@ class AndroidManagementClientTest : public testing::Test {
         identity_test_environment_.identity_manager();
     CoreAccountId account_id = identity_manager->PickAccountIdForAccount(
         signin::GetTestGaiaIdForEmail(kAccountEmail), kAccountEmail);
-    client_.reset(new AndroidManagementClient(
-        &service_, shared_url_loader_factory_, account_id, identity_manager));
+    client_ = std::make_unique<AndroidManagementClient>(
+        &service_, shared_url_loader_factory_, account_id, identity_manager);
 
     service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();

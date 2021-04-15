@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/extension_notifier_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
@@ -33,8 +35,8 @@ std::vector<ash::NotifierMetadata> ExtensionNotifierController::GetNotifierList(
   // back to the default icon. The fetched icon will be resized in the
   // settings dialog. See chrome/browser/extensions/extension_icon_image.cc
   // and crbug.com/222931
-  app_icon_loader_.reset(new extensions::ChromeAppIconLoader(
-      profile, extension_misc::EXTENSION_ICON_SMALL, this));
+  app_icon_loader_ = std::make_unique<extensions::ChromeAppIconLoader>(
+      profile, extension_misc::EXTENSION_ICON_SMALL, this);
   for (extensions::ExtensionSet::const_iterator iter = extension_set.begin();
        iter != extension_set.end(); ++iter) {
     const extensions::Extension* extension = iter->get();

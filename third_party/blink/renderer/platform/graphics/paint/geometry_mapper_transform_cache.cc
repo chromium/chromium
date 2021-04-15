@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_transform_cache.h"
 
+#include <memory>
+
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 namespace blink {
@@ -51,7 +53,7 @@ void GeometryMapperTransformCache::Update(
 
     if (parent.plane_root_transform_) {
       if (!plane_root_transform_)
-        plane_root_transform_.reset(new PlaneRootTransform());
+        plane_root_transform_ = std::make_unique<PlaneRootTransform>();
       plane_root_transform_->plane_root = parent.plane_root();
       plane_root_transform_->to_plane_root = parent.to_plane_root();
       plane_root_transform_->to_plane_root.Translate(translation.Width(),
@@ -85,7 +87,7 @@ void GeometryMapperTransformCache::Update(
   }
 
   if (!plane_root_transform_)
-    plane_root_transform_.reset(new PlaneRootTransform());
+    plane_root_transform_ = std::make_unique<PlaneRootTransform>();
 
   if (is_plane_root) {
     plane_root_transform_->plane_root = &node;
@@ -122,7 +124,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   parent_node->UpdateScreenTransform();
   const auto& parent = parent_node->GetTransformCache();
 
-  screen_transform_.reset(new ScreenTransform());
+  screen_transform_ = std::make_unique<ScreenTransform>();
   parent.ApplyToScreen(screen_transform_->to_screen);
   if (node.FlattensInheritedTransform())
     screen_transform_->to_screen.FlattenTo2d();

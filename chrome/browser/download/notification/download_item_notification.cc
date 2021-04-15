@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -514,7 +516,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   std::unique_ptr<std::vector<DownloadCommands::Command>> actions(
       GetExtraActions());
 
-  button_actions_.reset(new std::vector<DownloadCommands::Command>);
+  button_actions_ = std::make_unique<std::vector<DownloadCommands::Command>>();
   for (auto it = actions->begin(); it != actions->end(); it++) {
     button_actions_->push_back(*it);
     message_center::ButtonInfo button_info =

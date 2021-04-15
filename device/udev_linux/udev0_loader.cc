@@ -4,6 +4,8 @@
 
 #include "device/udev_linux/udev0_loader.h"
 
+#include <memory>
+
 #include "library_loaders/libudev0.h"
 
 namespace device {
@@ -15,7 +17,7 @@ Udev0Loader::~Udev0Loader() = default;
 bool Udev0Loader::Init() {
   if (lib_loader_)
     return lib_loader_->loaded();
-  lib_loader_.reset(new LibUdev0Loader);
+  lib_loader_ = std::make_unique<LibUdev0Loader>();
   return lib_loader_->Load("libudev.so.0");
 }
 

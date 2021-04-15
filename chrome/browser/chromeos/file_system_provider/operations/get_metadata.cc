@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -36,14 +37,15 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
     return false;
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_NAME)
-    output->name.reset(new std::string(*params->metadata.name));
+    output->name = std::make_unique<std::string>(*params->metadata.name);
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY)
-    output->is_directory.reset(new bool(*params->metadata.is_directory));
+    output->is_directory =
+        std::make_unique<bool>(*params->metadata.is_directory);
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE)
-    output->size.reset(
-        new int64_t(static_cast<int64_t>(*params->metadata.size)));
+    output->size =
+        std::make_unique<int64_t>(static_cast<int64_t>(*params->metadata.size));
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
     std::string input_modification_time;
@@ -55,17 +57,20 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
     base::Time output_modification_time;
     ignore_result(base::Time::FromString(input_modification_time.c_str(),
                                          &output_modification_time));
-    output->modification_time.reset(new base::Time(output_modification_time));
+    output->modification_time =
+        std::make_unique<base::Time>(output_modification_time);
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE &&
       params->metadata.mime_type.get()) {
-    output->mime_type.reset(new std::string(*params->metadata.mime_type.get()));
+    output->mime_type =
+        std::make_unique<std::string>(*params->metadata.mime_type.get());
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
       params->metadata.thumbnail.get()) {
-    output->thumbnail.reset(new std::string(*params->metadata.thumbnail.get()));
+    output->thumbnail =
+        std::make_unique<std::string>(*params->metadata.thumbnail.get());
   }
 
   return true;

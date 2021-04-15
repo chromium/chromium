@@ -4,6 +4,7 @@
 
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 
+#include <memory>
 #include <utility>
 
 #include <google/protobuf/message_lite.h>
@@ -65,7 +66,8 @@ class CryptohomeMiscClientImpl : public CryptohomeMiscClient {
     proxy_ = bus->GetObjectProxy(
         ::user_data_auth::kUserDataAuthServiceName,
         dbus::ObjectPath(::user_data_auth::kUserDataAuthServicePath));
-    blocking_method_caller_.reset(new BlockingMethodCaller(bus, proxy_));
+    blocking_method_caller_ =
+        std::make_unique<BlockingMethodCaller>(bus, proxy_);
   }
 
   // CryptohomeMiscClient override:

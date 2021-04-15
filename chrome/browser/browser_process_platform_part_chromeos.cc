@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
@@ -82,8 +83,9 @@ BrowserProcessPlatformPart::~BrowserProcessPlatformPart() {
 void BrowserProcessPlatformPart::InitializeAutomaticRebootManager() {
   DCHECK(!automatic_reboot_manager_);
 
-  automatic_reboot_manager_.reset(new ash::system::AutomaticRebootManager(
-      base::DefaultTickClock::GetInstance()));
+  automatic_reboot_manager_ =
+      std::make_unique<ash::system::AutomaticRebootManager>(
+          base::DefaultTickClock::GetInstance());
 }
 
 void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
@@ -104,11 +106,12 @@ void BrowserProcessPlatformPart::DestroyChromeUserManager() {
 void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
   DCHECK(!device_disabling_manager_);
 
-  device_disabling_manager_delegate_.reset(
-      new ash::system::DeviceDisablingManagerDefaultDelegate);
-  device_disabling_manager_.reset(new ash::system::DeviceDisablingManager(
-      device_disabling_manager_delegate_.get(), ash::CrosSettings::Get(),
-      user_manager::UserManager::Get()));
+  device_disabling_manager_delegate_ =
+      std::make_unique<ash::system::DeviceDisablingManagerDefaultDelegate>();
+  device_disabling_manager_ =
+      std::make_unique<ash::system::DeviceDisablingManager>(
+          device_disabling_manager_delegate_.get(), ash::CrosSettings::Get(),
+          user_manager::UserManager::Get());
   device_disabling_manager_->Init();
 }
 
@@ -200,9 +203,9 @@ void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
 
 void BrowserProcessPlatformPart::RegisterKeepAlive() {
   DCHECK(!keep_alive_);
-  keep_alive_.reset(
-      new ScopedKeepAlive(KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS,
-                          KeepAliveRestartOption::DISABLED));
+  keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS,
+      KeepAliveRestartOption::DISABLED);
 }
 
 void BrowserProcessPlatformPart::UnregisterKeepAlive() {
@@ -225,15 +228,15 @@ BrowserProcessPlatformPart::browser_policy_connector_chromeos() {
 chromeos::system::TimeZoneResolverManager*
 BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   if (!timezone_resolver_manager_.get()) {
-    timezone_resolver_manager_.reset(
-        new chromeos::system::TimeZoneResolverManager());
+    timezone_resolver_manager_ =
+        std::make_unique<chromeos::system::TimeZoneResolverManager>();
   }
   return timezone_resolver_manager_.get();
 }
 
 chromeos::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
   if (!timezone_resolver_.get()) {
-    timezone_resolver_.reset(new chromeos::TimeZoneResolver(
+    timezone_resolver_ = std::make_unique<chromeos::TimeZoneResolver>(
         GetTimezoneResolverManager(),
         g_browser_process->shared_url_loader_factory(),
         chromeos::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
@@ -241,7 +244,7 @@ chromeos::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
         base::BindRepeating(&chromeos::DelayNetworkCall,
                             base::TimeDelta::FromMilliseconds(
                                 chromeos::kDefaultNetworkRetryDelayMS)),
-        g_browser_process->local_state()));
+        g_browser_process->local_state());
   }
   return timezone_resolver_.get();
 }
@@ -255,7 +258,7 @@ void BrowserProcessPlatformPart::StartTearDown() {
 
 chromeos::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
   if (!system_clock_.get())
-    system_clock_.reset(new chromeos::system::SystemClock());
+    system_clock_ = std::make_unique<chromeos::system::SystemClock>();
   return system_clock_.get();
 }
 

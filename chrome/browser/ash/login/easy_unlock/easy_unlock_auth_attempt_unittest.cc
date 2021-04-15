@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
@@ -160,8 +162,8 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
   ~EasyUnlockAuthAttemptUnlockTest() override {}
 
   void SetUp() override {
-    auth_attempt_.reset(new EasyUnlockAuthAttempt(
-        test_account_id1_, EasyUnlockAuthAttempt::TYPE_UNLOCK));
+    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(
+        test_account_id1_, EasyUnlockAuthAttempt::TYPE_UNLOCK);
   }
 
   void TearDown() override {
@@ -171,7 +173,7 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
 
  protected:
   void InitScreenLock() {
-    lock_handler_.reset(new TestLockHandler(test_account_id1_));
+    lock_handler_ = std::make_unique<TestLockHandler>(test_account_id1_);
     lock_handler_->set_state(TestLockHandler::STATE_ATTEMPTING_UNLOCK);
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         lock_handler_.get());
@@ -292,8 +294,8 @@ class EasyUnlockAuthAttemptSigninTest : public testing::Test {
   ~EasyUnlockAuthAttemptSigninTest() override {}
 
   void SetUp() override {
-    auth_attempt_.reset(new EasyUnlockAuthAttempt(
-        test_account_id1_, EasyUnlockAuthAttempt::TYPE_SIGNIN));
+    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(
+        test_account_id1_, EasyUnlockAuthAttempt::TYPE_SIGNIN);
   }
 
   void TearDown() override {
@@ -303,7 +305,7 @@ class EasyUnlockAuthAttemptSigninTest : public testing::Test {
 
  protected:
   void InitScreenLock() {
-    lock_handler_.reset(new TestLockHandler(test_account_id1_));
+    lock_handler_ = std::make_unique<TestLockHandler>(test_account_id1_);
     lock_handler_->set_state(TestLockHandler::STATE_ATTEMPTING_SIGNIN);
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         lock_handler_.get());

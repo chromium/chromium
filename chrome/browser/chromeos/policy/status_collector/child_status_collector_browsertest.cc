@@ -330,7 +330,7 @@ class ChildStatusCollectorTest : public testing::Test {
   }
 
   void GetStatus() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     status_collector_->GetStatusAsync(base::BindRepeating(
         &ChildStatusCollectorTest::OnStatusReceived, base::Unretained(this)));
     run_loop_->Run();

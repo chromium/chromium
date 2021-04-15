@@ -599,7 +599,7 @@ Response InspectorDOMAgent::getFlattenedDocument(
   if (sanitized_depth == -1)
     sanitized_depth = INT_MAX;
 
-  nodes->reset(new protocol::Array<protocol::DOM::Node>());
+  *nodes = std::make_unique<protocol::Array<protocol::DOM::Node>>();
   (*nodes)->emplace_back(BuildObjectForNode(
       document_.Get(), sanitized_depth, pierce.fromMaybe(false),
       document_node_to_id_map_.Get(), nodes->get()));

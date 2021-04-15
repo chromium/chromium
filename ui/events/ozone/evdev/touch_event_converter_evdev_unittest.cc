@@ -238,7 +238,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
   void SetUp() override {
     // By default, tests disable single-cancel and enable palm on touch_major ==
     // major_max.
-    scoped_feature_list_.reset(new base::test::ScopedFeatureList);
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(
         {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm},
         {kEnableSingleCancelTouch});
@@ -741,7 +741,7 @@ TEST_F(TouchEventConverterEvdevTest, ShouldRemoveContactsWhenDisabled) {
 TEST_F(TouchEventConverterEvdevTest, ToolTypePalmNotCancelTouch) {
   // By default, we use TOOL_TYPE_PALM as a cancellation signal for all touches.
   // We disable that behavior and want to see all touches registered as usual.
-  scoped_feature_list_.reset(new base::test::ScopedFeatureList);
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
       {}, {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm,
            kEnableSingleCancelTouch});
@@ -837,7 +837,7 @@ TEST_F(TouchEventConverterEvdevTest, MaxMajorNotCancelTouch) {
   // By default, tests disable single-cancel and enable palm on touch_major ==
   // major_max. So we disable that behavior: and expect to see a RELEASED rather
   // than cancelled.
-  scoped_feature_list_.reset(new base::test::ScopedFeatureList);
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
       {}, {kEnablePalmOnMaxTouchMajor, kEnableSingleCancelTouch});
   SetUpDevice();
@@ -1294,7 +1294,7 @@ TEST_F(TouchEventConverterEvdevTest, TrackingIdShouldNotResetCancelByPalm) {
 TEST_F(TouchEventConverterEvdevTest,
        TrackingIdShouldNotResetCancelByPalmSingleCancel) {
   // Flip field to true.
-  scoped_feature_list_.reset(new base::test::ScopedFeatureList);
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitAndEnableFeature(kEnableSingleCancelTouch);
 
   ui::MockTouchEventConverterEvdev* dev = device();

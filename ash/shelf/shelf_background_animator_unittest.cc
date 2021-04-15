@@ -144,7 +144,7 @@ void ShelfBackgroundAnimatorTest::SetUp() {
       GetPrimaryShelf()->shelf_widget()->background_animator_for_testing();
   animator_->AddObserver(&observer_);
 
-  test_api_.reset(new ShelfBackgroundAnimatorTestApi(animator_));
+  test_api_ = std::make_unique<ShelfBackgroundAnimatorTestApi>(animator_);
 }
 
 void ShelfBackgroundAnimatorTest::PaintBackground(

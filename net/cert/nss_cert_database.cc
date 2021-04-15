@@ -93,7 +93,8 @@ NSSCertDatabase::NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
   CHECK(public_slot_);
 
   CertDatabase* cert_db = CertDatabase::GetInstance();
-  cert_notification_forwarder_.reset(new CertNotificationForwarder(cert_db));
+  cert_notification_forwarder_ =
+      std::make_unique<CertNotificationForwarder>(cert_db);
   AddObserver(cert_notification_forwarder_.get());
 
   psm::EnsurePKCS12Init();

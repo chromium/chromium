@@ -275,8 +275,8 @@ bool DrmDevice::Initialize() {
   allow_addfb2_modifiers_ =
       GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
 
-  watcher_.reset(
-      new IOWatcher(file_.GetPlatformFile(), page_flip_manager_.get()));
+  watcher_ = std::make_unique<IOWatcher>(file_.GetPlatformFile(),
+                                         page_flip_manager_.get());
 
   return true;
 }
@@ -430,7 +430,7 @@ ScopedDrmPropertyBlob DrmDevice::CreatePropertyBlob(const void* blob,
   int ret = drmModeCreatePropertyBlob(file_.GetPlatformFile(), blob, size, &id);
   DCHECK(!ret && id);
 
-  return ScopedDrmPropertyBlob(new DrmPropertyBlobMetadata(this, id));
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void DrmDevice::DestroyPropertyBlob(uint32_t id) {

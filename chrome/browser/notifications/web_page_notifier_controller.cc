@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -35,7 +37,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
   favicon::FaviconService* const favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  favicon_tracker_.reset(new base::CancelableTaskTracker());
+  favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
   patterns_.clear();
   for (ContentSettingsForOneType::const_iterator iter = settings.begin();
        iter != settings.end(); ++iter) {

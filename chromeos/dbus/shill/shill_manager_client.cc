@@ -165,7 +165,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(shill::kFlimflamServiceName,
                                  dbus::ObjectPath(shill::kFlimflamServicePath));
-    helper_.reset(new ShillClientHelper(proxy_));
+    helper_ = std::make_unique<ShillClientHelper>(proxy_);
     helper_->MonitorPropertyChanged(shill::kFlimflamManagerInterface);
   }
 

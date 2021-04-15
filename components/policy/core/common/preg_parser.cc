@@ -165,7 +165,7 @@ bool DecodePRegValue(uint32_t type,
     case REG_EXPAND_SZ:
       if (!DecodePRegStringValue(data, &data_utf8))
         return false;
-      value->reset(new base::Value(data_utf8));
+      *value = std::make_unique<base::Value>(data_utf8);
       return true;
     case REG_DWORD_LITTLE_ENDIAN:
     case REG_DWORD_BIG_ENDIAN:
@@ -175,7 +175,7 @@ bool DecodePRegValue(uint32_t type,
           val = base::NetToHost32(val);
         else
           val = base::ByteSwapToLE32(val);
-        value->reset(new base::Value(static_cast<int>(val)));
+        *value = std::make_unique<base::Value>(static_cast<int>(val));
         return true;
       } else {
         LOG(ERROR) << "Bad data size " << data.size();

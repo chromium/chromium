@@ -130,11 +130,11 @@ class MultiProfileUserControllerTest
   ~MultiProfileUserControllerTest() override {}
 
   void SetUp() override {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    controller_.reset(new MultiProfileUserController(
-        this, TestingBrowserProcess::GetGlobal()->local_state()));
+    controller_ = std::make_unique<MultiProfileUserController>(
+        this, TestingBrowserProcess::GetGlobal()->local_state());
 
     for (size_t i = 0; i < test_users_.size(); ++i) {
       const AccountId account_id(test_users_[i]);

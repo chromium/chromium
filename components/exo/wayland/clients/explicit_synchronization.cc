@@ -6,6 +6,8 @@
 
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 
+#include <memory>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
@@ -89,8 +91,8 @@ void ExplicitSynchronizationClient::Run() {
 
     // Create an EGLSyncKHR object to signal when rendering is done.
     gr_context_->flushAndSubmit();
-    buffer->egl_sync.reset(new ScopedEglSync(
-        eglCreateSyncKHR(eglGetCurrentDisplay(), egl_sync_type_, nullptr)));
+    buffer->egl_sync = std::make_unique<ScopedEglSync>(
+        eglCreateSyncKHR(eglGetCurrentDisplay(), egl_sync_type_, nullptr));
     DCHECK(buffer->egl_sync->is_valid());
     glFlush();
 

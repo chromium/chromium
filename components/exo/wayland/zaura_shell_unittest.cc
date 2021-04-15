@@ -106,10 +106,10 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
     std::unique_ptr<Buffer> buffer(
         new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
 
-    surface_.reset(new Surface);
+    surface_ = std::make_unique<Surface>();
     surface_->Attach(buffer.get());
 
-    aura_surface_.reset(new TestAuraSurface(surface_.get()));
+    aura_surface_ = std::make_unique<TestAuraSurface>(surface_.get());
 
     gfx::Transform transform;
     transform.Scale(1.5f, 1.5f);

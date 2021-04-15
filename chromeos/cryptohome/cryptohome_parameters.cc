@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/notreached.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
@@ -116,9 +118,9 @@ KeyDefinition::ProviderData::ProviderData(const std::string& name)
 KeyDefinition::ProviderData::ProviderData(const ProviderData& other)
     : name(other.name) {
   if (other.number)
-    number.reset(new int64_t(*other.number));
+    number = std::make_unique<int64_t>(*other.number);
   if (other.bytes)
-    bytes.reset(new std::string(*other.bytes));
+    bytes = std::make_unique<std::string>(*other.bytes);
 }
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name,

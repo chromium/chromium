@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -147,7 +149,7 @@ class GeolocationReceiver {
   }
 
   void WaitUntilRequestDone() {
-    message_loop_runner_.reset(new base::RunLoop);
+    message_loop_runner_ = std::make_unique<base::RunLoop>();
     message_loop_runner_->Run();
   }
 

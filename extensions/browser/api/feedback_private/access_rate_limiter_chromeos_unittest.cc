@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/feedback_private/access_rate_limiter.h"
 
+#include <memory>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +32,8 @@ class AccessRateLimiterTest : public ::testing::Test {
 };
 
 TEST_F(AccessRateLimiterTest, MaxAccessCountOfZero) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      0, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      0, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_FALSE(limiter_->AttemptAccess());
   EXPECT_FALSE(limiter_->AttemptAccess());
@@ -41,8 +43,8 @@ TEST_F(AccessRateLimiterTest, MaxAccessCountOfZero) {
 }
 
 TEST_F(AccessRateLimiterTest, NormalRepeatedAccess) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_TRUE(limiter_->AttemptAccess());
   EXPECT_TRUE(limiter_->AttemptAccess());
@@ -57,8 +59,8 @@ TEST_F(AccessRateLimiterTest, NormalRepeatedAccess) {
 }
 
 TEST_F(AccessRateLimiterTest, RechargeWhenDry) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_TRUE(limiter_->AttemptAccess());
   EXPECT_TRUE(limiter_->AttemptAccess());
@@ -81,8 +83,8 @@ TEST_F(AccessRateLimiterTest, RechargeWhenDry) {
 }
 
 TEST_F(AccessRateLimiterTest, RechargeTimeOfZero) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(0), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(0), &test_clock_);
 
   // Unlimited number of accesses.
   for (int i = 0; i < 100; ++i)
@@ -101,8 +103,8 @@ TEST_F(AccessRateLimiterTest, RechargeTimeOfZero) {
 }
 
 TEST_F(AccessRateLimiterTest, RechargeToMax) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_TRUE(limiter_->AttemptAccess());
   EXPECT_TRUE(limiter_->AttemptAccess());
@@ -122,8 +124,8 @@ TEST_F(AccessRateLimiterTest, RechargeToMax) {
 }
 
 TEST_F(AccessRateLimiterTest, IncrementalRecharge) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_TRUE(limiter_->AttemptAccess());
   EXPECT_TRUE(limiter_->AttemptAccess());
@@ -156,8 +158,8 @@ TEST_F(AccessRateLimiterTest, IncrementalRecharge) {
 }
 
 TEST_F(AccessRateLimiterTest, IncrementalRechargeToMax) {
-  limiter_.reset(new extensions::AccessRateLimiter(
-      5, base::TimeDelta::FromMilliseconds(100), &test_clock_));
+  limiter_ = std::make_unique<extensions::AccessRateLimiter>(
+      5, base::TimeDelta::FromMilliseconds(100), &test_clock_);
 
   EXPECT_TRUE(limiter_->AttemptAccess());
   EXPECT_TRUE(limiter_->AttemptAccess());

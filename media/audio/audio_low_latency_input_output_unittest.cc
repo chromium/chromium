@@ -119,11 +119,11 @@ class FullDuplexAudioSinkSource
 
     // Start with the smallest possible buffer size. It will be increased
     // dynamically during the test if required.
-    buffer_.reset(
-        new media::SeekableBuffer(0, samples_per_packet_ * frame_size_));
+    buffer_ = std::make_unique<media::SeekableBuffer>(
+        0, samples_per_packet_ * frame_size_);
 
     frames_to_ms_ = static_cast<double>(1000.0 / sample_rate_);
-    delay_states_.reset(new AudioDelayState[kMaxDelayMeasurements]);
+    delay_states_ = std::make_unique<AudioDelayState[]>(kMaxDelayMeasurements);
   }
 
   ~FullDuplexAudioSinkSource() override {

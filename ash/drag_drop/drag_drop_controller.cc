@@ -414,10 +414,10 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
       // drag drop is still in progress. The drag drop ends only when the nested
       // message loop ends. Due to this stupidity, we have to defer forwarding
       // the long tap.
-      pending_long_tap_.reset(new ui::GestureEvent(
+      pending_long_tap_ = std::make_unique<ui::GestureEvent>(
           *event,
           static_cast<aura::Window*>(drag_drop_tracker_->capture_window()),
-          static_cast<aura::Window*>(drag_source_window_)));
+          static_cast<aura::Window*>(drag_source_window_));
       DoDragCancel(kTouchCancelAnimationDuration);
       break;
     default:

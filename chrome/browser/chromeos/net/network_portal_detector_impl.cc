@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/net/network_portal_detector_impl.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -88,7 +89,8 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
             ->GetSharedURLLoaderFactory();
     loader_factory = shared_url_loader_factory_.get();
   }
-  captive_portal_detector_.reset(new CaptivePortalDetector(loader_factory));
+  captive_portal_detector_ =
+      std::make_unique<CaptivePortalDetector>(loader_factory);
 
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
                  content::NotificationService::AllSources());

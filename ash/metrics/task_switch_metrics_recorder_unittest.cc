@@ -4,6 +4,8 @@
 
 #include "ash/metrics/task_switch_metrics_recorder.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,8 +48,8 @@ void TaskSwitchMetricsRecorderTest::OnTaskSwitch(
 void TaskSwitchMetricsRecorderTest::SetUp() {
   testing::Test::SetUp();
 
-  histogram_tester_.reset(new base::HistogramTester());
-  task_switch_metrics_recorder_.reset(new TaskSwitchMetricsRecorder());
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+  task_switch_metrics_recorder_ = std::make_unique<TaskSwitchMetricsRecorder>();
 }
 
 void TaskSwitchMetricsRecorderTest::TearDown() {

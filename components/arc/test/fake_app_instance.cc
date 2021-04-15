@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -284,7 +285,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
 void FakeAppInstance::SetTaskInfo(int32_t task_id,
                                   const std::string& package_name,
                                   const std::string& activity) {
-  task_id_to_info_[task_id].reset(new Request(package_name, activity));
+  task_id_to_info_[task_id] = std::make_unique<Request>(package_name, activity);
 }
 
 void FakeAppInstance::SendRefreshPackageList(

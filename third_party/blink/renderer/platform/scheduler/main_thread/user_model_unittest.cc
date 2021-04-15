@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/user_model.h"
 
+#include <memory>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +19,10 @@ class UserModelTest : public testing::Test {
   ~UserModelTest() override = default;
 
   void SetUp() override {
-    clock_.reset(new base::SimpleTestTickClock());
+    clock_ = std::make_unique<base::SimpleTestTickClock>();
     clock_->Advance(base::TimeDelta::FromMicroseconds(5000));
 
-    user_model_.reset(new UserModel());
+    user_model_ = std::make_unique<UserModel>();
   }
 
  protected:

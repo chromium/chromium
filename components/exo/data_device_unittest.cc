@@ -80,7 +80,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   }
   DataOffer* OnDataOffer() override {
     events_.push_back(DataEvent::kOffer);
-    data_offer_.reset(new DataOffer(new TestDataOfferDelegate));
+    data_offer_ = std::make_unique<DataOffer>(new TestDataOfferDelegate);
     return data_offer_.get();
   }
   void OnEnter(Surface* surface,

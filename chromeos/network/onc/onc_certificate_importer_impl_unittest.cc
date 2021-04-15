@@ -5,6 +5,8 @@
 #include "chromeos/network/onc/onc_certificate_importer_impl.h"
 
 #include <cert.h>
+
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -37,12 +39,12 @@ class ONCCertificateImporterImplTest : public testing::Test {
     ASSERT_TRUE(private_nssdb_.is_open());
 
     task_runner_ = new base::TestSimpleTaskRunner();
-    thread_task_runner_handle_.reset(
-        new base::ThreadTaskRunnerHandle(task_runner_));
+    thread_task_runner_handle_ =
+        std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
 
-    test_nssdb_.reset(new net::NSSCertDatabaseChromeOS(
+    test_nssdb_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_nssdb_.slot())),
-        crypto::ScopedPK11Slot(PK11_ReferenceSlot(private_nssdb_.slot()))));
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(private_nssdb_.slot())));
 
     // Test db should be empty at start of test.
     EXPECT_TRUE(ListCertsInPublicSlot().empty());

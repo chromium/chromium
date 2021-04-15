@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/preferences.h"
 
 #include <limits>
+#include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -639,8 +640,8 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   if (user->is_active())
     input_method_manager_->SetState(ime_state_);
 
-  input_method_syncer_.reset(
-      new input_method::InputMethodSyncer(prefs, ime_state_));
+  input_method_syncer_ =
+      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 
   // If a guest is logged in, initialize the prefs as if this is the first
@@ -663,8 +664,8 @@ void Preferences::InitUserPrefsForTesting(
 
   InitUserPrefs(prefs);
 
-  input_method_syncer_.reset(
-      new input_method::InputMethodSyncer(prefs, ime_state_));
+  input_method_syncer_ =
+      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 }
 

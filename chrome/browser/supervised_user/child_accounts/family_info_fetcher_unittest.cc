@@ -126,10 +126,10 @@ class FamilyInfoFetcherTest
  private:
   void EnsureFamilyInfoFetcher() {
     DCHECK(!fetcher_);
-    fetcher_.reset(new FamilyInfoFetcher(
+    fetcher_ = std::make_unique<FamilyInfoFetcher>(
         this, identity_test_env_.identity_manager(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_)));
+            &test_url_loader_factory_));
   }
 
  protected:

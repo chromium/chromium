@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/media/video_wake_lock.h"
 
+#include <memory>
+
 #include "cc/layers/layer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -72,8 +74,8 @@ class VideoWakeLockPictureInPictureService
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
       StartSessionCallback callback) final {
     mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote;
-    session_.reset(new VideoWakeLockPictureInPictureSession(
-        session_remote.InitWithNewPipeAndPassReceiver()));
+    session_ = std::make_unique<VideoWakeLockPictureInPictureSession>(
+        session_remote.InitWithNewPipeAndPassReceiver());
 
     std::move(callback).Run(std::move(session_remote), gfx::Size());
   }

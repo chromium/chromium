@@ -99,8 +99,8 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
  public:
   KidsManagementURLCheckerClientTest() = default;
   void SetUp() override {
-    test_profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    test_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(test_profile_manager_->SetUp());
 
 // ChromeOS requires an ash::FakeChromeUserManager for the tests to work.

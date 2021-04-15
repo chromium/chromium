@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -126,9 +128,9 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     create_drive_integration_service_ = base::BindRepeating(
         &FileSystemApiTestForDrive::CreateDriveIntegrationService,
         base::Unretained(this));
-    service_factory_for_test_.reset(
-        new drive::DriveIntegrationServiceFactory::ScopedFactoryForTest(
-            &create_drive_integration_service_));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
   }
 
   // Ensure the fake service's data is fetch in the local file system. This is
@@ -223,9 +225,9 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
     create_drive_integration_service_ = base::BindRepeating(
         &FileSystemApiTestForRequestFileSystem::CreateDriveIntegrationService,
         base::Unretained(this));
-    service_factory_for_test_.reset(
-        new drive::DriveIntegrationServiceFactory::ScopedFactoryForTest(
-            &create_drive_integration_service_));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
   }
 
   void SetUpOnMainThread() override {

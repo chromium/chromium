@@ -198,7 +198,7 @@ class ShillToONCTranslator {
 
 std::unique_ptr<base::DictionaryValue>
 ShillToONCTranslator::CreateTranslatedONCObject() {
-  onc_object_.reset(new base::Value(base::Value::Type::DICTIONARY));
+  onc_object_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   if (onc_signature_ == &kNetworkWithStateSignature) {
     TranslateNetworkWithState();
   } else if (onc_signature_ == &kEthernetSignature) {

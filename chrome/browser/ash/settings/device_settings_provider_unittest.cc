@@ -65,10 +65,10 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     DeviceSettingsTestBase::SetUp();
 
     EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
-    provider_.reset(new DeviceSettingsProvider(
+    provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&DeviceSettingsProviderTest::SettingChanged,
                             base::Unretained(this)),
-        device_settings_service_.get(), local_state_.Get()));
+        device_settings_service_.get(), local_state_.Get());
     Mock::VerifyAndClearExpectations(this);
   }
 

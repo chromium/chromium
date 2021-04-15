@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -603,7 +604,7 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
   {
     std::unique_ptr<Thread> my_threads[kNumAdditionalThreads];
     for (int i = 0; i < kNumAdditionalThreads; ++i) {
-      my_threads[i].reset(new Thread("GetNumberOfThreadsTest"));
+      my_threads[i] = std::make_unique<Thread>("GetNumberOfThreadsTest");
       my_threads[i]->Start();
       ASSERT_EQ(GetNumberOfThreads(current), initial_threads + 1 + i);
     }

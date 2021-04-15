@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
@@ -103,7 +105,7 @@ class TestTouchSelectionControllerClientAura
   void InitWaitForSelectionEvent(ui::SelectionEventType expected_event) {
     DCHECK(!run_loop_);
     expected_event_ = expected_event;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   void Wait() {
@@ -189,7 +191,7 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     if (!ui::TouchSelectionMenuRunner::GetInstance())
-      menu_runner_.reset(new TestTouchSelectionMenuRunner);
+      menu_runner_ = std::make_unique<TestTouchSelectionMenuRunner>();
   }
 
  private:
@@ -297,7 +299,7 @@ class GestureEventWaiter : public RenderWidgetHost::InputEventObserver {
   void Wait() {
     if (gesture_event_type_seen_)
       return;
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
   }
@@ -305,7 +307,7 @@ class GestureEventWaiter : public RenderWidgetHost::InputEventObserver {
   void WaitForAck() {
     if (gesture_event_type_ack_seen_)
       return;
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
   }

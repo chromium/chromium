@@ -674,13 +674,13 @@ void InputMethodAPI::OnListenerAdded(
     const extensions::EventListenerInfo& details) {
   if (details.event_name == OnChanged::kEventName &&
       !input_method_event_router_.get()) {
-    input_method_event_router_.reset(
-        new chromeos::ExtensionInputMethodEventRouter(context_));
+    input_method_event_router_ =
+        std::make_unique<chromeos::ExtensionInputMethodEventRouter>(context_);
   } else if (details.event_name == OnDictionaryChanged::kEventName ||
              details.event_name == OnDictionaryLoaded::kEventName) {
     if (!dictionary_event_router_.get()) {
-      dictionary_event_router_.reset(
-          new chromeos::ExtensionDictionaryEventRouter(context_));
+      dictionary_event_router_ =
+          std::make_unique<chromeos::ExtensionDictionaryEventRouter>(context_);
     }
     if (details.event_name == OnDictionaryLoaded::kEventName) {
       dictionary_event_router_->DispatchLoadedEventIfLoaded();
@@ -689,8 +689,8 @@ void InputMethodAPI::OnListenerAdded(
               details.event_name == OnImeMenuListChanged::kEventName ||
               details.event_name == OnImeMenuItemsChanged::kEventName) &&
              !ime_menu_event_router_.get()) {
-    ime_menu_event_router_.reset(
-        new chromeos::ExtensionImeMenuEventRouter(context_));
+    ime_menu_event_router_ =
+        std::make_unique<chromeos::ExtensionImeMenuEventRouter>(context_);
   }
 }
 

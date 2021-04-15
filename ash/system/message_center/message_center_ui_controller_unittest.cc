@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/message_center_ui_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -69,9 +70,10 @@ class MessageCenterUiControllerTest : public testing::Test {
 
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-    delegate_.reset(new MockDelegate);
+    delegate_ = std::make_unique<MockDelegate>();
     message_center_ = message_center::MessageCenter::Get();
-    ui_controller_.reset(new MessageCenterUiController(delegate_.get()));
+    ui_controller_ =
+        std::make_unique<MessageCenterUiController>(delegate_.get());
   }
 
   void TearDown() override {

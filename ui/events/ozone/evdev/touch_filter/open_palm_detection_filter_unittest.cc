@@ -4,6 +4,8 @@
 
 #include "ui/events/ozone/evdev/touch_filter/open_palm_detection_filter.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
@@ -17,8 +19,8 @@ class OpenPalmDetectionFilterTest : public testing::Test {
 
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
-    palm_detection_filter_.reset(
-        new OpenPalmDetectionFilter(shared_palm_state.get()));
+    palm_detection_filter_ =
+        std::make_unique<OpenPalmDetectionFilter>(shared_palm_state.get());
   }
 
  protected:

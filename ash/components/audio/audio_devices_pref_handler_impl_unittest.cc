@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
@@ -94,7 +96,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
   ~AudioDevicesPrefHandlerTest() override = default;
 
   void SetUp() override {
-    pref_service_.reset(new TestingPrefServiceSimple());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     AudioDevicesPrefHandlerImpl::RegisterPrefs(pref_service_->registry());
 
     // Set the preset pref values directly, to ensure it doesn't depend on pref

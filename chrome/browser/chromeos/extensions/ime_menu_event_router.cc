@@ -75,7 +75,7 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
   for (const auto& item : items) {
     input_method_private::MenuItem menu_item;
     menu_item.id = item.id;
-    menu_item.label.reset(new std::string(item.label));
+    menu_item.label = std::make_unique<std::string>(item.label);
     switch (item.style) {
       case input_method::InputMethodManager::MENU_ITEM_STYLE_CHECK:
         menu_item.style = input_method_private::ParseMenuItemStyle("check");
@@ -89,9 +89,9 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
       default:
         menu_item.style = input_method_private::ParseMenuItemStyle("");
     }
-    menu_item.visible.reset(new bool(item.visible));
-    menu_item.checked.reset(new bool(item.checked));
-    menu_item.enabled.reset(new bool(item.enabled));
+    menu_item.visible = std::make_unique<bool>(item.visible);
+    menu_item.checked = std::make_unique<bool>(item.checked);
+    menu_item.enabled = std::make_unique<bool>(item.enabled);
     menu_items.push_back(std::move(menu_item));
   }
 

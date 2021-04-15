@@ -199,8 +199,9 @@ void ProfilePolicyConnector::Init(
   if (!user) {
     DCHECK(schema_registry);
     // This case occurs for the signin and the lock screen app profiles.
-    special_user_policy_provider_.reset(new LoginProfilePolicyProvider(
-        browser_policy_connector->GetPolicyService()));
+    special_user_policy_provider_ =
+        std::make_unique<LoginProfilePolicyProvider>(
+            browser_policy_connector->GetPolicyService());
   } else {
     // |user| should never be nullptr except for the signin and the lock screen
     // app profile.

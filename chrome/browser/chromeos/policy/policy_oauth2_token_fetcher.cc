@@ -161,8 +161,8 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
   }
 
   DCHECK(!auth_code_.empty());
-  refresh_token_fetcher_.reset(new GaiaAuthFetcher(
-      this, gaia::GaiaSource::kChrome, system_url_loader_factory_));
+  refresh_token_fetcher_ = std::make_unique<GaiaAuthFetcher>(
+      this, gaia::GaiaSource::kChrome, system_url_loader_factory_);
   refresh_token_fetcher_->StartAuthCodeForOAuth2TokenExchange(auth_code_);
 }
 

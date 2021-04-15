@@ -37,10 +37,11 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
     network_test_helper_->SetUp();
     base::RunLoop().RunUntilIdle();
 
-    synced_network_metrics_logger_.reset(new SyncedNetworkMetricsLogger(
-        network_test_helper_->network_state_test_helper()
-            ->network_state_handler(),
-        /* network_connection_handler */ nullptr));
+    synced_network_metrics_logger_ =
+        std::make_unique<SyncedNetworkMetricsLogger>(
+            network_test_helper_->network_state_test_helper()
+                ->network_state_handler(),
+            /* network_connection_handler */ nullptr);
   }
 
   void TearDown() override {

@@ -585,7 +585,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, ToggleTalkBack) {
   ASSERT_TRUE(helper_bridge->last_event->event_args->GetList()[0].GetBool());
 
   // Disable TalkBack.
-  window_tracker.reset(new aura::WindowTracker());
+  window_tracker = std::make_unique<aura::WindowTracker>();
   window_tracker->Add(helper_bridge->window_.get());
   helper_bridge->OnSetNativeChromeVoxArcSupportProcessed(
       std::move(window_tracker), true, true);

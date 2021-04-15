@@ -866,7 +866,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   // Now uninstall the prod app and check that we fall back to the dev app.
   UninstallExtension(prod_extension.get(), profile());
   launched_chrome_apps_.clear();
-  histogram_tester.reset(new HistogramTester());
+  histogram_tester = std::make_unique<HistogramTester>();
   helper()->LaunchAppForNewNote(profile(), base::FilePath());
   ASSERT_EQ(1u, launched_chrome_apps_.size());
   EXPECT_EQ(NoteTakingHelper::kDevKeepExtensionId, launched_chrome_apps_[0].id);
@@ -881,7 +881,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   // Now uninstall the dev app and check that we fall back to the test web app.
   UninstallExtension(dev_extension.get(), profile());
   launched_chrome_apps_.clear();
-  histogram_tester.reset(new HistogramTester());
+  histogram_tester = std::make_unique<HistogramTester>();
   helper()->LaunchAppForNewNote(profile(), base::FilePath());
   // Not a chrome app.
   EXPECT_EQ(0u, launched_chrome_apps_.size());
@@ -1044,7 +1044,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
   // The second app should be launched now.
   intent_helper_.clear_handled_intents();
   file_system_->clear_handled_requests();
-  histogram_tester.reset(new HistogramTester());
+  histogram_tester = std::make_unique<HistogramTester>();
   helper()->LaunchAppForNewNote(profile(), base::FilePath());
   ASSERT_EQ(1u, file_system_->handledUrlRequests().size());
   EXPECT_EQ(arc::mojom::ActionType::CREATE_NOTE,

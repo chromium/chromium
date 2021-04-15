@@ -71,7 +71,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
             helper_.network_state_handler(),
             nullptr /* network_device_handler */);
 
-    network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
+    network_connection_handler_ =
+        std::make_unique<NetworkConnectionHandlerImpl>();
     network_connection_handler_->Init(
         helper_.network_state_handler(), network_configuration_handler_,
         /*managed_network_configuration_handler=*/nullptr,
@@ -121,10 +122,10 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
   // This creates a new NetworkMetadataStore object.
   void SetIsEnterpriseEnrolled(bool is_enterprise_enrolled) {
-    metadata_store_.reset(new NetworkMetadataStore(
+    metadata_store_ = std::make_unique<NetworkMetadataStore>(
         network_configuration_handler_, network_connection_handler_.get(),
         network_state_handler_, user_prefs_.get(), device_prefs_.get(),
-        is_enterprise_enrolled));
+        is_enterprise_enrolled);
     metadata_store_->AddObserver(metadata_observer_.get());
   }
 

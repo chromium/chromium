@@ -73,12 +73,14 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     service_->Init();
 
     if (standalone) {
-      external_externsions_overrides_.reset(new base::ScopedPathOverride(
-          chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-          data_dir().Append("external_standalone")));
+      external_externsions_overrides_ =
+          std::make_unique<base::ScopedPathOverride>(
+              chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+              data_dir().Append("external_standalone"));
     } else {
-      external_externsions_overrides_.reset(new base::ScopedPathOverride(
-          chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().Append("external")));
+      external_externsions_overrides_ =
+          std::make_unique<base::ScopedPathOverride>(
+              chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().Append("external"));
     }
 
     ProviderCollection providers;

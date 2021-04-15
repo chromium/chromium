@@ -24,7 +24,7 @@ class EndToEndSyncTest : public testing::Test {
   void SetUp() override {
     // Start the test service;
     TestService::Options options;
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_FALSE(test_service_->HasDBusThread());

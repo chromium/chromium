@@ -534,8 +534,8 @@ class DeviceSyncCryptAuthDeviceManagerImplTest
       update.Get()->Append(std::move(device_dictionary));
     }
 
-    device_manager_.reset(new TestCryptAuthDeviceManager(
-        &clock_, client_factory_.get(), &gcm_manager_, &pref_service_));
+    device_manager_ = std::make_unique<TestCryptAuthDeviceManager>(
+        &clock_, client_factory_.get(), &gcm_manager_, &pref_service_);
     device_manager_->AddObserver(this);
 
     get_my_devices_response_.add_devices()->CopyFrom(devices_in_response_[0]);
@@ -722,8 +722,8 @@ TEST_F(
   ListPrefUpdate update(&pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
   update.Get()->Append(std::move(device_dictionary));
 
-  device_manager_.reset(new TestCryptAuthDeviceManager(
-      &clock_, client_factory_.get(), &gcm_manager_, &pref_service_));
+  device_manager_ = std::make_unique<TestCryptAuthDeviceManager>(
+      &clock_, client_factory_.get(), &gcm_manager_, &pref_service_);
   device_manager_->Start();
 
   // Ensure that the deprecated booleans are not exposed in the final

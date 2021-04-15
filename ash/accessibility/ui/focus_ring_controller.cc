@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
 
+#include <memory>
+
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -84,7 +86,7 @@ void FocusRingController::UpdateFocusRing() {
 
   // Update the focus ring layer.
   if (!focus_ring_layer_)
-    focus_ring_layer_.reset(new FocusRingLayer(this));
+    focus_ring_layer_ = std::make_unique<FocusRingLayer>(this);
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityBubbleContainer);
   focus_ring_layer_->Set(container, view_bounds, /*stack_at_top=*/true);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/cloud_external_data_policy_observer.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -188,13 +189,13 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
   cros_settings_ = std::make_unique<ash::CrosSettings>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
-  device_local_account_policy_service_.reset(
-      new DeviceLocalAccountPolicyService(
+  device_local_account_policy_service_ =
+      std::make_unique<DeviceLocalAccountPolicyService>(
           &session_manager_client_, device_settings_service_.get(),
           cros_settings_.get(), &affiliated_invalidation_service_provider_,
           base::ThreadTaskRunnerHandle::Get(),
           base::ThreadTaskRunnerHandle::Get(),
-          base::ThreadTaskRunnerHandle::Get(), shared_url_loader_factory_));
+          base::ThreadTaskRunnerHandle::Get(), shared_url_loader_factory_);
 
   ON_CALL(user_policy_provider_, IsInitializationComplete(_))
       .WillByDefault(Return(true));
@@ -252,9 +253,9 @@ void CloudExternalDataPolicyObserverTest::OnExternalDataFetched(
 }
 
 void CloudExternalDataPolicyObserverTest::CreateObserver() {
-  observer_.reset(new CloudExternalDataPolicyObserver(
+  observer_ = std::make_unique<CloudExternalDataPolicyObserver>(
       cros_settings_.get(), device_local_account_policy_service_.get(),
-      key::kUserAvatarImage, this));
+      key::kUserAvatarImage, this);
   observer_->Init();
 }
 
@@ -333,10 +334,10 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
     const AccountId& account_id) {
   user_manager::User* user = user_manager_->AddUser(account_id);
 
-  device_local_account_policy_provider_.reset(
-      new DeviceLocalAccountPolicyProvider(
+  device_local_account_policy_provider_ =
+      std::make_unique<DeviceLocalAccountPolicyProvider>(
           account_id.GetUserEmail(), device_local_account_policy_service_.get(),
-          std::unique_ptr<PolicyMap>()));
+          std::unique_ptr<PolicyMap>());
 
   PolicyServiceImpl::Providers providers;
   providers.push_back(device_local_account_policy_provider_.get());

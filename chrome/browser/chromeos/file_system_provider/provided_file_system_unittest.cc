@@ -230,7 +230,7 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
   ~FileSystemProviderProvidedFileSystemTest() override {}
 
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     const base::FilePath mount_path = util::GetMountPath(
         profile_.get(), ProviderId::CreateFromExtensionId(kExtensionId),
         kFileSystemId);
@@ -239,13 +239,13 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
     mount_options.display_name = kDisplayName;
     mount_options.supports_notify_tag = true;
     mount_options.writable = true;
-    file_system_info_.reset(new ProvidedFileSystemInfo(
+    file_system_info_ = std::make_unique<ProvidedFileSystemInfo>(
         kExtensionId, mount_options, mount_path, false /* configurable */,
-        true /* watchable */, extensions::SOURCE_FILE, IconSet()));
-    provided_file_system_.reset(
-        new ProvidedFileSystem(profile_.get(), *file_system_info_.get()));
-    event_router_.reset(
-        new FakeEventRouter(profile_.get(), provided_file_system_.get()));
+        true /* watchable */, extensions::SOURCE_FILE, IconSet());
+    provided_file_system_ = std::make_unique<ProvidedFileSystem>(
+        profile_.get(), *file_system_info_.get());
+    event_router_ = std::make_unique<FakeEventRouter>(
+        profile_.get(), provided_file_system_.get());
     event_router_->AddEventListener(extensions::api::file_system_provider::
                                         OnAddWatcherRequested::kEventName,
                                     NULL,

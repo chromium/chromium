@@ -53,8 +53,8 @@ class MultilingualSpellCheckTest : public testing::Test {
 
   void ReinitializeSpellCheck(const std::string& unsplit_languages) {
     spellcheck_ = new SpellCheck(&embedder_provider_);
-    provider_.reset(
-        new TestingSpellCheckProvider(spellcheck_, &embedder_provider_));
+    provider_ = std::make_unique<TestingSpellCheckProvider>(
+        spellcheck_, &embedder_provider_);
     InitializeSpellCheck(unsplit_languages);
   }
 

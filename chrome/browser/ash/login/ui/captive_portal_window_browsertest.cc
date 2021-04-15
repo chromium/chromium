@@ -84,8 +84,8 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
         LoginDisplayHost::default_host()->GetOobeWebContents();
-    captive_portal_window_proxy_.reset(
-        new CaptivePortalWindowProxy(&delegate_, web_contents));
+    captive_portal_window_proxy_ =
+        std::make_unique<CaptivePortalWindowProxy>(&delegate_, web_contents);
   }
 
   void TearDownOnMainThread() override {

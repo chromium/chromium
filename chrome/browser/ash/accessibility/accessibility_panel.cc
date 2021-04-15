@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_panel.h"
 
+#include <memory>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/macros.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -48,8 +50,9 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
 
   views::WebView* web_view = new views::WebView(browser_context);
   web_contents_ = web_view->GetWebContents();
-  web_contents_observer_.reset(
-      new AccessibilityPanelWebContentsObserver(web_contents_, this));
+  web_contents_observer_ =
+      std::make_unique<AccessibilityPanelWebContentsObserver>(web_contents_,
+                                                              this);
   web_contents_->SetDelegate(this);
   extensions::SetViewType(web_contents_,
                           extensions::mojom::ViewType::kComponent);

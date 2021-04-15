@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -85,10 +87,10 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
       const std::string app_id =
           command_line->GetSwitchValueASCII(::switches::kAppId);
       Profile* profile = ProfileManager::GetActiveUserProfile();
-      notification_.reset(new IdleAppNameNotificationView(
+      notification_ = std::make_unique<IdleAppNameNotificationView>(
           kMessageVisibilityTimeMs, kMessageAnimationTimeMs,
           extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-              app_id)));
+              app_id));
     }
     show_notification_upon_next_user_activity_ = false;
   }

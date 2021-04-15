@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -337,10 +338,10 @@ void DriveFirstRunController::EnableOfflineMode() {
     return;
   }
 
-  web_contents_manager_.reset(new DriveWebContentsManager(
+  web_contents_manager_ = std::make_unique<DriveWebContentsManager>(
       profile_, drive_hosted_app_id_, drive_offline_endpoint_url_,
       base::BindOnce(&DriveFirstRunController::OnOfflineInit,
-                     base::Unretained(this))));
+                     base::Unretained(this)));
   web_contents_manager_->StartLoad();
   web_contents_timer_.Start(
       FROM_HERE,

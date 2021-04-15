@@ -226,7 +226,7 @@ void ThreadState::AttachToIsolate(
   DCHECK(isolate);
   isolate_ = isolate;
   v8_build_embedder_graph_ = v8_build_embedder_graph;
-  unified_heap_controller_.reset(new UnifiedHeapController(this));
+  unified_heap_controller_ = std::make_unique<UnifiedHeapController>(this);
   isolate_->SetEmbedderHeapTracer(unified_heap_controller_.get());
   unified_heap_controller_.get()->SetStackStart(WTF::GetStackStart());
   if (v8::HeapProfiler* profiler = isolate->GetHeapProfiler()) {

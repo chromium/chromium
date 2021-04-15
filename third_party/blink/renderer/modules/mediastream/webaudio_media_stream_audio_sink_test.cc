@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +34,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     component_ = MakeGarbageCollected<MediaStreamComponent>(
         String::FromUTF8("audio_track"), audio_source);
     component_->SetPlatformTrack(std::make_unique<MediaStreamAudioTrack>(true));
-    source_provider_.reset(
-        new WebAudioMediaStreamAudioSink(component_, context_sample_rate));
+    source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
+        component_, context_sample_rate);
     source_provider_->SetSinkParamsForTesting(sink_params_);
     source_provider_->OnSetFormat(source_params_);
   }

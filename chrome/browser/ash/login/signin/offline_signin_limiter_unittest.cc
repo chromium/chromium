@@ -132,7 +132,7 @@ void OfflineSigninLimiterTest::SetUpUserManager() {
 }
 
 void OfflineSigninLimiterTest::SetUp() {
-  profile_.reset(new TestingProfile);
+  profile_ = std::make_unique<TestingProfile>();
 
   OfflineSigninLimiterFactory::SetClockForTesting(&clock_);
   clock_.Advance(base::TimeDelta::FromHours(1));

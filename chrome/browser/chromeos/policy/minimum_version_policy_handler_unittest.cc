@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -135,8 +137,9 @@ void MinimumVersionPolicyHandlerTest::TearDown() {
 }
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
-  minimum_version_policy_handler_.reset(
-      new MinimumVersionPolicyHandler(this, ash::CrosSettings::Get()));
+  minimum_version_policy_handler_ =
+      std::make_unique<MinimumVersionPolicyHandler>(this,
+                                                    ash::CrosSettings::Get());
 }
 
 const MinimumVersionRequirement* MinimumVersionPolicyHandlerTest::GetState()
@@ -146,7 +149,7 @@ const MinimumVersionRequirement* MinimumVersionPolicyHandlerTest::GetState()
 
 void MinimumVersionPolicyHandlerTest::SetCurrentVersionString(
     std::string version) {
-  current_version_.reset(new base::Version(version));
+  current_version_ = std::make_unique<base::Version>(version);
   ASSERT_TRUE(current_version_->IsValid());
 }
 

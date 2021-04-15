@@ -139,7 +139,7 @@ std::unique_ptr<base::Value> DecodeIntegerValue(google::protobuf::int64 value) {
     return nullptr;
   }
 
-  return std::unique_ptr<base::Value>(new base::Value(static_cast<int>(value)));
+  return std::make_unique<base::Value>(static_cast<int>(value));
 }
 
 std::unique_ptr<base::Value> DecodeConnectionType(int value) {

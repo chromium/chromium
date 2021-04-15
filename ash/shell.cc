@@ -965,7 +965,7 @@ void Shell::Init(
 
   peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
       peripheral_battery_listener_.get());
-  power_event_observer_.reset(new PowerEventObserver());
+  power_event_observer_ = std::make_unique<PowerEventObserver>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   if (features::IsCaptureModeEnabled()) {
@@ -1079,9 +1079,9 @@ void Shell::Init(
 
   // ui::UserActivityDetector passes events to observers, so let them get
   // rewritten first.
-  user_activity_detector_.reset(new ui::UserActivityDetector);
+  user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
 
-  overlay_filter_.reset(new OverlayEventFilter);
+  overlay_filter_ = std::make_unique<OverlayEventFilter>();
   AddPreTargetHandler(overlay_filter_.get());
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
@@ -1091,7 +1091,8 @@ void Shell::Init(
       std::make_unique<PreTargetAcceleratorHandler>());
   AddPreTargetHandler(accelerator_filter_.get());
 
-  event_transformation_handler_.reset(new EventTransformationHandler);
+  event_transformation_handler_ =
+      std::make_unique<EventTransformationHandler>();
   AddPreTargetHandler(event_transformation_handler_.get());
 
   back_gesture_event_handler_ = std::make_unique<BackGestureEventHandler>();
@@ -1103,7 +1104,7 @@ void Shell::Init(
   system_gesture_filter_ = std::make_unique<SystemGestureEventFilter>();
   AddPreTargetHandler(system_gesture_filter_.get());
 
-  sticky_keys_controller_.reset(new StickyKeysController);
+  sticky_keys_controller_ = std::make_unique<StickyKeysController>();
   screen_pinning_controller_ = std::make_unique<ScreenPinningController>();
 
   power_prefs_ = std::make_unique<PowerPrefs>(
@@ -1138,11 +1139,12 @@ void Shell::Init(
   // Create Controllers that may need root window.
   // TODO(oshima): Move as many controllers before creating
   // RootWindowController as possible.
-  visibility_controller_.reset(new AshVisibilityController);
+  visibility_controller_ = std::make_unique<AshVisibilityController>();
 
-  laser_pointer_controller_.reset(new LaserPointerController());
-  partial_magnification_controller_.reset(new PartialMagnificationController());
-  highlighter_controller_.reset(new HighlighterController());
+  laser_pointer_controller_ = std::make_unique<LaserPointerController>();
+  partial_magnification_controller_ =
+      std::make_unique<PartialMagnificationController>();
+  highlighter_controller_ = std::make_unique<HighlighterController>();
 
   magnification_controller_ = std::make_unique<MagnificationController>();
   mru_window_tracker_ = std::make_unique<MruWindowTracker>();
@@ -1168,23 +1170,23 @@ void Shell::Init(
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
-  high_contrast_controller_.reset(new HighContrastController);
+  high_contrast_controller_ = std::make_unique<HighContrastController>();
 
   docked_magnifier_controller_ =
       std::make_unique<DockedMagnifierControllerImpl>();
 
   video_detector_ = std::make_unique<VideoDetector>();
 
-  tooltip_controller_.reset(new views::corewm::TooltipController(
-      std::unique_ptr<views::corewm::Tooltip>(new views::corewm::TooltipAura)));
+  tooltip_controller_ = std::make_unique<views::corewm::TooltipController>(
+      std::make_unique<views::corewm::TooltipAura>());
   AddPreTargetHandler(tooltip_controller_.get());
 
-  modality_filter_.reset(new SystemModalContainerEventFilter(this));
+  modality_filter_ = std::make_unique<SystemModalContainerEventFilter>(this);
   AddPreTargetHandler(modality_filter_.get());
 
-  event_client_.reset(new EventClientImpl);
+  event_client_ = std::make_unique<EventClientImpl>();
 
-  resize_shadow_controller_.reset(new ResizeShadowController());
+  resize_shadow_controller_ = std::make_unique<ResizeShadowController>();
   shadow_controller_ = std::make_unique<::wm::ShadowController>(
       focus_controller_.get(), std::make_unique<WmShadowControllerDelegate>(),
       env);
@@ -1240,8 +1242,8 @@ void Shell::Init(
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
           user_activity_detector_.get(), std::move(fingerprint));
-  video_activity_notifier_.reset(
-      new VideoActivityNotifier(video_detector_.get()));
+  video_activity_notifier_ =
+      std::make_unique<VideoActivityNotifier>(video_detector_.get());
   bluetooth_notification_controller_ =
       std::make_unique<BluetoothNotificationController>(
           message_center::MessageCenter::Get());
@@ -1250,8 +1252,8 @@ void Shell::Init(
 
   cros_display_config_ = std::make_unique<CrosDisplayConfig>();
 
-  screen_layout_observer_.reset(new ScreenLayoutObserver());
-  sms_observer_.reset(new SmsObserver());
+  screen_layout_observer_ = std::make_unique<ScreenLayoutObserver>();
+  sms_observer_ = std::make_unique<SmsObserver>();
   snap_controller_ = std::make_unique<SnapControllerImpl>();
   key_accessibility_enabler_ = std::make_unique<KeyAccessibilityEnabler>();
 

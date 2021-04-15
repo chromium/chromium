@@ -113,7 +113,7 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
     launcher_->SetUrlLoaderForTesting(
         std::unique_ptr<web_app::TestWebAppUrlLoader>(url_loader_));
 
-    closer_.reset(new AppWindowCloser());
+    closer_ = std::make_unique<AppWindowCloser>();
   }
 
   void TearDown() override {

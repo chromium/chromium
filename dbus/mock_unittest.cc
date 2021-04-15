@@ -201,7 +201,7 @@ TEST_F(MockTest, CallMethod) {
   writer.AppendString(kHello);
 
   // Call the method.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   proxy->CallMethod(
       &method_call, ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&MockTest::OnResponse, base::Unretained(this)));

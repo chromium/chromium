@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/switch_access_handler.h"
 
+#include <memory>
+
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -104,7 +106,7 @@ void SwitchAccessHandler::RegisterMessages() {
 }
 
 void SwitchAccessHandler::OnJavascriptAllowed() {
-  pref_change_registrar_.reset(new PrefChangeRegistrar);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
       ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,

@@ -82,7 +82,7 @@ class SessionManagerOperationTest : public testing::Test {
         "fake-whitelist");
     policy_.Build();
 
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     service_ =
         OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
   }

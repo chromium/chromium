@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_user_login_flow.h"
@@ -97,7 +99,7 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (connector->IsCloudManaged() && wildcard_match &&
       !connector->IsNonEnterpriseUser(account_id.GetUserEmail())) {
-    wildcard_login_checker_.reset(new policy::WildcardLoginChecker());
+    wildcard_login_checker_ = std::make_unique<policy::WildcardLoginChecker>();
     if (refresh_token.empty()) {
       NOTREACHED() << "Refresh token must be present.";
       OnlineWildcardLoginCheckCompleted(

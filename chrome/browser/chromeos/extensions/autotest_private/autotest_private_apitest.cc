@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"
+
+#include <memory>
+
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
@@ -13,7 +17,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
@@ -104,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
   arc::ArcSessionManager::Get()->StartArcForTesting();
 
   std::unique_ptr<arc::FakeAppInstance> app_instance;
-  app_instance.reset(new arc::FakeAppInstance(prefs));
+  app_instance = std::make_unique<arc::FakeAppInstance>(prefs);
   prefs->app_connection_holder()->SetInstance(app_instance.get());
   arc::WaitForInstanceReady(prefs->app_connection_holder());
 

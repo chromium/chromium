@@ -402,7 +402,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
           string_decoder_ = std::make_unique<TextResourceDecoder>(
               TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM());
         }
-        string_builder_.reset(new StringBuilder);
+        string_builder_ = std::make_unique<StringBuilder>();
       }
       return true;
     }

@@ -47,7 +47,8 @@ TEST_F(AudioStreamHandlerTest, Play) {
   std::unique_ptr<AudioStreamHandler> audio_stream_handler;
 
   SetObserverForTesting(&observer);
-  audio_stream_handler.reset(new AudioStreamHandler(base::DoNothing(), data));
+  audio_stream_handler =
+      std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
   ASSERT_TRUE(audio_stream_handler->IsInitialized());
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(20u),
@@ -71,7 +72,8 @@ TEST_F(AudioStreamHandlerTest, ConsecutivePlayRequests) {
   std::unique_ptr<AudioStreamHandler> audio_stream_handler;
 
   SetObserverForTesting(&observer);
-  audio_stream_handler.reset(new AudioStreamHandler(base::DoNothing(), data));
+  audio_stream_handler =
+      std::make_unique<AudioStreamHandler>(base::DoNothing(), data);
 
   ASSERT_TRUE(audio_stream_handler->IsInitialized());
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(20u),

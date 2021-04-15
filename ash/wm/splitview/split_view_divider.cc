@@ -81,8 +81,7 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
     divider_handler_view_ =
         AddChildView(std::make_unique<SplitViewDividerHandlerView>());
-    SetEventTargeter(
-        std::unique_ptr<views::ViewTargeter>(new views::ViewTargeter(this)));
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
   ~DividerView() override = default;
 

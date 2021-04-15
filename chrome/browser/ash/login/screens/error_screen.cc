@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/error_screen.h"
 
+#include <memory>
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -426,7 +428,7 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   if (guest_login_performer_)
     return;
 
-  guest_login_performer_.reset(new ChromeLoginPerformer(this));
+  guest_login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   guest_login_performer_->LoginOffTheRecord();
 }
 

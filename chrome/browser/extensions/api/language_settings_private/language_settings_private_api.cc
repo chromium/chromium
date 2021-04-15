@@ -268,7 +268,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&
         allowed_ui_locales.count(language.code) == 0) {
-      language.is_prohibited_language.reset(new bool(true));
+      language.is_prohibited_language = std::make_unique<bool>(true);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -745,14 +745,14 @@ void PopulateInputMethodListFromDescriptors(
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
     if (active_ids.count(input_method.id) > 0)
-      input_method.enabled.reset(new bool(true));
+      input_method.enabled = std::make_unique<bool>(true);
     if (descriptor.options_page_url().is_valid())
-      input_method.has_options_page.reset(new bool(true));
+      input_method.has_options_page = std::make_unique<bool>(true);
     if (!allowed_ids.empty() &&
         (util->IsKeyboardLayout(input_method.id) ||
          chromeos::extension_ime_util::IsArcIME(input_method.id)) &&
         allowed_ids.count(input_method.id) == 0) {
-      input_method.is_prohibited_by_policy.reset(new bool(true));
+      input_method.is_prohibited_by_policy = std::make_unique<bool>(true);
     }
     input_map[base::UTF8ToUTF16(util->GetLocalizedDisplayName(descriptor))] =
         std::move(input_method);

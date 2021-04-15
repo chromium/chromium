@@ -169,7 +169,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
         candidate_window_controller_);
     keyboard_ = new FakeImeKeyboard;
     manager_->SetImeKeyboardForTesting(keyboard_);
-    mock_engine_handler_.reset(new MockInputMethodEngine());
+    mock_engine_handler_ = std::make_unique<MockInputMethodEngine>();
     ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetCurrentEngineHandler(mock_engine_handler_.get());
 

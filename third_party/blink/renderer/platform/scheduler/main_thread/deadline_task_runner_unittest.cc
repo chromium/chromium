@@ -24,10 +24,10 @@ class DeadlineTaskRunnerTest : public testing::Test {
   ~DeadlineTaskRunnerTest() override = default;
 
   void SetUp() override {
-    deadline_task_runner_.reset(new DeadlineTaskRunner(
+    deadline_task_runner_ = std::make_unique<DeadlineTaskRunner>(
         base::BindRepeating(&DeadlineTaskRunnerTest::TestTask,
                             base::Unretained(this)),
-        task_environment_.GetMainThreadTaskRunner()));
+        task_environment_.GetMainThreadTaskRunner());
     run_times_.clear();
   }
 

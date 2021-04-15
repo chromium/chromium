@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -808,7 +809,8 @@ class RenderWidgetHostViewAuraOverscrollTest
     gfx::Size display_size = display::Screen::GetScreen()
                                  ->GetDisplayNearestView(view_->GetNativeView())
                                  .size();
-    overscroll_delegate_.reset(new TestOverscrollDelegate(display_size));
+    overscroll_delegate_ =
+        std::make_unique<TestOverscrollDelegate>(display_size);
     view_->overscroll_controller()->set_delegate(
         overscroll_delegate_->GetWeakPtr());
 

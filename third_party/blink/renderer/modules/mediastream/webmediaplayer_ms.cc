@@ -5,7 +5,9 @@
 #include "third_party/blink/public/web/modules/mediastream/webmediaplayer_ms.h"
 
 #include <stddef.h>
+
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -161,8 +163,9 @@ class WebMediaPlayerMS::FrameDeliverer {
 
     if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
                              true /* for_media_stream */)) {
-      gpu_memory_buffer_pool_.reset(new media::GpuMemoryBufferVideoFramePool(
-          media_task_runner, worker_task_runner, gpu_factories));
+      gpu_memory_buffer_pool_ =
+          std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+              media_task_runner, worker_task_runner, gpu_factories);
     }
   }
 
@@ -449,11 +452,11 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   SendLogMessage(
       String::Format("%s => (stream_id=%s)", __func__, stream_id.c_str()));
 
-  frame_deliverer_.reset(new WebMediaPlayerMS::FrameDeliverer(
+  frame_deliverer_ = std::make_unique<WebMediaPlayerMS::FrameDeliverer>(
       weak_this_,
       CrossThreadBindRepeating(&WebMediaPlayerMSCompositor::EnqueueFrame,
                                compositor_),
-      media_task_runner_, worker_task_runner_, gpu_factories_));
+      media_task_runner_, worker_task_runner_, gpu_factories_);
   video_frame_provider_ = renderer_factory_->GetVideoRenderer(
       web_stream_,
       ConvertToBaseRepeatingCallback(frame_deliverer_->GetRepaintCallback()),

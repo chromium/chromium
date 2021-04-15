@@ -77,7 +77,8 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     // DeviceLocalAccountPolicyBroker, which uses the registry to fetch and
     // cache policy even if there is no active session for that account.
     // Use a ForwardingSchemaRegistry that wraps this SchemaRegistry.
-    registry.reset(new ForwardingSchemaRegistry(broker->schema_registry()));
+    registry =
+        std::make_unique<ForwardingSchemaRegistry>(broker->schema_registry());
   }
 #endif
 

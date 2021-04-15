@@ -194,10 +194,10 @@ PageSchedulerImpl::PageSchedulerImpl(
           blink::features::kFreezeBackgroundTabOnNetworkIdle)),
       delay_for_background_and_network_idle_tab_freezing_(
           GetDelayForBackgroundAndNetworkIdleTabFreezing()) {
-  page_lifecycle_state_tracker_.reset(new PageLifecycleStateTracker(
+  page_lifecycle_state_tracker_ = std::make_unique<PageLifecycleStateTracker>(
       this, kDefaultPageVisibility == PageVisibilityState::kVisible
                 ? PageLifecycleState::kActive
-                : PageLifecycleState::kHiddenBackgrounded));
+                : PageLifecycleState::kHiddenBackgrounded);
   do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
       &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
   do_intensively_throttle_wake_ups_callback_.Reset(

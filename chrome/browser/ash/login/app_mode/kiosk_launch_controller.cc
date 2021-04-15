@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
@@ -194,9 +196,9 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
                                           weak_ptr_factory_.GetWeakPtr()));
 
-  kiosk_profile_loader_.reset(
-      new KioskProfileLoader(*kiosk_app_id_.account_id, kiosk_app_id_.type,
-                             /*use_guest_mount=*/false, /*delegate=*/this));
+  kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
+      *kiosk_app_id_.account_id, kiosk_app_id_.type,
+      /*use_guest_mount=*/false, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 

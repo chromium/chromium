@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/render_widget_signals.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +39,9 @@ class RenderWidgetSignalsTest : public testing::Test {
   ~RenderWidgetSignalsTest() override = default;
 
   void SetUp() override {
-    mock_observer_.reset(new MockObserver());
-    render_widget_signals_.reset(new RenderWidgetSignals(mock_observer_.get()));
+    mock_observer_ = std::make_unique<MockObserver>();
+    render_widget_signals_ =
+        std::make_unique<RenderWidgetSignals>(mock_observer_.get());
   }
 
   void IgnoreWidgetCreationCallbacks() {

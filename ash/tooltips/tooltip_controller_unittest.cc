@@ -84,7 +84,7 @@ class TooltipControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    helper_.reset(new TooltipControllerTestHelper(GetController()));
+    helper_ = std::make_unique<TooltipControllerTestHelper>(GetController());
   }
 
  protected:

@@ -102,8 +102,7 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnSuccess) {
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 
-  configure.OnSuccess(kRequestId,
-                      std::unique_ptr<RequestValue>(new RequestValue()),
+  configure.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
                       false /* has_more */);
   ASSERT_EQ(1u, callback_log.size());
   base::File::Error event_result = callback_log[0];
@@ -122,8 +121,7 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnError) {
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 
-  configure.OnError(kRequestId,
-                    std::unique_ptr<RequestValue>(new RequestValue()),
+  configure.OnError(kRequestId, std::make_unique<RequestValue>(),
                     base::File::FILE_ERROR_NOT_FOUND);
   ASSERT_EQ(1u, callback_log.size());
   base::File::Error event_result = callback_log[0];

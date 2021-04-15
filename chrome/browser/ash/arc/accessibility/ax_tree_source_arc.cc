@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 
+#include <memory>
 #include <stack>
 #include <string>
 #include <utility>
@@ -541,7 +542,7 @@ void AXTreeSourceArc::Reset() {
   tree_map_.clear();
   parent_map_.clear();
   computed_bounds_.clear();
-  current_tree_serializer_.reset(new AXTreeArcSerializer(this));
+  current_tree_serializer_ = std::make_unique<AXTreeArcSerializer>(this);
   root_id_.reset();
   window_id_.reset();
   android_focused_id_.reset();

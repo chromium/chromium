@@ -452,8 +452,8 @@ void UserMetricsRecorder::OnShellInitialized() {
   // Lazy creation of the DesktopTaskSwitchMetricRecorder because it accesses
   // Shell::Get() which is not available when |this| is instantiated.
   if (!desktop_task_switch_metric_recorder_) {
-    desktop_task_switch_metric_recorder_.reset(
-        new DesktopTaskSwitchMetricRecorder());
+    desktop_task_switch_metric_recorder_ =
+        std::make_unique<DesktopTaskSwitchMetricRecorder>();
   }
   pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
 }

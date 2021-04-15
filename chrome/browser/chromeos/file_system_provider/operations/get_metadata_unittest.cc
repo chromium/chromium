@@ -131,11 +131,11 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for non-root.
   {
     EntryMetadata metadata;
-    metadata.name.reset(new std::string(kValidFileName));
-    metadata.modification_time.reset(new ModificationTime());
+    metadata.name = std::make_unique<std::string>(kValidFileName);
+    metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
-    metadata.thumbnail.reset(new std::string(kValidThumbnailUrl));
+    metadata.thumbnail = std::make_unique<std::string>(kValidThumbnailUrl);
     EXPECT_TRUE(ValidateIDLEntryMetadata(
         metadata,
         ProvidedFileSystemInterface::METADATA_FIELD_NAME |
@@ -147,8 +147,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for non-root (without thumbnail).
   {
     EntryMetadata metadata;
-    metadata.name.reset(new std::string(kValidFileName));
-    metadata.modification_time.reset(new ModificationTime());
+    metadata.name = std::make_unique<std::string>(kValidFileName);
+    metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
     EXPECT_TRUE(ValidateIDLEntryMetadata(
@@ -162,8 +162,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for root.
   {
     EntryMetadata metadata;
-    metadata.name.reset(new std::string());
-    metadata.modification_time.reset(new ModificationTime());
+    metadata.name = std::make_unique<std::string>();
+    metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
     EXPECT_TRUE(ValidateIDLEntryMetadata(
@@ -177,7 +177,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Invalid characters in the name.
   {
     EntryMetadata metadata;
-    metadata.name.reset(new std::string("hello/world"));
+    metadata.name = std::make_unique<std::string>("hello/world");
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_NAME,
         false /* root_path */));
@@ -186,7 +186,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Empty name for non-root.
   {
     EntryMetadata metadata;
-    metadata.name.reset(new std::string());
+    metadata.name = std::make_unique<std::string>();
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_NAME,
         false /* root_path */));
@@ -203,7 +203,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Invalid thumbnail.
   {
     EntryMetadata metadata;
-    metadata.thumbnail.reset(new std::string("http://invalid-scheme"));
+    metadata.thumbnail = std::make_unique<std::string>("http://invalid-scheme");
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
         false /* root_path */));
@@ -212,7 +212,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Empty string for thumbnail.
   {
     EntryMetadata metadata;
-    metadata.thumbnail.reset(new std::string());
+    metadata.thumbnail = std::make_unique<std::string>();
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
         false /* root_path */));
@@ -401,8 +401,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnError) {
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
-  get_metadata.OnError(kRequestId,
-                       std::unique_ptr<RequestValue>(new RequestValue()),
+  get_metadata.OnError(kRequestId, std::make_unique<RequestValue>(),
                        base::File::FILE_ERROR_TOO_MANY_OPENED);
 
   ASSERT_EQ(1u, callback_logger.events().size());

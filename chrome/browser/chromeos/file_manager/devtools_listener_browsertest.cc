@@ -39,7 +39,8 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
 
   void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override {
     CHECK(devtools_agent_.find(host) == devtools_agent_.end());
-    devtools_agent_[host].reset(new DevToolsListener(host, process_id_));
+    devtools_agent_[host] =
+        std::make_unique<DevToolsListener>(host, process_id_);
   }
 
   void DevToolsAgentHostAttached(content::DevToolsAgentHost* host) override {}

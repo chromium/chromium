@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -173,12 +174,12 @@ void DeviceLocalAccountPolicyServiceTestBase::TearDown() {
 }
 
 void DeviceLocalAccountPolicyServiceTestBase::CreatePolicyService() {
-  service_.reset(new DeviceLocalAccountPolicyService(
+  service_ = std::make_unique<DeviceLocalAccountPolicyService>(
       &session_manager_client_, device_settings_service_.get(),
       cros_settings_.get(), &affiliated_invalidation_service_provider_,
       base::ThreadTaskRunnerHandle::Get(), extension_cache_task_runner_,
       base::ThreadTaskRunnerHandle::Get(),
-      /*url_loader_factory=*/nullptr));
+      /*url_loader_factory=*/nullptr);
 }
 
 void DeviceLocalAccountPolicyServiceTestBase::
@@ -543,9 +544,8 @@ DeviceLocalAccountPolicyExtensionCacheTest::
 void DeviceLocalAccountPolicyExtensionCacheTest::SetUp() {
   DeviceLocalAccountPolicyServiceTestBase::SetUp();
   ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
-  cache_root_dir_override_.reset(new base::ScopedPathOverride(
-      chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,
-      cache_root_dir_.GetPath()));
+  cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
+      chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS, cache_root_dir_.GetPath());
 
   cache_dir_1_ = GetCacheDirectoryForAccountID(kAccount1);
   cache_dir_2_ = GetCacheDirectoryForAccountID(kAccount2);

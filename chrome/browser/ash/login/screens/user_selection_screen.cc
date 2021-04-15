@@ -633,7 +633,7 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
     return;
 
   if (!token_handle_util_.get()) {
-    token_handle_util_.reset(new TokenHandleUtil());
+    token_handle_util_ = std::make_unique<TokenHandleUtil>();
   }
 
   if (token_handle_util_->HasToken(account_id)) {

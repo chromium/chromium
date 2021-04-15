@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/extension_js_browser_test.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -20,7 +22,7 @@ ExtensionJSBrowserTest::~ExtensionJSBrowserTest() {}
 
 void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
                                               base::OnceClosure load_cb) {
-  load_waiter_.reset(new ExtensionLoadWaiterOneShot());
+  load_waiter_ = std::make_unique<ExtensionLoadWaiterOneShot>();
   load_waiter_->WaitForExtension(extension_id, std::move(load_cb));
 }
 

@@ -235,7 +235,8 @@ TEST_F(BluetoothAdvertisementBlueZTest, UnregisterAfterReleasedFailed) {
   ExpectSuccess();
   EXPECT_TRUE(advertisement);
 
-  observer_.reset(new TestBluetoothAdvertisementObserver(advertisement));
+  observer_ =
+      std::make_unique<TestBluetoothAdvertisementObserver>(advertisement);
   TriggerReleased(advertisement);
   EXPECT_TRUE(observer_->released());
 

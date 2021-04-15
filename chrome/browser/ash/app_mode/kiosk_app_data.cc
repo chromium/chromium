@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -468,8 +469,8 @@ void KioskAppData::StartFetch() {
     return;
   }
 
-  webstore_fetcher_.reset(
-      new extensions::WebstoreDataFetcher(this, GURL(), app_id()));
+  webstore_fetcher_ =
+      std::make_unique<extensions::WebstoreDataFetcher>(this, GURL(), app_id());
   webstore_fetcher_->set_max_auto_retries(3);
   webstore_fetcher_->Start(g_browser_process->system_network_context_manager()
                                ->GetURLLoaderFactory());

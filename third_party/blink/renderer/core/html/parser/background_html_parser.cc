@@ -77,10 +77,10 @@ void BackgroundHTMLParser::Init(
     bool priority_hints_origin_trial_enabled) {
   TRACE_EVENT1("loading", "BackgroundHTMLParser::Init", "url",
                document_url.GetString().Utf8());
-  preload_scanner_.reset(new TokenPreloadScanner(
+  preload_scanner_ = std::make_unique<TokenPreloadScanner>(
       document_url, std::move(cached_document_parameters),
       media_values_cached_data, TokenPreloadScanner::ScannerType::kMainDocument,
-      priority_hints_origin_trial_enabled));
+      priority_hints_origin_trial_enabled);
 }
 
 BackgroundHTMLParser::Configuration::Configuration() {}

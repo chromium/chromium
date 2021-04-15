@@ -139,7 +139,7 @@ void DisplayAnimator::StartFadeOutAnimation(base::OnceClosure callback) {
   // In case that OnDisplayModeChanged() isn't called or its animator is
   // canceled due to some unknown errors, we set a timer to clear these
   // hiding layers.
-  timer_.reset(new base::OneShotTimer());
+  timer_ = std::make_unique<base::OneShotTimer>();
   timer_->Start(FROM_HERE,
                 base::TimeDelta::FromSeconds(kFadingTimeoutDurationInSeconds),
                 this, &DisplayAnimator::ClearHidingLayers);

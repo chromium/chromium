@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -143,7 +145,7 @@ class TimeZoneReceiver {
   }
 
   void WaitUntilRequestDone() {
-    message_loop_runner_.reset(new base::RunLoop);
+    message_loop_runner_ = std::make_unique<base::RunLoop>();
     message_loop_runner_->Run();
   }
 

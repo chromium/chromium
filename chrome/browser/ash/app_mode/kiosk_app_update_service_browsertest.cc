@@ -87,8 +87,8 @@ class KioskAppUpdateServiceTest
         base::NumberToString(uptime.InSecondsF());
     const base::FilePath uptime_file = temp_dir.Append("uptime");
     ASSERT_TRUE(base::WriteFile(uptime_file, uptime_seconds));
-    uptime_file_override_.reset(
-        new base::ScopedPathOverride(chromeos::FILE_UPTIME, uptime_file));
+    uptime_file_override_ = std::make_unique<base::ScopedPathOverride>(
+        chromeos::FILE_UPTIME, uptime_file);
   }
 
   void SetUpOnMainThread() override {
@@ -146,13 +146,13 @@ class KioskAppUpdateServiceTest
   void FireUpdatedNeedReboot() {
     update_engine::StatusResult status;
     status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     automatic_reboot_manager_->UpdateStatusChanged(status);
     run_loop_->Run();
   }
 
   void RequestPeriodicReboot() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     g_browser_process->local_state()->SetInteger(
         prefs::kUptimeLimit, base::TimeDelta::FromHours(2).InSeconds());
     run_loop_->Run();

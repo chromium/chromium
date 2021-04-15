@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -351,7 +352,7 @@ void TimeZoneResolver::TimeZoneResolverImpl::CreateNewRequest() {
 
   refresh_timer_.Stop();
 
-  request_.reset(new TZRequest(this));
+  request_ = std::make_unique<TZRequest>(this);
   request_->Start();
 }
 
@@ -417,7 +418,7 @@ TimeZoneResolver::~TimeZoneResolver() {
 void TimeZoneResolver::Start() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!implementation_) {
-    implementation_.reset(new TimeZoneResolverImpl(this));
+    implementation_ = std::make_unique<TimeZoneResolverImpl>(this);
     implementation_->Start();
   }
 }

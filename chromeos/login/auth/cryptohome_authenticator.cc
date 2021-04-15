@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -395,12 +396,12 @@ void OnGetKeyData(const base::WeakPtr<AuthAttemptState>& attempt,
            it != key_definition.provider_data.end(); ++it) {
         if (it->name == kKeyProviderDataTypeName) {
           if (it->number)
-            type.reset(new int64_t(*it->number));
+            type = std::make_unique<int64_t>(*it->number);
           else
             NOTREACHED();
         } else if (it->name == kKeyProviderDataSaltName) {
           if (it->bytes)
-            salt.reset(new std::string(*it->bytes));
+            salt = std::make_unique<std::string>(*it->bytes);
           else
             NOTREACHED();
         }
@@ -603,7 +604,8 @@ void CryptohomeAuthenticator::AuthenticateToLogin(
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
+  current_state_ =
+      std::make_unique<AuthAttemptState>(user_context, false /* unlock */);
   // Reset the verified flag.
   owner_is_verified_ = false;
 
@@ -617,7 +619,8 @@ void CryptohomeAuthenticator::CompleteLogin(const UserContext& user_context) {
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  current_state_.reset(new AuthAttemptState(user_context, true /* unlock */));
+  current_state_ =
+      std::make_unique<AuthAttemptState>(user_context, true /* unlock */);
 
   // Reset the verified flag.
   owner_is_verified_ = false;
@@ -642,10 +645,10 @@ void CryptohomeAuthenticator::CompleteLogin(const UserContext& user_context) {
 
 void CryptohomeAuthenticator::LoginOffTheRecord() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  current_state_.reset(
-      new AuthAttemptState(UserContext(user_manager::USER_TYPE_GUEST,
-                                       user_manager::GuestAccountId()),
-                           false /* unlock */));
+  current_state_ = std::make_unique<AuthAttemptState>(
+      UserContext(user_manager::USER_TYPE_GUEST,
+                  user_manager::GuestAccountId()),
+      false /* unlock */);
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   MountGuestAndGetHash(current_state_->AsWeakPtr(),
@@ -667,8 +670,8 @@ void CryptohomeAuthenticator::LoginAsPublicSession(
   DCHECK(user_context.GetKey()->GetLabel().empty());
   new_user_context.GetKey()->SetLabel(kCryptohomeGaiaKeyLabel);
 
-  current_state_.reset(
-      new AuthAttemptState(new_user_context, false /* unlock */));
+  current_state_ =
+      std::make_unique<AuthAttemptState>(new_user_context, false /* unlock */);
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   StartMount(current_state_->AsWeakPtr(),
@@ -683,9 +686,9 @@ void CryptohomeAuthenticator::LoginAsKioskAccount(
 
   const AccountId& account_id =
       use_guest_mount ? user_manager::GuestAccountId() : app_account_id;
-  current_state_.reset(new AuthAttemptState(
+  current_state_ = std::make_unique<AuthAttemptState>(
       UserContext(user_manager::USER_TYPE_KIOSK_APP, account_id),
-      false /* unlock */));
+      false /* unlock */);
 
   remove_user_data_on_failure_ = true;
   if (!use_guest_mount) {
@@ -703,9 +706,9 @@ void CryptohomeAuthenticator::LoginAsArcKioskAccount(
     const AccountId& app_account_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  current_state_.reset(new AuthAttemptState(
+  current_state_ = std::make_unique<AuthAttemptState>(
       UserContext(user_manager::USER_TYPE_ARC_KIOSK_APP, app_account_id),
-      false /* unlock */));
+      false /* unlock */);
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -717,9 +720,9 @@ void CryptohomeAuthenticator::LoginAsWebKioskAccount(
     const AccountId& app_account_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  current_state_.reset(new AuthAttemptState(
+  current_state_ = std::make_unique<AuthAttemptState>(
       UserContext(user_manager::USER_TYPE_WEB_KIOSK_APP, app_account_id),
-      false /* unlock */));
+      false /* unlock */);
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -788,7 +791,8 @@ void CryptohomeAuthenticator::OnAuthFailure(const AuthFailure& error) {
 
 void CryptohomeAuthenticator::MigrateKey(const UserContext& user_context,
                                          const std::string& old_password) {
-  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
+  current_state_ =
+      std::make_unique<AuthAttemptState>(user_context, false /* unlock */);
   RecoverEncryptedData(old_password);
 }
 

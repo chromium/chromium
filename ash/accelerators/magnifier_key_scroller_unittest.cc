@@ -4,6 +4,8 @@
 
 #include "ash/accelerators/magnifier_key_scroller.h"
 
+#include <memory>
+
 #include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -23,8 +25,8 @@ class KeyEventDelegate : public aura::test::TestWindowDelegate {
 
   // ui::EventHandler overrides:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    key_event.reset(
-        new ui::KeyEvent(event->type(), event->key_code(), event->flags()));
+    key_event = std::make_unique<ui::KeyEvent>(event->type(), event->key_code(),
+                                               event->flags());
   }
 
   const ui::KeyEvent* event() const { return key_event.get(); }

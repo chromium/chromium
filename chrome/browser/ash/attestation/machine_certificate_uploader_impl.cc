@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -115,8 +116,8 @@ void MachineCertificateUploaderImpl::Start() {
   if (!attestation_flow_) {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
-    default_attestation_flow_.reset(
-        new AttestationFlow(std::move(attestation_ca_client)));
+    default_attestation_flow_ =
+        std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
     attestation_flow_ = default_attestation_flow_.get();
   }
 

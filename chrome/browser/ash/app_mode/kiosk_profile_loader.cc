@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -149,12 +151,12 @@ KioskProfileLoader::~KioskProfileLoader() {}
 void KioskProfileLoader::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   login_performer_.reset();
-  cryptohomed_checker_.reset(new CryptohomedChecker(this));
+  cryptohomed_checker_ = std::make_unique<CryptohomedChecker>(this);
   cryptohomed_checker_->StartCheck();
 }
 
 void KioskProfileLoader::LoginAsKioskAccount() {
-  login_performer_.reset(new ChromeLoginPerformer(this));
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   switch (app_type_) {
     case KioskAppType::kArcApp:
       // Arc kiosks do not support ephemeral mount.

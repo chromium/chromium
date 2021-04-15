@@ -4,6 +4,8 @@
 
 #include "ash/display/touch_calibrator_view.h"
 
+#include <memory>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -181,7 +183,7 @@ CircularThrobberView::CircularThrobberView(int width,
   outer_circle_flags_.setAntiAlias(true);
   outer_circle_flags_.setStyle(cc::PaintFlags::kFill_Style);
 
-  animation_.reset(new gfx::ThrobAnimation(this));
+  animation_ = std::make_unique<gfx::ThrobAnimation>(this);
   animation_->SetThrobDuration(animation_duration);
   animation_->StartThrobbing(-1);
 

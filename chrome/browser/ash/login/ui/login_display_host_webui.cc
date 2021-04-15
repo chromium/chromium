@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -867,7 +868,8 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
     focus_ring_controller_ = std::make_unique<ash::FocusRingController>();
     focus_ring_controller_->SetVisible(true);
 
-    keyboard_driven_oobe_key_handler_.reset(new KeyboardDrivenOobeKeyHandler);
+    keyboard_driven_oobe_key_handler_ =
+        std::make_unique<KeyboardDrivenOobeKeyHandler>();
   }
 
   views::Widget::InitParams params(

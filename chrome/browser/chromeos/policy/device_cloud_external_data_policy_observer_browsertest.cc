@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/device_cloud_external_data_policy_observer.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -130,7 +131,7 @@ class DeviceCloudExternalDataPolicyObserverTest
 
   void WaitUntilPolicyChanged() {
     policy_change_waiting_run_loop_->Run();
-    policy_change_waiting_run_loop_.reset(new base::RunLoop());
+    policy_change_waiting_run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver> observer_;

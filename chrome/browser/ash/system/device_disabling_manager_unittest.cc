@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
+#include <memory>
+
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -92,10 +94,8 @@ void DeviceDisablingManagerTestBase::TearDown() {
 }
 
 void DeviceDisablingManagerTestBase::CreateDeviceDisablingManager() {
-  device_disabling_manager_.reset(new DeviceDisablingManager(
-      this,
-      CrosSettings::Get(),
-      &fake_user_manager_));
+  device_disabling_manager_ = std::make_unique<DeviceDisablingManager>(
+      this, CrosSettings::Get(), &fake_user_manager_);
   device_disabling_manager_->Init();
 }
 

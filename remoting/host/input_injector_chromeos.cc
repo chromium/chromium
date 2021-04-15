@@ -4,6 +4,7 @@
 
 #include "remoting/host/input_injector_chromeos.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -206,7 +207,7 @@ void InputInjectorChromeos::Core::Start(
   // Implemented by remoting::ClipboardAura.
   clipboard_ = Clipboard::Create();
   clipboard_->Start(std::move(client_clipboard));
-  point_transformer_.reset(new PointTransformer());
+  point_transformer_ = std::make_unique<PointTransformer>();
 
   // If the cursor was hidden before we start injecting input then we should try
   // to restore its state when the remote user disconnects.  The main scenario

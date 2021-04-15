@@ -177,7 +177,7 @@ void StorageMonitorCrosTest::SetUp() {
   DiskMountManager::InitializeForTesting(disk_mount_manager_mock_);
   disk_mount_manager_mock_->SetupDefaultReplies();
 
-  mock_storage_observer_.reset(new MockRemovableStorageObserver);
+  mock_storage_observer_ = std::make_unique<MockRemovableStorageObserver>();
 
   // Initialize the test subject.
   TestStorageMonitor::Destroy();

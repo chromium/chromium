@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -86,7 +87,7 @@ class StatusUploaderTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     client_.SetDMToken("dm_token");
-    collector_.reset(new MockDeviceStatusCollector(&prefs_));
+    collector_ = std::make_unique<MockDeviceStatusCollector>(&prefs_);
 
     // Keep a pointer to the mock collector because collector_ gets cleared
     // when it is passed to the StatusUploader constructor.

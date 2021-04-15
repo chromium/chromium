@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -292,8 +293,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   // TaskQueueThrottler requires some task runners, then initialize
   // TaskQueueThrottler after task queues/runners are initialized.
-  task_queue_throttler_.reset(
-      new TaskQueueThrottler(this, &tracing_controller_));
+  task_queue_throttler_ =
+      std::make_unique<TaskQueueThrottler>(this, &tracing_controller_);
   update_policy_closure_ = base::BindRepeating(
       &MainThreadSchedulerImpl::UpdatePolicy, weak_factory_.GetWeakPtr());
   end_renderer_hidden_idle_period_closure_.Reset(base::BindRepeating(
@@ -1893,12 +1894,12 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
     main_thread_only().initial_virtual_time = base::Time::Now();
   if (main_thread_only().initial_virtual_time_ticks.is_null())
     main_thread_only().initial_virtual_time_ticks = tick_clock()->NowTicks();
-  virtual_time_domain_.reset(new AutoAdvancingVirtualTimeDomain(
+  virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       main_thread_only().initial_virtual_time +
           main_thread_only().initial_virtual_time_offset,
       main_thread_only().initial_virtual_time_ticks +
           main_thread_only().initial_virtual_time_offset,
-      &helper_, policy));
+      &helper_, policy);
   RegisterTimeDomain(virtual_time_domain_.get());
 
   DCHECK(!virtual_time_control_task_queue_);

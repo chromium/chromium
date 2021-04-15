@@ -424,8 +424,8 @@ void SpellCheck::RequestTextChecking(
   if (pending_request_param_)
     pending_request_param_->completion()->DidCancelCheckingText();
 
-  pending_request_param_.reset(
-      new SpellcheckRequest(text, std::move(completion)));
+  pending_request_param_ =
+      std::make_unique<SpellcheckRequest>(text, std::move(completion));
   // We will check this text after we finish loading the hunspell dictionary.
   if (InitializeIfNeeded())
     return;

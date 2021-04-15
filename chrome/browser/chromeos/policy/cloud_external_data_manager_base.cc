@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -182,9 +183,9 @@ void CloudExternalDataManagerBase::Backend::Connect(
     std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!updater_);
-  updater_.reset(new ExternalPolicyDataUpdater(
+  updater_ = std::make_unique<ExternalPolicyDataUpdater>(
       task_runner_, std::move(external_policy_data_fetcher),
-      kMaxParallelFetches));
+      kMaxParallelFetches);
   for (const auto& it : pending_downloads_)
     StartDownload(it.first);
 }

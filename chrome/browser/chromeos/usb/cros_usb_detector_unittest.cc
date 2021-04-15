@@ -153,7 +153,8 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     cros_usb_detector_ = std::make_unique<chromeos::CrosUsbDetector>();
     BrowserWithTestWindowTest::SetUp();
-    crostini_test_helper_.reset(new crostini::CrostiniTestHelper(profile()));
+    crostini_test_helper_ =
+        std::make_unique<crostini::CrostiniTestHelper>(profile());
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());

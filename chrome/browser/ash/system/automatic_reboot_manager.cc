@@ -10,6 +10,7 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -238,7 +239,7 @@ void AutomaticRebootManager::OnUserActivity(const ui::Event* event) {
   // Destroying and re-creating the timer ensures that Start() posts a fresh
   // task with a delay of exactly |kLoginManagerIdleTimeoutMs|, ensuring that
   // the timer fires predictably in tests.
-  login_screen_idle_timer_.reset(new base::OneShotTimer);
+  login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
   login_screen_idle_timer_->Start(
       FROM_HERE, base::TimeDelta::FromMilliseconds(kLoginManagerIdleTimeoutMs),
       base::BindOnce(&AutomaticRebootManager::MaybeReboot,
@@ -347,7 +348,7 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.
   if (!grace_start_timer_)
-    grace_start_timer_.reset(new base::OneShotTimer);
+    grace_start_timer_ = std::make_unique<base::OneShotTimer>();
   VLOG(1) << "Scheduling reboot attempt in " << (grace_start_time - now);
   grace_start_timer_->Start(
       FROM_HERE, std::max(grace_start_time - now, base::TimeDelta()),
@@ -359,7 +360,7 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the end of the grace period. If the grace period ended
   // in the past, the timer is still used with its delay set to zero.
   if (!grace_end_timer_)
-    grace_end_timer_.reset(new base::OneShotTimer);
+    grace_end_timer_ = std::make_unique<base::OneShotTimer>();
   VLOG(1) << "Scheduling unconditional reboot in " << (grace_end_time - now);
   grace_end_timer_->Start(
       FROM_HERE, std::max(grace_end_time - now, base::TimeDelta()),

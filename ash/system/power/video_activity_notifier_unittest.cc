@@ -23,7 +23,7 @@ class VideoActivityNotifierTest : public AshTestBase {
     power_client_ = static_cast<chromeos::FakePowerManagerClient*>(
         chromeos::PowerManagerClient::Get());
     detector_ = std::make_unique<VideoDetector>();
-    notifier_.reset(new VideoActivityNotifier(detector_.get()));
+    notifier_ = std::make_unique<VideoActivityNotifier>(detector_.get());
   }
 
   void TearDown() override {

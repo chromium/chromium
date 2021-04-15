@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/cloud_external_data_policy_observer.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -274,7 +275,7 @@ void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
   delegate_->OnExternalDataSet(policy_, user_id);
 
   std::unique_ptr<WeakPtrFactory>& weak_ptr_factory = fetch_weak_ptrs_[user_id];
-  weak_ptr_factory.reset(new WeakPtrFactory(this));
+  weak_ptr_factory = std::make_unique<WeakPtrFactory>(this);
   if (entry->external_data_fetcher) {
     entry->external_data_fetcher->Fetch(
         base::BindOnce(&CloudExternalDataPolicyObserver::OnExternalDataFetched,

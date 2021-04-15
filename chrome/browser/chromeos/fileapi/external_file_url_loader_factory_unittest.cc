@@ -49,8 +49,8 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
 
   void SetUp() override {
     // Create a testing profile.
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* const profile =
         profile_manager_->CreateTestingProfile("test-user");

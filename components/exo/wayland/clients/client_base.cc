@@ -522,8 +522,8 @@ bool ClientBase::Init(const InitParams& params) {
         gl::init::CreateGLContext(nullptr,  // share_group
                                   gl_surface_.get(), gl::GLContextAttribs());
 
-    make_current_.reset(
-        new ui::ScopedMakeCurrent(gl_context_.get(), gl_surface_.get()));
+    make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
+                                                            gl_surface_.get());
 
     if (gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_flush_external") ||
         gl::GLSurfaceEGL::HasEGLExtension("EGL_ARM_implicit_external_sync")) {
@@ -1029,10 +1029,10 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         eglGetCurrentDisplay(), EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
         nullptr /* no client buffer */, khr_image_attrs);
 
-    buffer->egl_image.reset(new ScopedEglImage(image));
+    buffer->egl_image = std::make_unique<ScopedEglImage>(image);
     GLuint texture = 0;
     glGenTextures(1, &texture);
-    buffer->texture.reset(new ScopedTexture(texture));
+    buffer->texture = std::make_unique<ScopedTexture>(texture);
     glBindTexture(GL_TEXTURE_2D, buffer->texture->get());
     glEGLImageTargetTexture2DOES(
         GL_TEXTURE_2D, static_cast<GLeglImageOES>(buffer->egl_image->get()));

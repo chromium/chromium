@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -115,7 +117,7 @@ EnrollmentScreen::EnrollmentScreen(EnrollmentScreenView* view,
   retry_policy_.maximum_backoff_ms = kMaxDelayMS;
   retry_policy_.entry_lifetime_ms = -1;
   retry_policy_.always_use_initial_delay = true;
-  retry_backoff_.reset(new net::BackoffEntry(&retry_policy_));
+  retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
 }
 
 EnrollmentScreen::~EnrollmentScreen() {
@@ -245,7 +247,7 @@ void EnrollmentScreen::HideImpl() {
 
 void EnrollmentScreen::RestoreAfterRollback() {
   VLOG(1) << "Restoring after version rollback.";
-  elapsed_timer_.reset(new base::ElapsedTimer());
+  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   view_->Show();
   view_->ShowEnrollmentSpinnerScreen();
   CreateEnrollmentHelper();
@@ -254,7 +256,7 @@ void EnrollmentScreen::RestoreAfterRollback() {
 
 void EnrollmentScreen::AuthenticateUsingAttestation() {
   VLOG(1) << "Authenticating using attestation.";
-  elapsed_timer_.reset(new base::ElapsedTimer());
+  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   view_->Show();
   CreateEnrollmentHelper();
   if (enrollment_config_.mode ==
@@ -270,7 +272,7 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
 void EnrollmentScreen::OnLoginDone(const std::string& user,
                                    const std::string& auth_code) {
   LOG_IF(ERROR, auth_code.empty()) << "Auth code is empty.";
-  elapsed_timer_.reset(new base::ElapsedTimer());
+  elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   enrolling_user_domain_ = gaia::ExtractDomainName(user);
   UMA(enrollment_failed_once_ ? policy::kMetricEnrollmentRestarted
                               : policy::kMetricEnrollmentStarted);

@@ -13,6 +13,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -442,8 +443,8 @@ int RectsClient::Run(const ClientBase::InitParams& params,
 
 #if defined(USE_GBM)
         if (egl_sync_type_) {
-          buffer->egl_sync.reset(new ScopedEglSync(eglCreateSyncKHR(
-              eglGetCurrentDisplay(), egl_sync_type_, nullptr)));
+          buffer->egl_sync = std::make_unique<ScopedEglSync>(eglCreateSyncKHR(
+              eglGetCurrentDisplay(), egl_sync_type_, nullptr));
           DCHECK(buffer->egl_sync->is_valid());
         }
 #endif

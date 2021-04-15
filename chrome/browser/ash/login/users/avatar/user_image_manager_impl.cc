@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -540,7 +541,7 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->LoadImage(base::FilePath(image_path), image_index, image_url);
 }
 
@@ -596,7 +597,7 @@ void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
   is_random_image_set_ = false;
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToDefaultImage(default_image_index);
 }
 
@@ -604,7 +605,7 @@ void UserImageManagerImpl::SaveUserImage(
     std::unique_ptr<user_manager::UserImage> user_image) {
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToImage(user_manager::User::USER_IMAGE_EXTERNAL,
                    std::move(user_image));
 }
@@ -612,7 +613,7 @@ void UserImageManagerImpl::SaveUserImage(
 void UserImageManagerImpl::SaveUserImageFromFile(const base::FilePath& path) {
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToPath(path, user_manager::User::USER_IMAGE_EXTERNAL, GURL(), true);
 }
 
@@ -629,7 +630,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
         downloaded_profile_image_, user_manager::UserImage::ChooseImageFormat(
                                        *downloaded_profile_image_.bitmap()));
   }
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToImage(user_manager::User::USER_IMAGE_PROFILE,
                    std::move(user_image));
   // If no profile image has been downloaded yet, ensure that a download is
@@ -692,7 +693,7 @@ void UserImageManagerImpl::OnExternalDataFetched(
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
   DCHECK(IsUserImageManaged());
   if (data) {
-    job_.reset(new Job(this));
+    job_ = std::make_unique<Job>(this);
     job_->SetToImageData(std::move(data));
   }
 }
@@ -836,7 +837,7 @@ void UserImageManagerImpl::DownloadProfileData() {
   }
 
   downloading_profile_image_ = NeedProfileImage();
-  profile_downloader_.reset(new ProfileDownloader(this));
+  profile_downloader_ = std::make_unique<ProfileDownloader>(this);
   profile_downloader_->Start();
 }
 
@@ -878,7 +879,7 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
   // must not be started so that the policy-set image does not get synced out.
   if (!user_image_sync_observer_ && user && user->CanSyncImage() &&
       !IsUserImageManaged()) {
-    user_image_sync_observer_.reset(new UserImageSyncObserver(user));
+    user_image_sync_observer_ = std::make_unique<UserImageSyncObserver>(user);
   }
 }
 

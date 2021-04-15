@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_media_parser_util.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -23,7 +25,7 @@ void SetValueScopedPtr(std::string value,
                        std::unique_ptr<std::string>* destination) {
   DCHECK(destination);
   if (!value.empty())
-    destination->reset(new std::string(std::move(value)));
+    *destination = std::make_unique<std::string>(std::move(value));
 }
 
 void ChangeAudioMimePrefixToVideo(std::string* mime_type) {

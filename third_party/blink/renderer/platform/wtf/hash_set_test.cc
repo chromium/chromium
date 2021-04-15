@@ -313,7 +313,7 @@ TEST(HashSetTest, UniquePtr) {
 
   // Insert more to cause a rehash.
   for (int i = 2; i < 32; ++i) {
-    Set::AddResult add_result = set.insert(Pointer(new int(i)));
+    Set::AddResult add_result = set.insert(std::make_unique<int>(i));
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(i, **add_result.stored_value);
   }

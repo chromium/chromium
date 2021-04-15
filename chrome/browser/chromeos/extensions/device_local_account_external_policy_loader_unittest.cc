@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -211,10 +212,10 @@ void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_));
 
   loader_ = new DeviceLocalAccountExternalPolicyLoader(&store_, cache_dir_);
-  provider_.reset(new extensions::ExternalProviderImpl(
+  provider_ = std::make_unique<extensions::ExternalProviderImpl>(
       &visitor_, loader_, profile_.get(), ManifestLocation::kExternalPolicy,
       ManifestLocation::kExternalPolicyDownload,
-      extensions::Extension::NO_FLAGS));
+      extensions::Extension::NO_FLAGS);
 
   VerifyAndResetVisitorCallExpectations();
 }

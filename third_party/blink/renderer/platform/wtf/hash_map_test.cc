@@ -435,7 +435,7 @@ TEST(HashMapTest, UniquePtrAsKey) {
 
   // Insert more to cause a rehash.
   for (int i = 2; i < 32; ++i) {
-    Map::AddResult add_result = map.insert(Pointer(new int(i)), i);
+    Map::AddResult add_result = map.insert(std::make_unique<int>(i), i);
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(i, *add_result.stored_value->key);
     EXPECT_EQ(i, add_result.stored_value->value);
@@ -458,7 +458,7 @@ TEST(HashMapTest, UniquePtrAsValue) {
   using Map = HashMap<int, Pointer>;
   Map map;
   {
-    Map::AddResult add_result = map.insert(1, Pointer(new int(1)));
+    Map::AddResult add_result = map.insert(1, std::make_unique<int>(1));
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(1, add_result.stored_value->key);
     EXPECT_EQ(1, *add_result.stored_value->value);
@@ -476,7 +476,7 @@ TEST(HashMapTest, UniquePtrAsValue) {
   EXPECT_TRUE(iter == map.end());
 
   for (int i = 2; i < 32; ++i) {
-    Map::AddResult add_result = map.insert(i, Pointer(new int(i)));
+    Map::AddResult add_result = map.insert(i, std::make_unique<int>(i));
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(i, add_result.stored_value->key);
     EXPECT_EQ(i, *add_result.stored_value->value);

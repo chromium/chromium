@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_opus_encoder.h"
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -112,14 +114,14 @@ void AudioTrackOpusEncoder::OnSetFormat(
            << " -->|converted_params_|:"
            << converted_params_.AsHumanReadableString();
 
-  converter_.reset(new media::AudioConverter(input_params_, converted_params_,
-                                             false /* disable_fifo */));
+  converter_ = std::make_unique<media::AudioConverter>(
+      input_params_, converted_params_, false /* disable_fifo */);
   converter_->AddInput(this);
   converter_->PrimeWithSilence();
 
-  fifo_.reset(new media::AudioFifo(
+  fifo_ = std::make_unique<media::AudioFifo>(
       input_params_.channels(),
-      kMaxNumberOfFifoBuffers * input_params_.frames_per_buffer()));
+      kMaxNumberOfFifoBuffers * input_params_.frames_per_buffer());
 
   buffer_.reset(new float[converted_params_.channels() *
                           converted_params_.frames_per_buffer()]);

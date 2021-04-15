@@ -61,8 +61,8 @@ class FileSystemProviderThrottledFileSystemTest : public testing::Test {
         false /* configurable */, true /* watchable */, extensions::SOURCE_FILE,
         IconSet());
 
-    file_system_.reset(new ThrottledFileSystem(
-        std::make_unique<FakeProvidedFileSystem>(file_system_info)));
+    file_system_ = std::make_unique<ThrottledFileSystem>(
+        std::make_unique<FakeProvidedFileSystem>(file_system_info));
   }
 
   content::BrowserTaskEnvironment task_environment_;

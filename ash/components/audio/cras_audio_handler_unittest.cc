@@ -310,7 +310,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   void SetUp() override {
     fake_manager_ = std::make_unique<FakeMediaControllerManager>();
     system_monitor_.AddDevicesChangedObserver(&system_monitor_observer_);
-    video_capture_manager_.reset(new FakeVideoCaptureManager);
+    video_capture_manager_ = std::make_unique<FakeVideoCaptureManager>();
   }
 
   void TearDown() override {
@@ -351,7 +351,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
-    test_observer_.reset(new TestObserver);
+    test_observer_ = std::make_unique<TestObserver>();
     cras_audio_handler_->AddAudioObserver(test_observer_.get());
     video_capture_manager_->AddObserver(cras_audio_handler_);
     base::RunLoop().RunUntilIdle();
@@ -385,7 +385,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
                                  audio_pref_handler_);
 
     cras_audio_handler_ = CrasAudioHandler::Get();
-    test_observer_.reset(new TestObserver);
+    test_observer_ = std::make_unique<TestObserver>();
     cras_audio_handler_->AddAudioObserver(test_observer_.get());
     base::RunLoop().RunUntilIdle();
   }
@@ -400,7 +400,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
-    test_observer_.reset(new TestObserver);
+    test_observer_ = std::make_unique<TestObserver>();
     cras_audio_handler_->AddAudioObserver(test_observer_.get());
     base::RunLoop().RunUntilIdle();
   }

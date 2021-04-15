@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 
 #include <cmath>
+#include <memory>
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
@@ -645,8 +646,8 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
     RecordTouchEventState();
   } else {
-    input_device_event_observer_.reset(
-        new AsynchronousTouchEventStateRecorder());
+    input_device_event_observer_ =
+        std::make_unique<AsynchronousTouchEventStateRecorder>();
   }
 #else
   RecordTouchEventState();

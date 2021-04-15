@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 
+#include <memory>
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -25,7 +27,8 @@ class FullRestorePrefsTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   }
 
   user_prefs::PrefRegistrySyncable* registry() {

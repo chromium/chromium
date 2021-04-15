@@ -58,8 +58,9 @@ CouldExternalDataStoreTest::CouldExternalDataStoreTest()
 
 void CouldExternalDataStoreTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  resource_cache_.reset(new ResourceCache(temp_dir_.GetPath(), task_runner_,
-                                          /* max_cache_size */ base::nullopt));
+  resource_cache_ =
+      std::make_unique<ResourceCache>(temp_dir_.GetPath(), task_runner_,
+                                      /* max_cache_size */ base::nullopt);
 }
 
 TEST_F(CouldExternalDataStoreTest, StoreAndLoad) {

@@ -166,7 +166,8 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (device.battery_percentage())
-    out->battery_percentage.reset(new int(device.battery_percentage().value()));
+    out->battery_percentage =
+        std::make_unique<int>(device.battery_percentage().value());
   else
     out->battery_percentage.reset();
 #endif

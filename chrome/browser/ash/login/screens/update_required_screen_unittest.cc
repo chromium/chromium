@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 
+#include <memory>
+
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -63,7 +65,8 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
-    mock_error_screen_.reset(new MockErrorScreen(mock_error_view_.get()));
+    mock_error_screen_ =
+        std::make_unique<MockErrorScreen>(mock_error_view_.get());
 
     // Ensure proper behavior of `UpdateRequiredScreen`'s supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())

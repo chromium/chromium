@@ -5,6 +5,7 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -76,7 +77,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
 #endif  // defined(OS_WIN)
 
   void SetUpOnMainThread() override {
-    renderer_.reset(new content::MockRenderProcessHost(GetContext()));
+    renderer_ = std::make_unique<content::MockRenderProcessHost>(GetContext());
     renderer_->Init();
     prefs_ = user_prefs::UserPrefs::Get(GetContext());
   }

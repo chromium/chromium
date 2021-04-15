@@ -78,10 +78,10 @@ class TaskQueueThrottlerTest : public testing::Test {
     test_task_runner_->AdvanceMockTickClock(
         base::TimeDelta::FromMilliseconds(5));
 
-    scheduler_.reset(new MainThreadSchedulerImplForTest(
+    scheduler_ = std::make_unique<MainThreadSchedulerImplForTest>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, test_task_runner_, GetTickClock()),
-        base::nullopt));
+        base::nullopt);
     task_queue_throttler_ = scheduler_->task_queue_throttler();
     wake_up_budget_pool_ =
         task_queue_throttler_->CreateWakeUpBudgetPool("Wake Up Budget Pool");

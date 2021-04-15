@@ -4,6 +4,8 @@
 
 #include "chromeos/network/network_connection_handler_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -719,10 +721,9 @@ void NetworkConnectionHandlerImpl::QueueConnectRequest(
   }
 
   NET_LOG(EVENT) << "Connect Request Queued: " << NetworkPathId(service_path);
-  queued_connect_.reset(new ConnectRequest(request->mode, service_path,
-                                           request->profile_path,
-                                           std::move(request->success_callback),
-                                           std::move(request->error_callback)));
+  queued_connect_ = std::make_unique<ConnectRequest>(
+      request->mode, service_path, request->profile_path,
+      std::move(request->success_callback), std::move(request->error_callback));
   pending_requests_.erase(service_path);
 
   // Post a delayed task to check to see if certificates have loaded. If they

@@ -114,7 +114,7 @@ class RequestManagerTest : public ::testing::Test {
   }
 
   void DoLoop() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

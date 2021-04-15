@@ -60,7 +60,7 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
  private:
   void CreateLockScreen() {
     auto lock_view = std::make_unique<views::View>();
-    lock_screen_widget_.reset(new views::Widget);
+    lock_screen_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     gfx::Size ps = lock_view->GetPreferredSize();

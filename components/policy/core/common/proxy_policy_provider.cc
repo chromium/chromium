@@ -26,7 +26,7 @@ void ProxyPolicyProvider::SetDelegate(ConfigurationPolicyProvider* delegate) {
     delegate_->AddObserver(this);
     OnUpdatePolicy(delegate_);
   } else {
-    UpdatePolicy(std::unique_ptr<PolicyBundle>(new PolicyBundle()));
+    UpdatePolicy(std::make_unique<PolicyBundle>());
   }
 }
 

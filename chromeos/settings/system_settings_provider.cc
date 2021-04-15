@@ -4,6 +4,7 @@
 
 #include "chromeos/settings/system_settings_provider.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -51,12 +52,12 @@ void SystemSettingsProvider::Init() {
   system::TimezoneSettings* timezone_settings =
       system::TimezoneSettings::GetInstance();
   timezone_settings->AddObserver(this);
-  timezone_value_.reset(
-      new base::Value(timezone_settings->GetCurrentTimezoneID()));
-  per_user_timezone_enabled_value_.reset(
-      new base::Value(PerUserTimezoneEnabled()));
-  fine_grained_time_zone_enabled_value_.reset(
-      new base::Value(FineGrainedTimeZoneDetectionEnabled()));
+  timezone_value_ =
+      std::make_unique<base::Value>(timezone_settings->GetCurrentTimezoneID());
+  per_user_timezone_enabled_value_ =
+      std::make_unique<base::Value>(PerUserTimezoneEnabled());
+  fine_grained_time_zone_enabled_value_ =
+      std::make_unique<base::Value>(FineGrainedTimeZoneDetectionEnabled());
 }
 
 const base::Value* SystemSettingsProvider::Get(const std::string& path) const {
@@ -85,8 +86,8 @@ bool SystemSettingsProvider::HandlesSetting(const std::string& path) const {
 
 void SystemSettingsProvider::TimezoneChanged(const icu::TimeZone& timezone) {
   // Fires system setting change notification.
-  timezone_value_.reset(
-      new base::Value(system::TimezoneSettings::GetTimezoneID(timezone)));
+  timezone_value_ = std::make_unique<base::Value>(
+      system::TimezoneSettings::GetTimezoneID(timezone));
   NotifyObservers(kSystemTimezone);
 }
 

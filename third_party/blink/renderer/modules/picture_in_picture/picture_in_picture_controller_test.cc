@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
 
+#include <memory>
+
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -74,8 +76,8 @@ class MockPictureInPictureService
     receiver_.Bind(mojo::PendingReceiver<mojom::blink::PictureInPictureService>(
         std::move(handle)));
 
-    session_.reset(new MockPictureInPictureSession(
-        session_remote_.InitWithNewPipeAndPassReceiver()));
+    session_ = std::make_unique<MockPictureInPictureSession>(
+        session_remote_.InitWithNewPipeAndPassReceiver());
   }
 
   MOCK_METHOD7(

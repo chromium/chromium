@@ -119,7 +119,8 @@ void ToggleShowDebugBorders() {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
-      value.reset(new cc::DebugBorderTypes(state.show_debug_borders.flip()));
+      value = std::make_unique<cc::DebugBorderTypes>(
+          state.show_debug_borders.flip());
     state.show_debug_borders = *value.get();
     compositor->SetLayerTreeDebugState(state);
   }
@@ -132,7 +133,7 @@ void ToggleShowFpsCounter() {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
-      value.reset(new bool(!state.show_fps_counter));
+      value = std::make_unique<bool>(!state.show_fps_counter);
     state.show_fps_counter = *value.get();
     compositor->SetLayerTreeDebugState(state);
   }
@@ -145,7 +146,7 @@ void ToggleShowPaintRects() {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
-      value.reset(new bool(!state.show_paint_rects));
+      value = std::make_unique<bool>(!state.show_paint_rects);
     state.show_paint_rects = *value.get();
     compositor->SetLayerTreeDebugState(state);
   }

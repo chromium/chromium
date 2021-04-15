@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -89,8 +90,8 @@ class ShelfModelTest : public testing::Test {
   ~ShelfModelTest() override = default;
 
   void SetUp() override {
-    model_.reset(new ShelfModel);
-    observer_.reset(new TestShelfModelObserver);
+    model_ = std::make_unique<ShelfModel>();
+    observer_ = std::make_unique<TestShelfModelObserver>();
     model_->AddObserver(observer_.get());
   }
 

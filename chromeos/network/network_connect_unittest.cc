@@ -100,10 +100,10 @@ class NetworkConnectTest : public testing::Test {
     NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
 
-    mock_delegate_.reset(new MockDelegate());
+    mock_delegate_ = std::make_unique<MockDelegate>();
     ON_CALL(*mock_delegate_, ShowEnrollNetwork(_)).WillByDefault(Return(true));
 
-    fake_tether_delegate_.reset(new FakeTetherDelegate());
+    fake_tether_delegate_ = std::make_unique<FakeTetherDelegate>();
     NetworkHandler::Get()->network_connection_handler()->SetTetherDelegate(
         fake_tether_delegate_.get());
 

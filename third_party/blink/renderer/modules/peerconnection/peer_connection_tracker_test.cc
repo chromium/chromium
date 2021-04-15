@@ -150,7 +150,7 @@ class PeerConnectionTrackerTest : public ::testing::Test {
   }
 
   void CreateAndRegisterPeerConnectionHandler() {
-    mock_handler_.reset(new MockPeerConnectionHandler());
+    mock_handler_ = std::make_unique<MockPeerConnectionHandler>();
     EXPECT_CALL(*mock_host_, AddPeerConnection(_));
     tracker_->RegisterPeerConnection(
         mock_handler_.get(),

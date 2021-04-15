@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -196,24 +197,26 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   external_data_manager_->Connect(
       g_browser_process->shared_url_loader_factory());
 
-  enrollment_certificate_uploader_.reset(
-      new ash::attestation::EnrollmentCertificateUploaderImpl(client()));
-  enrollment_policy_observer_.reset(
-      new ash::attestation::EnrollmentPolicyObserver(
-          client(), enrollment_certificate_uploader_.get()));
-  lookup_key_uploader_.reset(
-      new LookupKeyUploader(device_store(), g_browser_process->local_state(),
-                            enrollment_certificate_uploader_.get()));
+  enrollment_certificate_uploader_ =
+      std::make_unique<ash::attestation::EnrollmentCertificateUploaderImpl>(
+          client());
+  enrollment_policy_observer_ =
+      std::make_unique<ash::attestation::EnrollmentPolicyObserver>(
+          client(), enrollment_certificate_uploader_.get());
+  lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
+      device_store(), g_browser_process->local_state(),
+      enrollment_certificate_uploader_.get());
 
   // Don't create a MachineCertificateUploader or start the
   // AttestationPolicyObserver if machine cert requests are disabled.
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kDisableMachineCertRequest))) {
-    machine_certificate_uploader_.reset(
-        new ash::attestation::MachineCertificateUploaderImpl(client()));
-    attestation_policy_observer_.reset(
-        new ash::attestation::AttestationPolicyObserver(
-            machine_certificate_uploader_.get()));
+    machine_certificate_uploader_ =
+        std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
+            client());
+    attestation_policy_observer_ =
+        std::make_unique<ash::attestation::AttestationPolicyObserver>(
+            machine_certificate_uploader_.get());
   }
 
   // Start remote commands services now that we have setup everything they need.
@@ -228,10 +231,11 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   // perform monitoring if it is active.
   if (install_attributes->IsCloudManaged()) {
     CreateStatusUploader();
-    syslog_uploader_.reset(new SystemLogUploader(nullptr, task_runner_));
-    heartbeat_scheduler_.reset(new HeartbeatScheduler(
+    syslog_uploader_ =
+        std::make_unique<SystemLogUploader>(nullptr, task_runner_);
+    heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
-        install_attributes->GetDeviceId(), task_runner_));
+        install_attributes->GetDeviceId(), task_runner_);
   }
 
   NotifyConnected();
@@ -260,8 +264,8 @@ void DeviceCloudPolicyManagerChromeOS::Disconnect() {
 void DeviceCloudPolicyManagerChromeOS::SetSigninProfileSchemaRegistry(
     SchemaRegistry* schema_registry) {
   DCHECK(!signin_profile_forwarding_schema_registry_);
-  signin_profile_forwarding_schema_registry_.reset(
-      new ForwardingSchemaRegistry(schema_registry));
+  signin_profile_forwarding_schema_registry_ =
+      std::make_unique<ForwardingSchemaRegistry>(schema_registry);
 }
 
 void DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated() {
@@ -280,11 +284,11 @@ void DeviceCloudPolicyManagerChromeOS::NotifyDisconnected() {
 }
 
 void DeviceCloudPolicyManagerChromeOS::CreateStatusUploader() {
-  status_uploader_.reset(new StatusUploader(
+  status_uploader_ = std::make_unique<StatusUploader>(
       client(),
       std::make_unique<DeviceStatusCollector>(
           local_state_, chromeos::system::StatisticsProvider::GetInstance()),
-      task_runner_, kDeviceStatusUploadFrequency));
+      task_runner_, kDeviceStatusUploadFrequency);
 }
 
 }  // namespace policy

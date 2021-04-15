@@ -337,8 +337,8 @@ void UnlockManagerImpl::OnRemoteStatusUpdate(
   metrics::RecordRemoteSecuritySettingsState(
       GetRemoteSecuritySettingsState(status_update));
 
-  remote_screenlock_state_.reset(new RemoteScreenlockState(
-      GetScreenlockStateFromRemoteUpdate(status_update)));
+  remote_screenlock_state_ = std::make_unique<RemoteScreenlockState>(
+      GetScreenlockStateFromRemoteUpdate(status_update));
 
   // Only record these metrics within the initial period of opening the laptop
   // displaying the lock screen.
@@ -364,7 +364,7 @@ void UnlockManagerImpl::OnDecryptResponse(const std::string& decrypted_bytes) {
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
             kFailedToDecryptSignInChallenge);
   } else {
-    sign_in_secret_.reset(new std::string(decrypted_bytes));
+    sign_in_secret_ = std::make_unique<std::string>(decrypted_bytes);
     if (GetMessenger())
       GetMessenger()->DispatchUnlockEvent();
   }

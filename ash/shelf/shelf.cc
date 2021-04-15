@@ -408,7 +408,7 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   DCHECK(!shelf_widget_);
   aura::Window* shelf_container =
       root->GetChildById(kShellWindowId_ShelfContainer);
-  shelf_widget_.reset(new ShelfWidget(this));
+  shelf_widget_ = std::make_unique<ShelfWidget>(this);
 
   DCHECK(!shelf_layout_manager_);
   shelf_layout_manager_ = shelf_widget_->shelf_layout_manager();

@@ -33,7 +33,8 @@ namespace blink {
 class RTCRtpTransceiverImplTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
     main_task_runner_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
         dependency_factory_.get(), main_task_runner_);
@@ -344,10 +345,10 @@ TEST_F(RTCRtpTransceiverImplTest, ShallowCopy) {
                                remote_track_adapter->Copy());
     EXPECT_FALSE(transceiver_state.is_initialized());
     transceiver_state.Initialize();
-    transceiver.reset(new RTCRtpTransceiverImpl(
+    transceiver = std::make_unique<RTCRtpTransceiverImpl>(
         peer_connection_.get(), track_map_, std::move(transceiver_state),
         /*force_encoded_audio_insertable_streams=*/false,
-        /*force_encoded_video_insertable_streams=*/false));
+        /*force_encoded_video_insertable_streams=*/false);
   }
   DCHECK(transceiver);
   EXPECT_FALSE(transceiver->Stopped());

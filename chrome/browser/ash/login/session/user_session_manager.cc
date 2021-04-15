@@ -2052,7 +2052,7 @@ void UserSessionManager::StartAccountManagerMigration(Profile* profile) {
 
 EasyUnlockKeyManager* UserSessionManager::GetEasyUnlockKeyManager() {
   if (!easy_unlock_key_manager_)
-    easy_unlock_key_manager_.reset(new EasyUnlockKeyManager);
+    easy_unlock_key_manager_ = std::make_unique<EasyUnlockKeyManager>();
 
   return easy_unlock_key_manager_.get();
 }

@@ -4,6 +4,7 @@
 
 #include "components/nacl/browser/pnacl_host.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -145,7 +146,7 @@ void PnaclHost::Init() {
   base::FilePath cache_path(GetCachePath());
   if (cache_path.empty() || cache_state_ != CacheUninitialized)
     return;
-  disk_cache_.reset(new PnaclTranslationCache());
+  disk_cache_ = std::make_unique<PnaclTranslationCache>();
   cache_state_ = CacheInitializing;
   int rv = disk_cache_->InitOnDisk(
       cache_path,
@@ -161,7 +162,7 @@ void PnaclHost::InitForTest(base::FilePath temp_dir, bool in_memory) {
   DCHECK(thread_checker_.CalledOnValidThread());
   file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  disk_cache_.reset(new PnaclTranslationCache());
+  disk_cache_ = std::make_unique<PnaclTranslationCache>();
   cache_state_ = CacheInitializing;
   temp_dir_ = temp_dir;
   int rv;

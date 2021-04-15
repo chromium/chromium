@@ -92,7 +92,8 @@ void FillFileSystemInfo(const ProvidedFileSystemInfo& file_system_info,
     watcher_item.entry_path = watcher.second.entry_path.value();
     watcher_item.recursive = watcher.second.recursive;
     if (!watcher.second.last_tag.empty())
-      watcher_item.last_tag.reset(new std::string(watcher.second.last_tag));
+      watcher_item.last_tag =
+          std::make_unique<std::string>(watcher.second.last_tag);
     output->watchers.push_back(std::move(watcher_item));
   }
 

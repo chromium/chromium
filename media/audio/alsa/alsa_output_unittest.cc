@@ -80,7 +80,7 @@ class MockAudioManagerAlsa : public AudioManagerAlsa {
 class AlsaPcmOutputStreamTest : public testing::Test {
  protected:
   AlsaPcmOutputStreamTest() {
-    mock_manager_.reset(new StrictMock<MockAudioManagerAlsa>());
+    mock_manager_ = std::make_unique<StrictMock<MockAudioManagerAlsa>>();
   }
 
   ~AlsaPcmOutputStreamTest() override { mock_manager_->Shutdown(); }
@@ -115,7 +115,7 @@ class AlsaPcmOutputStreamTest : public testing::Test {
     DCHECK(test_stream);
     packet_ = new DataBuffer(kTestPacketSize);
     packet_->set_data_size(kTestPacketSize);
-    test_stream->buffer_.reset(new SeekableBuffer(0, kTestPacketSize));
+    test_stream->buffer_ = std::make_unique<SeekableBuffer>(0, kTestPacketSize);
     test_stream->buffer_->Append(packet_.get());
   }
 

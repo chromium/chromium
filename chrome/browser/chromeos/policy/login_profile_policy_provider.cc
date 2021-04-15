@@ -85,20 +85,20 @@ const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
 
 std::unique_ptr<base::Value> GetAction(const std::string& action) {
   if (action == kActionSuspend) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(chromeos::PowerPolicyController::ACTION_SUSPEND));
+    return std::make_unique<base::Value>(
+        chromeos::PowerPolicyController::ACTION_SUSPEND);
   }
   if (action == kActionLogout) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(chromeos::PowerPolicyController::ACTION_STOP_SESSION));
+    return std::make_unique<base::Value>(
+        chromeos::PowerPolicyController::ACTION_STOP_SESSION);
   }
   if (action == kActionShutdown) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN));
+    return std::make_unique<base::Value>(
+        chromeos::PowerPolicyController::ACTION_SHUT_DOWN);
   }
   if (action == kActionDoNothing) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING));
+    return std::make_unique<base::Value>(
+        chromeos::PowerPolicyController::ACTION_DO_NOTHING);
   }
   return nullptr;
 }

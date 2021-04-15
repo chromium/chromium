@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/cloud_external_data_manager_base.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -112,9 +113,9 @@ CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {
 
 void CloudExternalDataManagerBaseTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  resource_cache_.reset(new ResourceCache(
+  resource_cache_ = std::make_unique<ResourceCache>(
       temp_dir_.GetPath(), task_environment_.GetMainThreadTaskRunner(),
-      /* max_cache_size */ base::nullopt));
+      /* max_cache_size */ base::nullopt);
   SetUpExternalDataManager();
 
   // Set |kStringPolicy| to a string value.
@@ -533,9 +534,9 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnStartup) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
 
-  cache.reset(new CloudExternalDataStore(
+  cache = std::make_unique<CloudExternalDataStore>(
       kCacheKey, task_environment_.GetMainThreadTaskRunner(),
-      resource_cache_.get()));
+      resource_cache_.get());
   std::string data;
   // Verify that the valid external data for |k10BytePolicy| is still in the
   // cache.
@@ -586,9 +587,9 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
   // the cache.
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  cache.reset(new CloudExternalDataStore(
+  cache = std::make_unique<CloudExternalDataStore>(
       kCacheKey, task_environment_.GetMainThreadTaskRunner(),
-      resource_cache_.get()));
+      resource_cache_.get());
   std::string data;
   EXPECT_TRUE(cache
                   ->Load(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
@@ -653,9 +654,9 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
 
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  cache.reset(new CloudExternalDataStore(
+  cache = std::make_unique<CloudExternalDataStore>(
       kCacheKey, task_environment_.GetMainThreadTaskRunner(),
-      resource_cache_.get()));
+      resource_cache_.get());
   std::string data;
   // Verify that the invalid external data for |k10BytePolicy| has been pruned
   // from the cache. Load() will return |false| in two cases:

@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
@@ -51,8 +53,8 @@ class SigninPrepareUserListTest : public testing::Test,
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     controller_ = std::make_unique<MultiProfileUserController>(
         this, TestingBrowserProcess::GetGlobal()->local_state());

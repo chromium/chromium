@@ -5,6 +5,7 @@
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 
 #include <map>
+#include <memory>
 
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ash/accessibility/soda_installer_impl_chromeos.h"
@@ -104,8 +105,8 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
         base::BindRepeating(
             &OnDeviceSpeechRecognizerTest::CreateTestSpeechRecognitionService,
             base::Unretained(this)));
-    mock_speech_delegate_.reset(
-        new testing::StrictMock<MockSpeechRecognizerDelegate>());
+    mock_speech_delegate_ =
+        std::make_unique<testing::StrictMock<MockSpeechRecognizerDelegate>>();
     // Fake that SODA is installed.
     static_cast<speech::SodaInstallerImplChromeOS*>(
         speech::SodaInstaller::GetInstance())

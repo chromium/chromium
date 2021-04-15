@@ -4,6 +4,8 @@
 
 #include "dbus/bus.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -38,7 +40,7 @@ class RunLoopWithExpectedCount {
     DCHECK_EQ(0, expected_quit_calls_);
     DCHECK_EQ(0, actual_quit_calls_);
     expected_quit_calls_ = expected_quit_calls;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

@@ -234,8 +234,8 @@ void SessionLengthLimiterTest::CreateSessionLengthLimiter(
       .WillByDefault(
           Invoke(runner_.get(), &base::TestMockTimeTaskRunner::GetMockClock));
   EXPECT_CALL(*delegate_, StopSession()).Times(0);
-  session_length_limiter_.reset(
-      new SessionLengthLimiter(delegate_, browser_restarted));
+  session_length_limiter_ =
+      std::make_unique<SessionLengthLimiter>(delegate_, browser_restarted);
 }
 
 void SessionLengthLimiterTest::DestroySessionLengthLimiter() {

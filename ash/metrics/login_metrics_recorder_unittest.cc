@@ -44,7 +44,7 @@ class LoginMetricsRecorderTest : public LoginTestBase {
   // LoginTestBase:
   void SetUp() override {
     LoginTestBase::SetUp();
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
  protected:

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/chrome_ash_message_center_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -90,7 +91,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
   }
 
   void CreateClient() {
-    client_.reset(new ChromeAshMessageCenterClient(nullptr));
+    client_ = std::make_unique<ChromeAshMessageCenterClient>(nullptr);
     client_->AddNotifierSettingsObserver(this);
   }
 

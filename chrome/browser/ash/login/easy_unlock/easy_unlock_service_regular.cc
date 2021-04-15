@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "apps/app_lifetime_monitor_factory.h"
@@ -317,8 +318,9 @@ void EasyUnlockServiceRegular::RecordPasswordLoginEvent(
 }
 
 void EasyUnlockServiceRegular::InitializeInternal() {
-  pref_manager_.reset(new proximity_auth::ProximityAuthProfilePrefManager(
-      profile()->GetPrefs(), multidevice_setup_client_));
+  pref_manager_ =
+      std::make_unique<proximity_auth::ProximityAuthProfilePrefManager>(
+          profile()->GetPrefs(), multidevice_setup_client_);
   pref_manager_->StartSyncingToLocalState(g_browser_process->local_state(),
                                           GetAccountId());
 

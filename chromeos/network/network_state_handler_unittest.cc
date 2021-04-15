@@ -326,7 +326,8 @@ class NetworkStateHandlerTest : public testing::Test {
     shill_clients::InitializeFakes();
     SetupDefaultShillState();
     network_state_handler_.reset(new NetworkStateHandler);
-    test_observer_.reset(new TestObserver(network_state_handler_.get()));
+    test_observer_ =
+        std::make_unique<TestObserver>(network_state_handler_.get());
     network_state_handler_->AddObserver(test_observer_.get(), FROM_HERE);
     network_state_handler_->InitShillPropertyHandler();
     network_state_handler_->set_stub_cellular_networks_provider(

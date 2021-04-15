@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/events/touch_event.h"
 
+#include <memory>
+
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_touch_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -83,7 +85,7 @@ TouchEvent::TouchEvent(const WebCoalescedInputEvent& event,
       changed_touches_(changed_touches),
       current_touch_action_(current_touch_action) {
   DCHECK(WebInputEvent::IsTouchEventType(event.Event().GetType()));
-  native_event_.reset(new WebCoalescedInputEvent(event));
+  native_event_ = std::make_unique<WebCoalescedInputEvent>(event);
 }
 
 TouchEvent::TouchEvent(const AtomicString& type,

@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/policy/auto_enrollment_client_impl.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -172,7 +174,7 @@ class AutoEnrollmentClientImplTest
 
   void CreateClient(int power_initial, int power_limit) {
     state_ = AUTO_ENROLLMENT_STATE_PENDING;
-    service_.reset(new MockDeviceManagementService());
+    service_ = std::make_unique<MockDeviceManagementService>();
     service_->ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
 

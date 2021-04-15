@@ -104,8 +104,8 @@ class UserManagerTest : public testing::Test {
     SetDeviceSettings(false, "", false);
 
     // Register an in-memory local settings instance.
-    local_state_.reset(
-        new ScopedTestingLocalState(TestingBrowserProcess::GetGlobal()));
+    local_state_ = std::make_unique<ScopedTestingLocalState>(
+        TestingBrowserProcess::GetGlobal());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(

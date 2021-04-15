@@ -52,29 +52,29 @@ class EventLogger {
   virtual ~EventLogger() {}
 
   void OnStatus(base::File::Error error) {
-    result_.reset(new base::File::Error(error));
+    result_ = std::make_unique<base::File::Error>(error);
   }
 
   void OnCreateOrOpen(base::File file, base::OnceClosure on_close_callback) {
     if (file.IsValid())
-      result_.reset(new base::File::Error(base::File::FILE_OK));
+      result_ = std::make_unique<base::File::Error>(base::File::FILE_OK);
 
-    result_.reset(new base::File::Error(file.error_details()));
+    result_ = std::make_unique<base::File::Error>(file.error_details());
   }
 
   void OnEnsureFileExists(base::File::Error error, bool created) {
-    result_.reset(new base::File::Error(error));
+    result_ = std::make_unique<base::File::Error>(error);
   }
 
   void OnGetFileInfo(base::File::Error error,
                      const base::File::Info& file_info) {
-    result_.reset(new base::File::Error(error));
+    result_ = std::make_unique<base::File::Error>(error);
   }
 
   void OnReadDirectory(base::File::Error error,
                        storage::AsyncFileUtil::EntryList file_list,
                        bool has_more) {
-    result_.reset(new base::File::Error(error));
+    result_ = std::make_unique<base::File::Error>(error);
     read_directory_list_ = std::move(file_list);
   }
 
@@ -83,7 +83,7 @@ class EventLogger {
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
       scoped_refptr<storage::ShareableFileReference> file_ref) {
-    result_.reset(new base::File::Error(error));
+    result_ = std::make_unique<base::File::Error>(error);
   }
 
   void OnCopyFileProgress(int64_t size) {}
@@ -125,11 +125,11 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("testing-profile");
-    async_file_util_.reset(new internal::ProviderAsyncFileUtil);
+    async_file_util_ = std::make_unique<internal::ProviderAsyncFileUtil>();
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         nullptr, data_dir_.GetPath());

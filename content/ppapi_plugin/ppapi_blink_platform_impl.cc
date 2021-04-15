@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/notreached.h"
@@ -40,7 +41,7 @@ PpapiBlinkPlatformImpl::PpapiBlinkPlatformImpl() {
       font_service.InitWithNewPipeAndPassReceiver());
   font_loader_ = sk_make_sp<font_service::FontLoader>(std::move(font_service));
   SkFontConfigInterface::SetGlobal(font_loader_);
-  sandbox_support_.reset(new WebSandboxSupportLinux(font_loader_));
+  sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
 #elif defined(OS_MAC)
   sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #endif

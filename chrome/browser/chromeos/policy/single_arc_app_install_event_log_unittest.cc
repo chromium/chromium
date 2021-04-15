@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -31,7 +33,7 @@ class SingleArcAppInstallEventLogTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    log_.reset(new SingleArcAppInstallEventLog(kPackageName));
+    log_ = std::make_unique<SingleArcAppInstallEventLog>(kPackageName);
   }
 
   void VerifyHeader(bool incomplete) {
@@ -42,12 +44,12 @@ class SingleArcAppInstallEventLogTest : public testing::Test {
   }
 
   void CreateFile() {
-    temp_dir_.reset(new base::ScopedTempDir);
+    temp_dir_ = std::make_unique<base::ScopedTempDir>();
     ASSERT_TRUE(temp_dir_->CreateUniqueTempDir());
-    file_.reset(new base::File(temp_dir_->GetPath().Append(kFileName),
-                               base::File::FLAG_CREATE_ALWAYS |
-                                   base::File::FLAG_WRITE |
-                                   base::File::FLAG_READ));
+    file_ = std::make_unique<base::File>(temp_dir_->GetPath().Append(kFileName),
+                                         base::File::FLAG_CREATE_ALWAYS |
+                                             base::File::FLAG_WRITE |
+                                             base::File::FLAG_READ);
   }
 
   std::unique_ptr<SingleArcAppInstallEventLog> log_;

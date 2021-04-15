@@ -524,8 +524,8 @@ void PPBNaClPrivate::LaunchSelLdr(
       // Save the channel handle for when StartPpapiProxy() is called.
       NaClPluginInstance* nacl_plugin_instance =
           GetNaClPluginInstance(instance);
-      nacl_plugin_instance->instance_info.reset(
-          new InstanceInfo(instance_info));
+      nacl_plugin_instance->instance_info =
+          std::make_unique<InstanceInfo>(instance_info);
     }
   }
 

@@ -5,6 +5,7 @@
 #include "components/nacl/renderer/plugin/pnacl_coordinator.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -204,7 +205,7 @@ void PnaclCoordinator::OpenBitcodeStream() {
   // thread object immediately. This ensures that any pieces of the file
   // that get downloaded before the compilation thread is accepting
   // SRPCs won't get dropped.
-  translate_thread_.reset(new PnaclTranslateThread());
+  translate_thread_ = std::make_unique<PnaclTranslateThread>();
   if (translate_thread_ == NULL) {
     ReportNonPpapiError(
         PP_NACL_ERROR_PNACL_THREAD_CREATE,
@@ -238,8 +239,8 @@ void PnaclCoordinator::BitcodeStreamCacheMiss(int64_t expected_pexe_size,
   // The component updater's resource throttles + OnDemand update/install
   // should block the URL request until the compiler is present. Now we
   // can load the resources (e.g. llc and ld nexes).
-  resources_.reset(new PnaclResources(plugin_,
-                                      PP_ToBool(pnacl_options_.use_subzero)));
+  resources_ = std::make_unique<PnaclResources>(
+      plugin_, PP_ToBool(pnacl_options_.use_subzero));
   CHECK(resources_ != NULL);
 
   // The first step of loading resources: read the resource info file.

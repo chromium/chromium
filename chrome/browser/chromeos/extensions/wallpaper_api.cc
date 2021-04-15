@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/wallpaper_api.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -236,8 +237,8 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
     bool success,
     const std::string& response) {
   if (success) {
-    params_->details.data.reset(
-        new std::vector<uint8_t>(response.begin(), response.end()));
+    params_->details.data = std::make_unique<std::vector<uint8_t>>(
+        response.begin(), response.end());
     StartDecode(*params_->details.data);
     // StartDecode() will Respond later through OnWallpaperDecoded()
   } else {

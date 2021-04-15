@@ -187,7 +187,7 @@ TEST(IdlCompiler, ObjectTypes) {
 
   // Test the BarType type.
   BarType b1;
-  b1.x.reset(new base::Value(7));
+  b1.x = std::make_unique<base::Value>(7);
   std::unique_ptr<base::DictionaryValue> serialized_bar = b1.ToValue();
   BarType b2;
   EXPECT_TRUE(BarType::Populate(*serialized_bar.get(), &b2));

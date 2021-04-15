@@ -570,7 +570,7 @@ std::unique_ptr<TestInputMethodObserver> TestInputMethodObserver::Create(
 #if defined(USE_AURA)
   RenderWidgetHostViewAura* view = static_cast<RenderWidgetHostViewAura*>(
       web_contents->GetRenderWidgetHostView());
-  observer.reset(new InputMethodObserverAura(view->GetInputMethod()));
+  observer = std::make_unique<InputMethodObserverAura>(view->GetInputMethod());
 #endif
   return observer;
 }

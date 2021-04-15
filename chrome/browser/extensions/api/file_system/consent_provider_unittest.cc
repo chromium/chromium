@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -113,7 +114,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   FileSystemApiConsentProviderTest() {}
 
   void SetUp() override {
-    testing_pref_service_.reset(new TestingPrefServiceSimple);
+    testing_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TestingBrowserProcess::GetGlobal()->SetLocalState(
         testing_pref_service_.get());
     user_manager_ = new ash::FakeChromeUserManager;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/file_system_provider/fake_registry.h"
 
+#include <memory>
+
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/file_system_provider/watcher.h"
 
@@ -16,8 +18,9 @@ FakeRegistry::~FakeRegistry() {}
 void FakeRegistry::RememberFileSystem(
     const ProvidedFileSystemInfo& file_system_info,
     const Watchers& watchers) {
-  file_system_info_.reset(new ProvidedFileSystemInfo(file_system_info));
-  watchers_.reset(new Watchers(watchers));
+  file_system_info_ =
+      std::make_unique<ProvidedFileSystemInfo>(file_system_info);
+  watchers_ = std::make_unique<Watchers>(watchers);
 }
 
 void FakeRegistry::ForgetFileSystem(const ProviderId& provider_id,

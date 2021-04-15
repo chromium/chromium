@@ -60,7 +60,7 @@ class VideoDetectorTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    observer_.reset(new TestObserver);
+    observer_ = std::make_unique<TestObserver>();
     detector_ = Shell::Get()->video_detector();
     detector_->AddObserver(observer_.get());
   }

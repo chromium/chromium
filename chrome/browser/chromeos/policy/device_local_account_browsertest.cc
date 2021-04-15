@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   extensions::ExtensionCacheImpl cache_impl(
       std::make_unique<extensions::ChromeOSExtensionCacheDelegate>(impl_path));
   std::unique_ptr<base::RunLoop> run_loop;
-  run_loop.reset(new base::RunLoop);
+  run_loop = std::make_unique<base::RunLoop>();
   cache_impl.Start(base::BindOnce(&OnExtensionCacheImplInitialized, &run_loop));
   run_loop->Run();
 
@@ -1287,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
     EXPECT_TRUE(CopyFile(test_dir.Append(kGoodExtensionCRXPath), temp_file));
   }
   cache_impl.AllowCaching(kGoodExtensionID);
-  run_loop.reset(new base::RunLoop);
+  run_loop = std::make_unique<base::RunLoop>();
   cache_impl.PutExtension(kGoodExtensionID, hash, temp_file,
                           kGoodExtensionVersion,
                           base::BindOnce(&OnPutExtension, &run_loop));
@@ -1407,7 +1407,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
 
   // Retrieve the external data. Although the data is no longer being served,
   // the retrieval should succeed because the data has been cached.
-  run_loop.reset(new base::RunLoop);
+  run_loop = std::make_unique<base::RunLoop>();
   std::unique_ptr<std::string> fetched_external_data;
   base::FilePath file_path;
   policy_entry->external_data_fetcher->Fetch(
@@ -1435,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
 
   // Retrieve the external data via the ProfilePolicyConnector. The retrieval
   // should succeed because the data has been cached.
-  run_loop.reset(new base::RunLoop);
+  run_loop = std::make_unique<base::RunLoop>();
   fetched_external_data.reset();
   policy_entry->external_data_fetcher->Fetch(
       base::BindOnce(&test::ExternalDataFetchCallback, &fetched_external_data,
@@ -1569,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
           app_install_observer.details()).ptr();
 
   // Start the platform app, causing it to open a window.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->Launch(
@@ -1591,7 +1591,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser);
   BrowserWindow* browser_window = browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
   browser_window = NULL;
   run_loop_->Run();
@@ -1607,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_EQ(1U, browser_list->size());
 
   // Close the app window.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   ASSERT_EQ(1U, app_window_registry->app_windows().size());
   app_window_registry->app_windows().front()->GetBaseWindow()->Close();
   run_loop_->Run();
@@ -1624,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the first browser window.
   browser_window = first_browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
   browser_window = NULL;
   run_loop_->Run();
@@ -1638,7 +1638,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the second browser window.
   browser_window = second_browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
   browser_window = NULL;
   run_loop_->Run();
@@ -1661,7 +1661,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Close the browser window.
   browser_window = browser->window();
   ASSERT_TRUE(browser_window);
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
   browser_window = NULL;
   run_loop_->Run();

@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -137,22 +138,22 @@ BluetoothAdapterClient::DiscoveryFilter::~DiscoveryFilter() = default;
 void BluetoothAdapterClient::DiscoveryFilter::CopyFrom(
     const DiscoveryFilter& filter) {
   if (filter.rssi.get())
-    rssi.reset(new int16_t(*filter.rssi));
+    rssi = std::make_unique<int16_t>(*filter.rssi);
   else
     rssi.reset();
 
   if (filter.pathloss.get())
-    pathloss.reset(new uint16_t(*filter.pathloss));
+    pathloss = std::make_unique<uint16_t>(*filter.pathloss);
   else
     pathloss.reset();
 
   if (filter.transport.get())
-    transport.reset(new std::string(*filter.transport));
+    transport = std::make_unique<std::string>(*filter.transport);
   else
-    transport.reset(new std::string(kBluezAutoTransport));
+    transport = std::make_unique<std::string>(kBluezAutoTransport);
 
   if (filter.uuids.get())
-    uuids.reset(new std::vector<std::string>(*filter.uuids));
+    uuids = std::make_unique<std::vector<std::string>>(*filter.uuids);
   else
     uuids.reset();
 }

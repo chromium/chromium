@@ -327,8 +327,8 @@ TEST_F(UploadFlowTest, TokenInvalid) {
   access_token_manager_.AddTokenToQueue(kTokenInvalid);
   access_token_manager_.AddTokenToQueue(kTokenInvalid);
   access_token_manager_.AddTokenToQueue(kTokenInvalid);
-  SetExpectedError(std::unique_ptr<UploadJob::ErrorCode>(
-      new UploadJob::ErrorCode(UploadJob::AUTHENTICATION_ERROR)));
+  SetExpectedError(
+      std::make_unique<UploadJob::ErrorCode>(UploadJob::AUTHENTICATION_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
       base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
@@ -351,8 +351,8 @@ TEST_F(UploadFlowTest, TokenMultipleTries) {
 }
 
 TEST_F(UploadFlowTest, TokenFetchFailure) {
-  SetExpectedError(std::unique_ptr<UploadJob::ErrorCode>(
-      new UploadJob::ErrorCode(UploadJob::AUTHENTICATION_ERROR)));
+  SetExpectedError(
+      std::make_unique<UploadJob::ErrorCode>(UploadJob::AUTHENTICATION_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
       base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
@@ -367,8 +367,8 @@ TEST_F(UploadFlowTest, InternalServerError) {
   access_token_manager_.SetTokenValid(kTokenValid);
   access_token_manager_.AddTokenToQueue(kTokenValid);
 
-  SetExpectedError(std::unique_ptr<UploadJob::ErrorCode>(
-      new UploadJob::ErrorCode(UploadJob::SERVER_ERROR)));
+  SetExpectedError(
+      std::make_unique<UploadJob::ErrorCode>(UploadJob::SERVER_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
       base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));

@@ -131,7 +131,8 @@ class PublicSessionPermissionHelperTest
 
 void PublicSessionPermissionHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-  login_state_.reset(new chromeos::ScopedTestPublicSessionLoginState());
+  login_state_ =
+      std::make_unique<chromeos::ScopedTestPublicSessionLoginState>();
   extension_a_ = LoadManifestHelper("extension_a");
   extension_b_ = LoadManifestHelper("extension_b");
 }

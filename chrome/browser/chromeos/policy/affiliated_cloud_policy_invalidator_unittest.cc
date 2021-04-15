@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/policy/affiliated_cloud_policy_invalidator.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -56,7 +58,7 @@ FakeCloudPolicyStore::FakeCloudPolicyStore() {
 }
 
 void FakeCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
-  policy_.reset(new em::PolicyData);
+  policy_ = std::make_unique<em::PolicyData>();
   policy_->ParseFromString(policy.policy_data());
   Load();
 }

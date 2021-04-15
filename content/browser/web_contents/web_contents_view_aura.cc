@@ -898,7 +898,7 @@ void WebContentsViewAura::CreateAuraWindow(aura::Window* context) {
   // 1) guests do not support NPAPI plugins.
   // 2) guests' window bounds are supposed to come from its embedder.
   if (!BrowserPluginGuest::IsGuest(web_contents_))
-    window_observer_.reset(new WindowObserver(this));
+    window_observer_ = std::make_unique<WindowObserver>(this);
 }
 
 void WebContentsViewAura::UpdateWebContentsVisibility() {

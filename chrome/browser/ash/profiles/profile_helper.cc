@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -718,7 +719,7 @@ void ProfileHelperImpl::SetActiveUserIdForTesting(const std::string& user_id) {
 
 void ProfileHelperImpl::FlushProfile(Profile* profile) {
   if (!profile_flusher_)
-    profile_flusher_.reset(new FileFlusher);
+    profile_flusher_ = std::make_unique<FileFlusher>();
 
   // Flushes files directly under profile path since these are the critical
   // ones.

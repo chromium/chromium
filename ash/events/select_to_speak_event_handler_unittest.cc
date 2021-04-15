@@ -4,6 +4,7 @@
 
 #include "ash/events/select_to_speak_event_handler.h"
 
+#include <memory>
 #include <set>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -42,13 +43,13 @@ class EventCapturer : public ui::EventHandler {
 
  private:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    last_mouse_event_.reset(new ui::MouseEvent(*event));
+    last_mouse_event_ = std::make_unique<ui::MouseEvent>(*event);
   }
   void OnKeyEvent(ui::KeyEvent* event) override {
-    last_key_event_.reset(new ui::KeyEvent(*event));
+    last_key_event_ = std::make_unique<ui::KeyEvent>(*event);
   }
   void OnTouchEvent(ui::TouchEvent* event) override {
-    last_touch_event_.reset(new ui::TouchEvent(*event));
+    last_touch_event_ = std::make_unique<ui::TouchEvent>(*event);
   }
 
   std::unique_ptr<ui::KeyEvent> last_key_event_;

@@ -875,10 +875,10 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
   aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = this;
 
-  stacking_controller_.reset(new StackingController);
+  stacking_controller_ = std::make_unique<StackingController>();
   aura::client::SetWindowParentingClient(root_window,
                                          stacking_controller_.get());
-  capture_client_.reset(new ::wm::ScopedCaptureClient(root_window));
+  capture_client_ = std::make_unique<::wm::ScopedCaptureClient>(root_window);
 }
 
 void RootWindowController::Init(RootWindowType root_window_type) {
@@ -1255,8 +1255,8 @@ void RootWindowController::CreateSystemWallpaper(
           chromeos::switches::kFirstExecAfterBoot);
   if (is_boot_splash_screen)
     color = kChromeOsBootColor;
-  system_wallpaper_.reset(
-      new SystemWallpaperController(GetRootWindow(), color));
+  system_wallpaper_ =
+      std::make_unique<SystemWallpaperController>(GetRootWindow(), color);
 }
 
 AccessibilityPanelLayoutManager*

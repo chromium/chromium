@@ -1968,7 +1968,7 @@ class WindowObserverTest : public WindowTest,
 
   void OnWindowVisibilityChanged(Window* window, bool visible) override {
     if (!visibility_info_) {
-      visibility_info_.reset(new VisibilityInfo);
+      visibility_info_ = std::make_unique<VisibilityInfo>();
       visibility_info_->changed_count = 0;
     }
     visibility_info_->window_visible = window->IsVisible();
@@ -2699,7 +2699,7 @@ TEST_F(WindowTest, RootWindowAttachment) {
   observer.Clear();
 
   // Test an indirect add/remove from the RootWindow.
-  w1.reset(new Window(nullptr));
+  w1 = std::make_unique<Window>(nullptr);
   w1->Init(ui::LAYER_NOT_DRAWN);
   Window* w11 = new Window(nullptr);
   w11->Init(ui::LAYER_NOT_DRAWN);
@@ -2720,7 +2720,7 @@ TEST_F(WindowTest, RootWindowAttachment) {
   observer.Clear();
 
   // Test an indirect add/remove with nested observers.
-  w1.reset(new Window(nullptr));
+  w1 = std::make_unique<Window>(nullptr);
   w1->Init(ui::LAYER_NOT_DRAWN);
   w11 = new Window(nullptr);
   w11->Init(ui::LAYER_NOT_DRAWN);

@@ -226,13 +226,13 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   void SetUp() override {
     IMEBridge::Initialize();
 
-    mock_ime_engine_handler_.reset(
-        new chromeos::MockIMEEngineHandler());
+    mock_ime_engine_handler_ =
+        std::make_unique<chromeos::MockIMEEngineHandler>();
     IMEBridge::Get()->SetCurrentEngineHandler(
         mock_ime_engine_handler_.get());
 
-    mock_ime_candidate_window_handler_.reset(
-        new chromeos::MockIMECandidateWindowHandler());
+    mock_ime_candidate_window_handler_ =
+        std::make_unique<chromeos::MockIMECandidateWindowHandler>();
     IMEBridge::Get()->SetCandidateWindowHandler(
         mock_ime_candidate_window_handler_.get());
 

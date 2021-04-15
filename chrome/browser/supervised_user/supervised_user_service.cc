@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -678,11 +679,11 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
 
   auto factory = content::BrowserContext::GetDefaultStoragePartition(profile_)
                      ->GetURLLoaderFactoryForBrowserProcess();
-  denylist_downloader_.reset(new FileDownloader(
+  denylist_downloader_ = std::make_unique<FileDownloader>(
       url, path, false, std::move(factory),
       base::BindOnce(&SupervisedUserService::OnDenylistDownloadDone,
                      base::Unretained(this), path),
-      traffic_annotation));
+      traffic_annotation);
 }
 
 void SupervisedUserService::LoadDenylistFromFile(const base::FilePath& path) {

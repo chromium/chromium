@@ -4,6 +4,7 @@
 
 #include "chromeos/dbus/dbus_thread_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -56,7 +57,7 @@ DBusThreadManager::DBusThreadManager(ClientSet client_set,
                                      bool use_real_clients)
     : use_real_clients_(use_real_clients) {
   if (client_set == DBusThreadManager::kAll)
-    clients_browser_.reset(new DBusClientsBrowser(use_real_clients));
+    clients_browser_ = std::make_unique<DBusClientsBrowser>(use_real_clients);
   // NOTE: When there are clients only used by ash, create them here.
 
   dbus::statistics::Initialize();
@@ -65,7 +66,7 @@ DBusThreadManager::DBusThreadManager(ClientSet client_set,
     // Create the D-Bus thread.
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
-    dbus_thread_.reset(new base::Thread("D-Bus thread"));
+    dbus_thread_ = std::make_unique<base::Thread>("D-Bus thread");
     dbus_thread_->StartWithOptions(thread_options);
 
     // Create the connection to the system bus.

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -271,8 +272,8 @@ class ProxyConfigServiceImplTest : public testing::Test {
   }
 
   void SetUpProxyConfigService(PrefService* profile_prefs) {
-    config_service_impl_.reset(new ProxyConfigServiceImpl(
-        profile_prefs, &pref_service_, content::GetIOThreadTaskRunner({})));
+    config_service_impl_ = std::make_unique<ProxyConfigServiceImpl>(
+        profile_prefs, &pref_service_, content::GetIOThreadTaskRunner({}));
     proxy_config_service_ =
         config_service_impl_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>());

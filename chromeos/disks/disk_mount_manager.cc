@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -73,7 +74,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   DiskMountManagerImpl() : already_refreshed_(false) {
     DBusThreadManager* dbus_thread_manager = DBusThreadManager::Get();
     cros_disks_client_ = dbus_thread_manager->GetCrosDisksClient();
-    suspend_unmount_manager_.reset(new SuspendUnmountManager(this));
+    suspend_unmount_manager_ = std::make_unique<SuspendUnmountManager>(this);
 
     cros_disks_client_->AddObserver(this);
   }

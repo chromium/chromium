@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
@@ -13,7 +15,8 @@ namespace blink {
 class PeerConnectionDependencyFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
   }
 
  protected:

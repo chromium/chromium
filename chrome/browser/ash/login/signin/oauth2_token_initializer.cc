@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/signin/oauth2_token_initializer.h"
 
+#include <memory>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -20,9 +22,9 @@ void OAuth2TokenInitializer::Start(const UserContext& user_context,
   DCHECK(!user_context.GetAuthCode().empty());
   callback_ = std::move(callback);
   user_context_ = user_context;
-  oauth2_token_fetcher_.reset(new OAuth2TokenFetcher(
+  oauth2_token_fetcher_ = std::make_unique<OAuth2TokenFetcher>(
       this, g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory()));
+                ->GetSharedURLLoaderFactory());
   if (user_context.GetDeviceId().empty())
     NOTREACHED() << "Device ID is not set";
   oauth2_token_fetcher_->StartExchangeFromAuthCode(user_context.GetAuthCode(),

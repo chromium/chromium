@@ -93,8 +93,8 @@ void NativeWebContentsModalDialogManagerViews::Show() {
 #if defined(USE_AURA)
   std::unique_ptr<wm::SuspendChildWindowVisibilityAnimations> suspend;
   if (shown_widgets_.find(widget) != shown_widgets_.end()) {
-    suspend.reset(new wm::SuspendChildWindowVisibilityAnimations(
-        widget->GetNativeWindow()->parent()));
+    suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
+        widget->GetNativeWindow()->parent());
   }
 #endif
   // |host_| may be null during tab drag on Views/Win32.
@@ -125,8 +125,8 @@ void NativeWebContentsModalDialogManagerViews::Hide() {
   views::Widget* widget = GetWidget(dialog());
 #if defined(USE_AURA)
   std::unique_ptr<wm::SuspendChildWindowVisibilityAnimations> suspend;
-  suspend.reset(new wm::SuspendChildWindowVisibilityAnimations(
-      widget->GetNativeWindow()->parent()));
+  suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
+      widget->GetNativeWindow()->parent());
 #endif
   widget->Hide();
 }

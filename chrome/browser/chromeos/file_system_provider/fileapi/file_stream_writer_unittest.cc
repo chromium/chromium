@@ -68,8 +68,8 @@ class FileSystemProviderFileStreamWriter : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("testing-profile");
 

@@ -151,7 +151,7 @@ class OncMaskValues : public Mapper {
         return Mapper::MapField(field_name, object_signature, onc_value,
                                 found_unknown_field, error);
       }
-      return std::unique_ptr<base::Value>(new base::Value(mask_));
+      return std::make_unique<base::Value>(mask_);
     } else {
       return Mapper::MapField(field_name, object_signature, onc_value,
                               found_unknown_field, error);

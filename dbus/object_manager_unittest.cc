@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -67,7 +68,7 @@ class ObjectManagerTest
     base::ThreadRestrictions::SetIOAllowed(false);
 
     // Start the D-Bus thread.
-    dbus_thread_.reset(new base::Thread("D-Bus Thread"));
+    dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
     ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
@@ -75,7 +76,7 @@ class ObjectManagerTest
     // Start the test service, using the D-Bus thread.
     TestService::Options options;
     options.dbus_task_runner = dbus_thread_->task_runner();
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_TRUE(test_service_->HasDBusThread());
@@ -165,7 +166,7 @@ class ObjectManagerTest
   void WaitForObject() {
     while (added_objects_.size() < kExpectedObjects ||
            updated_properties_.size() < kExpectedProperties) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
     for (size_t i = 0; i < kExpectedObjects; ++i)
@@ -176,7 +177,7 @@ class ObjectManagerTest
 
   void WaitForRemoveObject() {
     while (removed_objects_.size() < kExpectedObjects) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
     for (size_t i = 0; i < kExpectedObjects; ++i)
@@ -184,7 +185,7 @@ class ObjectManagerTest
   }
 
   void WaitForMethodCallback() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     method_callback_called_ = false;
   }
@@ -387,7 +388,7 @@ TEST_F(ObjectManagerTest, OwnershipLostAndRegained) {
 TEST_F(ObjectManagerTest, DISABLED_PropertiesChangedAsObjectsReceived) {
   // Remove the existing object manager.
   object_manager_->UnregisterInterface("org.chromium.TestInterface");
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   EXPECT_TRUE(bus_->RemoveObjectManager(
       test_service_->service_name(),
       ObjectPath("/org/chromium/TestService"),
@@ -413,7 +414,7 @@ TEST_F(ObjectManagerTest, DISABLED_PropertiesChangedAsObjectsReceived) {
       base::TimeDelta::FromSeconds(2));
 
   while (last_name_value_ != "ChangedTestServiceName" && !timeout_expired_) {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 }

@@ -385,7 +385,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        NoInvalidationServiceAvailable) {
   // Register a consumer. Verify that the consumer is not called back
   // immediately as no connected invalidation service exists yet.
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
   EXPECT_EQ(0, consumer_->GetAndClearInvalidationServiceSetCount());
 }
 
@@ -396,7 +396,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // connects, it is made available to the consumer.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        UseDeviceInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Indicate that the device-global invalidation service connected. Verify that
   // that the consumer is informed about this.
@@ -420,7 +420,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // affiliated user connects, it is made available to the consumer.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        UseAffiliatedProfileInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());
@@ -442,7 +442,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // unaffiliated user connects, it is ignored.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        DoNotUseUnaffiliatedProfileInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());
@@ -461,7 +461,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // consumer instead and the device-global invalidation service is destroyed.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        SwitchToAffiliatedProfileInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Indicate that the device-global invalidation service connected. Verify that
   // that the consumer is informed about this.
@@ -482,7 +482,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // consumer.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        DoNotSwitchToUnaffiliatedProfileInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Indicate that the device-global invalidation service connected. Verify that
   // that the consumer is informed about this.
@@ -503,7 +503,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // service connects, it is made available to the consumer.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        SwitchToDeviceInvalidationService) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());
@@ -533,7 +533,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // to the second user is made available to the consumer instead.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        SwitchBetweenAffiliatedProfileInvalidationServices) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());
@@ -587,7 +587,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest,
 // consumer. Further verifies that when the second consumer also unregisters,
 // the device-global invalidation service is destroyed.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest, MultipleConsumers) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Indicate that the device-global invalidation service connected. Verify that
   // that the consumer is informed about this.
@@ -623,7 +623,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest, MultipleConsumers) {
 // service belonging to a second affiliated user that subsequently connects is
 // ignored.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest, NoServiceAfterShutdown) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());
@@ -674,7 +674,7 @@ TEST_F(AffiliatedInvalidationServiceProviderImplTest, NoServiceAfterShutdown) {
 // This is a regression test for http://crbug.com/455504.
 TEST_F(AffiliatedInvalidationServiceProviderImplTest,
        ConnectedDeviceGlobalInvalidationServiceOnShutdown) {
-  consumer_.reset(new FakeConsumer(provider_.get()));
+  consumer_ = std::make_unique<FakeConsumer>(provider_.get());
 
   // Verify that a device-global invalidation service has been created.
   EXPECT_TRUE(provider_->GetDeviceInvalidationServiceForTest());

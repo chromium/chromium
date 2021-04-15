@@ -169,8 +169,8 @@ void ExtendedMouseWarpController::AddWarpRegion(
     std::unique_ptr<WarpRegion> warp_region,
     bool has_drag_source) {
   if (has_drag_source) {
-    warp_region->shared_display_edge_indicator_.reset(
-        new SharedDisplayEdgeIndicator);
+    warp_region->shared_display_edge_indicator_ =
+        std::make_unique<SharedDisplayEdgeIndicator>();
     warp_region->shared_display_edge_indicator_->Show(
         warp_region->a_indicator_bounds_, warp_region->b_indicator_bounds_);
   }

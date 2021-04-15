@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -140,10 +141,10 @@ PlatformVerificationFlow::PlatformVerificationFlow()
       timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
-  default_attestation_flow_.reset(
-      new AttestationFlow(std::move(attestation_ca_client)));
+  default_attestation_flow_ =
+      std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
   attestation_flow_ = default_attestation_flow_.get();
-  default_delegate_.reset(new DefaultDelegate());
+  default_delegate_ = std::make_unique<DefaultDelegate>();
   delegate_ = default_delegate_.get();
 }
 
@@ -157,7 +158,7 @@ PlatformVerificationFlow::PlatformVerificationFlow(
       timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!delegate_) {
-    default_delegate_.reset(new DefaultDelegate());
+    default_delegate_ = std::make_unique<DefaultDelegate>();
     delegate_ = default_delegate_.get();
   }
 }

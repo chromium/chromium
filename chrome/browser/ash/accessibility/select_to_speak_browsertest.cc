@@ -73,7 +73,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     extension_load_waiter.Wait();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
-    generator_.reset(new ui::test::EventGenerator(root_window));
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
 
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   }

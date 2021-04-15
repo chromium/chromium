@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -197,9 +199,9 @@ void EasyUnlockServiceSignin::WrapChallengeForUserAndDevice(
     if (device_data.public_key == device_public_key_base64) {
       PA_LOG(VERBOSE) << "Wrapping challenge for " << account_id.Serialize()
                       << "...";
-      challenge_wrapper_.reset(new EasyUnlockChallengeWrapper(
+      challenge_wrapper_ = std::make_unique<EasyUnlockChallengeWrapper>(
           device_data.challenge, channel_binding_data, account_id,
-          EasyUnlockTpmKeyManagerFactory::GetInstance()->Get(profile())));
+          EasyUnlockTpmKeyManagerFactory::GetInstance()->Get(profile()));
       challenge_wrapper_->WrapChallenge(std::move(callback));
       return;
     }
@@ -297,8 +299,9 @@ void EasyUnlockServiceSignin::InitializeInternal() {
 
   service_active_ = true;
 
-  pref_manager_.reset(new proximity_auth::ProximityAuthLocalStatePrefManager(
-      g_browser_process->local_state()));
+  pref_manager_ =
+      std::make_unique<proximity_auth::ProximityAuthLocalStatePrefManager>(
+          g_browser_process->local_state());
 
   proximity_auth::ScreenlockBridge* screenlock_bridge =
       proximity_auth::ScreenlockBridge::Get();

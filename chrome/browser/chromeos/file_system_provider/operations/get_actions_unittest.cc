@@ -232,8 +232,7 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, OnError) {
 
   EXPECT_TRUE(get_actions.Execute(kRequestId));
 
-  get_actions.OnError(kRequestId,
-                      std::unique_ptr<RequestValue>(new RequestValue()),
+  get_actions.OnError(kRequestId, std::make_unique<RequestValue>(),
                       base::File::FILE_ERROR_TOO_MANY_OPENED);
 
   ASSERT_EQ(1u, callback_logger.events().size());

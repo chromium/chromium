@@ -168,7 +168,7 @@ TEST_F(WorkletAnimationTest,
   EXPECT_TIME_NEAR(0, input->added_and_updated_animations[0].current_time);
 
   SimulateFrame(111 + 123.4);
-  state.reset(new AnimationWorkletDispatcherInput);
+  state = std::make_unique<AnimationWorkletDispatcherInput>();
   worklet_animation_->UpdateInputState(state.get());
   input = state->TakeWorkletState(id.worklet_id);
   EXPECT_TIME_NEAR(123.4, input->updated_animations[0].current_time);

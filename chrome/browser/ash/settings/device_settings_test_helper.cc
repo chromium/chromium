@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -74,7 +76,7 @@ void DeviceSettingsTestBase::SetUp() {
   device_settings_service_->SetSessionManager(&session_manager_client_,
                                               owner_key_util_);
 
-  profile_.reset(new TestingProfile());
+  profile_ = std::make_unique<TestingProfile>();
 }
 
 void DeviceSettingsTestBase::TearDown() {

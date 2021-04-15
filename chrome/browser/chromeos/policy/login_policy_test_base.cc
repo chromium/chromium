@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -48,8 +50,8 @@ void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
   GetMandatoryPoliciesValue(&mandatory);
   base::DictionaryValue recommended;
   GetRecommendedPoliciesValue(&recommended);
-  user_policy_helper_.reset(
-      new UserPolicyTestHelper(GetAccount(), &local_policy_server_));
+  user_policy_helper_ = std::make_unique<UserPolicyTestHelper>(
+      GetAccount(), &local_policy_server_);
   user_policy_helper_->SetPolicy(mandatory, recommended);
 }
 

@@ -20,10 +20,10 @@ MediaMultiChannelResampler::MediaMultiChannelResampler(
       resampler_output_bus_wrapper_(
           AudioBus::Create(channels, request_frames, false)),
       read_cb_(std::move(read_cb)) {
-  resampler_.reset(new media::MultiChannelResampler(
+  resampler_ = std::make_unique<media::MultiChannelResampler>(
       channels, io_sample_rate_ratio, request_frames,
       base::BindRepeating(&MediaMultiChannelResampler::ProvideResamplerInput,
-                          base::Unretained(this))));
+                          base::Unretained(this)));
 }
 
 void MediaMultiChannelResampler::Resample(

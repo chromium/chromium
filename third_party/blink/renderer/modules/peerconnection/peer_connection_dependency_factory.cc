@@ -316,8 +316,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
             "block it."
         }
     )");
-  socket_factory_.reset(new IpcPacketSocketFactory(p2p_socket_dispatcher_.get(),
-                                                   traffic_annotation));
+  socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
+      p2p_socket_dispatcher_.get(), traffic_annotation);
 
   gpu_factories_ = gpu_factories;
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =

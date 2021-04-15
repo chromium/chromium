@@ -371,7 +371,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   void RequestGoogleAccountsInArc() {
     arc_google_accounts_.clear();
     arc_google_accounts_callback_called_ = false;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
 
     ArcAuthService::GetGoogleAccountsInArcCallback callback = base::BindOnce(
         [](std::vector<mojom::ArcAccountInfoPtr>* accounts,

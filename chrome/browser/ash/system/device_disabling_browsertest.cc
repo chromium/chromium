@@ -119,7 +119,7 @@ void DeviceDisablingTest::MarkDisabledAndWaitForPolicyFetch() {
 }
 
 void DeviceDisablingTest::SetUpOnMainThread() {
-  network_state_change_wait_run_loop_.reset(new base::RunLoop);
+  network_state_change_wait_run_loop_ = std::make_unique<base::RunLoop>();
 
   OobeBaseTest::SetUpOnMainThread();
 

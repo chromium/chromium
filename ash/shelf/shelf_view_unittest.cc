@@ -189,9 +189,9 @@ class ShelfObserverIconTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    observer_.reset(new TestShelfObserver(GetPrimaryShelf()));
-    shelf_view_test_.reset(
-        new ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting()));
+    observer_ = std::make_unique<TestShelfObserver>(GetPrimaryShelf());
+    shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
+        GetPrimaryShelf()->GetShelfViewForTesting());
     shelf_view_test_->SetAnimationDuration(
         base::TimeDelta::FromMilliseconds(1));
   }
@@ -351,7 +351,7 @@ class ShelfViewTest : public AshTestBase {
                   .width(),
               500);
 
-    test_api_.reset(new ShelfViewTestAPI(shelf_view_));
+    test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
     test_api_->SetAnimationDuration(base::TimeDelta::FromMilliseconds(1));
 
     // Add a browser shortcut shelf item, as chrome does, for testing.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -50,7 +52,7 @@ class UserAddingScreenTest : public LoginManagerTest,
   void WaitUntilUserAddingFinishedOrCancelled() {
     if (finished_)
       return;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

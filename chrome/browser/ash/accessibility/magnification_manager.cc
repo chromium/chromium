@@ -187,7 +187,7 @@ void MagnificationManager::SetProfile(Profile* profile) {
 
   if (profile) {
     // TODO(yoshiki): Move following code to PrefHandler.
-    pref_change_registrar_.reset(new PrefChangeRegistrar);
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
         prefs::kAccessibilityScreenMagnifierEnabled,

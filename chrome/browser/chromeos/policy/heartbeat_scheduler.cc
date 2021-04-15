@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/heartbeat_scheduler.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -289,8 +290,8 @@ void HeartbeatScheduler::ScheduleNextHeartbeat() {
       registered_app_handler_ = true;
       gcm_driver_->AddAppHandler(kHeartbeatGCMAppID, this);
       gcm_driver_->AddConnectionObserver(this);
-      registration_helper_.reset(new HeartbeatRegistrationHelper(
-          gcm_driver_, task_runner_));
+      registration_helper_ = std::make_unique<HeartbeatRegistrationHelper>(
+          gcm_driver_, task_runner_);
       registration_helper_->Register(
           base::BindOnce(&HeartbeatScheduler::OnRegistrationComplete,
                          weak_factory_.GetWeakPtr()));

@@ -78,11 +78,11 @@ void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
   DCHECK(entries_.find(entry_path) == entries_.end());
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
 
-  metadata->is_directory.reset(new bool(is_directory));
-  metadata->name.reset(new std::string(name));
-  metadata->size.reset(new int64_t(size));
-  metadata->modification_time.reset(new base::Time(modification_time));
-  metadata->mime_type.reset(new std::string(mime_type));
+  metadata->is_directory = std::make_unique<bool>(is_directory);
+  metadata->name = std::make_unique<std::string>(name);
+  metadata->size = std::make_unique<int64_t>(size);
+  metadata->modification_time = std::make_unique<base::Time>(modification_time);
+  metadata->mime_type = std::make_unique<std::string>(mime_type);
 
   entries_[entry_path] =
       std::make_unique<FakeEntry>(std::move(metadata), contents);
@@ -116,26 +116,28 @@ AbortCallback FakeProvidedFileSystem::GetMetadata(
 
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY) {
-    metadata->is_directory.reset(
-        new bool(*entry_it->second->metadata->is_directory));
+    metadata->is_directory =
+        std::make_unique<bool>(*entry_it->second->metadata->is_directory);
   }
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_NAME)
-    metadata->name.reset(new std::string(*entry_it->second->metadata->name));
+    metadata->name =
+        std::make_unique<std::string>(*entry_it->second->metadata->name);
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_SIZE)
-    metadata->size.reset(new int64_t(*entry_it->second->metadata->size));
+    metadata->size =
+        std::make_unique<int64_t>(*entry_it->second->metadata->size);
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
-    metadata->modification_time.reset(
-        new base::Time(*entry_it->second->metadata->modification_time));
+    metadata->modification_time = std::make_unique<base::Time>(
+        *entry_it->second->metadata->modification_time);
   }
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE &&
       entry_it->second->metadata->mime_type.get()) {
-    metadata->mime_type.reset(
-        new std::string(*entry_it->second->metadata->mime_type));
+    metadata->mime_type =
+        std::make_unique<std::string>(*entry_it->second->metadata->mime_type);
   }
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
       entry_it->second->metadata->thumbnail.get()) {
-    metadata->thumbnail.reset(
-        new std::string(*entry_it->second->metadata->thumbnail));
+    metadata->thumbnail =
+        std::make_unique<std::string>(*entry_it->second->metadata->thumbnail);
   }
 
   return PostAbortableTask(base::BindOnce(

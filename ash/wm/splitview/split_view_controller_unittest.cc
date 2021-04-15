@@ -2230,7 +2230,8 @@ TEST_F(SplitViewControllerTest, OverviewExitAnimationTest) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // Reset the observer as we'll need the OverviewStatesObserver to be added to
   // to ShellObserver list after SplitViewController.
-  overview_observer.reset(new OverviewStatesObserver(window1->GetRootWindow()));
+  overview_observer =
+      std::make_unique<OverviewStatesObserver>(window1->GetRootWindow());
   // Test |overview_animate_when_exiting_| has been properly reset.
   EXPECT_TRUE(overview_observer->overview_animate_when_exiting());
   CheckOverviewEnterExitHistogram("EnterInSplitView", {2, 1}, {2, 0});
@@ -3846,7 +3847,8 @@ TEST_F(SplitViewTabDraggingTest, OverviewExitAnimationTest) {
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   split_view_controller()->SnapWindow(window2.get(),
                                       SplitViewController::RIGHT);
-  overview_observer.reset(new OverviewStatesObserver(window1->GetRootWindow()));
+  overview_observer =
+      std::make_unique<OverviewStatesObserver>(window1->GetRootWindow());
   resizer = StartDrag(window1.get(), window1.get());
   ASSERT_TRUE(resizer.get());
   // Overview should have been opened behind the dragged window.

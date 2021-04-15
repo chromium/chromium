@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/values.h"
@@ -145,11 +147,13 @@ ScopedCrosSettingsTestHelper::InstallAttributes() {
 
 void ScopedCrosSettingsTestHelper::Initialize(bool create_settings_service) {
   if (create_settings_service) {
-    test_install_attributes_.reset(new chromeos::ScopedStubInstallAttributes());
+    test_install_attributes_ =
+        std::make_unique<chromeos::ScopedStubInstallAttributes>();
     CHECK(!DeviceSettingsService::IsInitialized());
-    test_device_settings_service_.reset(new ScopedTestDeviceSettingsService());
-    test_cros_settings_.reset(
-        new ScopedTestCrosSettings(g_browser_process->local_state()));
+    test_device_settings_service_ =
+        std::make_unique<ScopedTestDeviceSettingsService>();
+    test_cros_settings_ = std::make_unique<ScopedTestCrosSettings>(
+        g_browser_process->local_state());
   }
 }
 

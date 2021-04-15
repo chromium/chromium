@@ -210,7 +210,7 @@ StickyKeysOverlay::StickyKeysOverlay() {
   params.bounds = CalculateOverlayBounds();
   params.parent = Shell::GetContainer(Shell::GetRootWindowForNewWindows(),
                                       kShellWindowId_OverlayContainer);
-  overlay_widget_.reset(new views::Widget);
+  overlay_widget_ = std::make_unique<views::Widget>();
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(false);
   overlay_view_ = overlay_widget_->SetContentsView(std::move(overlay_view));

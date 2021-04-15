@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -100,7 +101,7 @@ class TestDelegate : public UsersPrivateDelegate {
 
   PrefsUtil* GetPrefsUtil() override {
     if (!prefs_util_)
-      prefs_util_.reset(new TestPrefsUtil(profile_));
+      prefs_util_ = std::make_unique<TestPrefsUtil>(profile_);
 
     return prefs_util_.get();
   }

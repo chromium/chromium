@@ -106,7 +106,7 @@ void SystemClock::SetProfile(Profile* profile) {
   profile_observation_.Reset();
   profile_observation_.Observe(profile);
   PrefService* prefs = profile->GetPrefs();
-  user_pref_registrar_.reset(new PrefChangeRegistrar);
+  user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
   user_pref_registrar_->Init(prefs);
   user_pref_registrar_->Add(prefs::kUse24HourClock,
                             base::BindRepeating(&SystemClock::UpdateClockType,

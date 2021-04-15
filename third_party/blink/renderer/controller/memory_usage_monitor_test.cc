@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -23,7 +25,7 @@ class MemoryUsageMonitorTest : public testing::Test {
   MemoryUsageMonitorTest() = default;
 
   void SetUp() override {
-    monitor_.reset(new MemoryUsageMonitor);
+    monitor_ = std::make_unique<MemoryUsageMonitor>();
     MemoryUsageMonitor::SetInstanceForTesting(monitor_.get());
   }
 

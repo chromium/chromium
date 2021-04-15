@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
 
+#include <memory>
+
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -54,8 +56,8 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)
     : AccessibilityPanel(browser_context, GetUrlForContent(), kWidgetName) {
-  web_contents_observer_.reset(
-      new ChromeVoxPanelWebContentsObserver(GetWebContents(), this));
+  web_contents_observer_ = std::make_unique<ChromeVoxPanelWebContentsObserver>(
+      GetWebContents(), this);
 
   SetAccessibilityPanelFullscreen(false);
 }

@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
+#include <memory>
+
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"
@@ -49,7 +51,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     content::WaitForResizeComplete(web_contents);
     root_window_ = Shell::Get()->GetPrimaryRootWindow();
-    event_handler_.reset(new ui::test::TestEventHandler());
+    event_handler_ = std::make_unique<ui::test::TestEventHandler>();
     root_window_->AddPreTargetHandler(event_handler_.get());
   }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/shell.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -35,7 +37,7 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
     extension_load_waiter.Wait();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
-    generator_.reset(new ui::test::EventGenerator(root_window));
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
 
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   }
@@ -49,8 +51,8 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
         new net::RuleBasedHostResolverProc(host_resolver());
     resolver->AllowDirectLookup("*.google.com");
     resolver->AllowDirectLookup("*.gstatic.com");
-    mock_host_resolver_override_.reset(
-        new net::ScopedDefaultHostResolverProc(resolver.get()));
+    mock_host_resolver_override_ =
+        std::make_unique<net::ScopedDefaultHostResolverProc>(resolver.get());
   }
 
   void TearDownInProcessBrowserTestFixture() override {

@@ -4,6 +4,8 @@
 
 #include "net/tools/quic/quic_simple_server.h"
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "net/quic/address_utils.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
@@ -34,13 +36,11 @@ class QuicChromeServerDispatchPacketTest : public QuicTest {
         dispatcher_(&config_,
                     &crypto_config_,
                     &version_manager_,
-                    std::unique_ptr<quic::test::MockQuicConnectionHelper>(
-                        new quic::test::MockQuicConnectionHelper),
+                    std::make_unique<quic::test::MockQuicConnectionHelper>(),
                     std::unique_ptr<quic::QuicCryptoServerStreamBase::Helper>(
                         new QuicSimpleServerSessionHelper(
                             quic::QuicRandom::GetInstance())),
-                    std::unique_ptr<quic::test::MockAlarmFactory>(
-                        new quic::test::MockAlarmFactory),
+                    std::make_unique<quic::test::MockAlarmFactory>(),
                     &memory_cache_backend_) {
     dispatcher_.InitializeWithWriter(nullptr);
   }

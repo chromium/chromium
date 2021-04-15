@@ -62,11 +62,11 @@ class AddressTrackerLinuxTest : public testing::Test {
 
   void InitializeAddressTracker(bool tracking) {
     if (tracking) {
-      tracker_.reset(
-          new AddressTrackerLinux(base::DoNothing(), base::DoNothing(),
-                                  base::DoNothing(), ignored_interfaces_));
+      tracker_ = std::make_unique<AddressTrackerLinux>(
+          base::DoNothing(), base::DoNothing(), base::DoNothing(),
+          ignored_interfaces_);
     } else {
-      tracker_.reset(new AddressTrackerLinux());
+      tracker_ = std::make_unique<AddressTrackerLinux>();
     }
     original_get_interface_name_ = tracker_->get_interface_name_;
     tracker_->get_interface_name_ = TestGetInterfaceName;

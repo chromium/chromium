@@ -59,7 +59,8 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
 #endif
 
   if (!should_check_object_manager || use_dbus_fakes) {
-    client_bundle_.reset(new BluetoothDBusClientBundle(use_dbus_fakes));
+    client_bundle_ =
+        std::make_unique<BluetoothDBusClientBundle>(use_dbus_fakes);
     InitializeClients();
     object_manager_supported_ = true;
     object_manager_support_known_ = true;
@@ -184,7 +185,8 @@ void BluezDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   DVLOG(1) << "Bluetooth supported. Initializing clients.";
   object_manager_supported_ = true;
 
-  client_bundle_.reset(new BluetoothDBusClientBundle(false /* use_fakes */));
+  client_bundle_ =
+      std::make_unique<BluetoothDBusClientBundle>(false /* use_fakes */);
   InitializeClients();
 
   object_manager_support_known_ = true;

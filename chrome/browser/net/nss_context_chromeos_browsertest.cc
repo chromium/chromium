@@ -125,7 +125,7 @@ class UserAddingFinishObserver : public chromeos::UserAddingScreen::Observer {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (finished_)
       return;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

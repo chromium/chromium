@@ -226,7 +226,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
   // Runs the loop until wallpaper has changed to the expected color.
   void RunUntilWallpaperChangeToColor(const SkColor& expected_color) {
     while (expected_color != GetAverageWallpaperColor()) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
   }

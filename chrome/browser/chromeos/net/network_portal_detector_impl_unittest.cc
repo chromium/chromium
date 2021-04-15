@@ -102,8 +102,8 @@ class NetworkPortalDetectorImplTest
         test_account_id.GetUserEmail());
     EXPECT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
 
-    network_portal_detector_.reset(
-        new NetworkPortalDetectorImpl(test_loader_factory()));
+    network_portal_detector_ =
+        std::make_unique<NetworkPortalDetectorImpl>(test_loader_factory());
     network_portal_detector_->Enable(false);
 
     set_detector(network_portal_detector_->captive_portal_detector_.get());

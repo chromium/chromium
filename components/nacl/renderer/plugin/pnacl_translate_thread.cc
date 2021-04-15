@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <iterator>
+#include <memory>
 #include <sstream>
 
 #include "base/check.h"
@@ -112,7 +113,7 @@ void PnaclTranslateThread::RunCompile(
   compiler_channel_filter_ = compiler_channel_->CreateSyncMessageFilter();
 
   compile_finished_callback_ = compile_finished_callback;
-  translate_thread_.reset(new CompileThread(this));
+  translate_thread_ = std::make_unique<CompileThread>(this);
   translate_thread_->Start();
 }
 
@@ -131,7 +132,7 @@ void PnaclTranslateThread::RunLink() {
 
   // Tear down the previous thread.
   translate_thread_->Join();
-  translate_thread_.reset(new LinkThread(this));
+  translate_thread_ = std::make_unique<LinkThread>(this);
   translate_thread_->Start();
 }
 

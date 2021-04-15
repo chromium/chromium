@@ -116,7 +116,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
     users_pref_object->value->GetAsList(&existing);
     email_list.reset(existing->DeepCopy());
   } else {
-    email_list.reset(new base::ListValue());
+    email_list = std::make_unique<base::ListValue>();
   }
 
   const user_manager::UserManager* user_manager =

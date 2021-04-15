@@ -5,6 +5,7 @@
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/check_op.h"
@@ -143,7 +144,7 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->AddObserver(this);
-  display_configurator_.reset(new display::DisplayConfigurator);
+  display_configurator_ = std::make_unique<display::DisplayConfigurator>();
   display_configurator_->Init(
       ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate(), false);
   display_configurator_->ForceInitialConfigure();

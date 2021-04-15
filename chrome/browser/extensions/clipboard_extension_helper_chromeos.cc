@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -76,7 +77,8 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
 };
 
 ClipboardExtensionHelper::ClipboardExtensionHelper() {
-  clipboard_image_data_decoder_.reset(new ClipboardImageDataDecoder(this));
+  clipboard_image_data_decoder_ =
+      std::make_unique<ClipboardImageDataDecoder>(this);
 }
 
 ClipboardExtensionHelper::~ClipboardExtensionHelper() {}

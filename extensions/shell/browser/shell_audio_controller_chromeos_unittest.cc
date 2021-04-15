@@ -32,7 +32,7 @@ class ShellAudioControllerTest : public testing::Test {
     audio_client()->SetAudioNodesForTesting(AudioNodeList());
     CrasAudioHandler::InitializeForTesting();
 
-    controller_.reset(new ShellAudioController());
+    controller_ = std::make_unique<ShellAudioController>();
   }
 
   ~ShellAudioControllerTest() override {

@@ -5,6 +5,7 @@
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -377,7 +378,7 @@ TouchExplorationController::InSingleTapOrTouchExploreReleased(
     most_recent_press_timestamp_ = event.time_stamp();
     // This will update as the finger moves before a possible passthrough, and
     // will determine the offset.
-    last_unused_finger_event_.reset(new ui::TouchEvent(event));
+    last_unused_finger_event_ = std::make_unique<ui::TouchEvent>(event);
     last_unused_finger_continuation_ = continuation;
     return DiscardEvent(continuation);
   }
@@ -628,17 +629,17 @@ void TouchExplorationController::SendSimulatedClick() {
 void TouchExplorationController::SendSimulatedTap(
     const Continuation continuation) {
   std::unique_ptr<ui::TouchEvent> touch_press;
-  touch_press.reset(new ui::TouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(),
-                                       Now(),
-                                       initial_press_->pointer_details()));
+  touch_press = std::make_unique<ui::TouchEvent>(
+      ui::ET_TOUCH_PRESSED, gfx::Point(), Now(),
+      initial_press_->pointer_details());
   touch_press->set_location_f(anchor_point_dip_);
   touch_press->set_root_location_f(anchor_point_dip_);
   DispatchEvent(touch_press.get(), continuation);
 
   std::unique_ptr<ui::TouchEvent> touch_release;
-  touch_release.reset(new ui::TouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(),
-                                         Now(),
-                                         initial_press_->pointer_details()));
+  touch_release = std::make_unique<ui::TouchEvent>(
+      ui::ET_TOUCH_RELEASED, gfx::Point(), Now(),
+      initial_press_->pointer_details());
   touch_release->set_location_f(anchor_point_dip_);
   touch_release->set_root_location_f(anchor_point_dip_);
   DispatchEvent(touch_release.get(), continuation);

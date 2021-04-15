@@ -249,9 +249,9 @@ class ShillPropertyHandlerTest : public testing::Test {
   // Call this after any initial Shill client setup
   void SetupShillPropertyHandler() {
     SetupDefaultShillState();
-    listener_.reset(new TestListener);
-    shill_property_handler_.reset(
-        new internal::ShillPropertyHandler(listener_.get()));
+    listener_ = std::make_unique<TestListener>();
+    shill_property_handler_ =
+        std::make_unique<internal::ShillPropertyHandler>(listener_.get());
     shill_property_handler_->Init();
   }
 

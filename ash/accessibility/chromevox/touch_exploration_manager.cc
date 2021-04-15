@@ -219,8 +219,8 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
 
   if (!touch_accessibility_enabler_) {
     // Always enable gesture to toggle spoken feedback.
-    touch_accessibility_enabler_.reset(new TouchAccessibilityEnabler(
-        root_window_controller_->GetRootWindow(), this));
+    touch_accessibility_enabler_ = std::make_unique<TouchAccessibilityEnabler>(
+        root_window_controller_->GetRootWindow(), this);
   }
 
   if (spoken_feedback_enabled) {

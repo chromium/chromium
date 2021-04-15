@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -288,7 +289,7 @@ void HIDDetectionScreen::AdapterPresentChanged(
     bool present) {
   if (present && switch_on_adapter_when_ready_) {
     VLOG(1) << "Switching on BT adapter on HID OOBE screen.";
-    adapter_initially_powered_.reset(new bool(adapter_->IsPowered()));
+    adapter_initially_powered_ = std::make_unique<bool>(adapter_->IsPowered());
     adapter_->SetPowered(
         true,
         base::BindOnce(&HIDDetectionScreen::StartBTDiscoverySession,
@@ -559,7 +560,7 @@ void HIDDetectionScreen::TryInitiateBTDevicesUpdate() {
       switch_on_adapter_when_ready_ = true;
     } else if (!adapter_->IsPowered()) {
       VLOG(1) << "Switching on BT adapter on HID OOBE screen.";
-      adapter_initially_powered_.reset(new bool(false));
+      adapter_initially_powered_ = std::make_unique<bool>(false);
       adapter_->SetPowered(
           true,
           base::BindOnce(&HIDDetectionScreen::StartBTDiscoverySession,
@@ -689,7 +690,7 @@ HIDDetectionScreen::GetAdapterForTesting() {
 }
 
 void HIDDetectionScreen::SetAdapterInitialPoweredForTesting(bool powered) {
-  adapter_initially_powered_.reset(new bool(powered));
+  adapter_initially_powered_ = std::make_unique<bool>(powered);
 }
 
 }  // namespace chromeos

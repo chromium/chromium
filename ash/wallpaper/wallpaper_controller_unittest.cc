@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -1010,7 +1011,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
 
   // Verify that the attempt to set an online wallpaper without providing image
   // data fails.
-  run_loop.reset(new base::RunLoop());
+  run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperIfExists(
       account_id_1, kDummyUrl, layout, false /*preview_mode=*/,
@@ -1053,7 +1054,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   // it succeeds this time because |SetOnlineWallpaperFromData| has saved the
   // file.
   ClearWallpaperCount();
-  run_loop.reset(new base::RunLoop());
+  run_loop = std::make_unique<base::RunLoop>();
   controller_->SetOnlineWallpaperIfExists(
       account_id_1, kDummyUrl, layout, false /*preview_mode=*/,
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
@@ -1066,7 +1067,7 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
 
   // Verify that the wallpaper with |url| is available offline, and the returned
   // file name should not contain the small wallpaper suffix.
-  run_loop.reset(new base::RunLoop());
+  run_loop = std::make_unique<base::RunLoop>();
   controller_->GetOfflineWallpaperList(base::BindLambdaForTesting(
       [&run_loop](const std::vector<std::string>& url_list) {
         EXPECT_EQ(1U, url_list.size());
@@ -2354,7 +2355,7 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   gfx::ImageSkia online_wallpaper =
       CreateImage(640, 480, online_wallpaper_color);
   EXPECT_NE(online_wallpaper_color, GetWallpaperColor());
-  run_loop.reset(new base::RunLoop());
+  run_loop = std::make_unique<base::RunLoop>();
   SetOnlineWallpaperFromImage(
       account_id_1, online_wallpaper, kDummyUrl, layout, false /*save_file=*/,
       true /*preview_mode=*/,

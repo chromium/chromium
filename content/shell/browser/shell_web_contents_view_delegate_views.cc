@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -85,9 +87,10 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
                                                  &screen_point);
   }
 
-  context_menu_model_.reset(new ContextMenuModel(web_contents_, params));
-  context_menu_runner_.reset(new views::MenuRunner(
-      context_menu_model_.get(), views::MenuRunner::CONTEXT_MENU));
+  context_menu_model_ =
+      std::make_unique<ContextMenuModel>(web_contents_, params);
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      context_menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
 
   views::Widget* widget = views::Widget::GetWidgetForNativeView(
       web_contents_->GetTopLevelNativeWindow());

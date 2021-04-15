@@ -216,8 +216,8 @@ void CanvasRenderingContext2DTest::CreateContext(
 void CanvasRenderingContext2DTest::SetUp() {
   test_context_provider_ = CreateContextProvider();
   InitializeSharedGpuContext(test_context_provider_.get());
-  allow_accelerated_.reset(
-      new ScopedAccelerated2dCanvasForTest(AllowsAcceleration()));
+  allow_accelerated_ =
+      std::make_unique<ScopedAccelerated2dCanvasForTest>(AllowsAcceleration());
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
   web_view_helper_->Initialize();
 

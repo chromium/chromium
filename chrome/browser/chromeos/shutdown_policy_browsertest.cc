@@ -87,7 +87,7 @@ class ShutdownPolicyBaseTest
 
   // Refreshes device policy and waits for it to be applied.
   void SyncRefreshDevicePolicy() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     DeviceSettingsService::Get()->AddObserver(this);
     RefreshDevicePolicy();
     run_loop_->Run();
@@ -173,8 +173,9 @@ class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     ShutdownPolicyBaseTest::SetUpInProcessBrowserTestFixture();
-    zero_duration_mode_.reset(new ui::ScopedAnimationDurationScaleMode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION));
+    zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   void SetUpOnMainThread() override {

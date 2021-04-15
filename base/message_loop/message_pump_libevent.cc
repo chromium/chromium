@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -144,7 +145,7 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
   std::unique_ptr<event> evt(controller->ReleaseEvent());
   if (!evt) {
     // Ownership is transferred to the controller.
-    evt.reset(new event);
+    evt = std::make_unique<event>();
   } else {
     // Make sure we don't pick up any funky internal libevent masks.
     int old_interest_mask = evt->ev_events & (EV_READ | EV_WRITE | EV_PERSIST);

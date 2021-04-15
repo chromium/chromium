@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -42,8 +44,8 @@ class MultiUserUtilTest : public ChromeAshTestBase {
                        CreateProfileForIdentityTestEnvironment()
                            .release());
 
-    identity_test_env_adaptor_.reset(
-        new IdentityTestEnvironmentProfileAdaptor(profile_.get()));
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
   }
 
   void TearDown() override {

@@ -146,7 +146,8 @@ TabManager::TabManager(TabLoadTracker* tab_load_tracker)
       loading_slots_(kNumOfLoadingSlots),
       tab_load_tracker_(tab_load_tracker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  delegate_.reset(new TabManagerDelegate(weak_ptr_factory_.GetWeakPtr()));
+  delegate_ =
+      std::make_unique<TabManagerDelegate>(weak_ptr_factory_.GetWeakPtr());
 #endif
   browser_tab_strip_tracker_.Init();
   session_restore_observer_ =

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -177,8 +179,7 @@ MediaStreamAudioSource::CreateMediaStreamAudioTrack(const std::string& id) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   SendLogMessage(
       base::StringPrintf("CreateMediaStreamAudioTrack({id=%s})", id.c_str()));
-  return std::unique_ptr<MediaStreamAudioTrack>(
-      new MediaStreamAudioTrack(is_local_source()));
+  return std::make_unique<MediaStreamAudioTrack>(is_local_source());
 }
 
 bool MediaStreamAudioSource::EnsureSourceIsStarted() {

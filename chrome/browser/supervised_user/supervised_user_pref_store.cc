@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -114,7 +115,7 @@ SupervisedUserPrefStore::~SupervisedUserPrefStore() {
 void SupervisedUserPrefStore::OnNewSettingsAvailable(
     const base::DictionaryValue* settings) {
   std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
-  prefs_.reset(new PrefValueMap);
+  prefs_ = std::make_unique<PrefValueMap>();
   if (settings) {
     // Set hardcoded prefs and defaults.
     prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,

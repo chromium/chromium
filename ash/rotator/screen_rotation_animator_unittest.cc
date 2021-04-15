@@ -276,7 +276,7 @@ void ScreenRotationAnimatorSmoothAnimationTest::SetScreenRotationAnimator(
 }
 
 void ScreenRotationAnimatorSmoothAnimationTest::WaitForCopyCallback() {
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 }
 

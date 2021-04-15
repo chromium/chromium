@@ -144,8 +144,8 @@ class RendererFreezerTest : public testing::Test {
 
  protected:
   void Init() {
-    renderer_freezer_.reset(new RendererFreezer(
-        std::unique_ptr<RendererFreezer::Delegate>(test_delegate_)));
+    renderer_freezer_ = std::make_unique<RendererFreezer>(
+        std::unique_ptr<RendererFreezer::Delegate>(test_delegate_));
   }
 
   // Owned by |renderer_freezer_|.
@@ -217,8 +217,8 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   void SetUp() override {
     RendererFreezerTest::SetUp();
 
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
 
     // Must be called from testing::Test::SetUp.
     EXPECT_TRUE(profile_manager_->SetUp());

@@ -5,6 +5,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -252,7 +253,7 @@ void FakeBluetoothAdapterClient::SetDiscoveryFilter(
     return;
   }
 
-  discovery_filter_.reset(new DiscoveryFilter());
+  discovery_filter_ = std::make_unique<DiscoveryFilter>();
   discovery_filter_->CopyFrom(discovery_filter);
   PostDelayedTask(std::move(callback));
 }

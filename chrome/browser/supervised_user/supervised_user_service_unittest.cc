@@ -78,7 +78,7 @@ class AsyncTestHelper {
  private:
   void Reset() {
     quit_called_ = false;
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;

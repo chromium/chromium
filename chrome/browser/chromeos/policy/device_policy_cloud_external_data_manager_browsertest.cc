@@ -154,7 +154,7 @@ class DevicePolicyCloudExternalDataManagerTest
 
   void WaitUntilPolicyChanged() {
     policy_change_waiting_run_loop_->Run();
-    policy_change_waiting_run_loop_.reset(new base::RunLoop());
+    policy_change_waiting_run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   PolicyService* policy_service_ = nullptr;

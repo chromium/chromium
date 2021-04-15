@@ -172,7 +172,8 @@ TEST(ActivityIconLoaderTest, TestOnIconsResized) {
 
   // Call OnIconsResized() again to make sure that the second call does not
   // remove the cache the previous call added.
-  activity_to_icons.reset(new ActivityIconLoader::ActivityToIconsMap);
+  activity_to_icons =
+      std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
   // Duplicated entry.
   activity_to_icons->insert(std::make_pair(
       ActivityIconLoader::ActivityName("p1", "a1"),

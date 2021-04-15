@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/chromevox/touch_accessibility_enabler.h"
 
+#include <memory>
+
 #include "ash/accessibility/chromevox/mock_touch_exploration_controller_delegate.h"
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
 #include "base/macros.h"
@@ -61,13 +63,14 @@ class TouchAccessibilityEnablerTest : public aura::test::AuraTestBase {
   void SetUp() override {
     aura::test::AuraTestBase::SetUp();
 
-    generator_.reset(new ui::test::EventGenerator(root_window()));
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window());
 
     // Tests fail if time is ever 0.
     simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
     ui::SetEventTickClockForTesting(&simulated_clock_);
 
-    enabler_.reset(new TouchAccessibilityEnabler(root_window(), &delegate_));
+    enabler_ =
+        std::make_unique<TouchAccessibilityEnabler>(root_window(), &delegate_);
   }
 
   void TearDown() override {

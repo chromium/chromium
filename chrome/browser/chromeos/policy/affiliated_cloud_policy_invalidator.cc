@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/affiliated_cloud_policy_invalidator.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
@@ -54,10 +56,10 @@ AffiliatedCloudPolicyInvalidator::GetInvalidatorForTest() const {
 void AffiliatedCloudPolicyInvalidator::CreateInvalidator(
     invalidation::InvalidationService* invalidation_service) {
   DCHECK(!invalidator_);
-  invalidator_.reset(new CloudPolicyInvalidator(
+  invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       scope_, core_, base::ThreadTaskRunnerHandle::Get(),
       base::DefaultClock::GetInstance(), highest_handled_invalidation_version_,
-      device_local_account_id_));
+      device_local_account_id_);
   invalidator_->Initialize(invalidation_service);
 }
 

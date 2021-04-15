@@ -4,6 +4,8 @@
 
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/macros.h"
 #include "chromeos/network/network_handler.h"
@@ -127,7 +129,7 @@ PortalDetectorStrategy::PortalDetectorStrategy(Delegate* delegate)
   policy_.maximum_backoff_ms = 2 * 60 * 1000;
   policy_.entry_lifetime_ms = -1;
   policy_.always_use_initial_delay = true;
-  backoff_entry_.reset(new net::BackoffEntry(&policy_, delegate_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(&policy_, delegate_);
 }
 
 PortalDetectorStrategy::~PortalDetectorStrategy() = default;
@@ -167,7 +169,7 @@ void PortalDetectorStrategy::Reset() {
 void PortalDetectorStrategy::SetPolicyAndReset(
     const net::BackoffEntry::Policy& policy) {
   policy_ = policy;
-  backoff_entry_.reset(new net::BackoffEntry(&policy_, delegate_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(&policy_, delegate_);
 }
 
 void PortalDetectorStrategy::OnDetectionCompleted() {

@@ -4,9 +4,8 @@
 
 #include "chromeos/components/proximity_auth/messenger_impl.h"
 
-#include <utility>
-
 #include <memory>
+#include <utility>
 
 #include "base/base64url.h"
 #include "base/bind.h"
@@ -132,7 +131,7 @@ void MessengerImpl::ProcessMessageQueue() {
   if (channel_->is_disconnected())
     return;
 
-  pending_message_.reset(new PendingMessage(queued_messages_.front()));
+  pending_message_ = std::make_unique<PendingMessage>(queued_messages_.front());
   queued_messages_.pop_front();
 
   channel_->SendMessage(

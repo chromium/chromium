@@ -29,7 +29,8 @@ namespace blink {
 class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
   }
 

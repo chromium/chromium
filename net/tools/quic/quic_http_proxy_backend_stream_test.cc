@@ -4,6 +4,8 @@
 
 #include "net/tools/quic/quic_http_proxy_backend_stream.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -182,7 +184,7 @@ class QuicHttpProxyBackendStreamTest : public QuicTest {
   // Initializes |test_server_| without starting it.  Allows subclasses to use
   // their own server configuration.
   void SetUpServer() {
-    test_server_.reset(new EmbeddedTestServer);
+    test_server_ = std::make_unique<EmbeddedTestServer>();
     test_server_->AddDefaultHandlers(base::FilePath());
     test_server_->RegisterDefaultHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/defaultresponselarge",

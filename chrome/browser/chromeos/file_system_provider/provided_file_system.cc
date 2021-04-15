@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -160,9 +161,9 @@ void ProvidedFileSystem::SetEventRouterForTesting(
 void ProvidedFileSystem::SetNotificationManagerForTesting(
     std::unique_ptr<NotificationManagerInterface> notification_manager) {
   notification_manager_ = std::move(notification_manager);
-  request_manager_.reset(new RequestManager(
+  request_manager_ = std::make_unique<RequestManager>(
       profile_, file_system_info_.provider_id().GetExtensionId(),
-      notification_manager_.get()));
+      notification_manager_.get());
 }
 
 AbortCallback ProvidedFileSystem::RequestUnmount(

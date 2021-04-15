@@ -543,11 +543,11 @@ TEST(VectorTest, ValuesMovedAndSwappedWithInlineCapacity) {
 TEST(VectorTest, UniquePtr) {
   using Pointer = std::unique_ptr<int>;
   Vector<Pointer> vector;
-  vector.push_back(Pointer(new int(1)));
+  vector.push_back(std::make_unique<int>(1));
   vector.ReserveCapacity(2);
-  vector.UncheckedAppend(Pointer(new int(2)));
-  vector.insert(2, Pointer(new int(3)));
-  vector.push_front(Pointer(new int(0)));
+  vector.UncheckedAppend(std::make_unique<int>(2));
+  vector.insert(2, std::make_unique<int>(3));
+  vector.push_front(std::make_unique<int>(0));
 
   ASSERT_EQ(4u, vector.size());
   EXPECT_EQ(0, *vector[0]);
@@ -561,7 +561,7 @@ TEST(VectorTest, UniquePtr) {
   ASSERT_EQ(4u, vector.size());
   EXPECT_TRUE(!vector[3]);
   vector.EraseAt(3);
-  vector[0] = Pointer(new int(-1));
+  vector[0] = std::make_unique<int>(-1);
   ASSERT_EQ(3u, vector.size());
   EXPECT_EQ(-1, *vector[0]);
 }

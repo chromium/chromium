@@ -189,8 +189,8 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
 
   void CreateUnlockManager(
       ProximityAuthSystem::ScreenlockType screenlock_type) {
-    unlock_manager_.reset(
-        new TestUnlockManager(screenlock_type, &proximity_auth_client_));
+    unlock_manager_ = std::make_unique<TestUnlockManager>(
+        screenlock_type, &proximity_auth_client_);
 
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     mock_bluetooth_suspension_recovery_timer_ = mock_timer.get();

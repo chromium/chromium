@@ -83,8 +83,9 @@ class MockValidationDB : public NaClValidationDB {
 class TestQuery {
  public:
   TestQuery(const char* key, const char* version) {
-    db.reset(new MockValidationDB());
-    context.reset(new NaClValidationQueryContext(db.get(), key, version));
+    db = std::make_unique<MockValidationDB>();
+    context =
+        std::make_unique<NaClValidationQueryContext>(db.get(), key, version);
     query.reset(context->CreateQuery());
   }
 
@@ -99,8 +100,8 @@ class NaClValidationQueryTest : public ::testing::Test {
   std::unique_ptr<TestQuery> query2;
 
   void SetUp() override {
-    query1.reset(new TestQuery(kKey, kVersion));
-    query2.reset(new TestQuery(kKey, kVersion));
+    query1 = std::make_unique<TestQuery>(kKey, kVersion);
+    query2 = std::make_unique<TestQuery>(kKey, kVersion);
   }
 
   void AssertQuerySame() {
@@ -255,7 +256,7 @@ TEST_F(NaClValidationQueryTest, ConsistentRepeatedLong) {
 }
 
 TEST_F(NaClValidationQueryTest, PerturbKey) {
-  query2.reset(new TestQuery(kKeyAlt, kVersion));
+  query2 = std::make_unique<TestQuery>(kKeyAlt, kVersion);
 
   query1->query->AddData(kShortData, sizeof(kShortData));
   query1->query->QueryKnownToValidate();
@@ -267,7 +268,7 @@ TEST_F(NaClValidationQueryTest, PerturbKey) {
 }
 
 TEST_F(NaClValidationQueryTest, PerturbVersion) {
-  query2.reset(new TestQuery(kKey, kVersionAlt));
+  query2 = std::make_unique<TestQuery>(kKey, kVersionAlt);
 
   query1->query->AddData(kShortData, sizeof(kShortData));
   query1->query->QueryKnownToValidate();

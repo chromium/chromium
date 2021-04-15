@@ -129,9 +129,9 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
   if (user &&
       policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
                                        &device_local_account_type)) {
-    device_local_account_management_policy_provider_.reset(
-        new chromeos::DeviceLocalAccountManagementPolicyProvider(
-            device_local_account_type));
+    device_local_account_management_policy_provider_ =
+        std::make_unique<chromeos::DeviceLocalAccountManagementPolicyProvider>(
+            device_local_account_type);
   }
 #endif
 }
@@ -145,8 +145,8 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
   // Lazy creation of SigninScreenPolicyProvider.
   if (!signin_screen_policy_provider_) {
     if (chromeos::ProfileHelper::IsSigninProfile(profile_)) {
-      signin_screen_policy_provider_.reset(
-          new chromeos::SigninScreenPolicyProvider());
+      signin_screen_policy_provider_ =
+          std::make_unique<chromeos::SigninScreenPolicyProvider>();
     }
   }
 
@@ -248,8 +248,9 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
     if (chromeos::LoginState::IsInitialized() &&
         chromeos::LoginState::Get()->IsPublicSessionUser() &&
         !chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled()) {
-      extensions_permissions_tracker_.reset(new ExtensionsPermissionsTracker(
-          ExtensionRegistry::Get(profile_), profile_));
+      extensions_permissions_tracker_ =
+          std::make_unique<ExtensionsPermissionsTracker>(
+              ExtensionRegistry::Get(profile_), profile_);
     }
 #endif
     management_policy_ = std::make_unique<ManagementPolicy>();

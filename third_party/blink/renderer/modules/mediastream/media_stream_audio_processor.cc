@@ -6,9 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -142,7 +144,8 @@ class MediaStreamAudioFifo {
       // possible, twice the larger of the two is a (probably) loose upper bound
       // on the FIFO size.
       const int fifo_frames = 2 * std::max(source_frames, destination_frames);
-      fifo_.reset(new media::AudioFifo(destination_channels, fifo_frames));
+      fifo_ =
+          std::make_unique<media::AudioFifo>(destination_channels, fifo_frames);
     }
 
     // May be created in the main render thread and used in the audio threads.
@@ -627,7 +630,7 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   if (goog_typing_detection) {
     // TODO(xians): Remove this |typing_detector_| after the typing suppression
     // is enabled by default.
-    typing_detector_.reset(new webrtc::TypingDetection());
+    typing_detector_ = std::make_unique<webrtc::TypingDetection>();
     blink::EnableTypingDetection(&apm_config, typing_detector_.get());
   }
 
@@ -726,14 +729,14 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
     output_format_.set_channels_for_discrete(input_format.channels());
   }
 
-  capture_fifo_.reset(
-      new MediaStreamAudioFifo(input_format.channels(), fifo_output_channels,
-                               input_format.frames_per_buffer(),
-                               processing_frames, input_format.sample_rate()));
+  capture_fifo_ = std::make_unique<MediaStreamAudioFifo>(
+      input_format.channels(), fifo_output_channels,
+      input_format.frames_per_buffer(), processing_frames,
+      input_format.sample_rate());
 
   if (audio_processing_) {
-    output_bus_.reset(
-        new MediaStreamAudioBus(output_format_.channels(), output_frames));
+    output_bus_ = std::make_unique<MediaStreamAudioBus>(
+        output_format_.channels(), output_frames);
   }
 }
 

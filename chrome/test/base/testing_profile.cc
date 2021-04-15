@@ -372,8 +372,8 @@ void TestingProfile::Init() {
                               immediate_callback_runner);
   account_manager->SetPrefService(GetPrefs());
   if (!ash::CrosSettings::IsInitialized()) {
-    scoped_cros_settings_test_helper_.reset(
-        new ash::ScopedCrosSettingsTestHelper);
+    scoped_cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
   }
   arc::ArcServiceLauncher* launcher = arc::ArcServiceLauncher::Get();
   if (launcher)

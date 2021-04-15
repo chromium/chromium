@@ -60,7 +60,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         {} /* enabled_features */,
         {features::
              kPurgeRendererMemoryWhenBackgrounded} /* disabled_features */);
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
     scheduler_ = std::make_unique<MainThreadSchedulerImplForTest>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),

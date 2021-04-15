@@ -95,8 +95,8 @@ class FileSystemProviderServiceTest : public testing::Test {
   ~FileSystemProviderServiceTest() override {}
 
   void SetUp() override {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test-user@example.com");
     user_manager_ = new FakeChromeUserManager();
@@ -104,8 +104,9 @@ class FileSystemProviderServiceTest : public testing::Test {
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_));
-    extension_registry_.reset(new extensions::ExtensionRegistry(profile_));
-    service_.reset(new Service(profile_, extension_registry_.get()));
+    extension_registry_ =
+        std::make_unique<extensions::ExtensionRegistry>(profile_);
+    service_ = std::make_unique<Service>(profile_, extension_registry_.get());
 
     registry_ = new FakeRegistry;
     // Passes ownership to the service instance.

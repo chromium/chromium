@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chromeos/process_proxy/process_proxy_registry.h"
-#include "base/strings/string_number_conversions.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 
 namespace chromeos {
@@ -194,7 +196,7 @@ bool ProcessProxyRegistry::EnsureWatcherThreadStarted() {
   // TODO(tbarzic): Change process output watcher to watch for fd readability on
   //    FILE thread, and move output reading to worker thread instead of
   //    spinning a new thread.
-  watcher_thread_.reset(new base::Thread(kWatcherThreadName));
+  watcher_thread_ = std::make_unique<base::Thread>(kWatcherThreadName);
   return watcher_thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 }

@@ -5,12 +5,15 @@
 #include "chrome/test/nacl/nacl_browsertest_util.h"
 
 #include <stdlib.h>
+
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/values.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -268,7 +271,7 @@ bool NaClBrowserTestBase::StartTestServer() {
   base::FilePath document_root;
   if (!GetDocumentRoot(&document_root))
     return false;
-  test_server_.reset(new net::EmbeddedTestServer);
+  test_server_ = std::make_unique<net::EmbeddedTestServer>();
   test_server_->ServeFilesFromSourceDirectory(document_root);
   return test_server_->Start();
 }

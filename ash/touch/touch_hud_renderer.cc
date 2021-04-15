@@ -4,6 +4,8 @@
 
 #include "ash/touch/touch_hud_renderer.h"
 
+#include <memory>
+
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -52,8 +54,8 @@ class TouchPointView : public views::View,
   void FadeOut(std::unique_ptr<TouchPointView> self) {
     DCHECK_EQ(this, self.get());
     owned_self_reference_ = std::move(self);
-    fadeout_.reset(
-        new gfx::LinearAnimation(kFadeoutDuration, kFadeoutFrameRate, this));
+    fadeout_ = std::make_unique<gfx::LinearAnimation>(kFadeoutDuration,
+                                                      kFadeoutFrameRate, this);
     fadeout_->Start();
   }
 

@@ -155,9 +155,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     ASSERT_TRUE(test_nssdb_.is_open());
 
     // Use the same DB for public and private slot.
-    test_nsscertdb_.reset(new net::NSSCertDatabaseChromeOS(
+    test_nsscertdb_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())),
-        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot()))));
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
 
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
@@ -179,31 +179,34 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         network_config_handler_.get(), nullptr /* network_device_handler */,
         nullptr /* prohibited_tecnologies_handler */);
 
-    cellular_inhibitor_.reset(new CellularInhibitor());
+    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_inhibitor_->Init(helper_.network_state_handler(),
                               helper_.network_device_handler());
 
-    cellular_esim_profile_handler_.reset(new TestCellularESimProfileHandler());
+    cellular_esim_profile_handler_ =
+        std::make_unique<TestCellularESimProfileHandler>();
     cellular_esim_profile_handler_->Init(helper_.network_state_handler(),
                                          cellular_inhibitor_.get());
 
-    cellular_esim_connection_handler_.reset(
-        new CellularESimConnectionHandler());
+    cellular_esim_connection_handler_ =
+        std::make_unique<CellularESimConnectionHandler>();
     cellular_esim_connection_handler_->Init(
         helper_.network_state_handler(), cellular_inhibitor_.get(),
         cellular_esim_profile_handler_.get());
 
-    network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
+    network_connection_handler_ =
+        std::make_unique<NetworkConnectionHandlerImpl>();
     network_connection_handler_->Init(
         helper_.network_state_handler(), network_config_handler_.get(),
         managed_config_handler_.get(), cellular_esim_connection_handler_.get());
-    network_connection_observer_.reset(new TestNetworkConnectionObserver);
+    network_connection_observer_ =
+        std::make_unique<TestNetworkConnectionObserver>();
     network_connection_handler_->AddObserver(
         network_connection_observer_.get());
 
     task_environment_.RunUntilIdle();
 
-    fake_tether_delegate_.reset(new FakeTetherDelegate());
+    fake_tether_delegate_ = std::make_unique<FakeTetherDelegate>();
   }
 
   void TearDown() override {

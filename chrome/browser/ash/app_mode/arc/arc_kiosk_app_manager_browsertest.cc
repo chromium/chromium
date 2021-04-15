@@ -44,7 +44,7 @@ class NotificationWaiter : public KioskAppManagerObserver {
   void Wait() {
     if (notification_received_)
       return;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

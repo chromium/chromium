@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -256,16 +257,16 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
 
   void SetUp() override {
     // Create and inject fake lock handler to the screenlock bridge.
-    lock_handler_.reset(new TestLockHandler(account_id_));
+    lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
     proximity_auth::ScreenlockBridge* screenlock_bridge =
         proximity_auth::ScreenlockBridge::Get();
     screenlock_bridge->SetLockHandler(lock_handler_.get());
     fake_pref_manager_ = std::make_unique<FakeProximityAuthPrefManager>();
 
     // Create the screenlock state handler object that will be tested.
-    state_handler_.reset(new EasyUnlockScreenlockStateHandler(
+    state_handler_ = std::make_unique<EasyUnlockScreenlockStateHandler>(
         account_id_, EasyUnlockScreenlockStateHandler::NO_HARDLOCK,
-        screenlock_bridge, fake_pref_manager_.get()));
+        screenlock_bridge, fake_pref_manager_.get());
   }
 
   void TearDown() override {
@@ -466,7 +467,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StatePreservedWhenScreenUnlocks) {
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
-  lock_handler_.reset(new TestLockHandler(account_id_));
+  lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 
@@ -485,7 +486,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangeWhileScreenUnlocked) {
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
-  lock_handler_.reset(new TestLockHandler(account_id_));
+  lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
 
   state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
@@ -616,7 +617,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
       EasyUnlockScreenlockStateHandler::NO_HARDLOCK);
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
-  lock_handler_.reset(new TestLockHandler(account_id_));
+  lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 
@@ -626,7 +627,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
-  lock_handler_.reset(new TestLockHandler(account_id_));
+  lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 
@@ -651,7 +652,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
-  lock_handler_.reset(new TestLockHandler(account_id_));
+  lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 

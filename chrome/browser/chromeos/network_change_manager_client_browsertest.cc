@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -31,7 +33,7 @@ class NetObserver : public net::NetworkChangeNotifier::NetworkChangeObserver {
 
   void WaitForConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
     while (last_connection_type_ != type) {
-      run_loop_.reset(new base::RunLoop());
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
       run_loop_.reset();
     }
@@ -71,7 +73,7 @@ class NetworkServiceObserver
 
   void WaitForConnectionType(network::mojom::ConnectionType type) {
     while (last_connection_type_ != type) {
-      run_loop_.reset(new base::RunLoop());
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
       run_loop_.reset();
     }

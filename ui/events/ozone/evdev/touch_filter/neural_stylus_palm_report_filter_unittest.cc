@@ -4,6 +4,8 @@
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_report_filter.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,8 +23,8 @@ class NeuralStylusReportFilterTest : public testing::Test {
 
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
-    palm_detection_filter_.reset(
-        new NeuralStylusReportFilter(shared_palm_state.get()));
+    palm_detection_filter_ =
+        std::make_unique<NeuralStylusReportFilter>(shared_palm_state.get());
     EXPECT_TRUE(CapabilitiesToDeviceInfo(kNocturneTouchScreen,
                                          &nocturne_touchscreen_info_));
     EXPECT_TRUE(

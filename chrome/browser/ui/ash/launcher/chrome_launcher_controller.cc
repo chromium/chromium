@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -246,8 +247,8 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
   // On Chrome OS using multi profile we want to switch the content of the shelf
   // with a user change. Note that for unit tests the instance can be nullptr.
   if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
-    user_switch_observer_.reset(
-        new ChromeLauncherControllerUserSwitchObserver(this));
+    user_switch_observer_ =
+        std::make_unique<ChromeLauncherControllerUserSwitchObserver>(this);
   }
 
   std::unique_ptr<AppServiceAppWindowLauncherController>

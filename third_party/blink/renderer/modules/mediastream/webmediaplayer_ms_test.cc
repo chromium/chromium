@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -172,12 +173,12 @@ class ReusableMessageLoopEvent {
 
   void RunAndWait() {
     event_->RunAndWait();
-    event_.reset(new media::WaitableMessageLoopEvent());
+    event_ = std::make_unique<media::WaitableMessageLoopEvent>();
   }
 
   void RunAndWaitForStatus(media::PipelineStatus expected) {
     event_->RunAndWaitForStatus(expected);
-    event_.reset(new media::WaitableMessageLoopEvent());
+    event_ = std::make_unique<media::WaitableMessageLoopEvent>();
   }
 
  private:

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -156,7 +157,8 @@ class InputMethodEngineTest : public testing::Test {
     layouts_.emplace_back("us");
     InitInputMethod();
     ui::IMEBridge::Initialize();
-    mock_ime_input_context_handler_.reset(new ui::MockIMEInputContextHandler());
+    mock_ime_input_context_handler_ =
+        std::make_unique<ui::MockIMEInputContextHandler>();
     ui::IMEBridge::Get()->SetInputContextHandler(
         mock_ime_input_context_handler_.get());
 
@@ -172,7 +174,7 @@ class InputMethodEngineTest : public testing::Test {
 
  protected:
   void CreateEngine(bool allowlisted) {
-    engine_.reset(new InputMethodEngine());
+    engine_ = std::make_unique<InputMethodEngine>();
     observer_ = new TestObserver();
     std::unique_ptr<InputMethodEngineBase::Observer> observer_ptr(observer_);
     engine_->Initialize(std::move(observer_ptr),

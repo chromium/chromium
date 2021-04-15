@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/customization/customization_document.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -705,7 +706,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
       const base::DictionaryValue* app_entry = nullptr;
       std::unique_ptr<base::DictionaryValue> entry;
       if (apps_list->GetString(i, &app_id)) {
-        entry.reset(new base::DictionaryValue());
+        entry = std::make_unique<base::DictionaryValue>();
       } else if (apps_list->GetDictionary(i, &app_entry)) {
         if (!app_entry->GetString(kIdAttr, &app_id)) {
           LOG(ERROR) << "Wrong format of default application list";
@@ -823,10 +824,10 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
     return;
   }
 
-  wallpaper_downloader_.reset(new CustomizationWallpaperDownloader(
+  wallpaper_downloader_ = std::make_unique<CustomizationWallpaperDownloader>(
       wallpaper_url, dir, file,
       base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(applying))));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(applying)));
 
   wallpaper_downloader_->Start();
 }

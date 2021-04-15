@@ -247,8 +247,8 @@ class BaseSelectFileDialogExtensionBrowserTest
 
     std::unique_ptr<ExtensionTestMessageListener> additional_listener;
     if (!additional_message.empty()) {
-      additional_listener.reset(
-          new ExtensionTestMessageListener(additional_message, will_reply));
+      additional_listener = std::make_unique<ExtensionTestMessageListener>(
+          additional_message, will_reply);
     }
 
     // Include a file type filter. This triggers additional functionality within

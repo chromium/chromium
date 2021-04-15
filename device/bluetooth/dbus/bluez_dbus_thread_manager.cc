@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
@@ -16,7 +18,7 @@ static BluezDBusThreadManager* g_bluez_dbus_thread_manager = NULL;
 BluezDBusThreadManager::BluezDBusThreadManager() {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
-  dbus_thread_.reset(new base::Thread("Bluez D-Bus thread"));
+  dbus_thread_ = std::make_unique<base::Thread>("Bluez D-Bus thread");
   dbus_thread_->StartWithOptions(thread_options);
 
   // Create the connection to the system bus.

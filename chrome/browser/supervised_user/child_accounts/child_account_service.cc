@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
@@ -334,10 +335,10 @@ void ChildAccountService::OnAccountsInCookieUpdated(
 }
 
 void ChildAccountService::StartFetchingFamilyInfo() {
-  family_fetcher_.reset(new FamilyInfoFetcher(
+  family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
       this, identity_manager_,
       content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcess()));
+          ->GetURLLoaderFactoryForBrowserProcess());
   family_fetcher_->StartGetFamilyMembers();
 }
 

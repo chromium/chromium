@@ -300,7 +300,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
     UserImageManagerImpl* uim = static_cast<UserImageManagerImpl*>(
         ChromeUserManager::Get()->GetUserImageManager(user->GetAccountId()));
     if (uim->job_.get()) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
   }
@@ -350,7 +350,7 @@ class UserImageManagerTest : public UserImageManagerTestBase {
 
 IN_PROC_BROWSER_TEST_F(UserImageManagerTest, PRE_SaveAndLoadUserImage) {
   // Setup a user with JPEG image.
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   const gfx::ImageSkia& image = default_user_image::GetDefaultImage(
       default_user_image::kFirstDefaultImageIndex);
   UserImageManager* user_image_manager =
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImage) {
   const gfx::ImageSkia custom_image =
       gfx::ImageSkia::CreateFrom1xBitmap(custom_image_bitmap);
 
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserImage(user_manager::UserImage::CreateAndEncode(
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromFile) {
       test::ImageLoader(custom_image_path).Load();
   ASSERT_FALSE(custom_image.isNull());
 
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserImageFromFile(custom_image_path);
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromFile) {
   // This image should have transparent pixels (i.e. not opaque).
   EXPECT_FALSE(SkBitmap::ComputeIsOpaque(*transparent_image.bitmap()));
 
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   user_image_manager->SaveUserImageFromFile(transparent_image_path);
   run_loop_->Run();
 
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
   LoginUser(test_account_id1_);
   UpdatePrimaryAccountInfo(ProfileHelper::Get()->GetProfileByUserUnsafe(user));
 
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserImageFromProfileImage();
@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   user_policy_.Build();
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
                                                    user_policy_.GetBlob());
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();
 
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   user_policy_.Build();
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
                                                    user_policy_.GetBlob());
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   store->AddObserver(this);
   store->Load();
   run_loop_->Run();
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   user_policy_.Build();
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
                                                    user_policy_.GetBlob());
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();
 
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   user_policy_.Build();
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
                                                    user_policy_.GetBlob());
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();
 

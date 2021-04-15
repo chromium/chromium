@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -1973,7 +1975,7 @@ bool InspectorHighlight::GetContentQuads(
     quad.Scale(scale, scale);
   }
 
-  result->reset(new protocol::Array<protocol::Array<double>>());
+  *result = std::make_unique<protocol::Array<protocol::Array<double>>>();
   for (FloatQuad& quad : quads)
     (*result)->emplace_back(BuildArrayForQuad(quad));
   return true;

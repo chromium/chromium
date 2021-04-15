@@ -92,7 +92,7 @@ TEST_F(ExtensionCacheTest, SizePolicy) {
   cache_impl.Start(run_loop->QuitClosure());
   run_loop->Run();
 
-  run_loop.reset(new base::RunLoop);
+  run_loop = std::make_unique<base::RunLoop>();
   cache_impl.Shutdown(run_loop->QuitClosure());
   run_loop->Run();
 

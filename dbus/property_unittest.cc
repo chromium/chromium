@@ -58,7 +58,7 @@ class PropertyTest : public testing::Test {
     base::ThreadRestrictions::SetIOAllowed(false);
 
     // Start the D-Bus thread.
-    dbus_thread_.reset(new base::Thread("D-Bus Thread"));
+    dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
     ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
@@ -66,7 +66,7 @@ class PropertyTest : public testing::Test {
     // Start the test service, using the D-Bus thread.
     TestService::Options options;
     options.dbus_task_runner = dbus_thread_->task_runner();
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_TRUE(test_service_->HasDBusThread());
@@ -83,9 +83,9 @@ class PropertyTest : public testing::Test {
     ASSERT_TRUE(bus_->HasDBusThread());
 
     // Create the properties structure
-    properties_.reset(new Properties(
+    properties_ = std::make_unique<Properties>(
         object_proxy_, base::BindRepeating(&PropertyTest::OnPropertyChanged,
-                                           base::Unretained(this))));
+                                           base::Unretained(this)));
     properties_->ConnectSignals();
     properties_->GetAll();
   }
@@ -126,7 +126,7 @@ class PropertyTest : public testing::Test {
   // Waits for the given number of updates.
   void WaitForUpdates(size_t num_updates) {
     while (updated_properties_.size() < num_updates) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
     for (size_t i = 0; i < num_updates; ++i)
@@ -143,7 +143,7 @@ class PropertyTest : public testing::Test {
 
   // Waits until MethodCallback is called.
   void WaitForMethodCallback() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -152,7 +152,7 @@ class PropertyTest : public testing::Test {
   // other; you can set this to whatever you wish.
   void WaitForCallback(const std::string& id) {
     while (last_callback_ != id) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
   }

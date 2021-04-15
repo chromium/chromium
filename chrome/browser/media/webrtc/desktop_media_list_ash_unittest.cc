@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 
+#include <memory>
+
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -44,7 +46,7 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
   }
 
   void CreateList(DesktopMediaList::Type type) {
-    list_.reset(new DesktopMediaListAsh(type));
+    list_ = std::make_unique<DesktopMediaListAsh>(type);
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.

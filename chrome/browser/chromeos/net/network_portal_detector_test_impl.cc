@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
 #include "chromeos/network/network_state.h"
@@ -25,7 +27,7 @@ void NetworkPortalDetectorTestImpl::SetDefaultNetworkForTesting(
   if (guid.empty()) {
     default_network_.reset();
   } else {
-    default_network_.reset(new NetworkState("/service/" + guid));
+    default_network_ = std::make_unique<NetworkState>("/service/" + guid);
     default_network_->SetGuid(guid);
   }
 }

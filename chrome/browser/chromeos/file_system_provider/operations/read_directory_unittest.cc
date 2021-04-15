@@ -271,8 +271,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnError) {
 
   EXPECT_TRUE(read_directory.Execute(kRequestId));
 
-  read_directory.OnError(kRequestId,
-                         std::unique_ptr<RequestValue>(new RequestValue()),
+  read_directory.OnError(kRequestId, std::make_unique<RequestValue>(),
                          base::File::FILE_ERROR_TOO_MANY_OPENED);
 
   ASSERT_EQ(1u, callback_logger.events().size());

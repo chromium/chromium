@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 
+#include <memory>
+
 #include "base/memory/discardable_memory.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -81,7 +83,7 @@ TEST(WebProcessMemoryDumpTest, IntegrationTest) {
   ASSERT_NE(null_wmad, wpmd1->GetMemoryAllocatorDump("2/2"));
 
   // Check that calling serialization routines doesn't cause a crash.
-  traced_value.reset(new base::trace_event::TracedValue);
+  traced_value = std::make_unique<base::trace_event::TracedValue>();
   wpmd1->process_memory_dump()->SerializeAllocatorDumpsInto(traced_value.get());
 
   // Check that clear() actually works.
@@ -91,7 +93,7 @@ TEST(WebProcessMemoryDumpTest, IntegrationTest) {
   ASSERT_EQ(nullptr, wpmd1->process_memory_dump()->GetAllocatorDump("2/1"));
 
   // Check that calling serialization routines doesn't cause a crash.
-  traced_value.reset(new base::trace_event::TracedValue);
+  traced_value = std::make_unique<base::trace_event::TracedValue>();
   wpmd1->process_memory_dump()->SerializeAllocatorDumpsInto(traced_value.get());
 
   // Check if a WebMemoryAllocatorDump created with guid, has correct guid.

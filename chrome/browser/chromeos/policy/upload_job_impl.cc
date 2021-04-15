@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/policy/upload_job_impl.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -249,8 +251,8 @@ bool UploadJobImpl::SetUpMultipart() {
       return false;
   }
 
-  mime_boundary_.reset(
-      new std::string(boundary_generator_->GenerateBoundary()));
+  mime_boundary_ =
+      std::make_unique<std::string>(boundary_generator_->GenerateBoundary());
 
   // Estimate an upper bound for the total message size to make memory
   // allocation more efficient. It is not an error if this turns out to be too
@@ -266,7 +268,7 @@ bool UploadJobImpl::SetUpMultipart() {
   }
 
   // Allocate memory of the expected size.
-  post_data_.reset(new std::string);
+  post_data_ = std::make_unique<std::string>();
   post_data_->reserve(size);
 
   for (const auto& data_segment : data_segments_) {

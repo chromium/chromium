@@ -156,8 +156,8 @@ TEST_F(PersistentHostScanCacheImplTest, TestStoredPersistently) {
 
   // Delete the current PersistentHostScanCacheImpl and create another new one.
   // It should still contain the same data.
-  host_scan_cache_.reset(
-      new PersistentHostScanCacheImpl(test_pref_service_.get()));
+  host_scan_cache_ =
+      std::make_unique<PersistentHostScanCacheImpl>(test_pref_service_.get());
   VerifyPersistentCacheMatchesInMemoryCache(2u /* expected_size */);
 }
 

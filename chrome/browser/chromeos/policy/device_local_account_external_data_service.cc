@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/device_local_account_external_data_service.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -27,8 +28,9 @@ DeviceLocalAccountExternalDataService::DeviceLocalAccountExternalDataService(
     : parent_(parent), backend_task_runner_(std::move(backend_task_runner)) {
   const base::FilePath cache_dir = base::PathService::CheckedGet(
       chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA);
-  resource_cache_.reset(new ResourceCache(cache_dir, backend_task_runner_,
-                                          /* max_cache_size */ base::nullopt));
+  resource_cache_ =
+      std::make_unique<ResourceCache>(cache_dir, backend_task_runner_,
+                                      /* max_cache_size */ base::nullopt);
   parent_->AddObserver(this);
 }
 

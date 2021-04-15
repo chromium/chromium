@@ -5,6 +5,8 @@
 #include "chrome/browser/download/notification/download_item_notification.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/guid.h"
@@ -54,19 +56,19 @@ class DownloadItemNotificationTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test-user");
 
     service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
 
-    download_notification_manager_.reset(
-        new DownloadNotificationManager(profile_));
+    download_notification_manager_ =
+        std::make_unique<DownloadNotificationManager>(profile_);
 
     base::FilePath download_item_target_path(kDownloadItemTargetPathString);
-    download_item_.reset(new NiceMock<download::MockDownloadItem>());
+    download_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*download_item_, GetId()).WillByDefault(Return(12345));
     ON_CALL(*download_item_, GetGuid())
         .WillByDefault(ReturnRefOfCopy(base::GenerateGUID()));

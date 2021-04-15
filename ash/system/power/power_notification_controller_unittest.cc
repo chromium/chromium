@@ -81,8 +81,9 @@ class PowerNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    message_center_.reset(new MockMessageCenter());
-    controller_.reset(new PowerNotificationController(message_center_.get()));
+    message_center_ = std::make_unique<MockMessageCenter>();
+    controller_ =
+        std::make_unique<PowerNotificationController>(message_center_.get());
   }
 
   void TearDown() override {

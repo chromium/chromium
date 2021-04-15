@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -232,10 +233,11 @@ EasyUnlockService::GetScreenlockStateHandler() {
   if (!IsAllowed())
     return NULL;
   if (!screenlock_state_handler_) {
-    screenlock_state_handler_.reset(new EasyUnlockScreenlockStateHandler(
-        GetAccountId(), GetHardlockState(),
-        proximity_auth::ScreenlockBridge::Get(),
-        GetProximityAuthPrefManager()));
+    screenlock_state_handler_ =
+        std::make_unique<EasyUnlockScreenlockStateHandler>(
+            GetAccountId(), GetHardlockState(),
+            proximity_auth::ScreenlockBridge::Get(),
+            GetProximityAuthPrefManager());
   }
   return screenlock_state_handler_.get();
 }
@@ -295,7 +297,8 @@ bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
     return false;
   }
 
-  auth_attempt_.reset(new EasyUnlockAuthAttempt(account_id, auth_attempt_type));
+  auth_attempt_ =
+      std::make_unique<EasyUnlockAuthAttempt>(account_id, auth_attempt_type);
   if (!auth_attempt_->Start()) {
     RecordAuthResultFailure(
         auth_attempt_type,
@@ -430,7 +433,7 @@ void EasyUnlockService::UpdateAppState() {
       proximity_auth_system_->Start();
 
     if (!power_monitor_)
-      power_monitor_.reset(new PowerMonitor(this));
+      power_monitor_ = std::make_unique<PowerMonitor>(this);
   }
 }
 
@@ -626,11 +629,12 @@ void EasyUnlockService::SetProximityAuthDevices(
 
   if (!proximity_auth_system_) {
     PA_LOG(VERBOSE) << "Creating ProximityAuthSystem.";
-    proximity_auth_system_.reset(new proximity_auth::ProximityAuthSystem(
-        GetType() == TYPE_SIGNIN
-            ? proximity_auth::ProximityAuthSystem::SIGN_IN
-            : proximity_auth::ProximityAuthSystem::SESSION_LOCK,
-        proximity_auth_client(), secure_channel_client_));
+    proximity_auth_system_ =
+        std::make_unique<proximity_auth::ProximityAuthSystem>(
+            GetType() == TYPE_SIGNIN
+                ? proximity_auth::ProximityAuthSystem::SIGN_IN
+                : proximity_auth::ProximityAuthSystem::SESSION_LOCK,
+            proximity_auth_client(), secure_channel_client_);
   }
 
   proximity_auth_system_->SetRemoteDevicesForUser(account_id, remote_devices,

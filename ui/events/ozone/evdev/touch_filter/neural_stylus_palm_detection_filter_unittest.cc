@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,7 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
  public:
   NeuralStylusPalmDetectionFilterTest() = default;
   void SetUp() override {
-    shared_palm_state.reset(new SharedPalmDetectionFilterState);
+    shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     model_ = new testing::StrictMock<MockNeuralModel>;
     model_config_.biggest_near_neighbor_count = 2;
     model_config_.min_sample_count = 2;
@@ -43,10 +44,10 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
         .WillRepeatedly(testing::ReturnRef(model_config_));
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kNocturneTouchScreen, &nocturne_touchscreen_));
-    palm_detection_filter_.reset(new NeuralStylusPalmDetectionFilter(
+    palm_detection_filter_ = std::make_unique<NeuralStylusPalmDetectionFilter>(
         nocturne_touchscreen_,
         std::unique_ptr<NeuralStylusPalmDetectionFilterModel>(model_),
-        shared_palm_state.get()));
+        shared_palm_state.get());
     touch_.resize(kNumTouchEvdevSlots);
     for (size_t i = 0; i < touch_.size(); ++i) {
       touch_[i].slot = i;

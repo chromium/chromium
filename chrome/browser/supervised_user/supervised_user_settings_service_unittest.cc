@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -64,7 +65,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   ~SupervisedUserSettingsServiceTest() override {}
 
   std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncProcessor() {
-    sync_processor_.reset(new syncer::FakeSyncChangeProcessor);
+    sync_processor_ = std::make_unique<syncer::FakeSyncChangeProcessor>();
     return std::unique_ptr<syncer::SyncChangeProcessor>(
         new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
   }
@@ -83,13 +84,13 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     split_items_.SetKey(key, base::Value(value));
     settings_service_.UploadItem(
         SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
-        std::unique_ptr<base::Value>(new base::Value(value)));
+        std::make_unique<base::Value>(value));
   }
 
   void UploadAtomicItem(const std::string& value) {
-    atomic_setting_value_.reset(new base::Value(value));
-    settings_service_.UploadItem(
-        kAtomicItemName, std::unique_ptr<base::Value>(new base::Value(value)));
+    atomic_setting_value_ = std::make_unique<base::Value>(value);
+    settings_service_.UploadItem(kAtomicItemName,
+                                 std::make_unique<base::Value>(value));
   }
 
   void VerifySyncDataItem(syncer::SyncData sync_data) {
@@ -272,8 +273,7 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
 
   settings_.reset();
   settings_service_.SetLocalSetting(
-      kSettingsName,
-      std::unique_ptr<base::Value>(new base::Value(kSettingsValue)));
+      kSettingsName, std::make_unique<base::Value>(kSettingsValue));
   ASSERT_TRUE(settings_);
   ASSERT_TRUE(settings_->GetWithoutPathExpansion(kSettingsName, &value));
   std::string string_value;

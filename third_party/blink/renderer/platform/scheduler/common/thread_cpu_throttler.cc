@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 
+#include <memory>
+
 #include "base/atomicops.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -212,7 +214,7 @@ void ThreadCPUThrottler::SetThrottlingRate(double rate) {
   if (throttling_thread_) {
     throttling_thread_->SetThrottlingRate(rate);
   } else {
-    throttling_thread_.reset(new ThrottlingThread(rate));
+    throttling_thread_ = std::make_unique<ThrottlingThread>(rate);
   }
 }
 

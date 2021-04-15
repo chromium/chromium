@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -114,8 +116,8 @@ void TokenHandleFetcher::FillForNewUser(const std::string& access_token,
 
 void TokenHandleFetcher::FillForAccessToken(const std::string& access_token) {
   if (!gaia_client_.get())
-    gaia_client_.reset(
-        new gaia::GaiaOAuthClient(profile_->GetURLLoaderFactory()));
+    gaia_client_ = std::make_unique<gaia::GaiaOAuthClient>(
+        profile_->GetURLLoaderFactory());
   tokeninfo_response_start_time_ = base::TimeTicks::Now();
   gaia_client_->GetTokenInfo(access_token, kMaxRetries, this);
 }

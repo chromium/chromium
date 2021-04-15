@@ -145,7 +145,8 @@ class ProcessOutputWatcherTest : public testing::Test {
 
   void RunTest(const std::vector<TestCase>& test_cases) {
     ASSERT_FALSE(output_watch_thread_started_);
-    output_watch_thread_.reset(new base::Thread("ProcessOutpuWatchThread"));
+    output_watch_thread_ =
+        std::make_unique<base::Thread>("ProcessOutpuWatchThread");
     output_watch_thread_started_ = output_watch_thread_->StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     ASSERT_TRUE(output_watch_thread_started_);

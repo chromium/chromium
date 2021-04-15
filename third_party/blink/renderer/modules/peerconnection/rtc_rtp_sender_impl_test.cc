@@ -37,7 +37,8 @@ namespace blink {
 class RTCRtpSenderImplTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
     track_map_ = base::MakeRefCounted<blink::WebRtcMediaStreamTrackAdapterMap>(
         dependency_factory_.get(), main_thread_);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer_sink.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -150,8 +151,9 @@ MediaStreamVideoRendererSink::~MediaStreamVideoRendererSink() {
 void MediaStreamVideoRendererSink::Start() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  frame_deliverer_.reset(new MediaStreamVideoRendererSink::FrameDeliverer(
-      repaint_cb_, weak_factory_.GetWeakPtr(), main_render_task_runner_));
+  frame_deliverer_ =
+      std::make_unique<MediaStreamVideoRendererSink::FrameDeliverer>(
+          repaint_cb_, weak_factory_.GetWeakPtr(), main_render_task_runner_);
   PostCrossThreadTask(
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::Start,

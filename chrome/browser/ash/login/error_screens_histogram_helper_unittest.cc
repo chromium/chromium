@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 
+#include <memory>
+
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -15,8 +17,9 @@ namespace chromeos {
 class ErrorScreensHistogramHelperTest : public testing::Test {
  public:
   void SetUp() override {
-    helper_.reset(new ErrorScreensHistogramHelper("TestScreen"));
-    second_helper_.reset(new ErrorScreensHistogramHelper("TestScreen2"));
+    helper_ = std::make_unique<ErrorScreensHistogramHelper>("TestScreen");
+    second_helper_ =
+        std::make_unique<ErrorScreensHistogramHelper>("TestScreen2");
   }
 
   content::BrowserTaskEnvironment task_environment_;

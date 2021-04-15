@@ -55,62 +55,65 @@ TEST(ValuesUtilTest, PopBasicTypes) {
   // Pop a byte.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kByteValue));
+  expected_value = std::make_unique<base::Value>(kByteValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a bool.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kBoolValue));
+  expected_value = std::make_unique<base::Value>(kBoolValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an int16_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kInt16Value));
+  expected_value = std::make_unique<base::Value>(kInt16Value);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a uint16_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kUint16Value));
+  expected_value = std::make_unique<base::Value>(kUint16Value);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an int32_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kInt32Value));
+  expected_value = std::make_unique<base::Value>(kInt32Value);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a uint32_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(static_cast<double>(kUint32Value)));
+  expected_value =
+      std::make_unique<base::Value>(static_cast<double>(kUint32Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an int64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(static_cast<double>(kInt64Value)));
+  expected_value =
+      std::make_unique<base::Value>(static_cast<double>(kInt64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a uint64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(static_cast<double>(kUint64Value)));
+  expected_value =
+      std::make_unique<base::Value>(static_cast<double>(kUint64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a double.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kDoubleValue));
+  expected_value = std::make_unique<base::Value>(kDoubleValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a string.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kStringValue));
+  expected_value = std::make_unique<base::Value>(kStringValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an empty string.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kEmptyStringValue));
+  expected_value = std::make_unique<base::Value>(kEmptyStringValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an object path.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kObjectPathValue.value()));
+  expected_value = std::make_unique<base::Value>(kObjectPathValue.value());
   EXPECT_TRUE(value->Equals(expected_value.get()));
 }
 
@@ -133,22 +136,22 @@ TEST(ValuesUtilTest, PopVariant) {
   // Pop a bool.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kBoolValue));
+  expected_value = std::make_unique<base::Value>(kBoolValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop an int32_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kInt32Value));
+  expected_value = std::make_unique<base::Value>(kInt32Value);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a double.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kDoubleValue));
+  expected_value = std::make_unique<base::Value>(kDoubleValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
   // Pop a string.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(kStringValue));
+  expected_value = std::make_unique<base::Value>(kStringValue);
   EXPECT_TRUE(value->Equals(expected_value.get()));
 }
 
@@ -170,14 +173,16 @@ TEST(ValuesUtilTest, PopExtremelyLargeIntegers) {
   // Pop an int64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(static_cast<double>(kInt64Value)));
+  expected_value =
+      std::make_unique<base::Value>(static_cast<double>(kInt64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
   ASSERT_TRUE(value->GetAsDouble(&double_value));
   EXPECT_NE(kInt64Value, static_cast<int64_t>(double_value));
   // Pop a uint64_t.
   value = PopDataAsValue(&reader);
   ASSERT_NE(nullptr, value);
-  expected_value.reset(new base::Value(static_cast<double>(kUint64Value)));
+  expected_value =
+      std::make_unique<base::Value>(static_cast<double>(kUint64Value));
   EXPECT_TRUE(value->Equals(expected_value.get()));
   ASSERT_TRUE(value->GetAsDouble(&double_value));
   EXPECT_NE(kUint64Value, static_cast<uint64_t>(double_value));

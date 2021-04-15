@@ -530,8 +530,8 @@ class DiskMountManagerTest : public testing::Test {
 
     InitDisksAndMountPoints();
 
-    observer_.reset(
-        new MockDiskMountManagerObserver(DiskMountManager::GetInstance()));
+    observer_ = std::make_unique<MockDiskMountManagerObserver>(
+        DiskMountManager::GetInstance());
     DiskMountManager::GetInstance()->AddObserver(observer_.get());
   }
 

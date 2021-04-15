@@ -5,6 +5,8 @@
 #include "chromeos/components/proximity_auth/proximity_monitor_impl.h"
 
 #include <math.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -161,7 +163,7 @@ void ProximityMonitorImpl::ClearProximityState() {
 void ProximityMonitorImpl::AddSample(int32_t rssi) {
   double weight = kRssiSampleWeight;
   if (!rssi_rolling_average_) {
-    rssi_rolling_average_.reset(new double(rssi));
+    rssi_rolling_average_ = std::make_unique<double>(rssi);
   } else {
     *rssi_rolling_average_ =
         weight * rssi + (1 - weight) * (*rssi_rolling_average_);

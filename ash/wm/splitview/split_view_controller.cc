@@ -1279,8 +1279,8 @@ void SplitViewController::OnWindowDragEnded(
     SnapPosition desired_snap_position,
     const gfx::Point& last_location_in_screen) {
   if (window_util::IsDraggingTabs(dragged_window)) {
-    dragged_window_observer_.reset(new TabDraggedWindowObserver(
-        this, dragged_window, desired_snap_position, last_location_in_screen));
+    dragged_window_observer_ = std::make_unique<TabDraggedWindowObserver>(
+        this, dragged_window, desired_snap_position, last_location_in_screen);
   } else {
     EndWindowDragImpl(dragged_window, /*is_being_destroyed=*/false,
                       desired_snap_position, last_location_in_screen);

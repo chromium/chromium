@@ -794,7 +794,7 @@ void BluetoothDeviceBlueZ::SetAdvertisedUUIDs(
 
 BluetoothPairingBlueZ* BluetoothDeviceBlueZ::BeginPairing(
     BluetoothDevice::PairingDelegate* pairing_delegate) {
-  pairing_.reset(new BluetoothPairingBlueZ(this, pairing_delegate));
+  pairing_ = std::make_unique<BluetoothPairingBlueZ>(this, pairing_delegate);
   return pairing_.get();
 }
 

@@ -112,7 +112,7 @@ class MtpManagerClientChromeOSTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    mock_storage_observer_.reset(new MockRemovableStorageObserver);
+    mock_storage_observer_ = std::make_unique<MockRemovableStorageObserver>();
     TestStorageMonitor* monitor = TestStorageMonitor::CreateAndInstall();
     mtp_device_observer_ = std::make_unique<FakeMtpManagerClientChromeOS>(
         monitor->receiver(), monitor->media_transfer_protocol_manager());

@@ -5,6 +5,8 @@
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api_ash.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -192,7 +194,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 
   std::unique_ptr<net::CertificateList> client_certs;
   if (params->details.client_certs) {
-    client_certs.reset(new net::CertificateList);
+    client_certs = std::make_unique<net::CertificateList>();
     for (const std::vector<uint8_t>& client_cert_der :
          *params->details.client_certs) {
       if (client_cert_der.empty())

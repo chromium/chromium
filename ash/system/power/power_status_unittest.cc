@@ -44,7 +44,7 @@ class PowerStatusTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     power_status_ = PowerStatus::Get();
-    test_observer_.reset(new TestObserver);
+    test_observer_ = std::make_unique<TestObserver>();
     power_status_->AddObserver(test_observer_.get());
   }
 

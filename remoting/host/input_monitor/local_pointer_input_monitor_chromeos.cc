@@ -4,6 +4,7 @@
 
 #include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -92,7 +93,7 @@ void LocalPointerInputMonitorChromeos::Core::Start() {
   // EventMatchers. (And if that doesn't work, maybe a PointerObserver.)
   if (ui::PlatformEventSource::GetInstance())
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
-  point_transformer_.reset(new PointTransformer());
+  point_transformer_ = std::make_unique<PointTransformer>();
 }
 
 LocalPointerInputMonitorChromeos::Core::~Core() {

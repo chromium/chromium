@@ -280,10 +280,10 @@ void EasyUnlockCreateKeysOperation::CreateKeyForDeviceAtIndex(size_t index) {
     return;
   }
 
-  challenge_creator_.reset(new ChallengeCreator(
+  challenge_creator_ = std::make_unique<ChallengeCreator>(
       user_key, session_key->key(), tpm_public_key_, device,
       base::BindOnce(&EasyUnlockCreateKeysOperation::OnChallengeCreated,
-                     weak_ptr_factory_.GetWeakPtr(), index)));
+                     weak_ptr_factory_.GetWeakPtr(), index));
   challenge_creator_->Start();
 }
 

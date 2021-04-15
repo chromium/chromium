@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -183,7 +184,8 @@ class SystemTPMTokenInfoGetterTest : public testing::Test {
   }
 
   void SetUp() override {
-    cryptohome_client_.reset(new TestCryptohomePkcs11Client(EmptyAccountId()));
+    cryptohome_client_ =
+        std::make_unique<TestCryptohomePkcs11Client>(EmptyAccountId());
     tpm_token_info_getter_ =
         chromeos::TPMTokenInfoGetter::CreateForSystemToken(
             cryptohome_client_.get(),
@@ -212,7 +214,8 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
   }
 
   void SetUp() override {
-    cryptohome_client_.reset(new TestCryptohomePkcs11Client(account_id_));
+    cryptohome_client_ =
+        std::make_unique<TestCryptohomePkcs11Client>(account_id_);
     tpm_token_info_getter_ = chromeos::TPMTokenInfoGetter::CreateForUserToken(
         account_id_, cryptohome_client_.get(),
         scoped_refptr<base::TaskRunner>(new FakeTaskRunner(&delays_)));

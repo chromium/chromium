@@ -1,8 +1,10 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
+
+#include <memory>
+
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -31,7 +33,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
         nullptr /* profile */);
     tester_->SetNotificationAddedClosure(base::BindRepeating(
         &GnubbyNotificationTest::OnNotificationAdded, base::Unretained(this)));
-    gnubby_notification_.reset(new GnubbyNotification());
+    gnubby_notification_ = std::make_unique<GnubbyNotification>();
     notification_count_ = 0;
   }
 

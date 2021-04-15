@@ -102,11 +102,11 @@ class FileSystemProviderRegistryTest : public testing::Test {
   ~FileSystemProviderRegistryTest() override {}
 
   void SetUp() override {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test-user@example.com");
-    registry_.reset(new Registry(profile_));
+    registry_ = std::make_unique<Registry>(profile_);
     fake_watcher_.entry_path = base::FilePath(FILE_PATH_LITERAL("/a/b/c"));
     fake_watcher_.recursive = true;
     fake_watcher_.subscribers[GURL(kTemporaryOrigin)].origin =

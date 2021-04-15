@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 
@@ -33,11 +35,11 @@ const brlapi_keyCode_t kMaxFunctionKey = BRLAPI_KEY_SYM_FUNCTION + 23;
 // |KeyEvent|.
 void MapModifierFlags(brlapi_keyCode_t code, KeyEvent* event) {
   if (code & BRLAPI_KEY_FLG_CONTROL)
-    event->ctrl_key.reset(new bool(true));
+    event->ctrl_key = std::make_unique<bool>(true);
   if (code & BRLAPI_KEY_FLG_META)
-    event->alt_key.reset(new bool(true));
+    event->alt_key = std::make_unique<bool>(true);
   if (code & BRLAPI_KEY_FLG_SHIFT)
-    event->shift_key.reset(new bool(true));
+    event->shift_key = std::make_unique<bool>(true);
 }
 
 // Maps a brlapi keysym, which is similar to an X keysym into the
@@ -51,14 +53,14 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
     uint32_t code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
     if (!base::IsValidCharacter(code_point))
       return;
-    event->standard_key_char.reset(new std::string);
+    event->standard_key_char = std::make_unique<std::string>();
     base::WriteUnicodeCharacter(code_point, event->standard_key_char.get());
   } else if (key_sym >= kMinFunctionKey && key_sym <= kMaxFunctionKey) {
     // Function keys are 0-based here, so we need to add one to get e.g.
     // 'F1' for the first key.
     int function_key_number = key_sym - kMinFunctionKey + 1;
-    event->standard_key_code.reset(
-        new std::string(base::StringPrintf("F%d", function_key_number)));
+    event->standard_key_code = std::make_unique<std::string>(
+        base::StringPrintf("F%d", function_key_number));
   } else {
     // Explicitly map the keys that brlapi provides.
     const char* code_string;
@@ -108,7 +110,7 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
       default:
         return;
     }
-    event->standard_key_code.reset(new std::string(code_string));
+    event->standard_key_code = std::make_unique<std::string>(code_string);
   }
   MapModifierFlags(code, event);
   event->command = KEY_COMMAND_STANDARD_KEY;
@@ -139,11 +141,11 @@ void MapCommand(brlapi_keyCode_t code, KeyEvent* event) {
       switch (code & BRLAPI_KEY_CMD_BLK_MASK) {
         case BRLAPI_KEY_CMD_ROUTE:
           event->command = KEY_COMMAND_ROUTING;
-          event->display_position.reset(new int(argument));
+          event->display_position = std::make_unique<int>(argument);
           break;
         case BRLAPI_KEY_CMD_PASSDOTS:
           unsigned int dots = argument & kAllDots;
-          event->braille_dots.reset(new int(dots));
+          event->braille_dots = std::make_unique<int>(dots);
 
           // BRLAPI_DOTC represents when the braille space key is pressed.
           if (dots && (argument & BRLAPI_DOTC))

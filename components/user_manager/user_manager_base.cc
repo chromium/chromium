@@ -1097,7 +1097,7 @@ void UserManagerBase::UpdateUserAccountLocale(const AccountId& account_id,
                        std::move(resolved_locale)),
         raw_resolved_locale);
   } else {
-    resolved_locale.reset(new std::string(locale));
+    resolved_locale = std::make_unique<std::string>(locale);
     DoUpdateAccountLocale(account_id, std::move(resolved_locale));
   }
 }

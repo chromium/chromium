@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/switch_access/point_scan_controller.h"
+
+#include <memory>
+
 #include "ash/accessibility/switch_access/point_scan_layer.h"
 #include "ash/accessibility/switch_access/point_scan_layer_animation_info.h"
 #include "ui/display/display.h"
@@ -32,9 +35,9 @@ void PointScanController::Start() {
 
 void PointScanController::StartHorizontalRangeScan() {
   state_ = PointScanState::kHorizontalRangeScanning;
-  horizontal_range_layer_.reset(
-      new PointScanLayer(this, PointScanLayer::Orientation::HORIZONTAL,
-                         PointScanLayer::Type::RANGE));
+  horizontal_range_layer_ = std::make_unique<PointScanLayer>(
+      this, PointScanLayer::Orientation::HORIZONTAL,
+      PointScanLayer::Type::RANGE);
   gfx::Rect layer_bounds = horizontal_range_layer_->bounds();
   horizontal_range_layer_info_.offset = layer_bounds.x();
   horizontal_range_layer_info_.offset_start = layer_bounds.x();
@@ -46,9 +49,9 @@ void PointScanController::StartHorizontalRangeScan() {
 void PointScanController::StartHorizontalLineScan() {
   state_ = PointScanState::kHorizontalScanning;
   horizontal_range_layer_->Pause();
-  horizontal_line_layer_.reset(
-      new PointScanLayer(this, PointScanLayer::Orientation::HORIZONTAL,
-                         PointScanLayer::Type::LINE));
+  horizontal_line_layer_ = std::make_unique<PointScanLayer>(
+      this, PointScanLayer::Orientation::HORIZONTAL,
+      PointScanLayer::Type::LINE);
   horizontal_line_layer_info_.offset = horizontal_range_layer_info_.offset;
   horizontal_line_layer_info_.offset_start =
       horizontal_range_layer_info_.offset;
@@ -61,9 +64,8 @@ void PointScanController::StartVerticalRangeScan() {
   state_ = PointScanState::kVerticalRangeScanning;
   horizontal_line_layer_->Pause();
   horizontal_range_layer_->SetOpacity(0);
-  vertical_range_layer_.reset(
-      new PointScanLayer(this, PointScanLayer::Orientation::VERTICAL,
-                         PointScanLayer::Type::RANGE));
+  vertical_range_layer_ = std::make_unique<PointScanLayer>(
+      this, PointScanLayer::Orientation::VERTICAL, PointScanLayer::Type::RANGE);
   gfx::Rect layer_bounds = vertical_range_layer_->bounds();
   vertical_range_layer_info_.offset = layer_bounds.y();
   vertical_range_layer_info_.offset = layer_bounds.y();
@@ -75,8 +77,8 @@ void PointScanController::StartVerticalRangeScan() {
 void PointScanController::StartVerticalLineScan() {
   state_ = PointScanState::kVerticalScanning;
   vertical_range_layer_->Pause();
-  vertical_line_layer_.reset(new PointScanLayer(
-      this, PointScanLayer::Orientation::VERTICAL, PointScanLayer::Type::LINE));
+  vertical_line_layer_ = std::make_unique<PointScanLayer>(
+      this, PointScanLayer::Orientation::VERTICAL, PointScanLayer::Type::LINE);
   vertical_line_layer_info_.offset = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_start = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_bound =

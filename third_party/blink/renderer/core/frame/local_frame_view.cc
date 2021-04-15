@@ -540,7 +540,7 @@ ScrollingCoordinatorContext* LocalFrameView::GetScrollingContext() const {
     return root->View()->GetScrollingContext();
 
   if (!scrolling_context_)
-    scrolling_context_.reset(new ScrollingCoordinatorContext());
+    scrolling_context_ = std::make_unique<ScrollingCoordinatorContext>();
   return scrolling_context_.get();
 }
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/users_private/users_private_delegate.h"
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -21,7 +23,7 @@ UsersPrivateDelegate::~UsersPrivateDelegate() {
 
 PrefsUtil* UsersPrivateDelegate::GetPrefsUtil() {
   if (!prefs_util_)
-    prefs_util_.reset(new PrefsUtil(profile_));
+    prefs_util_ = std::make_unique<PrefsUtil>(profile_);
 
   return prefs_util_.get();
 }

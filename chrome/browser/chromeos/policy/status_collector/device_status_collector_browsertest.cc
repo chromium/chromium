@@ -930,7 +930,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     device_status_.Clear();
     session_status_.Clear();
     got_session_status_ = false;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     status_collector_->GetStatusAsync(base::BindRepeating(
         &DeviceStatusCollectorTest::OnStatusReceived, base::Unretained(this)));
     run_loop_->Run();
@@ -1036,7 +1036,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchArcKioskApp(
       const DeviceLocalAccount& auto_launch_app_account) {
-    arc_kiosk_app_manager_.reset(new chromeos::ArcKioskAppManager());
+    arc_kiosk_app_manager_ = std::make_unique<chromeos::ArcKioskAppManager>();
     arc_kiosk_app_manager_->AddAutoLaunchAppForTest(
         auto_launch_app_account.arc_kiosk_app_info.package_name(),
         auto_launch_app_account.arc_kiosk_app_info,

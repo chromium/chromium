@@ -351,7 +351,7 @@ bool OwnerSettingsServiceAsh::CommitTentativeDeviceSettings(
                << user_id_;
     return false;
   }
-  tentative_settings_.reset(new em::ChromeDeviceSettingsProto);
+  tentative_settings_ = std::make_unique<em::ChromeDeviceSettingsProto>();
   CHECK(tentative_settings_->ParseFromString(policy->policy_value()));
   StorePendingChanges();
   return true;

@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_context.h"
@@ -46,8 +48,8 @@ WebcamPrivateAPI* WebcamPrivateAPI::Get(content::BrowserContext* context) {
 
 WebcamPrivateAPI::WebcamPrivateAPI(content::BrowserContext* context)
     : browser_context_(context) {
-  webcam_resource_manager_.reset(
-      new ApiResourceManager<WebcamResource>(context));
+  webcam_resource_manager_ =
+      std::make_unique<ApiResourceManager<WebcamResource>>(context);
 }
 
 WebcamPrivateAPI::~WebcamPrivateAPI() {

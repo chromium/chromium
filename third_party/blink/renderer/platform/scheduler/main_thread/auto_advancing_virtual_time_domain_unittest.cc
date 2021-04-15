@@ -34,17 +34,18 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
         base::TimeDelta::FromMilliseconds(5));
     sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
         nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
-    scheduler_helper_.reset(new NonMainThreadSchedulerHelper(
-        sequence_manager_.get(), nullptr, TaskType::kInternalTest));
+    scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
+        sequence_manager_.get(), nullptr, TaskType::kInternalTest);
     scheduler_helper_->AttachToCurrentThread();
 
     scheduler_helper_->AddTaskTimeObserver(&test_task_time_observer_);
     task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
     initial_time_ = base::Time::FromJsTime(100000.0);
     initial_time_ticks_ = test_task_runner_->NowTicks();
-    auto_advancing_time_domain_.reset(new AutoAdvancingVirtualTimeDomain(
-        initial_time_, initial_time_ticks_, scheduler_helper_.get(),
-        AutoAdvancingVirtualTimeDomain::BaseTimeOverridePolicy::OVERRIDE));
+    auto_advancing_time_domain_ =
+        std::make_unique<AutoAdvancingVirtualTimeDomain>(
+            initial_time_, initial_time_ticks_, scheduler_helper_.get(),
+            AutoAdvancingVirtualTimeDomain::BaseTimeOverridePolicy::OVERRIDE);
     scheduler_helper_->RegisterTimeDomain(auto_advancing_time_domain_.get());
     task_queue_->SetTimeDomain(auto_advancing_time_domain_.get());
   }

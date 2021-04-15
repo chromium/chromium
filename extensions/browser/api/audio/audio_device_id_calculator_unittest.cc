@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
 
+#include <memory>
+
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -78,7 +80,7 @@ TEST_F(AudioDeviceIdCalculatorTest, Test) {
 
   // Reset the calculator and test adding stable IDs does not produce ID
   // conflicting with previously added ones.
-  calculator.reset(new AudioDeviceIdCalculator(browser_context()));
+  calculator = std::make_unique<AudioDeviceIdCalculator>(browser_context());
   EXPECT_EQ("3", calculator->GetStableDeviceId(22222));
   EXPECT_EQ("4", calculator->GetStableDeviceId(33333));
 

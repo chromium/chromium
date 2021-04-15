@@ -82,7 +82,8 @@ class MockCryptAuthEnrollerFactory : public CryptAuthEnrollerFactory {
   // CryptAuthEnrollerFactory:
   std::unique_ptr<CryptAuthEnroller> CreateInstance() override {
     auto passed_cryptauth_enroller = std::move(next_cryptauth_enroller_);
-    next_cryptauth_enroller_.reset(new NiceMock<MockCryptAuthEnroller>());
+    next_cryptauth_enroller_ =
+        std::make_unique<NiceMock<MockCryptAuthEnroller>>();
     return std::move(passed_cryptauth_enroller);
   }
 

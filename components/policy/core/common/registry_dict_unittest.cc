@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/registry_dict.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -79,7 +80,7 @@ TEST(RegistryDictTest, SetAndGetKeys) {
   ASSERT_TRUE(actual_subdict);
   EXPECT_EQ(int_value, *actual_subdict->GetValue("one"));
 
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("three", string_value.CreateDeepCopy());
   test_dict.SetKey("four", std::move(subdict));
   EXPECT_EQ(2u, test_dict.keys().size());
@@ -138,10 +139,10 @@ TEST(RegistryDictTest, Merge) {
   dict_a.SetKey("three", std::move(subdict));
 
   dict_b.SetValue("four", string_value.CreateDeepCopy());
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("two", int_value.CreateDeepCopy());
   dict_b.SetKey("three", std::move(subdict));
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("five", int_value.CreateDeepCopy());
   dict_b.SetKey("six", std::move(subdict));
 

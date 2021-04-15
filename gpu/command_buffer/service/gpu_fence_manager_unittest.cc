@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
@@ -44,8 +46,8 @@ class GpuFenceManagerTest : public GpuServiceTest {
     GpuServiceTest::SetUp();
     SetupMockEGL("EGL_ANDROID_native_fence_sync EGL_KHR_wait_sync");
     SetupFeatureInfo("", "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
-    error_state_.reset(new ::testing::StrictMock<MockErrorState>());
-    manager_.reset(new GpuFenceManager());
+    error_state_ = std::make_unique<::testing::StrictMock<MockErrorState>>();
+    manager_ = std::make_unique<GpuFenceManager>();
   }
 
   void TearDown() override {
@@ -57,7 +59,7 @@ class GpuFenceManagerTest : public GpuServiceTest {
 
   void SetupMockEGL(const char* extensions) {
     gl::SetGLGetProcAddressProc(gl::MockEGLInterface::GetGLProcAddress);
-    egl_.reset(new ::testing::NiceMock<::gl::MockEGLInterface>());
+    egl_ = std::make_unique<::testing::NiceMock<::gl::MockEGLInterface>>();
     ::gl::MockEGLInterface::SetEGLInterface(egl_.get());
 
     const EGLDisplay kDummyDisplay = reinterpret_cast<EGLDisplay>(0x1001);

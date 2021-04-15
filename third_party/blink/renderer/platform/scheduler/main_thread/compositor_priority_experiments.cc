@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/compositor_priority_experiments.h"
 
+#include <memory>
+
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -74,12 +76,12 @@ QueuePriority CompositorPriorityExperiments::GetCompositorPriority() const {
 
 void CompositorPriorityExperiments::OnMainThreadSchedulerInitialized() {
   if (experiment_ == Experiment::kVeryHighPriorityForCompositingBudget) {
-    budget_pool_controller_.reset(new CompositorBudgetPoolController(
+    budget_pool_controller_ = std::make_unique<CompositorBudgetPoolController>(
         this, scheduler_, scheduler_->CompositorTaskQueue().get(),
         &scheduler_->tracing_controller_,
         base::TimeDelta::FromMilliseconds(
             kInitialCompositorBudgetInMilliseconds.Get()),
-        kCompositorBudgetRecoveryRate.Get()));
+        kCompositorBudgetRecoveryRate.Get());
   }
 }
 
@@ -178,8 +180,8 @@ CompositorPriorityExperiments::CompositorBudgetPoolController::
             MainThreadTaskQueue::QueueType::kCompositor);
   base::TimeTicks now = scheduler->GetTickClock()->NowTicks();
 
-  compositor_budget_pool_.reset(new CPUTimeBudgetPool(
-      "CompositorBudgetPool", this, tracing_controller, now));
+  compositor_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
+      "CompositorBudgetPool", this, tracing_controller, now);
   compositor_budget_pool_->SetMinBudgetLevelToRun(now, min_budget);
   compositor_budget_pool_->SetTimeBudgetRecoveryRate(now, budget_recovery_rate);
   compositor_queue->AddToBudgetPool(now, compositor_budget_pool_.get());

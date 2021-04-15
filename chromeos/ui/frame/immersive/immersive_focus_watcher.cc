@@ -4,6 +4,8 @@
 
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 
+#include <memory>
+
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -239,7 +241,8 @@ aura::Window* ImmersiveFocusWatcher::GetWidgetWindow() {
 }
 
 void ImmersiveFocusWatcher::RecreateBubbleObserver() {
-  bubble_observer_.reset(new BubbleObserver(immersive_fullscreen_controller_));
+  bubble_observer_ =
+      std::make_unique<BubbleObserver>(immersive_fullscreen_controller_);
   const std::vector<aura::Window*> transient_children =
       aura::client::GetTransientWindowClient()->GetTransientChildren(
           GetWidgetWindow());

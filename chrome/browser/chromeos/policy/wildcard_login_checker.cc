@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/wildcard_login_checker.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
@@ -80,8 +82,8 @@ void WildcardLoginChecker::OnPolicyTokenFetched(
 
 void WildcardLoginChecker::StartUserInfoFetcher(
     const std::string& access_token) {
-  user_info_fetcher_.reset(new UserInfoFetcher(
-      this, g_browser_process->shared_url_loader_factory()));
+  user_info_fetcher_ = std::make_unique<UserInfoFetcher>(
+      this, g_browser_process->shared_url_loader_factory());
   user_info_fetcher_->Start(access_token);
 }
 

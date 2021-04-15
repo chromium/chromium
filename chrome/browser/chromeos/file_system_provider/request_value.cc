@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/file_system_provider/request_value.h"
 
+#include <memory>
 #include <utility>
 
 namespace chromeos {
@@ -74,7 +75,7 @@ std::unique_ptr<RequestValue> RequestValue::CreateForOperationError(
 std::unique_ptr<RequestValue> RequestValue::CreateForTesting(
     const std::string& params) {
   std::unique_ptr<RequestValue> result(new RequestValue);
-  result->testing_params_.reset(new std::string(params));
+  result->testing_params_ = std::make_unique<std::string>(params);
   return result;
 }
 

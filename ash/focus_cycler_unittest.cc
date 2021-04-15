@@ -63,7 +63,7 @@ class FocusCyclerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    focus_cycler_.reset(new FocusCycler());
+    focus_cycler_ = std::make_unique<FocusCycler>();
   }
 
   void TearDown() override {
@@ -277,7 +277,8 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate;
   std::unique_ptr<views::Widget> browser_widget(new views::Widget);
-  test_widget_delegate.reset(new PanedWidgetDelegate(browser_widget.get()));
+  test_widget_delegate =
+      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::TYPE_WINDOW);
   widget_params.delegate = test_widget_delegate.get();

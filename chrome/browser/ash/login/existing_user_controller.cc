@@ -624,7 +624,7 @@ void ExistingUserController::PerformLogin(
   if (!login_performer_.get() || num_login_attempts_ <= 1) {
     // Only one instance of LoginPerformer should exist at a time.
     login_performer_.reset(nullptr);
-    login_performer_.reset(new ChromeLoginPerformer(this));
+    login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   }
   if (IsActiveDirectoryManaged() &&
       user_context.GetUserType() != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
@@ -1258,7 +1258,7 @@ void ExistingUserController::LoginAsGuest() {
 
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
-  login_performer_.reset(new ChromeLoginPerformer(this));
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   login_performer_->LoginOffTheRecord();
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD));
@@ -1495,7 +1495,7 @@ void ExistingUserController::StartAutoLoginTimer() {
 
   // Start the auto-login timer.
   if (!auto_login_timer_)
-    auto_login_timer_.reset(new base::OneShotTimer);
+    auto_login_timer_ = std::make_unique<base::OneShotTimer>();
 
   VLOG(2) << "Public session autologin will be fired in " << auto_login_delay_
           << "ms";
@@ -1544,7 +1544,7 @@ void ExistingUserController::LoginAsPublicSessionInternal(
   VLOG(2) << "LoginAsPublicSessionInternal for user: "
           << user_context.GetAccountId();
   login_performer_.reset(nullptr);
-  login_performer_.reset(new ChromeLoginPerformer(this));
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   login_performer_->LoginAsPublicSession(user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT));
@@ -1663,7 +1663,7 @@ void ExistingUserController::DoCompleteLogin(
 
   // Fetch OAuth2 tokens if we have an auth code.
   if (!user_context.GetAuthCode().empty()) {
-    oauth2_token_initializer_.reset(new OAuth2TokenInitializer);
+    oauth2_token_initializer_ = std::make_unique<OAuth2TokenInitializer>();
     oauth2_token_initializer_->Start(
         user_context,
         base::BindOnce(&ExistingUserController::OnOAuth2TokensFetched,

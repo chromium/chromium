@@ -267,7 +267,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     // Testing profile must be initialized after user_manager_ +
     // user_manager_enabler_, because it will create another UserManager
     // instance if UserManager instance has not been registed before.
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         owner_key_util_);
     Key key("fakepass");
@@ -298,7 +298,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
-    state_.reset(new TestAttemptState(user_context_));
+    state_ = std::make_unique<TestAttemptState>(user_context_);
   }
 
   // Tears down the test fixture.
@@ -551,8 +551,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   crypto::ScopedTestNSSChromeOSUser user_slot(user_context_.GetUserIDHash());
   owner_key_util_->SetPublicKey(GetOwnerPublicKey());
 
-  profile_manager_.reset(
-      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+  profile_manager_ = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
 
   FailOnLoginSuccess();  // Set failing on success as the default...
@@ -579,7 +579,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_.reset(new TestAttemptState(user_context_));
+  state_ = std::make_unique<TestAttemptState>(user_context_);
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should not have found the owner key, so login should
@@ -603,8 +603,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
       crypto::GetPublicSlotForChromeOSUser(user_context_.GetUserIDHash()));
   ASSERT_TRUE(CreateOwnerKeyInSlot(user_slot.get()));
 
-  profile_manager_.reset(
-      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+  profile_manager_ = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
 
   ExpectLoginSuccess(user_context_);
@@ -629,7 +629,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_.reset(new TestAttemptState(user_context_));
+  state_ = std::make_unique<TestAttemptState>(user_context_);
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should find the owner key, so login should succeed.

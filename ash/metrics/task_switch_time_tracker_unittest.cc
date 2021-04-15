@@ -4,6 +4,7 @@
 
 #include "ash/metrics/task_switch_time_tracker.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/metrics/task_switch_time_tracker_test_api.h"
@@ -53,9 +54,9 @@ TaskSwitchTimeTrackerTest::~TaskSwitchTimeTrackerTest() = default;
 void TaskSwitchTimeTrackerTest::SetUp() {
   testing::Test::SetUp();
 
-  histogram_tester_.reset(new base::HistogramTester());
-  time_tracker_test_api_.reset(
-      new TaskSwitchTimeTrackerTestAPI(kHistogramName));
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+  time_tracker_test_api_ =
+      std::make_unique<TaskSwitchTimeTrackerTestAPI>(kHistogramName);
   // The TaskSwitchTimeTracker interprets a value of base::TimeTicks() as if the
   // |last_action_time_| has not been set.
   time_tracker_test_api_->Advance(base::TimeDelta::FromMilliseconds(1));

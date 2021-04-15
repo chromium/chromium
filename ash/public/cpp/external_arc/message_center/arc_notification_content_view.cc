@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 
+#include <memory>
+
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
@@ -394,7 +396,7 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = surface_->GetWindow();
 
-  floating_control_buttons_widget_.reset(new views::Widget);
+  floating_control_buttons_widget_ = std::make_unique<views::Widget>();
   floating_control_buttons_widget_->Init(std::move(params));
   floating_control_buttons_widget_->SetContentsView(&control_buttons_view_);
   floating_control_buttons_widget_->GetNativeWindow()->AddPreTargetHandler(
@@ -497,7 +499,7 @@ void ArcNotificationContentView::AttachSurface() {
   surface_->Attach(this);
 
   // Creates slide helper after this view is added to its parent.
-  slide_helper_.reset(new SlideHelper(this));
+  slide_helper_ = std::make_unique<SlideHelper>(this);
 
   // Invokes Update() in case surface is attached during a slide.
   slide_helper_->Update(slide_in_progress_);

@@ -40,8 +40,8 @@ WMTestHelper::WMTestHelper(const gfx::Size& default_window_size) {
 
   new wm::DefaultActivationClient(host_->window());
 
-  capture_client_.reset(
-      new aura::client::DefaultCaptureClient(host_->window()));
+  capture_client_ =
+      std::make_unique<aura::client::DefaultCaptureClient>(host_->window());
 }
 
 WMTestHelper::~WMTestHelper() {

@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -335,7 +337,7 @@ User* User::CreatePublicAccountUser(const AccountId& account_id,
 }
 
 void User::SetAccountLocale(const std::string& resolved_account_locale) {
-  account_locale_.reset(new std::string(resolved_account_locale));
+  account_locale_ = std::make_unique<std::string>(resolved_account_locale);
 }
 
 void User::SetImage(std::unique_ptr<UserImage> user_image, int image_index) {

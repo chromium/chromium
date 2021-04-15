@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider_impl.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -387,8 +388,9 @@ void AffiliatedInvalidationServiceProviderImpl::
     // If no other connected invalidation service was found and no device-global
     // invalidation service exists, create one.
     device_invalidation_service_ = InitializeDeviceInvalidationService();
-    device_invalidation_service_observer_.reset(new InvalidationServiceObserver(
-        this, device_invalidation_service_.get()));
+    device_invalidation_service_observer_ =
+        std::make_unique<InvalidationServiceObserver>(
+            this, device_invalidation_service_.get());
   }
 
   if (device_invalidation_service_observer_->IsServiceConnected()) {

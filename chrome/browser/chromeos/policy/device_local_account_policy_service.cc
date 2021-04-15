@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -147,8 +148,8 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
       resource_cache_task_runner_(resource_cache_task_runner) {
   if (account.type != DeviceLocalAccount::TYPE_ARC_KIOSK_APP &&
       account.type != DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    extension_tracker_.reset(new DeviceLocalAccountExtensionTracker(
-        account, store_.get(), &schema_registry_));
+    extension_tracker_ = std::make_unique<DeviceLocalAccountExtensionTracker>(
+        account, store_.get(), &schema_registry_);
   }
   extension_loader_ = new chromeos::DeviceLocalAccountExternalPolicyLoader(
       store_.get(),
@@ -200,9 +201,9 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
   external_data_manager_->Connect(url_loader_factory);
   core_.StartRefreshScheduler();
   UpdateRefreshDelay();
-  invalidator_.reset(new AffiliatedCloudPolicyInvalidator(
+  invalidator_ = std::make_unique<AffiliatedCloudPolicyInvalidator>(
       PolicyInvalidationScope::kDeviceLocalAccount, &core_,
-      invalidation_service_provider_, account_id_));
+      invalidation_service_provider_, account_id_);
 }
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
@@ -243,10 +244,10 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
       component_policy_cache_path_, resource_cache_task_runner_,
       /* max_cache_size */ base::nullopt));
 
-  component_policy_service_.reset(new ComponentCloudPolicyService(
+  component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD, this,
       &schema_registry_, core(), client, std::move(resource_cache),
-      resource_cache_task_runner_));
+      resource_cache_task_runner_);
 }
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
@@ -462,7 +463,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
           external_data_manager =
               external_data_service_->GetExternalDataManager(it->account_id,
                                                              store.get());
-      broker.reset(new DeviceLocalAccountPolicyBroker(
+      broker = std::make_unique<DeviceLocalAccountPolicyBroker>(
           *it,
           component_policy_cache_root_.Append(
               GetCacheSubdirectoryForAccountID(it->account_id)),
@@ -471,7 +472,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
               &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
               base::Unretained(this), it->user_id),
           base::ThreadTaskRunnerHandle::Get(), resource_cache_task_runner_,
-          invalidation_service_provider_));
+          invalidation_service_provider_);
     }
 
     // Fire up the cloud connection for fetching policy for the account from

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
@@ -752,7 +754,7 @@ TEST_F(AccessibilityTest, InitRelationCacheLabelFor) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_.reset(new AXContext(GetDocument()));
+  ax_context_ = std::make_unique<AXContext>(GetDocument());
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
@@ -778,7 +780,7 @@ TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
 
   // Now recreate an AXContext, simulating what happens if accessibility
   // is enabled after the document is loaded.
-  ax_context_.reset(new AXContext(GetDocument()));
+  ax_context_ = std::make_unique<AXContext>(GetDocument());
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);

@@ -92,8 +92,7 @@ TEST_F(ProxyPolicyProviderTest, RefreshPolicies) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(&proxy_provider_));
-  mock_provider_.UpdatePolicy(
-      std::unique_ptr<PolicyBundle>(new PolicyBundle()));
+  mock_provider_.UpdatePolicy(std::make_unique<PolicyBundle>());
   Mock::VerifyAndClearExpectations(&observer_);
 }
 

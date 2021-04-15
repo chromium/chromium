@@ -27,11 +27,11 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
   ~SpellingOptionsSubMenuObserverTest() override {}
 
   void SetUpOnMainThread() override {
-    menu_.reset(new MockRenderViewContextMenu(false));
-    observer_.reset(
+    menu_ = std::make_unique<MockRenderViewContextMenu>(false);
+    observer_ = std::make_unique<SpellingOptionsSubMenuObserver>(
         // Pass nullptr as a delegate so that submenu items do not get put into
         // MockRenderViewContextMenu::items_.
-        new SpellingOptionsSubMenuObserver(menu_.get(), nullptr, 1));
+        menu_.get(), nullptr, 1);
     menu_->SetObserver(observer_.get());
   }
 

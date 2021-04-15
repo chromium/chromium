@@ -43,7 +43,8 @@ class ActiveTabPermissionGranterDelegateChromeOSTest
 
 void ActiveTabPermissionGranterDelegateChromeOSTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-  login_state_.reset(new chromeos::ScopedTestPublicSessionLoginState());
+  login_state_ =
+      std::make_unique<chromeos::ScopedTestPublicSessionLoginState>();
 }
 
 void ActiveTabPermissionGranterDelegateChromeOSTest::TearDown() {

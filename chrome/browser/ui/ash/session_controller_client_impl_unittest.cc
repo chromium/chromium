@@ -114,8 +114,8 @@ class SessionControllerClientImplTest : public testing::Test {
     // Initialize AssistantClientImpl singleton.
     assistant_client_ = std::make_unique<AssistantClientImpl>();
 
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     cros_settings_test_helper_ =

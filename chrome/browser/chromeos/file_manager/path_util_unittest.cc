@@ -55,8 +55,8 @@ class FileManagerPathUtilTest : public testing::Test {
   ~FileManagerPathUtilTest() override = default;
 
   void SetUp() override {
-    profile_.reset(
-        new TestingProfile(base::FilePath("/home/chronos/u-0123456789abcdef")));
+    profile_ = std::make_unique<TestingProfile>(
+        base::FilePath("/home/chronos/u-0123456789abcdef"));
   }
 
   void TearDown() override {

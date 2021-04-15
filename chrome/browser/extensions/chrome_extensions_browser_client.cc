@@ -370,8 +370,8 @@ void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {
   if (!extension_cache_.get()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    extension_cache_.reset(new ExtensionCacheImpl(
-        std::make_unique<ChromeOSExtensionCacheDelegate>()));
+    extension_cache_ = std::make_unique<ExtensionCacheImpl>(
+        std::make_unique<ChromeOSExtensionCacheDelegate>());
 #else
     extension_cache_ = std::make_unique<NullExtensionCache>();
 #endif

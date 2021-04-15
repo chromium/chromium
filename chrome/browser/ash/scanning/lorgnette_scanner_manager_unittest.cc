@@ -196,7 +196,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   // Runs run_loop_ until a callback calls Quit().
   void WaitForResult() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   FakeZeroconfScannerDetector* fake_zeroconf_scanner_detector() {

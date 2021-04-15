@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -74,7 +75,7 @@ class AuraDesktopCapturerTest : public testing::Test,
 };
 
 void AuraDesktopCapturerTest::SetUp() {
-  capturer_.reset(new AuraDesktopCapturer());
+  capturer_ = std::make_unique<AuraDesktopCapturer>();
 }
 
 TEST_F(AuraDesktopCapturerTest, ConvertSkBitmapToDesktopFrame) {

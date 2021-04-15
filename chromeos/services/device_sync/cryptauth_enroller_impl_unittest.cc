@@ -4,6 +4,8 @@
 
 #include "chromeos/services/device_sync/cryptauth_enroller_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -210,7 +212,7 @@ class DeviceSyncCryptAuthEnrollerTest
 
   void OnEnrollerCompleted(bool success) {
     EXPECT_FALSE(enroller_result_.get());
-    enroller_result_.reset(new bool(success));
+    enroller_result_ = std::make_unique<bool>(success);
   }
 
   void OnSetupEnrollment(const cryptauth::SetupEnrollmentRequest& request,
@@ -222,7 +224,8 @@ class DeviceSyncCryptAuthEnrollerTest
     EXPECT_TRUE(setup_callback_.is_null());
     EXPECT_TRUE(error_callback_.is_null());
 
-    setup_request_.reset(new cryptauth::SetupEnrollmentRequest(request));
+    setup_request_ =
+        std::make_unique<cryptauth::SetupEnrollmentRequest>(request);
     setup_callback_ = std::move(callback);
     error_callback_ = std::move(error_callback);
   }
@@ -235,7 +238,8 @@ class DeviceSyncCryptAuthEnrollerTest
     EXPECT_FALSE(finish_request_.get());
     EXPECT_TRUE(finish_callback_.is_null());
 
-    finish_request_.reset(new cryptauth::FinishEnrollmentRequest(request));
+    finish_request_ =
+        std::make_unique<cryptauth::FinishEnrollmentRequest>(request);
     finish_callback_ = std::move(callback);
     error_callback_ = std::move(error_callback);
   }

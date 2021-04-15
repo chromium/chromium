@@ -4,6 +4,8 @@
 
 #include "ash/multi_user/user_switch_animator.h"
 
+#include <memory>
+
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/shell.h"
@@ -98,7 +100,7 @@ UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
   if (animation_speed_.is_zero()) {
     FinalizeAnimation();
   } else {
-    user_changed_animation_timer_.reset(new base::RepeatingTimer());
+    user_changed_animation_timer_ = std::make_unique<base::RepeatingTimer>();
     user_changed_animation_timer_->Start(
         FROM_HERE, animation_speed_,
         base::BindRepeating(&UserSwitchAnimator::AdvanceUserTransitionAnimation,

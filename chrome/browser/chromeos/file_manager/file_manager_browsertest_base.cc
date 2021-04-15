@@ -1576,7 +1576,8 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
   CHECK(devtools_agent_.find(host) == devtools_agent_.end());
 
   if (ShouldInspect(host)) {
-    devtools_agent_[host].reset(new DevToolsListener(host, process_id_));
+    devtools_agent_[host] =
+        std::make_unique<DevToolsListener>(host, process_id_);
   }
 }
 

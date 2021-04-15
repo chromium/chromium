@@ -4,6 +4,8 @@
 
 #include "ash/system/status_area_widget.h"
 
+#include <memory>
+
 #include "ash/focus_cycler.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -103,7 +105,7 @@ class StatusAreaWidgetFocusTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    test_observer_.reset(new SystemTrayFocusTestObserver);
+    test_observer_ = std::make_unique<SystemTrayFocusTestObserver>();
     Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(
         test_observer_.get());
   }

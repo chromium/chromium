@@ -123,11 +123,11 @@ class DeviceCloudPolicyStoreChromeOSTest : public ash::DeviceSettingsTestBase {
     store_.reset();
     chromeos::install_attributes_util::InstallAttributesSet("enterprise.owned",
                                                             std::string());
-    install_attributes_.reset(new chromeos::InstallAttributes(
-        chromeos::FakeInstallAttributesClient::Get()));
-    store_.reset(new DeviceCloudPolicyStoreChromeOS(
+    install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
+        chromeos::FakeInstallAttributesClient::Get());
+    store_ = std::make_unique<DeviceCloudPolicyStoreChromeOS>(
         device_settings_service_.get(), install_attributes_.get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
     store_->AddObserver(&observer_);
   }
 

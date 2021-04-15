@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
@@ -69,7 +71,7 @@ void UserImageSyncObserver::RegisterProfilePrefs(
 
 void UserImageSyncObserver::OnProfileGained(Profile* profile) {
   prefs_ = PrefServiceSyncableFromProfile(profile);
-  pref_change_registrar_.reset(new PrefChangeRegistrar);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
       kUserImageInfo,

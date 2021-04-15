@@ -90,7 +90,7 @@ void RemoteDeviceLifeCycleImpl::FindConnection() {
 void RemoteDeviceLifeCycleImpl::CreateMessenger() {
   DCHECK(state_ == RemoteDeviceLifeCycle::State::AUTHENTICATING);
 
-  messenger_.reset(new MessengerImpl(std::move(channel_)));
+  messenger_ = std::make_unique<MessengerImpl>(std::move(channel_));
   messenger_->AddObserver(this);
 
   TransitionToState(RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/numerics/ranges.h"
@@ -177,7 +178,7 @@ void Service::CacheListenerExtensionIds() {
   if (cached_listener_extension_ids_)
     return;
 
-  cached_listener_extension_ids_.reset(new std::set<ExtensionId>());
+  cached_listener_extension_ids_ = std::make_unique<std::set<ExtensionId>>();
 
   const ExtensionSet& extension_set = extension_registry_->enabled_extensions();
   for (scoped_refptr<const extensions::Extension> extension : extension_set) {

@@ -4,6 +4,7 @@
 
 #include "chromeos/cryptohome/cryptohome_util.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -128,13 +129,15 @@ std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
 
       // Extract |number|.
       if (provider_data_it->has_number()) {
-        provider_data.number.reset(new int64_t(provider_data_it->number()));
+        provider_data.number =
+            std::make_unique<int64_t>(provider_data_it->number());
         ++data_items;
       }
 
       // Extract |bytes|.
       if (provider_data_it->has_bytes()) {
-        provider_data.bytes.reset(new std::string(provider_data_it->bytes()));
+        provider_data.bytes =
+            std::make_unique<std::string>(provider_data_it->bytes());
         ++data_items;
       }
 

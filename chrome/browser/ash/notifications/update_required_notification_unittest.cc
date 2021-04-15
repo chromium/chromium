@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -151,8 +153,9 @@ void UpdateRequiredNotificationTest::TearDown() {
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
-  minimum_version_policy_handler_.reset(
-      new policy::MinimumVersionPolicyHandler(this, CrosSettings::Get()));
+  minimum_version_policy_handler_ =
+      std::make_unique<policy::MinimumVersionPolicyHandler>(
+          this, CrosSettings::Get());
 }
 
 const MinimumVersionRequirement* UpdateRequiredNotificationTest::GetState()
@@ -162,7 +165,7 @@ const MinimumVersionRequirement* UpdateRequiredNotificationTest::GetState()
 
 void UpdateRequiredNotificationTest::SetCurrentVersionString(
     const std::string& version) {
-  current_version_.reset(new base::Version(version));
+  current_version_ = std::make_unique<base::Version>(version);
   ASSERT_TRUE(current_version_->IsValid());
 }
 

@@ -116,8 +116,8 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds) override {
     if (!capture_client_) {
-      capture_client_.reset(
-          new aura::client::DefaultCaptureClient(window_->GetRootWindow()));
+      capture_client_ = std::make_unique<aura::client::DefaultCaptureClient>(
+          window_->GetRootWindow());
     }
     return window_;
   }

@@ -4,6 +4,8 @@
 
 #include "remoting/host/chromeos/clipboard_aura.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
@@ -71,7 +73,7 @@ void ClipboardAuraTest::SetUp() {
 
   // Setup the clipboard.
   client_clipboard_ = new ClientClipboard();
-  clipboard_.reset(new ClipboardAura());
+  clipboard_ = std::make_unique<ClipboardAura>();
 
   EXPECT_GT(TestTimeouts::tiny_timeout(), kTestOverridePollingInterval * 10)
       << "The test timeout should be greater than the polling interval";

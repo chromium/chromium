@@ -110,9 +110,8 @@ void AccessibilityFocusRingControllerImpl::SetCursorRing(
     const gfx::Point& location) {
   cursor_location_ = location;
   if (!cursor_layer_) {
-    cursor_layer_.reset(new AccessibilityCursorRingLayer(
-        this, kCursorRingColorRed, kCursorRingColorGreen,
-        kCursorRingColorBlue));
+    cursor_layer_ = std::make_unique<AccessibilityCursorRingLayer>(
+        this, kCursorRingColorRed, kCursorRingColorGreen, kCursorRingColorBlue);
   }
   cursor_layer_->Set(location);
   OnLayerChange(&cursor_animation_info_);
@@ -127,8 +126,8 @@ void AccessibilityFocusRingControllerImpl::SetCaretRing(
   caret_location_ = location;
 
   if (!caret_layer_) {
-    caret_layer_.reset(new AccessibilityCursorRingLayer(
-        this, kCaretRingColorRed, kCaretRingColorGreen, kCaretRingColorBlue));
+    caret_layer_ = std::make_unique<AccessibilityCursorRingLayer>(
+        this, kCaretRingColorRed, kCaretRingColorGreen, kCaretRingColorBlue);
   }
 
   caret_layer_->Set(location);

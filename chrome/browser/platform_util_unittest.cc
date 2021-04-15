@@ -75,7 +75,8 @@ class PlatformUtilTestContentBrowserClient : public ChromeContentBrowserClient {
 class PlatformUtilTestBase : public BrowserWithTestWindowTest {
  protected:
   void SetUpPlatformFixture(const base::FilePath& test_directory) {
-    content_browser_client_.reset(new PlatformUtilTestContentBrowserClient());
+    content_browser_client_ =
+        std::make_unique<PlatformUtilTestContentBrowserClient>();
     old_content_browser_client_ =
         content::SetBrowserClientForTesting(content_browser_client_.get());
 

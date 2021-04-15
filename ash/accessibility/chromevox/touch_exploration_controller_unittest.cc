@@ -168,9 +168,10 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     if (gl::GetGLImplementation() == gl::kGLImplementationNone)
       gl::GLSurfaceTestSupport::InitializeOneOff();
     aura::test::AuraTestBase::SetUp();
-    cursor_client_.reset(new aura::test::TestCursorClient(root_window()));
+    cursor_client_ =
+        std::make_unique<aura::test::TestCursorClient>(root_window());
     root_window()->AddPreTargetHandler(&event_capturer_);
-    generator_.reset(new ui::test::EventGenerator(root_window()));
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window());
 
     // Tests fail if time is ever 0.
     simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
@@ -262,8 +263,10 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
     if (!on && touch_exploration_controller_.get()) {
       touch_exploration_controller_.reset();
     } else if (on && !touch_exploration_controller_.get()) {
-      touch_exploration_controller_.reset(new TouchExplorationControllerTestApi(
-          new TouchExplorationController(root_window(), &delegate_, nullptr)));
+      touch_exploration_controller_ =
+          std::make_unique<TouchExplorationControllerTestApi>(
+              new TouchExplorationController(root_window(), &delegate_,
+                                             nullptr));
       cursor_client()->ShowCursor();
       cursor_client()->DisableMouseEvents();
     }

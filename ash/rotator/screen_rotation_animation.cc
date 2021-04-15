@@ -37,8 +37,8 @@ ScreenRotationAnimation::ScreenRotationAnimation(ui::Layer* layer,
 
   // Use the target transform/bounds in case the layer is already animating.
   gfx::Transform current_transform = layer->GetTargetTransform();
-  interpolated_transform_.reset(
-      new ui::InterpolatedConstantTransform(current_transform));
+  interpolated_transform_ =
+      std::make_unique<ui::InterpolatedConstantTransform>(current_transform);
   interpolated_transform_->SetChild(std::move(rotation));
 }
 

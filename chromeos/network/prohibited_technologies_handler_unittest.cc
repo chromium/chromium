@@ -65,7 +65,7 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
     std::unique_ptr<base::ListValue> val(new base::ListValue());
     val->AppendString("WiFi");
     global_config_disable_wifi.Set("DisableNetworkTypes", std::move(val));
-    val.reset(new base::ListValue());
+    val = std::make_unique<base::ListValue>();
     val->AppendString("WiFi");
     val->AppendString("Cellular");
     global_config_disable_wifi_and_cell.Set("DisableNetworkTypes",

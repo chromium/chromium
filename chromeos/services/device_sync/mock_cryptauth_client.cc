@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
@@ -24,9 +25,9 @@ MockCryptAuthClientFactory::~MockCryptAuthClientFactory() {}
 std::unique_ptr<CryptAuthClient> MockCryptAuthClientFactory::CreateInstance() {
   std::unique_ptr<MockCryptAuthClient> client;
   if (mock_type_ == MockType::MAKE_STRICT_MOCKS)
-    client.reset(new testing::StrictMock<MockCryptAuthClient>());
+    client = std::make_unique<testing::StrictMock<MockCryptAuthClient>>();
   else
-    client.reset(new testing::NiceMock<MockCryptAuthClient>());
+    client = std::make_unique<testing::NiceMock<MockCryptAuthClient>>();
 
   for (auto& observer : observer_list_)
     observer.OnCryptAuthClientCreated(client.get());

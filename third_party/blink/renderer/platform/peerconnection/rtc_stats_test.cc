@@ -20,10 +20,10 @@ TEST(RTCStatsTest, OnlyIncludeAllowlistedStats_GetStats) {
 
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(42);
-  webrtc_report->AddStats(std::unique_ptr<webrtc::RTCTestStats>(
-      new webrtc::RTCTestStats(not_allowlisted_id, 42)));
-  webrtc_report->AddStats(std::unique_ptr<webrtc::RTCPeerConnectionStats>(
-      new webrtc::RTCPeerConnectionStats(allowlisted_id, 42)));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCTestStats>(not_allowlisted_id, 42));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCPeerConnectionStats>(allowlisted_id, 42));
 
   RTCStatsReportPlatform report(webrtc_report.get(), {});
   EXPECT_FALSE(report.GetStats(not_allowlisted_id));
@@ -36,10 +36,10 @@ TEST(RTCStatsTest, OnlyIncludeAllowlistedStats_Iteration) {
 
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(42);
-  webrtc_report->AddStats(std::unique_ptr<webrtc::RTCTestStats>(
-      new webrtc::RTCTestStats(not_allowlisted_id, 42)));
-  webrtc_report->AddStats(std::unique_ptr<webrtc::RTCPeerConnectionStats>(
-      new webrtc::RTCPeerConnectionStats(allowlisted_id, 42)));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCTestStats>(not_allowlisted_id, 42));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCPeerConnectionStats>(allowlisted_id, 42));
 
   RTCStatsReportPlatform report(webrtc_report.get(), {});
   // Only allowlisted stats are counted.

@@ -36,8 +36,9 @@ class ScreenRotationAnimationTest : public AshTestBase {
 
 void ScreenRotationAnimationTest::SetUp() {
   AshTestBase::SetUp();
-  non_zero_duration_mode_.reset(new ui::ScopedAnimationDurationScaleMode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION));
+  non_zero_duration_mode_ =
+      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 }
 
 TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {

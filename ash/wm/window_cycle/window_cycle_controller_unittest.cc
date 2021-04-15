@@ -151,8 +151,8 @@ class WindowCycleControllerTest : public AshTestBase {
 
     WindowCycleList::DisableInitialDelayForTesting();
 
-    shelf_view_test_.reset(
-        new ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting()));
+    shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
+        GetPrimaryShelf()->GetShelfViewForTesting());
     shelf_view_test_->SetAnimationDuration(
         base::TimeDelta::FromMilliseconds(1));
   }
@@ -2930,8 +2930,8 @@ class MultiUserWindowCycleControllerTest
     NoSessionAshTestBase::SetUp();
 
     WindowCycleList::DisableInitialDelayForTesting();
-    shelf_view_test_.reset(
-        new ShelfViewTestAPI(GetPrimaryShelf()->GetShelfViewForTesting()));
+    shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
+        GetPrimaryShelf()->GetShelfViewForTesting());
     shelf_view_test_->SetAnimationDuration(
         base::TimeDelta::FromMilliseconds(1));
 

@@ -1139,7 +1139,7 @@ void AccessibilityManager::SetProfile(Profile* profile) {
 
   if (profile) {
     // TODO(yoshiki): Move following code to PrefHandler.
-    pref_change_registrar_.reset(new PrefChangeRegistrar);
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
         prefs::kShouldAlwaysShowAccessibilityMenu,
@@ -1205,7 +1205,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
                        base::Unretained(this)));
     }
 
-    local_state_pref_change_registrar_.reset(new PrefChangeRegistrar);
+    local_state_pref_change_registrar_ =
+        std::make_unique<PrefChangeRegistrar>();
     local_state_pref_change_registrar_->Init(g_browser_process->local_state());
     local_state_pref_change_registrar_->Add(
         language::prefs::kApplicationLocale,
@@ -1474,10 +1475,11 @@ void AccessibilityManager::PostLoadChromeVox() {
 
   if (!chromevox_panel_) {
     chromevox_panel_ = new ChromeVoxPanel(profile_);
-    chromevox_panel_widget_observer_.reset(new AccessibilityPanelWidgetObserver(
-        chromevox_panel_->GetWidget(),
-        base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
-                       base::Unretained(this))));
+    chromevox_panel_widget_observer_ =
+        std::make_unique<AccessibilityPanelWidgetObserver>(
+            chromevox_panel_->GetWidget(),
+            base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
+                           base::Unretained(this)));
   }
 
   audio_focus_manager_->SetEnforcementMode(
@@ -1519,10 +1521,11 @@ void AccessibilityManager::PostSwitchChromeVoxProfile() {
     chromevox_panel_ = nullptr;
   }
   chromevox_panel_ = new ChromeVoxPanel(profile_);
-  chromevox_panel_widget_observer_.reset(new AccessibilityPanelWidgetObserver(
-      chromevox_panel_->GetWidget(),
-      base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
-                     base::Unretained(this))));
+  chromevox_panel_widget_observer_ =
+      std::make_unique<AccessibilityPanelWidgetObserver>(
+          chromevox_panel_->GetWidget(),
+          base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
+                         base::Unretained(this)));
 }
 
 void AccessibilityManager::OnChromeVoxPanelDestroying() {

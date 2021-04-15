@@ -123,12 +123,12 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
 
   void OnResult(const std::string& result) {
     EXPECT_FALSE(result_ || network_error_);
-    result_.reset(new std::string(result));
+    result_ = std::make_unique<std::string>(result);
   }
 
   void OnError(NetworkRequestError network_error) {
     EXPECT_FALSE(result_ || network_error_);
-    network_error_.reset(new NetworkRequestError(network_error));
+    network_error_ = std::make_unique<NetworkRequestError>(network_error);
   }
 
   void CheckCryptAuthHttpPostRequest(const std::string& serialized_request) {

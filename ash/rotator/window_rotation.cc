@@ -44,8 +44,8 @@ WindowRotation::~WindowRotation() = default;
 void WindowRotation::InitTransform(ui::Layer* layer) {
   // No rotation required, use the identity transform.
   if (degrees_ == 0) {
-    interpolated_transform_.reset(
-        new ui::InterpolatedConstantTransform(gfx::Transform()));
+    interpolated_transform_ =
+        std::make_unique<ui::InterpolatedConstantTransform>(gfx::Transform());
     return;
   }
 
@@ -95,8 +95,8 @@ void WindowRotation::InitTransform(ui::Layer* layer) {
       std::make_unique<ui::InterpolatedScale>(1.0f, 1.0f / scale_factor, 0.5f,
                                               1.0f);
 
-  interpolated_transform_.reset(
-      new ui::InterpolatedConstantTransform(current_transform));
+  interpolated_transform_ =
+      std::make_unique<ui::InterpolatedConstantTransform>(current_transform);
 
   scale_up->SetChild(std::move(scale_down));
   translation->SetChild(std::move(scale_up));

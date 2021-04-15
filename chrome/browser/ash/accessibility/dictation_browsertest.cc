@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/dictation.h"
 
+#include <memory>
+
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/accessibility/soda_installer.h"
@@ -43,7 +45,7 @@ class DictationTest : public InProcessBrowserTest,
                                     DictationNetworkTestVariant>> {
  protected:
   DictationTest() {
-    input_context_handler_.reset(new ui::MockIMEInputContextHandler());
+    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
     empty_composition_text_ =
         ui::MockIMEInputContextHandler::UpdateCompositionTextArg()
             .composition_text;
@@ -58,8 +60,8 @@ class DictationTest : public InProcessBrowserTest,
       // Use a fake speech recognition manager so that we don't end up with an
       // error finding the audio input device when running on a headless
       // environment.
-      fake_speech_recognition_manager_.reset(
-          new content::FakeSpeechRecognitionManager());
+      fake_speech_recognition_manager_ =
+          std::make_unique<content::FakeSpeechRecognitionManager>();
       // Don't send a fake response from the fake manager. The fake manager can
       // only send one final response before shutting off. We will do more
       // granular testing of multiple not-final and final results by sending

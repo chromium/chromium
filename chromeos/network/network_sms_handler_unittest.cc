@@ -75,7 +75,7 @@ class NetworkSmsHandlerTest : public testing::Test {
     // first test message until RequestUpdate has been called.
     network_sms_handler_.reset(new NetworkSmsHandler());
     network_sms_handler_->Init();
-    test_observer_.reset(new TestObserver());
+    test_observer_ = std::make_unique<TestObserver>();
     network_sms_handler_->AddObserver(test_observer_.get());
     network_sms_handler_->RequestUpdate(true);
     base::RunLoop().RunUntilIdle();

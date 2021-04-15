@@ -4,6 +4,8 @@
 
 #include "ash/system/power/power_notification_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -111,8 +113,8 @@ void PowerNotificationController::OnPowerStatusChanged() {
     // one. Otherwise we might update a "low battery" notification to "critical"
     // without it being shown again.
     battery_notification_.reset();
-    battery_notification_.reset(
-        new BatteryNotification(message_center_, notification_state_));
+    battery_notification_ = std::make_unique<BatteryNotification>(
+        message_center_, notification_state_);
   } else if (notification_state_ == NOTIFICATION_NONE) {
     battery_notification_.reset();
   } else if (battery_notification_.get()) {
@@ -180,7 +182,8 @@ void PowerNotificationController::MaybeShowDualRoleNotification() {
   }
 
   if (!dual_role_notification_)
-    dual_role_notification_.reset(new DualRoleNotification(message_center_));
+    dual_role_notification_ =
+        std::make_unique<DualRoleNotification>(message_center_);
   dual_role_notification_->Update();
 }
 

@@ -4,6 +4,8 @@
 
 #include "ash/display/display_configuration_controller.h"
 
+#include <memory>
+
 #include "ash/display/display_animator.h"
 #include "ash/display/display_util.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -87,9 +89,9 @@ DisplayConfigurationController::DisplayConfigurationController(
       window_tree_host_manager_(window_tree_host_manager) {
   window_tree_host_manager_->AddObserver(this);
   if (chromeos::IsRunningAsSystemCompositor())
-    limiter_.reset(new DisplayChangeLimiter);
+    limiter_ = std::make_unique<DisplayChangeLimiter>();
   if (!g_disable_animator_for_test)
-    display_animator_.reset(new DisplayAnimator());
+    display_animator_ = std::make_unique<DisplayAnimator>();
 }
 
 DisplayConfigurationController::~DisplayConfigurationController() {
@@ -206,7 +208,7 @@ void DisplayConfigurationController::SetAnimatorForTest(bool enable) {
   if (display_animator_ && !enable)
     display_animator_.reset();
   else if (!display_animator_ && enable)
-    display_animator_.reset(new DisplayAnimator());
+    display_animator_ = std::make_unique<DisplayAnimator>();
 }
 
 // Private
