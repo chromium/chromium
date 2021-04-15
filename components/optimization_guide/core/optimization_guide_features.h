@@ -170,6 +170,14 @@ int PredictionModelFetchRandomMinDelaySecs();
 // fetch for prediction models and host model features.
 int PredictionModelFetchRandomMaxDelaySecs();
 
+// Returns the time to wait before retrying a failed fetch for prediction
+// models.
+base::TimeDelta PredictionModelFetchRetryDelay();
+
+// Returns the time to wait after a successful fetch of prediction models to
+// refresh models.
+base::TimeDelta PredictionModelFetchInterval();
+
 // Returns a set of external Android app packages whose predictions have been
 // approved for fetching from the remote Optimization Guide Service.
 base::flat_set<std::string> ExternalAppPackageNamesApprovedForFetch();

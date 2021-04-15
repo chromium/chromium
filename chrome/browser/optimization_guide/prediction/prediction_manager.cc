@@ -51,16 +51,6 @@
 
 namespace {
 
-// Delay between retries on failed fetch and store of prediction models and
-// host model features from the remote Optimization Guide Service.
-constexpr base::TimeDelta kFetchRetryDelay = base::TimeDelta::FromMinutes(16);
-
-// The amount of time to wait after a successful fetch of models and host model
-// features before requesting an update from the remote Optimization Guide
-// Service.
-constexpr base::TimeDelta kUpdateModelsAndFeaturesDelay =
-    base::TimeDelta::FromHours(24);
-
 // Provide a random time delta in seconds before fetching models and host model
 // features.
 base::TimeDelta RandomFetchDelay() {
@@ -437,9 +427,8 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
         base::TimeTicks::Now() - model_evaluation_start_time);
   }
 
-  if (optimization_guide::features::
-          ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
-              optimization_target)) {
+  if (features::ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
+          optimization_target)) {
     return optimization_guide::OptimizationTargetDecision::
         kModelPredictionHoldback;
   }
@@ -491,9 +480,11 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
   if (!ShouldFetchModelsAndHostModelFeatures(profile_))
     return;
 
-  ScheduleModelsAndHostModelFeaturesFetch();
+  // Models and host model features should not be fetched if there are no
+  // optimization targets registered.
+  if (registered_optimization_targets_and_metadata_.empty())
+    return;
 
-  // We cannot download any models from the server, so don't refresh them.
   if (prediction_model_download_manager_) {
     bool download_service_available =
         prediction_model_download_manager_->IsAvailableForDownloads();
@@ -501,19 +492,17 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
         "OptimizationGuide.PredictionManager."
         "DownloadServiceAvailabilityBlockedFetch",
         !download_service_available);
-    if (!download_service_available)
+    if (!download_service_available) {
+      // We cannot download any models from the server, so don't refresh them.
       return;
+    }
+
+    prediction_model_download_manager_->CancelAllPendingDownloads();
   }
 
-  // Models and host model features should not be fetched if there are no
-  // optimization targets registered.
-  if (registered_optimization_targets_and_metadata_.empty())
-    return;
-
-  // Cancel all pending downloads since the server will probably give us new
-  // ones to fetch.
-  if (prediction_model_download_manager_)
-    prediction_model_download_manager_->CancelAllPendingDownloads();
+  // NOTE: ALL PRECONDITIONS FOR THIS FUNCTION MUST BE CHECKED ABOVE THIS LINE.
+  // It is assumed that if we proceed past here, that a fetch will at least be
+  // attempted.
 
   std::vector<std::string> top_hosts;
   std::vector<proto::FieldTrial> active_field_trials;
@@ -581,11 +570,19 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
     models_info.push_back(model_info);
   }
 
-  prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-      models_info, top_hosts, active_field_trials,
-      optimization_guide::proto::CONTEXT_BATCH_UPDATE,
-      base::BindOnce(&PredictionManager::OnModelsAndHostFeaturesFetched,
-                     ui_weak_ptr_factory_.GetWeakPtr()));
+  bool fetch_initiated =
+      prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
+          models_info, top_hosts, active_field_trials,
+          optimization_guide::proto::CONTEXT_BATCH_UPDATE,
+          base::BindOnce(&PredictionManager::OnModelsAndHostFeaturesFetched,
+                         ui_weak_ptr_factory_.GetWeakPtr()));
+
+  if (fetch_initiated)
+    SetLastModelAndFeaturesFetchAttemptTime(clock_->Now());
+  // Schedule the next fetch regardless since we may not have initiated a fetch
+  // due to a network condition and trying in the next minute to see if that is
+  // unblocked is only a timer firing and not an actual query to the server.
+  ScheduleModelsAndHostModelFeaturesFetch();
 }
 
 void PredictionManager::OnModelsAndHostFeaturesFetched(
@@ -594,6 +591,8 @@ void PredictionManager::OnModelsAndHostFeaturesFetched(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!get_models_response_data)
     return;
+
+  SetLastModelFetchSuccessTime(clock_->Now());
 
   // Update host model features, even if empty so the store metadata
   // that contains the update time for new models and features to be fetched
@@ -608,7 +607,7 @@ void PredictionManager::OnModelsAndHostFeaturesFetched(
 
   fetch_timer_.Stop();
   fetch_timer_.Start(
-      FROM_HERE, kUpdateModelsAndFeaturesDelay, this,
+      FROM_HERE, features::PredictionModelFetchInterval(), this,
       &PredictionManager::ScheduleModelsAndHostModelFeaturesFetch);
 }
 
@@ -618,7 +617,8 @@ void PredictionManager::UpdateHostModelFeatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<StoreUpdateData> host_model_features_update_data =
       StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
-          /*update_time=*/clock_->Now() + kUpdateModelsAndFeaturesDelay,
+          /*update_time=*/clock_->Now() +
+              features::PredictionModelFetchInterval(),
           /*expiry_time=*/clock_->Now() +
               features::StoredHostModelFeaturesFreshnessDuration());
   for (const auto& host_model_features : host_model_features) {
@@ -1036,9 +1036,7 @@ void PredictionManager::MaybeScheduleModelAndHostModelFeaturesFetch() {
   if (!ShouldFetchModelsAndHostModelFeatures(profile_))
     return;
 
-  if (optimization_guide::switches::
-          ShouldOverrideFetchModelsAndFeaturesTimer()) {
-    SetLastModelAndFeaturesFetchAttemptTime(clock_->Now());
+  if (switches::ShouldOverrideFetchModelsAndFeaturesTimer()) {
     fetch_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
                        &PredictionManager::FetchModelsAndHostModelFeatures);
   } else {
@@ -1053,18 +1051,25 @@ base::Time PredictionManager::GetLastFetchAttemptTime() const {
           pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
 }
 
+base::Time PredictionManager::GetLastFetchSuccessTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(
+          pref_service_->GetInt64(prefs::kModelLastFetchSuccess)));
+}
+
 void PredictionManager::ScheduleModelsAndHostModelFeaturesFetch() {
   DCHECK(!fetch_timer_.IsRunning());
   DCHECK(store_is_ready_);
   const base::TimeDelta time_until_update_time =
-      model_and_features_store_->GetHostModelFeaturesUpdateTime() -
+      GetLastFetchSuccessTime() + features::PredictionModelFetchInterval() -
       clock_->Now();
   const base::TimeDelta time_until_retry =
-      GetLastFetchAttemptTime() + kFetchRetryDelay - clock_->Now();
+      GetLastFetchAttemptTime() + features::PredictionModelFetchRetryDelay() -
+      clock_->Now();
   base::TimeDelta fetcher_delay =
       std::max(time_until_update_time, time_until_retry);
   if (fetcher_delay <= base::TimeDelta()) {
-    SetLastModelAndFeaturesFetchAttemptTime(clock_->Now());
     fetch_timer_.Start(FROM_HERE, RandomFetchDelay(), this,
                        &PredictionManager::FetchModelsAndHostModelFeatures);
     return;
@@ -1080,6 +1085,14 @@ void PredictionManager::SetLastModelAndFeaturesFetchAttemptTime(
   pref_service_->SetInt64(
       prefs::kModelAndFeaturesLastFetchAttempt,
       last_attempt_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+}
+
+void PredictionManager::SetLastModelFetchSuccessTime(
+    base::Time last_success_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetInt64(
+      prefs::kModelLastFetchSuccess,
+      last_success_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 void PredictionManager::SetClockForTesting(const base::Clock* clock) {
