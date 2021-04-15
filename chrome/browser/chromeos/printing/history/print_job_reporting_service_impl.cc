@@ -104,8 +104,8 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     job_config->set_id(print_job_info.id());
     job_config->set_title(print_job_info.title());
     job_config->set_status(ConvertStatus(print_job_info.status()));
-    job_config->set_creation_time(print_job_info.creation_time());
-    job_config->set_completion_time(print_job_info.completion_time());
+    job_config->set_creation_timestamp(print_job_info.creation_time());
+    job_config->set_completion_timestamp(print_job_info.completion_time());
     job_config->set_number_of_pages(print_job_info.number_of_pages());
     // Print settings
     auto* settings = job_config->mutable_settings();
