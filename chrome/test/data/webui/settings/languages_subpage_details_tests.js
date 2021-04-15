@@ -19,6 +19,7 @@ window.languages_subpage_details_tests = {};
 /** @enum {string} */
 window.languages_subpage_details_tests.TestNames = {
   AlwaysTranslateDialog: 'always translate dialog',
+  NeverTranslateDialog: 'never translate dialog',
 };
 
 suite('languages subpage detailed settings', function() {
@@ -33,6 +34,7 @@ suite('languages subpage detailed settings', function() {
 
   // Always Translate language pref name for the platform.
   const alwaysTranslatePref = 'translate_whitelists';
+  const neverTranslatePref = 'translate_blocked_languages';
 
   suiteSetup(function() {
     // TODO(crbug/1109431): Update this test once migration is completed.
@@ -152,26 +154,88 @@ suite('languages subpage detailed settings', function() {
           dialogClosedObserver.disconnect();
         });
 
-        test('add languages and cancel', function() {
-          // Check some languages.
-          dialogItems[1].click();  // en-CA.
-          dialogItems[2].click();  // tk.
-
-          // Canceling the dialog should close and remove it without enabling
-          // the checked languages.
-          cancelButton.click();
-          return dialogClosedResolver.promise.then(function() {
-            assertTrue(
-                languageHelper.getPref(alwaysTranslatePref).value.length === 0);
-          });
-        });
-
         test('add languages and confirm', function() {
           dialog.dispatchEvent(
               new CustomEvent('languages-added', {detail: ['en', 'no']}));
           dialog.$.dialog.close();
           assertDeepEquals(
               ['en', 'no'], languageHelper.getPref(alwaysTranslatePref).value);
+
+          return dialogClosedResolver.promise;
+        });
+      });
+
+  suite(
+      languages_subpage_details_tests.TestNames.NeverTranslateDialog,
+      function() {
+        let dialog;
+        let dialogItems;
+        let cancelButton;
+        let actionButton;
+        let dialogClosedResolver;
+        let dialogClosedObserver;
+
+        // Resolves the PromiseResolver if the mutation includes removal of the
+        // settings-add-languages-dialog.
+        // TODO(michaelpg): Extract into a common method similar to
+        // whenAttributeIs for use elsewhere.
+        const onMutation = function(mutations, observer) {
+          if (mutations.some(function(mutation) {
+                return mutation.type === 'childList' &&
+                    Array.from(mutation.removedNodes).includes(dialog);
+              })) {
+            // Sanity check: the dialog should no longer be in the DOM.
+            assertEquals(
+                null, languagesSubpage.$$('settings-add-languages-dialog'));
+            observer.disconnect();
+            assertTrue(!!dialogClosedResolver);
+            dialogClosedResolver.resolve();
+          }
+        };
+
+        setup(function() {
+          const addLanguagesButton = languagesSubpage.$$('#addNeverTranslate');
+          const whenDialogOpen =
+              eventToPromise('cr-dialog-open', languagesSubpage);
+          addLanguagesButton.click();
+
+          // The page stamps the dialog, registers listeners, and populates the
+          // iron-list asynchronously at microtask timing, so wait for a new
+          // task.
+          return whenDialogOpen.then(() => {
+            dialog = languagesSubpage.$$('settings-add-languages-dialog');
+            assertTrue(!!dialog);
+            assertEquals(dialog.id, 'neverTranslateDialog');
+
+            // Observe the removal of the dialog via MutationObserver since the
+            // HTMLDialogElement 'close' event fires at an unpredictable time.
+            dialogClosedResolver = new PromiseResolver();
+            dialogClosedObserver = new MutationObserver(onMutation);
+            dialogClosedObserver.observe(
+                languagesSubpage.root, {childList: true});
+
+            actionButton = dialog.$$('.action-button');
+            cancelButton = dialog.$$('.cancel-button');
+            flush();
+
+            // The fixed-height dialog's iron-list should stamp far fewer than
+            // 50 items.
+            dialogItems =
+                dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
+          });
+        });
+
+        teardown(function() {
+          dialogClosedObserver.disconnect();
+        });
+
+        test('add languages and confirm', function() {
+          dialog.dispatchEvent(
+              new CustomEvent('languages-added', {detail: ['sw', 'no']}));
+          dialog.$.dialog.close();
+          assertDeepEquals(
+              ['en-US', 'sw', 'no'],
+              languageHelper.getPref(neverTranslatePref).value);
 
           return dialogClosedResolver.promise;
         });

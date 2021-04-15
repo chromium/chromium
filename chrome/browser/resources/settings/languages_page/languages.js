@@ -183,6 +183,8 @@ Polymer({
     // |languages| property.
     'alwaysTranslateLanguagesPrefChanged_(' +
         'prefs.translate_whitelists.value.*, languages)',
+    'neverTranslateLanguagesPrefChanged_(' +
+        'prefs.translate_blocked_languages.value.*, languages)',
     'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
     'preferredLanguagesPrefChanged_(' +
         'prefs.' + preferredLanguagesPrefName + '.value, languages)',
@@ -553,6 +555,22 @@ Polymer({
     const alwaysTranslateLanguages =
         alwaysTranslateCodes.map(code => this.getLanguage(code));
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
+  },
+
+  /**
+   * Updates the list of never translate languages from translate prefs.
+   * @private
+   */
+  neverTranslateLanguagesPrefChanged_() {
+    if (this.prefs === undefined || this.languages === undefined) {
+      return;
+    }
+    const neverTranslateCodes =
+        /** @type {!Object} */ (
+            this.getPref('translate_blocked_languages').value);
+    const neverTranslateLanguages =
+        neverTranslateCodes.map(code => this.getLanguage(code));
+    this.set('languages.neverTranslate', neverTranslateLanguages);
   },
 
   /** @private */

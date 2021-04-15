@@ -94,6 +94,9 @@ Polymer({
     /** @private */
     showAddAlwaysTranslateDialog_: Boolean,
 
+    /** @private */
+    showAddNeverTranslateDialog_: Boolean,
+
     /** @private {?Array<!chrome.languageSettingsPrivate.Language>} */
     addLanguagesDialogLanguages_: Array,
 
@@ -272,6 +275,48 @@ Polymer({
     return languages === undefined || languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
+  },
+
+  /**
+   * Stamps and opens the Add Languages dialog, registering a listener to
+   * disable the dialog's dom-if again on close.
+   * @param {!Event} e
+   * @private
+   */
+  onAddNeverTranslateLanguagesClick_(e) {
+    e.preventDefault();
+
+    this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
+        language => !this.languages.neverTranslate.includes(language));
+    this.showAddNeverTranslateDialog_ = true;
+  },
+
+  /** @private */
+  onNeverTranslateDialogClose_() {
+    this.showAddNeverTranslateDialog_ = false;
+    this.addLanguagesDialogLanguages_ = null;
+    focusWithoutInk(assert(this.$$('#addNeverTranslate')));
+  },
+
+  /**
+   * @param {!CustomEvent<!Array<string>>} e
+   * @private
+   */
+  onNeverTranslateLanguagesAdded_(e) {
+    const languagesToAdd = e.detail;
+    languagesToAdd.forEach(languageCode => {
+      this.languageHelper.disableTranslateLanguage(languageCode);
+    });
+  },
+
+  /**
+   * Removes a language from the never translate languages list.
+   * @param {!Event} e
+   * @private
+   */
+  onRemoveNeverTranslateLanguageClick_(e) {
+    const languageCode = e.model.item.code;
+    this.languageHelper.enableTranslateLanguage(languageCode);
   },
 
   /**

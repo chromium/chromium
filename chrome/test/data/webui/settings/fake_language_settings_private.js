@@ -248,7 +248,11 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    *     callback
    */
   getNeverTranslateLanguages(callback) {
-    setTimeout(callback.bind(null, this.neverTranslateList));
+    setTimeout(() => {
+      callback(
+          /** @type {!Array<!string>} */ (this.settingsPrefs_.get(
+              'prefs.translate_blocked_languages.value')));
+    });
   }
 
   /**
