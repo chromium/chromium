@@ -88,45 +88,6 @@ bool IsAcceptableOffscreenTabUrl(const GURL& url) {
   return url.is_valid() && (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("data"));
 }
 
-// Removes all mandatory and optional constraint entries that start with the
-// "goog" prefix.  These are never needed and may cause the renderer-side
-// getUserMedia() call to fail.  http://crbug.com/579729
-//
-// TODO(miu): Remove once tabCapture API is migrated to new constraints spec.
-// http://crbug.com/579729
-void FilterDeprecatedGoogConstraints(TabCapture::CaptureOptions* options) {
-  const auto FilterGoogKeysFromDictionary = [](base::DictionaryValue* dict) {
-    std::vector<std::string> bad_keys;
-    base::DictionaryValue::Iterator it(*dict);
-    for (; !it.IsAtEnd(); it.Advance()) {
-      if (base::StartsWith(it.key(), "goog", base::CompareCase::SENSITIVE))
-        bad_keys.push_back(it.key());
-    }
-    for (const std::string& k : bad_keys) {
-      std::unique_ptr<base::Value> ignored;
-      dict->RemoveWithoutPathExpansion(k, &ignored);
-    }
-  };
-
-  if (options->audio_constraints) {
-    FilterGoogKeysFromDictionary(
-        &options->audio_constraints->mandatory.additional_properties);
-    if (options->audio_constraints->optional) {
-      FilterGoogKeysFromDictionary(
-          &options->audio_constraints->optional->additional_properties);
-    }
-  }
-
-  if (options->video_constraints) {
-    FilterGoogKeysFromDictionary(
-        &options->video_constraints->mandatory.additional_properties);
-    if (options->video_constraints->optional) {
-      FilterGoogKeysFromDictionary(
-          &options->video_constraints->optional->additional_properties);
-    }
-  }
-}
-
 bool GetAutoThrottlingFromOptions(TabCapture::CaptureOptions* options) {
   bool enable_auto_throttling = false;
   if (options && options->video && *options->video) {
@@ -272,7 +233,6 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
     // http://crbug.com/535336
     return RespondNow(Error(kCapturingSameTab));
   }
-  FilterDeprecatedGoogConstraints(&params->options);
   AddMediaStreamSourceConstraints(target_contents, &params->options, device_id);
 
   // At this point, everything is set up in the browser process.  It's now up to
@@ -344,11 +304,8 @@ ExtensionFunction::ResponseAction TabCaptureCaptureOffscreenTabFunction::Run() {
       target_contents, extension_id, true, extension()->url(), source,
       extension()->name(), extension_web_contents);
   if (device_id.empty()) {
-    // TODO(miu): Allow multiple consumers of single tab capture.
-    // http://crbug.com/535336
     return RespondNow(Error(kCapturingSameOffscreenTab));
   }
-  FilterDeprecatedGoogConstraints(&params->options);
   AddMediaStreamSourceConstraints(target_contents, &params->options, device_id);
 
   // At this point, everything is set up in the browser process.  It's now up to
