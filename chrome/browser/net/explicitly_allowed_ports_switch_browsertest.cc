@@ -2,39 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
-#include "content/shell/browser/shell.h"
-#include "services/network/public/cpp/network_switches.h"
+#include "url/gurl.h"
 
 namespace content {
 
-class CommandLineFlagsBrowserTest : public ContentBrowserTest {
+class ExplicitlyAllowedPortsSwitchBrowserTest : public InProcessBrowserTest {
  protected:
   network::mojom::NetworkContext* network_context() {
     return content::BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+               browser()->profile())
         ->GetNetworkContext();
   }
 };
 
 // Tests that when no special command line flags are passed, requests to port 79
 // (finger) fail with ERR_UNSAFE_PORT.
-IN_PROC_BROWSER_TEST_F(CommandLineFlagsBrowserTest, Port79DefaultBlocked) {
+IN_PROC_BROWSER_TEST_F(ExplicitlyAllowedPortsSwitchBrowserTest,
+                       Port79DefaultBlocked) {
   EXPECT_EQ(net::ERR_UNSAFE_PORT,
             content::LoadBasicRequest(network_context(),
                                       GURL("http://127.0.0.1:79")));
 }
 
-class ExplicitlyAllowPort79BrowserTest : public CommandLineFlagsBrowserTest {
+class ExplicitlyAllowPort79BrowserTest
+    : public ExplicitlyAllowedPortsSwitchBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(network::switches::kExplicitlyAllowedPorts,
-                                    "79");
+    command_line->AppendSwitchASCII(switches::kExplicitlyAllowedPorts, "79");
   }
 };
 

@@ -106,6 +106,11 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->plugin_fullscreen_allowed = data.plugin_fullscreen_allowed();
   out->caret_browsing_enabled = data.caret_browsing_enabled();
 
+  if (!data.ReadExplicitlyAllowedNetworkPorts(
+          &out->explicitly_allowed_network_ports)) {
+    return false;
+  }
+
   return true;
 }
 

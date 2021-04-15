@@ -110,6 +110,8 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(prefs::kAllowCrossOriginAuthPrompt,
                                            renderer_callback);
+    local_state_pref_change_registrar_.Add(
+        prefs::kExplicitlyAllowedNetworkPorts, renderer_callback);
   }
 }
 

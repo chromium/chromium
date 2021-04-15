@@ -959,12 +959,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
   // skia initialization code for the GPU.
   SkGraphics::SetImageGeneratorFromEncodedDataFactory(
       blink::WebImageGenerator::CreateAsSkImageGenerator);
-
-  if (command_line.HasSwitch(network::switches::kExplicitlyAllowedPorts)) {
-    std::string allowed_ports = command_line.GetSwitchValueASCII(
-        network::switches::kExplicitlyAllowedPorts);
-    net::SetExplicitlyAllowedPorts(allowed_ports);
-  }
 }
 
 void RenderThreadImpl::RegisterSchemes() {

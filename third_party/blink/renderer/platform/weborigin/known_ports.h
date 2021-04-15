@@ -27,6 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_KNOWN_PORTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_KNOWN_PORTS_H_
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -45,6 +48,11 @@ PLATFORM_EXPORT uint16_t DefaultPortForProtocol(const WTF::String& protocol);
 
 // Returns true if the port of the |url| is allowed for the scheme of the |url|.
 PLATFORM_EXPORT bool IsPortAllowedForScheme(const KURL&);
+
+// Sets ports as permitted that would otherwise be disallowed. Takes a
+// comma-separated list of ports.
+PLATFORM_EXPORT void SetExplicitlyAllowedPorts(
+    base::span<const uint16_t> allowed_ports);
 
 }  // namespace blink
 

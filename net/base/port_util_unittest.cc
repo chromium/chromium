@@ -12,13 +12,8 @@
 namespace net {
 
 TEST(NetUtilTest, SetExplicitlyAllowedPortsTest) {
-  std::string invalid[] = {"1,2,a", "'1','2'", "1, 2, 3", "1 0,11,12"};
-  std::string valid[] = {"", "1", "1,2", "1,2,3", "10,11,12,13"};
-
-  for (size_t i = 0; i < base::size(invalid); ++i) {
-    SetExplicitlyAllowedPorts(invalid[i]);
-    EXPECT_EQ(0, static_cast<int>(GetCountOfExplicitlyAllowedPorts()));
-  }
+  const std::vector<uint16_t> valid[] = {
+      {}, {1}, {1, 2}, {1, 2, 3}, {10, 11, 12, 13}};
 
   for (size_t i = 0; i < base::size(valid); ++i) {
     SetExplicitlyAllowedPorts(valid[i]);

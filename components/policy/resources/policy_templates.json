@@ -25456,6 +25456,51 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
 When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> only allows users to connect to the specified Bluetooth services with an exception when the list is empty which means any service is allowed to use. UUIDs reserved by the Bluetooth SIG can be represented as <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X">'0xABCD'</ph> or <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X">'ABCD'</ph>. Custom UUIDs can be represented as <ph name="BLUETOOTH_CUSTOM_UUID">'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE'</ph>. UUIDs are case insensitive. Leaving this policy unset lets users connect to any Bluetooth service.'''
     },
+    {
+      'name': 'ExplicitlyAllowedNetworkPorts',
+      'owners': ['ricea@chromium.org', 'yhirano@chromium.org'],
+      'type': 'string-enum-list',  # this would be 'int-enum-list' if it was supported.
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'enum': [
+            '10080',
+          ],
+        },
+      },
+      'items': [
+        {
+          'name': '10080',
+          'value': '10080',
+          'caption': '''port 10080 (expires 2022/04/01)''',
+          'supported_on': [
+            'chrome.*:91-99',
+            'android:91-99',
+            'chrome_os:91-99',
+            'webview_android:91-99'
+          ],
+        }
+      ],
+      'supported_on': ['chrome.*:91-', 'android:91-', 'chrome_os:91-', 'webview_android:91-'],
+      'features': {
+        'per_profile': False,
+        'dynamic_refresh': True,
+      },
+      'example_value': ['10080'],
+      'id': 849,
+      'caption': '''Explicitly allowed network ports''',
+      'tags': ['system-security', 'website-sharing', 'local-data-access'],
+      'desc': '''Setting the policy permits bypassing the list of restricted ports built into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. The value is a comma-separated list of zero or more ports that outgoing connections will be permitted on.
+
+      Ports are restricted to prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> being used as a vector to exploit various network vulnerabilities. Setting this policy may expose your network to attacks. This policy is intended as a temporary workaround for errors with code "ERR_UNSAFE_PORT" while migrating a service running on a blocked port to a standard port (ie. port 80 or 443).
+
+      Malicious websites can easily detect that this policy is set, and for what ports, and use that information to target attacks.
+
+      Leaving the value empty or unset means that all restricted ports will be blocked. If there is a mixture of valid and invalid values, the valid ones will be applied.
+
+      This policy overrides the "--explicitly-allowed-ports" command-line option.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -26386,6 +26431,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 848,
+  'highest_id_currently_used': 849,
   'highest_atomic_group_id_currently_used': 40
 }

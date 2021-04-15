@@ -41,6 +41,9 @@ class ChromeCommandLinePrefStore : public CommandLinePrefStore {
   // Determines whether the background mode is force-disabled.
   void ApplyBackgroundModeSwitches();
 
+  // Re-enables some ports that may have been disallowed for security reasons.
+  void ApplyExplicitlyAllowedPortSwitch();
+
   // Mappings of command line switches to prefs.
   static const BooleanSwitchToPreferenceMapEntry boolean_switch_map_[];
   static const SwitchToPreferenceMapEntry string_switch_map_[];

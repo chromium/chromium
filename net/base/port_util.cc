@@ -9,6 +9,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -62,6 +63,8 @@ void LogSlipstreamRestrictedPort(int port) {
 
 // The general list of blocked ports. Will be blocked unless a specific
 // protocol overrides it. (Ex: ftp can use port 21)
+// When adding a port to the list, consider also adding it to kAllowablePorts,
+// below.
 const int kRestrictedPorts[] = {
     1,     // tcpmux
     7,     // echo
@@ -145,6 +148,19 @@ const int kRestrictedPorts[] = {
 base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
     LAZY_INSTANCE_INITIALIZER;
 
+// List of ports which are permitted to be reenabled despite being in
+// kRestrictedList. When adding an port to this list you should also update the
+// enterprise policy to document the fact that the value can be set. Ports
+// should only remain in this list for about a year to give time for users to
+// migrate off while stopping them from becoming permanent parts of the web
+// platform.
+constexpr int kAllowablePorts[] = {
+    // TODO(https://crbug.com/1196846) Remove port 10080 around 2022/04/01.
+    10080,
+};
+
+int g_scoped_allowable_port = 0;
+
 }  // namespace
 
 bool IsPortValid(int port) {
@@ -187,34 +203,9 @@ size_t GetCountOfExplicitlyAllowedPorts() {
 
 // Specifies a comma separated list of port numbers that should be accepted
 // despite bans. If the string is invalid no allowed ports are stored.
-void SetExplicitlyAllowedPorts(const std::string& allowed_ports) {
-  if (allowed_ports.empty())
-    return;
-
-  std::multiset<int> ports;
-  size_t last = 0;
-  size_t size = allowed_ports.size();
-  // The comma delimiter.
-  const std::string::value_type kComma = ',';
-
-  // Overflow is still possible for evil user inputs.
-  for (size_t i = 0; i <= size; ++i) {
-    // The string should be composed of only digits and commas.
-    if (i != size && !base::IsAsciiDigit(allowed_ports[i]) &&
-        (allowed_ports[i] != kComma))
-      return;
-    if (i == size || allowed_ports[i] == kComma) {
-      if (i > last) {
-        int port;
-        base::StringToInt(base::MakeStringPiece(allowed_ports.begin() + last,
-                                                allowed_ports.begin() + i),
-                          &port);
-        ports.insert(port);
-      }
-      last = i + 1;
-    }
-  }
-  g_explicitly_allowed_ports.Get() = ports;
+void SetExplicitlyAllowedPorts(base::span<const uint16_t> allowed_ports) {
+  std::multiset<int> ports(allowed_ports.begin(), allowed_ports.end());
+  g_explicitly_allowed_ports.Get() = std::move(ports);
 }
 
 ScopedPortException::ScopedPortException(int port) : port_(port) {
@@ -227,6 +218,28 @@ ScopedPortException::~ScopedPortException() {
     g_explicitly_allowed_ports.Get().erase(it);
   else
     NOTREACHED();
+}
+
+NET_EXPORT bool IsAllowablePort(int port) {
+  for (auto allowable_port : kAllowablePorts) {
+    if (port == allowable_port) {
+      return true;
+    }
+  }
+
+  if (port == g_scoped_allowable_port)
+    return true;
+
+  return false;
+}
+
+ScopedAllowablePortForTesting::ScopedAllowablePortForTesting(int port) {
+  DCHECK_EQ(g_scoped_allowable_port, 0);
+  g_scoped_allowable_port = port;
+}
+
+ScopedAllowablePortForTesting::~ScopedAllowablePortForTesting() {
+  g_scoped_allowable_port = 0;
 }
 
 }  // namespace net

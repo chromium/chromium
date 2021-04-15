@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_RENDERER_PREFERENCES_RENDERER_PREFERENCES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_RENDERER_PREFERENCES_RENDERER_PREFERENCES_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -72,6 +74,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 #endif
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
+  std::vector<uint16_t> explicitly_allowed_network_ports;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);
