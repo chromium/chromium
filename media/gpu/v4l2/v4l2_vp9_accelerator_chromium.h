@@ -39,6 +39,8 @@ class V4L2ChromiumVP9Accelerator : public VP9Decoder::VP9Accelerator {
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
 
+  bool device_needs_frame_context_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(V4L2ChromiumVP9Accelerator);
 };
 
