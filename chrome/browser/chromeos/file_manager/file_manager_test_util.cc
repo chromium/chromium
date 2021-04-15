@@ -8,8 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
@@ -81,8 +80,7 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   // That used to be enough to also launch a Browser for the WebApp. However,
   // since https://crrev.com/c/2121860, ExecuteFileTaskForUrl() goes through the
   // mojoAppService, so it's necessary to flush those calls for WebApps to open.
-  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile_)
-      ->FlushMojoCallsForTesting();
+  web_app::FlushSystemWebAppLaunchesForTesting(profile_);
 
   return open_result;
 }

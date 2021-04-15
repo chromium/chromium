@@ -11,20 +11,13 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,13 +33,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -64,7 +51,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
@@ -108,16 +94,13 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 void LaunchReleaseNotesImpl(Profile* profile,
                             apps::mojom::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
-  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile)
-      ->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
-                         GURL("chrome://help-app/updates"), source,
-                         apps::MakeWindowInfo(display::kDefaultDisplayId));
+  LaunchSystemWebAppAsync(
+      profile, web_app::SystemAppType::HELP,
+      {.url = GURL("chrome://help-app/updates"), .launch_source = source});
 }
-
 #endif
 
 // Shows either the help app or the appropriate help page for |source|. If
@@ -142,9 +125,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     default:
       NOTREACHED() << "Unhandled help source" << source;
   }
-  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile)
-      ->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
-               apps::MakeWindowInfo(display::kDefaultDisplayId));
+
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
+                          {.launch_source = app_launch_source});
 #else
   GURL url;
   switch (source) {

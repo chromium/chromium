@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -50,44 +49,6 @@ bool AppServiceProxyFactory::IsAppServiceAvailableForProfile(Profile* profile) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-AppServiceProxyChromeOs* AppServiceProxyFactory::GetForProfile(
-    Profile* profile) {
-  // TODO(https://crbug.com/1122463): remove this and convert back to a DCHECK
-  // once we have audited and removed code paths that call here with a profile
-  // that doesn't have an App Service.
-  if (!IsAppServiceAvailableForProfile(profile)) {
-    DVLOG(1) << "Called AppServiceProxyFactory::GetForProfile() on a profile "
-                "which does not contain an AppServiceProxy. Please check "
-                "whether this is appropriate as you may be leaking information "
-                "out of this profile. Returning the AppServiceProxy attached "
-                "to the parent profile instead.";
-    // Fail tests that would trigger DumpWithoutCrashing.
-    DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kTestType));
-    base::debug::DumpWithoutCrashing();
-  }
-
-  auto* proxy = static_cast<AppServiceProxyChromeOs*>(
-      AppServiceProxyFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, true /* create */));
-  DCHECK_NE(nullptr, proxy);
-  return proxy;
-}
-
-// static
-AppServiceProxyChromeOs*
-AppServiceProxyFactory::GetForProfileRedirectInIncognito(Profile* profile) {
-  // TODO(https://crbug.com/1122463): replace this API and GetForProfile() with
-  // one that allows clients to specify different levels of incognito tolerance,
-  // where the default is to not leak out of incognito.
-  if (!IsAppServiceAvailableForProfile(profile)) {
-    profile = profile->GetOriginalProfile();
-  }
-  return GetForProfile(profile);
-}
-#else
 // static
 AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
   // TODO(https://crbug.com/1122463): remove this and convert back to a DCHECK
@@ -105,25 +66,12 @@ AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
     base::debug::DumpWithoutCrashing();
   }
 
-  auto* proxy = static_cast<AppServiceProxy*>(
+  AppServiceProxy* proxy = static_cast<AppServiceProxy*>(
       AppServiceProxyFactory::GetInstance()->GetServiceForBrowserContext(
           profile, true /* create */));
   DCHECK_NE(nullptr, proxy);
   return proxy;
 }
-
-// static
-AppServiceProxy* AppServiceProxyFactory::GetForProfileRedirectInIncognito(
-    Profile* profile) {
-  // TODO(https://crbug.com/1122463): replace this API and GetForProfile() with
-  // one that allows clients to specify different levels of incognito tolerance,
-  // where the default is to not leak out of incognito.
-  if (!IsAppServiceAvailableForProfile(profile)) {
-    profile = profile->GetOriginalProfile();
-  }
-  return GetForProfile(profile);
-}
-#endif
 
 // static
 AppServiceProxyFactory* AppServiceProxyFactory::GetInstance() {
@@ -149,11 +97,7 @@ AppServiceProxyFactory::~AppServiceProxyFactory() = default;
 
 KeyedService* AppServiceProxyFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return new AppServiceProxyChromeOs(Profile::FromBrowserContext(context));
-#else
   return new AppServiceProxy(Profile::FromBrowserContext(context));
-#endif
 }
 
 content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(

@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,11 +39,8 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
   }
 
   // Ensure apps are registered with the |AppService| and populated in
-  // |AppListModel|. Redirect to the profile that has an AppService that can be
-  // flushed. This logic differs from WebAppProviderFactory::GetContextToUse().
-  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
-      browser()->profile())
-      ->FlushMojoCallsForTesting();
+  // |AppListModel|.
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 }
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
@@ -64,8 +62,8 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   content::TestNavigationObserver navigation_observer(GetStartUrl(params));
   navigation_observer.StartWatchingNewWebContents();
 
-  // AppServiceProxyFactory will DumpWithoutCrash when called with wrong
-  // profile. In normal scenarios, no code path should trigger this.
+  // AppServiceProxyFactory will DCHECK when called with wrong profile. In
+  // normal scenarios, no code path should trigger this.
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       browser()->profile()));
 

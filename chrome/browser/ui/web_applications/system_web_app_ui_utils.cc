@@ -143,6 +143,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemAppType type,
                              const SystemAppLaunchParams& params,
                              apps::mojom::WindowInfoPtr window_info) {
+  DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemAppType::TERMINAL);
 
@@ -287,7 +288,7 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile) {
       << "FlushSystemWebAppLaunchesForTesting is called for a profile that "
          "can't run System Apps. Check your code.";
   auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+      apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
   DCHECK(app_service_proxy);
   app_service_proxy->FlushMojoCallsForTesting();  // IN-TEST
 }

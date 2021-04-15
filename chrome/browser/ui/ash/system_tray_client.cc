@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -404,12 +405,10 @@ void SystemTrayClient::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
-                          GURL(chrome::kChromeOSGestureEducationHelpURL),
-                          apps::mojom::LaunchSource::kFromOtherApp,
-                          apps::MakeWindowInfo(display::kDefaultDisplayId));
+  LaunchSystemWebAppAsync(
+      profile, web_app::SystemAppType::HELP,
+      {.url = GURL(chrome::kChromeOSGestureEducationHelpURL),
+       .launch_source = apps::mojom::LaunchSource::kFromOtherApp});
 }
 
 void SystemTrayClient::ShowPaletteHelp() {

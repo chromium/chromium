@@ -85,6 +85,10 @@ class AppServiceProxyBase : public KeyedService,
   // indicating opening a background tab). |launch_source| is the possible app
   // launch sources, e.g. from Shelf, from the search box, etc. |window_info| is
   // the window information to launch an app, e.g. display_id, window bounds.
+  //
+  // Note: prefer using LaunchSystemWebAppAsync() for launching System Web Apps,
+  // as that is robust to the choice of profile and avoids needing to specify an
+  // app_id.
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
