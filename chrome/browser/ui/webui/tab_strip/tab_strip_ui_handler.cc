@@ -187,7 +187,12 @@ TabStripUIHandler::TabStripUIHandler(Browser* browser,
                               base::Unretained(this))),
       tab_before_unload_tracker_(
           base::BindRepeating(&TabStripUIHandler::OnTabCloseCancelled,
-                              base::Unretained(this))) {}
+                              base::Unretained(this))),
+      long_press_timer_(std::make_unique<base::RetainingOneShotTimer>(
+          FROM_HERE,
+          kTouchLongpressDelay,
+          base::BindRepeating(&TabStripUIHandler::OnLongPressTimer,
+                              base::Unretained(this)))) {}
 TabStripUIHandler::~TabStripUIHandler() = default;
 
 void TabStripUIHandler::NotifyLayoutChanged() {
@@ -200,6 +205,12 @@ void TabStripUIHandler::NotifyReceivedKeyboardFocus() {
   if (!IsJavascriptAllowed())
     return;
   FireWebUIListener("received-keyboard-focus");
+}
+
+void TabStripUIHandler::NotifyContextMenuClosed() {
+  if (!IsJavascriptAllowed())
+    return;
+  FireWebUIListener("context-menu-closed");
 }
 
 // content::WebUIMessageHandler:
@@ -374,7 +385,7 @@ bool TabStripUIHandler::PreHandleGestureEvent(
 #if defined(USE_AURA)
       // If we are passed the `kTouchLongpressDelay` threshold since the initial
       // tap down initiate a drag on scroll start.
-      if (tap_down_timer_.Elapsed() >= kTouchLongpressDelay) {
+      if (!long_press_timer_->IsRunning()) {
         handling_gesture_scroll_ = true;
 
         // If we are about to start a drag ensure the context menu is closed.
@@ -404,6 +415,8 @@ bool TabStripUIHandler::PreHandleGestureEvent(
         window->delegate()->OnGestureEvent(&scroll_end_event);
         return true;
       }
+      long_press_timer_->Stop();
+      return false;
 #endif  // defined(USE_AURA)
       return false;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
@@ -412,7 +425,7 @@ bool TabStripUIHandler::PreHandleGestureEvent(
     case blink::WebInputEvent::Type::kGestureTapDown:
       touch_drag_start_point_ =
           gfx::ToRoundedPoint(event.PositionInRootFrame());
-      tap_down_timer_ = base::ElapsedTimer();
+      long_press_timer_->Reset();
       return false;
     case blink::WebInputEvent::Type::kGestureLongPress:
       // Do not block the long press if handling a scroll gesture.
@@ -494,6 +507,12 @@ void TabStripUIHandler::RegisterMessages() {
       "reportTabCreationDuration",
       base::BindRepeating(&TabStripUIHandler::HandleReportTabCreationDuration,
                           base::Unretained(this)));
+}
+
+void TabStripUIHandler::OnLongPressTimer() {
+  if (!IsJavascriptAllowed())
+    return;
+  FireWebUIListener("long-press");
 }
 
 void TabStripUIHandler::HandleCreateNewTab(const base::ListValue* args) {
@@ -813,7 +832,9 @@ void TabStripUIHandler::HandleShowBackgroundContextMenu(
   embedder_->ShowContextMenuAtPoint(
       gfx::ToRoundedPoint(point),
       std::make_unique<WebUIBackgroundContextMenu>(
-          browser_, embedder_->GetAcceleratorProvider()));
+          browser_, embedder_->GetAcceleratorProvider()),
+      base::BindRepeating(&TabStripUIHandler::NotifyContextMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabStripUIHandler::HandleShowEditDialogForGroup(
@@ -873,7 +894,9 @@ void TabStripUIHandler::HandleShowTabContextMenu(const base::ListValue* args) {
   embedder_->ShowContextMenuAtPoint(
       gfx::ToRoundedPoint(point),
       std::make_unique<WebUITabContextMenu>(
-          browser, embedder_->GetAcceleratorProvider(), tab_index));
+          browser, embedder_->GetAcceleratorProvider(), tab_index),
+      base::BindRepeating(&TabStripUIHandler::NotifyContextMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabStripUIHandler::HandleGetLayout(const base::ListValue* args) {

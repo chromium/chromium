@@ -91,6 +91,12 @@
     margin: 0;
   }
 
+  :host([touch_pressed_]) #dragImage {
+    transform: scale(1.1);
+    transform-origin: center;
+    transition-duration: 300ms;
+  }
+
   #progressSpinner,
   #favicon,
   #crashedIcon {

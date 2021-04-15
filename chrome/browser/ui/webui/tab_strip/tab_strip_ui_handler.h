@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -29,6 +29,7 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
 
   void NotifyLayoutChanged();
   void NotifyReceivedKeyboardFocus();
+  void NotifyContextMenuClosed();
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
@@ -71,6 +72,7 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
                            RemoveTabIfInvalidContextMenu);
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, UngroupTab);
 
+  void OnLongPressTimer();
   void HandleCreateNewTab(const base::ListValue* args);
   base::DictionaryValue GetTabData(content::WebContents* contents, int index);
   base::DictionaryValue GetTabGroupData(TabGroup* group);
@@ -110,8 +112,12 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   // drag will start.
   gfx::Point touch_drag_start_point_;
 
-  // Time since the tap down gesture was triggered.
-  base::ElapsedTimer tap_down_timer_;
+  // Timer that starts when a press gesture is encountered and runs for the
+  // duration of a long press. The timer is stopped if the tap gesture is
+  // interrupted (eg by a scroll start gesture).
+  std::unique_ptr<base::RetainingOneShotTimer> long_press_timer_;
+
+  base::WeakPtrFactory<TabStripUIHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabStripUIHandler);
 };

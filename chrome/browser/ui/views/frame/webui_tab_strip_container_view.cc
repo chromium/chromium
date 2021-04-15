@@ -790,7 +790,8 @@ void WebUITabStripContainerView::AnimationProgressed(
 
 void WebUITabStripContainerView::ShowContextMenuAtPoint(
     gfx::Point point,
-    std::unique_ptr<ui::MenuModel> menu_model) {
+    std::unique_ptr<ui::MenuModel> menu_model,
+    base::RepeatingClosure on_menu_closed_callback) {
   if (!web_view_->GetWebContents())
     return;
   ConvertPointToScreen(this, &point);
@@ -798,7 +799,8 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       context_menu_model_.get(),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU |
-          views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER);
+          views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER,
+      on_menu_closed_callback);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,

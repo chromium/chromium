@@ -277,6 +277,11 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_(
         'tab-thumbnail-updated', this.tabThumbnailUpdated_.bind(this));
 
+    this.addWebUIListener_('long-press', () => this.handleLongPress_());
+
+    this.addWebUIListener_(
+        'context-menu-closed', () => this.clearLastTargetedTab_());
+
     this.eventTracker_.add(
         document, 'contextmenu', e => this.onContextMenu_(e));
     this.eventTracker_.add(
@@ -288,8 +293,12 @@ export class TabListElement extends CustomElement {
     this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
     this.eventTracker_.add(
         document, 'touchstart', (e) => this.onTouchStart_(e));
-    this.eventTracker_.add(document, 'touchend', (e) => this.onTouchEnd_(e));
-    this.eventTracker_.add(document, 'touchcancel', (e) => this.onTouchEnd_(e));
+    // Touchend events happen when a touch gesture finishes normally (ie not due
+    // to the context menu appearing or drag starting). Clear the last targeted
+    // tab on a drag end to ensure `lastTargetedTab_` is cleared for the cases
+    // that do not end with a dragstart or the context menu appearing.
+    this.eventTracker_.add(
+        document, 'touchend', () => this.clearLastTargetedTab_());
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
 
@@ -503,6 +512,13 @@ export class TabListElement extends CustomElement {
    */
   getLayoutVariable_(variable) {
     return parseInt(this.style.getPropertyValue(variable), 10);
+  }
+
+  /** @private */
+  handleLongPress_() {
+    if (this.lastTargetedTab_) {
+      this.lastTargetedTab_.setTouchPressed(true);
+    }
   }
 
   /**
@@ -801,11 +817,11 @@ export class TabListElement extends CustomElement {
     this.lastTouchPoint_ = {clientX: touch.clientX, clientY: touch.clientY};
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onTouchEnd_(event) {
+  /** @private */
+  clearLastTargetedTab_() {
+    if (this.lastTargetedTab_) {
+      this.lastTargetedTab_.setTouchPressed(false);
+    }
     this.lastTargetedTab_ = null;
     this.lastTouchPoint_ = undefined;
   }
