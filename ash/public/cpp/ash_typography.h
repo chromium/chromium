@@ -30,7 +30,7 @@ enum AshTextContext {
   // Title label in the Sharesheet bubble. Medium weight. Usually 16pt.
   CONTEXT_SHARESHEET_BUBBLE_TITLE,
 
-  // Body text label in the Sharesheet bubble. Meidum weight. Usually 14pt.
+  // Body text label in the Sharesheet bubble. Medium weight. Usually 14pt.
   CONTEXT_SHARESHEET_BUBBLE_BODY,
 
   // Body text label in the Sharesheet bubble. Generally appears under body

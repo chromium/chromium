@@ -26,6 +26,9 @@
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace ash {
+namespace sharesheet {
+
 class SharesheetBubbleViewBrowserTest
     : public ::testing::WithParamInterface<bool>,
       public InProcessBrowserTest {
@@ -40,11 +43,11 @@ class SharesheetBubbleViewBrowserTest
 
   void ShowUi() {
     views::Widget::Widgets old_widgets;
-    for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows())
       views::Widget::GetAllChildWidgets(root_window, &old_widgets);
 
-    sharesheet::SharesheetService* const sharesheet_service =
-        sharesheet::SharesheetServiceFactory::GetForProfile(
+    ::sharesheet::SharesheetService* const sharesheet_service =
+        ::sharesheet::SharesheetServiceFactory::GetForProfile(
             browser()->profile());
 
     GURL test_url = GURL("https://www.google.com/");
@@ -52,11 +55,11 @@ class SharesheetBubbleViewBrowserTest
     intent->action = apps_util::kIntentActionSend;
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
-        sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
+        ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
         base::DoNothing());
 
     views::Widget::Widgets new_widgets;
-    for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows())
       views::Widget::GetAllChildWidgets(root_window, &new_widgets);
 
     views::Widget::Widgets added_widgets;
@@ -95,3 +98,6 @@ IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
   ASSERT_TRUE(VerifyUi());
   DismissUi();
 }
+
+}  // namespace sharesheet
+}  // namespace ash

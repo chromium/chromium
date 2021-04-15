@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -27,14 +28,17 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
-constexpr SkColor kTitlePreviewColor = gfx::kGoogleGrey700;
 constexpr int kBetweenChildSpacing = 12;
 
 }  // namespace
+
+namespace ash {
+namespace sharesheet {
 
 SharesheetContentPreviews::SharesheetContentPreviews(
     apps::mojom::IntentPtr intent,
@@ -45,7 +49,7 @@ SharesheetContentPreviews::SharesheetContentPreviews(
       thumbnail_loader_(profile) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      /* inside_border_insets */ gfx::Insets(SharesheetBubbleView::kSpacing),
+      /* inside_border_insets */ gfx::Insets(kSpacing),
       /* between_child_spacing */ kBetweenChildSpacing,
       /* collapse_margins_spacing */ false));
   // Sets all views to be left-aligned.
@@ -80,7 +84,7 @@ SharesheetContentPreviews::~SharesheetContentPreviews() = default;
 void SharesheetContentPreviews::InitaliseImageView() {
   image_preview_ = AddChildView(std::make_unique<views::ImageView>());
   image_preview_->SetImageSize(
-      gfx::Size(sharesheet::kIconSize, sharesheet::kIconSize));
+      gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize));
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
@@ -114,10 +118,9 @@ void SharesheetContentPreviews::ShowTextPreview() {
 
 void SharesheetContentPreviews::AddTextLine(std::string text) {
   auto* new_line = text_view_->AddChildView(std::make_unique<views::Label>(
-      (base::ASCIIToUTF16(text)),
-      ash::CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
-  new_line->SetLineHeight(SharesheetBubbleView::kTitleLineHeight);
-  new_line->SetEnabledColor(kTitlePreviewColor);
+      (base::ASCIIToUTF16(text)), CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
+  new_line->SetLineHeight(kTitleTextLineHeight);
+  new_line->SetEnabledColor(kPrimaryTextColor);
   new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
@@ -164,7 +167,7 @@ void SharesheetContentPreviews::LoadImage() {
   // those files are being temporarily saved to disk before being shared.
   // If those implementations change, this will need to be updated.
   thumbnail_loader_.Load(
-      {file_path, gfx::Size(sharesheet::kIconSize, sharesheet::kIconSize)},
+      {file_path, gfx::Size(::sharesheet::kIconSize, ::sharesheet::kIconSize)},
       base::BindOnce(&SharesheetContentPreviews::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -183,3 +186,9 @@ void SharesheetContentPreviews::OnImageLoaded(const SkBitmap* bitmap,
   image_preview_->SetImage(
       gfx::Image::CreateFrom1xBitmap(*bitmap).AsImageSkia());
 }
+
+BEGIN_METADATA(SharesheetContentPreviews, views::View)
+END_METADATA
+
+}  // namespace sharesheet
+}  // namespace ash

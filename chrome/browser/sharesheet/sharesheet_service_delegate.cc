@@ -20,7 +20,8 @@ SharesheetServiceDelegate::SharesheetServiceDelegate(
     SharesheetService* sharesheet_service)
     : native_window_(native_window),
       sharesheet_bubble_view_(
-          std::make_unique<SharesheetBubbleView>(native_window, this)),
+          std::make_unique<ash::sharesheet::SharesheetBubbleView>(native_window,
+                                                                  this)),
       sharesheet_service_(sharesheet_service) {}
 
 SharesheetServiceDelegate::~SharesheetServiceDelegate() = default;

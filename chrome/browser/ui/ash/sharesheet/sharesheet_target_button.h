@@ -12,6 +12,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace ash {
+namespace sharesheet {
+
 // SharesheetTargetButton is owned by |sharesheet_bubble_view|. It represents
 // a single target (either app or action) in the |sharesheet_bubble_view|. The
 // target is comprised of an image (made from |icon| for apps or from
@@ -36,5 +39,8 @@ class SharesheetTargetButton : public views::Button {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 };
+
+}  // namespace sharesheet
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_

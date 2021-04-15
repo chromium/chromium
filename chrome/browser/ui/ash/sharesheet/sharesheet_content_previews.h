@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -16,10 +17,15 @@ class ImageView;
 class Label;
 }  // namespace views
 
+namespace ash {
+namespace sharesheet {
+
 // The SharesheetContentPreviews class is the view for the image
 // previews feature.
 class SharesheetContentPreviews : public views::View {
  public:
+  METADATA_HEADER(SharesheetContentPreviews);
+
   explicit SharesheetContentPreviews(apps::mojom::IntentPtr intent,
                                      Profile* profile,
                                      std::unique_ptr<views::Label> share_title);
@@ -54,9 +60,12 @@ class SharesheetContentPreviews : public views::View {
 
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
-  ash::ThumbnailLoader thumbnail_loader_;
+  ThumbnailLoader thumbnail_loader_;
 
   base::WeakPtrFactory<SharesheetContentPreviews> weak_ptr_factory_{this};
 };
+
+}  // namespace sharesheet
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONTENT_PREVIEWS_H_

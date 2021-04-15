@@ -22,20 +22,19 @@ namespace sharesheet {
 class SharesheetServiceDelegate;
 }
 
+namespace ash {
+namespace sharesheet {
+
 class SharesheetContentPreviews;
 class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(SharesheetBubbleView);
-  using TargetInfo = sharesheet::TargetInfo;
-
-  // These constants are shared between sharesheet UI related classes.
-  static constexpr int kSpacing = 24;
-  static constexpr int kTitleLineHeight = 24;
+  using TargetInfo = ::sharesheet::TargetInfo;
 
   SharesheetBubbleView(gfx::NativeWindow native_window,
-                       sharesheet::SharesheetServiceDelegate* delegate);
+                       ::sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
   SharesheetBubbleView& operator=(const SharesheetBubbleView&) = delete;
   ~SharesheetBubbleView() override;
@@ -44,9 +43,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   // or the intent has been delivered to a target selected by the user.
   void ShowBubble(std::vector<TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
-                  sharesheet::DeliveredCallback delivered_callback);
-  void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
-                             sharesheet::DeliveredCallback delivered_callback);
+                  ::sharesheet::DeliveredCallback delivered_callback);
+  void ShowNearbyShareBubble(
+      apps::mojom::IntentPtr intent,
+      ::sharesheet::DeliveredCallback delivered_callback);
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble();
@@ -88,10 +88,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void RecordFormFactorMetric();
 
   // Owns this class.
-  sharesheet::SharesheetServiceDelegate* delegate_;
+  ::sharesheet::SharesheetServiceDelegate* delegate_;
   std::u16string active_target_;
   apps::mojom::IntentPtr intent_;
-  sharesheet::DeliveredCallback delivered_callback_;
+  ::sharesheet::DeliveredCallback delivered_callback_;
 
   int width_ = 0;
   int height_ = 0;
@@ -117,5 +117,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };
+
+}  // namespace sharesheet
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_

@@ -16,15 +16,20 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
+
+namespace ash {
+namespace sharesheet {
 class SharesheetBubbleView;
+}  // namespace sharesheet
+}  // namespace ash
 
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace sharesheet {
 
@@ -72,7 +77,8 @@ class SharesheetServiceDelegate : public SharesheetController {
   gfx::NativeWindow native_window_;
 
   std::u16string active_action_;
-  std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
+  std::unique_ptr<ash::sharesheet::SharesheetBubbleView>
+      sharesheet_bubble_view_;
   SharesheetService* sharesheet_service_;
 };
 

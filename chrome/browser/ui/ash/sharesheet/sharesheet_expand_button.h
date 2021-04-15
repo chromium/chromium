@@ -11,6 +11,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace ash {
+namespace sharesheet {
+
 class SharesheetExpandButton : public views::Button {
  public:
   METADATA_HEADER(SharesheetExpandButton);
@@ -29,5 +32,8 @@ class SharesheetExpandButton : public views::Button {
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 };
+
+}  // namespace sharesheet
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
