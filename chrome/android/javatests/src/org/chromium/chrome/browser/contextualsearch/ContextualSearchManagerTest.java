@@ -54,7 +54,6 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -141,15 +140,16 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests the Contextual Search Manager using instrumentation tests.
  */
-// NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+// NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED,
         "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
                 + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-@Batch(Batch.PER_CLASS)
+// TODO(donnd): Reenable batch per-class execution. See https://crbug.com/1183540,
+// and https://crbug.com/1180304.
 public class ContextualSearchManagerTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
