@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -36,7 +37,8 @@ bool CanIncludeWindowInMruList(aura::Window* window);
 // Maintains a most recently used list of windows. This is used for window
 // cycling using Alt+Tab and overview mode.
 class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
-                                    public aura::WindowObserver {
+                                    public aura::WindowObserver,
+                                    public aura::EnvObserver {
  public:
   using WindowList = std::vector<aura::Window*>;
 
@@ -101,18 +103,25 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  const std::vector<aura::Window*>& GetMruWindowsForTesting() {
+    return mru_windows_;
+  }
+
  private:
   // Updates the mru_windows_ list to insert/move |active_window| at/to the
   // front.
   void SetActiveWindow(aura::Window* active_window);
 
-  // Overridden from wm::ActivationChangeObserver:
+  // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // Overridden from aura::WindowObserver:
+  // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
+
+  // EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override;
 
   // List of windows that have been activated in containers that we cycle
   // through, sorted such that the most recently used window comes last.

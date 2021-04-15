@@ -58,10 +58,10 @@ extern const ui::ClassProperty<std::string*>* const kAppIdKey;
 // if a window is restored by the full restore process. Only a window, restored
 // from the full restore file and read by FullRestoreReadHandler during the
 // system startup phase, could have a kActivationIndexKey. This is cleared after
-// the window been stacked accordingly, or has been activated. A larger index
-// indicates a more recently used window. If this key is null, then the window
-// was not launched from full restore, or it is longer treated like a full
-// restore launched window (i.e. user clicked on it).
+// the window been activated. A smaller index indicates a more recently used
+// window. If this key is null, then the window was not launched from full
+// restore, or it is longer treated like a full restore launched window (i.e.
+// user clicked on it).
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t*>* const kActivationIndexKey;
 
