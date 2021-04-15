@@ -29,7 +29,11 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -126,9 +130,13 @@ class TranslateModelServiceBrowserTest
   void SetUp() override {
     origin_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    origin_server_->ServeFilesFromSourceDirectory("chrome/test/data/translate");
+    origin_server_->ServeFilesFromSourceDirectory(
+        "chrome/test/data/optimization_guide");
+    origin_server_->RegisterRequestHandler(
+        base::BindRepeating(&TranslateModelServiceBrowserTest::RequestHandler,
+                            base::Unretained(this)));
     ASSERT_TRUE(origin_server_->Start());
-    english_url_ = origin_server_->GetURL("/english_page.html");
+    english_url_ = origin_server_->GetURL("/hello_world.html");
     InProcessBrowserTest::SetUp();
   }
 
@@ -142,6 +150,25 @@ class TranslateModelServiceBrowserTest
   const GURL& english_url() const { return english_url_; }
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+      const net::test_server::HttpRequest& request) {
+    std::string path_value;
+
+    // This script is render blocking in the HTML, but is intentionally slow.
+    // This provides important time between commit and first layout for model
+    // requests to make it to the renderer, reducing flakes.
+    if (request.GetURL().path() == "/slow-first-layout.js") {
+      std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
+          std::make_unique<net::test_server::DelayedHttpResponse>(
+              base::TimeDelta::FromMilliseconds(500));
+      resp->set_code(net::HTTP_OK);
+      resp->set_content_type("application/javascript");
+      resp->set_content(std::string());
+      return resp;
+    }
+
+    return nullptr;
+  }
   base::test::ScopedFeatureList scoped_feature_list_;
   GURL english_url_;
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
@@ -253,17 +280,8 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", false, 1);
 }
 
-// Disabled due to flake: https://crbug.com/1177331
-#if defined(OS_MAC)
-#define MAYBE_LanguageDetectionModelAvailableForDetection \
-  DISABLED_LanguageDetectionModelAvailableForDetection
-#else
-#define MAYBE_LanguageDetectionModelAvailableForDetection \
-  LanguageDetectionModelAvailableForDetection
-#endif
-
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
-                       MAYBE_LanguageDetectionModelAvailableForDetection) {
+                       LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelFileForTesting(
@@ -271,13 +289,50 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
           /*model_metadata=*/base::nullopt, model_file_path());
   RetryForHistogramUntilCountReached(
       &histogram_tester,
-      "LanguageDetection.TFLiteModel.LanguageDetectionModelState", 1);
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
   histogram_tester.ExpectUniqueSample(
-      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
-      translate::LanguageDetectionModelState::kModelFileValidAndMemoryMapped,
-      1);
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
-  ui_test_utils::NavigateToURL(browser(), english_url());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), english_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       LanguageDetectionWithBackgroundTab) {
+  base::HistogramTester histogram_tester;
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          /*model_metadata=*/base::nullopt, model_file_path());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), english_url(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_NONE);
+
+  // Opening the browser causes the first model deferral event. The second
+  // is due to the background tab.
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "LanguageDetection.TFLiteModel.WasModelRequestDeferred", 2);
+  histogram_tester.ExpectBucketCount(
+      "LanguageDetection.TFLiteModel.WasModelRequestDeferred", true, 2);
+
+  // Make the background tab the active tab.
+  browser()->tab_strip_model()->SelectNextTab();
+
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);
