@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -465,9 +466,10 @@ MojoResult Connector::ReadMessage(Message* message) {
     // We include |interface_name_| in the error message since it usually
     // (via this Connector's owner) provides useful information about which
     // binding interface is using this Connector.
-    NotifyBadMessage(handle.get(),
-                     std::string(interface_name_) +
-                         "One or more handle attachments were invalid.");
+    NotifyBadMessage(
+        handle.get(),
+        base::StrCat({interface_name_,
+                      " One or more handle attachments were invalid."}));
     return MOJO_RESULT_ABORTED;
   }
 
