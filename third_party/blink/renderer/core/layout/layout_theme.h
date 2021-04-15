@@ -185,6 +185,14 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Adjust style as per platform selection.
   virtual void AdjustControlPartStyle(ComputedStyle&);
 
+  virtual bool IsAccentColorCustomized(
+      mojom::blink::ColorScheme color_scheme) const {
+    return false;
+  }
+  virtual Color GetAccentColor(mojom::blink::ColorScheme color_scheme) const {
+    return Color();
+  }
+
  protected:
   // The platform selection color.
   virtual Color PlatformActiveSelectionBackgroundColor(

@@ -96,6 +96,16 @@ bool LayoutThemeMac::IsAccentColorCustomized(
   return true;
 }
 
+Color LayoutThemeMac::GetAccentColor(
+    mojom::blink::ColorScheme color_scheme) const {
+  if (@available(macOS 10.14, *)) {
+    return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
+  } else {
+    return [[NSUserDefaults standardUserDefaults]
+        integerForKey:@"AppleAquaColorVariant"];
+  }
+}
+
 Color LayoutThemeMac::GetCustomFocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark
