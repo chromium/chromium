@@ -10,7 +10,7 @@
 #include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkFilterQuality.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
@@ -30,7 +30,7 @@ class CC_PAINT_EXPORT DrawImage {
             bool use_dark_mode,
             const SkIRect& src_rect,
             SkFilterQuality filter_quality,
-            const SkMatrix& matrix,
+            const SkM44& matrix,
             base::Optional<size_t> frame_index = base::nullopt,
             const base::Optional<gfx::ColorSpace>& color_space = base::nullopt,
             float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);

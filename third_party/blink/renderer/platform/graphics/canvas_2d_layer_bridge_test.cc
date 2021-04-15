@@ -821,11 +821,11 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
   gfx::ColorSpace expected_color_space = gfx::ColorSpace::CreateSRGB();
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, expected_color_space),
+                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality, SkM44(), 0u,
+                    expected_color_space),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, expected_color_space)};
+                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkM44(), 0u,
+                    expected_color_space)};
 
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
   bridge->GetPaintCanvas()->drawImageRect(
@@ -843,11 +843,11 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
       MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace())};
 
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
   bridge->GetPaintCanvas()->drawImageRect(
@@ -866,14 +866,14 @@ TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {
 
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace())};
 
   // First 2 images are budgeted, they should remain locked after the op.
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
@@ -901,8 +901,8 @@ TEST_F(Canvas2DLayerBridgeTest, QueuesCleanupTaskForLockedImages) {
 
   auto image =
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace());
+                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace());
   bridge->GetPaintCanvas()->drawImage(image.paint_image(), 0u, 0u);
 
   bridge->GetOrCreateResourceProvider()->FlushCanvas();
@@ -919,11 +919,11 @@ TEST_F(Canvas2DLayerBridgeTest, ImageCacheOnContextLost) {
       MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkM44(), 0u,
+                    color_params.GetStorageGfxColorSpace())};
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
 
   // Lose the context and ensure that the image provider is not used.

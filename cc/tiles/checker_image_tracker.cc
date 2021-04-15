@@ -411,7 +411,7 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
         candidate, it->second.use_dark_mode,
         SkIRect::MakeWH(candidate.width(), candidate.height()),
         it->second.filter_quality,
-        SkMatrix::Scale(it->second.scale.width(), it->second.scale.height()),
+        SkM44::Scale(it->second.scale.width(), it->second.scale.height()),
         it->second.frame_index, it->second.color_space);
     outstanding_image_decode_.emplace(candidate);
     break;

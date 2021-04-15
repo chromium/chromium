@@ -31,10 +31,8 @@ sk_sp<SkImage> CreateImage(int width, int height) {
   return SkImage::MakeFromBitmap(bitmap);
 }
 
-SkMatrix CreateMatrix(const SkSize& scale) {
-  SkMatrix matrix;
-  matrix.setScale(scale.width(), scale.height());
-  return matrix;
+SkM44 CreateMatrix(const SkSize& scale) {
+  return SkM44::Scale(scale.width(), scale.height());
 }
 
 enum class TestMode { kGpu, kTransferCache, kSw };

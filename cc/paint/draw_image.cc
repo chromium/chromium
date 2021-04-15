@@ -11,10 +11,13 @@ namespace {
 
 // Helper funciton to extract a scale from the matrix. Returns true on success
 // and false on failure.
-bool ExtractScale(const SkMatrix& matrix, SkSize* scale) {
-  *scale = SkSize::Make(matrix.getScaleX(), matrix.getScaleY());
-  if (matrix.getType() & SkMatrix::kAffine_Mask) {
-    if (!matrix.decomposeScale(scale)) {
+bool ExtractScale(const SkM44& matrix, SkSize* scale) {
+  *scale = SkSize::Make(matrix.rc(0, 0), matrix.rc(1, 1));
+  // TODO(crbug.com/1155544): Don't use SkMatrix here, add functionality to
+  // MathUtil.
+  SkMatrix mat33 = matrix.asM33();
+  if (mat33.getType() & SkMatrix::kAffine_Mask) {
+    if (!mat33.decomposeScale(scale)) {
       scale->set(1, 1);
       return false;
     }
@@ -44,7 +47,7 @@ DrawImage::DrawImage(PaintImage image,
                      bool use_dark_mode,
                      const SkIRect& src_rect,
                      SkFilterQuality filter_quality,
-                     const SkMatrix& matrix,
+                     const SkM44& matrix,
                      base::Optional<size_t> frame_index,
                      const base::Optional<gfx::ColorSpace>& color_space,
                      float sdr_white_level)

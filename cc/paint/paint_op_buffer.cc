@@ -43,7 +43,7 @@ SkFilterQuality sampling_to_quality(const SkSamplingOptions& sampling) {
 DrawImage CreateDrawImage(const PaintImage& image,
                           const PaintFlags* flags,
                           const SkSamplingOptions& sampling,
-                          const SkMatrix& matrix) {
+                          const SkM44& matrix) {
   if (!image)
     return DrawImage();
   return DrawImage(image, flags->useDarkModeForImage(),
@@ -493,7 +493,7 @@ size_t DrawImageOp::Serialize(const PaintOp* base_op,
 
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
   helper.Write(CreateDrawImage(op->image, serialized_flags, op->sampling,
-                               options.canvas->getTotalMatrix()),
+                               options.canvas->getLocalToDevice()),
                &scale_adjustment);
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(scale_adjustment.width());
@@ -517,8 +517,8 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
   helper.Write(*serialized_flags);
 
   // This adjustment mirrors DiscardableImageMap::GatherDiscardableImage logic.
-  SkMatrix matrix =
-      SkMatrix::RectToRect(op->src, op->dst) * options.canvas->getTotalMatrix();
+  SkM44 matrix = SkM44(SkMatrix::RectToRect(op->src, op->dst)) *
+                 options.canvas->getLocalToDevice();
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
@@ -1461,7 +1461,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   // Dark mode is applied only for OOP raster during serialization.
   DrawImage draw_image(
       op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
-      sampling_to_quality(op->sampling), canvas->getTotalMatrix());
+      sampling_to_quality(op->sampling), canvas->getLocalToDevice());
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1539,8 +1539,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     return;
   }
 
-  SkMatrix matrix =
-      canvas->getTotalMatrix() * SkMatrix::RectToRect(op->src, op->dst);
+  SkM44 matrix = canvas->getLocalToDevice() *
+                 SkM44(SkMatrix::RectToRect(op->src, op->dst));
 
   SkIRect int_src_rect;
   op->src.roundOut(&int_src_rect);

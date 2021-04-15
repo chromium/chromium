@@ -357,10 +357,8 @@ class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
   sk_sp<SkColorFilter> color_filter_;
 };
 
-SkMatrix CreateMatrix(const SkSize& scale) {
-  SkMatrix matrix;
-  matrix.setScale(scale.width(), scale.height());
-  return matrix;
+SkM44 CreateMatrix(const SkSize& scale) {
+  return SkM44::Scale(scale.width(), scale.height());
 }
 
 #define EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE(condition) \
@@ -493,7 +491,7 @@ class GpuImageDecodeCacheTest
 
   DrawImage CreateDrawImageInternal(
       const PaintImage& paint_image,
-      const SkMatrix& matrix = SkMatrix::I(),
+      const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
       SkFilterQuality filter_quality = kMedium_SkFilterQuality,
       SkIRect* src_rect = nullptr,
@@ -517,7 +515,7 @@ class GpuImageDecodeCacheTest
 
   DrawImage CreateDrawImageWithDarkModeInternal(
       const PaintImage& paint_image,
-      const SkMatrix& matrix = SkMatrix::I(),
+      const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
       SkFilterQuality filter_quality = kMedium_SkFilterQuality,
       SkIRect* src_rect = nullptr,
@@ -748,7 +746,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSmallerScale) {
 TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLowerQuality) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   DrawImage draw_image = CreateDrawImageInternal(image, matrix);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -871,7 +869,7 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLargerScaleNoReuse) {
 
 TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
   auto cache = CreateCache();
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
   DrawImage first_draw_image = CreateDrawImageInternal(
       first_image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
@@ -1366,7 +1364,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
 
 TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawHigherQuality) {
   auto cache = CreateCache();
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   DrawImage draw_image = CreateDrawImageInternal(
       image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
@@ -1792,7 +1790,7 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedZeroRefImagesImmediatelyDeleted) {
 TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
 
   // Create an image with kLow_FilterQuality.
   DrawImage low_draw_image = CreateDrawImageInternal(
@@ -1865,7 +1863,7 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawMipUsageChange) {
 TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTask) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
   DrawImage draw_image = CreateDrawImageInternal(
       image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
 
@@ -3480,7 +3478,7 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   // Another draw image with smaller src rect for image1.
   SkIRect src = SkIRect::MakeWH(10, 10);
   DrawImage draw_image12 = CreateDrawImageWithDarkModeInternal(
-      image1, SkMatrix::I(), nullptr, kMedium_SkFilterQuality, &src);
+      image1, SkM44(), nullptr, kMedium_SkFilterQuality, &src);
   ImageDecodeCache::TaskResult result12 = cache->GetTaskForImageAndRef(
       draw_image12, ImageDecodeCache::TracingInfo());
   GetImageAndDrawFinishedForDarkMode(cache.get(), draw_image12,

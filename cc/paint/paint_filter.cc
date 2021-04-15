@@ -684,7 +684,7 @@ sk_sp<PaintFilter> ImagePaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   DrawImage draw_image(image_, false,
                        SkIRect::MakeWH(image_.width(), image_.height()),
-                       filter_quality_, SkMatrix::I());
+                       filter_quality_, SkM44());
   auto scoped_result = image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return nullptr;

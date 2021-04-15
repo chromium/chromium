@@ -17,13 +17,12 @@ namespace cc {
 namespace {
 
 size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
-SkMatrix CreateMatrix(const SkSize& scale, bool is_decomposable) {
-  SkMatrix matrix;
-  matrix.setScale(scale.width(), scale.height());
+SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
+  SkM44 matrix = SkM44::Scale(scale.width(), scale.height());
 
   if (!is_decomposable) {
     // Perspective is not decomposable, add it.
-    matrix[SkMatrix::kMPersp0] = 0.1f;
+    matrix.setRC(3, 0, 0.1f);
   }
 
   return matrix;

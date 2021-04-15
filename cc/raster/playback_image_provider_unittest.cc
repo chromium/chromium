@@ -72,7 +72,7 @@ TEST(PlaybackImageProviderTest, SkipsAllImages) {
   PlaybackImageProvider provider(&cache, gfx::ColorSpace(), base::nullopt);
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
-  SkMatrix matrix = SkMatrix::I();
+  SkM44 matrix = SkM44();
 
   EXPECT_FALSE(provider.GetRasterContent(DrawImage(
       PaintImageBuilder::WithDefault()
@@ -100,7 +100,7 @@ TEST(PlaybackImageProviderTest, SkipsSomeImages) {
                                  std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
-  SkMatrix matrix = SkMatrix::I();
+  SkM44 matrix = SkM44();
   EXPECT_FALSE(provider.GetRasterContent(
       DrawImage(skip_image, false, rect, kMedium_SkFilterQuality, matrix)));
   EXPECT_EQ(cache.images_decoded(), 0);
@@ -116,7 +116,7 @@ TEST(PlaybackImageProviderTest, RefAndUnrefDecode) {
 
   {
     SkRect rect = SkRect::MakeWH(10, 10);
-    SkMatrix matrix = SkMatrix::I();
+    SkM44 matrix = SkM44();
     auto decode = provider.GetRasterContent(CreateDiscardableDrawImage(
         gfx::Size(10, 10), nullptr, rect, kMedium_SkFilterQuality, matrix));
     EXPECT_TRUE(decode);
@@ -144,7 +144,7 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
                                  std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
-  SkMatrix matrix = SkMatrix::I();
+  SkM44 matrix = SkM44();
   DrawImage draw_image(image, false, rect, kMedium_SkFilterQuality, matrix);
   provider.GetRasterContent(draw_image);
   ASSERT_TRUE(cache.last_image().paint_image());
@@ -162,7 +162,7 @@ TEST(PlaybackImageProviderTest, BitmapImages) {
 
   {
     SkIRect rect = SkIRect::MakeWH(10, 10);
-    SkMatrix matrix = SkMatrix::I();
+    SkM44 matrix = SkM44();
     auto draw_image = DrawImage(CreateBitmapImage(gfx::Size(10, 10)), false,
                                 rect, kMedium_SkFilterQuality, matrix);
     auto decode = provider.GetRasterContent(draw_image);
@@ -183,7 +183,7 @@ TEST(PlaybackImageProviderTest, IgnoresImagesNotSupportedByCache) {
                                  std::move(settings));
   {
     SkIRect rect = SkIRect::MakeWH(10, 10);
-    SkMatrix matrix = SkMatrix::I();
+    SkM44 matrix = SkM44();
     auto draw_image = DrawImage(CreateBitmapImage(gfx::Size(10, 10)), false,
                                 rect, kMedium_SkFilterQuality, matrix);
     auto decode = provider.GetRasterContent(draw_image);
