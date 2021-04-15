@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -20,6 +21,7 @@
 
 @interface ConsistencyPromoSigninCoordinator () <
     BottomSheetPresentationControllerPresentationDelegate,
+    ConsistencyDefaultAccountCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -30,6 +32,9 @@
 // from |self.navigationController|.
 @property(nonatomic, strong)
     UIPercentDrivenInteractiveTransition* interactionTransition;
+// Coordinator for the first screen.
+@property(nonatomic, strong)
+    ConsistencyDefaultAccountCoordinator* defaultAccountCoordinator;
 
 @end
 
@@ -39,12 +44,26 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [self.navigationController
+      dismissViewControllerAnimated:YES
+                         completion:^() {
+                           [weakSelf finishedWithResult:
+                                         SigninCoordinatorResultInterrupted
+                                               identity:nil];
+                         }];
 }
 
 - (void)start {
   [super start];
+  self.defaultAccountCoordinator = [[ConsistencyDefaultAccountCoordinator alloc]
+      initWithBaseViewController:nil
+                         browser:self.browser];
+  self.defaultAccountCoordinator.delegate = self;
+  [self.defaultAccountCoordinator start];
+
   self.navigationController = [[BottomSheetNavigationController alloc]
-      initWithRootViewController:[self firstViewController]];
+      initWithRootViewController:self.defaultAccountCoordinator.viewController];
   self.navigationController.delegate = self;
   UIScreenEdgePanGestureRecognizer* edgeSwipeGesture =
       [[UIScreenEdgePanGestureRecognizer alloc]
@@ -132,6 +151,31 @@
 - (void)bottomSheetPresentationControllerDismissViewController:
     (BottomSheetPresentationController*)controller {
   [self dismissNavigationViewController];
+}
+
+#pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
+
+- (void)consistencyDefaultAccountCoordinatorSkip:
+    (ConsistencyDefaultAccountCoordinator*)coordinator {
+  [self dismissNavigationViewController];
+}
+
+- (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
+    (ConsistencyDefaultAccountCoordinator*)coordinator {
+  NOTREACHED();
+}
+
+- (void)consistencyDefaultAccountCoordinator:
+            (ConsistencyDefaultAccountCoordinator*)coordinator
+                            selectedIdentity:(ChromeIdentity*)identity {
+  __weak __typeof(self) weakSelf = self;
+  [self.navigationController
+      dismissViewControllerAnimated:YES
+                         completion:^() {
+                           [weakSelf finishedWithResult:
+                                         SigninCoordinatorResultCanceledByUser
+                                               identity:identity];
+                         }];
 }
 
 #pragma mark - UINavigationControllerDelegate
