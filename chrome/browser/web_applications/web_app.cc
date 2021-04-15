@@ -10,6 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
@@ -309,17 +311,6 @@ WebApp::SyncFallbackData::SyncFallbackData(
 WebApp::SyncFallbackData& WebApp::SyncFallbackData::operator=(
     SyncFallbackData&& sync_fallback_data) = default;
 
-std::ostream& operator<<(std::ostream& out,
-                         const WebApp::SyncFallbackData& sync_fallback_data) {
-  out << "    theme_color: " << ColorToString(sync_fallback_data.theme_color)
-      << std::endl
-      << "    name: " << sync_fallback_data.name << std::endl
-      << "    scope: " << sync_fallback_data.scope << std::endl;
-  for (const WebApplicationIconInfo& icon : sync_fallback_data.icon_infos)
-    out << "    icon_info: " << icon << std::endl;
-  return out;
-}
-
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const base::Optional<T>& optional) {
   if (optional.has_value())
@@ -327,95 +318,168 @@ std::ostream& operator<<(std::ostream& out, const base::Optional<T>& optional) {
   return out << "nullopt";
 }
 
-std::ostream& operator<<(std::ostream& out, const WebApp& app) {
-  out << "app_id: " << app.app_id_ << std::endl
-      << "  name: " << app.name_ << std::endl
-      << "  start_url: " << app.start_url_ << std::endl
-      << "  launch_query_params: " << app.launch_query_params_ << std::endl
-      << "  scope: " << app.scope_ << std::endl
-      << "  theme_color: " << ColorToString(app.theme_color_) << std::endl
-      << "  background_color: " << ColorToString(app.background_color_)
-      << std::endl
-      << "  display_mode: " << blink::DisplayModeToString(app.display_mode_)
-      << std::endl
-      << "  display_override: " << app.display_mode_override_.size()
-      << std::endl;
-  for (const DisplayMode& mode : app.display_mode_override_)
-    out << "    " << blink::DisplayModeToString(mode) << std::endl;
-  out << "  user_display_mode: "
-      << blink::DisplayModeToString(app.user_display_mode_) << std::endl
-      << "  user_page_ordinal: " << app.user_page_ordinal_.ToDebugString()
-      << std::endl
-      << "  user_launch_ordinal: " << app.user_launch_ordinal_.ToDebugString()
+template <typename T>
+std::string Indent(const T& value) {
+  std::stringstream ss;
+  ss << value;
+  std::vector<std::string> lines = base::SplitString(
+      ss.str(), "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (std::string& line : lines)
+    line = "  " + line;
+  return base::JoinString(lines, "\n");
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const WebApp::SyncFallbackData& sync_fallback_data) {
+  out << "name: " << sync_fallback_data.name << std::endl;
+
+  out << "theme_color: " << ColorToString(sync_fallback_data.theme_color)
       << std::endl;
 
-  out << "  sources: ";
+  out << "scope: " << sync_fallback_data.scope << std::endl;
+
+  out << "icon_infos:" << std::endl;
+  for (const WebApplicationIconInfo& icon : sync_fallback_data.icon_infos)
+    out << Indent(icon) << std::endl;
+
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const WebApp& app) {
+  out << "app_id: " << app.app_id_ << std::endl;
+
+  out << "manifest_url: " << app.manifest_url_ << std::endl;
+
+  out << "manifest_id: " << app.manifest_id_ << std::endl;
+
+  out << "name: " << app.name_ << std::endl;
+
+  out << "start_url: " << app.start_url_ << std::endl;
+
+  out << "launch_query_params: " << app.launch_query_params_ << std::endl;
+
+  out << "scope: " << app.scope_ << std::endl;
+
+  out << "theme_color: " << ColorToString(app.theme_color_) << std::endl;
+
+  out << "background_color: " << ColorToString(app.background_color_)
+      << std::endl;
+
+  out << "display_mode: " << blink::DisplayModeToString(app.display_mode_)
+      << std::endl;
+
+  out << "display_override:";
+  for (const DisplayMode& mode : app.display_mode_override_)
+    out << " " << blink::DisplayModeToString(mode);
+  out << std::endl;
+
+  out << "user_display_mode: "
+      << blink::DisplayModeToString(app.user_display_mode_) << std::endl;
+
+  out << "user_page_ordinal: " << app.user_page_ordinal_.ToDebugString()
+      << std::endl;
+
+  out << "user_launch_ordinal: " << app.user_launch_ordinal_.ToDebugString()
+      << std::endl;
+
+  out << "sources:";
   for (int i = Source::Type::kMinValue; i <= Source::Type::kMaxValue; ++i) {
     if (app.sources_[i])
-      out << static_cast<Source::Type>(i) << " ";
+      out << " " << static_cast<Source::Type>(i);
   }
   out << std::endl;
 
-  out << "  is_locally_installed: " << app.is_locally_installed_ << std::endl
-      << "  is_in_sync_install: " << app.is_in_sync_install_ << std::endl
-      << "  sync_fallback_data: " << std::endl
-      << app.sync_fallback_data_  // Outputs a std::endl.
-      << "  description: " << app.description_ << std::endl
-      << "  last_badging_time: " << app.last_badging_time_ << std::endl
-      << "  last_launch_time: " << app.last_launch_time_ << std::endl
-      << "  install_time: " << app.install_time_ << std::endl
-      << "  is_generated_icon: " << app.is_generated_icon_ << std::endl
-      << "  run_on_os_login_mode: "
+  out << "is_locally_installed: " << app.is_locally_installed_ << std::endl;
+
+  out << "is_in_sync_install: " << app.is_in_sync_install_ << std::endl;
+
+  out << "sync_fallback_data:" << std::endl
+      << Indent(app.sync_fallback_data_) << std::endl;
+
+  out << "description: " << app.description_ << std::endl;
+
+  out << "last_badging_time: " << app.last_badging_time_ << std::endl;
+
+  out << "last_launch_time: " << app.last_launch_time_ << std::endl;
+
+  out << "install_time: " << app.install_time_ << std::endl;
+
+  out << "is_generated_icon: " << app.is_generated_icon_ << std::endl;
+
+  out << "run_on_os_login_mode: "
       << RunOnOsLoginModeToString(app.run_on_os_login_mode_) << std::endl;
+
+  out << "icon_infos:" << std::endl;
   for (const WebApplicationIconInfo& icon : app.icon_infos_)
-    out << "  icon_info: " << icon << std::endl;
+    out << Indent(icon) << std::endl;
+
+  out << "downloaded_icon_sizes_any:";
   for (SquareSizePx size : app.downloaded_icon_sizes_any_)
-    out << "  downloaded_icon_sizes_any_: " << size << std::endl;
+    out << " " << size;
+  out << std::endl;
+
+  out << "downloaded_icon_sizes_monochrome:";
   for (SquareSizePx size : app.downloaded_icon_sizes_monochrome_)
-    out << "  downloaded_icon_sizes_monochrome_: " << size << std::endl;
+    out << " " << size;
+  out << std::endl;
+
+  out << "downloaded_icon_sizes_maskable:";
   for (SquareSizePx size : app.downloaded_icon_sizes_maskable_)
-    out << "  downloaded_icon_sizes_maskable_: " << size << std::endl;
-  out << "  shortcuts_menu_item_infos_: " << std::endl;
+    out << " " << size;
+  out << std::endl;
+
+  out << "shortcuts_menu_item_infos:" << std::endl;
   for (const WebApplicationShortcutsMenuItemInfo& info :
        app.shortcuts_menu_item_infos_) {
-    out << info;
+    out << Indent(info) << std::endl;
   }
-  for (const IconSizes& icon_sizes :
-       app.downloaded_shortcuts_menu_icons_sizes_) {
-    out << "  downloaded_shortcuts_menu_icons_sizes_.any:";
+
+  out << "downloaded_shortcuts_menu_icons_sizes:" << std::endl;
+  for (size_t i = 0; i < app.downloaded_shortcuts_menu_icons_sizes_.size();
+       ++i) {
+    out << "  index: " << i << ":" << std::endl;
+    const IconSizes& icon_sizes = app.downloaded_shortcuts_menu_icons_sizes_[i];
+    out << "    any:";
     for (SquareSizePx size : icon_sizes.any)
       out << " " << size;
     out << std::endl;
 
-    out << "  downloaded_shortcuts_menu_icons_sizes_.maskable:";
+    out << "    maskable:";
     for (SquareSizePx size : icon_sizes.maskable)
       out << " " << size;
     out << std::endl;
   }
+
+  out << "file_handlers:" << std::endl;
   for (const apps::FileHandler& file_handler : app.file_handlers_)
-    out << "  file_handler: " << file_handler << std::endl;
-  if (app.share_target_)
-    out << "  share_target: " << *app.share_target_ << std::endl;
+    out << Indent(file_handler) << std::endl;
+
+  out << "share_target:" << std::endl << Indent(app.share_target_) << std::endl;
+
+  out << "additional_search_terms:" << std::endl;
   for (const std::string& additional_search_term : app.additional_search_terms_)
-    out << "  additional_search_term: " << additional_search_term << std::endl;
+    out << "  " << additional_search_term << std::endl;
+
+  out << "protocol_handlers:" << std::endl;
   for (const apps::ProtocolHandlerInfo& protocol_handler :
        app.protocol_handlers_) {
-    out << "  protocol_handler: " << protocol_handler << std::endl;
+    out << "  " << protocol_handler << std::endl;
   }
-  out << "  note_taking_new_note_url: " << app.note_taking_new_note_url_
+
+  out << "note_taking_new_note_url: " << app.note_taking_new_note_url_
       << std::endl;
+
+  out << "url_handlers:" << std::endl;
   for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
-    out << "  url_handler: " << url_handler << std::endl;
-  out << "  capture_links: " << app.capture_links_ << std::endl;
+    out << Indent(url_handler) << std::endl;
 
-  out << "  chromeos_data: " << app.chromeos_data_ << std::endl;
+  out << "capture_links: " << app.capture_links_ << std::endl;
 
-  out << "  system_web_app: " << app.client_data_.system_web_app_data
-      << std::endl;
+  out << "chromeos_data:" << std::endl
+      << Indent(app.chromeos_data_) << std::endl;
 
-  out << "  manifest_url: " << app.manifest_url_ << std::endl;
-
-  out << "  manifest_id: " << app.manifest_id_ << std::endl;
+  out << "system_web_app:" << std::endl
+      << Indent(app.client_data_.system_web_app_data) << std::endl;
 
   return out;
 }

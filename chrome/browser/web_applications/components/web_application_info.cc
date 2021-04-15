@@ -240,12 +240,13 @@ bool operator==(const WebApplicationIconInfo& icon_info1,
 
 std::ostream& operator<<(std::ostream& out,
                          const WebApplicationIconInfo& icon_info) {
-  out << "url: " << icon_info.url << " square_size_px: ";
+  out << "url: " << icon_info.url << std::endl;
+  out << "  square_size_px: ";
   if (icon_info.square_size_px)
-    out << *icon_info.square_size_px;
+    out << *icon_info.square_size_px << std::endl;
   else
-    out << "none";
-  out << " purpose: " << icon_info.purpose;
+    out << "none" << std::endl;
+  out << "  purpose: " << icon_info.purpose << std::endl;
   return out;
 }
 
@@ -272,19 +273,20 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
 
 std::ostream& operator<<(std::ostream& out,
                          const WebApplicationShortcutsMenuItemInfo& info) {
-  out << "    name: " << info.name << std::endl
-      << "    url: " << info.url << std::endl
-      << "    any:" << std::endl;
+  out << "name: " << info.name << std::endl;
+  out << "  url: " << info.url << std::endl;
+  out << "  icons:" << std::endl;
+  out << "    any:" << std::endl;
 
   for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.any) {
-    out << "      icon url: " << icon.url << std::endl
-        << "      icon square_size_px" << icon.square_size_px << std::endl;
+    out << "      url: " << icon.url << std::endl;
+    out << "      square_size_px: " << icon.square_size_px << std::endl;
   }
 
   out << "    maskable:" << std::endl;
   for (WebApplicationShortcutsMenuItemInfo::Icon icon : info.maskable) {
-    out << "      icon url: " << icon.url << std::endl
-        << "      icon square_size_px" << icon.square_size_px << std::endl;
+    out << "      url: " << icon.url << std::endl;
+    out << "      square_size_px: " << icon.square_size_px << std::endl;
   }
 
   // TODO (crbug.com/1114638): Add Monochrome support.

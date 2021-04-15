@@ -63,15 +63,15 @@ bool operator<(const UrlHandlerInfo& handler1, const UrlHandlerInfo& handler2) {
 }
 
 std::ostream& operator<<(std::ostream& out, const UrlHandlerInfo& handler) {
-  out << "origin: " << handler.origin;
-  out << "has_origin_wildcard: "
-      << (handler.has_origin_wildcard ? "true" : "false");
+  out << "origin: " << handler.origin << std::endl;
+  out << "  has_origin_wildcard: "
+      << (handler.has_origin_wildcard ? "true" : "false") << std::endl;
 
-  out << "paths: ";
+  out << "  paths:" << std::endl;
   for (auto path : handler.paths)
     out << "    " << path << std::endl;
 
-  out << "exclude_paths: ";
+  out << "  exclude_paths:" << std::endl;
   for (auto path : handler.exclude_paths)
     out << "    " << path << std::endl;
 

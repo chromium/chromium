@@ -84,15 +84,16 @@ std::ostream& operator<<(std::ostream& out, const ShareTarget::Params& params) {
   out << "title: " << params.title << std::endl;
   out << "text: " << params.text << std::endl;
   out << "url: " << params.url << std::endl;
+  out << "files:" << std::endl;
   for (const auto& files_entry : params.files)
     out << files_entry;
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ShareTarget::Files& files) {
-  out << "name: " << files.name << std::endl;
+  out << "  name: " << files.name << std::endl;
   for (const auto& accept_entry : files.accept)
-    out << "accept: " << accept_entry << std::endl;
+    out << "    accept: " << accept_entry << std::endl;
   return out;
 }
 

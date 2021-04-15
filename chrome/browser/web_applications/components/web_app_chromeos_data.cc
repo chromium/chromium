@@ -24,12 +24,12 @@ bool operator==(const WebAppChromeOsData& chromeos_data1,
 
 std::ostream& operator<<(std::ostream& out,
                          const WebAppChromeOsData& chromeos_data) {
-  out << "  show_in_launcher: " << chromeos_data.show_in_launcher << std::endl;
-  out << "  show_in_search: " << chromeos_data.show_in_search << std::endl;
-  out << "  show_in_management: " << chromeos_data.show_in_management
+  out << "show_in_launcher: " << chromeos_data.show_in_launcher << std::endl;
+  out << "show_in_search: " << chromeos_data.show_in_search << std::endl;
+  out << "show_in_management: " << chromeos_data.show_in_management
       << std::endl;
-  out << "  is_disabled: " << chromeos_data.is_disabled << std::endl;
-  out << "  oem_installed: " << chromeos_data.oem_installed << std::endl;
+  out << "is_disabled: " << chromeos_data.is_disabled << std::endl;
+  out << "oem_installed: " << chromeos_data.oem_installed << std::endl;
 
   return out;
 }

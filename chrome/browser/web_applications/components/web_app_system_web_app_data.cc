@@ -16,7 +16,7 @@ bool operator==(const WebAppSystemWebAppData& chromeos_data1,
 
 std::ostream& operator<<(std::ostream& out,
                          const WebAppSystemWebAppData& chromeos_data) {
-  out << "  swa type: " << static_cast<int>(chromeos_data.system_app_type)
+  out << "swa type: " << static_cast<int>(chromeos_data.system_app_type)
       << std::endl;
 
   return out;
