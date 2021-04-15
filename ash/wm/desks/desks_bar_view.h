@@ -16,8 +16,7 @@
 
 namespace ash {
 
-class BentoDesksBarLayout;
-class BentoDesksBarScrollViewLayout;
+class DesksBarScrollViewLayout;
 class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
@@ -40,15 +39,8 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   static constexpr int kZeroStateBarHeight = 40;
 
-  // Returns the height of the desk bar view which is based on the given |width|
-  // of the overview grid that exists on |root| (which is the same as the width
-  // of the bar) and |desks_bar_view|'s content (since they may not fit the
-  // given |width| forcing us to use the compact layout).
-  // If |desks_bar_view| is nullptr, the height returned will be solely based on
-  // the |width|.
-  static int GetBarHeightForWidth(aura::Window* root,
-                                  const DesksBarView* desks_bar_view,
-                                  int width);
+  // Returns the height of the desks bar that exists on |root|.
+  static int GetBarHeightForWidth(aura::Window* root);
 
   // Creates and returns the widget that contains the DeskBarView in overview
   // mode. The returned widget has no content view yet, and hasn't been shown
@@ -58,8 +50,6 @@ class ASH_EXPORT DesksBarView : public views::View,
       const gfx::Rect& bounds);
 
   views::View* background_view() const { return background_view_; }
-
-  NewDeskButton* new_desk_button() const { return new_desk_button_; }
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button() const {
     return zero_state_default_desk_button_;
@@ -147,15 +137,10 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // views::View:
   const char* GetClassName() const override;
+  void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
-
-  // Returns true if the width of the DesksBarView is below a defined
-  // threshold or the contents no longer fit within this object's bounds in
-  // default mode, suggesting a compact small screens layout should be used for
-  // both itself and its children.
-  bool UsesCompactLayout() const;
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
@@ -171,10 +156,10 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // This is called on initialization, creating a new desk through the
   // NewDeskButton or ExpandedStateNewDeskButton, or expanding from zero state
-  // bar to the expanded desks bar when Bento is enabled. Performs the expanding
-  // animation if |expanding_bar_view| is true, otherwise animates the
-  // mini_views (also the ExpandedStateNewDeskButton if Bento is enabled) to
-  // their final positions if |initializing_bar_view| is false.
+  // bar to the expanded desks bar. Performs the expanding animation if
+  // |expanding_bar_view| is true, otherwise animates the mini_views (also the
+  // ExpandedStateNewDeskButton) to their final positions if
+  // |initializing_bar_view| is false.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
   // If the focused |mini_view| is outside of the scroll view's visible bounds,
@@ -195,8 +180,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   }
 
  private:
-  friend class BentoDesksBarLayout;
-  friend class BentoDesksBarScrollViewLayout;
+  friend class DesksBarScrollViewLayout;
 
   // Determine the new index of the dragged desk at the position of
   // |location_in_screen|.
@@ -218,17 +202,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // be moved when performing the mini_view creation or deletion animations.
   int GetFirstMiniViewXOffset() const;
 
-  // Updates the cached minimum width required to fit all contents.
-  void UpdateMinimumWidthToFitContents();
-
-  // Adds |mini_view| as the DesksBarView's child or |scroll_view_content_|'s
-  // child if Bento is enabled.
-  DeskMiniView* AddMiniViewAsChild(std::unique_ptr<DeskMiniView> mini_view);
-
   // Updates the visibility of the two buttons inside the zero state desks bar
-  // and the ExpandedStateNewDeskButton on the desk bar's state. Used only when
-  // Bento is enabled.
-  void UpdateBentoDeskButtonsVisibility();
+  // and the ExpandedStateNewDeskButton on the desk bar's state.
+  void UpdateDeskButtonsVisibility();
 
   // Updates the visibility of |left_scroll_button_| and |right_scroll_button_|.
   // Show |left_scroll_button_| if there are contents outside of the left edge
@@ -251,9 +227,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // when the very first mini_views are created.
   views::View* background_view_;
 
-  // Used only in classic desks. Will be removed once Bento is fully launched.
-  NewDeskButton* new_desk_button_ = nullptr;
-
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
 
@@ -272,18 +245,13 @@ class ASH_EXPORT DesksBarView : public views::View,
   // The OverviewGrid that contains this object.
   OverviewGrid* overview_grid_;
 
-  // Caches the calculated minimum width to fit contents.
-  int min_width_to_fit_contents_ = 0;
-
-  // Puts the contents in a ScrollView to support scrollable desks. Used only
-  // when Bento is enabled.
+  // Puts the contents in a ScrollView to support scrollable desks.
   views::ScrollView* scroll_view_ = nullptr;
 
   // Contents of |scroll_view_|, which includes |mini_views_| and
-  // |new_desk_button_| currently. Used only when Bento is enabled.
+  // |expanded_state_new_desk_button_| currently.
   views::View* scroll_view_contents_ = nullptr;
 
-  // Used only when Bento is enabled.
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateNewDeskButton* zero_state_new_desk_button_ = nullptr;
   ExpandedStateNewDeskButton* expanded_state_new_desk_button_ = nullptr;

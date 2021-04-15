@@ -29,10 +29,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kArcResizeLock;
 // certain devices.
 ASH_PUBLIC_EXPORT extern const base::Feature kAutoNightLight;
 
-// Enables the Bento feature which encapsulate multiple sub-features which
-// improve virtual desks.
-ASH_PUBLIC_EXPORT extern const base::Feature kBento;
-
 // Enables the Capture Mode feature which is an enhanced screenshot and screen
 // capture user experience.
 ASH_PUBLIC_EXPORT extern const base::Feature kCaptureMode;
@@ -211,8 +207,6 @@ ASH_PUBLIC_EXPORT bool IsArcGhostWindowEnabled();
 ASH_PUBLIC_EXPORT bool IsArcResizeLockEnabled();
 
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
-
-ASH_PUBLIC_EXPORT bool IsBentoEnabled();
 
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -300,8 +299,7 @@ void Desk::AddWindowToDesk(aura::Window* window) {
   }
 
   // Update the window's workspace to this parent desk.
-  if ((features::IsBentoEnabled() || features::IsFullRestoreEnabled()) &&
-      !is_desk_being_removed_) {
+  if (!is_desk_being_removed_) {
     auto* desks_controller = DesksController::Get();
     window->SetProperty(aura::client::kWindowWorkspaceKey,
                         desks_controller->GetDeskIndex(this));

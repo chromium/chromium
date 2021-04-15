@@ -1158,95 +1158,6 @@ TEST_F(WindowCycleControllerTest, WindowDestruction) {
   EXPECT_EQ(2u, GetWindows(controller).size());
 }
 
-class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
- public:
-  LimitedWindowCycleControllerTest() = default;
-  LimitedWindowCycleControllerTest(const LimitedWindowCycleControllerTest&) =
-      delete;
-  LimitedWindowCycleControllerTest& operator=(
-      const LimitedWindowCycleControllerTest&) = delete;
-  ~LimitedWindowCycleControllerTest() override = default;
-
-  // WindowCycleControllerTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kLimitAltTabToActiveDesk);
-    WindowCycleControllerTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(LimitedWindowCycleControllerTest, CycleShowsActiveDeskWindows) {
-  if (features::IsBentoEnabled())
-    return;
-
-  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-  auto* desks_controller = DesksController::Get();
-  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(3u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
-  ActivateDesk(desk_2);
-  EXPECT_EQ(desk_2, desks_controller->active_desk());
-  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
-  const Desk* desk_3 = desks_controller->desks()[2].get();
-  ActivateDesk(desk_3);
-  EXPECT_EQ(desk_3, desks_controller->active_desk());
-  auto win3 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-
-  WindowCycleController* cycle_controller =
-      Shell::Get()->window_cycle_controller();
-
-  // Should contain only windows from |desk_3|.
-  cycle_controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-  auto cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(1u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
-  CompleteCycling(cycle_controller);
-  EXPECT_EQ(win3.get(), window_util::GetActiveWindow());
-
-  // Should contain only windows from |desk_2|.
-  ActivateDesk(desk_2);
-  cycle_controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-  cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(1u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
-  CompleteCycling(cycle_controller);
-  EXPECT_EQ(win2.get(), window_util::GetActiveWindow());
-
-  // Should contain only windows from |desk_1|.
-  const Desk* desk_1 = desks_controller->desks()[0].get();
-  ActivateDesk(desk_1);
-  cycle_controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-  cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(2u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
-  CompleteCycling(cycle_controller);
-  EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
-
-  // Swap desks while cycling, contents should update.
-  cycle_controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-  cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(2u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
-  ActivateDesk(desk_2);
-  EXPECT_TRUE(cycle_controller->IsCycling());
-  cycle_windows = GetWindows(cycle_controller);
-  EXPECT_EQ(1u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
-  CompleteCycling(cycle_controller);
-  EXPECT_EQ(win2.get(), window_util::GetActiveWindow());
-}
-
 class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {
  public:
   InteractiveWindowCycleControllerTest() = default;
@@ -2047,7 +1958,6 @@ class ModeSelectionWindowCycleControllerTest
 
   // WindowCycleControllerTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kBento);
     WindowCycleControllerTest::SetUp();
     generator_ = GetEventGenerator();
   }
@@ -2073,7 +1983,6 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::test::EventGenerator* generator_;
 };
 
@@ -2926,7 +2835,6 @@ class MultiUserWindowCycleControllerTest
   TestingPrefServiceSimple* user_2_prefs() { return user_2_prefs_; }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kBento);
     NoSessionAshTestBase::SetUp();
 
     WindowCycleList::DisableInitialDelayForTesting();
@@ -3069,7 +2977,6 @@ class MultiUserWindowCycleControllerTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::test::EventGenerator* generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;

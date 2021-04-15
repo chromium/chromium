@@ -11,7 +11,6 @@
 #include "ash/display/display_util.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/host/ash_window_tree_host.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -22,7 +21,6 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_bar_view.h"
-#include "ash/wm/desks/new_desk_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -510,32 +508,23 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
   const auto* desk_bar_view = GetOverviewSession()
                                   ->GetGridWithRootWindow(root_window)
                                   ->desks_bar_view();
-  if (features::IsBentoEnabled()) {
-    ASSERT_TRUE(desk_bar_view->IsZeroState());
 
-    // Tab once. The viewport should be centered on the center of the default
-    // desk button in the zero state desks bar.
-    SendKey(ui::VKEY_TAB);
-    TestMagnifierLayerTransform(desk_bar_view->zero_state_default_desk_button()
-                                    ->GetBoundsInScreen()
-                                    .CenterPoint(),
-                                root_window);
+  ASSERT_TRUE(desk_bar_view->IsZeroState());
+  // Tab once. The viewport should be centered on the center of the default
+  // desk button in the zero state desks bar.
+  SendKey(ui::VKEY_TAB);
+  TestMagnifierLayerTransform(desk_bar_view->zero_state_default_desk_button()
+                                  ->GetBoundsInScreen()
+                                  .CenterPoint(),
+                              root_window);
 
-    // Tab one more time. The viewport should be centered on the center of the
-    // new desk button in the zero state desks bar.
-    SendKey(ui::VKEY_TAB);
-    TestMagnifierLayerTransform(desk_bar_view->zero_state_new_desk_button()
-                                    ->GetBoundsInScreen()
-                                    .CenterPoint(),
-                                root_window);
-  } else {
-    // Tab once. The viewport should be centered on the center of the new desk
-    // button.
-    SendKey(ui::VKEY_TAB);
-    TestMagnifierLayerTransform(
-        desk_bar_view->new_desk_button()->GetBoundsInScreen().CenterPoint(),
-        root_window);
-  }
+  // Tab one more time. The viewport should be centered on the center of the
+  // new desk button in the zero state desks bar.
+  SendKey(ui::VKEY_TAB);
+  TestMagnifierLayerTransform(desk_bar_view->zero_state_new_desk_button()
+                                  ->GetBoundsInScreen()
+                                  .CenterPoint(),
+                              root_window);
 
   // Tab one more time. The viewport should be centered on the beginning of the
   // overview item's title.

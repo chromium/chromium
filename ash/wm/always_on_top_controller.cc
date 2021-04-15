@@ -4,7 +4,6 @@
 
 #include "ash/wm/always_on_top_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -63,8 +62,7 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
     // active desks' container.
     int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
-    if ((features::IsBentoEnabled() || features::IsFullRestoreEnabled()) &&
-        window_workspace != aura::client::kUnassignedWorkspace) {
+    if (window_workspace != aura::client::kUnassignedWorkspace) {
       auto* desk_container =
           DesksController::Get()->GetDeskContainer(root, window_workspace);
       if (desk_container)

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
@@ -24,6 +23,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/numerics/ranges.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -38,9 +38,6 @@
 namespace ash {
 
 namespace {
-
-// The height of the preview view in dips when using a compact layout.
-constexpr int kDeskPreviewHeightInCompactLayout = 48;
 
 // In non-compact layouts, the height of the preview is a percentage of the
 // total display height, with a max of |kDeskPreviewMaxHeight| dips and a min of
@@ -59,15 +56,6 @@ constexpr int kCornerRadius = 4;
 constexpr gfx::RoundedCornersF kCornerRadii(kCornerRadius);
 
 constexpr int kShadowElevation = 4;
-
-int GetHeightDivider(const int root_width) {
-  if (!features::IsBentoEnabled())
-    return kRootHeightDivider;
-
-  return root_width <= kUseSmallerHeightDividerWidthThreshold
-             ? kRootHeightDividerForSmallScreen
-             : kRootHeightDivider;
-}
 
 // Holds data about the original desk's layers to determine what we should do
 // when we attempt to mirror those layers.
@@ -351,16 +339,16 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
 DeskPreviewView::~DeskPreviewView() = default;
 
 // static
-int DeskPreviewView::GetHeight(aura::Window* root, bool compact) {
-  if (compact)
-    return kDeskPreviewHeightInCompactLayout;
-
+int DeskPreviewView::GetHeight(aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
-  return std::min(kDeskPreviewMaxHeight,
-                  std::max(kDeskPreviewMinHeight,
-                           root->bounds().height() /
-                               GetHeightDivider(root->bounds().width())));
+
+  const int height_divider =
+      root->bounds().width() <= kUseSmallerHeightDividerWidthThreshold
+          ? kRootHeightDividerForSmallScreen
+          : kRootHeightDivider;
+  return base::ClampToRange(root->bounds().height() / height_divider,
+                            kDeskPreviewMinHeight, kDeskPreviewMaxHeight);
 }
 
 void DeskPreviewView::SetBorderColor(SkColor color) {
@@ -388,8 +376,7 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   GetLayersData(desk_container, &layers_data);
 
   base::flat_set<aura::Window*> visible_on_all_desks_windows_to_mirror;
-  if (features::IsBentoEnabled() &&
-      !desks_util::IsActiveDeskContainer(desk_container)) {
+  if (!desks_util::IsActiveDeskContainer(desk_container)) {
     // Since visible on all desks windows reside on the active desk, only mirror
     // them in the layer tree if |this| is not the preview view for the active
     // desk.
@@ -446,16 +433,12 @@ void DeskPreviewView::Layout() {
 }
 
 bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
-  if (features::IsBentoEnabled())
-    mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
-
+  mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
   return Button::OnMousePressed(event);
 }
 
 bool DeskPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
-  if (features::IsBentoEnabled())
-    mini_view_->owner_bar()->HandleDragEvent(mini_view_, event);
-
+  mini_view_->owner_bar()->HandleDragEvent(mini_view_, event);
   return Button::OnMouseDragged(event);
 }
 
@@ -465,11 +448,6 @@ void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
-  if (!features::IsBentoEnabled()) {
-    Button::OnGestureEvent(event);
-    return;
-  }
-
   DesksBarView* owner_bar = mini_view_->owner_bar();
 
   switch (event->type()) {

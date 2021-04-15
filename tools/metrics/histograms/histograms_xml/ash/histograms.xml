@@ -769,6 +769,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.Desks.DesksCount2" units="units"
     expires_after="2021-11-29">
+  <obsolete>
+    Removed 04/2021. #enhanced-desks flag is removed from chrome://flags, which
+    means users will not able to switch to classic desks. Make this histogram
+    only for classic desks obsolete.
+  </obsolete>
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>

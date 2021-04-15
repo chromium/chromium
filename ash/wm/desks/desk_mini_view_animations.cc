@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -112,8 +111,8 @@ void PositionWindowsInOverview() {
 
 // A self-deleting object that performs a fade out animation on
 // |removed_mini_view|'s layer by changing its opacity from 1 to 0 and scales
-// down it around the center of |bar_view| while switching back to zero state in
-// Bento. |removed_mini_view_| and the object itserlf will be deleted when the
+// down it around the center of |bar_view| while switching back to zero state.
+// |removed_mini_view_| and the object itserlf will be deleted when the
 // animation is complete.
 // TODO(afakhry): Consider generalizing HidingWindowAnimationObserverBase to be
 // reusable for the mini_view removal animation.
@@ -210,12 +209,10 @@ void PerformNewDeskMiniViewAnimation(
   // existing mini views will move from right to left while the new desk button
   // will move from left to right. Since the newly added mini view will be added
   // between the last mini view and the new desk button.
-  if (features::IsBentoEnabled()) {
-    gfx::Transform new_desk_button_begin_transform;
-    new_desk_button_begin_transform.Translate(-shift_x, 0);
-    AnimateView(bar_view->expanded_state_new_desk_button(),
-                new_desk_button_begin_transform);
-  }
+  gfx::Transform new_desk_button_begin_transform;
+  new_desk_button_begin_transform.Translate(-shift_x, 0);
+  AnimateView(bar_view->expanded_state_new_desk_button(),
+              new_desk_button_begin_transform);
 }
 
 void PerformRemoveDeskMiniViewAnimation(
@@ -234,11 +231,7 @@ void PerformRemoveDeskMiniViewAnimation(
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
-
-  if (features::IsBentoEnabled()) {
-    AnimateView(expanded_state_new_desk_button,
-                mini_views_right_begin_transform);
-  }
+  AnimateView(expanded_state_new_desk_button, mini_views_right_begin_transform);
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {

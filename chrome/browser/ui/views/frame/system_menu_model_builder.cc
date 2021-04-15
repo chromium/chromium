@@ -20,7 +20,6 @@
 #include "ui/base/models/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,11 +38,9 @@
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
     Browser* browser)
-    : menu_delegate_(provider, browser) {
-}
+    : menu_delegate_(provider, browser) {}
 
-SystemMenuModelBuilder::~SystemMenuModelBuilder() {
-}
+SystemMenuModelBuilder::~SystemMenuModelBuilder() = default;
 
 void SystemMenuModelBuilder::Init() {
   ui::SimpleMenuModel* model = new ui::SimpleMenuModel(&menu_delegate_);
@@ -150,18 +147,16 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
-  if (ash::features::IsBentoEnabled()) {
-    auto* desks_helper = ash::DesksHelper::Get();
-    if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
-      model->AddSeparator(ui::NORMAL_SEPARATOR);
-      move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
-          &menu_delegate_,
-          views::Widget::GetWidgetForNativeWindow(
-              menu_delegate_.browser()->window()->GetNativeWindow()));
-      model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
-                                    IDS_MOVE_TO_DESKS_MENU,
-                                    move_to_desks_model_.get());
-    }
+  auto* desks_helper = ash::DesksHelper::Get();
+  if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
+    model->AddSeparator(ui::NORMAL_SEPARATOR);
+    move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
+        &menu_delegate_,
+        views::Widget::GetWidgetForNativeWindow(
+            menu_delegate_.browser()->window()->GetNativeWindow()));
+    model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
+                                  IDS_MOVE_TO_DESKS_MENU,
+                                  move_to_desks_model_.get());
   }
 }
 #endif

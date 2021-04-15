@@ -64,10 +64,9 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
   ~DeskPreviewView() override;
 
-  // Returns the height of the DeskPreviewView based on whether the |compact|
-  // small screens layout is used or not. In non-compact layouts, the height of
-  // the preview is a function of the |root| window's height.
-  static int GetHeight(aura::Window* root, bool compact);
+  // Returns the height of the DeskPreviewView, which is a function of the
+  // |root| window's height.
+  static int GetHeight(aura::Window* root);
 
   void SetBorderColor(SkColor color);
 

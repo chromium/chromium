@@ -1325,7 +1325,7 @@ bool OverviewGrid::IsDesksBarViewActive() const {
   // The desk bar view is not active if there is only a single desk when
   // overview is started. Once there are more than one desk, it should stay
   // active even if the 2nd to last desk is deleted in classic desks. Zero state
-  // desks bar in Bento should not be treated as active.
+  // desks bar should not be treated as active.
   return DesksController::Get()->desks().size() > 1 ||
          (desks_bar_view_ && !desks_bar_view_->mini_views().empty());
 }
@@ -1335,10 +1335,8 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
     return bounds_;
 
   gfx::Rect effective_bounds = bounds_;
-  effective_bounds.Inset(0,
-                         DesksBarView::GetBarHeightForWidth(
-                             root_window_, desks_bar_view_, bounds_.width()),
-                         0, 0);
+  effective_bounds.Inset(0, DesksBarView::GetBarHeightForWidth(root_window_), 0,
+                         0);
   return effective_bounds;
 }
 
@@ -1930,8 +1928,8 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
 
 gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
   gfx::Rect desks_widget_screen_bounds = bounds_;
-  desks_widget_screen_bounds.set_height(DesksBarView::GetBarHeightForWidth(
-      root_window_, desks_bar_view_, desks_widget_screen_bounds.width()));
+  desks_widget_screen_bounds.set_height(
+      DesksBarView::GetBarHeightForWidth(root_window_));
   // Shift the widget down to make room for the splitview indicator guidance
   // when it's shown at the top of the screen and no other windows are snapped.
   if (split_view_drag_indicators_ &&

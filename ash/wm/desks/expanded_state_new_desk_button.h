@@ -16,7 +16,7 @@ namespace ash {
 class DeskButtonBase;
 class DesksBarView;
 
-// The new desk button view in the expanded desks bar in Bento. It includes the
+// The new desk button view in the expanded desks bar. It includes the
 // InnerNewDeskButton and a name label below, which has the same style as a
 // DeskMiniVIew. But the name label is not changeable and not focusable.
 class ExpandedStateNewDeskButton : public views::View {

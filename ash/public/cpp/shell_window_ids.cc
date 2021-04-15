@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/public/cpp/ash_features.h"
 #include "base/containers/contains.h"
 
 namespace ash {
@@ -56,12 +55,10 @@ std::vector<int> GetActivatableShellWindowIds() {
   ids.emplace_back(kShellWindowId_DeskContainerB);
   ids.emplace_back(kShellWindowId_DeskContainerC);
   ids.emplace_back(kShellWindowId_DeskContainerD);
-  if (features::IsBentoEnabled()) {
-    ids.emplace_back(kShellWindowId_DeskContainerE);
-    ids.emplace_back(kShellWindowId_DeskContainerF);
-    ids.emplace_back(kShellWindowId_DeskContainerG);
-    ids.emplace_back(kShellWindowId_DeskContainerH);
-  }
+  ids.emplace_back(kShellWindowId_DeskContainerE);
+  ids.emplace_back(kShellWindowId_DeskContainerF);
+  ids.emplace_back(kShellWindowId_DeskContainerG);
+  ids.emplace_back(kShellWindowId_DeskContainerH);
 
   ids.insert(ids.end(), kPostDesksActivatableContainersIds.begin(),
              kPostDesksActivatableContainersIds.end());

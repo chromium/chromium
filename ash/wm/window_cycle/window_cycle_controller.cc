@@ -90,7 +90,7 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
                active_desk_container_id_before_cycle);
   base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
                                 desks_switch_distance,
-                                desks_util::GetMaxNumberOfDesks());
+                                desks_util::kMaxNumberOfDesks);
 }
 
 }  // namespace
@@ -99,13 +99,11 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
 // WindowCycleController, public:
 
 WindowCycleController::WindowCycleController() {
-  if (features::IsBentoEnabled())
-    Shell::Get()->session_controller()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
 WindowCycleController::~WindowCycleController() {
-  if (features::IsBentoEnabled())
-    Shell::Get()->session_controller()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 // static
@@ -119,10 +117,7 @@ bool WindowCycleController::CanCycle() {
 
 // static
 void WindowCycleController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  if (features::IsBentoEnabled()) {
-    registry->RegisterBooleanPref(prefs::kAltTabPerDesk,
-                                  DesksMruType::kAllDesks);
-  }
+  registry->RegisterBooleanPref(prefs::kAltTabPerDesk, DesksMruType::kAllDesks);
 }
 
 void WindowCycleController::HandleCycleWindow(
@@ -306,8 +301,7 @@ bool WindowCycleController::IsWindowListVisible() {
 }
 
 bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
-  return features::IsBentoEnabled() &&
-         Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
+  return Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
 }
 
 bool WindowCycleController::IsAltTabPerActiveDesk() {
@@ -327,8 +321,6 @@ bool WindowCycleController::IsTabSliderFocused() {
 
 void WindowCycleController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!features::IsBentoEnabled())
-    return;
   active_user_pref_service_ = pref_service;
   InitFromUserPrefs();
 }
@@ -447,7 +439,6 @@ void WindowCycleController::StopCycling() {
 
 void WindowCycleController::InitFromUserPrefs() {
   DCHECK(active_user_pref_service_);
-  DCHECK(features::IsBentoEnabled());
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(active_user_pref_service_);

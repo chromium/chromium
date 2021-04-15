@@ -6,14 +6,12 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/accessibility/magnifier/magnification_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
-#include "ash/wm/desks/new_desk_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -168,7 +166,7 @@ bool OverviewHighlightController::MaybeCloseHighlightedView() {
 }
 
 bool OverviewHighlightController::MaybeSwapHighlightedView(bool right) {
-  if (!features::IsBentoEnabled() || !highlighted_view_)
+  if (!highlighted_view_)
     return false;
 
   highlighted_view_->MaybeSwapHighlightedView(right);
@@ -211,7 +209,7 @@ std::vector<OverviewHighlightController::OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;
   traversable_views.reserve(overview_session_->num_items() +
-                            (desks_util::GetMaxNumberOfDesks() + 1) *
+                            (desks_util::kMaxNumberOfDesks + 1) *
                                 Shell::Get()->GetAllRootWindows().size());
   for (auto& grid : overview_session_->grid_list()) {
     auto* bar_view = grid->desks_bar_view();
@@ -229,14 +227,10 @@ OverviewHighlightController::GetTraversableViews() const {
         }
       }
 
-      if (features::IsBentoEnabled()) {
-        auto* new_desk_button =
-            bar_view->expanded_state_new_desk_button()->new_desk_button();
-        if (!is_zero_state && new_desk_button->GetEnabled())
-          traversable_views.push_back(new_desk_button);
-      } else if (bar_view->new_desk_button()->GetEnabled()) {
-        traversable_views.push_back(bar_view->new_desk_button());
-      }
+      auto* new_desk_button =
+          bar_view->expanded_state_new_desk_button()->new_desk_button();
+      if (!is_zero_state && new_desk_button->GetEnabled())
+        traversable_views.push_back(new_desk_button);
     }
 
     for (auto& item : grid->window_list())

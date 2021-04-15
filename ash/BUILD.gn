@@ -1552,8 +1552,6 @@ component("ash") {
     "wm/desks/desks_util.cc",
     "wm/desks/expanded_state_new_desk_button.cc",
     "wm/desks/expanded_state_new_desk_button.h",
-    "wm/desks/new_desk_button.cc",
-    "wm/desks/new_desk_button.h",
     "wm/desks/root_window_desk_switch_animator.cc",
     "wm/desks/root_window_desk_switch_animator.h",
     "wm/desks/scroll_arrow_button.cc",

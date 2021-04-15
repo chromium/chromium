@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
@@ -24,10 +23,7 @@ namespace desks_util {
 
 namespace {
 
-constexpr size_t kMaxNumberOfDesks = 4;
-constexpr size_t kBentoMaxNumberOfDesks = 8;
-
-constexpr std::array<int, kBentoMaxNumberOfDesks> kDesksContainersIds = {
+constexpr std::array<int, kMaxNumberOfDesks> kDesksContainersIds = {
     kShellWindowId_DefaultContainerDeprecated,
     kShellWindowId_DeskContainerB,
     kShellWindowId_DeskContainerC,
@@ -40,16 +36,7 @@ constexpr std::array<int, kBentoMaxNumberOfDesks> kDesksContainersIds = {
 
 }  // namespace
 
-size_t GetMaxNumberOfDesks() {
-  return features::IsBentoEnabled() ? kBentoMaxNumberOfDesks
-                                    : kMaxNumberOfDesks;
-}
-
 std::vector<int> GetDesksContainersIds() {
-  if (!features::IsBentoEnabled()) {
-    return std::vector<int>(kDesksContainersIds.begin(),
-                            kDesksContainersIds.begin() + kMaxNumberOfDesks);
-  }
   return std::vector<int>(kDesksContainersIds.begin(),
                           kDesksContainersIds.end());
 }

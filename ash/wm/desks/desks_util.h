@@ -25,7 +25,7 @@ namespace ash {
 
 namespace desks_util {
 
-ASH_EXPORT size_t GetMaxNumberOfDesks();
+constexpr size_t kMaxNumberOfDesks = 8;
 
 ASH_EXPORT std::vector<int> GetDesksContainersIds();
 

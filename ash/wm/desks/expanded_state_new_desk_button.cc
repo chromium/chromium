@@ -112,8 +112,7 @@ void ExpandedStateNewDeskButton::Layout() {
     return;
 
   const gfx::Rect new_desk_button_bounds = DeskMiniView::GetDeskPreviewBounds(
-      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow(),
-      /*compact=*/false);
+      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
   new_desk_button_->SetBoundsRect(new_desk_button_bounds);
 
   const gfx::Size label_size = label_->GetPreferredSize();

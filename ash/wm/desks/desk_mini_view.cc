@@ -48,9 +48,8 @@ int DeskMiniView::GetPreviewWidth(const gfx::Size& root_window_size,
 }
 
 // static
-gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window,
-                                             bool compact) {
-  const int preview_height = DeskPreviewView::GetHeight(root_window, compact);
+gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window) {
+  const int preview_height = DeskPreviewView::GetHeight(root_window);
   const auto root_size = root_window->bounds().size();
   return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
 }
@@ -160,15 +159,10 @@ const char* DeskMiniView::GetClassName() const {
 }
 
 void DeskMiniView::Layout() {
-  const bool compact = owner_bar_->UsesCompactLayout();
-  const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_, compact);
+  const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_);
   desk_preview_->SetBoundsRect(preview_bounds);
 
-  desk_name_view_->SetVisible(!compact);
-
-  if (!compact)
-    LayoutDeskNameView(preview_bounds);
-
+  LayoutDeskNameView(preview_bounds);
   close_desk_button_->SetBounds(
       preview_bounds.right() - CloseDeskButton::kCloseButtonSize -
           kCloseButtonMargin,
@@ -177,10 +171,7 @@ void DeskMiniView::Layout() {
 }
 
 gfx::Size DeskMiniView::CalculatePreferredSize() const {
-  const bool compact = owner_bar_->UsesCompactLayout();
-  const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_, compact);
-  if (compact)
-    return preview_bounds.size();
+  const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_);
 
   // The preferred size takes into account only the width of the preview
   // view. Desk preview's bottom inset should be excluded to maintain
@@ -425,13 +416,6 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   gfx::Point point_in_view = screen_location;
   ConvertPointFromScreen(this, &point_in_view);
   return HitTestPoint(point_in_view);
-}
-
-int DeskMiniView::GetMinWidthForDefaultLayout() const {
-  const auto& root_size = root_window_->bounds().size();
-  return GetPreviewWidth(root_size,
-                         DeskPreviewView::GetHeight(root_window_,
-                                                    /*compact=*/false));
 }
 
 bool DeskMiniView::IsDeskNameViewVisibleForTesting() const {

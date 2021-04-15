@@ -49,10 +49,7 @@ namespace ash {
 namespace {
 
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
-// TODO(minch): Remove kDesksCountHistogramName and make the corresponding
-// histogram obsolete when Bento is fully launched.
-constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount2";
-constexpr char kBentoDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
+constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
 constexpr char kWeeklyActiveDesksHistogramName[] =
     "Ash.Desks.WeeklyActiveDesks";
 constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
@@ -263,7 +260,7 @@ DesksController* DesksController::Get() {
 
 // static
 std::u16string DesksController::GetDeskDefaultName(size_t desk_index) {
-  DCHECK_LT(desk_index, desks_util::GetMaxNumberOfDesks());
+  DCHECK_LT(desk_index, desks_util::kMaxNumberOfDesks);
   return l10n_util::GetStringUTF16(kDeskDefaultNameIds[desk_index]);
 }
 
@@ -322,7 +319,7 @@ bool DesksController::AreDesksBeingModified() const {
 }
 
 bool DesksController::CanCreateDesks() const {
-  return desks_.size() < desks_util::GetMaxNumberOfDesks();
+  return desks_.size() < desks_util::kMaxNumberOfDesks;
 }
 
 Desk* DesksController::GetNextDesk(bool use_target_active_desk) const {
@@ -362,11 +359,10 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   available_container_ids_.pop();
   Desk* new_desk = desks_.back().get();
 
-  // If Bento is enabled and the user creates a desk with the button, the new
-  // desk should have an empty name to encourage them to rename their desks.
-  const bool empty_name = features::IsBentoEnabled() &&
-                          source == DesksCreationRemovalSource::kButton &&
-                          desks_.size() > 1;
+  // The new desk should have an empty name when the user creates a desk with
+  // the button. This is done to encourage them to rename their desks.
+  const bool empty_name =
+      source == DesksCreationRemovalSource::kButton && desks_.size() > 1;
   if (!empty_name) {
     new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
                       /*set_by_user=*/false);
@@ -418,7 +414,6 @@ void DesksController::RemoveDesk(const Desk* desk,
 }
 
 void DesksController::ReorderDesk(int old_index, int new_index) {
-  DCHECK(features::IsBentoEnabled());
   DCHECK_NE(old_index, new_index);
   DCHECK_GE(old_index, 0);
   DCHECK_GE(new_index, 0);
@@ -658,9 +653,6 @@ bool DesksController::MoveWindowFromActiveDeskTo(
 }
 
 void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
-  if (!features::IsBentoEnabled())
-    return;
-
   const bool added = visible_on_all_desks_windows_.emplace(window).second;
   DCHECK(added);
   NotifyAllDesksForContentChanged();
@@ -936,8 +928,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
     observer.OnDeskActivationChanged(active_desk_, old_active);
 
   // Only update active desk prefs when a primary user switches a desk.
-  if (features::IsBentoEnabled() &&
-      shell->session_controller()->IsUserPrimary()) {
+  if (shell->session_controller()->IsUserPrimary()) {
     desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
         GetDeskIndex(active_desk_));
   }
@@ -1095,7 +1086,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
-  DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
+  DCHECK_LE(available_container_ids_.size(), desks_util::kMaxNumberOfDesks);
 }
 
 void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
@@ -1215,11 +1206,9 @@ void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
 }
 
 void DesksController::ReportDesksCountHistogram() const {
-  DCHECK_LE(desks_.size(), desks_util::GetMaxNumberOfDesks());
-  UMA_HISTOGRAM_EXACT_LINEAR(features::IsBentoEnabled()
-                                 ? kBentoDesksCountHistogramName
-                                 : kDesksCountHistogramName,
-                             desks_.size(), desks_util::GetMaxNumberOfDesks());
+  DCHECK_LE(desks_.size(), desks_util::kMaxNumberOfDesks);
+  UMA_HISTOGRAM_EXACT_LINEAR(kDesksCountHistogramName, desks_.size(),
+                             desks_util::kMaxNumberOfDesks);
 }
 
 void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {

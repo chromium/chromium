@@ -37,7 +37,6 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -282,16 +281,13 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
     // changes happened since the last invocation.
     menu_model_builder_.reset();
   }
-  if (ash::features::IsBentoEnabled()) {
-    auto* desks_helper = ash::DesksHelper::Get();
-    int current_num_desks =
-        desks_helper ? desks_helper->GetNumberOfDesks() : -1;
-    if (current_num_desks != num_desks_) {
-      // Since the number of desks can change, the model must update to show any
-      // changes happened since the last invocation.
-      menu_model_builder_.reset();
-      num_desks_ = current_num_desks;
-    }
+  auto* desks_helper = ash::DesksHelper::Get();
+  int current_num_desks = desks_helper ? desks_helper->GetNumberOfDesks() : -1;
+  if (current_num_desks != num_desks_) {
+    // Since the number of desks can change, the model must update to show any
+    // changes happened since the last invocation.
+    menu_model_builder_.reset();
+    num_desks_ = current_num_desks;
   }
 #endif
   if (!menu_model_builder_.get()) {

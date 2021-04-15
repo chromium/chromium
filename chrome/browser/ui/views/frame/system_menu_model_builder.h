@@ -21,7 +21,7 @@ namespace ui {
 class AcceleratorProvider;
 class MenuModel;
 class SimpleMenuModel;
-}
+}  // namespace ui
 
 // SystemMenuModelBuilder is responsible for building and owning the system menu
 // model.
