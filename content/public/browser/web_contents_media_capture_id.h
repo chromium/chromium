@@ -21,11 +21,9 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
 
   WebContentsMediaCaptureId(int render_process_id,
                             int main_render_frame_id,
-                            bool enable_auto_throttling,
                             bool disable_local_echo)
       : render_process_id(render_process_id),
         main_render_frame_id(main_render_frame_id),
-        enable_auto_throttling(enable_auto_throttling),
         disable_local_echo(disable_local_echo) {}
 
   bool operator<(const WebContentsMediaCaptureId& other) const;
@@ -40,7 +38,6 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
   int render_process_id = MSG_ROUTING_NONE;
   int main_render_frame_id = MSG_ROUTING_NONE;
 
-  bool enable_auto_throttling = false;
   bool disable_local_echo = false;
 
   // TODO(qiangchen): Pass structured ID along code paths, instead of doing

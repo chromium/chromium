@@ -76,38 +76,12 @@ const char kMediaStreamSource[] = "chromeMediaSource";
 const char kMediaStreamSourceId[] = "chromeMediaSourceId";
 const char kMediaStreamSourceTab[] = "tab";
 
-// Tab Capture-specific video constraint to enable automatic resolution/rate
-// throttling mode in the capture pipeline.
-const char kEnableAutoThrottlingKey[] = "enableAutoThrottling";
-
 bool OptionsSpecifyAudioOrVideo(const TabCapture::CaptureOptions& options) {
   return (options.audio && *options.audio) || (options.video && *options.video);
 }
 
 bool IsAcceptableOffscreenTabUrl(const GURL& url) {
   return url.is_valid() && (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("data"));
-}
-
-bool GetAutoThrottlingFromOptions(TabCapture::CaptureOptions* options) {
-  bool enable_auto_throttling = false;
-  if (options && options->video && *options->video) {
-    if (options->video_constraints) {
-      // Check for the Tab Capture-specific video constraint for enabling
-      // automatic resolution/rate throttling mode in the capture pipeline.  See
-      // implementation comments for content::WebContentsVideoCaptureDevice.
-      base::DictionaryValue& props =
-          options->video_constraints->mandatory.additional_properties;
-      if (!props.GetBooleanWithoutPathExpansion(
-              kEnableAutoThrottlingKey, &enable_auto_throttling)) {
-        enable_auto_throttling = false;
-      }
-      // Remove the key from the properties to avoid an "unrecognized
-      // constraint" error in the renderer.
-      props.RemoveKey(kEnableAutoThrottlingKey);
-    }
-  }
-
-  return enable_auto_throttling;
 }
 
 DesktopMediaID BuildDesktopMediaID(content::WebContents* target_contents,
@@ -117,8 +91,7 @@ DesktopMediaID BuildDesktopMediaID(content::WebContents* target_contents,
   DesktopMediaID source(
       DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
       WebContentsMediaCaptureId(target_frame->GetProcess()->GetID(),
-                                target_frame->GetRoutingID(),
-                                GetAutoThrottlingFromOptions(options), false));
+                                target_frame->GetRoutingID()));
   return source;
 }
 

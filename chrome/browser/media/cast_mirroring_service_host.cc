@@ -108,8 +108,7 @@ content::DesktopMediaID BuildMediaIdForWebContents(
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
       contents->GetMainFrame()->GetProcess()->GetID(),
-      contents->GetMainFrame()->GetRoutingID(),
-      true /* enable_auto_throttling */, true /* disable_local_echo */);
+      contents->GetMainFrame()->GetRoutingID(), true /* disable_local_echo */);
   return media_id;
 }
 
