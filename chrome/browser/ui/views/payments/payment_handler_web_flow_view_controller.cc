@@ -28,7 +28,6 @@
 #include "components/security_state/core/security_state.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -205,15 +204,7 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
       target_(target),
       first_navigation_complete_callback_(
           std::move(first_navigation_complete_callback)),
-      // Borrow the browser's WebContentModalDialogHost to display modal dialogs
-      // triggered by the payment handler's web view (e.g. WebAuthn dialogs).
-      // The browser's WebContentModalDialogHost is valid throughout the
-      // lifetime of this controller because the payment sheet itself is a modal
-      // dialog.
-      dialog_manager_delegate_(
-          static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
-              chrome::FindBrowserWithWebContents(payment_request_web_contents))
-              ->GetWebContentsModalDialogHost()) {}
+      dialog_manager_delegate_(payment_request_web_contents) {}
 
 PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   state()->OnPaymentAppWindowClosed();
