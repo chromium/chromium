@@ -482,6 +482,10 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   int GetTopInsetInBrowserView() const override {
+    // BrowserView should fill the full window when window controls overlay
+    // is enabled.
+    if (browser_view_->IsWindowControlsOverlayEnabled())
+      return 0;
     return browser_view_->frame()->GetTopInset() - browser_view_->y();
   }
 
@@ -1580,6 +1584,11 @@ base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(
 
 void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
   link_opened_from_gesture_callbacks_.Notify(disposition);
+}
+
+bool BrowserView::IsWindowControlsOverlayEnabled() const {
+  return browser()->app_controller() &&
+         browser()->app_controller()->IsWindowControlsOverlayEnabled();
 }
 
 void BrowserView::FocusBookmarksToolbar() {

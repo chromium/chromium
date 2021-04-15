@@ -108,6 +108,14 @@ void GlassBrowserCaptionButtonContainer::AddedToWidget() {
   widget_observation_.Observe(widget);
 
   UpdateButtons();
+
+  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+    SetBackground(
+        views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
+    // BrowserView paints to a layer, so this must do the same to ensure that it
+    // paints on top of the BrowserView.
+    SetPaintToLayer();
+  }
 }
 
 void GlassBrowserCaptionButtonContainer::RemovedFromWidget() {

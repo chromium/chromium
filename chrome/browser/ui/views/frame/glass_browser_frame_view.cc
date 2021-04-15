@@ -400,8 +400,12 @@ void GlassBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
 
 void GlassBrowserFrameView::Layout() {
   TRACE_EVENT0("views.frame", "GlassBrowserFrameView::Layout");
+
   LayoutCaptionButtons();
-  LayoutTitleBar();
+  if (browser_view()->IsWindowControlsOverlayEnabled())
+    LayoutWindowControlsOverlay();
+  else
+    LayoutTitleBar();
   LayoutClientView();
   NonClientFrameView::Layout();
 }
@@ -724,16 +728,44 @@ void GlassBrowserFrameView::LayoutCaptionButtons() {
   int height = preferred_size.height();
   // We use the standard caption bar height when maximized in tablet mode, which
   // is smaller than our preferred button size.
-  if (IsWebUITabStrip() && IsMaximized())
+  if (IsWebUITabStrip() && IsMaximized()) {
     height = std::min(height, TitlebarMaximizedVisualHeight());
+  } else if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    // When the WCO is enabled, the caption button container should be the same
+    // height as the WebAppFrameToolbar for a seamless overlay.
+    height = IsMaximized() ? TitlebarMaximizedVisualHeight()
+                           : TitlebarHeight(false) - WindowTopY();
+  }
   caption_button_container_->SetBounds(width() - preferred_size.width(),
                                        WindowTopY(), preferred_size.width(),
                                        height);
 }
 
+void GlassBrowserFrameView::LayoutWindowControlsOverlay() {
+  // Layout WebAppFrameToolbarView.
+  int overlay_height = caption_button_container_->size().height();
+  auto available_space =
+      gfx::Rect(0, WindowTopY(), MinimizeButtonX(), overlay_height);
+  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(available_space);
+
+  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+  // WebContents can be null when an app window is first launched.
+  if (web_contents) {
+    int overlay_width = web_app_frame_toolbar()->size().width() +
+                        caption_button_container_->size().width();
+    int bounding_rect_width = width() - overlay_width;
+    auto bounding_rect =
+        GetMirroredRect(gfx::Rect(0, 0, bounding_rect_width, overlay_height));
+    web_contents->UpdateWindowControlsOverlay(bounding_rect);
+  }
+}
+
 void GlassBrowserFrameView::LayoutClientView() {
   client_view_bounds_ = GetLocalBounds();
-  client_view_bounds_.Inset(0, GetTopInset(false), 0, 0);
+  int top_inset = browser_view()->IsWindowControlsOverlayEnabled()
+                      ? WindowTopY()
+                      : GetTopInset(false);
+  client_view_bounds_.Inset(0, top_inset, 0, 0);
 }
 
 void GlassBrowserFrameView::StartThrobber() {

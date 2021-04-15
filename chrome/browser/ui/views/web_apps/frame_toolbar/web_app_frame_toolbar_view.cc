@@ -144,6 +144,21 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
   return std::pair<int, int>(center_bounds.x(), center_bounds.right());
 }
 
+void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
+    gfx::Rect available_rect) {
+  DCHECK(!left_container_);
+  center_container_->SetVisible(false);
+
+  // BrowserView paints to a layer, so this must do the same to ensure that it
+  // paints on top of the BrowserView.
+  SetPaintToLayer();
+
+  const int width = std::min(available_rect.width(),
+                             right_container_->GetPreferredSize().width());
+  const int x = available_rect.right() - width;
+  SetBounds(x, available_rect.y(), width, available_rect.height());
+}
+
 ExtensionsToolbarContainer*
 WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
   return right_container_->extensions_container();
@@ -267,9 +282,13 @@ void WebAppFrameToolbarView::UpdateChildrenColor() {
       paint_as_active_ ? active_foreground_color_ : inactive_foreground_color_;
   if (left_container_)
     left_container_->SetIconColor(foreground_color);
-  right_container_->SetColors(
-      foreground_color,
-      paint_as_active_ ? active_background_color_ : inactive_background_color_);
+  const SkColor background_color =
+      paint_as_active_ ? active_background_color_ : inactive_background_color_;
+  right_container_->SetColors(foreground_color, background_color);
+
+  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+    SetBackground(views::CreateSolidBackground(background_color));
+  }
 }
 
 BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)

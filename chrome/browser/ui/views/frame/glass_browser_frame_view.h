@@ -137,6 +137,7 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   // Layout various sub-components of this view.
   void LayoutTitleBar();
   void LayoutCaptionButtons();
+  void LayoutWindowControlsOverlay();
   void LayoutClientView();
 
   // Returns the insets of the client area. If |restored| is true, this is

@@ -57,6 +57,9 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                         int y,
                                         int available_height);
 
+  // Sets own bounds within the available_space.
+  void LayoutForWindowControlsOverlay(gfx::Rect available_space);
+
   SkColor active_color_for_testing() const { return active_foreground_color_; }
 
   // ToolbarButtonProvider:
