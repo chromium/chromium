@@ -280,6 +280,11 @@ class LayoutUnit {
 
   static LayoutUnit Clamp(double value) { return FromFloatFloor(value); }
 
+  // Multiply by |m| and divide by |d| as a single ("fused") operation, avoiding
+  // any saturation of the intermediate result. Rounding matches that of the
+  // regular operations (i.e the result of the divide is rounded towards zero).
+  LayoutUnit MulDiv(LayoutUnit m, LayoutUnit d) const;
+
   String ToString() const;
 
  private:
@@ -556,6 +561,12 @@ inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
                     a.RawValue() / b.RawValue();
   return_val.SetRawValue(base::saturated_cast<int>(raw_val));
   return return_val;
+}
+
+inline LayoutUnit LayoutUnit::MulDiv(LayoutUnit m, LayoutUnit d) const {
+  int64_t n = static_cast<int64_t>(RawValue()) * m.RawValue();
+  int64_t q = n / d.RawValue();
+  return FromRawValue(base::saturated_cast<int>(q));
 }
 
 constexpr float operator/(const LayoutUnit& a, float b) {

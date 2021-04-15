@@ -237,9 +237,6 @@ LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                      double logical_aspect_ratio,
                                      EBoxSizing box_sizing,
                                      LayoutUnit block_size) {
-  // TODO(dgrogan/ikilpatrick): These calculations might need to be done in
-  // integer space, in a potential BoundedMultiplyAndDivide(LayoutUnit,
-  // LayoutUnit, LayoutUnit) function.
   if (box_sizing == EBoxSizing::kBorderBox) {
     return LayoutUnit::FromDoubleRound(block_size * logical_aspect_ratio);
   }
@@ -253,10 +250,12 @@ LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                      const LogicalSize& aspect_ratio,
                                      EBoxSizing box_sizing,
                                      LayoutUnit block_size) {
-  return InlineSizeFromAspectRatio(
-      border_padding,
-      aspect_ratio.inline_size.ToDouble() / aspect_ratio.block_size.ToDouble(),
-      box_sizing, block_size);
+  if (box_sizing == EBoxSizing::kBorderBox) {
+    return block_size.MulDiv(aspect_ratio.inline_size, aspect_ratio.block_size);
+  }
+  block_size -= border_padding.BlockSum();
+  return block_size.MulDiv(aspect_ratio.inline_size, aspect_ratio.block_size) +
+         border_padding.InlineSum();
 }
 
 // logical_aspect_ratio is block_size / inline_size.
@@ -278,10 +277,13 @@ LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     const LogicalSize& aspect_ratio,
                                     EBoxSizing box_sizing,
                                     LayoutUnit inline_size) {
-  return BlockSizeFromAspectRatio(
-      border_padding,
-      aspect_ratio.block_size.ToDouble() / aspect_ratio.inline_size.ToDouble(),
-      box_sizing, inline_size);
+  if (box_sizing == EBoxSizing::kBorderBox) {
+    return inline_size.MulDiv(aspect_ratio.block_size,
+                              aspect_ratio.inline_size);
+  }
+  inline_size -= border_padding.InlineSum();
+  return inline_size.MulDiv(aspect_ratio.block_size, aspect_ratio.inline_size) +
+         border_padding.BlockSum();
 }
 
 namespace {
