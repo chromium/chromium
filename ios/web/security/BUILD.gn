@@ -5,10 +5,7 @@
 import("//ios/build/config.gni")
 
 source_set("security") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
