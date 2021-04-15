@@ -38,6 +38,13 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
   LayoutUnit ScrollHeight() const override;
 };
 
+template <>
+struct DowncastTraits<LayoutNGFieldset> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGFieldset();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_FIELDSET_H_

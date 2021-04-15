@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -7345,9 +7346,9 @@ void LayoutBox::RecalcFragmentsVisualOverflow() {
   // of |this| in the box tree, but it is a child of the fieldset container in
   // the fragment tree. Make sure it is recalculated.
   if (UNLIKELY(IsAnonymous() && HasSelfPaintingLayer())) {
-    const auto* parent = DynamicTo<LayoutBlock>(Parent());
-    if (parent && parent->IsLayoutNGFieldset()) {
-      if (LayoutBox* legend = LayoutFieldset::FindInFlowLegend(*parent))
+    const auto* fieldset = DynamicTo<LayoutNGFieldset>(Parent());
+    if (UNLIKELY(fieldset)) {
+      if (LayoutBox* legend = LayoutFieldset::FindInFlowLegend(*fieldset))
         legend->RecalcFragmentsVisualOverflow();
     }
   }
