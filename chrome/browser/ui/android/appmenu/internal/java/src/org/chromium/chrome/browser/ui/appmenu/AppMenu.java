@@ -76,6 +76,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     private AnimatorSet mMenuItemEnterAnimator;
     private long mMenuShownTimeMs;
     private boolean mSelectedItemBeforeDismiss;
+    private Integer mHighlightedItemId;
 
     /**
      * Creates and sets up the App Menu.
@@ -198,6 +199,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             mListView = null;
             mFooterView = null;
             mMenuItemEnterAnimator = null;
+            mHighlightedItemId = null;
         });
 
         // Some OEMs don't actually let us change the background... but they still return the
@@ -262,6 +264,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         int footerHeight = inflateFooter(footerResourceId, contentView, menuWidth);
         int headerHeight = inflateHeader(headerResourceId, contentView, menuWidth);
 
+        mHighlightedItemId = highlightedItemId;
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
             ViewHighlighter.turnOnHighlight(
@@ -359,7 +362,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         if (menuItem.isEnabled()) {
             mSelectedItemBeforeDismiss = true;
             dismiss();
-            mHandler.onOptionsItemSelected(menuItem);
+            mHandler.onOptionsItemSelected(menuItem,
+                    mHighlightedItemId != null && mHighlightedItemId == menuItem.getItemId());
         }
     }
 
