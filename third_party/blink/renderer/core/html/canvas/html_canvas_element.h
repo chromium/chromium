@@ -420,7 +420,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // GPU Memory Management
   mutable intptr_t externally_allocated_memory_;
 
-  scoped_refptr<StaticBitmapImage> transparent_image_ = nullptr;
+  scoped_refptr<StaticBitmapImage> transparent_image_;
 };
 
 }  // namespace blink

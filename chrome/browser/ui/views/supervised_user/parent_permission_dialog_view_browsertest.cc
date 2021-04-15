@@ -268,7 +268,7 @@ class ParentPermissionDialogViewTest
   // Closure that is triggered once the dialog completes.
   base::OnceClosure on_dialog_done_closure_;
 
-  scoped_refptr<const extensions::Extension> test_extension_ = nullptr;
+  scoped_refptr<const extensions::Extension> test_extension_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   base::Optional<NextDialogAction> next_dialog_action_;

@@ -610,7 +610,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     GURL url(net::UnescapeBinaryURLComponent(query));
     if (!url.is_valid())
       url = GURL(url::kAboutBlankURL);
-    scoped_refptr<DevToolsAgentHost> agent_host = nullptr;
+    scoped_refptr<DevToolsAgentHost> agent_host;
     agent_host = delegate_->CreateNewTarget(url);
     if (!agent_host) {
       SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, nullptr,

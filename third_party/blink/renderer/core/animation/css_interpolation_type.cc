@@ -100,7 +100,7 @@ class ResolvedRegisteredCustomPropertyChecker
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
     const CSSValue* resolved = css_environment.Resolve(
         PropertyHandle(declaration_->GetName()), declaration_);
-    scoped_refptr<CSSVariableData> resolved_tokens = nullptr;
+    scoped_refptr<CSSVariableData> resolved_tokens;
     if (const auto* decl = DynamicTo<CSSCustomPropertyDeclaration>(resolved))
       resolved_tokens = decl->Value();
 

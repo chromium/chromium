@@ -511,7 +511,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // separate task runner per instance (for better performance).
   //
   // Lazily initialized by GetUnpackerTaskRunner().
-  scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_;
 
   // Used to show the install dialog.
   ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback_;

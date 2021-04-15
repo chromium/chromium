@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
 
   // Cursor in use prior to the move loop starting. Restored when the move loop
   // quits.
-  scoped_refptr<X11Cursor> initial_cursor_ = nullptr;
+  scoped_refptr<X11Cursor> initial_cursor_;
 
   // An invisible InputOnly window. Keyboard grab and sometimes mouse grab
   // are set on this window.

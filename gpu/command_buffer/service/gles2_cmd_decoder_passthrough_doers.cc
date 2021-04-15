@@ -556,7 +556,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
 
   // Track the currently bound textures
   DCHECK(GLenumToTextureTarget(target) != TextureTarget::kUnkown);
-  scoped_refptr<TexturePassthrough> texture_passthrough = nullptr;
+  scoped_refptr<TexturePassthrough> texture_passthrough;
 
   // If there was anything bound that required an image bind / copy,
   // forget it since it's no longer bound to a sampler.
@@ -1130,7 +1130,7 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteTextures(
   std::vector<GLuint> non_mailbox_client_ids;
   for (GLsizei ii = 0; ii < n; ++ii) {
     GLuint client_id = textures[ii];
-    scoped_refptr<TexturePassthrough> texture = nullptr;
+    scoped_refptr<TexturePassthrough> texture;
     if (!resources_->texture_object_map.GetServiceID(client_id, &texture) ||
         texture == nullptr) {
       // Delete with DeleteHelper
@@ -4602,7 +4602,7 @@ error::Error GLES2DecoderPassthroughImpl::DoVertexAttribDivisorANGLE(
 error::Error GLES2DecoderPassthroughImpl::DoProduceTextureDirectCHROMIUM(
     GLuint texture_client_id,
     const volatile GLbyte* mailbox) {
-  scoped_refptr<TexturePassthrough> texture = nullptr;
+  scoped_refptr<TexturePassthrough> texture;
   if (!resources_->texture_object_map.GetServiceID(texture_client_id,
                                                    &texture) ||
       texture == nullptr) {
@@ -4817,7 +4817,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
     GLfloat uv_height,
     bool enable_blend,
     GLuint gpu_fence_id) {
-  scoped_refptr<TexturePassthrough> passthrough_texture = nullptr;
+  scoped_refptr<TexturePassthrough> passthrough_texture;
   if (!resources_->texture_object_map.GetServiceID(overlay_texture_id,
                                                    &passthrough_texture) ||
       passthrough_texture == nullptr) {
@@ -5079,7 +5079,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCommitOverlayPlanesCHROMIUM(
 error::Error GLES2DecoderPassthroughImpl::DoSetColorSpaceMetadataCHROMIUM(
     GLuint texture_id,
     gfx::ColorSpace color_space) {
-  scoped_refptr<TexturePassthrough> passthrough_texture = nullptr;
+  scoped_refptr<TexturePassthrough> passthrough_texture;
   if (!resources_->texture_object_map.GetServiceID(texture_id,
                                                    &passthrough_texture) ||
       passthrough_texture == nullptr) {
@@ -5293,7 +5293,7 @@ error::Error
 GLES2DecoderPassthroughImpl::DoInitializeDiscardableTextureCHROMIUM(
     GLuint texture_id,
     ServiceDiscardableHandle&& discardable_handle) {
-  scoped_refptr<TexturePassthrough> texture_passthrough = nullptr;
+  scoped_refptr<TexturePassthrough> texture_passthrough;
   if (!resources_->texture_object_map.GetServiceID(texture_id,
                                                    &texture_passthrough) ||
       texture_passthrough == nullptr) {

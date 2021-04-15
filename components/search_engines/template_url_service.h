@@ -690,7 +690,7 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // ---------- Dependencies on other components ------------------------------
   // Service used to store entries.
-  scoped_refptr<KeywordWebDataService> web_data_service_ = nullptr;
+  scoped_refptr<KeywordWebDataService> web_data_service_;
 
   std::unique_ptr<TemplateURLServiceClient> client_;
 

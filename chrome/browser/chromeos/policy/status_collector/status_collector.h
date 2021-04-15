@@ -144,7 +144,7 @@ class StatusCollector {
   base::Clock* clock_;
 
   // Task runner in the creation thread where responses are sent to.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // TODO(crbug.com/827386): check if it is possible to use the SequenceChecker
   // instead.
   base::ThreadChecker thread_checker_;

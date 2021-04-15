@@ -64,7 +64,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
 
  private:
   SharedContextState* const shared_context_state_;
-  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_ = nullptr;
+  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
 };
 
 }  // namespace gpu

@@ -5525,7 +5525,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // We intentionally don't share the SiteInstance with the original frame so
   // that view source has a consistent process model and always ends up in a new
   // process (https://crbug.com/699493).
-  scoped_refptr<SiteInstanceImpl> site_instance_for_view_source = nullptr;
+  scoped_refptr<SiteInstanceImpl> site_instance_for_view_source;
   // Referrer and initiator are not important, because view-source should not
   // hit the network, but should be served from the cache instead.
   Referrer referrer_for_view_source;

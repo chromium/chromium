@@ -516,7 +516,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Resources for Adaptation.
   // The Thermal Resource is lazily instantiated on platforms where thermal
   // signals are supported.
-  scoped_refptr<ThermalResource> thermal_resource_ = nullptr;
+  scoped_refptr<ThermalResource> thermal_resource_;
   // ThermalUmaListener is only tracked on peer connection that add a track.
   std::unique_ptr<ThermalUmaListener> thermal_uma_listener_;
   mojom::blink::DeviceThermalState last_thermal_state_ =

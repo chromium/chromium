@@ -259,7 +259,7 @@ class PasswordManagerPresenterTest : public testing::Test {
   // TODO(victorvianna): Rename to profile_store_.
   scoped_refptr<password_manager::TestPasswordStore> store_;
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<password_manager::TestPasswordStore> account_store_ = nullptr;
+  scoped_refptr<password_manager::TestPasswordStore> account_store_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerPresenterTest);
 };

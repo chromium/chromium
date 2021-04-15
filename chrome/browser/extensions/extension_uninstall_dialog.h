@@ -157,7 +157,7 @@ class ExtensionUninstallDialog
   Delegate* delegate_;
 
   // The extension we are showing the dialog for.
-  scoped_refptr<const Extension> extension_ = nullptr;
+  scoped_refptr<const Extension> extension_;
 
   // The extension triggering the dialog if the dialog was shown by
   // chrome.management.uninstall.

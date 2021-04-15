@@ -237,7 +237,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   std::unique_ptr<HttpTransaction> network_transaction_;
 
-  scoped_refptr<IOBuffer> read_buf_ = nullptr;
+  scoped_refptr<IOBuffer> read_buf_;
 
   int io_buf_len_ = 0;
   int write_len_ = 0;

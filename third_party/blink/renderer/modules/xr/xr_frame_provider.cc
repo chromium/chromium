@@ -660,7 +660,7 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   if (frame_transport_->DrawingIntoSharedBuffer()) {
     // Image is written to shared buffer already. Just submit with a
     // placeholder.
-    scoped_refptr<Image> image_ref = nullptr;
+    scoped_refptr<Image> image_ref;
     DVLOG(3) << __FUNCTION__ << ": FrameSubmit for SharedBuffer mode";
     frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
                                   webgl_context->ContextGL(), webgl_context,

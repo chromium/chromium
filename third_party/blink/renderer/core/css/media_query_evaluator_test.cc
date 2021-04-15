@@ -350,7 +350,7 @@ MediaQueryEvaluatorTestCase g_device_posture_book_cases[] = {
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
-  scoped_refptr<MediaQuerySet> query_set = nullptr;
+  scoped_refptr<MediaQuerySet> query_set;
   for (unsigned i = 0; test_cases[i].input; ++i) {
     if (String(test_cases[i].input).IsEmpty()) {
       query_set = MediaQuerySet::Create();

@@ -69,7 +69,7 @@ class StartupInformationHelper {
   int CountAttributes();
 
   // Fields that are not passed into CreateProcessAsUserW().
-  scoped_refptr<AppContainerBase> app_container_ = nullptr;
+  scoped_refptr<AppContainerBase> app_container_;
   bool restrict_child_process_creation_ = false;
   HANDLE stdout_handle_ = INVALID_HANDLE_VALUE;
   HANDLE stderr_handle_ = INVALID_HANDLE_VALUE;

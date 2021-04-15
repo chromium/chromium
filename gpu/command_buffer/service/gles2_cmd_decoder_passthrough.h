@@ -497,7 +497,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Fail-fast version of BindPendingImages that operates on a single texture
   // that's specified by |client_id|.
   inline void BindPendingImageForClientIDIfNeeded(int client_id) {
-    scoped_refptr<TexturePassthrough> texture = nullptr;
+    scoped_refptr<TexturePassthrough> texture;
 
     // We could keep track of the number of |is_bind_pending| textures in
     // |resources_|, and elide all of this if it's zero.

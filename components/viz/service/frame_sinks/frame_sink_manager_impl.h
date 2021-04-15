@@ -362,7 +362,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   //     OnFrameTokenChanged() will be directly called (without PostTask) on
   //     |client_|. Used for some unit tests.
   mojom::FrameSinkManagerClient* client_ = nullptr;
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_ = nullptr;
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   mojo::Remote<mojom::FrameSinkManagerClient> client_remote_;
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
 

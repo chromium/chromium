@@ -253,7 +253,7 @@ bool FindPlaceForCounter(LayoutObject& counter_owner,
   Element* current_element =
       PreviousInPreOrderRespectingContainment(*counter_owner_element);
   previous_sibling = nullptr;
-  scoped_refptr<CounterNode> previous_sibling_protector = nullptr;
+  scoped_refptr<CounterNode> previous_sibling_protector;
   while (current_element) {
     CounterNode* current_counter = nullptr;
     if (LayoutObject* current_layout_object =
@@ -405,8 +405,8 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
       !always_create_counter)
     return nullptr;
 
-  scoped_refptr<CounterNode> new_parent = nullptr;
-  scoped_refptr<CounterNode> new_previous_sibling = nullptr;
+  scoped_refptr<CounterNode> new_parent;
+  scoped_refptr<CounterNode> new_previous_sibling;
   scoped_refptr<CounterNode> new_node =
       CounterNode::Create(object, type_mask, value);
 
@@ -414,8 +414,8 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
     // Find the place where we would've inserted the new node if it was a
     // non-reset node. We have to move every non-reset sibling after the
     // insertion point to a child of the new node.
-    scoped_refptr<CounterNode> old_parent = nullptr;
-    scoped_refptr<CounterNode> old_previous_sibling = nullptr;
+    scoped_refptr<CounterNode> old_parent;
+    scoped_refptr<CounterNode> old_previous_sibling;
     if (FindPlaceForCounter(object, identifier, false, old_parent,
                             old_previous_sibling)) {
       if (!object.IsDescendantOf(&old_parent->Owner())) {
@@ -749,8 +749,8 @@ static void UpdateCounters(LayoutObject& layout_object) {
       MakeCounterNodeIfNeeded(layout_object, it->key, false);
       continue;
     }
-    scoped_refptr<CounterNode> new_parent = nullptr;
-    scoped_refptr<CounterNode> new_previous_sibling = nullptr;
+    scoped_refptr<CounterNode> new_parent;
+    scoped_refptr<CounterNode> new_previous_sibling;
 
     FindPlaceForCounter(layout_object, it->key, node->HasResetType(),
                         new_parent, new_previous_sibling);

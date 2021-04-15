@@ -56,7 +56,7 @@ ContextResult WebGPUInProcessContext::Initialize(
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
 
-  static const scoped_refptr<gl::GLSurface> surface = nullptr;
+  static const scoped_refptr<gl::GLSurface> surface;
   static constexpr bool is_offscreen = true;
   auto result = command_buffer_->Initialize(
       surface, is_offscreen, kNullSurfaceHandle, attribs,

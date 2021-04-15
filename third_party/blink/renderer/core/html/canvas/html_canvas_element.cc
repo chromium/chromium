@@ -888,7 +888,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   if (size_.IsEmpty())
     return nullptr;
 
-  scoped_refptr<StaticBitmapImage> image_bitmap = nullptr;
+  scoped_refptr<StaticBitmapImage> image_bitmap;
   if (OffscreenCanvasFrame()) {  // Offscreen Canvas
     DCHECK(OffscreenCanvasFrame()->OriginClean());
     image_bitmap = OffscreenCanvasFrame()->Bitmap();

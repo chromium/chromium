@@ -85,7 +85,7 @@ ImageFetcherServiceFactory::BuildServiceInstanceFor(
           std::move(data_store), std::move(metadata_store),
           profile_key->GetPrefs(), clock, task_runner);
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory = nullptr;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   // Network is null for some tests, may be removable after
   // https://crbug.com/981057.
   if (SystemNetworkContextManager::GetInstance()) {
