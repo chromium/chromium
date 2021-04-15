@@ -37,7 +37,6 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/ash/holding_space/fake_holding_space_color_provider.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
@@ -1334,8 +1333,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kNearbySharing, ash::features::kTemporaryHoldingSpace}, {});
 
-    holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>(
-        std::make_unique<ash::holding_space::FakeHoldingSpaceColorProvider>());
+    holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();
     const AccountId account_id(AccountId::FromUserEmail(""));
     user_manager_->AddUser(account_id);

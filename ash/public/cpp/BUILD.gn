@@ -126,8 +126,6 @@ component("cpp") {
     "fps_counter.h",
     "gesture_action_type.h",
     "holding_space/holding_space_client.h",
-    "holding_space/holding_space_color_provider.cc",
-    "holding_space/holding_space_color_provider.h",
     "holding_space/holding_space_constants.h",
     "holding_space/holding_space_controller.cc",
     "holding_space/holding_space_controller.h",

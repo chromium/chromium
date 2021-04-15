@@ -10,6 +10,10 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace views {
+class ImageView;
+}  // namespace views
+
 namespace ash {
 
 class HoldingSpaceItem;
@@ -43,6 +47,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
 
   // Owned by view hierarchy.
   RoundedImageView* image_ = nullptr;
+  views::ImageView* play_icon_ = nullptr;
 
   base::CallbackListSubscription image_subscription_;
 };

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/file_icon_util.h"
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -63,14 +62,6 @@ bool ContainsFolderTypeIcon(const gfx::ImageSkia& image) {
       chromeos::kFiletypeFolderIcon, kFileTypeIconSize, gfx::kGoogleGrey700);
   return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
 }
-
-// Fake implementation of HoldingSpaceColorProvider.
-class FakeHoldingSpaceColorProvider : public HoldingSpaceColorProvider {
- public:
-  // HoldingSpaceColorProvider:
-  SkColor GetBackgroundColor() const override { return gfx::kPlaceholderColor; }
-  bool IsDarkModeEnabled() const override { return false; }
-};
 
 // Helper class that provides a test implementation for the async bitmap
 // resolver callback used to generate holding space image representations.
@@ -196,7 +187,6 @@ class HoldingSpaceImageTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeHoldingSpaceColorProvider holding_space_color_provider_;
 };
 
 // Tests the basic flow for generating holding space image bitmaps.

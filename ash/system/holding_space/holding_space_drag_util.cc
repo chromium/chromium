@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -210,7 +209,10 @@ class DragImageItemChipView : public DragImageItemView {
         RoundedImageView::Alignment::kCenter));
     icon->SetPreferredSize(gfx::Size(kDragImageItemChipViewIconSize,
                                      kDragImageItemChipViewIconSize));
-    icon->SetImage(item->image().GetImageSkia(icon->GetPreferredSize()));
+
+    // TODO(crbug.com/1156190): Support dark/light mode.
+    icon->SetImage(item->image().GetImageSkia(icon->GetPreferredSize(),
+                                              /*dark_background=*/false));
 
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
@@ -246,7 +248,8 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
     auto* image = AddChildView(std::make_unique<RoundedImageView>(
         kDragImageItemViewCornerRadius, RoundedImageView::Alignment::kCenter));
     image->SetPreferredSize(kDragImageItemScreenCaptureViewPreferredSize);
-    image->SetImage(item->image().GetImageSkia(image->GetPreferredSize()));
+    image->SetImage(item->image().GetImageSkia(image->GetPreferredSize(),
+                                               /*dark_background=*/false));
   }
 };
 

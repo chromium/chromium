@@ -54,11 +54,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // Returns the underlying `gfx::ImageSkia`. If `size` is omitted, the
   // `max_size_` passed in the constructor is used. If `size` is present, it
   // must be less than or equal to the `max_size_` passed in the constructor in
-  // order to prevent pixelation that would otherwise occur due to upscaling.
-  // Note that the image source may be dynamically updated, so UI classes should
-  // observe and react to updates.
+  // order to prevent pixelation that would otherwise occur due to upscaling. If
+  // `dark_background` is `true`, file type icons will use lighter foreground
+  // colors to ensure sufficient contrast. Note that the image source may be
+  // dynamically updated, so UI classes should observe and react to updates.
   gfx::ImageSkia GetImageSkia(
-      const base::Optional<gfx::Size>& size = base::nullopt) const;
+      const base::Optional<gfx::Size>& size = base::nullopt,
+      bool dark_background = false) const;
 
   // Creates new image skia for the item, and thus invalidates currently loaded
   // representation. When the image is requested next time, the image

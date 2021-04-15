@@ -1000,8 +1000,6 @@ component("ash") {
     "system/gesture_education/gesture_education_notification_controller.h",
     "system/holding_space/downloads_section.cc",
     "system/holding_space/downloads_section.h",
-    "system/holding_space/holding_space_color_provider_impl.cc",
-    "system/holding_space/holding_space_color_provider_impl.h",
     "system/holding_space/holding_space_drag_util.cc",
     "system/holding_space/holding_space_drag_util.h",
     "system/holding_space/holding_space_item_chip_view.cc",

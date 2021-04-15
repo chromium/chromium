@@ -4,7 +4,6 @@
 
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
 
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -95,8 +94,21 @@ void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
 
 void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
+
   pin()->SetBackground(holding_space_util::CreateCircleBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
+
+  if (!play_icon_)
+    return;
+
+  play_icon_->SetBackground(holding_space_util::CreateCircleBackground(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
+  play_icon_->SetImage(gfx::CreateVectorIcon(
+      vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor)));
 }
 
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
@@ -116,16 +128,10 @@ void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* play_icon =
+  play_icon_ =
       play_icon_container->AddChildView(std::make_unique<views::ImageView>());
-  play_icon->SetID(kHoldingSpaceScreenCapturePlayIconId);
-  play_icon->SetBackground(holding_space_util::CreateCircleBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
-  play_icon->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor)));
-  play_icon->SetPreferredSize(kPlayIconSize);
+  play_icon_->SetID(kHoldingSpaceScreenCapturePlayIconId);
+  play_icon_->SetPreferredSize(kPlayIconSize);
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)

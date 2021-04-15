@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
@@ -17,9 +16,7 @@ HoldingSpaceController* g_instance = nullptr;
 
 }  // namespace
 
-HoldingSpaceController::HoldingSpaceController(
-    std::unique_ptr<HoldingSpaceColorProvider> color_provider)
-    : color_provider_(std::move(color_provider)) {
+HoldingSpaceController::HoldingSpaceController() {
   CHECK(!g_instance);
   g_instance = this;
 

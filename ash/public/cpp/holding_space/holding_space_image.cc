@@ -8,7 +8,6 @@
 #include <map>
 
 #include "ash/public/cpp/file_icon_util.h"
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -56,18 +55,12 @@ gfx::ImageSkia CreateEmptyImageSkia(const gfx::Size& size) {
 // Creates an image to represent the file type of the specified `file_path`.
 gfx::ImageSkia CreateFileTypeImageSkia(const base::FilePath& file_path,
                                        bool is_folder,
-                                       const gfx::Size& size) {
-  gfx::ImageSkia file_type_icon;
-  if (is_folder) {
-    file_type_icon =
-        GetIconFromType(IconType::kFolder,
-                        /*dark_background=*/HoldingSpaceColorProvider::Get()
-                            ->IsDarkModeEnabled());
-  } else {
-    file_type_icon = GetIconForPath(
-        file_path, /*dark_background=*/HoldingSpaceColorProvider::Get()
-                       ->IsDarkModeEnabled());
-  }
+                                       const gfx::Size& size,
+                                       bool dark_background) {
+  const gfx::ImageSkia file_type_icon =
+      is_folder ? GetIconFromType(IconType::kFolder, dark_background)
+                : GetIconForPath(file_path, dark_background);
+
   // Superimpose the `file_type_icon` over an empty image in order to center it
   // within the image at a fixed size.
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
@@ -201,7 +194,8 @@ void HoldingSpaceImage::OnBitmapLoaded(const base::FilePath& file_path,
 }
 
 gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
-    const base::Optional<gfx::Size>& opt_size) const {
+    const base::Optional<gfx::Size>& opt_size,
+    bool dark_background) const {
   const gfx::Size size = opt_size.value_or(max_size_);
 
   // Requested `size` must be less than or equal to `max_size_` to avoid
@@ -219,7 +213,8 @@ gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
       async_bitmap_resolver_error_ != base::File::FILE_OK) {
     const bool is_folder =
         async_bitmap_resolver_error_ == base::File::FILE_ERROR_NOT_A_FILE;
-    return CreateFileTypeImageSkia(backing_file_path_, is_folder, size);
+    return CreateFileTypeImageSkia(backing_file_path_, is_folder, size,
+                                   dark_background);
   }
 
   // Short-circuit resizing logic.
