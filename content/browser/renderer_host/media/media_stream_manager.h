@@ -50,6 +50,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/permission_controller.h"
 #include "media/base/video_facing.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
@@ -557,19 +558,20 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Store the subscription ids on a DeviceRequest in order to allow
   // unsubscribing when the request is deleted.
-  void SetPermissionSubscriptionIDs(const std::string& label,
-                                    int requesting_process_id,
-                                    int requesting_frame_id,
-                                    int audio_subscription_id,
-                                    int video_subscription_id);
+  void SetPermissionSubscriptionIDs(
+      const std::string& label,
+      int requesting_process_id,
+      int requesting_frame_id,
+      PermissionController::SubscriptionId audio_subscription_id,
+      PermissionController::SubscriptionId video_subscription_id);
 
   // Unsubscribe from following permission updates for the two specified
   // subscription IDs. Called when a request is deleted.
   static void UnsubscribeFromPermissionControllerOnUIThread(
       int requesting_process_id,
       int requesting_frame_id,
-      int audio_subscription_id,
-      int video_subscription_id);
+      PermissionController::SubscriptionId audio_subscription_id,
+      PermissionController::SubscriptionId video_subscription_id);
 
   // Callback that the PermissionController calls when a permission is updated.
   void PermissionChangedCallback(int requesting_process_id,

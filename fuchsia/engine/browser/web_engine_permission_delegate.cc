@@ -83,20 +83,21 @@ WebEnginePermissionDelegate::GetPermissionStatusForFrame(
       permission, url::Origin::Create(requesting_origin));
 }
 
-int WebEnginePermissionDelegate::SubscribePermissionStatusChange(
+WebEnginePermissionDelegate::SubscriptionId
+WebEnginePermissionDelegate::SubscribePermissionStatusChange(
     content::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
   // TODO(crbug.com/1063094): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
-  NOTIMPLEMENTED() << ": " << static_cast<int>(permission);
-  return content::PermissionController::kNoPendingOperation;
+  NOTIMPLEMENTED_LOG_ONCE() << ": " << static_cast<int>(permission);
+  return SubscriptionId();
 }
 
 void WebEnginePermissionDelegate::UnsubscribePermissionStatusChange(
-    int subscription_id) {
+    SubscriptionId subscription_id) {
   // TODO(crbug.com/1063094): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.
-  NOTREACHED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }

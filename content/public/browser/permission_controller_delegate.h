@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
+#include "base/util/type_safety/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -18,6 +19,10 @@ class RenderFrameHost;
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
   using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
+
+  // Identifier for an active subscription.
+  using SubscriptionId = util::IdType64<PermissionControllerDelegate>;
+
   virtual ~PermissionControllerDelegate() = default;
 
   // Requests a permission on behalf of a frame identified by
@@ -80,21 +85,21 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Runs the given |callback| whenever the |permission| associated with the
   // given RenderFrameHost changes. A nullptr should be passed if the request
-  // is from a worker. Returns the subscription_id to be used to unsubscribe.
-  // Can be kNoPendingOperation if the subscribe was not successful.
-  virtual int SubscribePermissionStatusChange(
+  // is from a worker. Returns the ID to be used to unsubscribe, which can be
+  // `is_null()` if the subscribe was not successful.
+  virtual SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)>
           callback) = 0;
 
-  // Unregisters from permission status change notifications.
-  // The |subscription_id| must match the value returned by the
-  // SubscribePermissionStatusChange call. Unsubscribing
-  // an already unsubscribed |subscription_id| or providing the
-  // |subscription_id| kNoPendingOperation is a no-op.
-  virtual void UnsubscribePermissionStatusChange(int subscription_id) = 0;
+  // Unregisters from permission status change notifications. The
+  // |subscription_id| must match the value returned by the
+  // SubscribePermissionStatusChange call. Unsubscribing an already
+  // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
+  virtual void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) = 0;
 
   // Manually overrides default permission settings of delegate, if overrides
   // are tracked by the delegate. This method should only be called by the
@@ -115,5 +120,18 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 };
 
 }  // namespace content
+
+namespace std {
+
+template <>
+struct hash<content::PermissionControllerDelegate::SubscriptionId> {
+  std::size_t operator()(
+      const content::PermissionControllerDelegate::SubscriptionId& v) const {
+    content::PermissionControllerDelegate::SubscriptionId::Hasher hasher;
+    return hasher(v);
+  }
+};
+
+}  // namespace std
 
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_

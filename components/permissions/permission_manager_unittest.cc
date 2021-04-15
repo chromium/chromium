@@ -325,7 +325,7 @@ TEST_F(PermissionManagerTest, SubscriptionDestroyedCleanlyWithoutUnsubscribe) {
 }
 
 TEST_F(PermissionManagerTest, SubscribeUnsubscribeAfterShutdown) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -340,7 +340,7 @@ TEST_F(PermissionManagerTest, SubscribeUnsubscribeAfterShutdown) {
       subscription_id);
 
   // Check that subscribe/unsubscribe after shutdown don't crash.
-  int subscription2_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription2_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -351,7 +351,7 @@ TEST_F(PermissionManagerTest, SubscribeUnsubscribeAfterShutdown) {
 }
 
 TEST_F(PermissionManagerTest, SameTypeChangeNotifies) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -369,7 +369,7 @@ TEST_F(PermissionManagerTest, SameTypeChangeNotifies) {
 }
 
 TEST_F(PermissionManagerTest, DifferentTypeChangeDoesNotNotify) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -386,7 +386,7 @@ TEST_F(PermissionManagerTest, DifferentTypeChangeDoesNotNotify) {
 }
 
 TEST_F(PermissionManagerTest, ChangeAfterUnsubscribeDoesNotNotify) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -403,7 +403,7 @@ TEST_F(PermissionManagerTest, ChangeAfterUnsubscribeDoesNotNotify) {
 }
 
 TEST_F(PermissionManagerTest, DifferentPrimaryUrlDoesNotNotify) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -420,7 +420,7 @@ TEST_F(PermissionManagerTest, DifferentPrimaryUrlDoesNotNotify) {
 }
 
 TEST_F(PermissionManagerTest, DifferentSecondaryUrlDoesNotNotify) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -437,7 +437,7 @@ TEST_F(PermissionManagerTest, DifferentSecondaryUrlDoesNotNotify) {
 }
 
 TEST_F(PermissionManagerTest, WildCardPatternNotifies) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -458,7 +458,7 @@ TEST_F(PermissionManagerTest, ClearSettingsNotifies) {
       url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
       CONTENT_SETTING_ALLOW);
 
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -475,7 +475,7 @@ TEST_F(PermissionManagerTest, ClearSettingsNotifies) {
 }
 
 TEST_F(PermissionManagerTest, NewValueCorrectlyPassed) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -497,7 +497,7 @@ TEST_F(PermissionManagerTest, ChangeWithoutPermissionChangeDoesNotNotify) {
       url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
       CONTENT_SETTING_ALLOW);
 
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -518,7 +518,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForth) {
       url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
       CONTENT_SETTING_ASK);
 
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -549,7 +549,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForthWorker) {
       url(), url(), ContentSettingsType::GEOLOCATION, std::string(),
       CONTENT_SETTING_ASK);
 
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, nullptr, url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -576,7 +576,7 @@ TEST_F(PermissionManagerTest, ChangesBackAndForthWorker) {
 }
 
 TEST_F(PermissionManagerTest, SubscribeMIDIPermission) {
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::MIDI, main_rfh(), url(),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
@@ -790,7 +790,7 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   content::RenderFrameHost* parent = main_rfh();
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
-  int subscription_id =
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
       GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
           PermissionType::GEOLOCATION, child, GURL(kOrigin2),
           base::Bind(&PermissionManagerTest::OnPermissionChange,
