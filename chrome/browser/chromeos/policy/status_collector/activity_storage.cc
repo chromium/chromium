@@ -262,14 +262,13 @@ void ActivityStorage::ForEachActivityPeriodFromPref(
                    << "'";
       continue;
     }
-    int duration;
-    if (!item.second.GetAsInteger(&duration)) {
+    if (!item.second.is_int()) {
       LOG(WARNING) << "Cannot parse recorded activity duration: '"
                    << item.second << "'";
       continue;
     }
-    if (duration > 0) {
-      f.Run(timestamp, timestamp + duration, activity_id);
+    if (item.second.GetInt() > 0) {
+      f.Run(timestamp, timestamp + item.second.GetInt(), activity_id);
     }
   }
 }
