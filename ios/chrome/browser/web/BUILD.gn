@@ -184,7 +184,6 @@ js_compile_bundle("chrome_bundle_all_frames") {
 js_compile_bundle("chrome_bundle_main_frame") {
   closure_entry_point = "__crWeb.chromeBundleMainFrame"
   sources = [
-    "//components/password_manager/ios/resources/password_controller.js",
     "//components/translate/ios/browser/resources/language_detection.js",
     "//ios/chrome/browser/link_to_text/resources/link_to_text.js",
     "//ios/chrome/browser/search_engines/resources/search_engine.js",
@@ -224,6 +223,7 @@ source_set("web_internal") {
     "//components/google/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/common",
+    "//components/password_manager/ios",
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",

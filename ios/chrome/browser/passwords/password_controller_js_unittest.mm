@@ -6,10 +6,11 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/password_manager/ios/js_password_manager.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/web_state.h"
@@ -66,7 +67,21 @@ class PasswordControllerJsTest : public web::WebJsTest<ChromeWebTest> {
   // Finds all password forms in the window and returns for data as a JSON
   // string.
   NSString* FindPasswordForms() {
-    return ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();");
+    // Run password forms search to set up unique IDs.
+    __block bool complete = false;
+    __block NSString* result = nil;
+    password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+        ->FindPasswordFormsInFrame(web::GetMainFrame(web_state()),
+                                   base::BindOnce(^(NSString* forms) {
+                                     result = forms;
+                                     complete = true;
+                                   }));
+
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return complete;
+    }));
+
+    return result;
   }
 };
 

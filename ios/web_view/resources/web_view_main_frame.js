@@ -7,6 +7,3 @@
 goog.provide('__crWeb.webViewMainFrame');
 
 goog.require('__crWeb.languageDetection');
-// password_controller.js requires migration into new js injection API before
-// this line can be moved into web_view_all_frames.js.
-goog.require('__crWeb.passwords');

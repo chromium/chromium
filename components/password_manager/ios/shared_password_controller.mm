@@ -37,7 +37,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
-#import "components/password_manager/ios/js_password_manager.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/web/common/url_scheme_util.h"
@@ -77,7 +76,6 @@ using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
-using password_manager::SerializePasswordFormFillData;
 
 namespace {
 
@@ -226,9 +224,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  if (webState->ContentIsHTML()) {
-    [self findPasswordFormsAndSendThemToPasswordStore];
-  } else {
+  if (!webState->ContentIsHTML()) {
     // If the current page is not HTML, it does not contain any HTML forms.
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
@@ -251,6 +247,10 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       uniqueIDDataTabHelper->GetNextAvailableRendererID();
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
                                              inFrame:web_frame];
+  // Form parsing is run via the main frame for all same origin iframes.
+  if (web_frame->IsMainFrame() && webState->ContentIsHTML()) {
+    [self findPasswordFormsAndSendThemToPasswordStore];
+  }
 }
 
 // Track detaching iframes.

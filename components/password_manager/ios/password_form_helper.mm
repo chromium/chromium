@@ -18,8 +18,8 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
-#include "components/password_manager/ios/js_password_manager.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -38,7 +38,6 @@ using base::UTF16ToUTF8;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
 using password_manager::JsonStringToFormData;
-using password_manager::SerializePasswordFormFillData;
 
 namespace password_manager {
 bool GetPageURLAndCheckTrustLevel(web::WebState* web_state,
@@ -72,14 +71,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
 @end
 
-// Category for test only.
-@interface PasswordFormHelper (Testing)
-
-// Replaces JsPasswordManager for test.
-- (void)setJsPasswordManager:(JsPasswordManager*)jsPasswordManager;
-
-@end
-
 @implementation PasswordFormHelper {
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
@@ -98,7 +89,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
 #pragma mark - Properties
 
-@synthesize jsPasswordManager = _jsPasswordManager;
 @synthesize fieldDataManager = _fieldDataManager;
 
 - (const GURL&)lastCommittedURL {
@@ -117,7 +107,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
     _webState->AddObserver(_webStateObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
-    _jsPasswordManager = [[JsPasswordManager alloc] init];
 
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
@@ -254,17 +243,16 @@ constexpr char kCommandPrefix[] = "passwordForm";
   }
 }
 
-#pragma mark - Private methods for test only
-
-- (void)setJsPasswordManager:(JsPasswordManager*)jsPasswordManager {
-  _jsPasswordManager = jsPasswordManager;
-}
-
 #pragma mark - Public methods
 
 - (void)findPasswordFormsWithCompletionHandler:
     (void (^)(const std::vector<FormData>&, uint32_t))completionHandler {
   if (!_webState) {
+    return;
+  }
+
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState);
+  if (!mainFrame) {
     return;
   }
 
@@ -274,31 +262,36 @@ constexpr char kCommandPrefix[] = "passwordForm";
   }
 
   __weak PasswordFormHelper* weakSelf = self;
-  [self.jsPasswordManager
-      findPasswordFormsInFrame:GetMainFrame(_webState)
-             completionHandler:^(NSString* JSONString) {
-               std::vector<FormData> forms;
-               [weakSelf getPasswordForms:&forms
-                                 fromJSON:JSONString
-                                  pageURL:pageURL];
-               // Find the maximum extracted value.
-               uint32_t maxID = 0;
-               for (const auto& form : forms) {
-                 if (form.unique_renderer_id) {
-                   maxID = std::max(maxID, form.unique_renderer_id.value());
-                 }
-                 for (const auto& field : form.fields) {
-                   if (field.unique_renderer_id) {
-                     maxID = std::max(maxID, field.unique_renderer_id.value());
-                   }
-                 }
-               }
-               completionHandler(forms, maxID);
-             }];
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->FindPasswordFormsInFrame(
+          mainFrame, base::BindOnce(^(NSString* JSONString) {
+            std::vector<FormData> forms;
+            [weakSelf getPasswordForms:&forms
+                              fromJSON:JSONString
+                               pageURL:pageURL];
+            // Find the maximum extracted value.
+            uint32_t maxID = 0;
+            for (const auto& form : forms) {
+              if (form.unique_renderer_id) {
+                maxID = std::max(maxID, form.unique_renderer_id.value());
+              }
+              for (const auto& field : form.fields) {
+                if (field.unique_renderer_id) {
+                  maxID = std::max(maxID, field.unique_renderer_id.value());
+                }
+              }
+            }
+            completionHandler(forms, maxID);
+          }));
 }
 
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
        completionHandler:(nullable void (^)(BOOL))completionHandler {
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState);
+  if (!mainFrame) {
+    return;
+  }
+
   // Necessary copy so the values can be used inside a block.
   FieldRendererId usernameID = formData.username_field.unique_renderer_id;
   FieldRendererId passwordID = formData.password_field.unique_renderer_id;
@@ -321,24 +314,22 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
   // Send JSON over to the web view.
   __weak PasswordFormHelper* weakSelf = self;
-  [self.jsPasswordManager
-       fillPasswordForm:SerializePasswordFormFillData(formData)
-                inFrame:GetMainFrame(_webState)
-           withUsername:UTF16ToUTF8(usernameValue)
-               password:UTF16ToUTF8(passwordValue)
-      completionHandler:^(BOOL success) {
-        if (success) {
-          weakSelf.fieldDataManager->UpdateFieldDataMap(
-              usernameID, usernameValue,
-              FieldPropertiesFlags::kAutofilledOnPageLoad);
-          weakSelf.fieldDataManager->UpdateFieldDataMap(
-              passwordID, passwordValue,
-              FieldPropertiesFlags::kAutofilledOnPageLoad);
-        }
-        if (completionHandler) {
-          completionHandler(success);
-        }
-      }];
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->FillPasswordForm(mainFrame, formData, UTF16ToUTF8(usernameValue),
+                         UTF16ToUTF8(passwordValue),
+                         base::BindOnce(^(BOOL success) {
+                           if (success) {
+                             weakSelf.fieldDataManager->UpdateFieldDataMap(
+                                 usernameID, usernameValue,
+                                 FieldPropertiesFlags::kAutofilledOnPageLoad);
+                             weakSelf.fieldDataManager->UpdateFieldDataMap(
+                                 passwordID, passwordValue,
+                                 FieldPropertiesFlags::kAutofilledOnPageLoad);
+                           }
+                           if (completionHandler) {
+                             completionHandler(success);
+                           }
+                         }));
 }
 
 - (void)fillPasswordForm:(FormRendererId)formIdentifier
@@ -346,15 +337,19 @@ constexpr char kCommandPrefix[] = "passwordForm";
     confirmPasswordIdentifier:(FieldRendererId)confirmPasswordIdentifier
             generatedPassword:(NSString*)generatedPassword
             completionHandler:(nullable void (^)(BOOL))completionHandler {
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState);
+  if (!mainFrame) {
+    return;
+  }
+
   // Send JSON over to the web view.
   __weak PasswordFormHelper* weakSelf = self;
-  [self.jsPasswordManager
-               fillPasswordForm:formIdentifier
-                        inFrame:GetMainFrame(_webState)
-          newPasswordIdentifier:newPasswordIdentifier
-      confirmPasswordIdentifier:confirmPasswordIdentifier
-              generatedPassword:generatedPassword
-              completionHandler:^(BOOL success) {
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->FillPasswordForm(
+          mainFrame, formIdentifier, newPasswordIdentifier,
+          confirmPasswordIdentifier, generatedPassword,
+          base::BindOnce(
+              ^(BOOL success) {
                 if (success) {
                   weakSelf.fieldDataManager->UpdateFieldDataMap(
                       newPasswordIdentifier,
@@ -368,13 +363,18 @@ constexpr char kCommandPrefix[] = "passwordForm";
                 if (completionHandler) {
                   completionHandler(success);
                 }
-              }];
+              }));
 }
 
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
                     triggeredOnField:(FieldRendererId)uniqueFieldID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState);
+  if (!mainFrame) {
+    return;
+  }
+
   // Necessary copy so the values can be used inside a block.
   FieldRendererId usernameID = fillData.username_element_id;
   FieldRendererId passwordID = fillData.password_element_id;
@@ -386,24 +386,22 @@ constexpr char kCommandPrefix[] = "passwordForm";
   BOOL fillUsername = uniqueFieldID == usernameID ||
                       !_fieldDataManager->DidUserType(usernameID);
   __weak PasswordFormHelper* weakSelf = self;
-  [self.jsPasswordManager
-       fillPasswordForm:SerializeFillData(fillData, fillUsername)
-                inFrame:GetMainFrame(_webState)
-           withUsername:UTF16ToUTF8(usernameValue)
-               password:UTF16ToUTF8(passwordValue)
-      completionHandler:^(BOOL success) {
-        if (success) {
-          weakSelf.fieldDataManager->UpdateFieldDataMap(
-              usernameID, usernameValue,
-              FieldPropertiesFlags::kAutofilledOnUserTrigger);
-          weakSelf.fieldDataManager->UpdateFieldDataMap(
-              passwordID, passwordValue,
-              FieldPropertiesFlags::kAutofilledOnUserTrigger);
-        }
-        if (completionHandler) {
-          completionHandler(success);
-        }
-      }];
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->FillPasswordForm(
+          mainFrame, fillData, fillUsername, UTF16ToUTF8(usernameValue),
+          UTF16ToUTF8(passwordValue), base::BindOnce(^(BOOL success) {
+            if (success) {
+              weakSelf.fieldDataManager->UpdateFieldDataMap(
+                  usernameID, usernameValue,
+                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
+              weakSelf.fieldDataManager->UpdateFieldDataMap(
+                  passwordID, passwordValue,
+                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
+            }
+            if (completionHandler) {
+              completionHandler(success);
+            }
+          }));
 }
 
 // Finds the password form named |formName| and calls
@@ -418,25 +416,28 @@ constexpr char kCommandPrefix[] = "passwordForm";
     return;
   }
 
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState);
+  if (!mainFrame) {
+    return;
+  }
+
   GURL pageURL;
   if (!GetPageURLAndCheckTrustLevel(_webState, &pageURL)) {
     completionHandler(NO, FormData());
     return;
   }
 
-  id extractFormDataCompletionHandler = ^(NSString* jsonString) {
-    FormData formData;
-    if (!JsonStringToFormData(jsonString, &formData, pageURL)) {
-      completionHandler(NO, FormData());
-      return;
-    }
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->ExtractForm(
+          mainFrame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
+            FormData formData;
+            if (!JsonStringToFormData(jsonString, &formData, pageURL)) {
+              completionHandler(NO, FormData());
+              return;
+            }
 
-    completionHandler(YES, formData);
-  };
-
-  [self.jsPasswordManager extractForm:formIdentifier
-                              inFrame:GetMainFrame(_webState)
-                    completionHandler:extractFormDataCompletionHandler];
+            completionHandler(YES, formData);
+          }));
 }
 
 - (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID

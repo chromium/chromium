@@ -6,7 +6,6 @@
 goog.provide('__crWeb.chromeBundleMainFrame');
 
 goog.require('__crWeb.imageFetch');
-goog.require('__crWeb.passwords');
 goog.require('__crWeb.searchEngine');
 goog.require('__crWeb.languageDetection');
 goog.require('__crWeb.linkToText');

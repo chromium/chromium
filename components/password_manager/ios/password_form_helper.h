@@ -15,7 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class JsPasswordManager;
 @class PasswordFormHelper;
 
 namespace autofill {
@@ -50,9 +49,6 @@ class WebState;
 // SharedPasswordController.
 @interface PasswordFormHelper
     : NSObject<FormActivityObserver, CRWWebStateObserver>
-
-// The JsPasswordManager processing password form via javascript.
-@property(nonatomic, readonly) JsPasswordManager* jsPasswordManager;
 
 // Last committed URL of current web state.
 // Returns empty URL if current web state is not available.

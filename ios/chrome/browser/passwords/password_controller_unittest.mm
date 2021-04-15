@@ -32,8 +32,8 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/password_manager/ios/js_password_manager.h"
 #import "components/password_manager/ios/password_form_helper.h"
+#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/password_manager/ios/test_helpers.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -197,18 +197,8 @@ ACTION(InvokeEmptyConsumerWithForms) {
 
 @interface PasswordFormHelper (Testing)
 
-// Provides access to JavaScript Manager for testing with mocks.
-@property(nonatomic) JsPasswordManager* jsPasswordManager;
-
 - (void)findPasswordFormsWithCompletionHandler:
     (void (^)(const std::vector<PasswordForm>&))completionHandler;
-
-@end
-
-@interface JsPasswordManager (Testing)
-
-// Provides access to JavaScript Manager for testing with mocks.
-@property BOOL noFormsSeen;
 
 @end
 
@@ -226,42 +216,6 @@ ACTION(InvokeEmptyConsumerWithForms) {
 
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
   self.suggestions = suggestions;
-}
-
-@end
-
-// Fake JsPasswordManager that can be set to fail at filling to check
-// that the fail is handled correctly.
-@interface FakeJsPasswordManager : JsPasswordManager
-
-- (void)findPasswordFormsInFrame:(web::WebFrame*)frame
-               completionHandler:(void (^)(NSString*))completionHandler;
-
-@property BOOL noFormsSeen;
-
-- (instancetype)init;
-
-@end
-
-@implementation FakeJsPasswordManager
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _noFormsSeen = YES;
-  }
-  return self;
-}
-
-- (void)findPasswordFormsInFrame:(web::WebFrame*)frame
-               completionHandler:(void (^)(NSString*))completionHandler {
-  DCHECK(completionHandler);
-  auto fakeCompletionHandler = ^(NSString* res) {
-    _noFormsSeen = [res isEqualToString:@"[]"] ? YES : NO;
-    completionHandler(res);
-  };
-  [super findPasswordFormsInFrame:frame
-                completionHandler:fakeCompletionHandler];
 }
 
 @end
@@ -459,6 +413,24 @@ class PasswordControllerTest : public ChromeWebTest {
     }));
     ASSERT_TRUE(
         passwordController_.sharedPasswordController.isPasswordGenerated);
+  }
+
+  void LoadHtml(NSString* html) {
+    ChromeWebTest::LoadHtml(html);
+    ASSERT_TRUE(SetUpUniqueIDs());
+  }
+
+  void LoadHtml(NSString* html, const GURL& url) {
+    ChromeWebTest::LoadHtml(html, url);
+    ASSERT_TRUE(SetUpUniqueIDs());
+  }
+
+  bool LoadHtml(const std::string& html) WARN_UNUSED_RESULT {
+    bool result = ChromeWebTest::LoadHtml(html);
+    if (result) {
+      result = SetUpUniqueIDs();
+    }
+    return result;
   }
 
   // SuggestionController for testing.
@@ -692,7 +664,6 @@ struct FillPasswordFormTestData {
 // Tests that filling password forms works correctly.
 TEST_F(PasswordControllerTest, FillPasswordForm) {
   LoadHtml(kHtmlWithMultiplePasswordForms);
-  WaitForFormManagersCreation();
 
   const std::string base_url = BaseUrl();
   // clang-format off
@@ -1320,7 +1291,6 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
 // not sent to the store then the request the the store is sent.
 TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   LoadHtml(kHtmlWithoutPasswordForm);
-  ASSERT_TRUE(SetUpUniqueIDs());
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
   // The standard pattern is to use a __block variable WaitUntilCondition but
@@ -1464,7 +1434,8 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
       EXPECT_CALL(*store_, GetLogins)
           .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms()));
     }
-    LoadHtml(kHtmlWithoutPasswordForm);
+    // Do not call |LoadHtml| which will prematurely configure form ids.
+    ChromeWebTest::LoadHtml(kHtmlWithoutPasswordForm);
     ExecuteJavaScript(kAddFormDynamicallyScript);
 
     SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
@@ -1862,13 +1833,6 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
                      << has_commited << " is_same_document=" << is_same_document
                      << " is_renderer_initiated=" << is_renderer_initiated);
         LoadHtml(SysUTF8ToNSString(kHtml));
-        ASSERT_TRUE(SetUpUniqueIDs());
-
-        auto& form_managers =
-            passwordController_.passwordManager->form_managers();
-        ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
-          return !form_managers.empty();
-        }));
 
         std::string main_frame_id = web::GetMainWebFrameId(web_state());
 
@@ -2174,9 +2138,6 @@ TEST_F(PasswordControllerTest, PasswordMetricsNoSavedCredentials) {
 TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
   base::HistogramTester histogram_tester;
 
-  passwordController_.sharedPasswordController.formHelper.jsPasswordManager =
-      [[FakeJsPasswordManager alloc] init];
-
   PasswordForm form(CreatePasswordForm(BaseUrl().c_str(), "user", "pw"));
   EXPECT_CALL(*store_, GetLogins)
       .WillRepeatedly(WithArg<1>(InvokeConsumer(form)));
@@ -2211,9 +2172,16 @@ TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
        "document.getElementById('submit_button').dispatchEvent(e);");
   LoadHtmlWithRendererInitiatedNavigation(@"<html><body>Success</body></html>");
 
+  password_manager::PasswordManagerJavaScriptFeature* password_feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  __block bool no_forms_seen = false;
+
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
-    return passwordController_.sharedPasswordController.formHelper
-        .jsPasswordManager.noFormsSeen;
+    password_feature->FindPasswordFormsInFrame(
+        web::GetMainFrame(web_state()), base::BindOnce(^(NSString* res) {
+          no_forms_seen = [res isEqualToString:@"[]"] ? true : false;
+        }));
+    return no_forms_seen;
   }));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.FillingAssistance",
@@ -2428,9 +2396,20 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  std::string form_data = base::SysNSStringToUTF8(ExecuteJavaScript([NSString
-      stringWithFormat:@"__gCrWeb.passwords.getPasswordFormDataAsString(%d);",
-                       1]));
+  __block NSString* form_details = nil;
+  __block bool form_details_retreived = false;
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->ExtractForm(GetMainFrame(web_state()), FormRendererId(1),
+                    base::BindOnce(^(NSString* response) {
+                      form_details = response;
+                      form_details_retreived = true;
+                    }));
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return form_details_retreived;
+  }));
+
+  std::string form_data = base::SysNSStringToUTF8(form_details);
 
   // Imitiate the signal from the page resetting the form.
   SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(1),
@@ -2486,8 +2465,20 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormlessFieldsClearing) {
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  std::string form_data = base::SysNSStringToUTF8(
-      ExecuteJavaScript(@"__gCrWeb.passwords.getPasswordFormDataAsString(0);"));
+  __block NSString* form_details = nil;
+  __block bool form_details_retreived = false;
+  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->ExtractForm(GetMainFrame(web_state()), autofill::FormRendererId(0),
+                    base::BindOnce(^(NSString* response) {
+                      form_details = response;
+                      form_details_retreived = true;
+                    }));
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return form_details_retreived;
+  }));
+
+  std::string form_data = base::SysNSStringToUTF8(form_details);
 
   // Imitiate the signal from the page resetting the form.
   SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(),

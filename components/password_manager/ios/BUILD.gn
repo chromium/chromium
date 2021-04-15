@@ -11,6 +11,7 @@ component("ios") {
   ]
 
   deps = [
+    ":password_controller_js",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -31,8 +32,6 @@ component("ios") {
   sources = [
     "account_select_fill_data.cc",
     "account_select_fill_data.h",
-    "js_password_manager.h",
-    "js_password_manager.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",
@@ -40,11 +39,18 @@ component("ios") {
     "password_manager_driver_bridge.h",
     "password_manager_ios_util.h",
     "password_manager_ios_util.mm",
+    "password_manager_java_script_feature.h",
+    "password_manager_java_script_feature.mm",
     "password_suggestion_helper.h",
     "password_suggestion_helper.mm",
     "shared_password_controller.h",
     "shared_password_controller.mm",
   ]
+}
+
+js_compile_bundle("password_controller_js") {
+  closure_entry_point = "__crWeb.passwords"
+  sources = [ "resources/password_controller.js" ]
 }
 
 static_library("test_support") {
@@ -72,7 +78,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":ios",
-    ":test_bundle",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -87,14 +92,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
-  ]
-}
-
-js_compile_bundle("test_bundle") {
-  closure_entry_point = "__crWeb.testBundle"
-  testonly = true
-  sources = [
-    "resources/password_controller.js",
-    "resources/test_bundle.js",
   ]
 }

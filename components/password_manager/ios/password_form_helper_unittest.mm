@@ -16,11 +16,14 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
+#include "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "components/password_manager/ios/test_helpers.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -43,40 +46,16 @@ using test_helpers::SetFillData;
 using test_helpers::SetFormData;
 
 namespace {
-// Returns a string containing the JavaScript loaded from a
-// bundled resource file with the given name (excluding extension).
-NSString* GetPageScript(NSString* script_file_name) {
-  EXPECT_NE(nil, script_file_name);
-  NSString* path =
-      [base::mac::FrameworkBundle() pathForResource:script_file_name
-                                             ofType:@"js"];
-  EXPECT_NE(nil, path);
-  NSError* error = nil;
-  NSString* content = [NSString stringWithContentsOfFile:path
-                                                encoding:NSUTF8StringEncoding
-                                                   error:&error];
-  EXPECT_EQ(nil, error);
-  EXPECT_NE(nil, content);
-  return content;
-}
-
-class FakeWebClientWithScript : public web::FakeWebClient {
- public:
-  NSString* GetDocumentStartScriptForMainFrame(
-      web::BrowserState* browser_state) const override {
-    return GetPageScript(@"test_bundle");
-  }
-
-  std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
-      web::BrowserState* browser_state) const override {
-    return {autofill::FormUtilJavaScriptFeature::GetInstance()};
-  }
-};
-
 class PasswordFormHelperTest : public web::WebTestWithWebState {
  public:
   PasswordFormHelperTest()
-      : web::WebTestWithWebState(std::make_unique<FakeWebClientWithScript>()) {}
+      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(GetWebClient());
+    web_client->SetJavaScriptFeatures(
+        {autofill::FormUtilJavaScriptFeature::GetInstance(),
+         password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
+  }
 
   ~PasswordFormHelperTest() override = default;
 
@@ -110,9 +89,24 @@ class PasswordFormHelperTest : public web::WebTestWithWebState {
         ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
     // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
-    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
                  intValue] == int{next_available_id};
+    });
+    if (!success) {
+      return false;
+    }
+
+    // Run password forms search to set up unique IDs.
+    __block bool complete = false;
+    password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+        ->FindPasswordFormsInFrame(web::GetMainFrame(web_state()),
+                                   base::BindOnce(^(NSString* forms) {
+                                     complete = true;
+                                   }));
+
+    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      return complete;
     });
   }
 
@@ -254,9 +248,6 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
        "<input id='p1' type='password' name='pw1'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
-
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
   const std::string base_url = BaseUrl();
   FieldRendererId username_field_id(2);
   FieldRendererId password_field_id(3);
@@ -286,9 +277,6 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
        "<input id='p1' type='password' name='pw1'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
-
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
 
   PasswordFormFillData form_data;
   SetPasswordFormFillData(BaseUrl(), "gChrome~form~0", 1, "u1", 2,
@@ -324,8 +312,6 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
 
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
   __block int call_counter = 0;
   __block int success_counter = 0;
   __block FormData result = FormData();
@@ -368,9 +354,6 @@ TEST_F(PasswordFormHelperTest, RefillFormFilledOnUserTrigger) {
             "<input id='p1' type='password' name='pw1'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
-
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
 
   // Fill the form on user trigger.
   const std::string base_url = BaseUrl();
@@ -416,9 +399,6 @@ TEST_F(PasswordFormHelperTest, RefillFormWithUserTypedInput) {
             "<input id='p1' type='password' name='pw1'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
-
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
 
   ExecuteJavaScript(
       @"document.getElementById('u1').value = 'john.doe@gmail.com';");
@@ -467,9 +447,6 @@ TEST_F(PasswordFormHelperTest, FillPasswordIntoFormWithUserTypedUsername) {
             "<input id='p1' type='password' name='pw1'></form>");
 
   ASSERT_TRUE(SetUpUniqueIDs());
-
-  // Run password forms search to set up unique IDs.
-  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
 
   FieldRendererId username_field_id(2);
   FieldRendererId password_field_id(3);

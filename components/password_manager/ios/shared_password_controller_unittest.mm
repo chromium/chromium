@@ -162,6 +162,12 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
 
   OCMExpect([suggestion_helper_ resetForNewPage]);
 
+  auto web_frame = web::FakeWebFrame::Create("dummy-frame-id",
+                                             /*is_main_frame=*/true, GURL());
+  [[[form_helper_ expect] ignoringNonObjectArgs]
+      setUpForUniqueIDsWithInitialState:1
+                                inFrame:web_frame.get()];
+
   id mock_completion_handler =
       [OCMArg checkWithBlock:^(void (^completionHandler)(
           const std::vector<autofill::FormData>& forms, uint32_t maxID)) {
@@ -174,7 +180,9 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
       }];
   OCMExpect([form_helper_
       findPasswordFormsWithCompletionHandler:mock_completion_handler]);
+
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  web_state_.OnWebFrameDidBecomeAvailable(web_frame.get());
 
   [suggestion_helper_ verify];
   [form_helper_ verify];
@@ -198,12 +206,12 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
 
 // Tests that new frames will trigger PasswordFormHelper to set up unique IDs.
 TEST_F(SharedPasswordControllerTest, FormHelperSetsUpUniqueIDsForNewFrame) {
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:static_cast<web::WebFrame*>(
-                                            [OCMArg anyPointer])];
   auto web_frame = web::FakeWebFrame::Create("dummy-frame-id",
                                              /*is_main_frame=*/true, GURL());
+  [[[form_helper_ expect] ignoringNonObjectArgs]
+      setUpForUniqueIDsWithInitialState:1
+                                inFrame:web_frame.get()];
+  OCMExpect([form_helper_ findPasswordFormsWithCompletionHandler:[OCMArg any]]);
   web_state_.OnWebFrameDidBecomeAvailable(web_frame.get());
 }
 
