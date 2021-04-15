@@ -868,7 +868,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   // skirmishes (on Windows, in particular). Allocate before locking below,
   // otherwise when PartitionAlloc is malloc() we get reentrancy issues. This
   // inflates reported values a bit for detailed dumps though, by 16kiB.
-  std::unique_ptr<uint32_t[]> direct_map_lengths = nullptr;
+  std::unique_ptr<uint32_t[]> direct_map_lengths;
   if (!is_light_dump) {
     direct_map_lengths =
         std::unique_ptr<uint32_t[]>(new uint32_t[kMaxReportableDirectMaps]);

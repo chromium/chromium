@@ -78,7 +78,7 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
   base::ScopedObservation<aura::client::FocusClient,
                           aura::client::FocusChangeObserver>
       root_focus_observer_;
-  std::unique_ptr<WindowTracker> focused_ = nullptr;
+  std::unique_ptr<WindowTracker> focused_;
 };
 
 }  // namespace borealis

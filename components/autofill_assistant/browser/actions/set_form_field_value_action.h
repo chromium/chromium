@@ -42,7 +42,7 @@ class SetFormFieldValueAction : public Action {
 
     // The keys to press if either |keycode| or |keyboard_input| is set, else
     // nullptr.
-    std::unique_ptr<std::vector<UChar32>> keyboard_input = nullptr;
+    std::unique_ptr<std::vector<UChar32>> keyboard_input;
     // If the action is about passwords, the field describes whether to use
     // password or username.
     PasswordManagerValue password_manager_value;

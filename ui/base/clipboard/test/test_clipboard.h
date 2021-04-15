@@ -128,7 +128,7 @@ class TestClipboard : public Clipboard {
     std::string html_src_url;
     SkBitmap image;
     std::vector<ui::FileInfo> filenames;
-    std::unique_ptr<DataTransferEndpoint> data_src = nullptr;
+    std::unique_ptr<DataTransferEndpoint> data_src;
   };
 
   // The non-const versions increment the sequence number as a side effect.

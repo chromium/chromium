@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
     base::Optional<dbus::ObjectPath> esim_profile_path;
     base::Optional<dbus::ObjectPath> euicc_path;
     UninstallRequestCallback callback;
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr;
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
   };
 
   void ProcessUninstallRequest();

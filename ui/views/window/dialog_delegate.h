@@ -336,10 +336,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   Params params_;
 
   // The extra view for this dialog, if there is one.
-  std::unique_ptr<View> extra_view_ = nullptr;
+  std::unique_ptr<View> extra_view_;
 
   // The footnote view for this dialog, if there is one.
-  std::unique_ptr<View> footnote_view_ = nullptr;
+  std::unique_ptr<View> footnote_view_;
 
   // Observers for DialogModel changes.
   base::ObserverList<DialogObserver>::Unchecked observer_list_;

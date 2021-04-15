@@ -64,8 +64,8 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
   MockAudibleContentsObserver* observer() const { return observer_.get(); }
 
  private:
-  std::unique_ptr<MockAudibleContentsObserver> observer_ = nullptr;
-  std::unique_ptr<metrics::AudibleContentsTracker> tracker_ = nullptr;
+  std::unique_ptr<MockAudibleContentsObserver> observer_;
+  std::unique_ptr<metrics::AudibleContentsTracker> tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(AudibleContentsTrackerTest);
 };

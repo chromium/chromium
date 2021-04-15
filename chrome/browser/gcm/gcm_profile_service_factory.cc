@@ -136,7 +136,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-  std::unique_ptr<GCMProfileService> service = nullptr;
+  std::unique_ptr<GCMProfileService> service;
 #if defined(OS_ANDROID)
   service = std::make_unique<GCMProfileService>(profile->GetPath(),
                                                 blocking_task_runner);

@@ -114,7 +114,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  protected:
   arc::ArcWallpaperService* service_ = nullptr;
-  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_ = nullptr;
+  std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 

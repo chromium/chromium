@@ -780,7 +780,7 @@ class BASE_EXPORT FieldTrialList {
   // browser and child processes, but readonly in the child.
   // In the future, we may want to move this to a more generic place if we want
   // to start passing more data other than field trials.
-  std::unique_ptr<FieldTrialAllocator> field_trial_allocator_ = nullptr;
+  std::unique_ptr<FieldTrialAllocator> field_trial_allocator_;
 
   // Readonly copy of the region to the allocator. Needs to be a member variable
   // because it's needed from both CopyFieldTrialStateToFlags() and

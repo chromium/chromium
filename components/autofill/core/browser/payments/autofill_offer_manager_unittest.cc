@@ -96,7 +96,7 @@ class AutofillOfferManagerTest : public testing::Test {
   TestAutofillClient autofill_client_;
   scoped_refptr<AutofillWebDataService> database_;
   TestPersonalDataManager personal_data_manager_;
-  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_ = nullptr;
+  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

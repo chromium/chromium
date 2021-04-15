@@ -128,7 +128,7 @@ class EventLogger : public ui::EventRewriter {
     return SendEvent(continuation, &event);
   }
 
-  std::unique_ptr<ui::Event> last_event_ = nullptr;
+  std::unique_ptr<ui::Event> last_event_;
 
   DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };

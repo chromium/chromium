@@ -312,7 +312,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   VideoCaptureDeliverFrameCB frame_validation_callback_;
 
   // For testing we use a nullptr for MediaStreamVideoTrack.
-  std::unique_ptr<MediaStreamVideoTrack> null_track_ = nullptr;
+  std::unique_ptr<MediaStreamVideoTrack> null_track_;
   bool track_added_ = false;
 };
 

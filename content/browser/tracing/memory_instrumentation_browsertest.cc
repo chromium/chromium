@@ -59,7 +59,7 @@ uint64_t GetPrivateFootprintKb(ProcessType type,
 }
 
 std::unique_ptr<GlobalMemoryDump> DoGlobalDump() {
-  std::unique_ptr<GlobalMemoryDump> result = nullptr;
+  std::unique_ptr<GlobalMemoryDump> result;
   base::RunLoop run_loop;
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDump(

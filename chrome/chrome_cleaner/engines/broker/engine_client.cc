@@ -138,7 +138,7 @@ void EngineClient::InitializeReadOnlyCallbacks() {
 }
 
 bool EngineClient::InitializeCleaningCallbacks() {
-  std::unique_ptr<ZipArchiver> archiver = nullptr;
+  std::unique_ptr<ZipArchiver> archiver;
   if (archiver_for_testing_) {
     archiver = std::move(archiver_for_testing_);
   } else {

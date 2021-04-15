@@ -43,13 +43,13 @@ class PolicyDiagnostic final : public PolicyInfo {
   JobLevel job_level_ = JOB_NONE;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
-  std::unique_ptr<Sid> app_container_sid_ = nullptr;
+  std::unique_ptr<Sid> app_container_sid_;
   // Only populated if |app_container_sid_| is present.
   std::vector<Sid> capabilities_;
   // Only populated if |app_container_sid_| is present.
   std::vector<Sid> initial_capabilities_;
   AppContainerType app_container_type_ = AppContainerType::kNone;
-  std::unique_ptr<PolicyGlobal> policy_rules_ = nullptr;
+  std::unique_ptr<PolicyGlobal> policy_rules_;
   bool is_csrss_connected_ = false;
   HandleMap handles_to_close_;
 

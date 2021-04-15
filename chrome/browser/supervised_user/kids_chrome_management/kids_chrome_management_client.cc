@@ -250,7 +250,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Token error: " << error.ToString();
 
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kTokenError);
     return;
@@ -271,7 +271,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
             req->request_proto.get()));
   } else {
     DVLOG(1) << "Could not detect the request proto's class.";
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kServiceError);
     return;
@@ -319,7 +319,7 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
     }
   }
 
-  std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+  std::unique_ptr<google::protobuf::MessageLite> response_proto;
 
   int net_error = simple_url_loader->NetError();
 

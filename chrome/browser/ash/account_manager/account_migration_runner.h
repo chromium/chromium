@@ -134,7 +134,7 @@ class AccountMigrationRunner {
   std::queue<std::unique_ptr<Step>> steps_;
 
   // The current step being executed.
-  std::unique_ptr<Step> current_step_ = nullptr;
+  std::unique_ptr<Step> current_step_;
 
   // Supplied by the caller of |Run| to get the overall result of migration.
   OnMigrationDone callback_;

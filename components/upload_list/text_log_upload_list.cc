@@ -237,7 +237,7 @@ void TextLogUploadList::ParseLogEntries(
   std::vector<std::string>::const_reverse_iterator i;
   for (i = log_entries.rbegin(); i != log_entries.rend(); ++i) {
     const std::string& line = *i;
-    std::unique_ptr<UploadInfo> info = nullptr;
+    std::unique_ptr<UploadInfo> info;
     base::Optional<base::Value> json = base::JSONReader::Read(line);
 
     if (json.has_value() && json->is_dict())

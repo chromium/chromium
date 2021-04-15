@@ -203,7 +203,7 @@ TEST_F(DesktopTaskSwitchMetricRecorderTest,
 TEST_F(DesktopTaskSwitchMetricRecorderTest, ActivateNullWindow) {
   std::unique_ptr<aura::Window> positionable_window =
       CreatePositionableWindow();
-  std::unique_ptr<aura::Window> null_window = nullptr;
+  std::unique_ptr<aura::Window> null_window;
 
   ActiveTaskWindowWithUserInput(positionable_window.get());
   ResetActionCounts();

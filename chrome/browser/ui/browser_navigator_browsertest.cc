@@ -245,7 +245,7 @@ class TestNavigationUIDataObserver : public content::TestNavigationObserver {
     content::TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
   }
 
-  std::unique_ptr<content::NavigationUIData> last_navigation_ui_data_ = nullptr;
+  std::unique_ptr<content::NavigationUIData> last_navigation_ui_data_;
 };
 
 Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,

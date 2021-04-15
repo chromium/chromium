@@ -113,7 +113,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
                           aura::Window* window,
                           const base::Time end_time);
 
-  std::unique_ptr<AppInfoProvider> provider_ = nullptr;
+  std::unique_ptr<AppInfoProvider> provider_;
 
   bool should_report_ = false;
 

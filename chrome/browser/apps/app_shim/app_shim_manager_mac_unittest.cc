@@ -165,7 +165,7 @@ class TestingAppShimManager : public AppShimManager {
  private:
   std::map<base::FilePath, base::OnceCallback<void(Profile*)>>
       load_profile_callbacks_;
-  std::unique_ptr<AppShimHost> host_for_create_ = nullptr;
+  std::unique_ptr<AppShimHost> host_for_create_;
   std::vector<chrome::mojom::ProfileMenuItemPtr> new_profile_menu_items_;
   bool is_acceptably_code_signed_ = true;
 };

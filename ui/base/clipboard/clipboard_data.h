@@ -149,7 +149,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   int format_;
 
   // The source of the data.
-  std::unique_ptr<DataTransferEndpoint> src_ = nullptr;
+  std::unique_ptr<DataTransferEndpoint> src_;
 };
 
 }  // namespace ui

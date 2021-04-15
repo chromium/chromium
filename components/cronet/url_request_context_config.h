@@ -262,7 +262,7 @@ struct URLRequestContextConfigBuilder {
   std::string experimental_options = "{}";
 
   // Certificate verifier for testing.
-  std::unique_ptr<net::CertVerifier> mock_cert_verifier = nullptr;
+  std::unique_ptr<net::CertVerifier> mock_cert_verifier;
 
   // Enable network quality estimator.
   bool enable_network_quality_estimator = false;

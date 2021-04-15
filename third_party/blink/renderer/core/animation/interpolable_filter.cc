@@ -41,7 +41,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
 std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeCreate(
     const FilterOperation& filter,
     double zoom) {
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
     case FilterOperation::GRAYSCALE:
@@ -92,7 +92,7 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeConvertCSSValue(
   const auto& filter = To<CSSFunctionValue>(css_value);
   DCHECK_LE(filter.length(), 1u);
 
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   FilterOperation::OperationType type =
       FilterOperationResolver::FilterOperationForType(filter.FunctionType());
   switch (type) {
@@ -133,7 +133,7 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::CreateInitialValue(
     FilterOperation::OperationType type) {
   // See https://drafts.fxtf.org/filter-effects-1/#filter-functions for the
   // mapping of OperationType to initial value.
-  std::unique_ptr<InterpolableValue> value = nullptr;
+  std::unique_ptr<InterpolableValue> value;
   switch (type) {
     case FilterOperation::GRAYSCALE:
     case FilterOperation::INVERT:

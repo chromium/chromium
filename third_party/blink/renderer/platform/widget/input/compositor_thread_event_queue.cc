@@ -108,7 +108,7 @@ void CompositorThreadEventQueue::Queue(
 
   // Extract the second last event in queue IF it's a scroll or a pinch for the
   // same target.
-  std::unique_ptr<EventWithCallback> second_last_event = nullptr;
+  std::unique_ptr<EventWithCallback> second_last_event;
   if (!queue_.empty() && WebGestureEvent::IsCompatibleScrollorPinch(
                              ToWebGestureEvent(new_event->event()),
                              ToWebGestureEvent(queue_.back()->event()))) {

@@ -283,7 +283,7 @@ CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
   // Add "New Window", if appropriate. It should score highest with no input.
   std::u16string new_window_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
   base::Erase(new_window_title, '&');
-  std::unique_ptr<CommandItem> item = nullptr;
+  std::unique_ptr<CommandItem> item;
   if (input.empty()) {
     item = std::make_unique<CommandItem>(new_window_title, .99,
                                          std::vector<gfx::Range>());
@@ -321,7 +321,7 @@ CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
   // Add "New Group", if appropriate. It should score highest with no input.
   std::u16string new_group_title =
       l10n_util::GetStringUTF16(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP);
-  std::unique_ptr<CommandItem> item = nullptr;
+  std::unique_ptr<CommandItem> item;
   if (input.empty()) {
     item = std::make_unique<CommandItem>(new_group_title, .99,
                                          std::vector<gfx::Range>());

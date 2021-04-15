@@ -71,14 +71,14 @@ void AssistantCollectUserDataDelegate::OnCreditCardChanged(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jcard,
     const base::android::JavaParamRef<jobject>& jbilling_profile) {
-  std::unique_ptr<autofill::CreditCard> card = nullptr;
+  std::unique_ptr<autofill::CreditCard> card;
   if (jcard) {
     card = std::make_unique<autofill::CreditCard>();
     autofill::PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
         jcard, env, card.get());
   }
 
-  std::unique_ptr<autofill::AutofillProfile> billing_profile = nullptr;
+  std::unique_ptr<autofill::AutofillProfile> billing_profile;
   if (jbilling_profile) {
     billing_profile = std::make_unique<autofill::AutofillProfile>();
     autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(

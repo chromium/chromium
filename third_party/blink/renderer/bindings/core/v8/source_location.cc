@@ -83,7 +83,7 @@ std::unique_ptr<SourceLocation> SourceLocation::FromMessage(
     v8::Local<v8::Message> message,
     ExecutionContext* execution_context) {
   v8::Local<v8::StackTrace> stack = message->GetStackTrace();
-  std::unique_ptr<v8_inspector::V8StackTrace> stack_trace = nullptr;
+  std::unique_ptr<v8_inspector::V8StackTrace> stack_trace;
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   if (debugger)
     stack_trace = debugger->GetV8Inspector()->createStackTrace(stack);

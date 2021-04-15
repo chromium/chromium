@@ -518,7 +518,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // signals are supported.
   scoped_refptr<ThermalResource> thermal_resource_ = nullptr;
   // ThermalUmaListener is only tracked on peer connection that add a track.
-  std::unique_ptr<ThermalUmaListener> thermal_uma_listener_ = nullptr;
+  std::unique_ptr<ThermalUmaListener> thermal_uma_listener_;
   mojom::blink::DeviceThermalState last_thermal_state_ =
       mojom::blink::DeviceThermalState::kUnknown;
 

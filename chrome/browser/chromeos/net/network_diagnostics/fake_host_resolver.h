@@ -65,7 +65,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
   // Responds to calls made to |this|.
   mojo::Remote<network::mojom::ResolveHostClient> response_client_;
   // Use the |fake_dns_result| to fake a single host resolution.
-  std::unique_ptr<DnsResult> fake_dns_result_ = nullptr;
+  std::unique_ptr<DnsResult> fake_dns_result_;
   // Used to mimic the scenario where network::mojom::HostResolver receiver
   // is disconnected.
   bool disconnect_ = false;

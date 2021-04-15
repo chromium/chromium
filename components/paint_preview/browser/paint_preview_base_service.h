@@ -138,8 +138,8 @@ class PaintPreviewBaseService : public KeyedService {
                   mojom::PaintPreviewStatus status,
                   std::unique_ptr<CaptureResult> result);
 
-  std::unique_ptr<PaintPreviewFileMixin> file_mixin_ = nullptr;
-  std::unique_ptr<PaintPreviewPolicy> policy_ = nullptr;
+  std::unique_ptr<PaintPreviewFileMixin> file_mixin_;
+  std::unique_ptr<PaintPreviewPolicy> policy_;
   bool is_off_the_record_;
 
   base::WeakPtrFactory<PaintPreviewBaseService> weak_ptr_factory_{this};

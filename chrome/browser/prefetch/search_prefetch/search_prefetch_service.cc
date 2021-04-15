@@ -182,7 +182,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
   }
 
-  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request = nullptr;
+  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request;
   if (StreamSearchPrefetchResponses()) {
     prefetch_request = std::make_unique<StreamingSearchPrefetchRequest>(
         url, base::BindOnce(&SearchPrefetchService::ReportError,

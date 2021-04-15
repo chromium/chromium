@@ -358,7 +358,7 @@ class ExternallyManagedAppInstallTaskTest
   }
 
  private:
-  std::unique_ptr<TestWebAppUrlLoader> url_loader_ = nullptr;
+  std::unique_ptr<TestWebAppUrlLoader> url_loader_;
   WebAppInstallManager* install_manager_ = nullptr;
   TestAppRegistrar* registrar_ = nullptr;
   TestDataRetriever* data_retriever_ = nullptr;

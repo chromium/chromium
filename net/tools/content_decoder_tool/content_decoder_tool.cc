@@ -69,7 +69,7 @@ bool ContentDecoderToolProcessInput(std::vector<std::string> content_encodings,
            content_encodings.rbegin();
        riter != content_encodings.rend(); ++riter) {
     std::string content_encoding = *riter;
-    std::unique_ptr<SourceStream> downstream = nullptr;
+    std::unique_ptr<SourceStream> downstream;
     if (base::LowerCaseEqualsASCII(content_encoding, kBrotli)) {
       downstream = CreateBrotliSourceStream(std::move(upstream));
     } else if (base::LowerCaseEqualsASCII(content_encoding, kDeflate)) {

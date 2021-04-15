@@ -89,7 +89,7 @@ class PaintPreviewCompositorBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<SimpleFactoryKey> key_ = nullptr;
+  std::unique_ptr<SimpleFactoryKey> key_;
 };
 
 // Test that a "true" initialization works and doesn't crash.

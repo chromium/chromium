@@ -49,7 +49,7 @@ PaymentRequestDisplayManager::~PaymentRequestDisplayManager() {}
 
 std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle>
 PaymentRequestDisplayManager::TryShow(ContentPaymentRequestDelegate* delegate) {
-  std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> handle = nullptr;
+  std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> handle;
   if (!current_handle_) {
     handle = std::make_unique<PaymentRequestDisplayManager::DisplayHandle>(
         this, delegate);

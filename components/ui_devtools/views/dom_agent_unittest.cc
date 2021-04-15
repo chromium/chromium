@@ -614,7 +614,7 @@ TEST_F(DOMAgentTest, SimpleDomSearch) {
 
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // 1 match
   dom_agent()->performSearch("child_a1", false, &search_id, &result_count);
@@ -640,7 +640,7 @@ TEST_F(DOMAgentTest, ExactDomSearch) {
   dom_agent()->getDocument(&root);
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // substring matches
   dom_agent()->performSearch("child_a", false, &search_id, &result_count);
@@ -675,7 +675,7 @@ TEST_F(DOMAgentTest, TagDomSearch) {
   dom_agent()->getDocument(&root);
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // normal search looks for any "widget" substrings
   dom_agent()->performSearch("widget", false, &search_id, &result_count);
@@ -701,7 +701,7 @@ TEST_F(DOMAgentTest, DomSearchForStylesPanel) {
 
   std::string search_id;
   int result_count = 0;
-  std::unique_ptr<protocol::Array<int>> node_ids = nullptr;
+  std::unique_ptr<protocol::Array<int>> node_ids;
 
   // Search for something that is in style properties but not in dom name or
   // attributes.

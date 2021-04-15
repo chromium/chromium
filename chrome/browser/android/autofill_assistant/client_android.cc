@@ -114,7 +114,7 @@ bool ClientAndroid::Start(JNIEnv* env,
   // AA_START there's a corresponding dropout.
   started_ = true;
 
-  std::unique_ptr<Service> service = nullptr;
+  std::unique_ptr<Service> service;
   if (jservice) {
     service.reset(static_cast<Service*>(reinterpret_cast<void*>(jservice)));
   }

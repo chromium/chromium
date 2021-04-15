@@ -87,7 +87,7 @@ class StartupInformationHelper {
   DWORD all_applications_package_policy_ = 0;
   std::vector<HANDLE> inherited_handle_list_;
   std::vector<HANDLE> job_handle_list_;
-  std::unique_ptr<SecurityCapabilities> security_capabilities_ = nullptr;
+  std::unique_ptr<SecurityCapabilities> security_capabilities_;
 };
 }  // namespace sandbox
 

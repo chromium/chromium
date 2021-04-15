@@ -87,7 +87,7 @@ struct AnalysisSettings {
 
   // ClientMetadata to include in the scanning request(s). This is populated
   // based on OnSecurityEvent and the affiliation state of the browser.
-  std::unique_ptr<ClientMetadata> client_metadata = nullptr;
+  std::unique_ptr<ClientMetadata> client_metadata;
 };
 
 struct ReportingSettings {

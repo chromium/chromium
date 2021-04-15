@@ -73,7 +73,7 @@ class BackgroundApplicationListModelTest
   BackgroundApplicationListModel* model() const { return model_.get(); }
 
  private:
-  std::unique_ptr<BackgroundApplicationListModel> model_ = nullptr;
+  std::unique_ptr<BackgroundApplicationListModel> model_;
 };
 
 enum PushMessagingOption {

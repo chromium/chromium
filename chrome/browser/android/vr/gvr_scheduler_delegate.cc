@@ -566,7 +566,7 @@ void GvrSchedulerDelegate::UpdatePendingBounds(int16_t frame_index) {
 
 void GvrSchedulerDelegate::SubmitDrawnFrame(FrameType frame_type,
                                             const gfx::Transform& head_pose) {
-  std::unique_ptr<gl::GLFenceEGL> fence = nullptr;
+  std::unique_ptr<gl::GLFenceEGL> fence;
   if (frame_type == kWebXrFrame && graphics_->DoesSurfacelessRendering()) {
     webxr_.GetProcessingFrame()->time_copied = base::TimeTicks::Now();
     if (webxr_use_gpu_fence_) {

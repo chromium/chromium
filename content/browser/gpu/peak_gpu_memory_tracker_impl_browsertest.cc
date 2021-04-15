@@ -198,8 +198,8 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
   }
 
  private:
-  std::unique_ptr<TestGpuService> test_gpu_service_ = nullptr;
-  std::unique_ptr<viz::GpuHostImplTestApi> gpu_host_impl_test_api_ = nullptr;
+  std::unique_ptr<TestGpuService> test_gpu_service_;
+  std::unique_ptr<viz::GpuHostImplTestApi> gpu_host_impl_test_api_;
   std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>>
       gpu_service_receiver_ = nullptr;
 };

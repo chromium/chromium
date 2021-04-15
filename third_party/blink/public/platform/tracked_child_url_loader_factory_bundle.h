@@ -101,7 +101,7 @@ class BLINK_PLATFORM_EXPORT TrackedChildURLLoaderFactoryBundle
 
   // |WeakPtr| and |TaskRunner| of the host bundle. Can be copied and passed
   // across sequences.
-  std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle_ = nullptr;
+  std::unique_ptr<HostPtrAndTaskRunner> main_thread_host_bundle_;
 
   DISALLOW_COPY_AND_ASSIGN(TrackedChildURLLoaderFactoryBundle);
 };
@@ -159,7 +159,7 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
       std::unique_ptr<network::PendingSharedURLLoaderFactory> update_info);
 
   // Contains |WeakPtr| and |TaskRunner| to tracked bundles.
-  std::unique_ptr<ObserverList> observer_list_ = nullptr;
+  std::unique_ptr<ObserverList> observer_list_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

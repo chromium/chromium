@@ -56,7 +56,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
   Java_AssistantTriggerScriptBridge_setNativePtr(
       AttachCurrentThread(), java_object_, reinterpret_cast<intptr_t>(this));
 
-  std::unique_ptr<ServiceRequestSender> service_request_sender = nullptr;
+  std::unique_ptr<ServiceRequestSender> service_request_sender;
   if (jservice_request_sender) {
     service_request_sender.reset(static_cast<ServiceRequestSender*>(
         reinterpret_cast<void*>(jservice_request_sender)));

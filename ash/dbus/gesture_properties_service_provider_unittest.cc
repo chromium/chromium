@@ -148,7 +148,7 @@ class GesturePropertiesServiceProviderTest : public testing::Test {
   }
 
   void CheckMethodErrorsWithNoParameters(std::string name) {
-    std::unique_ptr<dbus::Response> response = nullptr;
+    std::unique_ptr<dbus::Response> response;
     CallWithoutParameters(name, response);
     EXPECT_EQ(dbus::Message::MESSAGE_ERROR, response->GetMessageType());
   }
@@ -176,7 +176,7 @@ TEST_F(GesturePropertiesServiceProviderTest, ListDevicesEmpty) {
   list_devices_response_ = {};
   EXPECT_CALL(*mock_service_, ListDevices(_));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallWithoutParameters(chromeos::kGesturePropertiesServiceListDevicesMethod,
                         response);
 
@@ -195,7 +195,7 @@ TEST_F(GesturePropertiesServiceProviderTest, ListDevicesSuccess) {
   };
   EXPECT_CALL(*mock_service_, ListDevices(_));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallWithoutParameters(chromeos::kGesturePropertiesServiceListDevicesMethod,
                         response);
 
@@ -221,7 +221,7 @@ TEST_F(GesturePropertiesServiceProviderTest, ListPropertiesEmpty) {
   list_properties_response_ = {};
   EXPECT_CALL(*mock_service_, ListProperties(4, _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceListPropertiesMethod);
@@ -242,7 +242,7 @@ TEST_F(GesturePropertiesServiceProviderTest, ListPropertiesSuccess) {
   list_properties_response_ = {"prop 1", "prop 2"};
   EXPECT_CALL(*mock_service_, ListProperties(4, _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceListPropertiesMethod);
@@ -272,7 +272,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertySuccessInts) {
       ui::ozone::mojom::GesturePropValue::NewInts({1, 2, 4});
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
 
   dbus::MessageReader reader(response.get());
@@ -295,7 +295,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertySuccessShorts) {
       ui::ozone::mojom::GesturePropValue::NewShorts({1, 2, 4});
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
 
   dbus::MessageReader reader(response.get());
@@ -318,7 +318,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertySuccessBools) {
       ui::ozone::mojom::GesturePropValue::NewBools({true, false});
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
 
   dbus::MessageReader reader(response.get());
@@ -339,7 +339,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertySuccessStr) {
   get_property_response_ = ui::ozone::mojom::GesturePropValue::NewStr("llama");
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
 
   dbus::MessageReader reader(response.get());
@@ -357,7 +357,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertySuccessReals) {
       ui::ozone::mojom::GesturePropValue::NewReals({3.14, 6.28});
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
 
   dbus::MessageReader reader(response.get());
@@ -378,7 +378,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertyPropertyDoesntExist) {
   get_property_response_ = nullptr;
   EXPECT_CALL(*mock_service_, GetProperty(4, "prop 1", _));
 
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   CallGetProperty(4, "prop 1", response);
   EXPECT_EQ(dbus::Message::MESSAGE_ERROR, response->GetMessageType());
 }
@@ -390,7 +390,7 @@ TEST_F(GesturePropertiesServiceProviderTest, GetPropertyMissingParameters) {
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessInts) {
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceSetPropertyMethod);
@@ -411,7 +411,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessInts) {
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessShorts) {
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceSetPropertyMethod);
@@ -432,7 +432,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessShorts) {
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessBools) {
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceSetPropertyMethod);
@@ -452,7 +452,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessBools) {
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessStr) {
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceSetPropertyMethod);
@@ -468,7 +468,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessStr) {
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertySuccessReals) {
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
       chromeos::kGesturePropertiesServiceSetPropertyMethod);
@@ -490,7 +490,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertyError) {
   set_property_error_code_ =
       ui::ozone::mojom::SetGesturePropErrorCode::UNKNOWN_ERROR;
   EXPECT_CALL(*mock_service_, SetProperty(4, "prop 1", _, _));
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
 
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,
@@ -505,7 +505,7 @@ TEST_F(GesturePropertiesServiceProviderTest, SetPropertyError) {
 }
 
 TEST_F(GesturePropertiesServiceProviderTest, SetPropertyNoData) {
-  std::unique_ptr<dbus::Response> response = nullptr;
+  std::unique_ptr<dbus::Response> response;
 
   dbus::MethodCall* method_call = new dbus::MethodCall(
       chromeos::kGesturePropertiesServiceInterface,

@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // The source of the data written in ScopedClipboardWriter, nullptr means it's
   // not set, or the source of the data can't be represented by
   // DataTransferEndpoint.
-  std::unique_ptr<DataTransferEndpoint> data_src_ = nullptr;
+  std::unique_ptr<DataTransferEndpoint> data_src_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedClipboardWriter);
 };

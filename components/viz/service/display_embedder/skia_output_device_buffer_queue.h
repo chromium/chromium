@@ -132,7 +132,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // for opaque accelerated widgets and event wiring.
   bool needs_background_image_ = false;
   // A 4x4 small image that will be scaled to cover an opaque region.
-  std::unique_ptr<OutputPresenter::Image> background_image_ = nullptr;
+  std::unique_ptr<OutputPresenter::Image> background_image_;
   // Set to true if background has been scheduled in a frame.
   bool background_image_is_scheduled_ = false;
   // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling

@@ -50,7 +50,7 @@ class ScreenManager {
     const uint32_t crtc;
     const uint32_t connector;
     const gfx::Point origin;
-    std::unique_ptr<drmModeModeInfo> mode = nullptr;
+    std::unique_ptr<drmModeModeInfo> mode;
   };
   using ControllerConfigsList = std::vector<ControllerConfigParams>;
 

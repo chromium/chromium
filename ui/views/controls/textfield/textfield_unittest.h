@@ -151,7 +151,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   void TapAtCursor(ui::EventPointerType pointer_type);
 
   // We need widget to populate wrapper class.
-  std::unique_ptr<Widget> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
 
   TestTextfield* textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> test_api_;

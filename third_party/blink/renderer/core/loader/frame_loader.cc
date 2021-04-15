@@ -1054,7 +1054,7 @@ void FrameLoader::CommitNavigation(
       navigation_params->frame_load_type,
       !navigation_params->http_body.IsNull(), false /* have_event */);
 
-  std::unique_ptr<PolicyContainer> policy_container = nullptr;
+  std::unique_ptr<PolicyContainer> policy_container;
   if (navigation_params->policy_container) {
     // Javascript and xslt documents should not change the PolicyContainer.
     DCHECK(commit_reason == CommitReason::kRegular);

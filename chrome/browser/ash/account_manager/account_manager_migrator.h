@@ -61,7 +61,7 @@ class AccountManagerMigrator : public KeyedService {
   Profile* const profile_;
 
   // Used for running migration steps.
-  std::unique_ptr<AccountMigrationRunner> migration_runner_ = nullptr;
+  std::unique_ptr<AccountMigrationRunner> migration_runner_;
 
   // Stores if any migration steps were actually run. It is possible for the
   // migration flow to be a no-op, in which case this will be |false|.

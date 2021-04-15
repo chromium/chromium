@@ -575,8 +575,8 @@ std::unique_ptr<const DomainReliabilityConfig> MaybeGetGoogleConfig(
       base::StartsWith(hostname, "www.", base::CompareCase::SENSITIVE);
   std::string hostname_parent = net::GetSuperdomain(hostname);
 
-  std::unique_ptr<const DomainReliabilityConfig> config = nullptr;
-  std::unique_ptr<const DomainReliabilityConfig> superdomain_config = nullptr;
+  std::unique_ptr<const DomainReliabilityConfig> config;
+  std::unique_ptr<const DomainReliabilityConfig> superdomain_config;
 
   for (const auto& params : kGoogleConfigs) {
     if (params.hostname == hostname) {

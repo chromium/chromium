@@ -199,9 +199,9 @@ class ThreadedWorkletMessagingProxyForTest
   ~ThreadedWorkletMessagingProxyForTest() override = default;
 
   void Start() {
-    std::unique_ptr<Vector<char>> cached_meta_data = nullptr;
+    std::unique_ptr<Vector<char>> cached_meta_data;
     WorkerClients* worker_clients = nullptr;
-    std::unique_ptr<WorkerSettings> worker_settings = nullptr;
+    std::unique_ptr<WorkerSettings> worker_settings;
     InitializeWorkerThread(
         std::make_unique<GlobalScopeCreationParams>(
             GetExecutionContext()->Url(), mojom::blink::ScriptType::kModule,

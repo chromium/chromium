@@ -1621,7 +1621,7 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
-  std::unique_ptr<PeakGpuMemoryTracker> loading_mem_tracker_ = nullptr;
+  std::unique_ptr<PeakGpuMemoryTracker> loading_mem_tracker_;
 
   // Structure tracking the effects of the CrossOriginOpenerPolicy on this
   // navigation.

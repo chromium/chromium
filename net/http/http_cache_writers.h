@@ -235,7 +235,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // Owner of |this|.
   ActiveEntry* entry_ = nullptr;
 
-  std::unique_ptr<HttpTransaction> network_transaction_ = nullptr;
+  std::unique_ptr<HttpTransaction> network_transaction_;
 
   scoped_refptr<IOBuffer> read_buf_ = nullptr;
 

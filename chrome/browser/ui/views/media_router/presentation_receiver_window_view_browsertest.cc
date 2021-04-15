@@ -103,7 +103,7 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
   }
 
   const gfx::Rect bounds_{100, 100};
-  std::unique_ptr<FakeReceiverDelegate> fake_delegate_ = nullptr;
+  std::unique_ptr<FakeReceiverDelegate> fake_delegate_;
   PresentationReceiverWindowView* receiver_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowViewBrowserTest);

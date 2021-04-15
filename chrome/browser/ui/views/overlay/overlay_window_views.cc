@@ -369,7 +369,7 @@ void OverlayWindowViews::SetUpViews() {
 
   std::unique_ptr<views::BackToTabImageButton> back_to_tab_image_button =
       nullptr;
-  std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button = nullptr;
+  std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
   auto back_to_tab_callback = base::BindRepeating(
       [](OverlayWindowViews* overlay) {
         overlay->controller_->CloseAndFocusInitiator();

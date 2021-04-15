@@ -761,8 +761,8 @@ void AudioParamTimeline::CancelAndHoldAtTime(double cancel_time,
   ParamEvent::Type event_type = cancelled_event->GetType();
 
   // New event to be inserted, if any, and a SetValueEvent if needed.
-  std::unique_ptr<ParamEvent> new_event = nullptr;
-  std::unique_ptr<ParamEvent> new_set_value_event = nullptr;
+  std::unique_ptr<ParamEvent> new_event;
+  std::unique_ptr<ParamEvent> new_set_value_event;
 
   switch (event_type) {
     case ParamEvent::kLinearRampToValue:

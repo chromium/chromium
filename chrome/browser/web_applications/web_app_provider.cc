@@ -237,7 +237,7 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
         profile, icon_manager.get(), file_handler_manager.get(),
         protocol_handler_manager.get());
 
-    std::unique_ptr<UrlHandlerManager> url_handler_manager = nullptr;
+    std::unique_ptr<UrlHandlerManager> url_handler_manager;
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
     url_handler_manager = std::make_unique<UrlHandlerManagerImpl>(profile);

@@ -184,7 +184,7 @@ Display::CreateOrGetClientControlledShellSurface(
   // Remote shell surfaces in system modal container cannot be minimized.
   bool can_minimize = container != ash::kShellWindowId_SystemModalContainer;
 
-  std::unique_ptr<ClientControlledShellSurface> shell_surface = nullptr;
+  std::unique_ptr<ClientControlledShellSurface> shell_surface;
 
   int window_session_id = surface->GetWindowSessionId();
   if (window_session_id > 0) {

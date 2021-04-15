@@ -38,7 +38,7 @@ std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
   if (!struct_reader->PopUint32(&size))
     return nullptr;
 
-  std::unique_ptr<base::Value> value = nullptr;
+  std::unique_ptr<base::Value> value;
   switch (type) {
     case bluez::BluetoothServiceAttributeValueBlueZ::NULLTYPE: {
       break;

@@ -192,8 +192,8 @@ class PaintPreviewBaseServiceTest
   }
 
  private:
-  std::unique_ptr<SimpleFactoryKey> key_ = nullptr;
-  std::unique_ptr<SimpleFactoryKey> rejection_policy_key_ = nullptr;
+  std::unique_ptr<SimpleFactoryKey> key_;
+  std::unique_ptr<SimpleFactoryKey> rejection_policy_key_;
 };
 
 TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {

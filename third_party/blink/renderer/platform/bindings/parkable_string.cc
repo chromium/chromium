@@ -624,7 +624,7 @@ void ParkableStringImpl::CompressInBackground(
   bool ok;
   base::StringPiece data(reinterpret_cast<const char*>(params->data),
                          params->size);
-  std::unique_ptr<Vector<uint8_t>> compressed = nullptr;
+  std::unique_ptr<Vector<uint8_t>> compressed;
 
   // This runs in background, making CPU starvation likely, and not an issue.
   // Hence, report thread time instead of wall clock time.

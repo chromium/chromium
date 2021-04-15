@@ -93,7 +93,7 @@ class TestDragDropClient : public aura::client::DragDropClient {
 
  private:
   bool drag_in_progress_ = false;
-  std::unique_ptr<ui::OSExchangeData> drag_drop_data_ = nullptr;
+  std::unique_ptr<ui::OSExchangeData> drag_drop_data_;
 };
 
 }  // namespace

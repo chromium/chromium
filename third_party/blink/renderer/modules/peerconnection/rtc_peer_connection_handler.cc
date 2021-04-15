@@ -1961,7 +1961,7 @@ RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
   if (configuration_.sdp_semantics == webrtc::SdpSemantics::kPlanB) {
     if (RemoveTrackPlanB(web_sender)) {
       // In Plan B, null indicates success.
-      std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver = nullptr;
+      std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver;
       return std::move(platform_transceiver);
     }
     // TODO(hbos): Surface RTCError from third_party/webrtc when

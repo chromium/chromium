@@ -120,7 +120,7 @@ class WilcoDtcSupportdNotificationControllerTest
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<WilcoDtcSupportdNotificationController>
       notification_controller_ = nullptr;
-  std::unique_ptr<NotificationDisplayServiceTester> service_tester_ = nullptr;
+  std::unique_ptr<NotificationDisplayServiceTester> service_tester_;
 
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNotificationControllerTest);
 };

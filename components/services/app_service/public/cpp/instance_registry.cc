@@ -129,7 +129,7 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
       continue;
     }
 
-    std::unique_ptr<Instance> old_state = nullptr;
+    std::unique_ptr<Instance> old_state;
     if (state) {
       old_state = state->Clone();
       InstanceUpdate::Merge(state, d_iter.get());

@@ -121,7 +121,7 @@ class AnnotationInstance : public InstanceBase {
 
   // Same message as |proto|, but with the schema loaded at runtime
   // (using reflection) based on chrome_settings_full_runtime.proto.
-  std::unique_ptr<google::protobuf::Message> runtime_proto = nullptr;
+  std::unique_ptr<google::protobuf::Message> runtime_proto;
 
   // Type of the annotation.
   Type type;
