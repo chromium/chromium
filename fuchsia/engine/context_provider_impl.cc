@@ -78,16 +78,20 @@ zx::channel ValidateDirectoryAndTakeChannel(
     fidl::InterfaceHandle<fuchsia::io::Directory> directory_handle) {
   fidl::SynchronousInterfacePtr<fuchsia::io::Directory> directory =
       directory_handle.BindSync();
-  zx_status_t status = ZX_ERR_INTERNAL;
-  std::vector<uint8_t> entries;
 
-  directory->ReadDirents(0, &status, &entries);
-  if (status == ZX_OK) {
-    return directory.Unbind().TakeChannel();
+  fuchsia::io::NodeInfo info;
+  zx_status_t status = directory->Describe(&info);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "Describe()";
+    return {};
   }
 
-  // Not a directory.
-  return zx::channel();
+  if (!info.is_directory()) {
+    DLOG(ERROR) << "Not a directory.";
+    return {};
+  }
+
+  return directory.Unbind().TakeChannel();
 }
 
 // File names must not contain directory separators, nor match the special
@@ -98,8 +102,11 @@ bool IsValidContentDirectoryName(base::StringPiece file_name) {
       base::StringPiece::npos) {
     return false;
   }
-  return file_name != base::FilePath::kCurrentDirectory &&
-         file_name != base::FilePath::kParentDirectory;
+  if (file_name == base::FilePath::kCurrentDirectory ||
+      file_name == base::FilePath::kParentDirectory) {
+    return false;
+  }
+  return true;
 }
 
 // Maps content directories into the LaunchOptions and adds the enable flag
@@ -128,6 +135,9 @@ bool SetContentDirectoriesInLaunchOptions(
       return false;
     }
 
+    // Note that this leaks the directory in the case in which some later
+    // stage of CreateContext() fails. This will be fixed as part of migrating
+    // to launching WebEngine instances as Components.
     const base::FilePath kContentDirectories("/content-directories");
     launch_options->paths_to_transfer.emplace_back(base::PathToTransfer{
         .path = kContentDirectories.Append(directory.name()),
