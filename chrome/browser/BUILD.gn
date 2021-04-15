@@ -5296,8 +5296,6 @@ static_library("browser") {
       "notifications/popups_only_ui_controller.h",
       "notifications/screen_lock_notification_blocker.cc",
       "notifications/screen_lock_notification_blocker.h",
-      "password_manager/multi_profile_credentials_filter.cc",
-      "password_manager/multi_profile_credentials_filter.h",
       "platform_util.cc",
       "policy/cbcm_invalidations_initializer.cc",
       "policy/cbcm_invalidations_initializer.h",
@@ -5602,6 +5600,8 @@ static_library("browser") {
 
   if (enable_dice_support) {
     sources += [
+      "password_manager/multi_profile_credentials_filter.cc",
+      "password_manager/multi_profile_credentials_filter.h",
       "signin/dice_intercepted_session_startup_helper.cc",
       "signin/dice_intercepted_session_startup_helper.h",
       "signin/dice_response_handler.cc",

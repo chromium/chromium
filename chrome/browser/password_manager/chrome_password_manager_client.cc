@@ -144,7 +144,7 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #endif
 
@@ -1160,13 +1160,13 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
-      credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       credentials_filter_(
           this,
           base::BindRepeating(&GetSyncService, profile_),
           DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
+#else
+      credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
 #endif
 #if !defined(OS_ANDROID)
       account_storage_auth_helper_(profile_, &password_feature_manager_),

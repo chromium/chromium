@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/prefs/pref_member.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
@@ -52,10 +53,10 @@ class TouchToFillController;
 #include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
 #endif
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/password_manager/core/browser/sync_credentials_filter.h"
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
+#else
+#include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
 
 class ChromeBiometricAuthenticator;
@@ -388,11 +389,11 @@ class ChromePasswordManagerClient
   // point.
   BooleanPrefMember saving_passwords_enabled_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
-  // ChromeOS and Android don't support multiple profiles
-  const password_manager::SyncCredentialsFilter credentials_filter_;
-#else
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // MultiProfileCredentialsFilter requires DICE support.
   const MultiProfileCredentialsFilter credentials_filter_;
+#else
+  const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
 
   std::unique_ptr<autofill::LogManager> log_manager_;
