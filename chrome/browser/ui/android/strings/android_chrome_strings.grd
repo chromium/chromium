@@ -4612,6 +4612,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_CSN_AD_LABEL" desc="Label for identifying an ad in search results." translateable="false">
       Ad
       </message>
+      <message name="IDS_CSN_PROVIDER_LABEL" desc="Label that shows the source of a list of clickalbe URLs. This should have a new line character in the middle." translateable="false">
+      Results from\n<ph name="PROVIDER">%1$s</ph>
+      </message>
     </messages>
   </release>
 </grit>

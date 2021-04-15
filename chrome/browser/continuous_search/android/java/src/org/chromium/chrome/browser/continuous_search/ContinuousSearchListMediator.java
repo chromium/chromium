@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import android.content.res.Resources;
+import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -14,6 +17,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -39,6 +43,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mScrolled;
+    // The navigation index when CSN metadata was retrieved.
+    private int mStartNavigationIndex;
 
     ContinuousSearchListMediator(ModelList modelList, PropertyModel rootViewModel,
             Callback<Boolean> setLayoutVisibility, ThemeColorProvider themeColorProvider,
@@ -60,18 +66,6 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                             ? getColor(R.color.default_icon_color_dark)
                             : getColor(R.color.default_icon_color_light));
         }
-    }
-
-    private void handleResultClick(GURL url, int position) {
-        if (url == null || mCurrentTab == null) return;
-
-        LoadUrlParams params = new LoadUrlParams(url.getSpec());
-        params.setReferrer(new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
-        mCurrentTab.loadUrl(params);
-
-        RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.UI.ClickedItemPosition"
-                        + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                position);
     }
 
     private void invalidateOnUserRequest() {
@@ -113,19 +107,33 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     public void onUpdate(ContinuousNavigationMetadata metadata) {
         mModelList.clear();
 
-        int linkCount = 0;
+        mPageCategory = metadata.getCategory();
+        // We need to know the current navigation index because we want to come back here when the
+        // provider label is clicked.
+        if (mCurrentTab != null && mCurrentTab.getWebContents() != null
+                && mCurrentTab.getWebContents().getNavigationController() != null) {
+            mStartNavigationIndex = mCurrentTab.getWebContents()
+                                            .getNavigationController()
+                                            .getLastCommittedEntryIndex();
+        } else {
+            mStartNavigationIndex = -1;
+        }
+        String providerName = metadata.getProviderName();
+        if (!TextUtils.isEmpty(providerName)) {
+            String providerLabel = mResources.getString(R.string.csn_provider_label, providerName);
+            mModelList.add(new ListItem(
+                    ListItemType.GROUP_LABEL, generateListItem(providerLabel, null, 0, true)));
+        }
+
+        int resultCount = 0;
         for (PageGroup group : metadata.getGroups()) {
-            if (!group.isAdGroup()) {
-                mModelList.add(new ListItem(
-                        ListItemType.GROUP_LABEL, generateListItem(group.getLabel(), null, 0)));
-            }
             int itemType = group.isAdGroup() ? ListItemType.AD : ListItemType.SEARCH_RESULT;
             for (PageItem result : group.getPageItems()) {
                 mModelList.add(new ListItem(itemType,
-                        generateListItem(result.getTitle(), result.getUrl(), linkCount++)));
+                        generateListItem(
+                                result.getTitle(), result.getUrl(), resultCount++, false)));
             }
         }
-        mPageCategory = metadata.getCategory();
     }
 
     @Override
@@ -141,7 +149,16 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         setVisibility(mModelList.size() > 0 && !mOnSrp);
     }
 
-    private PropertyModel generateListItem(String text, GURL url, int position) {
+    /**
+     * Generates a list item with the given attributes.
+     * @param text            Displayed as the primary text.
+     * @param url             Displayed as teh secondary text.
+     * @param resultPosition  Denotes the position of this result in the list.
+     * @param isProviderLabel Whether this is the item that shows the provider information.
+     * @return {@link PropertyModel} representing this item.
+     */
+    private PropertyModel generateListItem(
+            String text, GURL url, int resultPosition, boolean isProviderLabel) {
         int backgroundColor =
                 getBackgroundColorForParentBackgroundColor(mThemeColorProvider.getThemeColor());
         boolean useDarkColors = shouldUseDarkElementColors(backgroundColor);
@@ -153,7 +170,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                         useDarkColors ? getColor(R.color.default_icon_color_dark)
                                       : getColor(R.color.default_icon_color_light))
                 .with(ContinuousSearchListProperties.CLICK_LISTENER,
-                        (view) -> handleResultClick(url, position))
+                        (view) -> handleItemClick(url, resultPosition, isProviderLabel))
                 .with(ContinuousSearchListProperties.BACKGROUND_COLOR, backgroundColor)
                 .with(ContinuousSearchListProperties.TITLE_TEXT_STYLE,
                         useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
@@ -162,6 +179,30 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                         useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
                                       : R.style.TextAppearance_TextMedium_Secondary_Light)
                 .build();
+    }
+
+    private void handleItemClick(@Nullable GURL url, int resultPosition, boolean isProviderLabel) {
+        // When the provider label is clicked, we should go back to the page where CSN started on.
+        if (isProviderLabel) {
+            if (mStartNavigationIndex >= 0 && mCurrentTab != null
+                    && mCurrentTab.getWebContents() != null) {
+                NavigationController navigationController =
+                        mCurrentTab.getWebContents().getNavigationController();
+                if (navigationController != null
+                        && navigationController.getEntryAtIndex(mStartNavigationIndex) != null) {
+                    navigationController.goToNavigationIndex(mStartNavigationIndex);
+                }
+            }
+        } else if (mCurrentTab != null && url != null) {
+            LoadUrlParams params = new LoadUrlParams(url.getSpec());
+            params.setReferrer(
+                    new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
+            mCurrentTab.loadUrl(params);
+            RecordHistogram.recordCount100Histogram(
+                    "Browser.ContinuousSearch.UI.ClickedItemPosition"
+                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
+                    resultPosition);
+        }
     }
 
     private void setVisibility(boolean visibility) {

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A class that holds the data necessary for continuous navigation.
- * Some example data providers include SRP and Discover/Feeds.
+ * A class that holds the data necessary for continuous navigation. Some example data providers
+ * include SRP and Discover/Feeds.
  */
 public class ContinuousNavigationMetadata {
     private final GURL mRootUrl;
@@ -41,6 +41,19 @@ public class ContinuousNavigationMetadata {
 
     List<PageGroup> getGroups() {
         return mGroups;
+    }
+
+    String getProviderName() {
+        // (TODO:crbug/1199339) Replace hardcoded string with translated resources.
+        switch (mCategory) {
+            case PageCategory.ORGANIC_SRP:
+                return "Google Search";
+            case PageCategory.NEWS_SRP:
+                return "Google News";
+            case PageCategory.DISCOVER:
+                return "Discover Feed";
+        }
+        return null;
     }
 
     @Override
