@@ -29,6 +29,7 @@
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -195,6 +196,7 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -2851,10 +2853,21 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - Private Methods: Reading List
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
-  base::RecordAction(UserMetricsAction("MobileReadingListAdd"));
-
   ReadingListModel* readingModel =
       ReadingListModelFactory::GetForBrowserState(self.browserState);
+  if (self.currentWebState &&
+      self.currentWebState->GetVisibleURL().spec() == URL.spec()) {
+    // Log UKM if the current page is being added to Reading List.
+    ukm::SourceId sourceID =
+        ukm::GetSourceIdForWebStateDocument(self.currentWebState);
+    if (sourceID != ukm::kInvalidSourceId) {
+      ukm::builders::IOS_PageAddedToReadingList(sourceID)
+          .SetAddedFromMessages(false)
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+  base::RecordAction(UserMetricsAction("MobileReadingListAdd"));
+
   readingModel->AddEntry(URL, base::SysNSStringToUTF8(title),
                          reading_list::ADDED_VIA_CURRENT_APP);
 
