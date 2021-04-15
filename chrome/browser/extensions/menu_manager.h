@@ -152,10 +152,9 @@ class MenuItem {
     }
 
     bool Populate(const base::Value& value) {
-      int int_value;
-      if (!value.GetAsInteger(&int_value) || int_value < 0)
+      if (!value.is_int() || value.GetInt() < 0)
         return false;
-      value_ = int_value;
+      value_ = value.GetInt();
       return true;
     }
 

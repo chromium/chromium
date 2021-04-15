@@ -237,8 +237,7 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   MenuItem::ContextList contexts;
   contexts.Add(MenuItem::PAGE);
   contexts.Add(MenuItem::SELECTION);
-  int contexts_value = 0;
-  ASSERT_TRUE(contexts.ToValue()->GetAsInteger(&contexts_value));
+  int contexts_value = contexts.ToValue()->GetInt();
 
   auto document_url_patterns = std::make_unique<base::ListValue>();
   document_url_patterns->AppendString("http://www.google.com/*");
