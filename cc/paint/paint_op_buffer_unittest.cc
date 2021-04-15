@@ -3951,4 +3951,22 @@ TEST(PaintOpBufferTest, NeedsAdditionalInvalidationForLCDText) {
   }
 }
 
+// A regression test for crbug.com/1195276. Ensure that PlaybackParams works
+// with SetMatrix operations.
+TEST(PaintOpBufferTest, SetMatrixOpWithNonIdentityPlaybackParams) {
+  for (const auto& original_ctm : test_matrices) {
+    for (const auto& matrix : test_matrices) {
+      SkCanvas device(0, 0);
+      SkCanvas* canvas = &device;
+
+      PlaybackParams params(nullptr, original_ctm);
+      SetMatrixOp op(matrix);
+      SetMatrixOp::Raster(&op, canvas, params);
+
+      EXPECT_TRUE(AnnotateOp::AreSkM44sEqual(canvas->getLocalToDevice(),
+                                             SkM44(original_ctm, matrix)));
+    }
+  }
+}
+
 }  // namespace cc
