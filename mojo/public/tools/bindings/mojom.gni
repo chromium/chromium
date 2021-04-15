@@ -1562,6 +1562,7 @@ template("mojom") {
           "//base:base_java",
           "//mojo/public/java:bindings_java",
           "//mojo/public/java:system_java",
+          "//third_party/androidx:androidx_annotation_annotation_java",
         ]
 
         # Disable warnings/checks on these generated files.

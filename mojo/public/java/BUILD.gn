@@ -61,6 +61,7 @@ android_library("bindings_java") {
   deps = [
     ":system_java",
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   srcjar_deps = [ "../interfaces/bindings:bindings_java_sources" ]
