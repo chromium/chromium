@@ -8,6 +8,7 @@
 #include <array>
 
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // TODO(ortuno): This should be longer.
 using SystemExtensionId = std::array<uint8_t, 4>;
@@ -22,6 +23,10 @@ struct SystemExtension {
   SystemExtension(const SystemExtension&) = delete;
   SystemExtension& operator=(const SystemExtension&) = delete;
   SystemExtension& operator=(SystemExtension&&) = default;
+
+  static std::string IdToString(const SystemExtensionId& system_extension_id);
+
+  // The following fields are specified by the System Extension itself.
 
   // Currently only kEcho is allowed.
   SystemExtensionType type;
@@ -38,6 +43,12 @@ struct SystemExtension {
   // in the background, but we'll change to a Service Worker once
   // chrome-untrusted:// supports Service Workers.
   GURL service_worker_url;
+
+  // The following fields are constructed from the System Extension's manifest.
+
+  // The System Extension's base URL derived from the type and the id e.g.
+  // `chrome-untrusted://system-extension-echo-1234/`
+  GURL base_url;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSION_H_

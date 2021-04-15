@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 
+#include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
+#include "chrome/common/chrome_paths.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 constexpr char kEchoSystemExtensionManifest[] =
@@ -22,6 +29,22 @@ constexpr char kEchoSystemExtensionManifest[] =
           "id": "1234",
           "type": "echo"
     })";
+
+constexpr char kSystemExtensionEchoPrefix[] = "system-extension-echo-";
+
+GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
+  // The host is made of up a System Extension prefix based on the type and
+  // the System Extension Id.
+  base::StringPiece host_prefix;
+  switch (type) {
+    case SystemExtensionType::kEcho:
+      host_prefix = kSystemExtensionEchoPrefix;
+      break;
+  }
+  const std::string host = base::StrCat({host_prefix, id});
+  return GURL(base::StrCat({content::kChromeUIUntrustedScheme,
+                            url::kStandardSchemeSeparator, host}));
+}
 
 }  // namespace
 
@@ -49,6 +72,9 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
+  base::FilePath user_data_directory;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
+
   // For now just use a hardcoded System Extension manifest. Future CLs will
   // change this to take a command line argument to a CRX.
   base::Optional<base::Value> value =
@@ -67,9 +93,12 @@ void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
   system_extension.short_name = *value->FindStringKey("short_name");
   system_extension.companion_web_app_url =
       GURL(*value->FindStringKey("companion_web_app_url"));
-  system_extension.service_worker_url =
-      GURL(base::StrCat({"chrome-untrusted://system-extension-echo-", id, "/",
-                         *value->FindStringKey("service_worker_url")}));
 
+  system_extension.base_url = GetBaseURL(id, system_extension.type);
+  system_extension.service_worker_url = system_extension.base_url.Resolve(
+      *value->FindStringKey("service_worker_url"));
+
+  SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
+      system_extension);
   system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
 }

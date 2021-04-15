@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 
-#include "base/logging.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
 
 // static
 SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
@@ -14,6 +14,7 @@ SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider() {
+  SystemExtensionsWebUIConfigMap::RegisterInstance();
   install_manager_ = std::make_unique<SystemExtensionsInstallManager>();
 }
 
