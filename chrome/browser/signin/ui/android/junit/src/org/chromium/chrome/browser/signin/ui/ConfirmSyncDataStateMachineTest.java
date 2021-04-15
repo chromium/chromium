@@ -12,14 +12,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,6 +33,9 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 /** Tests for {@link ConfirmSyncDataStateMachine}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConfirmSyncDataStateMachineTest {
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private ConfirmSyncDataStateMachineDelegate mDelegateMock;
 
@@ -51,7 +57,6 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -59,6 +64,7 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Test(expected = AssertionError.class)
     public void testNewAccountNameCannotBeEmpty() {
+        mMockitoRule.strictness(Strictness.LENIENT);
         ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
                 mDelegateMock, mOldAccountName, null, mStateMachineListenerMock);
     }

@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.signin.ui;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -33,13 +34,11 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiActivityTestCase {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private ConfirmManagedSyncDataDialog.Listener mListenerMock;
-
-    @Before
-    public void setUp() {
-        initMocks(this);
-    }
 
     @Test
     @LargeTest
