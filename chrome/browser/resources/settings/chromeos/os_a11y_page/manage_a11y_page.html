@@ -66,9 +66,12 @@
         deep-link-focus-id$="[[Setting.kChromeVox]]">
     </settings-toggle-button>
     <iron-collapse opened="[[prefs.settings.accessibility.value]]">
-      <cr-link-row id="chromeVoxSubpageButton"
+      <div class="sub-item">
+        <cr-link-row id="chromeVoxSubpageButton"
           class="settings-box" on-click="onChromeVoxSettingsTap_"
-          label="$i18n{chromeVoxOptionsLabel}" external></cr-link-row>
+          label="$i18n{chromeVoxOptionsLabel}" external>
+        </cr-link-row>
+      </div>
     </iron-collapse>
     <settings-toggle-button
         pref="{{prefs.settings.a11y.select_to_speak}}"
@@ -82,9 +85,12 @@
         deep-link-focus-id$="[[Setting.kSelectToSpeak]]">
     </settings-toggle-button>
     <iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
-      <cr-link-row id="selectToSpeakSubpageButton"
-          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-          label="$i18n{selectToSpeakOptionsLabel}" external></cr-link-row>
+      <div class="sub-item">
+        <cr-link-row id="selectToSpeakSubpageButton"
+            class="settings-box" on-click="onSelectToSpeakSettingsTap_"
+            label="$i18n{selectToSpeakOptionsLabel}" external>
+          </cr-link-row>
+      </div>
     </iron-collapse>
 
     <cr-link-row id="ttsSubpageButton" class="hr"
@@ -236,11 +242,13 @@
       </settings-toggle-button>
       <iron-collapse
           opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
-        <cr-link-row id="switchAccessSubpageButton"
-            label="$i18n{switchAccessOptionsLabel}"
-            on-click="onSwitchAccessSettingsTap_"
-            role-description="$i18n{subpageArrowRoleDescription}" embedded>
-        </cr-link-row>
+        <div class="sub-item">
+          <cr-link-row id="switchAccessSubpageButton"
+              label="$i18n{switchAccessOptionsLabel}"
+              on-click="onSwitchAccessSettingsTap_"
+              role-description="$i18n{subpageArrowRoleDescription}" embedded>
+          </cr-link-row>
+        </div>
       </iron-collapse>
       <cr-link-row id="keyboardSubpageButton" class="hr"
           label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
