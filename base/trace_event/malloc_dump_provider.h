@@ -56,6 +56,42 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
 };
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
+// This class is used to invert the dependency of PartitionAlloc on the
+// PartitionAllocMemoryDumpProvider. This implements an interface that will
+// be called with memory statistics for each bucket in the allocator.
+class BASE_EXPORT MemoryDumpPartitionStatsDumper final
+    : public base::PartitionStatsDumper {
+ public:
+  MemoryDumpPartitionStatsDumper(const char* root_name,
+                                 ProcessMemoryDump* memory_dump,
+                                 MemoryDumpLevelOfDetail level_of_detail)
+      : root_name_(root_name),
+        memory_dump_(memory_dump),
+        detailed_(level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {}
+
+  static const char* kPartitionsDumpName;
+
+  // PartitionStatsDumper implementation.
+  void PartitionDumpTotals(const char* partition_name,
+                           const base::PartitionMemoryStats*) override;
+  void PartitionsDumpBucketStats(
+      const char* partition_name,
+      const base::PartitionBucketMemoryStats*) override;
+
+  size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
+  size_t total_resident_bytes() const { return total_resident_bytes_; }
+  size_t total_active_bytes() const { return total_active_bytes_; }
+
+ private:
+  const char* root_name_;
+  base::trace_event::ProcessMemoryDump* memory_dump_;
+  uint64_t uid_ = 0;
+  size_t total_mmapped_bytes_ = 0;
+  size_t total_resident_bytes_ = 0;
+  size_t total_active_bytes_ = 0;
+  bool detailed_;
+};
+
 class MemoryAllocatorDump;
 
 BASE_EXPORT void ReportPartitionAllocThreadCacheStats(

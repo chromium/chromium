@@ -139,8 +139,13 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "malloc/allocated_objects",
     "malloc/metadata_fragmentation_caches",
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    "malloc/thread_cache",
-    "malloc/thread_cache/main_thread",
+    "malloc/partitions",
+    "malloc/partitions/allocator",
+    "malloc/partitions/allocator/thread_cache",
+    "malloc/partitions/allocator/thread_cache/main_thread",
+    "malloc/partitions/aligned",
+    "malloc/partitions/original_allocator",
+    "malloc/partitions/nonscannable",
 #endif
     "media/webmediaplayer/audio/player_0x?",
     "media/webmediaplayer/data_source/player_0x?",
