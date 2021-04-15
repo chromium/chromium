@@ -197,6 +197,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kOpenWebDatabaseThirdPartyContext,
           WebFeature::kPaymentRequestCSPViolation,
           WebFeature::kRequestedFileSystemPersistentThirdPartyContext,
+          WebFeature::kPrefixedStorageInfoThirdPartyContext,
       }));
   return *opt_in_features;
 }

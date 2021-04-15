@@ -32173,6 +32173,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3877" label="HTMLMediaElementSetSinkId"/>
   <int value="3878" label="PrefixedStorageQuotaThirdPartyContext"/>
   <int value="3879" label="RequestedFileSystemPersistentThirdPartyContext"/>
+  <int value="3880" label="PrefixedStorageInfoThirdPartyContext"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
