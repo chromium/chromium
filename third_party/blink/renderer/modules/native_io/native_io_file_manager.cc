@@ -403,11 +403,17 @@ ScriptPromise NativeIOFileManager::requestCapacity(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->RequestCapacityChange(
-      requested_capacity,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::RequestCapacityImpl,
+                WrapWeakPersistent(this), requested_capacity,
+                WrapPersistent(resolver)));
+
+  return promise;
 }
 
 ScriptPromise NativeIOFileManager::releaseCapacity(
@@ -421,45 +427,40 @@ ScriptPromise NativeIOFileManager::releaseCapacity(
                                "NativeIOHost backend went away"));
     return ScriptPromise();
   }
-  if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
-    ThrowNativeIOWithError(
-        exception_state,
-        mojom::blink::NativeIOError::New(
-            mojom::blink::NativeIOErrorType::kNoSpace,
-            "Attempted to release more capacity than available"));
-    return ScriptPromise();
-  }
-
-  int64_t requested_difference = -base::as_signed(requested_release);
-
-  // Reducing available capacity must be done before performing the IPC, so
-  // capacity cannot be double-spent by concurrent NativeIO operations.
-  if (!capacity_tracker_->ChangeAvailableCapacity(requested_difference)) {
-    ThrowNativeIOWithError(
-        exception_state,
-        mojom::blink::NativeIOError::New(
-            mojom::blink::NativeIOErrorType::kNoSpace,
-            "Attempted to release more capacity than available."));
-    return ScriptPromise();
-  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->RequestCapacityChange(
-      -requested_release,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::ReleaseCapacityImpl,
+                WrapWeakPersistent(this), requested_release,
+                WrapPersistent(resolver)));
+
+  return promise;
 }
 
 ScriptPromise NativeIOFileManager::getRemainingCapacity(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // TODO(rstz): Consider using ScriptPromise::Cast instead.
-  const ScriptPromise promise = resolver->Promise();
-  uint64_t available_capacity =
-      base::as_unsigned(capacity_tracker_->GetAvailableCapacity());
-  resolver->Resolve(available_capacity);
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "Execution context went away"));
+    return ScriptPromise();
+  }
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::GetRemainingCapacityImpl,
+                WrapWeakPersistent(this), WrapPersistent(resolver)));
+
   return promise;
 }
 
@@ -563,6 +564,15 @@ uint64_t NativeIOFileManager::requestCapacitySync(
                                "NativeIOHost backend went away"));
     return 0;
   }
+
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
+    return 0;
+  }
+
   if (!base::IsValueInRangeForNumericType<int64_t>(requested_capacity)) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
@@ -591,6 +601,15 @@ uint64_t NativeIOFileManager::releaseCapacitySync(
                                "NativeIOHost backend went away"));
     return 0;
   }
+
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
+    return 0;
+  }
+
   if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
@@ -612,6 +631,20 @@ uint64_t NativeIOFileManager::releaseCapacitySync(
 
 uint64_t NativeIOFileManager::getRemainingCapacitySync(
     ExceptionState& exception_state) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "Execution context went away"));
+    return 0;
+  }
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
+    return 0;
+  }
+
   uint64_t available_capacity =
       base::as_unsigned(capacity_tracker_->GetAvailableCapacity());
   return available_capacity;
@@ -743,6 +776,64 @@ void NativeIOFileManager::RenameImpl(String old_name,
 
   backend_->RenameFile(old_name, new_name,
                        WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
+                                              ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  backend_->RequestCapacityChange(
+      requested_capacity,
+      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
+                                              ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kNoSpace,
+                      "Attempted to release more capacity than available"));
+    return;
+  }
+
+  int64_t requested_difference = -base::as_signed(requested_release);
+
+  // Reducing available capacity must be done before performing the IPC, so
+  // capacity cannot be double-spent by concurrent NativeIO operations.
+  if (!capacity_tracker_->ChangeAvailableCapacity(requested_difference)) {
+    blink::RejectNativeIOWithError(
+        resolver, mojom::blink::NativeIOError::New(
+                      mojom::blink::NativeIOErrorType::kNoSpace,
+                      "Attempted to release more capacity than available."));
+    return;
+  }
+
+  backend_->RequestCapacityChange(
+      requested_difference,
+      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::GetRemainingCapacityImpl(
+    ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  uint64_t available_capacity =
+      base::as_unsigned(capacity_tracker_->GetAvailableCapacity());
+  resolver->Resolve(available_capacity);
 }
 
 void NativeIOFileManager::Trace(Visitor* visitor) const {

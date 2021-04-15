@@ -19,6 +19,15 @@ onmessage = function(e) {
       case 'getAllSync':
           storageFoundation.getAllSync();
         break;
+      case 'requestCapacitySync':
+          storageFoundation.requestCapacitySync(10);
+        break;
+      case 'releaseCapacitySync':
+          storageFoundation.releaseCapacitySync(10);
+        break;
+      case 'getRemainingCapacitySync':
+          storageFoundation.getRemainingCapacitySync();
+        break;
       default:
         result = 'unknown message received'
     }

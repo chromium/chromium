@@ -751,8 +751,6 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
     const char* code;
   };
 
-  // TODO(fivedots): Add test cases for getRemainingCapacity(),
-  // requestCapacity(), releaseCapacity() once they land.
   const TestOp kTestOps[] = {
       {.name = "storageFoundation.open()",
        .code = "storageFoundation.open('foo')"},
@@ -762,6 +760,12 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
        .code = "storageFoundation.rename('foo', 'bar')"},
       {.name = "storageFoundation.getAll()",
        .code = "storageFoundation.getAll()"},
+      {.name = "storageFoundation.requestCapacity()",
+       .code = "storageFoundation.requestCapacity(10)"},
+      {.name = "storageFoundation.releaseCapacity()",
+       .code = "storageFoundation.releaseCapacity(10)"},
+      {.name = "storageFoundation.getRemainingCapacity()",
+       .code = "storageFoundation.getRemainingCapacity()"},
   };
 
   content::WebContents* tab =
@@ -789,10 +793,15 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // TODO(fivedots): Add test cases for getRemainingCapacitySync(),
-  // requestCapacitySync(), releaseCapacitySync() once they land.
-  const char* kTestOps[] = {"openSync", "deleteSync", "renameSync",
-                            "getAllSync"};
+  const char* kTestOps[] = {
+      "openSync",
+      "deleteSync",
+      "renameSync",
+      "getAllSync",
+      "requestCapacitySync",
+      "releaseCapacitySync",
+      "getRemainingCapacitySync",
+  };
 
   for (auto* op : kTestOps) {
     EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kBaseCall, op)));

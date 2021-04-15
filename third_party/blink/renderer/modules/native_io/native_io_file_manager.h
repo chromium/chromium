@@ -97,6 +97,18 @@ class NativeIOFileManager final : public ScriptWrappable,
                   String new_name,
                   ScriptPromiseResolver* resolver);
 
+  // Executes the actual requestCapacity, after preconditions have been checked.
+  void RequestCapacityImpl(uint64_t requested_capacity,
+                           ScriptPromiseResolver* resolver);
+
+  // Executes the actual releaseCapacity, after preconditions have been checked.
+  void ReleaseCapacityImpl(uint64_t requested_difference,
+                           ScriptPromiseResolver* resolver);
+
+  // Executes the actual getRemainingCapacity, after preconditions have been
+  // checked.
+  void GetRemainingCapacityImpl(ScriptPromiseResolver* resolver);
+
   // Called when the mojo backend disconnects.
   void OnBackendDisconnect();
 
