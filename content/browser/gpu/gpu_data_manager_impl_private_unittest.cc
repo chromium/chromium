@@ -291,7 +291,11 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#if defined(OS_WIN)
+  gpu::GpuMode expected_mode = gpu::GpuMode::DISABLED;
+#else
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
+#endif  // !OS_WIN
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
 #endif  // !OS_FUCHSIA
@@ -310,7 +314,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
 TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
   ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::DISPLAT_COMPOSITOR, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::DISABLED, manager->GetGpuMode());
 }
 #endif  // IS_CHROMECAST
 

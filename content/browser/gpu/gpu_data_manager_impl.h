@@ -80,6 +80,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // to measure what tasks are in the queue or to move mock time forward.
   void StartUmaTimer();
 
+  bool GpuProcessStartAllowed() const;
+
   bool IsDx12VulkanVersionAvailable() const;
   bool IsGpuFeatureInfoAvailable() const;
 
