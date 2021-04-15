@@ -116,6 +116,7 @@ class InSessionPasswordSyncManager
 
  private:
   void UpdateOnlineAuth();
+  void OnCookiesTransfered();
   // Password sync token API calls.
   void CreateTokenAsync();
   void FetchTokenAsync();

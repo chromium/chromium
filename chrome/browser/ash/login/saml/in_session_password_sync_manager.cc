@@ -8,11 +8,14 @@
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
@@ -176,10 +179,36 @@ void InSessionPasswordSyncManager::CheckCredentials(
     PasswordChangedCallback callback) {
   user_context_ = user_context;
   password_changed_callback_ = std::move(callback);
+  content::StoragePartition* signin_partition = login::GetSigninPartition();
+  if (!signin_partition) {
+    LOG(ERROR) << "The sign-in partition is not available yet";
+    OnCookiesTransfered();
+    return;
+  }
+
+  bool transfer_saml_auth_cookies_on_subsequent_login = false;
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(primary_profile_);
+  if (user->IsAffiliated()) {
+    CrosSettings::Get()->GetBoolean(
+        kAccountsPrefTransferSAMLCookies,
+        &transfer_saml_auth_cookies_on_subsequent_login);
+  }
+
+  ProfileAuthData::Transfer(
+      signin_partition,
+      content::BrowserContext::GetDefaultStoragePartition(primary_profile_),
+      false /*transfer_auth_cookies_on_first_login*/,
+      transfer_saml_auth_cookies_on_subsequent_login,
+      base::BindOnce(&InSessionPasswordSyncManager::OnCookiesTransfered,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void InSessionPasswordSyncManager::OnCookiesTransfered() {
   if (!extended_authenticator_) {
     extended_authenticator_ = ExtendedAuthenticator::Create(this);
   }
-  extended_authenticator_.get()->AuthenticateToCheck(user_context,
+  extended_authenticator_.get()->AuthenticateToCheck(user_context_,
                                                      base::OnceClosure());
 }
 
