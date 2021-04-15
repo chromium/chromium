@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -60,12 +59,14 @@ gfx::ImageSkia CreateFileTypeImageSkia(const base::FilePath& file_path,
                                        const gfx::Size& size) {
   gfx::ImageSkia file_type_icon;
   if (is_folder) {
-    file_type_icon = gfx::CreateVectorIcon(
-        chromeos::kFiletypeFolderIcon, kFileTypeIconSize,
-        HoldingSpaceColorProvider::Get()->GetFileIconColor());
+    file_type_icon =
+        GetIconFromType(IconType::kFolder,
+                        /*dark_background=*/HoldingSpaceColorProvider::Get()
+                            ->IsDarkModeEnabled());
   } else {
     file_type_icon = GetIconForPath(
-        file_path, HoldingSpaceColorProvider::Get()->GetFileIconColor());
+        file_path, /*dark_background=*/HoldingSpaceColorProvider::Get()
+                       ->IsDarkModeEnabled());
   }
   // Superimpose the `file_type_icon` over an empty image in order to center it
   // within the image at a fixed size.

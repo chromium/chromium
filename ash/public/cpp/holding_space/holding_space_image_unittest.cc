@@ -33,7 +33,6 @@ namespace {
 // Appearance.
 constexpr gfx::Size kImageSize(32, 32);
 constexpr int kFileTypeIconSize = 20;
-constexpr SkColor kFileTypeIconColor(gfx::kPlaceholderColor);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -54,14 +53,14 @@ gfx::ImageSkia ExtractFileTypeIcon(const gfx::ImageSkia& image) {
 bool ContainsFileTypeIcon(const gfx::ImageSkia& image,
                           const base::FilePath& file_path) {
   gfx::ImageSkia actual = ExtractFileTypeIcon(image);
-  gfx::ImageSkia expected = GetIconForPath(file_path, kFileTypeIconColor);
+  gfx::ImageSkia expected = GetIconForPath(file_path, gfx::kGoogleGrey700);
   return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
 }
 
 bool ContainsFolderTypeIcon(const gfx::ImageSkia& image) {
   gfx::ImageSkia actual = ExtractFileTypeIcon(image);
   gfx::ImageSkia expected = gfx::CreateVectorIcon(
-      chromeos::kFiletypeFolderIcon, kFileTypeIconSize, kFileTypeIconColor);
+      chromeos::kFiletypeFolderIcon, kFileTypeIconSize, gfx::kGoogleGrey700);
   return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
 }
 
@@ -70,7 +69,7 @@ class FakeHoldingSpaceColorProvider : public HoldingSpaceColorProvider {
  public:
   // HoldingSpaceColorProvider:
   SkColor GetBackgroundColor() const override { return gfx::kPlaceholderColor; }
-  SkColor GetFileIconColor() const override { return kFileTypeIconColor; }
+  bool IsDarkModeEnabled() const override { return false; }
 };
 
 // Helper class that provides a test implementation for the async bitmap

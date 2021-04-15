@@ -17,8 +17,9 @@ namespace holding_space {
 SkColor FakeHoldingSpaceColorProvider::GetBackgroundColor() const {
   return SkColor();
 }
-SkColor FakeHoldingSpaceColorProvider::GetFileIconColor() const {
-  return SkColor();
+
+bool FakeHoldingSpaceColorProvider::IsDarkModeEnabled() const {
+  return false;
 }
 
 }  // namespace holding_space

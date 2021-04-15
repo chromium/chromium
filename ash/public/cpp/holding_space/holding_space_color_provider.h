@@ -21,8 +21,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceColorProvider {
   // Returns the background color for the bubble.
   virtual SkColor GetBackgroundColor() const = 0;
 
-  // Returns the color to be used for file icons.
-  virtual SkColor GetFileIconColor() const = 0;
+  // Returns true if dark mode is enabled, false otherwise.
+  virtual bool IsDarkModeEnabled() const = 0;
 
  protected:
   HoldingSpaceColorProvider();

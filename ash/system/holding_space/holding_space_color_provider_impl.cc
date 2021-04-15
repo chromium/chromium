@@ -5,7 +5,7 @@
 #include "ash/system/holding_space/holding_space_color_provider_impl.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ui/gfx/color_palette.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 
 namespace ash {
 
@@ -18,8 +18,10 @@ SkColor HoldingSpaceColorProviderImpl::GetBackgroundColor() const {
       AshColorProvider::BaseLayerType::kTransparent80);
 }
 
-SkColor HoldingSpaceColorProviderImpl::GetFileIconColor() const {
-  return gfx::kGoogleGrey700;
+// TODO(crbug.com/1156190): Support dark/light mode.
+bool HoldingSpaceColorProviderImpl::IsDarkModeEnabled() const {
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  return AshColorProvider::Get()->IsDarkModeEnabled();
 }
 
 }  // namespace ash

@@ -20,7 +20,7 @@ class FakeHoldingSpaceColorProvider : public ash::HoldingSpaceColorProvider {
 
   // ash::HoldingSpaceColorProvider:
   SkColor GetBackgroundColor() const override;
-  SkColor GetFileIconColor() const override;
+  bool IsDarkModeEnabled() const override;
 };
 
 }  // namespace holding_space
