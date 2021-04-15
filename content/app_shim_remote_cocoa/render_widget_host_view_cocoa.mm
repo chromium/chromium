@@ -1848,11 +1848,17 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 }
 
 // Each RenderWidgetHostViewCocoa has its own input context, but we return
-// nil when the caret is in non-editable content to avoid making input methods
-// do their work.
+// nil when the caret is in non-editable content or password box to avoid
+// making input methods do their work.
+// We disable input method inside password field as it is normal for Mac OS X
+// password input fields to not allow dead keys or non ASCII input methods.
+// There is also a privacy risk if the composition candidate window shows your
+// password when the user is "composing" inside a password field. See
+// crbug.com/1196101 for more info.
 - (NSTextInputContext*)inputContext {
   switch (_textInputType) {
     case ui::TEXT_INPUT_TYPE_NONE:
+    case ui::TEXT_INPUT_TYPE_PASSWORD:
       return nil;
     default:
       return [super inputContext];
