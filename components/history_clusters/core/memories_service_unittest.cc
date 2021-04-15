@@ -192,7 +192,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   // Fake a response from the endpoint.
   test_url_loader_factory_.AddResponse(endpoint, R"(
       {
-        "memories": [
+        "clusters": [
           {
             "description": "description",
             "topics": [
@@ -418,7 +418,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, R"({"memories": [{}, {}]})");
+  test_url_loader_factory_.AddResponse(endpoint, R"({"clusters": [{}, {}]})");
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
 
   // Verify the callback is invoked.

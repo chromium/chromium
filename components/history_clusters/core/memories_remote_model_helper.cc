@@ -120,7 +120,7 @@ history_clusters::Memories ValueToMemories(
     const std::vector<history_clusters::MemoriesVisit>& visits,
     const base::Value& value) {
   return FindListKeyAndCast<history_clusters::mojom::MemoryPtr>(
-      value, "memories", base::BindRepeating(&ValueToMemory, visits));
+      value, "clusters", base::BindRepeating(&ValueToMemory, visits));
 }
 
 }  // namespace
