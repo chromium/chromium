@@ -748,10 +748,8 @@ int ArcSettingsServiceImpl::GetIntegerPref(const std::string& pref_name) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
   DCHECK(pref);
-  int val = -1;
-  bool value_exists = pref->GetValue()->GetAsInteger(&val);
-  DCHECK(value_exists);
-  return val;
+  DCHECK(pref->GetValue()->is_int());
+  return pref->GetValue()->GetIfInt().value_or(-1);
 }
 
 bool ArcSettingsServiceImpl::IsBooleanPrefManaged(
