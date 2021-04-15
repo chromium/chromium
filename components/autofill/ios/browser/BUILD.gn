@@ -70,10 +70,7 @@ js_compile_bundle("suggestion_controller_js") {
 
 source_set("test_support") {
   testonly = true
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credit_card_save_manager_test_observer_bridge.h",
     "credit_card_save_manager_test_observer_bridge.mm",
