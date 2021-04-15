@@ -82,6 +82,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -894,8 +895,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionDocumentPropertiesEnabledTest,
                        ViewerPropertiesDialog) {
   // The properties dialog formats some values based on locale.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
-  base::test::ScopedRestoreDefaultTimezone
-      scoped_timezone{"America/Los_Angeles"};
+  // This will apply to the new processes spawned within RunTestsInJsModule(),
+  // thus consistently running the test in a well known time zone.
+  content::ScopedTimeZone scoped_time_zone{"America/Los_Angeles"};
   RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 

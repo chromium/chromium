@@ -340,6 +340,7 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
     switches::kPpapiStartupDialog,
+    switches::kTimeZoneForTesting,
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kPluginForwardSwitches,
                              base::size(kPluginForwardSwitches));
