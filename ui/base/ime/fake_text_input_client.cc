@@ -39,7 +39,12 @@ void FakeTextInputClient::ClearCompositionText() {}
 void FakeTextInputClient::InsertText(
     const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
-  text_.replace(selection_.start(), selection_.length(), text);
+  if (!composition_range_.is_empty()) {
+    text_.replace(composition_range_.start(), composition_range_.length(),
+                  text);
+  } else {
+    text_.replace(selection_.start(), selection_.length(), text);
+  }
 
   if (cursor_behavior ==
       TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText) {
@@ -84,7 +89,7 @@ bool FakeTextInputClient::GetCompositionCharacterBounds(uint32_t index,
 }
 
 bool FakeTextInputClient::HasCompositionText() const {
-  return false;
+  return !composition_range_.is_empty();
 }
 
 ui::TextInputClient::FocusReason FakeTextInputClient::GetFocusReason() const {
@@ -161,7 +166,7 @@ bool FakeTextInputClient::SetCompositionFromExistingText(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Range FakeTextInputClient::GetAutocorrectRange() const {
-  return {};
+  return autocorrect_range_;
 }
 
 gfx::Rect FakeTextInputClient::GetAutocorrectCharacterBounds() const {
@@ -169,7 +174,8 @@ gfx::Rect FakeTextInputClient::GetAutocorrectCharacterBounds() const {
 }
 
 bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
-  return false;
+  autocorrect_range_ = range;
+  return true;
 }
 #endif
 

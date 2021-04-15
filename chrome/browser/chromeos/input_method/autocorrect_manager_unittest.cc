@@ -9,7 +9,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/chromeos/input_method_chromeos.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -157,7 +159,49 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
                                    /*anchor_pos=*/4);
 }
 
-// TODO(b/171920749): Add unit tests for UndoAutocorrect().
+TEST(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
+  ui::IMEBridge::Initialize();
+  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  ui::InputMethodChromeOS ime(nullptr);
+  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ::testing::NiceMock<MockSuggestionHandler> mock_suggestion_handler;
+  AutocorrectManager manager(&mock_suggestion_handler);
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                   /*anchor_pos=*/4);
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Move cursor to the middle of 'the' and bring the text into composition.
+  fake_text_input_client.SetTextAndSelection(u"the ", gfx::Range(2));
+  ime.SetComposingRange(0, 3, {});
+
+  manager.UndoAutocorrect();
+
+  EXPECT_EQ(fake_text_input_client.text(), u"teh ");
+}
+
+TEST(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
+  ui::IMEBridge::Initialize();
+  ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  ui::InputMethodChromeOS ime(nullptr);
+  ui::IMEBridge::Get()->SetInputContextHandler(&ime);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ::testing::NiceMock<MockSuggestionHandler> mock_suggestion_handler;
+  AutocorrectManager manager(&mock_suggestion_handler);
+  manager.OnSurroundingTextChanged(u"hello world ", /*cursor_pos=*/12,
+                                   /*anchor_pos=*/12);
+  manager.HandleAutocorrect(gfx::Range(0, 11), u"helloworld", u"hello world");
+
+  // Move cursor to the middle of 'hello' and bring the word into composition.
+  fake_text_input_client.SetTextAndSelection(u"hello world ", gfx::Range(2));
+  ime.SetComposingRange(0, 5, {});
+
+  manager.UndoAutocorrect();
+
+  EXPECT_EQ(fake_text_input_client.text(), u"helloworld ");
+}
 
 }  // namespace
 }  // namespace chromeos

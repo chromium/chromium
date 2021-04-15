@@ -95,6 +95,7 @@ class FakeTextInputClient : public TextInputClient {
   gfx::Range selection_;
   gfx::Range composition_range_;
   std::vector<ui::ImeTextSpan> ime_text_spans_;
+  gfx::Range autocorrect_range_;
 };
 
 }  // namespace ui
