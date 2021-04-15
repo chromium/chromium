@@ -4204,7 +4204,6 @@
       'GPU FYI Mac Builder' : {},
       'GPU FYI Mac Builder (dbg)' : {},
       'GPU FYI Win Builder' : {},
-      'GPU FYI Win Builder (dbg)' : {},
       'GPU FYI Win x64 Builder' : {},
       'GPU FYI Win x64 Builder (dbg)' : {},
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
@@ -4800,18 +4799,6 @@
           'gtest_tests': 'gpu_fyi_win_gtests',
           'isolated_scripts': 'gpu_angle_fyi_win_optional_and_representative_perf_isolated_scripts',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
-        },
-      },
-      'Win7 FYI Debug (AMD)': {
-        'os_type': 'win',
-        'browser_config': 'debug',
-        'mixins': [
-          'limited_capacity_bot',
-          'win7_amd_r7_240',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win7_amd_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_debug_telemetry_tests',
         },
       },
       'Win7 FYI Release (AMD)': {

@@ -4766,15 +4766,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Win7 FYI Debug (AMD)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|7|x86|AMD",
-        short_name = "dbg",
-    ),
-    triggered_by = ["GPU FYI Win Builder (dbg)"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Win7 FYI Release (AMD)",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|7|x86|AMD",
@@ -4805,14 +4796,6 @@ ci.gpu_fyi_windows_builder(
     name = "GPU FYI Win Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Release",
-        short_name = "x86",
-    ),
-)
-
-ci.gpu_fyi_windows_builder(
-    name = "GPU FYI Win Builder (dbg)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Builder|Debug",
         short_name = "x86",
     ),
 )

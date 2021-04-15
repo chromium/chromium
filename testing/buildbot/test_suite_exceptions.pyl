@@ -116,11 +116,6 @@
           '--test-timeout': '60',
         },
       },
-      'Win7 FYI Debug (AMD)': {
-        'args': {
-          '--test-timeout': '60',
-        },
-      },
     },
   },
   'angle_perftests': {
@@ -2493,7 +2488,6 @@
       'Mac Debug (Intel)',
       'Mac Retina Debug (AMD)',
       'Win10 FYI x64 Debug (NVIDIA)',
-      'Win7 FYI Debug (AMD)',
       # Disabled due to dbus crashes crbug.com/927465
       'Linux FYI Release (Intel HD 630)',
       'Linux FYI Release (NVIDIA)',
@@ -2839,7 +2833,6 @@
       # crbug.com/555545 and crbug.com/649824:
       # Disable webgl_conformance_gl_tests on some Win/AMD cards.
       # Always fails on older cards, flaky on newer cards.
-      'Win7 FYI Debug (AMD)',
       'Win7 FYI Release (AMD)',
     ],
   },
@@ -2879,11 +2872,6 @@
         ]
       },
     },
-  },
-  'webgl_conformance_vulkan_passthrough_tests': {
-    'remove_from': [
-      'Win7 FYI Debug (AMD)',
-    ],
   },
   'webkit_unit_tests': {
     'remove_from': [
@@ -3081,9 +3069,6 @@
   },
   'xr_browser_tests': {
     'remove_from': [
-      # This exception probably needs to stay due to lack of capacity
-      # on the Win AMD bots.
-      'Win7 FYI Debug (AMD)',
       # Fails on the bot, http://crbug.com/868143
       'Win7 FYI Release (AMD)',
     ],

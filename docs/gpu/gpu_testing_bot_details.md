@@ -449,7 +449,8 @@ Builder].
         bots, but not trybots, and helps avoid overloading the physical
         hardware. Double-check the `BUILD_CONFIG` and `parent_buildername`
         properties for each. They must match the Release/Debug flavor of the
-        builder, like `GPU FYI Win Builder` vs. `GPU FYI Win Builder (dbg)`.
+        builder, like `GPU FYI Win x64 Builder` vs.
+        `GPU FYI Win x64 Builder (dbg)`.
     1.  Get this reviewed and landed. This step tells the Chromium recipe about
         the newly-deployed waterfall bot, so it knows which JSON file to load
         out of src/testing/buildbot and which entry to look at.

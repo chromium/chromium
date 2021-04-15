@@ -356,21 +356,6 @@
       "use_goma": true
     }
   },
-  "GPU FYI Win Builder (dbg)": {
-    "gn_args": {
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "internal_gles2_conform_tests": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "GPU FYI Win x64 Builder": {
     "gn_args": {
       "build_angle_gles1_conform_tests": true,

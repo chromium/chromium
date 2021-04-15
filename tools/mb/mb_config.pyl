@@ -479,7 +479,6 @@
       'GPU FYI Mac Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
       'GPU FYI Perf Android 64 Builder': 'gpu_fyi_tests_android_vulkan_ndk_release_trybot_dcheck_off_arm64',
       'GPU FYI Win Builder': 'gpu_fyi_tests_release_trybot_x86',
-      'GPU FYI Win Builder (dbg)': 'gpu_fyi_tests_debug_trybot_x86',
       'GPU FYI Win x64 Builder': 'gpu_fyi_tests_release_trybot',
       'GPU FYI Win x64 Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
       'GPU FYI Win x64 DX12 Vulkan Builder': 'gpu_fyi_tests_dx12vk_release_trybot',
@@ -1135,7 +1134,6 @@
     },
 
     'tryserver.chromium.win': {
-      'gpu-fyi-try-win7-amd-dbg-32': 'gpu_fyi_tests_debug_trybot_x86',
       'gpu-fyi-try-win7-amd-rel-32': 'gpu_fyi_tests_release_trybot_x86',
       'gpu-fyi-try-win7-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86',
       'gpu-fyi-try-win7-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
@@ -2050,10 +2048,6 @@
 
     'gpu_fyi_tests_debug_trybot': [
       'gpu_fyi_tests', 'debug_bot', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_debug_trybot_x86': [
-      'gpu_fyi_tests', 'debug_bot', 'x86', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_dx12vk_debug_trybot': [
