@@ -252,13 +252,31 @@ bool DoesURLMatchOriginForNavigation(
 }
 
 base::Optional<url::Origin> GetCommittedOriginForFrameEntry(
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const mojom::DidCommitProvisionalLoadParams& params,
+    NavigationRequest* request) {
   // Error pages commit in an opaque origin, yet have the real URL that resulted
   // in an error as the |params.url|. Since successful reload of an error page
   // should commit in the correct origin, setting the opaque origin on the
   // FrameNavigationEntry will be incorrect.
-  if (params.url_is_unreachable)
+  if (request->DidEncounterError())
     return base::nullopt;
+
+  // We also currently don't save committed origins for loadDataWithBaseURL
+  // navigations (probably accidentally). Without this check, navigations to
+  // the FrameNavigationEntry might fail the DoesURLMatchOriginForNavigation()
+  // check since the origin will be based on the base URL instead of the data:
+  // URL used for the navigation.
+  // TODO(https://crbug.com/1198406): Save committed origin in
+  // FrameNavigationEntry for this case too.
+  base::Optional<std::string> data_url_as_string;
+#if defined(OS_ANDROID)
+  data_url_as_string = request->commit_params().data_url_as_string;
+#endif
+  if (NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
+          request->IsInMainFrame(), request->common_params(),
+          data_url_as_string)) {
+    return base::nullopt;
+  }
 
   return base::make_optional(params.origin);
 }
@@ -1345,7 +1363,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   NotifyNavigationEntryCommitted(details);
 
   if (active_entry->GetURL().SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-      navigation_request->GetNetErrorCode() == net::OK) {
+      !navigation_request->DidEncounterError()) {
     UMA_HISTOGRAM_BOOLEAN("Navigation.SecureSchemeHasSSLStatus",
                           !!active_entry->GetSSL().certificate);
   }
@@ -1486,7 +1504,8 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_EXISTING_ENTRY;
   }
 
-  if (params.url_is_unreachable && failed_pending_entry_id_ != 0 &&
+  if (navigation_request->DidEncounterError() &&
+      failed_pending_entry_id_ != 0 &&
       nav_entry_id == failed_pending_entry_id_) {
     // If the renderer was going to a new pending entry that got cleared because
     // of an error, this is the case of the user trying to retry a failed load
@@ -1534,7 +1553,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
         params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-        params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
+        params.url, GetCommittedOriginForFrameEntry(params, request),
         Referrer(*params.referrer), initiator_origin,
         request->GetRedirectChain(), params.page_state, params.method,
         params.post_id, nullptr /* blob_url_loader_factory */,
@@ -1552,7 +1571,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
       new_entry->GetSSL() = SSLStatus();
 
       if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-          request->GetNetErrorCode() == net::OK) {
+          !request->DidEncounterError()) {
         UMA_HISTOGRAM_BOOLEAN(
             "Navigation.SecureSchemeHasSSLStatus.NewPageInPageOriginMismatch",
             !!new_entry->GetSSL().certificate);
@@ -1568,7 +1587,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     update_virtual_url = new_entry->update_virtual_url_with_url();
 
     if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.SecureSchemeHasSSLStatus.NewPageInPage",
                             !!new_entry->GetSSL().certificate);
     }
@@ -1606,7 +1625,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
 
     if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       UMA_HISTOGRAM_BOOLEAN(
           "Navigation.SecureSchemeHasSSLStatus.NewPagePendingEntryMatches",
           !!new_entry->GetSSL().certificate);
@@ -1641,7 +1660,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
 
     if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       UMA_HISTOGRAM_BOOLEAN(
           "Navigation.SecureSchemeHasSSLStatus.NewPageNoMatchingEntry",
           !!new_entry->GetSSL().certificate);
@@ -1656,8 +1675,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     // Don't use the page type from the pending entry. Some interstitial page
     // may have set the type to interstitial. Once we commit, however, the page
     // type must always be normal or error.
-    new_entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
-                                                       : PAGE_TYPE_NORMAL);
+    new_entry->set_page_type(request->DidEncounterError() ? PAGE_TYPE_ERROR
+                                                          : PAGE_TYPE_NORMAL);
     new_entry->SetURL(params.url);
     if (update_virtual_url)
       UpdateVirtualURLToURL(new_entry.get(), params.url);
@@ -1690,8 +1709,11 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                     request));
 
-    if (!params.url_is_unreachable)
-      frame_entry->set_committed_origin(params.origin);
+    if (base::Optional<url::Origin> committed_origin =
+            GetCommittedOriginForFrameEntry(params, request)) {
+      if (committed_origin.has_value())
+        frame_entry->set_committed_origin(committed_origin.value());
+    }
     if (request->web_bundle_navigation_info()) {
       frame_entry->set_web_bundle_navigation_info(
           request->web_bundle_navigation_info()->Clone());
@@ -1790,7 +1812,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     }
 
     if (params.url.SchemeIs(url::kHttpsScheme) &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       bool has_cert = !!entry->GetSSL().certificate;
       if (is_same_document) {
         UMA_HISTOGRAM_BOOLEAN(
@@ -1833,7 +1855,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     }
 
     if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       bool has_cert = !!entry->GetSSL().certificate;
       if (is_same_document && was_restored) {
         UMA_HISTOGRAM_BOOLEAN(
@@ -1877,7 +1899,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
           SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
 
     if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        request->GetNetErrorCode() == net::OK) {
+        !request->DidEncounterError()) {
       bool has_cert = !!entry->GetSSL().certificate;
       if (is_same_document) {
         UMA_HISTOGRAM_BOOLEAN(
@@ -1895,8 +1917,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   DCHECK(entry);
 
   // The URL may have changed due to redirects.
-  entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
-                                                 : PAGE_TYPE_NORMAL);
+  entry->set_page_type(request->DidEncounterError() ? PAGE_TYPE_ERROR
+                                                    : PAGE_TYPE_NORMAL);
   entry->SetURL(params.url);
   entry->SetReferrer(Referrer(*params.referrer));
   if (entry->update_virtual_url_with_url())
@@ -1915,7 +1937,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
+      params.url, GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -1976,7 +1998,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
+      params.url, GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -2062,7 +2084,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   last_committed->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
+      params.url, GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
@@ -2508,9 +2530,9 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         node->unique_name(), -1, -1, nullptr,
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
-        nullptr /* origin */, referrer, initiator_origin, std::vector<GURL>(),
-        blink::PageState(), method, -1, blob_url_loader_factory,
-        nullptr /* web_bundle_navigation_info */,
+        base::nullopt /* origin */, referrer, initiator_origin,
+        std::vector<GURL>(), blink::PageState(), method, -1,
+        blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */);
   }

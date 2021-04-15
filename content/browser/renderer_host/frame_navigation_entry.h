@@ -49,7 +49,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       scoped_refptr<SiteInstanceImpl> site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
-      const url::Origin* origin,
+      const base::Optional<url::Origin>& origin,
       const Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,

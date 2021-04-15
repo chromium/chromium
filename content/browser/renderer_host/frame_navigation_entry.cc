@@ -24,7 +24,7 @@ FrameNavigationEntry::FrameNavigationEntry(
     scoped_refptr<SiteInstanceImpl> site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
-    const url::Origin* origin,
+    const base::Optional<url::Origin>& origin,
     const Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     const std::vector<GURL>& redirect_chain,
@@ -42,6 +42,7 @@ FrameNavigationEntry::FrameNavigationEntry(
       site_instance_(std::move(site_instance)),
       source_site_instance_(std::move(source_site_instance)),
       url_(url),
+      committed_origin_(origin),
       referrer_(referrer),
       initiator_origin_(initiator_origin),
       redirect_chain_(redirect_chain),
@@ -53,10 +54,7 @@ FrameNavigationEntry::FrameNavigationEntry(
       web_bundle_navigation_info_(std::move(web_bundle_navigation_info)),
       subresource_web_bundle_navigation_info_(
           std::move(subresource_web_bundle_navigation_info)),
-      policy_container_policies_(std::move(policy_container_policies)) {
-  if (origin)
-    committed_origin_ = *origin;
-}
+      policy_container_policies_(std::move(policy_container_policies)) {}
 
 FrameNavigationEntry::~FrameNavigationEntry() {}
 

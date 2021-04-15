@@ -238,9 +238,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   //
   // DO NOT use this before the navigation commit. It would always return false.
   // You can use it from WebContentsObserver::DidFinishNavigation().
-  //
-  // Note that if an error page reloads, this will return true even though
-  // GetNetErrorCode will be net::OK.
   virtual bool IsErrorPage() = 0;
 
   // Not all committed subframe navigations (i.e., !IsInMainFrame &&

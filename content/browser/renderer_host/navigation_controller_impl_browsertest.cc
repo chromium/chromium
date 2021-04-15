@@ -354,6 +354,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   // data: URL loads always have HTTP status code 200.
   EXPECT_EQ(200, contents()->GetMainFrame()->last_http_status_code());
 
+  // Verify that the page is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
+
   // The redirect chain contains the base URL instead of the commit URL or
   // the history URL, because it's the URL used by the DocumentLoader (unless
   // the base URL is empty).
@@ -607,6 +611,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithInvalidBaseURL(
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
 
+  // Verify that the page is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
+
   const GURL push_state_url =
       GURL("data:text/html;charset=utf-8," + data + "#foo");
   EXPECT_EQ(
@@ -686,6 +694,11 @@ void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
   EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  // Verify that the page is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
+
   {
     // Make a same-document navigation via history.pushState.
     TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
@@ -712,6 +725,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
   EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
 
+  // Verify that the page is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
+
   {
     // Make a same-document navigation via fragment navigation.
     TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
@@ -724,6 +741,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
   EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  // Verify that the page is not classified as an error page.
+  EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
+  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
 
   SetBrowserClientForTesting(old_client);
 }
@@ -938,6 +959,62 @@ IN_PROC_BROWSER_TEST_P(
       true /* use_load_data_as_string_with_base_url */);
 }
 #endif
+
+// Tests that LoadDataWithBaseURL navigations that failed will commit an error
+// page and correctly classified as an error page navigation.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ErrorPageFromLoadDataWithBaseURL) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // WebView or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
+  const GURL base_url("http://baseurl");
+  const GURL history_url("http://historyurl");
+  const std::string data = "<html><body></body></html>";
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Set up an URLLoaderInterceptor which will cause all navigations to fail.
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+  url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+        network::URLLoaderCompletionStatus status;
+        status.error_code = net::ERR_NOT_IMPLEMENTED;
+        params->client->OnComplete(status);
+        return true;
+      }));
+
+  // Do a LoadDataWithBaseURL navigation that will fail and commit an error
+  // page instead.
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    same_tab_observer.Wait();
+
+    EXPECT_FALSE(same_tab_observer.last_navigation_succeeded());
+    EXPECT_EQ(1, controller.GetEntryCount());
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+
+    // Verify that the page is classified as an error page.
+    EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+    EXPECT_TRUE(contents()->GetMainFrame()->is_error_page());
+
+    EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
+    EXPECT_EQ(history_url, entry->GetVirtualURL());
+    EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
+    EXPECT_EQ(data_url, entry->GetURL());
+  }
+}
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateFromLoadDataWithBaseURL) {
@@ -2003,17 +2080,19 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     previous_entry = controller.GetLastCommittedEntry();
   }
 
+  // Set up an URLLoaderInterceptor which will cause all navigations to fail.
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+  url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+        network::URLLoaderCompletionStatus status;
+        status.error_code = net::ERR_NOT_IMPLEMENTED;
+        params->client->OnComplete(status);
+        return true;
+      }));
+
+  // Reload the tab (browser-initiated), but this time we hit a network error
+  // and end up in an error page.
   {
-    // Reload the tab (browser-initiated), but this time we hit a network error
-    // and end up in an error page.
-    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
-        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
-          network::URLLoaderCompletionStatus status;
-          status.error_code = net::ERR_NOT_IMPLEMENTED;
-          params->client->OnComplete(status);
-          return true;
-        }));
     TestNavigationObserver reload_observer(shell()->web_contents());
     FrameNavigateParamsCapturer capturer(root);
     shell()->Reload();
@@ -2029,11 +2108,37 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // TODO(https://crbug.com/1188956): This should replace the last committed
     // entry instead.
     EXPECT_FALSE(capturer.did_replace_entry());
-    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
-
-    previous_entry = controller.GetLastCommittedEntry();
-    url_loader_interceptor.reset();
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(previous_entry, entry);
+    EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+    previous_entry = entry;
   }
+
+  // Reload the tab and hit the same network error again.
+  {
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(root);
+    shell()->Reload();
+    capturer.Wait();
+    EXPECT_FALSE(reload_observer.last_navigation_succeeded());
+
+    // We're classifying this as EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+
+    // We reused the last committed entry for this navigation.
+    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // entry instead.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(previous_entry, entry);
+    EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+    previous_entry = entry;
+  }
+
+  // Reset the  URLLoaderInterceptor so future navigations will succeed.
+  url_loader_interceptor.reset();
 
   {
     // Reload the tab successfully after a failed navigation.

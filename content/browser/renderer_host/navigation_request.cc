@@ -5554,6 +5554,10 @@ bool NavigationRequest::IsErrorPage() {
   return state_ == DID_COMMIT_ERROR_PAGE;
 }
 
+bool NavigationRequest::DidEncounterError() const {
+  return net_error_ != net::OK;
+}
+
 net::HttpResponseInfo::ConnectionInfo NavigationRequest::GetConnectionInfo() {
   return response() ? response()->connection_info
                     : net::HttpResponseInfo::ConnectionInfo();

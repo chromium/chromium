@@ -2944,7 +2944,7 @@ void RenderFrameHostImpl::DidNavigate(
   // occurred.
   // TODO(creis): Remove this block and always set the URL.
   // See https://crbug.com/588314.
-  if (!params.url_is_unreachable)
+  if (!navigation_request->DidEncounterError())
     last_successful_url_ = params.url;
 
   // Set the last committed HTTP method and POST ID. Note that we're setting
@@ -7097,7 +7097,7 @@ void RenderFrameHostImpl::FailedNavigation(
   dom_content_loaded_ = false;
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
-         navigation_request->GetNetErrorCode() != net::OK);
+         navigation_request->DidEncounterError());
 }
 
 void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
@@ -7747,7 +7747,7 @@ void RenderFrameHostImpl::
     // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
     // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
     // and/or |coep_reporter| methods).
-    if (navigation_request->GetNetErrorCode() == net::OK) {
+    if (!navigation_request->DidEncounterError()) {
       *out_isolation_info =
           navigation_request->isolation_info_for_subresources();
       coep_reporter = navigation_request->coep_reporter();
@@ -8798,14 +8798,14 @@ mojom::Frame* RenderFrameHostImpl::GetMojomFrameInRenderer() {
 
 bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(
     NavigationRequest* navigation_request,
-    bool* should_commit_unreachable_url) {
-  if (should_commit_unreachable_url)
-    *should_commit_unreachable_url = false;
+    bool* should_commit_error_page) {
+  if (should_commit_error_page)
+    *should_commit_error_page = false;
 
   if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame())) {
     if (GetSiteInstance()->GetSiteInfo().is_error_page()) {
-      if (should_commit_unreachable_url)
-        *should_commit_unreachable_url = true;
+      if (should_commit_error_page)
+        *should_commit_error_page = true;
 
       // With error page isolation, any URL can commit in an error page process.
       return true;
@@ -8900,14 +8900,15 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // Error pages may sometimes commit a URL in the wrong process, which requires
   // an exception for the CanCommitOriginAndUrl() checks.  This is ok as long
   // as the origin is opaque.
-  bool should_commit_unreachable_url = false;
+  bool should_commit_error_page = false;
   bool bypass_checks_for_error_page = ShouldBypassSecurityChecksForErrorPage(
-      navigation_request, &should_commit_unreachable_url);
+      navigation_request, &should_commit_error_page);
 
   // Commits in the error page process must only be failures, otherwise
   // successful navigations could commit documents from origins different
   // than the chrome-error://chromewebdata/ one and violate expectations.
-  if (should_commit_unreachable_url && !params->url_is_unreachable) {
+  if (should_commit_error_page &&
+      (navigation_request && !navigation_request->DidEncounterError())) {
     DEBUG_ALIAS_FOR_ORIGIN(origin_debug_alias, params->origin);
     bad_message::ReceivedBadMessage(
         process, bad_message::RFH_ERROR_PROCESS_NON_ERROR_COMMIT);
@@ -9047,9 +9048,8 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   return true;
 }
 
-void RenderFrameHostImpl::UpdateSiteURL(const GURL& url,
-                                        bool url_is_unreachable) {
-  if (url_is_unreachable) {
+void RenderFrameHostImpl::UpdateSiteURL(const GURL& url, bool is_error_page) {
+  if (is_error_page) {
     SetLastCommittedSiteInfo(GURL());
   } else {
     SetLastCommittedSiteInfo(url);
@@ -9175,7 +9175,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   navigation_request->set_has_user_gesture(params->gesture ==
                                            NavigationGestureUser);
 
-  UpdateSiteURL(params->url, params->url_is_unreachable);
+  UpdateSiteURL(params->url, navigation_request->DidEncounterError());
 
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().
@@ -9339,7 +9339,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 // struct.
 void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     NavigationRequest* navigation_request) {
-  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
+  is_error_page_ = navigation_request->DidEncounterError();
 
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
@@ -10104,7 +10104,7 @@ void RenderFrameHostImpl::
   // if the net error code is not net::OK, or if we're doing a same-document
   // navigation on an error page (only possible for renderer-initiated
   // navigations).
-  const bool is_error_page = (request->GetNetErrorCode() != net::OK ||
+  const bool is_error_page = (request->DidEncounterError() ||
                               (is_error_page_ && request->IsSameDocument()));
 
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(

@@ -579,6 +579,13 @@ class CONTENT_EXPORT NavigationRequest
   // Whether this navigation navigates a subframe of an MHTML document.
   bool IsForMhtmlSubframe() const;
 
+  // Whether the navigation has a non-OK net error code.
+  // Note that this is different from IsErrorPage(), which only returns true if
+  // the navigation has finished committing an error page. The net error code
+  // can be non-OK before commit and also in cases that didn't result in the
+  // navigation being committed (e.g. canceled navigations).
+  virtual bool DidEncounterError() const;
+
   std::unique_ptr<AppCacheNavigationHandle> TakeAppCacheHandle();
 
   AppCacheNavigationHandle* appcache_handle() const {
