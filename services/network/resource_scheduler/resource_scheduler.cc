@@ -942,12 +942,12 @@ class ResourceScheduler::Client
       base::Optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
       return maybe_level.has_value() &&
              *maybe_level <=
-                 static_cast<int>(base::android::RadioSignalLevel::kPoor);
+                 static_cast<int>(base::android::RadioSignalLevel::kModerate);
     }
     base::Optional<base::android::RadioSignalLevel> maybe_level =
         base::android::RadioUtils::GetCellSignalLevel();
     return maybe_level.has_value() &&
-           *maybe_level <= base::android::RadioSignalLevel::kPoor;
+           *maybe_level <= base::android::RadioSignalLevel::kModerate;
   }
 #endif  // defined(OS_ANDROID)
 
