@@ -3,8 +3,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <body>
 <script>
 
@@ -29,10 +27,11 @@ promise_test(async t => {
   ];
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
-    assert_equals(result[i].event, expected[i].event, 'event');
+    assert_equals(result[i].event, expected[i].event, `event[${i}]`);
     assert_equals(result[i].prerendering, expected[i].prerendering,
-      'prerendering');
+      `prerendering[${i}]`);
   }
+  bc.close();
 }, `the access to the Web Locks API should be deferred until the prerendered
    page is activated`);
 
