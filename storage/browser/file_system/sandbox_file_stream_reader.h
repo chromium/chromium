@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FILE_STREAM_READER_H_
-#define STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FILE_STREAM_READER_H_
+#ifndef STORAGE_BROWSER_FILE_SYSTEM_SANDBOX_FILE_STREAM_READER_H_
+#define STORAGE_BROWSER_FILE_SYSTEM_SANDBOX_FILE_STREAM_READER_H_
 
 #include <stdint.h>
 
@@ -28,15 +28,17 @@ namespace storage {
 
 class FileSystemContext;
 
-// Generic FileStreamReader implementation for FileSystem files.
-// Note: This generic implementation would work for any filesystems but
-// remote filesystem should implement its own reader rather than relying
-// on FileSystemOperation::GetSnapshotFile() which may force downloading
-// the entire contents for remote files.
-class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileStreamReader
+// FileStreamReader implementation for Sandboxed FileSystem files.
+// This wraps either a LocalFileStreamReader or a MemoryFileStreamReader,
+// depending on if we're in an incognito profile or not.
+class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
     : public FileStreamReader {
  public:
-  ~FileSystemFileStreamReader() override;
+  SandboxFileStreamReader(FileSystemContext* file_system_context,
+                          const FileSystemURL& url,
+                          int64_t initial_offset,
+                          const base::Time& expected_modification_time);
+  ~SandboxFileStreamReader() override;
 
   // FileStreamReader overrides.
   int Read(net::IOBuffer* buf,
@@ -46,12 +48,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileStreamReader
 
  private:
   friend class FileStreamReader;
-  friend class FileSystemFileStreamReaderTest;
-
-  FileSystemFileStreamReader(FileSystemContext* file_system_context,
-                             const FileSystemURL& url,
-                             int64_t initial_offset,
-                             const base::Time& expected_modification_time);
 
   int CreateSnapshot();
   void DidCreateSnapshot(base::File::Error file_error,
@@ -72,11 +68,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileStreamReader
   std::unique_ptr<FileStreamReader> file_reader_;
   scoped_refptr<ShareableFileReference> snapshot_ref_;
   bool has_pending_create_snapshot_;
-  base::WeakPtrFactory<FileSystemFileStreamReader> weak_factory_{this};
+  base::WeakPtrFactory<SandboxFileStreamReader> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(FileSystemFileStreamReader);
+  DISALLOW_COPY_AND_ASSIGN(SandboxFileStreamReader);
 };
 
 }  // namespace storage
 
-#endif  // STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FILE_STREAM_READER_H_
+#endif  // STORAGE_BROWSER_FILE_SYSTEM_SANDBOX_FILE_STREAM_READER_H_

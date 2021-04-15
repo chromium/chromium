@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/browser/file_system/file_system_file_stream_reader.h"
+#include "storage/browser/file_system/sandbox_file_stream_reader.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -38,9 +38,9 @@ namespace {
 const char kURLOrigin[] = "http://remote/";
 }  // namespace
 
-class FileSystemFileStreamReaderTest : public FileStreamReaderTest {
+class SandboxFileStreamReaderTest : public FileStreamReaderTest {
  public:
-  FileSystemFileStreamReaderTest() = default;
+  SandboxFileStreamReaderTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -113,6 +113,6 @@ class FileSystemFileStreamReaderTest : public FileStreamReaderTest {
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FileSystem,
                                FileStreamReaderTypedTest,
-                               FileSystemFileStreamReaderTest);
+                               SandboxFileStreamReaderTest);
 
 }  // namespace storage
