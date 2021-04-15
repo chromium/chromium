@@ -8,7 +8,9 @@
 #include "base/callback_forward.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/version_info/version_info.h"
 
@@ -20,6 +22,14 @@ class StarterPlatformDelegate {
  public:
   StarterPlatformDelegate() = default;
   virtual ~StarterPlatformDelegate() = default;
+
+  // Asks the platform delegate to return a UI delegate for trigger scripts.
+  virtual std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
+  CreateTriggerScriptUiDelegate() = 0;
+  // Allows integration tests to provide their own mocked trigger script request
+  // senders. Returns null if the default request sender should be used.
+  virtual std::unique_ptr<ServiceRequestSender>
+  GetTriggerScriptRequestSenderToInject() = 0;
 
   // Access to the login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;

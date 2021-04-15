@@ -8,12 +8,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -122,7 +125,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
             argsBuilder.addParameter(param.getKey(), param.getValue());
         }
-        argsBuilder.addParameter(TriggerContext.PARAMETER_START_IMMEDIATELY, false);
+        argsBuilder.addParameter("START_IMMEDIATELY", false);
+        argsBuilder.addParameter("ENABLED", true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AutofillAssistantFacade.start(mTestRule.getActivity(), argsBuilder.build()));
     }
@@ -252,7 +256,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         /* no trigger condition */
                         .setUserInterface(createDefaultUI("Hello world",
                                 /* bubbleMessage = */ "",
-                                /* withProgressBar = */ true));
+                                /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
                 (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
                         .addTriggerScripts(triggerScript)
@@ -267,7 +271,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withContentDescription(R.string.autofill_assistant_overflow_options))
                 .perform(click());
         waitUntilViewMatchesCondition(withText("Never show again"), isCompletelyDisplayed());
-        onView(withText("Never show again")).perform(click());
+        onView(withText("Never show again"))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
         waitUntilViewAssertionTrue(
                 withText("Hello world"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpOn());

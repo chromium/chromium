@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/version_info/version_info.h"
@@ -31,9 +32,8 @@ bool IsDialogOnboardingEnabled() {
 namespace autofill_assistant {
 
 TriggerScriptCoordinator::TriggerScriptCoordinator(
+    StarterPlatformDelegate* starter_delegate,
     content::WebContents* web_contents,
-    WebsiteLoginManager* website_login_manager,
-    base::RepeatingCallback<bool(void)> is_first_time_user_callback,
     std::unique_ptr<WebController> web_controller,
     std::unique_ptr<ServiceRequestSender> request_sender,
     const GURL& get_trigger_scripts_server,
@@ -41,8 +41,8 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
     std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
     ukm::UkmRecorder* ukm_recorder)
     : content::WebContentsObserver(web_contents),
-      website_login_manager_(website_login_manager),
-      is_first_time_user_callback_(std::move(is_first_time_user_callback)),
+      starter_delegate_(starter_delegate),
+      ui_delegate_(starter_delegate->CreateTriggerScriptUiDelegate()),
       request_sender_(std::move(request_sender)),
       get_trigger_scripts_server_(get_trigger_scripts_server),
       web_controller_(std::move(web_controller)),
@@ -54,7 +54,12 @@ TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 
 void TriggerScriptCoordinator::Start(
     const GURL& deeplink_url,
-    std::unique_ptr<TriggerContext> trigger_context) {
+    std::unique_ptr<TriggerContext> trigger_context,
+    base::OnceCallback<void(Metrics::LiteScriptFinishedState,
+                            std::unique_ptr<TriggerContext>,
+                            base::Optional<TriggerScriptProto>)> callback) {
+  DCHECK(!callback_);
+  callback_ = std::move(callback);
   deeplink_url_ = deeplink_url;
   trigger_context_ = std::move(trigger_context);
 
@@ -113,6 +118,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
   Metrics::RecordLiteScriptShownToUser(
       ukm_recorder_, web_contents(), UNSPECIFIED_TRIGGER_UI_TYPE,
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_RUNNING);
+  ui_delegate_->Attach(this);
   StartCheckingTriggerConditions();
 }
 
@@ -134,6 +140,7 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
                LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION);
       return;
     case TriggerScriptProto::CANCEL_FOREVER:
+      starter_delegate_->SetProactiveHelpSettingEnabled(false);
       Stop(Metrics::LiteScriptFinishedState::
                LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER);
       return;
@@ -145,9 +152,10 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
         NOTREACHED();
         return;
       }
-      for (Observer& observer : observers_) {
-        observer.OnOnboardingRequested(IsDialogOnboardingEnabled());
-      }
+      starter_delegate_->ShowOnboarding(
+          IsDialogOnboardingEnabled(), *trigger_context_.get(),
+          base::BindOnce(&TriggerScriptCoordinator::OnOnboardingFinished,
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
     case TriggerScriptProto::UNDEFINED:
       return;
@@ -194,13 +202,17 @@ void TriggerScriptCoordinator::OnOnboardingFinished(bool onboardingShown,
               LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED);
     }
 
+    trigger_context_->SetOnboardingShown(onboardingShown);
     if (result == OnboardingResult::ACCEPTED) {
       // Do not hide the trigger script here, to facilitate a smooth
       // transition to the regular flow.
       StopCheckingTriggerConditions();
-      NotifyOnTriggerScriptFinished(
+      starter_delegate_->SetOnboardingAccepted(true);
+      ui_delegate_->Detach();
+      RunCallback(
           trigger_ui_type,
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED,
+          trigger_scripts_[visible_trigger_script_]->AsProto());
     } else if (!IsDialogOnboardingEnabled()) {
       Stop(Metrics::LiteScriptFinishedState::
                LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED);
@@ -244,15 +256,10 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
     return;
   }
-}
-
-void TriggerScriptCoordinator::OnProactiveHelpSettingChanged(
-    bool proactive_help_enabled) {
-  if (!proactive_help_enabled) {
-    Stop(Metrics::LiteScriptFinishedState::
-             LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
-    return;
-  }
+  // Note: do not update the static trigger conditions here! We should ignore
+  // this particular update to avoid hiding the first-time trigger script
+  // immediately after showing it.
+  starter_delegate_->SetIsFirstTimeUser(false);
 }
 
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
@@ -260,15 +267,8 @@ void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
   TriggerUIType trigger_ui_type = GetTriggerUiTypeForVisibleScript();
   HideTriggerScript();
   StopCheckingTriggerConditions();
-  NotifyOnTriggerScriptFinished(trigger_ui_type, state);
-}
-
-void TriggerScriptCoordinator::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TriggerScriptCoordinator::RemoveObserver(const Observer* observer) {
-  observers_.RemoveObserver(observer);
+  ui_delegate_->Detach();
+  RunCallback(trigger_ui_type, state, /* trigger_script = */ base::nullopt);
 }
 
 void TriggerScriptCoordinator::DidFinishNavigation(
@@ -331,6 +331,10 @@ void TriggerScriptCoordinator::OnTabInteractabilityChanged(bool interactable) {
   OnEffectiveVisibilityChanged();
 }
 
+const TriggerContext& TriggerScriptCoordinator::GetTriggerContext() const {
+  return *trigger_context_;
+}
+
 void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
   bool visible = web_contents_visible_ && web_contents_interactable_;
   if (visible) {
@@ -339,17 +343,19 @@ void TriggerScriptCoordinator::OnEffectiveVisibilityChanged() {
     // script that was shown before is still available, hence we need to fetch
     // it again.
     DCHECK(visible_trigger_script_ == -1);
+    // While the tab was invisible, the user may have disabled proactive help.
+    if (!starter_delegate_->GetProactiveHelpSettingEnabled()) {
+      Stop(Metrics::LiteScriptFinishedState::
+               LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
+      return;
+    }
     VLOG(2) << "Restarting after tab became visible again";
-    Start(deeplink_url_, std::move(trigger_context_));
+    Start(deeplink_url_, std::move(trigger_context_), std::move(callback_));
   } else {
     // Hide UI on tab switch.
     VLOG(2) << "Pausing after tab became invisible or non-interactable";
     StopCheckingTriggerConditions();
     HideTriggerScript();
-  }
-
-  for (Observer& observer : observers_) {
-    observer.OnVisibilityChanged(visible);
   }
 }
 
@@ -373,9 +379,7 @@ void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
     dynamic_trigger_conditions_->AddSelectorsFromTriggerScript(
         trigger_script->AsProto());
   }
-  static_trigger_conditions_->Init(
-      website_login_manager_, is_first_time_user_callback_, deeplink_url_,
-      trigger_context_.get(),
+  static_trigger_conditions_->Update(
       base::BindOnce(&TriggerScriptCoordinator::CheckDynamicTriggerConditions,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -406,10 +410,8 @@ void TriggerScriptCoordinator::ShowTriggerScript(int index) {
   Metrics::RecordLiteScriptShownToUser(
       ukm_recorder_, web_contents(), GetTriggerUiTypeForVisibleScript(),
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SHOWN_TO_USER);
-  auto proto = trigger_scripts_[index]->AsProto().user_interface();
-  for (Observer& observer : observers_) {
-    observer.OnTriggerScriptShown(proto);
-  }
+  ui_delegate_->ShowTriggerScript(
+      trigger_scripts_[index]->AsProto().user_interface());
 }
 
 void TriggerScriptCoordinator::HideTriggerScript() {
@@ -421,11 +423,13 @@ void TriggerScriptCoordinator::HideTriggerScript() {
   // time a script was invisible is reset.
   remaining_trigger_condition_evaluations_ =
       initial_trigger_condition_evaluations_;
-  static_trigger_conditions_->set_is_first_time_user(false);
   visible_trigger_script_ = -1;
-  for (Observer& observer : observers_) {
-    observer.OnTriggerScriptHidden();
-  }
+  ui_delegate_->HideTriggerScript();
+
+  // Now that the trigger script is hidden, we may need to update the
+  // static trigger conditions. This is done specifically to account for
+  // the |is_first_time_user| flag that might have changed.
+  static_trigger_conditions_->Update(base::DoNothing());
 }
 
 void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
@@ -516,18 +520,16 @@ void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
   OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true);
 }
 
-void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(
+void TriggerScriptCoordinator::RunCallback(
     TriggerUIType trigger_ui_type,
-    Metrics::LiteScriptFinishedState state) {
+    Metrics::LiteScriptFinishedState state,
+    const base::Optional<TriggerScriptProto>& trigger_script) {
   if (!finished_state_recorded_) {
     finished_state_recorded_ = true;
     Metrics::RecordLiteScriptFinished(ukm_recorder_, web_contents(),
                                       trigger_ui_type, state);
   }
-
-  for (Observer& observer : observers_) {
-    observer.OnTriggerScriptFinished(state);
-  }
+  std::move(callback_).Run(state, std::move(trigger_context_), trigger_script);
 }
 
 TriggerUIType TriggerScriptCoordinator::GetTriggerUiTypeForVisibleScript()

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsCo
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -129,7 +130,8 @@ public class AutofillAssistantDetailsUiTest {
 
     @Before
     public void setUp() {
-        AutofillAssistantUiTestUtil.startOnBlankPage(mTestRule);
+        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getTargetContext(), "about:blank"));
     }
 
     /** Tests assumptions about the initial state of the details. */

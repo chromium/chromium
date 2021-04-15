@@ -402,6 +402,8 @@ source_set("unit_tests") {
     "trigger_scripts/mock_dynamic_trigger_conditions.h",
     "trigger_scripts/mock_static_trigger_conditions.cc",
     "trigger_scripts/mock_static_trigger_conditions.h",
+    "trigger_scripts/mock_trigger_script_ui_delegate.cc",
+    "trigger_scripts/mock_trigger_script_ui_delegate.h",
     "trigger_scripts/static_trigger_conditions_unittest.cc",
     "trigger_scripts/trigger_script_coordinator_unittest.cc",
     "trigger_scripts/trigger_script_unittest.cc",

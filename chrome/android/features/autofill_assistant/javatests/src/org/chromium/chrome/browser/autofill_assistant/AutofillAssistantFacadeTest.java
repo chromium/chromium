@@ -38,14 +38,12 @@ public class AutofillAssistantFacadeTest {
     }
 
     /**
-     * Tests that mandatory parameters are indeed mandatory.
+     * Tests {@code isAutofillAssistantEnabled}.
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
-    public void
-    testMandatoryParameters() {
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testEnabled() {
         Intent intent = new Intent();
         Assert.assertFalse(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
 
@@ -54,15 +52,6 @@ public class AutofillAssistantFacadeTest {
         Assert.assertFalse(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
 
         intent.putExtra(extrasPrefix + "ENABLED", true);
-        Assert.assertFalse(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
-
-        intent.putExtra(extrasPrefix + "START_IMMEDIATELY", true);
-        Assert.assertTrue(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
-
-        intent.putExtra(extrasPrefix + "START_IMMEDIATELY", false);
-        Assert.assertFalse(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
-
-        intent.putExtra(extrasPrefix + "REQUEST_TRIGGER_SCRIPT", true);
         Assert.assertTrue(AutofillAssistantFacade.isAutofillAssistantEnabled(intent));
     }
 

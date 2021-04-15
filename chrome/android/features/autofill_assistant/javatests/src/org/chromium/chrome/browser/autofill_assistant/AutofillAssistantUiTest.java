@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.inOrder;
 
-import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,14 +95,6 @@ public class AutofillAssistantUiTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    /**
-     * @see CustomTabsTestUtils#createMinimalCustomTabIntent(Context, String).
-     */
-    private Intent createMinimalCustomTabIntent() {
-        return AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
-                mTestPage, /* startImmediately = */ true);
-    }
-
     private CustomTabActivity getActivity() {
         return mCustomTabActivityTestRule.getActivity();
     }
@@ -120,7 +111,9 @@ public class AutofillAssistantUiTest {
     public void testStartAndAccept() throws Exception {
         InOrder inOrder = inOrder(mRunnableMock);
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(), mTestPage));
         BottomSheetController bottomSheetController =
                 TestThreadUtils.runOnUiThreadBlocking(this::initializeBottomSheet);
         AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -255,7 +248,9 @@ public class AutofillAssistantUiTest {
     public void testTooltipBubble() throws Exception {
         InOrder inOrder = inOrder(mRunnableMock);
 
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
+                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(), mTestPage));
         BottomSheetController bottomSheetController =
                 TestThreadUtils.runOnUiThreadBlocking(this::initializeBottomSheet);
         AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {

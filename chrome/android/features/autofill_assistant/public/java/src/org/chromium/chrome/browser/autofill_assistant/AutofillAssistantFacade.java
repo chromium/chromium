@@ -11,15 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FieldTrialList;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
-import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -47,18 +43,9 @@ public class AutofillAssistantFacade {
 
     private static final String EXPERIMENTS_SYNTHETIC_TRIAL = "AutofillAssistantExperimentsTrial";
 
-    /**
-     * When starting a lite script, depending on incoming script parameters, we mark users as being
-     * in either the control or the experiment group to allow for aggregation of UKM metrics.
-     */
-    private static final String LITE_SCRIPT_EXPERIMENT_TRIAL =
-            "AutofillAssistantLiteScriptExperiment";
-    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL = "Control";
-    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT = "Experiment";
-
     /** Returns true if conditions are satisfied to attempt to start Autofill Assistant. */
     private static boolean isConfigured(TriggerContext arguments) {
-        return arguments.areMandatoryParametersSet();
+        return arguments.isEnabled();
     }
 
     /**
@@ -117,56 +104,7 @@ public class AutofillAssistantFacade {
         String intent = triggerContext.getParameters().get("INTENT");
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
-        waitForTabWithWebContents(activity, tab -> {
-            if (triggerContext.containsTriggerScript()) {
-                // Create a field trial and assign experiment arm based on script parameter. This
-                // is needed to tag UKM data to allow for A/B experiment comparisons.
-                FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
-                        triggerContext.isTriggerScriptExperiment()
-                                ? TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
-                                : TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
-
-                // Record this as soon as possible, to establish a baseline.
-                AutofillAssistantMetrics.recordLiteScriptStarted(
-                        tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
-
-                if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
-                                == null
-                        && triggerContext.containsTriggerScript()
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS)) {
-                    Log.v(TAG,
-                            "TriggerScript stopping: DFM module not available and on-demand"
-                                    + " installation is disabled.");
-                    return;
-                }
-            }
-
-            if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() == null) {
-                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(tab, (moduleEntry) -> {
-                    if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
-                        AutofillAssistantMetrics.recordDropOut(
-                                DropOutReason.DFM_INSTALL_FAILED, intent);
-                        if (triggerContext.containsTriggerScript()) {
-                            AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
-                                    LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
-                            Log.v(TAG, "TriggerScript stopping: failed to install DFM");
-                        }
-                        return;
-                    }
-                    start(activity, triggerContext, moduleEntry);
-                }, /* showUi = */ !triggerContext.containsTriggerScript());
-            } else {
-                start(activity, triggerContext,
-                        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled());
-            }
-        });
-    }
-
-    private static void start(ChromeActivity activity, TriggerContext triggerContext,
-            AutofillAssistantModuleEntry module) {
-        module.start(createDependencies(activity, module), triggerContext);
+        waitForTab(activity, tab -> { AutofillAssistantTabHelper.get(tab).start(triggerContext); });
     }
 
     /**
@@ -174,7 +112,6 @@ public class AutofillAssistantFacade {
      * TODO(b/173103628): move this out of the facade once we inject our dependencies in a better
      * way.
      */
-    @VisibleForTesting
     public static AssistantDependencies createDependencies(
             Activity activity, AutofillAssistantModuleEntry module) {
         assert activity instanceof ChromeActivity;
@@ -215,10 +152,9 @@ public class AutofillAssistantFacade {
                 AutofillAssistantModuleEntryProvider.INSTANCE);
     }
 
-    /** Provides the callback with a tab that has a web contents, waits if necessary. */
-    private static void waitForTabWithWebContents(ChromeActivity activity, Callback<Tab> callback) {
-        if (activity.getActivityTab() != null
-                && activity.getActivityTab().getWebContents() != null) {
+    /** Provides the callback with a tab, waits if necessary. */
+    private static void waitForTab(ChromeActivity activity, Callback<Tab> callback) {
+        if (activity.getActivityTab() != null) {
             callback.onResult(activity.getActivityTab());
             return;
         }
@@ -230,7 +166,6 @@ public class AutofillAssistantFacade {
                     public void onActivityTabChanged(Tab tab) {
                         if (tab == null) return;
                         activity.getActivityTabProvider().removeObserver(this);
-                        assert tab.getWebContents() != null;
                         callback.onResult(tab);
                     }
                 });

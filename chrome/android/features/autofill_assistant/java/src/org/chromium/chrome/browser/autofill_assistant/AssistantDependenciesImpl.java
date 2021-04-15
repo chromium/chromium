@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
@@ -23,10 +25,13 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
+import java.util.Map;
+
 /**
  * Concrete implementation of the AssistantDependencies interface. Provides the dependencies
  * necessary to start an autofill-assistant flow.
  */
+@JNINamespace("autofill_assistant")
 public class AssistantDependenciesImpl implements AssistantDependencies {
     // Dependencies tied to the activity.
     private final Context mContext;
@@ -40,6 +45,11 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
     private final AssistantTriggerScriptBridge mTriggerScriptBridge;
     private final WebContents mWebContents;
+
+    /**
+     * The currently shown onboarding coordinator, if any. Only set while the onboarding is shown.
+     */
+    private @Nullable BaseOnboardingCoordinator mOnboardingCoordinator;
 
     /** The most recently shown onboarding overlay coordinator, if any. */
     private @Nullable AssistantOverlayCoordinator mOnboardingOverlayCoordinator;
@@ -67,33 +77,42 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
      * the onboarding is finished such that the regular startup can reuse it.
      */
     @Override
-    public void showOnboarding(boolean useDialogOnboarding, TriggerContext triggerContext,
-            Callback<Integer> callback) {
-        BaseOnboardingCoordinator onboardingCoordinator;
+    public void showOnboarding(boolean useDialogOnboarding, String experimentIds,
+            Map<String, String> parameters, String initialUrl, Callback<Integer> callback) {
+        hideOnboarding();
         if (useDialogOnboarding) {
-            onboardingCoordinator = mOnboardingCoordinatorFactory.createDialogOnboardingCoordinator(
-                    triggerContext.getExperimentIds(), triggerContext.getParameters());
+            mOnboardingCoordinator =
+                    mOnboardingCoordinatorFactory.createDialogOnboardingCoordinator(
+                            experimentIds, parameters);
         } else {
-            onboardingCoordinator =
+            mOnboardingCoordinator =
                     mOnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
-                            triggerContext.getExperimentIds(), triggerContext.getParameters());
+                            experimentIds, parameters);
         }
 
-        onboardingCoordinator.show(result -> {
-            triggerContext.setOnboardingShown(true);
+        mOnboardingCoordinator.show(result -> {
             // Note: only transfer the controls in the ACCEPTED case, as it will prevent
             // the bottom sheet from hiding after the callback is done.
             if (result == AssistantOnboardingResult.ACCEPTED) {
-                mOnboardingOverlayCoordinator = onboardingCoordinator.transferControls();
+                mOnboardingOverlayCoordinator = mOnboardingCoordinator.transferControls();
             }
             callback.onResult(result);
-        }, mWebContents, triggerContext.getInitialUrl());
+        }, mWebContents, initialUrl);
+    }
+
+    @Override
+    public void hideOnboarding() {
+        if (mOnboardingCoordinator != null) {
+            mOnboardingCoordinator.hide();
+            mOnboardingCoordinator = null;
+        }
     }
 
     /**
      * Transfers ownership of the overlay coordinator shown during the most recent onboarding, if
      * any.
      */
+    @CalledByNative
     public @Nullable AssistantOverlayCoordinator transferOnboardingOverlayCoordinator() {
         AssistantOverlayCoordinator overlayCoordinator = mOnboardingOverlayCoordinator;
         mOnboardingOverlayCoordinator = null;

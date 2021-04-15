@@ -9,30 +9,28 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
+class StarterPlatformDelegate;
 
 // Provides easy access to the values of static trigger conditions. Static
 // trigger conditions do not depend on the current state of the DOM, as opposed
 // to dynamic element conditions.
 class StaticTriggerConditions {
  public:
-  StaticTriggerConditions();
+  // |delegate| and |trigger_context| must outlive this instance.
+  StaticTriggerConditions(StarterPlatformDelegate* delegate,
+                          TriggerContext* trigger_context,
+                          const GURL& deeplink_url);
   virtual ~StaticTriggerConditions();
 
-  // Initializes the field values using |website_login_manager| and
-  // |is_first_time_user_callback|. Invokes |callback| when done. All parameters
-  // must outlive this call.
-  virtual void Init(
-      WebsiteLoginManager* website_login_manager,
-      base::RepeatingCallback<bool(void)> is_first_time_user_callback,
-      const GURL& url,
-      TriggerContext* trigger_context,
-      base::OnceCallback<void(void)> callback);
-  virtual void set_is_first_time_user(bool first_time_user);
+  // Updates/initializes the static trigger conditions. Invokes |callback| when
+  // done.
+  virtual void Update(base::OnceCallback<void(void)> callback);
   virtual bool is_first_time_user() const;
   virtual bool has_stored_login_credentials() const;
   virtual bool is_in_experiment(int experiment_id) const;
@@ -50,9 +48,10 @@ class StaticTriggerConditions {
   // collected. Only valid during calls of |Init|.
   base::OnceCallback<void(void)> callback_;
   bool has_results_ = false;
-  bool is_first_time_user_ = true;
   bool has_stored_login_credentials_ = false;
-  TriggerContext* trigger_context_;
+  StarterPlatformDelegate* delegate_ = nullptr;
+  TriggerContext* trigger_context_ = nullptr;
+  GURL deeplink_url_;
   base::WeakPtrFactory<StaticTriggerConditions> weak_ptr_factory_{this};
 };
 

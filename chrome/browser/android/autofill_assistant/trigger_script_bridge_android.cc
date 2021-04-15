@@ -6,25 +6,9 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base64url.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/common/channel_info.h"
-#include "components/autofill_assistant/browser/onboarding_result.h"
-#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
-#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
-#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
-#include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
-#include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
-#include "components/autofill_assistant/browser/string_conversions_util.h"
-#include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
-#include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
-#include "components/autofill_assistant/browser/web/web_controller.h"
-#include "components/autofill_assistant/browser/website_login_manager_impl.h"
-#include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -32,89 +16,38 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
 
-namespace {
-bool IsFirstTimeTriggerScriptUser() {
-  return autofill_assistant::
-      Java_AssistantTriggerScriptBridge_isFirstTimeTriggerScriptUser(
-          AttachCurrentThread());
-}
-}  // namespace
-
 namespace autofill_assistant {
 
-TriggerScriptBridgeAndroid::TriggerScriptBridgeAndroid() = default;
-TriggerScriptBridgeAndroid::~TriggerScriptBridgeAndroid() = default;
-
-void TriggerScriptBridgeAndroid::StartTriggerScript(
-    content::WebContents* web_contents,
-    const JavaParamRef<jobject>& jdelegate,
-    const GURL& initial_url,
-    std::unique_ptr<TriggerContext> trigger_context,
-    jlong jservice_request_sender) {
-  DCHECK(!java_object_);
-  java_object_ = ScopedJavaGlobalRef<jobject>(jdelegate);
+TriggerScriptBridgeAndroid::TriggerScriptBridgeAndroid(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jassistant_deps) {
+  java_object_ =
+      Java_AssistantTriggerScriptBridge_Constructor(env, jassistant_deps);
   Java_AssistantTriggerScriptBridge_setNativePtr(
       AttachCurrentThread(), java_object_, reinterpret_cast<intptr_t>(this));
-
-  std::unique_ptr<ServiceRequestSender> service_request_sender;
-  if (jservice_request_sender) {
-    service_request_sender.reset(static_cast<ServiceRequestSender*>(
-        reinterpret_cast<void*>(jservice_request_sender)));
-    // TODO(b/171776026): consider exposing this in proto.
-    disable_header_animations_for_testing_ = true;
-  } else if (trigger_context->GetScriptParameters()
-                 .GetBase64TriggerScriptsResponseProto()
-                 .has_value()) {
-    std::string response;
-    if (!base::Base64UrlDecode(trigger_context->GetScriptParameters()
-                                   .GetBase64TriggerScriptsResponseProto()
-                                   .value(),
-                               base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                               &response)) {
-      LOG(ERROR) << "Failed to base64-decode trigger scripts response";
-      Metrics::RecordLiteScriptFinished(
-          ukm::UkmRecorder::Get(), web_contents, UNSPECIFIED_TRIGGER_UI_TYPE,
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR);
-      return;
-    }
-    service_request_sender =
-        std::make_unique<ServiceRequestSenderLocalImpl>(response);
-  } else {
-    service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
-        web_contents->GetBrowserContext(),
-        /* access_token_fetcher = */ nullptr,
-        std::make_unique<NativeURLLoaderFactory>(),
-        ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
-        /* auth_enabled = */ false,
-        /* disable_auth_if_no_access_token = */ true);
-  }
-
-  ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
-  if (!website_login_manager_) {
-    website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
-        ChromePasswordManagerClient::FromWebContents(web_contents),
-        web_contents);
-  }
-  trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
-      web_contents, website_login_manager_.get(),
-      base::BindRepeating(&IsFirstTimeTriggerScriptUser),
-      WebController::CreateForWebContents(web_contents),
-      std::move(service_request_sender),
-      url_fetcher.GetTriggerScriptsEndpoint(),
-      std::make_unique<StaticTriggerConditions>(),
-      std::make_unique<DynamicTriggerConditions>(), ukm::UkmRecorder::Get());
-
-  trigger_script_coordinator_->AddObserver(this);
-  trigger_script_coordinator_->Start(initial_url, std::move(trigger_context));
 }
 
-void TriggerScriptBridgeAndroid::StopTriggerScript() {
+TriggerScriptBridgeAndroid::~TriggerScriptBridgeAndroid() {
+  Detach();
+}
+
+void TriggerScriptBridgeAndroid::Attach(
+    TriggerScriptCoordinator* trigger_script_coordinator) {
+  trigger_script_coordinator_ = trigger_script_coordinator;
+}
+
+void TriggerScriptBridgeAndroid::Detach() {
   if (java_object_) {
     Java_AssistantTriggerScriptBridge_clearNativePtr(AttachCurrentThread(),
                                                      java_object_);
     java_object_ = nullptr;
   }
   trigger_script_coordinator_ = nullptr;
+}
+
+void TriggerScriptBridgeAndroid::SetDisableHeaderAnimationsForTesting(
+    bool disable) {
+  disable_header_animations_for_testing_ = disable;
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptAction(
@@ -166,7 +99,7 @@ void TriggerScriptBridgeAndroid::OnKeyboardVisibilityChanged(
   trigger_script_coordinator_->OnKeyboardVisibilityChanged(jvisible);
 }
 
-void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
+void TriggerScriptBridgeAndroid::ShowTriggerScript(
     const TriggerScriptUIProto& proto) {
   if (!java_object_) {
     return;
@@ -221,7 +154,6 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
     cancel_popup_actions.emplace_back(static_cast<int>(choice.action()));
   }
 
-  last_shown_trigger_script_ = proto;
   jboolean success = Java_AssistantTriggerScriptBridge_showTriggerScript(
       env, java_object_, ToJavaArrayOfStrings(env, cancel_popup_items),
       ToJavaIntArray(env, cancel_popup_actions), jleft_aligned_chips,
@@ -231,66 +163,12 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   trigger_script_coordinator_->OnTriggerScriptShown(success);
 }
 
-void TriggerScriptBridgeAndroid::OnTriggerScriptHidden() {
+void TriggerScriptBridgeAndroid::HideTriggerScript() {
   if (!java_object_) {
     return;
   }
   Java_AssistantTriggerScriptBridge_hideTriggerScript(AttachCurrentThread(),
                                                       java_object_);
-}
-
-void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
-    Metrics::LiteScriptFinishedState state) {
-  if (!java_object_) {
-    return;
-  }
-  // NOTE: for now, the transition to the regular script (if state == ACCEPTED)
-  // is still done in Java.
-  Java_AssistantTriggerScriptBridge_onTriggerScriptFinished(
-      AttachCurrentThread(), java_object_, static_cast<int>(state));
-  StopTriggerScript();
-}
-
-void TriggerScriptBridgeAndroid::OnVisibilityChanged(bool visible) {
-  if (!visible || !trigger_script_coordinator_) {
-    return;
-  }
-
-  // Every time the tab becomes visible again we have to double-check if the
-  // proactive help settings is still enabled.
-  trigger_script_coordinator_->OnProactiveHelpSettingChanged(
-      Java_AssistantTriggerScriptBridge_isProactiveHelpEnabled(
-          AttachCurrentThread()));
-}
-
-base::Optional<TriggerScriptUIProto>
-TriggerScriptBridgeAndroid::GetLastShownTriggerScript() const {
-  return last_shown_trigger_script_;
-}
-
-void TriggerScriptBridgeAndroid::ClearLastShownTriggerScript() {
-  last_shown_trigger_script_.reset();
-}
-
-void TriggerScriptBridgeAndroid::OnOnboardingRequested(
-    bool is_dialog_onboarding_enabled) {
-  if (!java_object_) {
-    return;
-  }
-  Java_AssistantTriggerScriptBridge_onOnboardingRequested(
-      AttachCurrentThread(), java_object_, is_dialog_onboarding_enabled);
-}
-
-void TriggerScriptBridgeAndroid::OnOnboardingFinished(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jboolean jonboarding_shown,
-    jint jresult) {
-  if (!trigger_script_coordinator_) {
-    return;
-  }
-  trigger_script_coordinator_->OnOnboardingFinished(
-      jonboarding_shown, static_cast<OnboardingResult>(jresult));
 }
 
 }  // namespace autofill_assistant

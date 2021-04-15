@@ -75,10 +75,6 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         }
 
         @Override
-        public void start(
-                AssistantDependencies assistantDependencies, TriggerContext triggerContext) {}
-
-        @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls,

@@ -35,14 +35,6 @@ public interface AutofillAssistantModuleEntry {
             ActivityTabProvider activityTabProvider);
 
     /**
-     * Starts Autofill Assistant on the current tab of the given chrome activity.
-     *
-     * <p>When started this way, Autofill Assistant appears immediately in the bottom sheet, expects
-     * a single autostartable script for the tab's current URL, runs that script until the end and
-     * disappears.
-     */
-    void start(AssistantDependencies assistantDependencies, TriggerContext triggerContext);
-    /**
      * Returns a {@link AutofillAssistantActionHandler} instance tied to the activity owning the
      * given bottom sheet, and scrim view.
      *

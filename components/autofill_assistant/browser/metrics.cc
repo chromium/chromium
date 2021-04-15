@@ -21,6 +21,8 @@ const char* const kIntentNotSet = "NotSet";
 namespace {
 const char kDropOutEnumName[] = "Android.AutofillAssistant.DropOutReason";
 const char kOnboardingEnumName[] = "Android.AutofillAssistant.OnBoarding";
+const char kFeatureModuleInstallationEnumName[] =
+    "Android.AutofillAssistant.FeatureModuleInstallation";
 const char kPaymentRequestPrefilledName[] =
     "Android.AutofillAssistant.PaymentRequest.Prefilled";
 const char kPaymentRequestAutofillInfoChangedName[] =
@@ -229,6 +231,12 @@ void Metrics::RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
 void Metrics::RecordOnboardingResult(OnBoarding event) {
   DCHECK_LE(event, OnBoarding::kMaxValue);
   base::UmaHistogramEnumeration(kOnboardingEnumName, event);
+}
+
+// static
+void Metrics::RecordFeatureModuleInstallation(FeatureModuleInstallation event) {
+  DCHECK_LE(event, FeatureModuleInstallation::kMaxValue);
+  base::UmaHistogramEnumeration(kFeatureModuleInstallationEnumName, event);
 }
 
 }  // namespace autofill_assistant

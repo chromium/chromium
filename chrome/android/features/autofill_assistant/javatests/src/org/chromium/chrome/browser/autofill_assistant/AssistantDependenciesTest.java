@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -13,8 +14,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import androidx.test.filters.MediumTest;
@@ -34,6 +39,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.Collections;
 
 /**
  * Tests for AssistantDependencies.
@@ -68,10 +75,10 @@ public class AssistantDependenciesTest {
     @Test
     @MediumTest
     public void testBottomSheetOnboarding() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
-                    TriggerContext.newBuilder().build(), mOnboardingCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
+                                "", Collections.emptyMap(), "", mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         onView(withId(R.id.button_init_ok)).perform(click());
@@ -81,10 +88,10 @@ public class AssistantDependenciesTest {
     @Test
     @MediumTest
     public void testDialogOnboarding() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
-                    TriggerContext.newBuilder().build(), mOnboardingCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
+                                "", Collections.emptyMap(), "", mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         // Check that the UI is shown in a dialog.
@@ -94,5 +101,36 @@ public class AssistantDependenciesTest {
 
         onView(withId(R.id.button_init_ok)).perform(click());
         verify(mOnboardingCallback).onResult(3 /* AssistantOnboardingResult.ACCEPTED */);
+    }
+
+    @Test
+    @MediumTest
+    public void hideBottomSheetOnboarding() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
+                                "", Collections.emptyMap(), "", mOnboardingCallback));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());
+        waitUntilViewAssertionTrue(
+                withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        verify(mOnboardingCallback, never()).onResult(anyInt());
+    }
+
+    @Test
+    @MediumTest
+    public void hideDialogOnboarding() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
+                                "", Collections.emptyMap(), "", mOnboardingCallback));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());
+        waitUntilViewAssertionTrue(
+                withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        // TODO(b/185209881): the dialog onboarding should not call the callback in this case.
+        verify(mOnboardingCallback).onResult(0 /* AssistantOnboardingResult.DISMISSED */);
     }
 }

@@ -13,16 +13,17 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/device_context.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace autofill_assistant {
 
@@ -46,32 +47,17 @@ class ClientAndroid : public Client,
   // Returns the corresponding Java AutofillAssistantClient.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& jcaller,
-             const base::android::JavaParamRef<jstring>& jinitial_url,
-             const base::android::JavaParamRef<jstring>& jexperiment_ids,
-             const base::android::JavaParamRef<jobjectArray>& parameter_names,
-             const base::android::JavaParamRef<jobjectArray>& parameter_values,
-             jboolean jis_cct,
-             const base::android::JavaParamRef<jobject>& joverlay_coordinator,
-             jboolean jonboarding_shown,
-             jlong jservice);
+  bool Start(const GURL& url,
+             std::unique_ptr<TriggerContext> trigger_context,
+             std::unique_ptr<Service> test_service_to_inject,
+             const base::android::JavaRef<jobject>& joverlay_coordinator,
+             const base::Optional<TriggerScriptProto>& trigger_script);
   void OnJavaDestroyUI(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcaller);
   void TransferUITo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
       const base::android::JavaParamRef<jobject>& jother_web_contents);
-
-  void StartTriggerScript(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& jdelegate,
-      const base::android::JavaParamRef<jstring>& jinitial_url,
-      const base::android::JavaParamRef<jstring>& jexperiment_ids,
-      const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-      const base::android::JavaParamRef<jobjectArray>& jparameter_values,
-      jlong jservice_request_sender);
 
   base::android::ScopedJavaLocalRef<jstring> GetPrimaryAccountName(
       JNIEnv* env,
@@ -136,10 +122,11 @@ class ClientAndroid : public Client,
 
   explicit ClientAndroid(content::WebContents* web_contents);
 
-  void CreateController(std::unique_ptr<Service> service);
+  void CreateController(
+      std::unique_ptr<Service> service,
+      const base::Optional<TriggerScriptProto>& trigger_script);
   void DestroyController();
-  void AttachUI(
-      const base::android::JavaParamRef<jobject>& joverlay_coordinator);
+  void AttachUI(const base::android::JavaRef<jobject>& joverlay_coordinator);
   bool NeedsUI();
   void OnFetchWebsiteActions(const base::android::JavaRef<jobject>& jcallback);
   void SafeDestroyControllerAndUI(Metrics::DropOutReason reason);
@@ -174,9 +161,6 @@ class ClientAndroid : public Client,
   bool has_had_ui_ = false;
 
   std::unique_ptr<UiControllerAndroid> ui_controller_android_;
-
-  // Bridge that allows Java to start trigger scripts.
-  TriggerScriptBridgeAndroid trigger_script_bridge_;
 
   base::OnceCallback<void(bool, const std::string&)>
       fetch_access_token_callback_;

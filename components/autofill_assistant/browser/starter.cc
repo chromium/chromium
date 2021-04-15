@@ -4,22 +4,72 @@
 
 #include "components/autofill_assistant/browser/starter.h"
 
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
+#include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
+#include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
+#include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
 namespace autofill_assistant {
 
 using StartupMode = StartupUtil::StartupMode;
 
+namespace {
+
+// When starting trigger scripts, depending on incoming script parameters, we
+// mark users as being in either the control or the experiment group to allow
+// for aggregation of UKM metrics.
+const char kTriggerScriptExperimentSyntheticFieldTrialName[] =
+    "AutofillAssistantLiteScriptExperiment";
+const char kTriggerScriptExperimentGroup[] = "Experiment";
+const char kTriggerScriptControlGroup[] = "Control";
+
+// Creates a service request sender that serves the pre-specified response.
+// Creation may fail (return null) if the parameter fails to decode.
+std::unique_ptr<ServiceRequestSender> CreateBase64TriggerScriptRequestSender(
+    const std::string& base64_trigger_script) {
+  std::string response;
+  if (!base::Base64UrlDecode(base64_trigger_script,
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &response)) {
+    return nullptr;
+  }
+  return std::make_unique<ServiceRequestSenderLocalImpl>(response);
+}
+
+// Creates a service request sender that communicates with a remote endpoint.
+std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
+    content::BrowserContext* browser_context,
+    StarterPlatformDelegate* delegate) {
+  return std::make_unique<ServiceRequestSenderImpl>(
+      browser_context,
+      /* access_token_fetcher = */ nullptr,
+      std::make_unique<NativeURLLoaderFactory>(),
+      ApiKeyFetcher().GetAPIKey(delegate->GetChannel()),
+      /* auth_enabled = */ false,
+      /* disable_auth_if_no_access_token = */ true);
+}
+
+}  // namespace
+
 Starter::Starter(content::WebContents* web_contents,
                  StarterPlatformDelegate* platform_delegate,
-                 ukm::UkmRecorder* ukm_recorder)
+                 ukm::UkmRecorder* ukm_recorder,
+                 base::WeakPtr<RuntimeManagerImpl> runtime_manager)
     : content::WebContentsObserver(web_contents),
       platform_delegate_(platform_delegate),
-      ukm_recorder_(ukm_recorder) {
+      ukm_recorder_(ukm_recorder),
+      runtime_manager_(runtime_manager) {
   CheckSettings();
 }
 
@@ -50,7 +100,9 @@ void Starter::CheckSettings() {
   // allowing the startup to proceed. If not, cancel the startup.
   if (pending_callback_) {
     StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
-        *pending_trigger_context_,
+        trigger_script_coordinator_ != nullptr
+            ? trigger_script_coordinator_->GetTriggerContext()
+            : *pending_trigger_context_,
         {msbb_setting_enabled, proactive_help_setting_enabled,
          feature_module_installed});
     switch (startup_mode) {
@@ -109,10 +161,10 @@ void Starter::CancelPendingStartup() {
   if (!pending_callback_) {
     return;
   }
-  pending_callback_.Reset();
-  pending_trigger_context_ = nullptr;
   platform_delegate_->HideOnboarding();
-  // TODO(arbesser): stop trigger script if necessary.
+  RunCallback(/* start_regular_script = */ false);
+  trigger_script_coordinator_.reset();
+  pending_trigger_context_.reset();
 }
 
 void Starter::MaybeInstallFeatureModule(StartupMode startup_mode) {
@@ -132,9 +184,14 @@ void Starter::MaybeInstallFeatureModule(StartupMode startup_mode) {
 void Starter::OnFeatureModuleInstalled(
     StartupMode startup_mode,
     Metrics::FeatureModuleInstallation result) {
+  Metrics::RecordFeatureModuleInstallation(result);
   if (result != Metrics::FeatureModuleInstallation::
                     DFM_FOREGROUND_INSTALLATION_SUCCEEDED &&
       result != Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED) {
+    Metrics::RecordDropOut(
+        Metrics::DropOutReason::DFM_INSTALL_FAILED,
+        pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
+            std::string()));
     RunCallback(/* start_regular_script = */ false);
     return;
   }
@@ -155,47 +212,108 @@ void Starter::OnFeatureModuleInstalled(
 }
 
 void Starter::StartTriggerScript() {
-  // TODO(arbesser): implement this.
-  OnTriggerScriptFinished(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED,
-      base::nullopt);
+  const auto& script_parameters =
+      pending_trigger_context_->GetScriptParameters();
+  base::FieldTrialList::CreateFieldTrial(
+      kTriggerScriptExperimentSyntheticFieldTrialName,
+      script_parameters.GetTriggerScriptExperiment()
+          ? kTriggerScriptExperimentGroup
+          : kTriggerScriptControlGroup);
+
+  std::unique_ptr<ServiceRequestSender> service_request_sender =
+      platform_delegate_->GetTriggerScriptRequestSenderToInject();
+  if (!service_request_sender) {
+    if (script_parameters.GetBase64TriggerScriptsResponseProto().has_value()) {
+      service_request_sender = CreateBase64TriggerScriptRequestSender(
+          script_parameters.GetBase64TriggerScriptsResponseProto().value());
+      if (!service_request_sender) {
+        Metrics::RecordLiteScriptFinished(
+            ukm_recorder_, web_contents(), UNSPECIFIED_TRIGGER_UI_TYPE,
+            Metrics::LiteScriptFinishedState::
+                LITE_SCRIPT_BASE64_DECODING_ERROR);
+        OnTriggerScriptFinished(
+            Metrics::LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR,
+            std::move(pending_trigger_context_), base::nullopt);
+        return;
+      }
+    } else if (script_parameters.GetRequestsTriggerScript().value_or(false)) {
+      service_request_sender = CreateRpcTriggerScriptRequestSender(
+          web_contents()->GetBrowserContext(), platform_delegate_);
+    } else {
+      // Should never happen.
+      DCHECK(false);
+      RunCallback(false);
+      return;
+    }
+  }
+  DCHECK(service_request_sender);
+
+  ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
+  GURL startup_url = StartupUtil()
+                         .ChooseStartupUrlForIntent(*pending_trigger_context_)
+                         .value();
+  trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
+      platform_delegate_, web_contents(),
+      WebController::CreateForWebContents(web_contents()),
+      std::move(service_request_sender),
+      url_fetcher.GetTriggerScriptsEndpoint(),
+      std::make_unique<StaticTriggerConditions>(
+          platform_delegate_, pending_trigger_context_.get(), startup_url),
+      std::make_unique<DynamicTriggerConditions>(), ukm_recorder_);
+
+  // Note: for the duration of the trigger script, the trigger script
+  // coordinator will take ownership of the pending trigger context.
+  trigger_script_coordinator_->Start(
+      startup_url, std::move(pending_trigger_context_),
+      base::BindOnce(&Starter::OnTriggerScriptFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void Starter::OnTriggerScriptFinished(
     Metrics::LiteScriptFinishedState state,
+    std::unique_ptr<TriggerContext> trigger_context,
     base::Optional<TriggerScriptProto> trigger_script) {
   if (state != Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED) {
     RunCallback(/* start_regular_script = */ false);
     return;
   }
 
+  // Take back ownership of the trigger context.
+  pending_trigger_context_ = std::move(trigger_context);
+
   // Note: most trigger scripts show the onboarding on their own and log a
   // different metric for the result. We need to be careful to only run the
   // regular onboarding if necessary to avoid logging metrics more than once.
   if (platform_delegate_->GetOnboardingAccepted()) {
-    RunCallback(/* start_regular_script = */ true);
+    RunCallback(/* start_regular_script = */ true, trigger_script);
     return;
   } else {
-    MaybeShowOnboarding();
+    MaybeShowOnboarding(trigger_script);
   }
 }
 
-void Starter::MaybeShowOnboarding() {
+void Starter::MaybeShowOnboarding(
+    base::Optional<TriggerScriptProto> trigger_script) {
   if (platform_delegate_->GetOnboardingAccepted()) {
-    OnOnboardingFinished(/* shown = */ false, OnboardingResult::ACCEPTED);
+    OnOnboardingFinished(trigger_script, /* shown = */ false,
+                         OnboardingResult::ACCEPTED);
     return;
   }
 
   // Always use bottom sheet onboarding here. Trigger scripts may show a dialog
   // onboarding, but if we have reached this part, we're already starting the
   // regular script, where we don't offer dialog onboarding.
+  runtime_manager_->SetUIState(UIState::kShown);
   platform_delegate_->ShowOnboarding(
       /* use_dialog_onboarding = */ false, *pending_trigger_context_,
       base::BindOnce(&Starter::OnOnboardingFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), trigger_script));
 }
 
-void Starter::OnOnboardingFinished(bool shown, OnboardingResult result) {
+void Starter::OnOnboardingFinished(
+    base::Optional<TriggerScriptProto> trigger_script,
+    bool shown,
+    OnboardingResult result) {
   auto intent =
       pending_trigger_context_->GetScriptParameters().GetIntent().value_or(
           std::string());
@@ -222,6 +340,7 @@ void Starter::OnOnboardingFinished(bool shown, OnboardingResult result) {
                                         : Metrics::OnBoarding::OB_NOT_SHOWN);
 
   if (result != OnboardingResult::ACCEPTED) {
+    runtime_manager_->SetUIState(UIState::kNotShown);
     RunCallback(/* start_regular_script = */ false);
     return;
   }
@@ -229,15 +348,17 @@ void Starter::OnOnboardingFinished(bool shown, OnboardingResult result) {
   // Onboarding is the last step before regular startup.
   platform_delegate_->SetOnboardingAccepted(true);
   pending_trigger_context_->SetOnboardingShown(shown);
-  RunCallback(/* start_regular_script = */ true);
+  RunCallback(/* start_regular_script = */ true, trigger_script);
 }
 
-void Starter::RunCallback(bool start_regular_script) {
+void Starter::RunCallback(bool start_regular_script,
+                          base::Optional<TriggerScriptProto> trigger_script) {
   DCHECK(pending_callback_);
   if (!start_regular_script) {
     pending_trigger_context_ = nullptr;
     std::move(pending_callback_)
-        .Run(/* start_regular_script = */ false, GURL(), nullptr);
+        .Run(/* start_regular_script = */ false, GURL(), nullptr,
+             base::nullopt);
     return;
   }
 
@@ -246,7 +367,7 @@ void Starter::RunCallback(bool start_regular_script) {
   DCHECK(startup_url.has_value());
   std::move(pending_callback_)
       .Run(/* start_regular_script = */ true, *startup_url,
-           std::move(pending_trigger_context_));
+           std::move(pending_trigger_context_), trigger_script);
 }
 
 }  // namespace autofill_assistant

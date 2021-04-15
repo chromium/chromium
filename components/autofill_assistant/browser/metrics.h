@@ -185,10 +185,6 @@ class Metrics {
   // The different ways a user might have opted out of the lite script
   // experience.
   //
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: LiteScriptStarted
-  //
   // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
   // AutofillAssistantLiteScriptStarted enum listing in
@@ -367,6 +363,7 @@ class Metrics {
                                          TriggerUIType trigger_ui_type,
                                          LiteScriptOnboarding event);
   static void RecordOnboardingResult(OnBoarding event);
+  static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
 
   // Intended for debugging: writes string representation of |reason| to |out|.
   friend std::ostream& operator<<(std::ostream& out,

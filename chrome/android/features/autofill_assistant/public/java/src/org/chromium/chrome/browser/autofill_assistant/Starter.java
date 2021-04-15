@@ -15,8 +15,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Connects to a native starter for which it acts as a platform delegate, providing the necessary
@@ -38,6 +42,17 @@ public class Starter extends EmptyTabObserver implements UserData {
      */
     private long mNativeStarter;
 
+    /** The dependencies required to start a flow. */
+    @Nullable
+    private AssistantDependencies mDependencies;
+
+    /**
+     * A field to temporarily hold a startup request's trigger context while the tab is being
+     * initialized.
+     */
+    @Nullable
+    private TriggerContext mPendingTriggerContext;
+
     /**
      * Constructs a java-side starter.
      *
@@ -54,6 +69,25 @@ public class Starter extends EmptyTabObserver implements UserData {
     }
 
     /**
+     * Attempts to start a new flow for {@code triggerContext}. This will wait for the necessary
+     * dependencies (such as the web-contents) to be available before attempting the startup. New
+     * calls to this method will supersede earlier invocations, potentially cancelling the previous
+     * flow (as there can be only one flow maximum per tab).
+     */
+    public void start(TriggerContext triggerContext) {
+        // Starter is not yet ready, we need to wait for the web-contents to be available.
+        if (mNativeStarter == 0) {
+            mPendingTriggerContext = triggerContext;
+            return;
+        }
+
+        StarterJni.get().start(mNativeStarter, Starter.this, triggerContext.getExperimentIds(),
+                triggerContext.getParameters().keySet().toArray(new String[0]),
+                triggerContext.getParameters().values().toArray(new String[0]),
+                triggerContext.isCustomTab(), triggerContext.getInitialUrl());
+    }
+
+    /**
      * Should be called whenever the Tab's WebContents may have changed. Disconnects from the
      * existing WebContents, if necessary, and then connects to the new WebContents.
      */
@@ -63,12 +97,18 @@ public class Starter extends EmptyTabObserver implements UserData {
             mWebContents = currentWebContents;
             safeNativeDetach();
             if (mWebContents != null) {
-                // TODO(arbesser): retrieve dependencies.
-                mNativeStarter = StarterJni.get().fromWebContents(Starter.this, mWebContents);
+                // Some dependencies are tied to the web-contents and need to be fetched again.
+                mDependencies = null;
+                mNativeStarter = StarterJni.get().fromWebContents(mWebContents);
                 // Note: This is intentionally split into two methods (fromWebContents, attach).
                 // It ensures that at the time of attach, the native pointer is already set and
                 // this instance is ready to serve requests from native.
                 StarterJni.get().attach(mNativeStarter, Starter.this);
+
+                if (mPendingTriggerContext != null) {
+                    start(mPendingTriggerContext);
+                    mPendingTriggerContext = null;
+                }
             }
         }
     }
@@ -165,16 +205,27 @@ public class Starter extends EmptyTabObserver implements UserData {
     }
 
     @CalledByNative
-    private void showOnboarding(boolean useDialogOnboarding, String initialUrl,
-            String experimentIds, String[] parameterKeys, String[] parameterValues) {
+    private void showOnboarding(AssistantDependencies dependencies, boolean useDialogOnboarding,
+            String initialUrl, String experimentIds, String[] parameterKeys,
+            String[] parameterValues) {
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             safeNativeOnOnboardingFinished(
                     /* shown = */ false, 3 /* AssistantOnboardingResult.ACCEPTED*/);
             return;
         }
 
-        // TODO(arbesser): implement this.
-        safeNativeOnOnboardingFinished(false, 0 /* AssistantOnboardingResult.DISMISSED*/);
+        assert parameterKeys.length == parameterValues.length;
+        Map<String, String> parameters = new HashMap<>();
+        for (int i = 0; i < parameterKeys.length; i++) {
+            parameters.put(parameterKeys[i], parameterValues[i]);
+        }
+        dependencies.showOnboarding(useDialogOnboarding, experimentIds, parameters, initialUrl,
+                result -> safeNativeOnOnboardingFinished(true, result));
+    }
+
+    @CalledByNative
+    private void hideOnboarding(AssistantDependencies dependencies) {
+        dependencies.hideOnboarding();
     }
 
     private void safeNativeOnOnboardingFinished(boolean shown, int result) {
@@ -201,9 +252,24 @@ public class Starter extends EmptyTabObserver implements UserData {
                 Profile.getLastUsedRegularProfile());
     }
 
+    @CalledByNative
+    private @Nullable AssistantDependencies getOrCreateDependencies() {
+        if (mDependencies != null) return mDependencies;
+        if (!getFeatureModuleInstalled()) {
+            throw new RuntimeException(
+                    "failed to create dependencies: feature module not installed");
+        }
+
+        AutofillAssistantModuleEntry module =
+                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
+        mDependencies =
+                AutofillAssistantFacade.createDependencies(TabUtils.getActivity(mTab), module);
+        return mDependencies;
+    }
+
     @NativeMethods
     interface Natives {
-        long fromWebContents(Starter caller, WebContents webContents);
+        long fromWebContents(WebContents webContents);
         void attach(long nativeStarterAndroid, Starter caller);
         void detach(long nativeStarterAndroid, Starter caller);
         void onFeatureModuleInstalled(long nativeStarterAndroid, Starter caller, int result);
@@ -211,5 +277,8 @@ public class Starter extends EmptyTabObserver implements UserData {
                 long nativeStarterAndroid, Starter caller, boolean shown, int result);
         void onInteractabilityChanged(
                 long nativeStarterAndroid, Starter caller, boolean isInteractable);
+        void start(long nativeStarterAndroid, Starter caller, String experimentIds,
+                String[] parameterNames, String[] parameterValues, boolean isCCT,
+                String initialUrl);
     }
 }

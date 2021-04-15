@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -48,7 +49,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -73,17 +73,11 @@ public class AutofillAssistantNavigationIntegrationTest {
         return mTestServer.getURL(HTML_DIRECTORY + page);
     }
 
-    private void setupScripts(AutofillAssistantTestScript... scripts) {
+    private void startAutofillAssistantOnTab(
+            String pageToLoad, AutofillAssistantTestScript... scripts) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Arrays.asList(scripts));
-        testService.scheduleForInjection();
-    }
-
-    private void startAutofillAssistantOnTab(String pageToLoad) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AutofillAssistantFacade.start(mTestRule.getActivity(),
-                                /* bundleExtras= */ null, getURL(pageToLoad)));
+        startAutofillAssistant(mTestRule.getActivity(), testService, getURL(pageToLoad));
     }
 
     @Before
@@ -114,8 +108,7 @@ public class AutofillAssistantNavigationIntegrationTest {
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
 
@@ -155,8 +148,7 @@ public class AutofillAssistantNavigationIntegrationTest {
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         waitUntil(
@@ -192,8 +184,7 @@ public class AutofillAssistantNavigationIntegrationTest {
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         waitUntil(
@@ -256,8 +247,7 @@ public class AutofillAssistantNavigationIntegrationTest {
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_B);
+        startAutofillAssistantOnTab(TEST_PAGE_B, script);
 
         waitUntilViewMatchesCondition(withText("Page B"), isCompletelyDisplayed());
         onView(withText("Navigate")).perform(click());
@@ -303,8 +293,7 @@ public class AutofillAssistantNavigationIntegrationTest {
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
 

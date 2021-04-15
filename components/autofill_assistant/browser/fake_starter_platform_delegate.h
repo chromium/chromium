@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_STARTER_PLATFORM_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_STARTER_PLATFORM_DELEGATE_H_
 
+#include <memory>
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,6 +18,10 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   ~FakeStarterPlatformDelegate() override;
 
   // Implements StarterPlatformDelegate:
+  std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
+  CreateTriggerScriptUiDelegate() override;
+  std::unique_ptr<ServiceRequestSender> GetTriggerScriptRequestSenderToInject()
+      override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
   version_info::Channel GetChannel() const override;
   bool GetFeatureModuleInstalled() const override;
@@ -38,6 +43,10 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
 
+  std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
+      trigger_script_ui_delegate_ = nullptr;
+  std::unique_ptr<ServiceRequestSender>
+      trigger_script_request_sender_for_test_ = nullptr;
   WebsiteLoginManager* website_login_manager_ = nullptr;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool feature_module_installed_ = true;

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.base.Callback;
 
+import java.util.Map;
+
 /**
  * Parent interface for autofill-assistant dependencies. This interface allows code outside the
  * feature module to access dependencies inside the feature module without leaking the relevant
@@ -16,9 +18,18 @@ public interface AssistantDependencies {
      * Displays the onboarding to the user.
      *
      * @param useDialogOnboarding whether to show the dialog or bottom-sheet onboarding.
-     * @param triggerContext the trigger context to fetch parameters and experiments from.
+     * @param experimentIds the list of active experiment ids.
+     * @param parameters the key/value map of script parameters use.
+     * @param initialUrl the initial url. The onboarding will automatically abort if the user
+     *         navigates away.
      * @param callback the callback to invoke with the {@code OnboardingResult}.
      */
-    void showOnboarding(
-            boolean useDialogOnboarding, TriggerContext triggerContext, Callback<Integer> callback);
+    void showOnboarding(boolean useDialogOnboarding, String experimentIds,
+            Map<String, String> parameters, String initialUrl, Callback<Integer> callback);
+
+    /**
+     * Hides the onboarding, if currently shown. Does not invoke the callback that was associated
+     * with {@code showOnboarding}.
+     */
+    void hideOnboarding();
 }

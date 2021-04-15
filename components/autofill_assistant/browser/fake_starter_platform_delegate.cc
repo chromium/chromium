@@ -9,6 +9,16 @@ namespace autofill_assistant {
 FakeStarterPlatformDelegate::FakeStarterPlatformDelegate() = default;
 FakeStarterPlatformDelegate::~FakeStarterPlatformDelegate() = default;
 
+std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
+FakeStarterPlatformDelegate::CreateTriggerScriptUiDelegate() {
+  return std::move(trigger_script_ui_delegate_);
+}
+
+std::unique_ptr<ServiceRequestSender>
+FakeStarterPlatformDelegate::GetTriggerScriptRequestSenderToInject() {
+  return std::move(trigger_script_request_sender_for_test_);
+}
+
 WebsiteLoginManager* FakeStarterPlatformDelegate::GetWebsiteLoginManager()
     const {
   return website_login_manager_;

@@ -48,6 +48,7 @@ public class PasswordChangeLauncher {
                         .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER, username)
                         .addParameter(INTENT_PARAMETER, INTENT)
                         .addParameter(TriggerContext.PARAMETER_START_IMMEDIATELY, true)
+                        .addParameter(TriggerContext.PARAMETER_ENABLED, true)
                         .build());
     }
 }

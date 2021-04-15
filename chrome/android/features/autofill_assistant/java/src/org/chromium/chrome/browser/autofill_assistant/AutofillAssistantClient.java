@@ -18,7 +18,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccessTokenData;
@@ -84,55 +83,9 @@ public class AutofillAssistantClient {
         AutofillAssistantClientJni.get().onOnboardingUiChange(webContents, shown);
     }
 
+    @CalledByNative
     private AutofillAssistantClient(long nativeClientAndroid) {
         mNativeClientAndroid = nativeClientAndroid;
-    }
-
-    private void checkNativeClientIsAliveOrThrow() {
-        if (mNativeClientAndroid == 0) {
-            throw new IllegalStateException("Native instance is dead");
-        }
-    }
-
-    /**
-     * Start a flow on the current URL, autostarting scripts defined for that URL.
-     *
-     * <p>This immediately shows the UI, with a loading message, then fetches scripts
-     * from the server and autostarts one of them.
-     *
-     * @param triggerContext the startup parameters and experiment ids.
-     * @param overlayCoordinator The overlay coordinator shown during the onboarding, if any.
-     *
-     * @return true if the flow was started, false if the controller is in a state where
-     * autostarting is not possible, such as can happen if a script is already running. The flow can
-     * still fail after this method returns true; the failure will be displayed on the UI.
-     */
-    boolean start(TriggerContext triggerContext,
-            @Nullable AssistantOverlayCoordinator overlayCoordinator) {
-        if (mNativeClientAndroid == 0) return false;
-
-        checkNativeClientIsAliveOrThrow();
-        chooseAccountAsyncIfNecessary(triggerContext.getCallerEmail());
-        return AutofillAssistantClientJni.get().start(mNativeClientAndroid, this,
-                triggerContext.getStartupUrl(), triggerContext.getExperimentIds(),
-                triggerContext.getParameters().keySet().toArray(new String[0]),
-                triggerContext.getParameters().values().toArray(new String[0]),
-                triggerContext.isCustomTab(), overlayCoordinator,
-                triggerContext.getOnboardingShown(),
-                AutofillAssistantServiceInjector.getServiceToInject(mNativeClientAndroid));
-    }
-
-    public void startTriggerScript(
-            TriggerContext triggerContext, AssistantTriggerScriptBridge delegate) {
-        if (mNativeClientAndroid == 0) {
-            return;
-        }
-        checkNativeClientIsAliveOrThrow();
-        AutofillAssistantClientJni.get().startTriggerScript(mNativeClientAndroid, this, delegate,
-                triggerContext.getStartupUrl(), triggerContext.getExperimentIds(),
-                triggerContext.getParameters().keySet().toArray(new String[0]),
-                triggerContext.getParameters().values().toArray(new String[0]),
-                AutofillAssistantServiceInjector.getServiceRequestSenderToInject());
     }
 
     /**
@@ -223,10 +176,6 @@ public class AutofillAssistantClient {
     }
 
     @CalledByNative
-    private static AutofillAssistantClient create(long nativeClientAndroid) {
-        return new AutofillAssistantClient(nativeClientAndroid);
-    }
-
     private void chooseAccountAsyncIfNecessary(@Nullable String userName) {
         if (mAccountInitializationStarted) return;
         mAccountInitializationStarted = true;
@@ -395,13 +344,6 @@ public class AutofillAssistantClient {
     interface Natives {
         AutofillAssistantClient fromWebContents(WebContents webContents);
         void onOnboardingUiChange(WebContents webContents, boolean shown);
-        boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
-                String experimentIds, String[] parameterNames, String[] parameterValues,
-                boolean isChromeCustomTab, @Nullable AssistantOverlayCoordinator overlayCoordinator,
-                boolean onboardingShown, long nativeService);
-        void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,
-                AssistantTriggerScriptBridge delegate, String initialUrl, String experimentIds,
-                String[] parameterNames, String[] parameterValues, long nativeServiceRequestSender);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);

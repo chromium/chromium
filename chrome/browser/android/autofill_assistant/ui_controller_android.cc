@@ -267,7 +267,7 @@ bool ShouldAllowSoftKeyboardForState(AutofillAssistantState state) {
 // static
 std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
     content::WebContents* web_contents,
-    const base::android::JavaParamRef<jobject>& joverlay_coordinator) {
+    const base::android::JavaRef<jobject>& joverlay_coordinator) {
   JNIEnv* env = AttachCurrentThread();
   auto jactivity = Java_AutofillAssistantUiController_findAppropriateActivity(
       env, web_contents->GetJavaWebContents());
@@ -281,7 +281,7 @@ std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
 UiControllerAndroid::UiControllerAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jactivity,
-    const base::android::JavaParamRef<jobject>& joverlay_coordinator)
+    const base::android::JavaRef<jobject>& joverlay_coordinator)
     : overlay_delegate_(this),
       header_delegate_(this),
       collect_user_data_delegate_(this),
