@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/infobars",
-  "+components/resources",
-  "+components/strings",
-  "+components/subresource_filter/content/browser",
-  "+content/public/browser",
-  "+ui/android/java",
-  "+ui/base/l10n",
-]

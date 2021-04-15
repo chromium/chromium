@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_H_
 
 #include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
-#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
+#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 
 namespace subresource_filter {
 
@@ -28,4 +28,4 @@ class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_H_

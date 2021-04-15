@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
+#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/subresource_filter/android/ads_blocked_infobar.h"
+#include "components/subresource_filter/content/browser/ads_blocked_infobar.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"

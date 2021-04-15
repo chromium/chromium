@@ -30,25 +30,11 @@ android_library("java") {
 }
 
 source_set("android") {
-  sources = [
-    "ads_blocked_infobar.cc",
-    "ads_blocked_infobar.h",
-    "ads_blocked_infobar_delegate.cc",
-    "ads_blocked_infobar_delegate.h",
-    "subresource_filter_feature_list.cc",
-  ]
+  sources = [ "subresource_filter_feature_list.cc" ]
   deps = [
     ":subresource_filter_jni_headers",
     "//base",
-    "//components/infobars/android",
-    "//components/infobars/content",
-    "//components/infobars/core",
-    "//components/resources:android_resources",
-    "//components/strings:components_strings_grit",
-    "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
-    "//content/public/browser",
-    "//ui/base",
   ]
 }
 

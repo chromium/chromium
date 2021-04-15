@@ -22,7 +22,7 @@
 
 #if defined(OS_ANDROID)
 #include "components/safe_browsing/android/remote_database_manager.h"
-#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
+#include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 #include "weblayer/browser/infobar_service.h"
 #endif
 
