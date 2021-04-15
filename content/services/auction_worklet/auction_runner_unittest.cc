@@ -87,8 +87,6 @@ std::string MakeBidScript(const std::string& bid,
       // that's what reportResult passes through.
       if (sellerSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
-      if (sellerSignals.interestGroupName !== interestGroupName)
-        throw new Error("wrong interestGroupName");
       if (sellerSignals.interestGroupOwner !== interestGroupOwner)
         throw new Error("wrong interestGroupOwner");
       if (sellerSignals.renderUrl !== renderUrl)
@@ -140,8 +138,6 @@ constexpr char kAuctionScript[] = R"(
       throw new Error("Wrong sellerSignals");
     if (browserSignals.topWindowHostname !== 'publisher1.com')
       throw new Error("wrong topWindowHostname");
-    if (browserSignals.interestGroupName !== adMetadata.groupName)
-      throw new Error("wrong interestGroupName in browserSignals");
     if ("joinCount" in browserSignals)
       throw new Error("wrong kind of browser signals");
 
@@ -302,7 +298,6 @@ TEST_F(AuctionRunnerTest, Basic) {
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
             R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("interestGroupName":"Another Ad Thing",)"
             R"("renderUrl":"https://ad2.com/",)"
             R"("adRenderFingerprint":"#####",)"
             R"("bid":2,"desirability":4})",
@@ -338,7 +333,6 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
             R"("interestGroupOwner":"https://adplatform.com",)"
-            R"("interestGroupName":"Ad Platform",)"
             R"("renderUrl":"https://ad1.com/",)"
             R"("adRenderFingerprint":"#####",)"
             R"("bid":1,"desirability":2})",
@@ -377,7 +371,6 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
             R"("interestGroupOwner":"https://adplatform.com",)"
-            R"("interestGroupName":"Ad Platform",)"
             R"("renderUrl":"https://ad1.com/",)"
             R"("adRenderFingerprint":"#####",)"
             R"("bid":1,"desirability":2})",
@@ -524,7 +517,6 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
             R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("interestGroupName":"Another Ad Thing",)"
             R"("renderUrl":"https://ad2.com/",)"
             R"("adRenderFingerprint":"#####",)"
             R"("bid":2,"desirability":4})",
@@ -561,7 +553,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
             res.seller_report->report_url.spec());
   EXPECT_EQ(R"({"topWindowHostname":"publisher1.com",)"
             R"("interestGroupOwner":"https://anotheradthing.com",)"
-            R"("interestGroupName":"Another Ad Thing",)"
             R"("renderUrl":"https://ad2.com/",)"
             R"("adRenderFingerprint":"#####",)"
             R"("bid":2,"desirability":4})",

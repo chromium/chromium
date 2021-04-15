@@ -184,8 +184,7 @@ SellerWorklet::ScoreResult AuctionRunner::ScoreBid(const BidState* state) {
   return seller_worklet_->ScoreAd(
       state->bid_result.ad, state->bid_result.bid, *auction_config_,
       browser_signals_->top_frame_origin.host(), state->bidder->group->owner,
-      state->bidder->group->name, AdRenderFingerprint(state),
-      state->bid_duration);
+      AdRenderFingerprint(state), state->bid_duration);
 }
 
 std::string AuctionRunner::AdRenderFingerprint(const BidState* state) {
@@ -232,9 +231,9 @@ SellerWorklet::Report AuctionRunner::ReportSellerResult(
     const BidState* best_bid) {
   return seller_worklet_->ReportResult(
       *auction_config_, browser_signals_->top_frame_origin.host(),
-      best_bid->bidder->group->owner, best_bid->bidder->group->name,
-      best_bid->bid_result.render_url, AdRenderFingerprint(best_bid),
-      best_bid->bid_result.bid, best_bid->score_result.score);
+      best_bid->bidder->group->owner, best_bid->bid_result.render_url,
+      AdRenderFingerprint(best_bid), best_bid->bid_result.bid,
+      best_bid->score_result.score);
 }
 
 BidderWorklet::ReportWinResult AuctionRunner::ReportBidWin(

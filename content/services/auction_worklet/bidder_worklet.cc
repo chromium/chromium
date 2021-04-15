@@ -273,11 +273,11 @@ BidderWorklet::ReportWinResult BidderWorklet::ReportWin(
   }
   args.push_back(browser_signals);
 
-  v8::Local<v8::Value> signals_for_winner_value;
-  if (!v8_helper_
-           ->RunScript(context, worklet_script_->Get(isolate), "reportWin",
-                       args)
-           .ToLocal(&signals_for_winner_value)) {
+  // An empty return value indicates an exception was thrown. Any other return
+  // value indicates no exception.
+  if (v8_helper_
+          ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args)
+          .IsEmpty()) {
     return ReportWinResult();
   }
 
