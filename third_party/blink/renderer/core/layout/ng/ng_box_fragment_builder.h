@@ -654,7 +654,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
   base::Optional<NGLayoutResult::MathData> math_data_;
 
-  const NGBlockBreakToken* previous_break_token_;
+  const NGBlockBreakToken* previous_break_token_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single
