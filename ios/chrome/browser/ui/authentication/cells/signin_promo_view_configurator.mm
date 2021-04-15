@@ -89,7 +89,7 @@ using l10n_util::GetNSStringF;
     }
     case SigninPromoViewModeSyncWithPrimaryAccount: {
       [signinPromoView.primaryButton
-          setTitle:GetNSString(IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_BUTTON)
+          setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
           forState:UIControlStateNormal];
       signinPromoView.accessibilityLabel =
           GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
