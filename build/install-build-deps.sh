@@ -204,7 +204,6 @@ dev_list="\
   patch
   perl
   pkg-config
-  python2-dev
   python-setuptools
   rpm
   ruby
@@ -219,9 +218,9 @@ dev_list="\
 "
 
 if package_exists python-is-python2; then
-  dev_list="${dev_list} python-is-python2"
+  dev_list="${dev_list} python-is-python2 python2-dev"
 else
-  dev_list="${dev_list} python"
+  dev_list="${dev_list} python python-dev"
 fi
 
 # 64-bit systems need a minimum set of 32-bit compat packages for the pre-built
@@ -340,7 +339,6 @@ backwards_compatible_list="\
   libgtk2.0-dev
   mesa-common-dev
   msttcorefonts
-  python-dev
   ttf-dejavu-core
   ttf-indic-fonts
   ttf-kochi-gothic
@@ -348,6 +346,10 @@ backwards_compatible_list="\
   ttf-mscorefonts-installer
   xfonts-mathml
 "
+if package_exists python-is-python2; then
+  backwards_compatible_list="${backwards_compatible_list} python-dev"
+fi
+
 case $distro_codename in
   trusty)
     backwards_compatible_list+=" \
