@@ -1217,10 +1217,7 @@ const Extension* PrefsUtil::GetExtensionControllingPref(
     return GetExtensionOverridingHomepage(profile_);
 
   if (pref_object.key == ::prefs::kRestoreOnStartup) {
-    int restore_on_startup;
-    CHECK(pref_object.value->GetAsInteger(&restore_on_startup));
-
-    if (restore_on_startup == SessionStartupPref::kPrefValueURLs)
+    if (pref_object.value->GetInt() == SessionStartupPref::kPrefValueURLs)
       return GetExtensionOverridingStartupPages(profile_);
   }
 
