@@ -12,6 +12,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
@@ -41,6 +42,13 @@ GURL AboutBlankUrl() {
 
 GURL AboutSrcdocUrl() {
   return GURL(url::kAboutSrcdocURL);
+}
+
+network::mojom::ContentSecurityPolicyPtr MakeTestCSP() {
+  auto csp = network::mojom::ContentSecurityPolicy::New();
+  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+  csp->header->header_value = "some-directive some-value";
+  return csp;
 }
 
 // See also the unit tests for PolicyContainerNavigationBundle, which exercise
@@ -187,6 +195,12 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
+
+  // Deliver a Content Security Policy via `AddContentSecurityPolicy`. This
+  // policy should not be incorporated in the final policies, since the bundle
+  // is using the history policies.
+  bundle.AddContentSecurityPolicy(MakeTestCSP());
+
   bundle.ComputePolicies(AboutBlankUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
@@ -226,6 +240,12 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
+
+  // Deliver a Content Security Policy via `AddContentSecurityPolicy`. This
+  // policy should not be incorporated in the final policies, since the bundle
+  // is using the history policies.
+  bundle.AddContentSecurityPolicy(MakeTestCSP());
+
   bundle.ComputePolicies(AboutSrcdocUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
