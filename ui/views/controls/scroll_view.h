@@ -163,11 +163,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetScrollBarLayoutWidth() const;
   int GetScrollBarLayoutHeight() const;
 
-  // Returns the horizontal/vertical scrollbar. This may return null.
-  ScrollBar* horizontal_scroll_bar() { return horiz_sb_.get(); }
-  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_.get(); }
-  ScrollBar* vertical_scroll_bar() { return vert_sb_.get(); }
-  const ScrollBar* vertical_scroll_bar() const { return vert_sb_.get(); }
+  // Returns the horizontal/vertical scrollbar.
+  ScrollBar* horizontal_scroll_bar() { return horiz_sb_; }
+  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_; }
+  ScrollBar* vertical_scroll_bar() { return vert_sb_; }
+  const ScrollBar* vertical_scroll_bar() const { return vert_sb_; }
 
   // Customize the scrollbar design. |horiz_sb| and |vert_sb| cannot be null.
   ScrollBar* SetHorizontalScrollBar(std::unique_ptr<ScrollBar> horiz_sb);
@@ -287,10 +287,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   View* header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  std::unique_ptr<ScrollBar> horiz_sb_;
+  ScrollBar* horiz_sb_;
 
   // Vertical scrollbar.
-  std::unique_ptr<ScrollBar> vert_sb_;
+  ScrollBar* vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;

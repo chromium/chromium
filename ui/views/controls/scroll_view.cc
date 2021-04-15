@@ -194,8 +194,8 @@ ScrollView::ScrollView()
                      : ScrollWithLayers::kDisabled) {}
 
 ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
-    : horiz_sb_(PlatformStyle::CreateScrollBar(true)),
-      vert_sb_(PlatformStyle::CreateScrollBar(false)),
+    : horiz_sb_(AddChildView(PlatformStyle::CreateScrollBar(true))),
+      vert_sb_(AddChildView(PlatformStyle::CreateScrollBar(false))),
       corner_view_(std::make_unique<ScrollCornerView>()),
       scroll_with_layers_enabled_(scroll_with_layers ==
                                   ScrollWithLayers::kEnabled) {
@@ -208,8 +208,6 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   AddChildView(std::move(contents_viewport));
   header_viewport_ = AddChildView(std::make_unique<Viewport>(this));
 
-  // Don't add the scrollbars as children until we discover we need them
-  // (ShowOrHideScrollBar).
   horiz_sb_->SetVisible(false);
   horiz_sb_->set_controller(this);
   vert_sb_->SetVisible(false);
@@ -421,22 +419,20 @@ void ScrollView::ClipHeightTo(int min_height, int max_height) {
 }
 
 int ScrollView::GetScrollBarLayoutWidth() const {
-  return vert_sb_ && !vert_sb_->OverlapsContent() ? vert_sb_->GetThickness()
-                                                  : 0;
+  return vert_sb_->OverlapsContent() ? 0 : vert_sb_->GetThickness();
 }
 
 int ScrollView::GetScrollBarLayoutHeight() const {
-  return horiz_sb_ && !horiz_sb_->OverlapsContent() ? horiz_sb_->GetThickness()
-                                                    : 0;
+  return horiz_sb_->OverlapsContent() ? 0 : horiz_sb_->GetThickness();
 }
 
 ScrollBar* ScrollView::SetHorizontalScrollBar(
     std::unique_ptr<ScrollBar> horiz_sb) {
-  DCHECK(horiz_sb);
   horiz_sb->SetVisible(horiz_sb_->GetVisible());
   horiz_sb->set_controller(this);
-  horiz_sb_ = std::move(horiz_sb);
-  return horiz_sb_.get();
+  RemoveChildViewT(horiz_sb_);
+  horiz_sb_ = AddChildView(std::move(horiz_sb));
+  return horiz_sb_;
 }
 
 ScrollBar* ScrollView::SetVerticalScrollBar(
@@ -444,8 +440,9 @@ ScrollBar* ScrollView::SetVerticalScrollBar(
   DCHECK(vert_sb);
   vert_sb->SetVisible(vert_sb_->GetVisible());
   vert_sb->set_controller(this);
-  vert_sb_ = std::move(vert_sb);
-  return vert_sb_.get();
+  RemoveChildViewT(vert_sb_);
+  vert_sb_ = AddChildView(std::move(vert_sb));
+  return vert_sb_;
 }
 
 void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
@@ -579,8 +576,8 @@ void ScrollView::Layout() {
   bool corner_view_required =
       horiz_sb_required && vert_sb_required && !vert_sb_->OverlapsContent();
   // Take action.
-  SetControlVisibility(horiz_sb_.get(), horiz_sb_required);
-  SetControlVisibility(vert_sb_.get(), vert_sb_required);
+  horiz_sb_->SetVisible(horiz_sb_required);
+  vert_sb_->SetVisible(vert_sb_required);
   SetControlVisibility(corner_view_.get(), corner_view_required);
 
   // Default.
@@ -748,10 +745,8 @@ void ScrollView::OnScrollEvent(ui::ScrollEvent* event) {
   // A direction might not be known when the event stream starts, notify both
   // scrollbars that they may be about scroll, or that they may need to cancel
   // UI feedback once the scrolling direction is known.
-  if (horiz_sb_)
-    horiz_sb_->ObserveScrollEvent(e);
-  if (vert_sb_)
-    vert_sb_->ObserveScrollEvent(e);
+  horiz_sb_->ObserveScrollEvent(e);
+  vert_sb_->ObserveScrollEvent(e);
 
   // Need to copy state back to original event.
   if (e.handled())
@@ -798,55 +793,34 @@ void ScrollView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!contents_)
     return;
 
-  ScrollBar* horizontal = horizontal_scroll_bar();
-  if (horizontal) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
-                               CurrentOffset().x());
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
-                               horizontal->GetMinPosition());
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax,
-                               horizontal->GetMaxPosition());
-  }
-  ScrollBar* vertical = vertical_scroll_bar();
-  if (vertical) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollY,
-                               CurrentOffset().y());
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin,
-                               vertical->GetMinPosition());
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax,
-                               vertical->GetMaxPosition());
-  }
-  if (horizontal || vertical)
-    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, true);
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
+                             CurrentOffset().x());
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
+                             horiz_sb_->GetMinPosition());
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax,
+                             horiz_sb_->GetMaxPosition());
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollY,
+                             CurrentOffset().y());
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin,
+                             vert_sb_->GetMinPosition());
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax,
+                             vert_sb_->GetMaxPosition());
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, true);
 }
 
 bool ScrollView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (!contents_)
     return View::HandleAccessibleAction(action_data);
 
-  ScrollBar* horizontal = horizontal_scroll_bar();
-  ScrollBar* vertical = vertical_scroll_bar();
   switch (action_data.action) {
     case ax::mojom::Action::kScrollLeft:
-      if (horizontal)
-        return horizontal->ScrollByAmount(ScrollBar::ScrollAmount::kPrevPage);
-      else
-        return false;
+      return horiz_sb_->ScrollByAmount(ScrollBar::ScrollAmount::kPrevPage);
     case ax::mojom::Action::kScrollRight:
-      if (horizontal)
-        return horizontal->ScrollByAmount(ScrollBar::ScrollAmount::kNextPage);
-      else
-        return false;
+      return horiz_sb_->ScrollByAmount(ScrollBar::ScrollAmount::kNextPage);
     case ax::mojom::Action::kScrollUp:
-      if (vertical)
-        return vertical->ScrollByAmount(ScrollBar::ScrollAmount::kPrevPage);
-      else
-        return false;
+      return vert_sb_->ScrollByAmount(ScrollBar::ScrollAmount::kPrevPage);
     case ax::mojom::Action::kScrollDown:
-      if (vertical)
-        return vertical->ScrollByAmount(ScrollBar::ScrollAmount::kNextPage);
-      else
-        return false;
+      return vert_sb_->ScrollByAmount(ScrollBar::ScrollAmount::kNextPage);
     case ax::mojom::Action::kSetScrollOffset:
       ScrollToOffset(gfx::ScrollOffset(action_data.target_point.x(),
                                        action_data.target_point.y()));
@@ -862,13 +836,13 @@ void ScrollView::ScrollToPosition(ScrollBar* source, int position) {
     return;
 
   gfx::ScrollOffset offset = CurrentOffset();
-  if (source == horiz_sb_.get() && IsHorizontalScrollEnabled()) {
+  if (source == horiz_sb_ && IsHorizontalScrollEnabled()) {
     position = AdjustPosition(offset.x(), position, contents_->width(),
                               contents_viewport_->width());
     if (offset.x() == position)
       return;
     offset.set_x(position);
-  } else if (source == vert_sb_.get() && IsVerticalScrollEnabled()) {
+  } else if (source == vert_sb_ && IsVerticalScrollEnabled()) {
     position = AdjustPosition(offset.y(), position, contents_->height(),
                               contents_viewport_->height());
     if (offset.y() == position)
@@ -1067,25 +1041,15 @@ bool ScrollView::ScrollsWithLayers() const {
 }
 
 bool ScrollView::IsHorizontalScrollEnabled() const {
-  switch (horizontal_scroll_bar_mode_) {
-    case ScrollBarMode::kDisabled:
-      return false;
-    case ScrollBarMode::kHiddenButEnabled:
-      return bool{horiz_sb_};
-    case ScrollBarMode::kEnabled:
-      return horiz_sb_ && horiz_sb_->GetVisible();
-  }
+  return horizontal_scroll_bar_mode_ == ScrollBarMode::kHiddenButEnabled ||
+         (horizontal_scroll_bar_mode_ == ScrollBarMode::kEnabled &&
+          horiz_sb_->GetVisible());
 }
 
 bool ScrollView::IsVerticalScrollEnabled() const {
-  switch (vertical_scroll_bar_mode_) {
-    case ScrollBarMode::kDisabled:
-      return false;
-    case ScrollBarMode::kHiddenButEnabled:
-      return bool{vert_sb_};
-    case ScrollBarMode::kEnabled:
-      return vert_sb_ && vert_sb_->GetVisible();
-  }
+  return vertical_scroll_bar_mode_ == ScrollBarMode::kHiddenButEnabled ||
+         (vertical_scroll_bar_mode_ == ScrollBarMode::kEnabled &&
+          vert_sb_->GetVisible());
 }
 
 void ScrollView::EnableViewportLayer() {
