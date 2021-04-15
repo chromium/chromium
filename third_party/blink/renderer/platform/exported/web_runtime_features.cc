@@ -491,6 +491,12 @@ void WebRuntimeFeatures::EnableSharedArrayBufferOnDesktop(bool enable) {
   RuntimeEnabledFeatures::SetSharedArrayBufferOnDesktopEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableSharedArrayBufferUnrestrictedAccessAllowed(
+    bool enable) {
+  RuntimeEnabledFeatures::SetSharedArrayBufferUnrestrictedAccessAllowedEnabled(
+      enable);
+}
+
 void WebRuntimeFeatures::EnableRemotePlaybackAPI(bool enable) {
   RuntimeEnabledFeatures::SetRemotePlaybackEnabled(enable);
 }

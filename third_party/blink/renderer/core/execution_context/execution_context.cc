@@ -186,9 +186,11 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
   return false;
 #else
   // On desktop, enable transfer for the reverse Origin Trial, or if the
-  // Finch "kill switch" is on.
+  // Finch "kill switch" is on, or if enabled by Enterprise Policy.
   return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
-         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled();
+         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled() ||
+         RuntimeEnabledFeatures::
+             SharedArrayBufferUnrestrictedAccessAllowedEnabled();
 #endif
 }
 

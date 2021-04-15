@@ -192,6 +192,9 @@ CONTENT_EXPORT extern const char kRendererProcessLimit[];
 CONTENT_EXPORT extern const char kRendererStartupDialog[];
 CONTENT_EXPORT extern const char kRunManualTestsFlag[];
 extern const char kSandboxIPCProcess[];
+#if !defined(OS_ANDROID)
+CONTENT_EXPORT extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
+#endif
 CONTENT_EXPORT extern const char kSharedFiles[];
 CONTENT_EXPORT extern const char kSingleProcess[];
 CONTENT_EXPORT extern const char kSitePerProcess[];

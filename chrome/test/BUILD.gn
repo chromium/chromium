@@ -1034,6 +1034,7 @@ if (!is_android) {
       "../browser/chrome_origin_trials_browsertest.cc",
       "../browser/chrome_security_exploit_browsertest.cc",
       "../browser/chrome_service_worker_browsertest.cc",
+      "../browser/chrome_shared_array_buffer_browsertest.cc",
       "../browser/chrome_web_platform_security_metrics_browsertest.cc",
       "../browser/chrome_worker_browsertest.cc",
       "../browser/client_hints/client_hints_browsertest.cc",

@@ -24133,6 +24133,7 @@ Called by update_document_policy_enum.py.-->
   <int value="849" label="ExplicitlyAllowedNetworkPorts"/>
   <int value="850" label="DeviceDebugPacketCaptureAllowed"/>
   <int value="851" label="SuggestLogoutAfterClosingLastWindow"/>
+  <int value="852" label="SharedArrayBufferUnrestrictedAccessAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

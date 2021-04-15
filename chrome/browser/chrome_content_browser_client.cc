@@ -1322,6 +1322,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
   registry->RegisterListPref(prefs::kAutoplayWhitelist);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
+  registry->RegisterBooleanPref(
+      prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
 #endif
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
@@ -2299,6 +2301,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (instant_service &&
           instant_service->IsInstantProcess(process->GetID())) {
         command_line->AppendSwitch(switches::kInstantProcess);
+      }
+
+      // Enable SharedArrayBuffer on desktop if allowed by Enterprise Policy.
+      // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
+      if (prefs->GetBoolean(
+              prefs::kSharedArrayBufferUnrestrictedAccessAllowed)) {
+        command_line->AppendSwitch(
+            switches::kSharedArrayBufferUnrestrictedAccessAllowed);
       }
 #endif
 

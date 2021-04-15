@@ -2999,6 +2999,11 @@ const char kIsolateOrigins[] = "site_isolation.isolate_origins";
 const char kSitePerProcess[] = "site_isolation.site_per_process";
 
 #if !defined(OS_ANDROID)
+// Boolean to allow SharedArrayBuffer in non-crossOriginIsolated contexts.
+// TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
+const char kSharedArrayBufferUnrestrictedAccessAllowed[] =
+    "profile.shared_array_buffer_unrestricted_access_allowed";
+
 // Boolean that specifies whether media (audio/video) autoplay is allowed.
 const char kAutoplayAllowed[] = "media.autoplay_allowed";
 

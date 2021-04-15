@@ -38,6 +38,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_v8_features.h"
@@ -92,6 +93,8 @@ namespace content {
 
 RenderProcessImpl::RenderProcessImpl()
     : RenderProcess("Renderer", GetThreadPoolInitParams()) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Some official builds ship with DCHECKs compiled in. Failing DCHECKs then
   // are either fatal or simply log the error, based on a feature flag.
@@ -159,11 +162,19 @@ RenderProcessImpl::RenderProcessImpl()
       base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
       blink::IsCrossOriginIsolated();
 
-  // The Finch "kill switch" feature can bypass the restriction on desktop only.
 #if (!defined(OS_ANDROID))
   if (!enable_shared_array_buffer) {
+    // Bypass the SAB restriction for the Finch "kill switch".
     enable_shared_array_buffer =
         base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
+    if (!enable_shared_array_buffer &&
+        command_line->HasSwitch(
+            switches::kSharedArrayBufferUnrestrictedAccessAllowed)) {
+      // Bypass the SAB restriction when enabled by Enterprise Policy.
+      enable_shared_array_buffer = true;
+      blink::WebRuntimeFeatures::
+          EnableSharedArrayBufferUnrestrictedAccessAllowed(true);
+    }
   }
 #endif
 
@@ -188,8 +199,6 @@ RenderProcessImpl::RenderProcessImpl()
                         "--no-wasm-trap-handler");
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
     if (command_line->HasSwitch(switches::kEnableCrashpad) ||
         command_line->HasSwitch(switches::kEnableCrashReporter) ||
         command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
@@ -230,18 +239,15 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  if (command_line.HasSwitch(switches::kNoV8UntrustedCodeMitigations)) {
+  if (command_line->HasSwitch(switches::kNoV8UntrustedCodeMitigations)) {
     const char* disable_mitigations = "--no-untrusted-code-mitigations";
     v8::V8::SetFlagsFromString(disable_mitigations,
                                strlen(disable_mitigations));
   }
 
-  if (command_line.HasSwitch(switches::kJavaScriptFlags)) {
+  if (command_line->HasSwitch(switches::kJavaScriptFlags)) {
     std::string js_flags =
-        command_line.GetSwitchValueASCII(switches::kJavaScriptFlags);
+        command_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
     std::vector<base::StringPiece> flag_list = base::SplitStringPiece(
         js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& flag : flag_list) {

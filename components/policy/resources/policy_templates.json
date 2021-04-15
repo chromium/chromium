@@ -17960,6 +17960,39 @@
       Note: Site isolation support for Android will improve, but currently it may cause performance problems. This policy applies only to Chrome on Android running on devices with strictly more than 1 GB of RAM. To apply the policy on non-Android platforms, use <ph name="SITE_PER_PROCESS_POLICY_NAME">SitePerProcess</ph>.''',
     },
     {
+      'name': 'SharedArrayBufferUnrestrictedAccessAllowed',
+      'owners': ['bbudge@chromium.org', 'vahl@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
+      'device_only': False,
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow sites to use SharedArrayBuffers',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent sites from using SharedArrayBuffers',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 852,
+      'caption': '''Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context''',
+      'tags': ['system-security'],
+      'desc': '''
+      Specifies whether SharedArrayBuffers can be used in a non cross-origin-
+      isolated context. Chrome will require cross-origin isolation when using
+      SharedArrayBuffers from Chrome 91 onward (2021-05-25) for Web Compatibility
+      reasons. Additional details can be found on:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.''',
+    },
+    {
       'name': 'WebDriverOverridesIncompatiblePolicies',
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
@@ -26497,6 +26530,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 851,
+  'highest_id_currently_used': 852,
   'highest_atomic_group_id_currently_used': 40
 }
