@@ -103,6 +103,7 @@ js_modulizer("modulize") {
     "multidevice_task_continuation_disabled_link_tests.js",
     "multidevice_wifi_sync_disabled_link_tests.js",
     "multidevice_wifi_sync_item_tests.js",
+    "nearby_share_confirm_page_test.js",
     "nearby_share_receive_dialog_tests.js",
     "nearby_share_subpage_tests.js",
     "network_proxy_section_test.js",

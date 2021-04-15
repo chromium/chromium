@@ -120,7 +120,7 @@
     </template>
 
     <!-- TODO(crbug.com/1149546) factor error section into its own component -->
-    <template is="dom-if" if="[[errorTitle_]]">
+    <template is="dom-if" if="[[errorTitle_]]" restamp>
       <div id="errorSection">
         <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
         <div id="error" role="alert" aria-labelledby="errorTitle"
