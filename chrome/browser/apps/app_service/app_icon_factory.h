@@ -34,6 +34,10 @@ using ScaleToSize = std::map<float, int>;
 //
 // It derives from a uint32_t because it needs to be the same size as the
 // uint32_t IconKey.icon_effects field.
+
+// This enum is used to mask the icon_effects value in crosapi, which is a
+// stable interface that needs to be backwards compatible. Do not change the
+// masks here.
 enum IconEffects : uint32_t {
   kNone = 0x00,
 

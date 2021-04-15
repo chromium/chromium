@@ -175,6 +175,7 @@ test("chromeos_unittests") {
       ":test_support",
       "//chromeos/attestation:unit_tests",
       "//chromeos/crosapi/cpp:unit_tests",
+      "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/cryptohome:unit_tests",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus:unit_tests",

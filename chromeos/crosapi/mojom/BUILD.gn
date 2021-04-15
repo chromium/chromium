@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
+    "app_service_types.mojom",
     "automation.mojom",
     "bitmap.mojom",
     "cert_database.mojom",
@@ -33,6 +34,7 @@ mojom("mojom") {
   public_deps = [
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
+    "//components/services/app_service/public/mojom:mojom",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture_types",
     "//mojo/public/mojom/base",
@@ -42,5 +44,40 @@ mojom("mojom") {
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "crosapi.mojom.App"
+          cpp = "::apps::mojom::AppPtr"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [
+        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
+        "//components/services/app_service/public/mojom/types.mojom.h",
+      ]
+      traits_sources =
+          [ "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//components/services/app_service/public/mojom:mojom" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_service_types_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base/test:test_support",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/mojom:mojom",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
   ]
 }

@@ -1,0 +1,189 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Information about an app. See components/services/app_service/README.md.
+
+// This struct is used to transport App data between lacros-chrome and
+// ash-chrome. It is intended to be the minimal subset of apps::mojom::App
+// required for this purpose, and exists to allow apps::mojom::App to not have
+// to be versioned.
+// See components/services/app_service/public/mojom/types.mojom for details
+// for the structs in this file.
+[Stable]
+struct App {
+  AppType app_type;
+  string app_id;
+
+  // The fields above are mandatory. Everything else below is optional.
+
+  Readiness readiness;
+  string? name;
+  string? short_name;
+
+  // An optional, publisher-specific ID for this app, e.g. for Android apps,
+  // this field contains the Android package name, and for web apps, it
+  // contains the start URL.
+  string? publisher_id;
+  string? description;
+  string? version;
+  array<string> additional_search_terms;
+  IconKey? icon_key;
+  mojo_base.mojom.Time? last_launch_time;
+  mojo_base.mojom.Time? install_time;
+
+  // Whether the app was installed by sync, policy or as a default app.
+  InstallSource install_source;
+  OptionalBool recommendable;
+  OptionalBool searchable;
+  OptionalBool show_in_launcher;
+  OptionalBool show_in_shelf;
+  OptionalBool show_in_search;
+  OptionalBool show_in_management;
+
+  // Whether the app icon should add the notification badging.
+  OptionalBool has_badge;
+
+  // Paused apps cannot be launched, and any running apps that become paused
+  // will be stopped. This is independent of whether or not the app is ready to
+  // be launched (defined by the Readiness field).
+  OptionalBool paused;
+
+  // This vector stores all the intent filters defined in this app. Each
+  // intent filter defines a matching criteria for whether an intent can
+  // be handled by this app. One app can have multiple intent filters.
+  array<IntentFilter> intent_filters;
+};
+
+// The types of apps available in the registry.
+[Stable, Extensible]
+enum AppType {
+  [Default] kUnknown = 0,
+  kArc,           // Android app.
+  kWeb,           // Web app.
+  kSystemWeb,     // System web app.
+};
+
+// Whether an app is ready to launch, i.e. installed.
+[Stable, Extensible]
+enum Readiness {
+  [Default] kUnknown = 0,
+  kReady,                // Installed and launchable.
+  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
+  kDisabledByPolicy,     // Disabled by admin policy.
+  kDisabledByUser,       // Disabled by explicit user action.
+  kTerminated,           // Renderer process crashed.
+  kUninstalledByUser,
+  // Removed apps are purged from the registry cache and have their
+  // associated memory freed. Subscribers are not notified of removed
+  // apps, so publishers must set the app as uninstalled before
+  // removing it.
+  kRemoved,
+};
+
+// How the app was installed.
+[Stable, Extensible]
+enum InstallSource {
+  [Default] kUnknown = 0,
+  kSystem,     // Installed with the system and is considered a part of the OS.
+  kPolicy,     // Installed by policy.
+  kOem,        // Installed by an OEM.
+  kDefault,    // Preinstalled by default, but is not considered a system app.
+  kSync,       // Installed by sync.
+  kUser,       // Installed by user action.
+};
+
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBool {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
+[Stable]
+struct IconKey {
+  // A timeline value for icons that do not change.
+  const uint64 kDoesNotChangeOverTime = 0;
+
+  // A monotonically increasing number so that, after an icon update, a new
+  // IconKey, one that is different in terms of field-by-field equality, can be
+  // broadcast by a Publisher.
+  //
+  // The exact value of the number isn't important, only that newer IconKey's
+  // (those that were created more recently) have a larger timeline than older
+  // IconKey's.
+  //
+  // This is, in some sense, *a* version number, but the field is not called
+  // "version", to avoid any possible confusion that it encodes *the* app's
+  // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
+  //
+  // For example, if an app is disabled for some reason (so that its icon is
+  // grayed out), this would result in a different timeline even though the
+  // app's version is unchanged.
+  uint64 timeline;
+
+  // A bitmask of icon post-processing effects, such as desaturation to gray
+  // and rounding the corners.
+  // The mask enum apps::IconEffects is defined in
+  // chrome/browser/apps/app_service/app_icon_factory.h and will remain
+  // stable.
+  uint32 icon_effects;
+};
+
+// The intent filter matching condition types.
+[Stable, Extensible]
+enum ConditionType {
+  [Default] kScheme,  // Matches the URL scheme (e.g. https, tel).
+  kHost,              // Matches the URL host (e.g. www.google.com).
+  kPattern,           // Matches the URL pattern (e.g. /abc/*).
+  kAction,            // Matches the action type (e.g. view, send).
+  kMimeType,          // Matches the data mime type (e.g. image/jpeg).
+};
+
+// The pattern match type for intent filter pattern condition.
+[Stable, Extensible]
+enum PatternMatchType {
+  [Default] kNone = 0,
+  kLiteral,
+  kPrefix,
+  kGlob,
+  kMimeType,
+};
+
+// For pattern type of condition, the value match will be based on the pattern
+// match type. If the match_type is kNone, then an exact match with the value
+// will be required.
+[Stable]
+struct ConditionValue {
+  string value;
+  PatternMatchType match_type; // This will be None for non pattern conditions.
+};
+
+// The condition for an intent filter. It matches if the intent contains this
+// condition type and the corresponding value matches with any of the
+// condition_values.
+[Stable]
+struct Condition {
+  ConditionType condition_type;
+  array<ConditionValue> condition_values;
+};
+
+// An intent filter is defined by an app, and contains a list of conditions that
+// an intent needs to match. If all conditions match, then this intent filter
+// matches against an intent.
+[Stable]
+struct IntentFilter {
+  array<Condition> conditions;
+
+  // Activity which registered this filter. We only fill this field for ARC
+  // share intent filters.
+  string? activity_name;
+
+  // The label shown to the user for this activity.
+  string? activity_label;
+};
