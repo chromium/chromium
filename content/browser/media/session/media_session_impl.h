@@ -390,6 +390,10 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT bool AddOneShotPlayer(MediaSessionPlayerObserver* observer,
                                        int player_id);
 
+  // Returns true if there is at least one player and all the players are
+  // one-shot.
+  bool HasOnlyOneShotPlayers() const;
+
   // MediaSessionService-related methods
 
   // Called when the routed service may have changed.

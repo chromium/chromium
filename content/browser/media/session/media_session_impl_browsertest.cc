@@ -1575,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       ControlsDontShowWhenOneShotIsPresent) {
+                       ControlsDontShowWhenOnlyOneShotIsPresent) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
 
   {
@@ -1597,9 +1597,9 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
     StartNewPlayer(player_observer.get(), media::MediaContentType::Transient);
 
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-    observer.WaitForControllable(false);
+    observer.WaitForControllable(true);
 
-    EXPECT_FALSE(IsControllable());
+    EXPECT_TRUE(IsControllable());
     EXPECT_TRUE(IsActive());
   }
 
@@ -1609,9 +1609,9 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
     StartNewPlayer(player_observer.get(), media::MediaContentType::Persistent);
 
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-    observer.WaitForControllable(false);
+    observer.WaitForControllable(true);
 
-    EXPECT_FALSE(IsControllable());
+    EXPECT_TRUE(IsControllable());
     EXPECT_TRUE(IsActive());
   }
 }
@@ -1671,7 +1671,22 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       DontSuspendWhenOneShotIsPresent) {
+                       DontSuspendWhenOnlyOneShotIsPresent) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
+
+  StartNewPlayer(player_observer.get(), media::MediaContentType::OneShot);
+  ResolveAudioFocusSuccess();
+
+  SystemSuspend(false);
+
+  EXPECT_FALSE(IsControllable());
+  EXPECT_TRUE(IsActive());
+
+  EXPECT_EQ(0, player_observer->received_suspend_calls());
+}
+
+IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
+                       SuspendWhenOneShotAndNormalArePresent) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
 
   StartNewPlayer(player_observer.get(), media::MediaContentType::OneShot);
@@ -1682,9 +1697,9 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   SystemSuspend(false);
 
   EXPECT_FALSE(IsControllable());
-  EXPECT_TRUE(IsActive());
+  EXPECT_FALSE(IsActive());
 
-  EXPECT_EQ(0, player_observer->received_suspend_calls());
+  EXPECT_EQ(2, player_observer->received_suspend_calls());
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,

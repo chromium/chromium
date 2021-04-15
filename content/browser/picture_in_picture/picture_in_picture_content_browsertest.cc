@@ -331,6 +331,19 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       CanvasCaptureRespondsToUserAction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL test_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture_in_picture/canvas-in-pip.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_page_url));
+  ASSERT_EQ(true, EvalJs(shell(), "start();"));
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
+
+  window_controller()->TogglePlayPause();
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
+}
+
 class MediaSessionPictureInPictureContentBrowserTest
     : public PictureInPictureContentBrowserTest {
  public:
@@ -387,17 +400,50 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
+// Tests that an audio player and a canvas-capture player in Picture-in-Picture
+// running in one frame coexist peacefully: Media Session actions should work.
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       CanvasCaptureControlledByMediaSession) {
+                       AudioPlayerWithPictureInPictureCanvasPlayer) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL test_page_url = embedded_test_server()->GetURL(
-      "example.com", "/media/picture_in_picture/canvas-in-pip.html");
+      "example.com", "/media/picture_in_picture/audio-and-canvas.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_page_url));
-  ASSERT_EQ(true, EvalJs(shell(), "start();"));
-  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
 
+  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionPlayActionHandler();"));
+  ASSERT_TRUE(ExecJs(shell(), "setMediaSessionPauseActionHandler();"));
+
+  // Start the audio player and enter PiP for the canvas player. The PiP
+  // window should be in the "playing" state.
+  ASSERT_TRUE(ExecJs(shell(), "addPlayEventListener();"));
+  ASSERT_EQ(true, EvalJs(shell(), "start();"));
+  std::u16string expected_title = u"play";
+  ASSERT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  ASSERT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPlaying);
+
+  // Simulate pausing playback by invoking the Media Session "pause" action
+  // through interaction with the PiP window.
+  ASSERT_TRUE(ExecJs(shell(), "addPauseEventListener();"));
   window_controller()->TogglePlayPause();
-  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
+  expected_title = u"pause";
+  ASSERT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  ASSERT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPaused);
+
+  // Simulate resuming playback by invoking the Media Session "play" action
+  // through interaction with the PiP window.
+  ASSERT_TRUE(ExecJs(shell(), "addPlayEventListener();"));
+  window_controller()->TogglePlayPause();
+  expected_title = u"play";
+  ASSERT_EQ(
+      expected_title,
+      TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  ASSERT_EQ(overlay_window()->playback_state(),
+            OverlayWindow::PlaybackState::kPlaying);
 }
 
 class AutoPictureInPictureContentBrowserTest

@@ -406,6 +406,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
         iter->second = required_audio_focus_type;
 
       UpdateRoutedService();
+      RebuildAndNotifyMediaSessionInfoChanged();
       RebuildAndNotifyActionsChanged();
       RebuildAndNotifyMediaPositionChanged();
       return true;
@@ -665,9 +666,7 @@ void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
 }
 
 bool MediaSessionImpl::IsControllable() const {
-  // If the session does not have audio focus or it has one shot players then it
-  // cannot be controllable.
-  if (audio_focus_state_ == State::INACTIVE || !one_shot_players_.empty())
+  if (audio_focus_state_ == State::INACTIVE || HasOnlyOneShotPlayers())
     return false;
 
 #if !defined(OS_ANDROID)
@@ -729,6 +728,11 @@ bool MediaSessionImpl::IsSuspended() const {
 
 bool MediaSessionImpl::HasPepper() const {
   return !pepper_players_.empty();
+}
+
+bool MediaSessionImpl::HasOnlyOneShotPlayers() const {
+  return !one_shot_players_.empty() && normal_players_.empty() &&
+         pepper_players_.empty();
 }
 
 void MediaSessionImpl::SetDelegateForTests(
@@ -802,7 +806,7 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
   // UI suspend cannot use State::INACTIVE.
   DCHECK(suspend_type == SuspendType::kSystem || new_state == State::SUSPENDED);
 
-  if (!one_shot_players_.empty())
+  if (HasOnlyOneShotPlayers())
     return;
 
   if (audio_focus_state_ != State::ACTIVE)
