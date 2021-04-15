@@ -235,7 +235,6 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
   quad_state->quad_layer_rect = gfx::Rect(frame_size);
   quad_state->visible_quad_layer_rect = gfx::Rect(frame_size);
   quad_state->clip_rect = clip;
-  quad_state->is_clipped = true;
   quad_state->opacity = 1.f;
 
   viz::SurfaceDrawQuad* surface_quad =

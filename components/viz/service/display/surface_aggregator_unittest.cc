@@ -383,15 +383,13 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     gfx::Transform layer_to_target_transform = transform;
     gfx::Rect layer_bounds(primary_surface_rect);
     gfx::Rect visible_layer_rect(primary_surface_rect);
-    gfx::Rect clip_rect(primary_surface_rect);
-    bool is_clipped = false;
     bool are_contents_opaque = false;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
     auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
     shared_quad_state->SetAll(layer_to_target_transform, layer_bounds,
-                              visible_layer_rect, mask_filter_info, clip_rect,
-                              is_clipped, are_contents_opaque, opacity,
+                              visible_layer_rect, mask_filter_info,
+                              base::nullopt, are_contents_opaque, opacity,
                               blend_mode, 0);
     shared_quad_state->is_fast_rounded_corner = is_fast_rounded_corner;
 
@@ -411,7 +409,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     gfx::Rect output_rect = gfx::Rect(0, 0, 5, 5);
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(transform, output_rect, output_rect,
-                         gfx::MaskFilterInfo(), output_rect, false, false, 1,
+                         gfx::MaskFilterInfo(), base::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
@@ -426,7 +424,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                               const gfx::Rect& output_rect) {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
     shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
-                         gfx::MaskFilterInfo(), output_rect, false, false, 1,
+                         gfx::MaskFilterInfo(), base::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
@@ -2213,9 +2211,7 @@ void AddSolidColorQuadWithBlendMode(
   const gfx::Transform layer_to_target_transform;
   const gfx::Rect layer_rect(size);
   const gfx::Rect visible_layer_rect(size);
-  const gfx::Rect clip_rect(size);
 
-  bool is_clipped = false;
   SkColor color = SK_ColorGREEN;
   bool are_contents_opaque = SkColorGetA(color) == 0xFF;
   float opacity = 1.f;
@@ -2223,8 +2219,8 @@ void AddSolidColorQuadWithBlendMode(
   bool force_anti_aliasing_off = false;
   auto* sqs = pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(layer_to_target_transform, layer_rect, visible_layer_rect,
-              mask_filter_info, clip_rect, is_clipped, are_contents_opaque,
-              opacity, blend_mode, 0);
+              mask_filter_info, base::nullopt, are_contents_opaque, opacity,
+              blend_mode, 0);
 
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(pass->shared_quad_state_list.back(), visible_layer_rect,
@@ -2632,7 +2628,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
     auto* child_root_pass = child_frame.render_pass_list[1].get();
     auto* child_root_pass_sqs = child_root_pass->shared_quad_state_list.front();
     child_root_pass_sqs->quad_to_target_transform.Translate(8, 0);
-    child_root_pass_sqs->is_clipped = true;
     child_root_pass_sqs->clip_rect = gfx::Rect(0, 0, 5, 5);
 
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -2760,16 +2755,16 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateMultiplePassWithTransform) {
         << iter.index();
   }
 
-  EXPECT_TRUE(
-      aggregated_pass_list[1]->shared_quad_state_list.ElementAt(1)->is_clipped);
+  EXPECT_TRUE(aggregated_pass_list[1]
+                  ->shared_quad_state_list.ElementAt(1)
+                  ->clip_rect.has_value());
 
   // The second quad in the root pass is aggregated from the child, so its
   // clip rect must be transformed by the child's translation/scale and
   // clipped be the visible_rects for both children.
-  EXPECT_EQ(gfx::Rect(0, 13, 8, 12).ToString(),
-            aggregated_pass_list[1]
-                ->shared_quad_state_list.ElementAt(1)
-                ->clip_rect.ToString());
+  EXPECT_EQ(
+      gfx::Rect(0, 13, 8, 12),
+      aggregated_pass_list[1]->shared_quad_state_list.ElementAt(1)->clip_rect);
 }
 
 // This test verifies that in the absence of a primary Surface,
@@ -6671,7 +6666,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
     auto* root_render_pass = root_frame.render_pass_list[0].get();
     auto* surface_quad_sqs = root_render_pass->shared_quad_state_list.front();
     surface_quad_sqs->quad_to_target_transform = transform;
-    surface_quad_sqs->is_clipped = false;
+    surface_quad_sqs->clip_rect.reset();
     // Set the root damage rect to empty. Only the child surface will be tested.
     root_render_pass->damage_rect = gfx::Rect();
     root_sink_->SubmitCompositorFrame(root_local_surface_id_,
@@ -6698,7 +6693,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
     auto* root_render_pass = root_frame.render_pass_list[0].get();
     auto* surface_quad_sqs = root_render_pass->shared_quad_state_list.front();
     surface_quad_sqs->quad_to_target_transform = transform;
-    surface_quad_sqs->is_clipped = true;
     surface_quad_sqs->clip_rect = clip_rect;
     root_render_pass->damage_rect = gfx::Rect();
     root_sink_->SubmitCompositorFrame(root_local_surface_id_,
@@ -7030,7 +7024,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     auto* render_pass = child_surface_frame.render_pass_list[0].get();
     auto* surface_quad_sqs = render_pass->shared_quad_state_list.front();
-    surface_quad_sqs->is_clipped = true;
     surface_quad_sqs->clip_rect = gfx::Rect(20, 0, 60, 80);
 
     child_sink_->SubmitCompositorFrame(child_local_surface_id,
@@ -7096,7 +7089,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
     auto* last_pass = root_frame.render_pass_list.back().get();
     auto* solid_quad_sqs = last_pass->shared_quad_state_list.front();
-    solid_quad_sqs->is_clipped = true;
     solid_quad_sqs->clip_rect = gfx::Rect(80, 0, 40, 30);
 
     root_sink_->SubmitCompositorFrame(root_local_surface_id_,

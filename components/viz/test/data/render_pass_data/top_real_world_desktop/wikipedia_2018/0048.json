@@ -1217,14 +1217,7 @@
       "shared_quad_state_list": [ {
          "are_contents_opaque": false,
          "blend_mode": "kSrcOver",
-         "clip_rect": {
-            "height": 0,
-            "width": 0,
-            "x": 0,
-            "y": 0
-         },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": false,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1254,7 +1247,6 @@
             "y": 100
          },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": true,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1284,7 +1276,6 @@
             "y": 155
          },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": true,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1314,7 +1305,6 @@
             "y": 155
          },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": true,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1337,14 +1327,7 @@
       }, {
          "are_contents_opaque": false,
          "blend_mode": "kSrcOver",
-         "clip_rect": {
-            "height": 0,
-            "width": 0,
-            "x": 0,
-            "y": 0
-         },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": false,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1367,14 +1350,7 @@
       }, {
          "are_contents_opaque": false,
          "blend_mode": "kSrcOver",
-         "clip_rect": {
-            "height": 0,
-            "width": 0,
-            "x": 0,
-            "y": 0
-         },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": false,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1397,14 +1373,7 @@
       }, {
          "are_contents_opaque": false,
          "blend_mode": "kSrcOver",
-         "clip_rect": {
-            "height": 0,
-            "width": 0,
-            "x": 0,
-            "y": 0
-         },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": false,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {
@@ -1427,14 +1396,7 @@
       }, {
          "are_contents_opaque": true,
          "blend_mode": "kSrcOver",
-         "clip_rect": {
-            "height": 0,
-            "width": 0,
-            "x": 0,
-            "y": 0
-         },
          "de_jelly_delta_y": 0.0,
-         "is_clipped": false,
          "is_fast_rounded_corner": false,
          "opacity": 1.0,
          "quad_layer_rect": {

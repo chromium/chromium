@@ -141,10 +141,13 @@ void LayerImpl::SetScrollTreeIndex(int index) {
 void LayerImpl::PopulateSharedQuadState(viz::SharedQuadState* state,
                                         bool contents_opaque) const {
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
+  base::Optional<gfx::Rect> clip_rect;
+  if (draw_properties_.is_clipped) {
+    clip_rect = draw_properties_.clip_rect;
+  }
   state->SetAll(draw_properties_.target_space_transform, gfx::Rect(bounds()),
                 draw_properties_.visible_layer_rect,
-                draw_properties_.mask_filter_info, draw_properties_.clip_rect,
-                draw_properties_.is_clipped, contents_opaque,
+                draw_properties_.mask_filter_info, clip_rect, contents_opaque,
                 draw_properties_.opacity,
                 effect_node->HasRenderSurface() ? SkBlendMode::kSrcOver
                                                 : effect_node->blend_mode,
@@ -178,9 +181,12 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
                               SK_Scalar1 / layer_to_content_scale);
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
+  base::Optional<gfx::Rect> clip_rect;
+  if (draw_properties().is_clipped) {
+    clip_rect = draw_properties().clip_rect;
+  }
   state->SetAll(scaled_draw_transform, content_rect, visible_content_rect,
-                draw_properties().mask_filter_info, draw_properties().clip_rect,
-                draw_properties().is_clipped, contents_opaque,
+                draw_properties().mask_filter_info, clip_rect, contents_opaque,
                 draw_properties().opacity,
                 effect_node->HasRenderSurface() ? SkBlendMode::kSrcOver
                                                 : effect_node->blend_mode,

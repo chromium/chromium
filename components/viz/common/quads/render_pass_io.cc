@@ -1692,8 +1692,9 @@ base::Value SharedQuadStateToDict(const SharedQuadState& sqs) {
               RectToDict(sqs.visible_quad_layer_rect));
   dict.SetKey("rounded_corner_bounds",
               RRectFToDict(sqs.mask_filter_info.rounded_corner_bounds()));
-  dict.SetKey("clip_rect", RectToDict(sqs.clip_rect));
-  dict.SetBoolKey("is_clipped", sqs.is_clipped);
+  if (sqs.clip_rect) {
+    dict.SetKey("clip_rect", RectToDict(*sqs.clip_rect));
+  }
   dict.SetBoolKey("are_contents_opaque", sqs.are_contents_opaque);
   dict.SetDoubleKey("opacity", sqs.opacity);
   dict.SetStringKey("blend_mode", BlendModeToString(sqs.blend_mode));
@@ -1765,9 +1766,9 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       dict.FindDoubleKey("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
-      !visible_quad_layer_rect || !rounded_corner_bounds || !clip_rect ||
-      !is_clipped || !are_contents_opaque || !opacity || !blend_mode ||
-      !sorting_context_id || !is_fast_rounded_corner || !de_jelly_delta_y) {
+      !visible_quad_layer_rect || !rounded_corner_bounds ||
+      !are_contents_opaque || !opacity || !blend_mode || !sorting_context_id ||
+      !is_fast_rounded_corner || !de_jelly_delta_y) {
     return false;
   }
   gfx::Transform t_quad_to_target_transform;
@@ -1778,9 +1779,20 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       !RectFromDict(*quad_layer_rect, &t_quad_layer_rect) ||
       !RectFromDict(*visible_quad_layer_rect, &t_visible_quad_layer_rect) ||
       !RRectFFromDict(*rounded_corner_bounds, &t_rounded_corner_bounds) ||
-      !RectFromDict(*clip_rect, &t_clip_rect)) {
+      (clip_rect && !RectFromDict(*clip_rect, &t_clip_rect))) {
     return false;
   }
+  base::Optional<gfx::Rect> clip_rect_opt;
+  // Some older files still use the is_clipped field.  If it's present, we'll
+  // respect it, and ignore clip_rect if it's false.
+  if (is_clipped.has_value()) {
+    if (is_clipped.value()) {
+      clip_rect_opt = t_clip_rect;
+    }
+  } else if (clip_rect) {
+    clip_rect_opt = t_clip_rect;
+  }
+
   int blend_mode_index = StringToBlendMode(*blend_mode);
   DCHECK_GE(static_cast<int>(SkBlendMode::kLastMode), blend_mode_index);
   if (blend_mode_index < 0)
@@ -1788,10 +1800,9 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   SkBlendMode t_blend_mode = static_cast<SkBlendMode>(blend_mode_index);
   gfx::MaskFilterInfo mask_filter_info(t_rounded_corner_bounds);
   sqs->SetAll(t_quad_to_target_transform, t_quad_layer_rect,
-              t_visible_quad_layer_rect, mask_filter_info, t_clip_rect,
-              is_clipped.value(), are_contents_opaque.value(),
-              static_cast<float>(opacity.value()), t_blend_mode,
-              sorting_context_id.value());
+              t_visible_quad_layer_rect, mask_filter_info, clip_rect_opt,
+              are_contents_opaque.value(), static_cast<float>(opacity.value()),
+              t_blend_mode, sorting_context_id.value());
   sqs->is_fast_rounded_corner = is_fast_rounded_corner.value();
   sqs->de_jelly_delta_y = static_cast<float>(de_jelly_delta_y.value());
   return true;

@@ -57,8 +57,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false,
+      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
       /*opacity=*/src_opacity,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
@@ -273,8 +272,7 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false,
+      /*clip_rect=*/base::nullopt,
       /*are_contents_opaque=*/false,
       /*opacity=*/dst_opacity_,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);

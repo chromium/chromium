@@ -1519,10 +1519,8 @@ bool GLRenderer::UpdateRPDQWithSkiaFilters(
         filter = sk_ref_sp(filter->getInput(0));
       }
       if (filter) {
-        gfx::Rect clip_rect = current_draw_rect_;
-        if (quad->shared_quad_state->is_clipped) {
-          clip_rect = quad->shared_quad_state->clip_rect;
-        }
+        gfx::Rect clip_rect =
+            quad->shared_quad_state->clip_rect.value_or(current_draw_rect_);
         gfx::Transform transform = params->quad_to_target_transform;
         transform.FlattenTo2d();
         if (!transform.IsInvertible()) {

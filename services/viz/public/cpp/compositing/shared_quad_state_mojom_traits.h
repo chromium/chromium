@@ -41,12 +41,9 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, OptSharedQuadState> {
     return input.sqs->mask_filter_info;
   }
 
-  static const gfx::Rect& clip_rect(const OptSharedQuadState& input) {
+  static const base::Optional<gfx::Rect>& clip_rect(
+      const OptSharedQuadState& input) {
     return input.sqs->clip_rect;
-  }
-
-  static bool is_clipped(const OptSharedQuadState& input) {
-    return input.sqs->is_clipped;
   }
 
   static bool are_contents_opaque(const OptSharedQuadState& input) {
@@ -99,12 +96,9 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     return sqs.mask_filter_info;
   }
 
-  static const gfx::Rect& clip_rect(const viz::SharedQuadState& sqs) {
+  static const base::Optional<gfx::Rect>& clip_rect(
+      const viz::SharedQuadState& sqs) {
     return sqs.clip_rect;
-  }
-
-  static bool is_clipped(const viz::SharedQuadState& sqs) {
-    return sqs.is_clipped;
   }
 
   static bool are_contents_opaque(const viz::SharedQuadState& sqs) {
@@ -143,7 +137,6 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
       return false;
     }
 
-    out->is_clipped = data.is_clipped();
     out->are_contents_opaque = data.are_contents_opaque();
     out->opacity = data.opacity();
     if (data.blend_mode() > static_cast<int>(SkBlendMode::kLastMode))

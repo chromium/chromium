@@ -310,8 +310,8 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->display_rect = gfx::RectF(quad->rect);
   transform.TransformRect(&candidate->display_rect);
 
-  candidate->clip_rect = sqs->clip_rect;
-  candidate->is_clipped = sqs->is_clipped;
+  candidate->clip_rect = sqs->clip_rect.value_or(gfx::Rect());
+  candidate->is_clipped = sqs->clip_rect.has_value();
   candidate->is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();

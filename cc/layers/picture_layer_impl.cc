@@ -262,10 +262,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (is_clipped())
       bounds_in_target_space.Intersect(draw_properties().clip_rect);
 
-    if (shared_quad_state->is_clipped)
-      bounds_in_target_space.Intersect(shared_quad_state->clip_rect);
+    if (shared_quad_state->clip_rect)
+      bounds_in_target_space.Intersect(*shared_quad_state->clip_rect);
 
-    shared_quad_state->is_clipped = true;
     shared_quad_state->clip_rect = bounds_in_target_space;
 
 #if DCHECK_IS_ON()

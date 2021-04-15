@@ -98,14 +98,14 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
 
     viz::SharedQuadState* quad_state =
         render_pass->CreateAndAppendSharedQuadState();
-    quad_state->SetAll(
-        transform,
-        /*quad_layer_rect=*/child_bounds,
-        /*visible_quad_layer_rect=*/child_bounds,
-        /*mask_filter_info=*/gfx::MaskFilterInfo(),
-        /*clip_rect=*/gfx::Rect(),
-        /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-        /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+    quad_state->SetAll(transform,
+                       /*quad_layer_rect=*/child_bounds,
+                       /*visible_layer_rect=*/child_bounds,
+                       /*mask_filter_info=*/gfx::MaskFilterInfo(),
+                       /*clip_rect=*/base::nullopt,
+                       /*are_contents_opaque=*/false, /*opacity=*/1.f,
+                       /*blend_mode=*/SkBlendMode::kSrcOver,
+                       /*sorting_context_id=*/0);
 
     viz::SurfaceDrawQuad* embed =
         render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
@@ -123,14 +123,14 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
   // content-area of the client.
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  quad_state->SetAll(
-      gfx::Transform(),
-      /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+  quad_state->SetAll(gfx::Transform(),
+                     /*quad_layer_rect=*/output_rect,
+                     /*visible_layer_rect=*/output_rect,
+                     /*mask_filter_info=*/gfx::MaskFilterInfo(),
+                     /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+                     /*opacity=*/1.f,
+                     /*blend_mode=*/SkBlendMode::kSrcOver,
+                     /*sorting_context_id=*/0);
 
   viz::SolidColorDrawQuad* color_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

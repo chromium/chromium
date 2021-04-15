@@ -210,7 +210,7 @@ class CALayerOverlayProcessorInternal {
     // another CALayer to the tree). Handling non-single border radii is also,
     // but requires APIs not supported on all macOS versions.
     if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
-      DCHECK(quad->shared_quad_state->is_clipped);
+      DCHECK(quad->shared_quad_state->clip_rect);
       if (quad->shared_quad_state->mask_filter_info.rounded_corner_bounds()
               .GetType() > gfx::RRectF::Type::kSingle) {
         return CA_LAYER_FAILED_QUAD_ROUNDED_CORNER_NOT_UNIFORM;
@@ -235,9 +235,9 @@ class CALayerOverlayProcessorInternal {
       most_recent_overlay_shared_state_->sorting_context_id =
           quad->shared_quad_state->sorting_context_id;
       most_recent_overlay_shared_state_->is_clipped =
-          quad->shared_quad_state->is_clipped;
+          quad->shared_quad_state->clip_rect.has_value();
       most_recent_overlay_shared_state_->clip_rect =
-          gfx::RectF(quad->shared_quad_state->clip_rect);
+          gfx::RectF(quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
       most_recent_overlay_shared_state_->rounded_corner_bounds =
           quad->shared_quad_state->mask_filter_info.rounded_corner_bounds();
 

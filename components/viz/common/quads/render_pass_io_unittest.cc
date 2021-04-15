@@ -130,8 +130,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     sqs1->SetAll(
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(2.f, 3.f, 4.f, 5.f), 1.5f)),
-        gfx::Rect(5, 20, 1000, 200), true, false, 0.5f, SkBlendMode::kDstOver,
-        101);
+        gfx::Rect(5, 20, 1000, 200), false, 0.5f, SkBlendMode::kDstOver, 101);
     sqs1->is_fast_rounded_corner = true;
     sqs1->de_jelly_delta_y = 0.7f;
   }
@@ -148,8 +147,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(gfx::Rect(), sqs0->quad_layer_rect);
     EXPECT_EQ(gfx::Rect(), sqs0->visible_quad_layer_rect);
     EXPECT_FALSE(sqs0->mask_filter_info.HasRoundedCorners());
-    EXPECT_EQ(gfx::Rect(), sqs0->clip_rect);
-    EXPECT_FALSE(sqs0->is_clipped);
+    EXPECT_EQ(base::nullopt, sqs0->clip_rect);
     EXPECT_TRUE(sqs0->are_contents_opaque);
     EXPECT_EQ(1.0f, sqs0->opacity);
     EXPECT_EQ(SkBlendMode::kSrcOver, sqs0->blend_mode);
@@ -169,7 +167,6 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
               sqs1->mask_filter_info.rounded_corner_bounds().GetSimpleRadius());
     EXPECT_EQ(gfx::RectF(2.f, 3.f, 4.f, 5.f), sqs1->mask_filter_info.bounds());
     EXPECT_EQ(gfx::Rect(5, 20, 1000, 200), sqs1->clip_rect);
-    EXPECT_TRUE(sqs1->is_clipped);
     EXPECT_FALSE(sqs1->are_contents_opaque);
     EXPECT_EQ(0.5f, sqs1->opacity);
     EXPECT_EQ(SkBlendMode::kDstOver, sqs1->blend_mode);

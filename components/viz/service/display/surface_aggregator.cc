@@ -609,8 +609,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     // smaller cliprect for the quad.
     gfx::Rect surface_quad_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
         source_sqs->quad_to_target_transform, source_visible_rect);
-    if (source_sqs->is_clipped) {
-      surface_quad_clip_rect.Intersect(source_sqs->clip_rect);
+    if (source_sqs->clip_rect) {
+      surface_quad_clip_rect.Intersect(*source_sqs->clip_rect);
     }
 
     quads_clip =
@@ -888,10 +888,10 @@ void SurfaceAggregator::AddColorConversionPass() {
   shared_quad_state->SetAll(
       /*quad_to_target_transform=*/gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect,
+      /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
+      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+      /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrc, /*sorting_context_id=*/0);
 
   auto* quad = color_conversion_pass
@@ -946,10 +946,9 @@ void SurfaceAggregator::AddDisplayTransformPass() {
   shared_quad_state->SetAll(
       /*quad_to_target_transform=*/root_surface_transform_,
       /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect,
+      /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, are_contents_opaque, /*opacity=*/1.f,
+      /*clip_rect=*/base::nullopt, are_contents_opaque, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   auto* quad = display_transform_pass
@@ -985,12 +984,8 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
     AggregatedRenderPass* dest_render_pass,
     const MaskFilterInfoExt& mask_filter_info_ext) {
   auto* shared_quad_state = dest_render_pass->CreateAndAppendSharedQuadState();
-  base::Optional<gfx::Rect> quad_clip;
-  if (source_sqs->is_clipped) {
-    quad_clip = source_sqs->clip_rect;
-  }
   auto new_clip_rect =
-      CalculateClipRect(clip_rect, quad_clip, target_transform);
+      CalculateClipRect(clip_rect, source_sqs->clip_rect, target_transform);
 
   // target_transform contains any transformation that may exist
   // between the context that these quads are being copied from (i.e. the
@@ -1003,8 +998,7 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
 
   shared_quad_state->SetAll(
       new_transform, quad_layer_rect, visible_quad_layer_rect,
-      mask_filter_info_ext.mask_filter_info,
-      new_clip_rect.value_or(gfx::Rect()), new_clip_rect.has_value(),
+      mask_filter_info_ext.mask_filter_info, new_clip_rect,
       source_sqs->are_contents_opaque, source_sqs->opacity,
       source_sqs->blend_mode, source_sqs->sorting_context_id);
   shared_quad_state->is_fast_rounded_corner =
@@ -1526,8 +1520,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           cc::MathUtil::MapEnclosingClippedRectIgnoringError(
               quad->shared_quad_state->quad_to_target_transform,
               quad_damage_rect, kEpsilon);
-      if (quad->shared_quad_state->is_clipped) {
-        rect_in_target_space.Intersect(quad->shared_quad_state->clip_rect);
+      if (quad->shared_quad_state->clip_rect) {
+        rect_in_target_space.Intersect(*quad->shared_quad_state->clip_rect);
       }
       damage_rect.Union(rect_in_target_space);
     }
@@ -2122,8 +2116,8 @@ void SurfaceAggregator::HandleDeJelly(Surface* surface) {
       continue;
 
     // We are going to de-jelly this SharedQuadState. Expand the max clip.
-    if (state->is_clipped) {
-      jelly_clip.Union(state->clip_rect);
+    if (state->clip_rect) {
+      jelly_clip.Union(*state->clip_rect);
     }
 
     // Compute the skew angle and update |max_skew|.
@@ -2179,7 +2173,7 @@ void SurfaceAggregator::HandleDeJelly(Surface* surface) {
     // Create a new render pass if we have a skewed quad which is clipped more
     // than jelly_clip.
     bool create_render_pass =
-        has_skew && state->is_clipped && state->clip_rect != jelly_clip;
+        has_skew && state->clip_rect && state->clip_rect != jelly_clip;
     if (!sub_render_pass && create_render_pass) {
       sub_render_pass = std::make_unique<AggregatedRenderPass>(1, 1);
       gfx::Transform skew_transform;
@@ -2230,11 +2224,11 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
   // MaxDeJellyHeight().
   int un_clip_top = 0;
   int un_clip_bottom = 0;
-  DCHECK(state->is_clipped);
-  if (state->clip_rect.y() <= jelly_clip.y()) {
+  DCHECK(state->clip_rect);
+  if (state->clip_rect->y() <= jelly_clip.y()) {
     un_clip_top = MaxDeJellyHeight();
   }
-  if (state->clip_rect.bottom() >= jelly_clip.bottom()) {
+  if (state->clip_rect->bottom() >= jelly_clip.bottom()) {
     un_clip_bottom = MaxDeJellyHeight();
   }
 
@@ -2277,7 +2271,7 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
     }
 
     // Expand our clip by un clip amounts.
-    new_state->clip_rect.Inset(0, -un_clip_top, 0, -un_clip_bottom);
+    new_state->clip_rect->Inset(0, -un_clip_top, 0, -un_clip_bottom);
   }
 
   // Append all quads sharing |new_state|.
@@ -2318,7 +2312,7 @@ void SurfaceAggregator::AppendDeJellyRenderPass(
   gfx::Transform transform;
   new_state->SetAll(transform, render_pass->output_rect,
                     render_pass->output_rect, gfx::MaskFilterInfo(), jelly_clip,
-                    true, false, opacity, blend_mode, 0);
+                    false, opacity, blend_mode, 0);
   auto* quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(new_state, render_pass->output_rect, render_pass->output_rect,

@@ -1370,7 +1370,6 @@ TEST_F(SingleOverlayOnTopTest, AllowClipped) {
   CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  pass->shared_quad_state_list.back()->is_clipped = true;
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
 
   OverlayCandidateList candidate_list;
@@ -4229,10 +4228,10 @@ void AddQuad(gfx::Rect quad_rect,
   SharedQuadState* quad_state = render_pass->CreateAndAppendSharedQuadState();
 
   quad_state->SetAll(
-      /*quad_layer_rect=*/quad_to_target_transform, quad_rect,
-      /*visible_quad_layer_rect=*/quad_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(), /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false,
+      /*quad_to_target_transform=*/quad_to_target_transform, quad_rect,
+      /*visible_layer_rect=*/quad_rect,
+      /*mask_filter_info=*/gfx::MaskFilterInfo(),
+      /*clip_rect=*/base::nullopt,
       /*are contents opaque=*/true,
       /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -4367,7 +4366,6 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
       YUV_420_BIPLANAR);
-  pass->shared_quad_state_list.back()->is_clipped = true;
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   SkMatrix44 default_color = GetIdentityColorMatrix();
@@ -4401,7 +4399,6 @@ TEST_F(SingleOverlayOnTopTest,
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
       YUV_420_BIPLANAR);
-  pass->shared_quad_state_list.back()->is_clipped = true;
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
   SkMatrix44 default_color = GetIdentityColorMatrix();

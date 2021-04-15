@@ -27,9 +27,7 @@ struct SharedQuadState {
   gfx.mojom.MaskFilterInfo mask_filter_info;
 
   // This rect lives in the target content space.
-  gfx.mojom.Rect clip_rect;
-
-  bool is_clipped;
+  gfx.mojom.Rect? clip_rect;
 
   // Indicates whether the quads share this sqs contains opaque content.
   bool are_contents_opaque;

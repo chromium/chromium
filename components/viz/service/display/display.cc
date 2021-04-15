@@ -1164,8 +1164,8 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
                     last_sqs->mask_filter_info.rounded_corner_bounds())));
           }
 
-          if (last_sqs->is_clipped)
-            sqs_rect_in_target.Intersect(last_sqs->clip_rect);
+          if (last_sqs->clip_rect)
+            sqs_rect_in_target.Intersect(*last_sqs->clip_rect);
 
           // If region complexity is above our threshold, remove the smallest
           // rects from occlusion region.

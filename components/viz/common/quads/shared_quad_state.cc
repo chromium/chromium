@@ -4,6 +4,7 @@
 
 #include "components/viz/common/quads/shared_quad_state.h"
 
+#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -30,12 +31,26 @@ void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
                              float opacity,
                              SkBlendMode blend_mode,
                              int sorting_context_id) {
+  SetAll(quad_to_target_transform, quad_layer_rect, visible_quad_layer_rect,
+         mask_filter_info,
+         is_clipped ? base::make_optional(clip_rect) : base::nullopt,
+         are_contents_opaque, opacity, blend_mode, sorting_context_id);
+}
+
+void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
+                             const gfx::Rect& quad_layer_rect,
+                             const gfx::Rect& visible_quad_layer_rect,
+                             const gfx::MaskFilterInfo& mask_filter_info,
+                             const base::Optional<gfx::Rect>& clip_rect,
+                             bool are_contents_opaque,
+                             float opacity,
+                             SkBlendMode blend_mode,
+                             int sorting_context_id) {
   this->quad_to_target_transform = quad_to_target_transform;
   this->quad_layer_rect = quad_layer_rect;
   this->visible_quad_layer_rect = visible_quad_layer_rect;
   this->mask_filter_info = mask_filter_info;
   this->clip_rect = clip_rect;
-  this->is_clipped = is_clipped;
   this->are_contents_opaque = are_contents_opaque;
   this->opacity = opacity;
   this->blend_mode = blend_mode;
@@ -53,8 +68,9 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
       "mask_filter_rounded_corners_radii",
       mask_filter_info.rounded_corner_bounds(), value);
 
-  value->SetBoolean("is_clipped", is_clipped);
-  cc::MathUtil::AddToTracedValue("clip_rect", clip_rect, value);
+  if (clip_rect) {
+    cc::MathUtil::AddToTracedValue("clip_rect", *clip_rect, value);
+  }
 
   value->SetBoolean("are_contents_opaque", are_contents_opaque);
   value->SetDouble("opacity", opacity);

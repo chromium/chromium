@@ -149,8 +149,6 @@ SharedQuadState* CreateTestSharedQuadState(
     const gfx::RRectF& rrect) {
   const gfx::Rect layer_rect = rect;
   const gfx::Rect visible_layer_rect = rect;
-  const gfx::Rect clip_rect = gfx::Rect();
-  const bool is_clipped = false;
   const bool are_contents_opaque = false;
   const float opacity = 1.0f;
   const gfx::MaskFilterInfo mask_filter_info(rrect);
@@ -158,7 +156,7 @@ SharedQuadState* CreateTestSharedQuadState(
   int sorting_context_id = 0;
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
-                       mask_filter_info, clip_rect, is_clipped,
+                       mask_filter_info, /**clip_rect=*/base::nullopt,
                        are_contents_opaque, opacity, blend_mode,
                        sorting_context_id);
   return shared_state;
@@ -171,7 +169,6 @@ SharedQuadState* CreateTestSharedQuadStateClipped(
     AggregatedRenderPass* render_pass) {
   const gfx::Rect layer_rect = rect;
   const gfx::Rect visible_layer_rect = clip_rect;
-  const bool is_clipped = true;
   const bool are_contents_opaque = false;
   const float opacity = 1.0f;
   const SkBlendMode blend_mode = SkBlendMode::kSrcOver;
@@ -179,8 +176,9 @@ SharedQuadState* CreateTestSharedQuadStateClipped(
   SharedQuadState* shared_state = render_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(quad_to_target_transform, layer_rect, visible_layer_rect,
                        /*mask_filter_info=*/gfx::MaskFilterInfo(), clip_rect,
-                       is_clipped, are_contents_opaque, opacity, blend_mode,
+                       are_contents_opaque, opacity, blend_mode,
                        sorting_context_id);
+
   return shared_state;
 }
 

@@ -151,7 +151,6 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
   quad_state->quad_layer_rect = gfx::Rect(frame_size);
   quad_state->visible_quad_layer_rect = gfx::Rect(frame_size);
   quad_state->clip_rect = clip;
-  quad_state->is_clipped = true;
   quad_state->opacity = 1.f;
 
   viz::SurfaceDrawQuad* surface_quad =
@@ -221,15 +220,14 @@ void SurfacesInstance::RemoveChildId(const viz::SurfaceId& child_id) {
 void SurfacesInstance::SetSolidColorRootFrame() {
   DCHECK(!surface_size_.IsEmpty());
   gfx::Rect rect(surface_size_);
-  bool is_clipped = false;
   bool are_contents_opaque = true;
   auto render_pass = viz::CompositorRenderPass::Create();
   render_pass->SetNew(viz::CompositorRenderPassId{1}, rect, rect,
                       gfx::Transform());
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  quad_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), rect,
-                     is_clipped, are_contents_opaque, 1.f,
+  quad_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
+                     base::nullopt, are_contents_opaque, 1.f,
                      SkBlendMode::kSrcOver, 0);
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

@@ -413,10 +413,14 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  shared_quad_state->SetAll(
-      draw_transform(), content_rect(), content_rect(), mask_filter_info(),
-      draw_properties_.clip_rect, draw_properties_.is_clipped, contents_opaque,
-      draw_properties_.draw_opacity, BlendMode(), sorting_context_id);
+  base::Optional<gfx::Rect> clip_rect;
+  if (draw_properties_.is_clipped) {
+    clip_rect = draw_properties_.clip_rect;
+  }
+  shared_quad_state->SetAll(draw_transform(), content_rect(), content_rect(),
+                            mask_filter_info(), clip_rect, contents_opaque,
+                            draw_properties_.draw_opacity, BlendMode(),
+                            sorting_context_id);
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {

@@ -510,7 +510,6 @@ TEST_F(DCLayerOverlayTest, ClipRect) {
     CreateOpaqueQuadAt(resource_provider_.get(),
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 2, 100, 100), SK_ColorWHITE);
-    pass->shared_quad_state_list.back()->is_clipped = true;
     pass->shared_quad_state_list.back()->clip_rect = gfx::Rect(0, 3, 100, 100);
 
     SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
@@ -519,7 +518,6 @@ TEST_F(DCLayerOverlayTest, ClipRect) {
     CreateFullscreenCandidateYUVVideoQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), shared_state, pass.get());
-    shared_state->is_clipped = true;
     // Clipped rect shouldn't be overlapped by clipped opaque quad rect.
     shared_state->clip_rect = gfx::Rect(0, 0, 100, 3);
 
@@ -541,7 +539,6 @@ TEST_F(DCLayerOverlayTest, ClipRect) {
     // Because of clip rects the overlay isn't occluded and shouldn't be an
     // underlay.
     EXPECT_EQ(1, dc_layer_list.back().z_order);
-    EXPECT_TRUE(dc_layer_list.back().is_clipped);
     EXPECT_EQ(gfx::Rect(0, 0, 100, 3), dc_layer_list.back().clip_rect);
     if (i == 1) {
       // The damage rect should only contain contents that aren't in the

@@ -49,7 +49,6 @@ TEST(DrawQuadTest, CopySharedQuadState) {
   gfx::Rect layer_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
   gfx::Rect clip_rect(19, 21, 23, 25);
-  bool is_clipped = true;
   bool are_contents_opaque = true;
   float opacity = 0.25f;
   SkBlendMode blend_mode = SkBlendMode::kMultiply;
@@ -57,15 +56,14 @@ TEST(DrawQuadTest, CopySharedQuadState) {
 
   auto state = std::make_unique<SharedQuadState>();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), clip_rect, is_clipped,
-                are_contents_opaque, opacity, blend_mode, sorting_context_id);
+                gfx::MaskFilterInfo(), clip_rect, are_contents_opaque, opacity,
+                blend_mode, sorting_context_id);
 
   auto copy = std::make_unique<SharedQuadState>(*state);
   EXPECT_EQ(quad_transform, copy->quad_to_target_transform);
   EXPECT_EQ(visible_layer_rect, copy->visible_quad_layer_rect);
   EXPECT_EQ(opacity, copy->opacity);
   EXPECT_EQ(clip_rect, copy->clip_rect);
-  EXPECT_EQ(is_clipped, copy->is_clipped);
   EXPECT_EQ(are_contents_opaque, copy->are_contents_opaque);
   EXPECT_EQ(blend_mode, copy->blend_mode);
 }
@@ -74,8 +72,6 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   gfx::Transform quad_transform = gfx::Transform(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
   gfx::Rect layer_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
-  gfx::Rect clip_rect(19, 21, 23, 25);
-  bool is_clipped = false;
   bool are_contents_opaque = true;
   float opacity = 1.f;
   int sorting_context_id = 65536;
@@ -83,8 +79,8 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
   state->SetAll(quad_transform, layer_rect, visible_layer_rect,
-                gfx::MaskFilterInfo(), clip_rect, is_clipped,
-                are_contents_opaque, opacity, blend_mode, sorting_context_id);
+                gfx::MaskFilterInfo(), base::nullopt, are_contents_opaque,
+                opacity, blend_mode, sorting_context_id);
   return state;
 }
 
@@ -96,7 +92,6 @@ void CompareSharedQuadState(const SharedQuadState* source_sqs,
   EXPECT_EQ(source_sqs->visible_quad_layer_rect,
             copy_sqs->visible_quad_layer_rect);
   EXPECT_EQ(source_sqs->clip_rect, copy_sqs->clip_rect);
-  EXPECT_EQ(source_sqs->is_clipped, copy_sqs->is_clipped);
   EXPECT_EQ(source_sqs->opacity, copy_sqs->opacity);
   EXPECT_EQ(source_sqs->blend_mode, copy_sqs->blend_mode);
   EXPECT_EQ(source_sqs->sorting_context_id, copy_sqs->sorting_context_id);

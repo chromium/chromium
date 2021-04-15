@@ -311,7 +311,6 @@ TEST_F(CALayerOverlayTest, AllowContainingClip) {
   CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  pass->shared_quad_state_list.back()->is_clipped = true;
   pass->shared_quad_state_list.back()->clip_rect = kOverlayRect;
 
   gfx::Rect damage_rect;
@@ -337,7 +336,6 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
   CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  pass->shared_quad_state_list.back()->is_clipped = true;
   pass->shared_quad_state_list.back()->clip_rect = gfx::Rect(64, 64, 128, 128);
 
   gfx::Rect damage_rect;
@@ -355,7 +353,6 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect);
   EXPECT_EQ(1U, ca_layer_list.size());
-  EXPECT_TRUE(ca_layer_list.back().shared_state->is_clipped);
   EXPECT_EQ(gfx::RectF(64, 64, 128, 128),
             ca_layer_list.back().shared_state->clip_rect);
   EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());

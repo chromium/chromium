@@ -2410,10 +2410,8 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           filters->MapRect(rpdq_params.filter_bounds, local_matrix);
 
       // If after applying the filter we would be clipped out, skip the draw.
-      gfx::Rect clip_rect = current_draw_rect_;
-      if (quad->shared_quad_state->is_clipped) {
-        clip_rect = quad->shared_quad_state->clip_rect;
-      }
+      gfx::Rect clip_rect =
+          quad->shared_quad_state->clip_rect.value_or(current_draw_rect_);
       gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
       transform.FlattenTo2d();
@@ -2735,7 +2733,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
 
   gfx::Transform quad_to_target_transform_inverse(
       gfx::Transform::kSkipInitialization);
-  if (shared_quad_state->is_clipped ||
+  if (shared_quad_state->clip_rect ||
       !shared_quad_state->mask_filter_info.IsEmpty()) {
     bool result = shared_quad_state->quad_to_target_transform.GetInverse(
         &quad_to_target_transform_inverse);
@@ -2745,10 +2743,10 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   // The |clip_rect| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
   base::Optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
-  if (shared_quad_state->is_clipped) {
-    gfx::RectF clip_rect(shared_quad_state->clip_rect);
+  if (shared_quad_state->clip_rect) {
+    gfx::RectF clip_rect(*shared_quad_state->clip_rect);
     quad_to_target_transform_inverse.TransformRect(&clip_rect);
-    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
+    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect.value(),
                                  gfx::ToEnclosedRect(clip_rect));
   }
 

@@ -1214,13 +1214,12 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  quad_state->SetAll(quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
-                     quad_rect /*visible_quad_layer_rect=*/,
-                     gfx::MaskFilterInfo() /*mask_filter_info=*/,
-                     gfx::Rect() /*clip_rect=*/, false /*is_clipped=*/,
-                     are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
-                     SkBlendMode::kSrcOver /*blend_mode=*/,
-                     0 /*sorting_context_id=*/);
+  quad_state->SetAll(
+      quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
+      quad_rect /*visible_quad_layer_rect=*/,
+      gfx::MaskFilterInfo() /*mask_filter_info=*/, base::nullopt /*clip_rect=*/,
+      are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
+      SkBlendMode::kSrcOver /*blend_mode=*/, 0 /*sorting_context_id=*/);
   quad_state->no_damage = damage_rect.IsEmpty();
 
   if (current_resource_.id) {
@@ -1258,7 +1257,6 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
       if (latest_embedded_surface_id_.is_valid() &&
           !embedded_surface_size_.IsEmpty()) {
         if (!state_.basic_state.crop.IsEmpty()) {
-          quad_state->is_clipped = true;
           quad_state->clip_rect = output_rect;
         }
         viz::SurfaceDrawQuad* surface_quad =

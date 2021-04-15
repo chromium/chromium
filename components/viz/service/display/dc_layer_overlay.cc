@@ -65,8 +65,8 @@ gfx::RectF ClippedQuadRectangle(const DrawQuad* quad) {
   gfx::RectF quad_rect = cc::MathUtil::MapClippedRect(
       quad->shared_quad_state->quad_to_target_transform,
       gfx::RectF(quad->rect));
-  if (quad->shared_quad_state->is_clipped)
-    quad_rect.Intersect(gfx::RectF(quad->shared_quad_state->clip_rect));
+  if (quad->shared_quad_state->clip_rect)
+    quad_rect.Intersect(gfx::RectF(*quad->shared_quad_state->clip_rect));
   return quad_rect;
 }
 
@@ -152,11 +152,11 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   quad_to_root_transform.FlattenTo2d();
   dc_layer->transform = quad_to_root_transform;
 
-  dc_layer->is_clipped = quad->shared_quad_state->is_clipped;
-  if (dc_layer->is_clipped) {
+  dc_layer->is_clipped = quad->shared_quad_state->clip_rect.has_value();
+  if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
-    gfx::RectF clip_rect = gfx::RectF(quad->shared_quad_state->clip_rect);
+    gfx::RectF clip_rect = gfx::RectF(*quad->shared_quad_state->clip_rect);
     transform_to_root_target.TransformRect(&clip_rect);
     dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
   }
@@ -219,11 +219,11 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   quad_to_root_transform.FlattenTo2d();
   dc_layer->transform = quad_to_root_transform;
 
-  dc_layer->is_clipped = quad->shared_quad_state->is_clipped;
-  if (dc_layer->is_clipped) {
+  dc_layer->is_clipped = quad->shared_quad_state->clip_rect.has_value();
+  if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
-    gfx::RectF clip_rect = gfx::RectF(quad->shared_quad_state->clip_rect);
+    gfx::RectF clip_rect = gfx::RectF(*quad->shared_quad_state->clip_rect);
     transform_to_root_target.TransformRect(&clip_rect);
     dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
   }
