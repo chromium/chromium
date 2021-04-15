@@ -6716,7 +6716,10 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   CableV2AuthenticatorImplTest()
       : network_context_(device::cablev2::NewMockTunnelServer(
             base::BindRepeating(&CableV2AuthenticatorImplTest::OnContact,
-                                base::Unretained(this)))) {}
+                                base::Unretained(this)))),
+        browser_client_(base::BindRepeating(
+            &CableV2AuthenticatorImplTest::MaybeContactPhones,
+            base::Unretained(this))) {}
 
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
@@ -6724,6 +6727,8 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
     EnableFeature(features::kWebAuthCable);
     EnableFeature(device::kWebAuthPhoneSupport);
     NavigateAndCommit(GURL(kTestOrigin1));
+
+    old_client_ = SetBrowserClientForTesting(&browser_client_);
 
     bssl::UniquePtr<EC_GROUP> p256(
         EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -6737,6 +6742,11 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
     std::tie(ble_advert_callback_, ble_advert_events_) =
         device::cablev2::Discovery::AdvertEventStream::New();
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_client_);
+    AuthenticatorImplTest::TearDown();
   }
 
   base::RepeatingCallback<void(device::cablev2::PairingEvent)>
@@ -6767,6 +6777,48 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
     std::unique_ptr<device::cablev2::Discovery> discovery_;
   };
 
+  class ContactWhenReadyAuthenticatorRequestDelegate
+      : public AuthenticatorRequestClientDelegate {
+   public:
+    explicit ContactWhenReadyAuthenticatorRequestDelegate(
+        base::RepeatingClosure callback)
+        : callback_(callback) {}
+    ~ContactWhenReadyAuthenticatorRequestDelegate() override = default;
+
+    void OnTransportAvailabilityEnumerated(
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo) override {
+      callback_.Run();
+    }
+
+   private:
+    base::RepeatingClosure callback_;
+  };
+
+  class ContactWhenReadyContentBrowserClient : public ContentBrowserClient {
+   public:
+    explicit ContactWhenReadyContentBrowserClient(
+        base::RepeatingClosure callback)
+        : callback_(callback) {}
+
+    std::unique_ptr<AuthenticatorRequestClientDelegate>
+    GetWebAuthenticationRequestDelegate(
+        RenderFrameHost* render_frame_host) override {
+      return std::make_unique<ContactWhenReadyAuthenticatorRequestDelegate>(
+          callback_);
+    }
+
+   private:
+    base::RepeatingClosure callback_;
+  };
+
+  // MaybeContactPhones is called when OnTransportAvailabilityEnumerated is
+  // called by the request handler.
+  void MaybeContactPhones() {
+    if (maybe_contact_phones_callback_) {
+      std::move(maybe_contact_phones_callback_).Run();
+    }
+  }
+
   void OnContact(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
       base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
@@ -6776,18 +6828,11 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   }
 
   void OnPairingEvent(device::cablev2::PairingEvent event) {
-    if (auto* disabled_public_key =
-            absl::get_if<std::array<uint8_t, device::kP256X962Length>>(
-                &event)) {
-      bool found = false;
-      for (auto it = pairings_.begin(); it != pairings_.end(); it++) {
-        if ((*it)->peer_public_key_x962 == *disabled_public_key) {
-          found = true;
-          pairings_.erase(it);
-          return;
-        }
-      }
-      CHECK(found);
+    if (auto* disabled_public_key_index = absl::get_if<size_t>(&event)) {
+      // When testing failed contacts, only a single pairing is supported
+      // otherwise a more complex way of handling the indexes will be needed.
+      CHECK(*disabled_public_key_index == 0 && pairings_.size() == 1);
+      pairings_.clear();
     } else if (auto* pairing =
                    absl::get_if<std::unique_ptr<device::cablev2::Pairing>>(
                        &event)) {
@@ -6819,12 +6864,17 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
       ble_advert_events_;
   device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
+
+  ContactWhenReadyContentBrowserClient browser_client_;
+  ContentBrowserClient* old_client_ = nullptr;
+  base::OnceClosure maybe_contact_phones_callback_;
 };
 
 TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 
@@ -6849,6 +6899,7 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 
@@ -6871,11 +6922,18 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   std::tie(ble_advert_callback_, ble_advert_events_) =
       device::cablev2::Discovery::EventStream<
           base::span<const uint8_t, device::cablev2::kAdvertSize>>::New();
+  auto callback_and_event_stream =
+      device::cablev2::Discovery::EventStream<size_t>::New();
   discovery = std::make_unique<device::cablev2::Discovery>(
       network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
-      std::move(pairings_),
+      std::move(pairings_), std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
+
+  maybe_contact_phones_callback_ =
+      base::BindLambdaForTesting([&callback_and_event_stream]() {
+        callback_and_event_stream.first.Run(0);
+      });
 
   const std::array<uint8_t, device::cablev2::kRoutingIdSize> routing_id = {0};
   bool contact_callback_was_called = false;
@@ -6926,15 +6984,22 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   // Passing |nullopt| as the callback here causes all contact IDs to be
   // rejected.
   auto network_context = device::cablev2::NewMockTunnelServer(base::nullopt);
+  auto callback_and_event_stream =
+      device::cablev2::Discovery::EventStream<size_t>::New();
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       network_context.get(), qr_generator_key_, std::move(ble_advert_events_),
-      std::move(pairings),
+      std::move(pairings), std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 
   AuthenticatorEnvironmentImpl::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  maybe_contact_phones_callback_ =
+      base::BindLambdaForTesting([&callback_and_event_stream]() {
+        callback_and_event_stream.first.Run(0);
+      });
 
   pairings_.emplace_back(DummyPairing());
   ASSERT_EQ(pairings_.size(), 1u);

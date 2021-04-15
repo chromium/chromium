@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
       std::vector<std::unique_ptr<Pairing>> pairings,
+      // contact_device_stream contains a series of indexes into |pairings|
+      // indicating that the given device should be contacted. The indexes
+      // may be duplicated. It may be nullptr if |pairings| is empty.
+      std::unique_ptr<EventStream<size_t>> contact_device_stream,
       const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
       // receives pairing information from the peer, or when an existing
@@ -61,9 +65,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   };
 
   void OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert);
+  void OnContactDevice(size_t pairing_index);
   void AddPairing(std::unique_ptr<Pairing> pairing);
-  void PairingIsInvalid(
-      std::array<uint8_t, kP256X962Length> peer_public_key_x962);
+  void PairingIsInvalid(size_t pairing_index);
   static base::Optional<UnpairedKeys> KeysFromQRGeneratorKey(
       base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
   static base::Optional<UnpairedKeys> KeysFromExtension(
@@ -74,6 +78,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   const base::Optional<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
+  std::unique_ptr<EventStream<size_t>> contact_device_stream_;
   const base::Optional<base::RepeatingCallback<void(PairingEvent)>>
       pairing_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;

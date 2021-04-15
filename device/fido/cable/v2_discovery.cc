@@ -48,6 +48,7 @@ Discovery::Discovery(
     base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
     std::vector<std::unique_ptr<Pairing>> pairings,
+    std::unique_ptr<EventStream<size_t>> contact_device_stream,
     const std::vector<CableDiscoveryData>& extension_contents,
     base::Optional<base::RepeatingCallback<void(PairingEvent)>>
         pairing_callback)
@@ -58,10 +59,17 @@ Discovery::Discovery(
       extension_keys_(KeysFromExtension(extension_contents)),
       advert_stream_(std::move(advert_stream)),
       pairings_(std::move(pairings)),
+      contact_device_stream_(std::move(contact_device_stream)),
       pairing_callback_(std::move(pairing_callback)) {
   static_assert(EXTENT(*qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
   advert_stream_->Connect(
       base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
+
+  DCHECK(pairings_.empty() || contact_device_stream_);
+  if (contact_device_stream_) {
+    contact_device_stream_->Connect(base::BindRepeating(
+        &Discovery::OnContactDevice, base::Unretained(this)));
+  }
 }
 
 Discovery::~Discovery() = default;
@@ -80,16 +88,6 @@ void Discovery::StartInternal() {
     RecordEvent(CableV2DiscoveryEvent::kHaveExtensionKeys);
   }
 
-  for (auto& pairing : pairings_) {
-    std::array<uint8_t, kP256X962Length> peer_public_key_x962 =
-        pairing->peer_public_key_x962;
-    tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
-        network_context_, std::move(pairing),
-        base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
-                       peer_public_key_x962)));
-  }
-  pairings_.clear();
-
   started_ = true;
   NotifyDiscoveryStarted(true);
 
@@ -105,6 +103,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
       fido_parsing_utils::Materialize<kAdvertSize>(advert);
 
   if (!started_) {
+    // Server-linked devices may have started advertising already.
     pending_adverts_.push_back(advert_array);
     return;
   }
@@ -166,6 +165,18 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
   FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert) << ": no v2 match)";
 }
 
+void Discovery::OnContactDevice(size_t pairing_index) {
+  DCHECK_LT(pairing_index, pairings_.size());
+  if (!pairings_[pairing_index]) {
+    return;
+  }
+
+  tunnels_pending_advert_.emplace_back(std::make_unique<FidoTunnelDevice>(
+      network_context_, std::move(pairings_[pairing_index]),
+      base::BindOnce(&Discovery::PairingIsInvalid, weak_factory_.GetWeakPtr(),
+                     pairing_index)));
+}
+
 void Discovery::AddPairing(std::unique_ptr<Pairing> pairing) {
   if (!pairing_callback_) {
     return;
@@ -174,13 +185,12 @@ void Discovery::AddPairing(std::unique_ptr<Pairing> pairing) {
   pairing_callback_->Run(std::move(pairing));
 }
 
-void Discovery::PairingIsInvalid(
-    std::array<uint8_t, kP256X962Length> peer_public_key_x962) {
+void Discovery::PairingIsInvalid(size_t pairing_index) {
   if (!pairing_callback_) {
     return;
   }
 
-  pairing_callback_->Run(std::move(peer_public_key_x962));
+  pairing_callback_->Run(pairing_index);
 }
 
 // static

@@ -79,11 +79,34 @@ class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
       public AuthenticatorRequestDialogModel::Observer {
  public:
+  // TestObserver is an interface that observes certain events related to this
+  // class for testing purposes. Only a single instance of this interface can
+  // be installed at a given time.
+  class TestObserver {
+   public:
+    virtual void Created(ChromeAuthenticatorRequestDelegate* delegate) = 0;
+
+    virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
+    GetCablePairingsFromSyncedDevices() = 0;
+
+    virtual void OnTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate,
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) = 0;
+
+    virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) = 0;
+  };
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   // The |render_frame_host| must outlive this instance.
   explicit ChromeAuthenticatorRequestDelegate(
       content::RenderFrameHost* render_frame_host);
   ~ChromeAuthenticatorRequestDelegate() override;
+
+  // SetGlobalObserverForTesting sets the single |TestObserver| that is active
+  // at a given time. Call be called with |nullptr| to unregister a
+  // |TestObserver|. It is a fatal error to try and register a |TestObserver|
+  // while one is still installed.
+  static void SetGlobalObserverForTesting(TestObserver*);
 
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
@@ -176,6 +199,11 @@ class ChromeAuthenticatorRequestDelegate
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
+
+  // The next two fields are the same length and contain the names and public
+  // keys of paired phones.
+  std::vector<std::string> phone_names_;
+  std::vector<std::array<uint8_t, device::kP256X962Length>> phone_public_keys_;
 
   // If in the TransportAvailabilityInfo reported by the request handler,
   // disable_embedder_ui is set, this will be set to true. No UI must be

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -139,6 +140,31 @@ class AuthenticatorRequestDialogModel {
     virtual void OnCancelRequest() {}
   };
 
+  // PairedPhone represents a paired caBLEv2 device.
+  struct PairedPhone {
+    PairedPhone() = delete;
+    PairedPhone(const PairedPhone&);
+    PairedPhone(
+        const std::string& name,
+        size_t contact_id,
+        const std::array<uint8_t, device::kP256X962Length> public_key_x962);
+    ~PairedPhone();
+
+    PairedPhone& operator=(const PairedPhone&);
+
+    static bool CompareByName(const PairedPhone& a, const PairedPhone& b);
+
+    // name is the human-friendly name of the phone. It may be unreasonably
+    // long, however, and should be elided to fit within UIs.
+    std::string name;
+    // contact_id is an ID that can be passed to the FidoDiscoveryFactory's
+    // |get_cable_contact_callback| callback in order to trigger a notification
+    // to this phone.
+    size_t contact_id;
+    // public_key_x962 is the phone's public key.
+    std::array<uint8_t, device::kP256X962Length> public_key_x962;
+  };
+
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
   ~AuthenticatorRequestDialogModel();
 
@@ -216,6 +242,12 @@ class AuthenticatorRequestDialogModel {
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
   void StartWinNativeApi();
+
+  // Contacts a paired phone. The phone is specified by name.
+  void ContactPhone(const std::string& name);
+
+  // Called when an attempt to contact a phone failed.
+  void OnPhoneContactFailed(const std::string& name);
 
   // StartPhonePairing triggers the display of a QR code for pairing a new
   // phone.
@@ -418,12 +450,17 @@ class AuthenticatorRequestDialogModel {
 
   void set_cable_transport_info(
       bool cable_extension_provided,
-      bool has_paired_phones,
+      std::vector<PairedPhone> paired_phones,
+      base::RepeatingCallback<void(size_t)> contact_phone_callback,
       const base::Optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {
     return transport_availability_.has_win_native_api_authenticator;
   }
+
+  // paired_phone_names returns a sorted, unique list of the names of paired
+  // phones.
+  std::vector<std::string> paired_phone_names() const;
 
   bool cable_extension_provided() const { return cable_extension_provided_; }
 
@@ -465,6 +502,8 @@ class AuthenticatorRequestDialogModel {
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
+
+  void ContactNextPhoneByName(const std::string& name);
 
   EphemeralState ephemeral_state_;
 
@@ -515,9 +554,19 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
-  // have_paired_phones_ indicates whether this profile knows of any paired
-  // phones.
-  bool have_paired_phones_ = false;
+
+  // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
+  // QR-based pairing. The entries are sorted by name.
+  std::vector<PairedPhone> paired_phones_;
+
+  // paired_phones_contacted_ is the same length as |paired_phones_| and
+  // contains true whenever the corresponding phone as already been contacted.
+  std::vector<bool> paired_phones_contacted_;
+
+  // contact_phone_callback can be run with a |PairedPhone::contact_id| in order
+  // to contact the indicated phone.
+  base::RepeatingCallback<void(size_t)> contact_phone_callback_;
+
   base::Optional<std::string> cable_qr_string_;
   // win_native_api_already_tried_ is true if the Windows-native UI has been
   // displayed already and the user cancelled it. In this case, we shouldn't

@@ -158,6 +158,11 @@ void AuthenticatorTransportSelectorSheetModel::StartWinNativeApi() {
   dialog_model()->StartWinNativeApi();
 }
 
+void AuthenticatorTransportSelectorSheetModel::ContactPhone(
+    const std::string& name) {
+  dialog_model()->ContactPhone(name);
+}
+
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------
 
 AuthenticatorInsertAndActivateUsbSheetModel::

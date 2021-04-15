@@ -46,9 +46,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       transport_availability.available_transports.insert(
           AuthenticatorTransport::kAndroidAccessory);
     }
-    model->set_cable_transport_info(/*cable_extension_provided=*/true,
-                                    /*has_paired_phones=*/false,
-                                    "fido://qrcode");
+    model->set_cable_transport_info(
+        /*cable_extension_provided=*/true,
+        /*paired_phones=*/{},
+        /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
     model->StartFlow(std::move(transport_availability),
                      /*use_location_bar_bubble=*/false);
 

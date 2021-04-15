@@ -62,6 +62,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
           ret.emplace_back(std::make_unique<cablev2::Discovery>(
               network_context_, qr_generator_key_,
               v1_discovery->GetV2AdvertStream(), std::move(v2_pairings_),
+              std::move(contact_device_stream_),
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_)));
         }
@@ -128,6 +129,16 @@ void FidoDiscoveryFactory::set_network_context(
 void FidoDiscoveryFactory::set_cable_pairing_callback(
     base::RepeatingCallback<void(cablev2::PairingEvent)> pairing_callback) {
   cable_pairing_callback_.emplace(std::move(pairing_callback));
+}
+
+base::RepeatingCallback<void(size_t)>
+FidoDiscoveryFactory::get_cable_contact_callback() {
+  DCHECK(!contact_device_stream_);
+
+  base::RepeatingCallback<void(size_t)> ret;
+  std::tie(ret, contact_device_stream_) =
+      FidoDeviceDiscovery::EventStream<size_t>::New();
+  return ret;
 }
 
 void FidoDiscoveryFactory::set_hid_ignore_list(

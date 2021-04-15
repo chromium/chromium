@@ -288,10 +288,10 @@ void FidoTunnelDevice::OnTunnelReady(
 
     case WebSocketAdapter::Result::GONE:
       if (auto* info = absl::get_if<PairedInfo>(&info_)) {
-        std::move(info->pairing_is_invalid).Run();
         FIDO_LOG(DEBUG) << GetId()
                         << ": tunnel server reports that contact ID is invalid";
         RecordEvent(CableV2TunnelEvent::kTunnelGone);
+        std::move(info->pairing_is_invalid).Run();
       } else {
         FIDO_LOG(ERROR) << GetId()
                         << ": server reported an invalid contact ID for an "
@@ -408,6 +408,7 @@ void FidoTunnelDevice::OnTunnelData(
         }
       }
 
+      FIDO_LOG(DEBUG) << GetId() << ": established";
       RecordEvent(CableV2TunnelEvent::kTunnelEstablished);
       state_ = State::kReady;
       MaybeFlushPendingMessage();

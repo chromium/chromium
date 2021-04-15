@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -105,6 +106,15 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       base::span<const uint8_t, 32> handshake_hash);
 
+  static bool CompareByMostRecentFirst(const std::unique_ptr<Pairing>&,
+                                       const std::unique_ptr<Pairing>&);
+  static bool CompareByLeastStableChannelFirst(const std::unique_ptr<Pairing>&,
+                                               const std::unique_ptr<Pairing>&);
+  static bool CompareByPublicKey(const std::unique_ptr<Pairing>&,
+                                 const std::unique_ptr<Pairing>&);
+  static bool EqualPublicKeys(const std::unique_ptr<Pairing>&,
+                              const std::unique_ptr<Pairing>&);
+
   // tunnel_server_domain is known to be a valid hostname as it's constructed
   // from the 22-bit value in the BLE advert rather than being parsed as a
   // string from the authenticator.
@@ -123,12 +133,17 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // name is a human-friendly name for the authenticator, specified by that
   // authenticator. (For example "Pixel 3".)
   std::string name;
+  // last_updated is populated for pairings learned from Sync.
+  base::Time last_updated;
+  // channel_priority is populated for pairing learned from Sync. It contains
+  // a higher number for less stable release channels (i.e. Canary is high,
+  // development builds are highest).
+  int channel_priority = 0;
 };
 
 // A PairingEvent is either a new |Pairing|, learnt from a device, or else the
-// public key of a pairing that has been discovered to be invalid.
-using PairingEvent = absl::variant<std::unique_ptr<Pairing>,
-                                   std::array<uint8_t, kP256X962Length>>;
+// index of a pairing has been discovered to be invalid.
+using PairingEvent = absl::variant<std::unique_ptr<Pairing>, size_t>;
 
 }  // namespace cablev2
 

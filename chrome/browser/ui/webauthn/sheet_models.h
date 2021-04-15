@@ -76,6 +76,7 @@ class AuthenticatorTransportSelectorSheetModel
   // TransportHoverListModel::Delegate:
   void OnTransportSelected(AuthenticatorTransport transport) override;
   void StartWinNativeApi() override;
+  void ContactPhone(const std::string& name) override;
 
  private:
   // AuthenticatorSheetModelBase:

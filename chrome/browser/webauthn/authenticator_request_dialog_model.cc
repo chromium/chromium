@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -68,6 +69,27 @@ base::Optional<device::FidoTransportProtocol> SelectMostLikelyTransport(
 
 AuthenticatorRequestDialogModel::EphemeralState::EphemeralState() = default;
 AuthenticatorRequestDialogModel::EphemeralState::~EphemeralState() = default;
+
+AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(const PairedPhone&) =
+    default;
+AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(
+    const std::string& name,
+    size_t contact_id,
+    const std::array<uint8_t, device::kP256X962Length> public_key_x962) {
+  this->name = name;
+  this->contact_id = contact_id;
+  this->public_key_x962 = public_key_x962;
+}
+AuthenticatorRequestDialogModel::PairedPhone::~PairedPhone() = default;
+AuthenticatorRequestDialogModel::PairedPhone&
+AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
+    default;
+
+bool AuthenticatorRequestDialogModel::PairedPhone::CompareByName(
+    const PairedPhone& a,
+    const PairedPhone& b) {
+  return a.name < b.name;
+}
 
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
   selected_authenticator_id_ = base::nullopt;
@@ -140,14 +162,15 @@ void AuthenticatorRequestDialogModel::
          base::Contains(
              transports,
              AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy) &&
-         !cable_extension_provided_ && !have_paired_phones_)) {
+         !cable_extension_provided_ && paired_phones_.empty())) {
       StartWinNativeApi();
       return;
     }
   }
 
   auto most_likely_transport = SelectMostLikelyTransport(
-      transport_availability_, cable_extension_provided_, have_paired_phones_);
+      transport_availability_, cable_extension_provided_,
+      !paired_phones_.empty());
   if (most_likely_transport) {
     StartGuidedFlowForTransport(*most_likely_transport);
   } else if (!transport_availability_.available_transports.empty()) {
@@ -218,6 +241,16 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi() {
   }
 }
 
+void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name) {
+  ContactNextPhoneByName(name);
+  EnsureBleAdapterIsPoweredAndContinueWithCable();
+}
+
+void AuthenticatorRequestDialogModel::OnPhoneContactFailed(
+    const std::string& name) {
+  ContactNextPhoneByName(name);
+}
+
 void AuthenticatorRequestDialogModel::StartPhonePairing() {
   DCHECK(cable_qr_string_);
   SetCurrentStep(Step::kCableV2QRCode);
@@ -231,15 +264,15 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kNotStarted);
   Step cable_step;
-  if (cable_extension_provided_) {
-    // caBLEv1.
+  if (!base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+    // caBLEv1/2 without QR codes.
     cable_step = Step::kCableActivate;
   } else {
-    // caBLEv2. Display QR code if the user never paired a phone before, or
-    // show instructions how to use the previously paired phone otherwise. The
-    // user can still decide to pair a new phone on that screen.
+    // caBLEv2 with QR support. Display QR code if the user never paired a phone
+    // before, or show instructions how to use the previously paired phone
+    // otherwise. The user can still decide to pair a new phone on that screen.
     cable_step =
-        have_paired_phones_ ? Step::kCableV2Activate : Step::kCableV2QRCode;
+        paired_phones_.empty() ? Step::kCableV2QRCode : Step::kCableV2Activate;
   }
   if (ble_adapter_is_powered()) {
     SetCurrentStep(cable_step);
@@ -651,14 +684,62 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     bool cable_extension_provided,
-    bool have_paired_phones,
+    std::vector<PairedPhone> paired_phones,
+    base::RepeatingCallback<void(size_t)> contact_phone_callback,
     const base::Optional<std::string>& cable_qr_string) {
+  DCHECK(paired_phones.empty() || contact_phone_callback);
+
   cable_extension_provided_ = cable_extension_provided;
-  have_paired_phones_ = have_paired_phones;
+  paired_phones_ = std::move(paired_phones);
+  contact_phone_callback_ = std::move(contact_phone_callback);
   cable_qr_string_ = cable_qr_string;
+
+  std::stable_sort(paired_phones_.begin(), paired_phones_.end(),
+                   PairedPhone::CompareByName);
+  paired_phones_contacted_.assign(paired_phones_.size(), false);
+}
+
+std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
+    const {
+  DCHECK(std::is_sorted(paired_phones_.begin(), paired_phones_.end(),
+                        PairedPhone::CompareByName));
+
+  std::vector<std::string> names;
+  std::transform(paired_phones_.begin(), paired_phones_.end(),
+                 std::back_inserter(names),
+                 [](const PairedPhone& phone) -> const std::string& {
+                   return phone.name;
+                 });
+  names.erase(std::unique(names.begin(), names.end()), names.end());
+  return names;
 }
 
 base::WeakPtr<AuthenticatorRequestDialogModel>
 AuthenticatorRequestDialogModel::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
+    const std::string& name) {
+  DCHECK(std::is_sorted(paired_phones_.begin(), paired_phones_.end(),
+                        PairedPhone::CompareByName));
+
+  bool found_name = false;
+  for (size_t i = 0; i != paired_phones_.size(); i++) {
+    const PairedPhone& phone = paired_phones_[i];
+    if (phone.name == name) {
+      found_name = true;
+      if (!paired_phones_contacted_[i]) {
+        paired_phones_contacted_[i] = true;
+        contact_phone_callback_.Run(phone.contact_id);
+        break;
+      }
+    } else if (found_name) {
+      // |paired_phones_| is sorted by name so as soon as we see a mismatch
+      // after a match, we're done.
+      break;
+    }
+  }
+
+  DCHECK(found_name);
 }

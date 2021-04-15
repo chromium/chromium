@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual bool IsTestOverride();
 
   // set_cable_data configures caBLE obtained via a WebAuthn extension.
-  void set_cable_data(
+  virtual void set_cable_data(
       std::vector<CableDiscoveryData> cable_data,
       const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
           qr_generator_key,
@@ -71,8 +71,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // set_cable_pairing_callback installs a repeating callback that will be
   // called when a QR handshake results in a phone wishing to pair with this
   // browser.
-  void set_cable_pairing_callback(
+  virtual void set_cable_pairing_callback(
       base::RepeatingCallback<void(cablev2::PairingEvent)>);
+
+  // get_cable_contact_callback returns a callback that can be called with
+  // indexes into the vector of pairings passed to |set_cable_data| in order
+  // to contact the indexed device. Only a single callback is supported.
+  virtual base::RepeatingCallback<void(size_t)> get_cable_contact_callback();
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
@@ -132,6 +137,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
+      contact_device_stream_;
   base::Optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
       cable_pairing_callback_;
 #if defined(OS_WIN)

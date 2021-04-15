@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_HOVER_LIST_MODEL_H_
 
 #include <stddef.h>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -23,10 +24,13 @@ class TransportHoverListModel : public HoverListModel {
     virtual void OnTransportSelected(AuthenticatorTransport transport) = 0;
     // Called to trigger the native Windows API.
     virtual void StartWinNativeApi() = 0;
+    // Called to trigger a contact with a phone specified by name.
+    virtual void ContactPhone(const std::string& name) = 0;
   };
 
   TransportHoverListModel(base::flat_set<AuthenticatorTransport> transport_list,
                           bool show_win_native_api_item,
+                          std::vector<std::string> phone_names,
                           Delegate* delegate);
   ~TransportHoverListModel() override;
 
@@ -50,6 +54,9 @@ class TransportHoverListModel : public HoverListModel {
   // Indicates whether a button to dispatch the request to the native Windows
   // API should be shown.
   const bool show_win_native_api_item_ = false;
+
+  // The human-friendly names of all paired phones.
+  std::vector<std::string> phone_names_;
 
   Delegate* const delegate_;  // Weak, may be nullptr.
 
