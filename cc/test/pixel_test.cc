@@ -296,7 +296,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   gpu_service_holder_ = viz::TestGpuServiceHolder::GetInstance();
 
   auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-      gpu_service(), task_executor(), gpu::kNullSurfaceHandle);
+      gpu_service(), gpu::kNullSurfaceHandle);
   display_controller_ =
       std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
           std::move(skia_deps));

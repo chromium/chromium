@@ -111,10 +111,9 @@ OutputSurfaceProviderImpl::CreateGpuDependency(
     return nullptr;
 
   if (renderer_settings.use_skia_renderer) {
-    DCHECK(task_executor_);
     gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
     auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-        gpu_service_impl_, task_executor_, surface_handle);
+        gpu_service_impl_, surface_handle);
     return std::make_unique<DisplayCompositorMemoryAndTaskController>(
         std::move(skia_deps));
   } else {

@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_messages.h"
@@ -18,15 +17,6 @@ class GpuChannelTest : public GpuChannelTestCommon {
  public:
   GpuChannelTest() : GpuChannelTestCommon(true /* use_stub_bindings */) {}
   ~GpuChannelTest() override = default;
-
- private:
-  // Any test/component which uses `base::ThreadTaskRunnerHandle::Get()` or
-  // `base::SequencedTaskRunnerHandle::Get()` to post tasks to the thread it was
-  // created on will need at least a `base::test::SingleThreadTaskEnvironment`
-  // in order for these APIs to be functional and `base::RunLoop` to run the
-  // posted tasks. This test eventually calls Scheduler::CreateSequence() which
-  // grabs a task runner via base::ThreadTaskRunnerHandle::Get().
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 #if defined(OS_WIN)
@@ -251,15 +241,6 @@ class GpuChannelExitForContextLostTest : public GpuChannelTestCommon {
   GpuChannelExitForContextLostTest()
       : GpuChannelTestCommon({EXIT_ON_CONTEXT_LOST} /* enabled_workarounds */,
                              true /* use_stub_bindings */) {}
-
- private:
-  // Any test/component which uses `base::ThreadTaskRunnerHandle::Get()` or
-  // `base::SequencedTaskRunnerHandle::Get()` to post tasks to the thread it was
-  // created on will need at least a `base::test::SingleThreadTaskEnvironment`
-  // in order for these APIs to be functional and `base::RunLoop` to run the
-  // posted tasks. This test eventually calls Scheduler::CreateSequence() which
-  // grabs a task runner via base::ThreadTaskRunnerHandle::Get().
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(GpuChannelExitForContextLostTest,
