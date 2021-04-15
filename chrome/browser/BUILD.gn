@@ -3585,6 +3585,8 @@ static_library("browser") {
       "enterprise/reporting/report_scheduler_desktop.h",
       "enterprise/reporting/reporting_delegate_factory_desktop.cc",
       "enterprise/reporting/reporting_delegate_factory_desktop.h",
+      "enterprise/signals/client_certificate_fetcher.cc",
+      "enterprise/signals/client_certificate_fetcher.h",
       "enterprise/signals/context_info_fetcher.cc",
       "enterprise/signals/context_info_fetcher.h",
       "enterprise/signals/device_info_fetcher.cc",

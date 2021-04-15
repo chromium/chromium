@@ -63,6 +63,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/federated_learning/floc_eligibility_observer.h"
@@ -2942,61 +2943,6 @@ bool ChromeContentBrowserClient::ShouldDenyRequestOnCertificateError(
 
 namespace {
 
-certificate_matching::CertificatePrincipalPattern
-ParseCertificatePrincipalPattern(const base::Value* pattern) {
-  return certificate_matching::CertificatePrincipalPattern::
-      ParseFromOptionalDict(pattern, "CN", "L", "O", "OU");
-}
-
-// Attempts to auto-select a client certificate according to the value of
-// |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting for
-// |requesting_url|. If no certificate was auto-selected, returns nullptr.
-std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
-    Profile* profile,
-    const GURL& requesting_url,
-    net::ClientCertIdentityList& client_certs) {
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map->GetWebsiteSetting(
-          requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
-
-  if (!setting || !setting->is_dict())
-    return nullptr;
-
-  const base::Value* filters =
-      setting->FindKeyOfType("filters", base::Value::Type::LIST);
-  if (!filters) {
-    // |setting_dict| has the wrong format (e.g. single filter instead of a
-    // list of filters). This content setting is only provided by
-    // the |PolicyProvider|, which should always set it to a valid format.
-    // Therefore, delete the invalid value.
-    host_content_settings_map->SetWebsiteSettingDefaultScope(
-        requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
-    return nullptr;
-  }
-
-  for (const base::Value& filter : filters->GetList()) {
-    DCHECK(filter.is_dict());
-
-    auto issuer_pattern = ParseCertificatePrincipalPattern(
-        filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY));
-    auto subject_pattern = ParseCertificatePrincipalPattern(
-        filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY));
-    // Use the first certificate that is matched by the filter.
-    for (auto& client_cert : client_certs) {
-      if (issuer_pattern.Matches(client_cert->certificate()->issuer()) &&
-          subject_pattern.Matches(client_cert->certificate()->subject())) {
-        return std::move(client_cert);
-      }
-    }
-  }
-
-  return nullptr;
-}
-
 #if !defined(OS_ANDROID)
 blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
     ui::NativeTheme::PreferredColorScheme native_theme_scheme) {
@@ -3120,7 +3066,8 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<net::ClientCertIdentity> auto_selected_identity =
-      AutoSelectCertificate(profile, requesting_url, client_certs);
+      chrome::enterprise_util::AutoSelectCertificate(profile, requesting_url,
+                                                     client_certs);
   if (auto_selected_identity) {
     // The callback will own |auto_selected_identity| and |delegate|, keeping
     // them alive until after ContinueWithCertificate is called.
