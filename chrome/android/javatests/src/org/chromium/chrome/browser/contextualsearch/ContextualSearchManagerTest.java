@@ -164,7 +164,6 @@ public class ContextualSearchManagerTest {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.LONGPRESS).name("enableLongpress"),
                     new ParameterSet()
                             .value(EnabledFeature.TRANSLATIONS)
                             .name("enableTranslations"));
@@ -196,12 +195,10 @@ public class ContextualSearchManagerTest {
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
-    /** This represents the Longpress with LiteralTap configurations, a good launch candidate. */
-    private static final ImmutableMap<String, Boolean> ENABLE_LONGPRESS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
-    /** This represents the Translations addition to the Longpress with LiteralTap configuration. */
+    /**
+     * This represents the Translations addition to the Longpress with LiteralTap configuration.
+     * This is likely the best launch candidate.
+     */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
@@ -229,12 +226,11 @@ public class ContextualSearchManagerTest {
     // State for an individual test.
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
-    @IntDef({EnabledFeature.NONE, EnabledFeature.LONGPRESS, EnabledFeature.TRANSLATIONS})
+    @IntDef({EnabledFeature.NONE, EnabledFeature.TRANSLATIONS})
     @Retention(RetentionPolicy.SOURCE)
     private @interface EnabledFeature {
         int NONE = 0;
-        int LONGPRESS = 1;
-        int TRANSLATIONS = 2;
+        int TRANSLATIONS = 1;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -295,9 +291,6 @@ public class ContextualSearchManagerTest {
         switch (mEnabledFeature) {
             case EnabledFeature.NONE:
                 whichFeature = ENABLE_NONE;
-                break;
-            case EnabledFeature.LONGPRESS:
-                whichFeature = ENABLE_LONGPRESS;
                 break;
             case EnabledFeature.TRANSLATIONS:
                 whichFeature = ENABLE_TRANSLATIONS;
@@ -3326,11 +3319,6 @@ public class ContextualSearchManagerTest {
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     @DisabledTest(message = "Flaky https://crbug.com/1127796")
     public void testQuickActionUrl_Longpress(@EnabledFeature int enabledFeature) throws Exception {
-        // TODO(donnd): figure out why this fails to select on Longpress, but works fine on the
-        // other experiment configurations including Translations (which should be identical for
-        // this test). Probably something needs to be initialized between test runs.
-        if (enabledFeature == EnabledFeature.LONGPRESS) return;
-
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
@@ -3707,7 +3695,8 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapIsIgnoredWithLongpressResolveEnabled() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_LONGPRESS);
+        // Enabling Translations implicitly enables Longpress too.
+        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
 
         clickNode("states");
         Assert.assertNull(getSelectedText());
@@ -3719,7 +3708,8 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testLongpressResolveEnabled() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_LONGPRESS);
+        // Enabling Translations implicitly enables Longpress too.
+        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
 
         longPressNode("states");
         assertLoadedNoUrl();
@@ -3738,7 +3728,8 @@ public class ContextualSearchManagerTest {
             message = "Flaky < P, https://crbug.com/1048827; Flaky on P, crbug.com/1181088")
     public void
     testLongpressExtendingSelectionExactResolve() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_LONGPRESS);
+        // Enabling Translations implicitly enables Longpress too.
+        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
 
         // Set up UserAction monitoring.
         Set<String> userActions = new HashSet();
