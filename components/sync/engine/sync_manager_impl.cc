@@ -86,26 +86,11 @@ SyncManagerImpl::SyncManagerImpl(
       network_connection_tracker_(network_connection_tracker),
       initialized_(false),
       observing_network_connectivity_changes_(false),
-      sync_encryption_handler_(nullptr) {
-  // Pre-fill |notification_info_map_|.
-  for (ModelType type : ModelTypeSet::All()) {
-    notification_info_map_.insert(std::make_pair(type, NotificationInfo()));
-  }
-}
+      sync_encryption_handler_(nullptr) {}
 
 SyncManagerImpl::~SyncManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialized_);
-}
-
-SyncManagerImpl::NotificationInfo::NotificationInfo() : total_count(0) {}
-SyncManagerImpl::NotificationInfo::~NotificationInfo() {}
-
-base::DictionaryValue* SyncManagerImpl::NotificationInfo::ToValue() const {
-  base::DictionaryValue* value = new base::DictionaryValue();
-  value->SetInteger("totalCount", total_count);
-  value->SetString("payload", payload);
-  return value;
 }
 
 ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
@@ -231,14 +216,6 @@ void SyncManagerImpl::NotifyInitializationSuccess() {
     observer.OnInitializationComplete(
         MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()),
         MakeWeakHandle(debug_info_event_listener_.GetWeakPtr()), true);
-  }
-}
-
-void SyncManagerImpl::NotifyInitializationFailure() {
-  for (auto& observer : observers_) {
-    observer.OnInitializationComplete(
-        MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()),
-        MakeWeakHandle(debug_info_event_listener_.GetWeakPtr()), false);
   }
 }
 

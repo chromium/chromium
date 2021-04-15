@@ -70,6 +70,8 @@ class SyncManager {
     // WARNING: Calling methods on the SyncManager before receiving this
     // message, unless otherwise specified, produces undefined behavior.
 
+    // TODO(crbug.com/1198986): Remove this - it's always called synchronously
+    // from Init(), and always with success=true.
     virtual void OnInitializationComplete(
         const WeakHandle<JsBackend>& js_backend,
         const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
