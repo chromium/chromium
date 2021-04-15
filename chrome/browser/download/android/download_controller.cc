@@ -200,9 +200,17 @@ void DownloadController::RecordStoragePermission(StoragePermissionType type) {
 }
 
 // static
-void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents) {
+void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
+                                         download::DownloadItem* download) {
   if (!web_contents || !web_contents->GetController().IsInitialNavigation())
     return;
+
+  // If the download is dangerous, don't close the tab now. The dangerous
+  // infobar needs to be shown.
+  if (download && download->IsDangerous() &&
+      (download->GetState() != DownloadItem::CANCELLED)) {
+    return;
+  }
 
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
   if (!tab_model || tab_model->GetTabCount() == 1)
@@ -335,7 +343,7 @@ void DownloadController::StartAndroidDownloadInternal(
       env, jurl, juser_agent, jfile_name, jmime_type, jcookie, jreferer);
 
   WebContents* web_contents = wc_getter.Run();
-  CloseTabIfEmpty(web_contents);
+  CloseTabIfEmpty(web_contents, nullptr);
 }
 
 bool DownloadController::HasFileAccessPermission() {

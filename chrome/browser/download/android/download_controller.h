@@ -54,7 +54,10 @@ class DownloadController : public DownloadControllerBase {
   };
   static void RecordStoragePermission(StoragePermissionType type);
 
-  static void CloseTabIfEmpty(content::WebContents* web_contents);
+  // Close the |web_contents| for |download|. |download| could be null
+  // if the download is created by Android DownloadManager.
+  static void CloseTabIfEmpty(content::WebContents* web_contents,
+                              download::DownloadItem* download);
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired, which permission to update.

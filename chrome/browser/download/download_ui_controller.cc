@@ -192,7 +192,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
       content::DownloadItemUtils::GetWebContents(item);
   if (web_contents) {
 #if defined(OS_ANDROID)
-    DownloadController::CloseTabIfEmpty(web_contents);
+    DownloadController::CloseTabIfEmpty(web_contents, item);
 #else
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     // If the download occurs in a new tab, and it's not a save page
