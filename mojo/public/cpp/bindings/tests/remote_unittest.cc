@@ -22,10 +22,13 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/test/mojo_test_base.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/remote_unittest.test-mojom.h"
@@ -937,6 +940,89 @@ TEST_P(RemoteTest, SharedRemoteWithTaskRunner) {
   // internal Remote can be deleted before the background thread itself is
   // cleaned up.
   shared_remote.reset();
+}
+
+class SequenceCheckerImpl : public mojom::SequenceChecker {
+ public:
+  SequenceCheckerImpl() = default;
+  ~SequenceCheckerImpl() override = default;
+
+  // mojom::SequenceChecker:
+  void Bind(
+      PendingAssociatedReceiver<mojom::SequenceChecker> receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void Check(int32_t n) override {
+    CHECK_EQ(next_expected_value_, n);
+    ++next_expected_value_;
+  }
+
+  void GetNextExpectedValue(GetNextExpectedValueCallback callback) override {
+    std::move(callback).Run(next_expected_value_);
+  }
+
+ private:
+  int32_t next_expected_value_ = 0;
+  AssociatedReceiverSet<mojom::SequenceChecker> receivers_;
+};
+
+TEST_P(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
+  // Verifies that we can start passing associated endpoints over a SharedRemote
+  // as soon as it's constructed, even if it's still scheduled to bind on a
+  // background thread.
+  const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  PendingRemote<mojom::SequenceChecker> remote;
+  other_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SequenceChecker> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SequenceCheckerImpl>(),
+                           std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+
+  SharedRemote<mojom::SequenceChecker> checker(std::move(remote),
+                                               other_thread_task_runner);
+  PendingAssociatedRemote<mojom::SequenceChecker> pending_associated_checker;
+  checker->Bind(
+      pending_associated_checker.InitWithNewEndpointAndPassReceiver());
+
+  SharedAssociatedRemote<mojom::SequenceChecker> associated_checker =
+      mojo::SharedAssociatedRemote<mojom::SequenceChecker>(
+          std::move(pending_associated_checker), other_thread_task_runner);
+
+  checker->Check(0);
+  associated_checker->Check(1);
+  checker->Check(2);
+
+  // Make sure the above Checks reach the impl before we pass the test.
+  int32_t next_expected_value = 0;
+  EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
+  EXPECT_EQ(3, next_expected_value);
+}
+
+TEST_P(RemoteTest, SharedRemoteEarlySyncCall) {
+  // Verifies that sync calls made immediately after SharedRemote setup (with
+  // off-thread binding) do not deadlock.
+  const scoped_refptr<base::SequencedTaskRunner> other_thread_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  PendingRemote<mojom::SequenceChecker> remote;
+  other_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PendingReceiver<mojom::SequenceChecker> receiver) {
+                       MakeSelfOwnedReceiver(
+                           std::make_unique<SequenceCheckerImpl>(),
+                           std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+  SharedRemote<mojom::SequenceChecker> checker(std::move(remote),
+                                               other_thread_task_runner);
+
+  int32_t next_expected_value = -1;
+  EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
+  EXPECT_EQ(0, next_expected_value);
 }
 
 TEST_P(RemoteTest, SharedRemoteDisconnectCallback) {

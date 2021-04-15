@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SHARED_ASSOCIATED_REMOTE_H_
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -29,14 +30,9 @@ class SharedAssociatedRemote {
  public:
   SharedAssociatedRemote() = default;
   explicit SharedAssociatedRemote(
-      PendingAssociatedRemote<Interface> pending_remote)
-      : remote_(pending_remote.is_valid()
-                    ? SharedRemoteBase<AssociatedRemote<Interface>>::Create(
-                          std::move(pending_remote))
-                    : nullptr) {}
-  SharedAssociatedRemote(
       PendingAssociatedRemote<Interface> pending_remote,
-      scoped_refptr<base::SequencedTaskRunner> bind_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
+          base::SequencedTaskRunnerHandle::Get())
       : remote_(pending_remote.is_valid()
                     ? SharedRemoteBase<AssociatedRemote<Interface>>::Create(
                           std::move(pending_remote),

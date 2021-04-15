@@ -122,8 +122,8 @@ void BindingStateBase::BindInternal(
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
-  router_ = new MultiplexRouter(std::move(receiver_state->pipe), config, false,
-                                sequenced_runner, interface_name);
+  router_ = MultiplexRouter::Create(std::move(receiver_state->pipe), config,
+                                    false, sequenced_runner, interface_name);
   router_->SetConnectionGroup(std::move(receiver_state->connection_group));
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(

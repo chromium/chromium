@@ -89,9 +89,8 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
-  DCHECK(runner_->RunsTasksInCurrentSequence());
-  router_ = new MultiplexRouter(std::move(handle_), config, true, runner_,
-                                interface_name);
+  router_ = MultiplexRouter::Create(std::move(handle_), config, true, runner_,
+                                    interface_name);
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
       std::move(payload_validator), false, std::move(runner_),

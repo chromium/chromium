@@ -156,8 +156,7 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
-      interface_name_(interface_name),
-      nesting_observer_(RunLoopNestingObserver::GetForThread()) {
+      interface_name_(interface_name) {
   if (config == MULTI_THREADED_SEND)
     lock_.emplace();
 
@@ -167,9 +166,17 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
 #endif
 
   weak_self_ = weak_factory_.GetWeakPtr();
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
   // Even though we don't have an incoming receiver, we still want to monitor
   // the message pipe to know if is closed or encounters an error.
-  WaitToReadMore();
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    WaitToReadMore();
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Connector::WaitToReadMore, weak_self_));
+  }
 }
 
 Connector::~Connector() {
@@ -410,6 +417,9 @@ void Connector::OnHandleReadyInternal(MojoResult result) {
 void Connector::WaitToReadMore() {
   CHECK(!paused_);
   DCHECK(!handle_watcher_);
+
+  if (!nesting_observer_)
+    nesting_observer_ = RunLoopNestingObserver::GetForThread();
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   handle_watcher_ = std::make_unique<SimpleWatcher>(

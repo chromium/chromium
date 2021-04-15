@@ -40,17 +40,20 @@ class InterfaceEndpointController;
 
 // InterfaceEndpointClient handles message sending and receiving of an interface
 // endpoint, either the implementation side or the client side.
-// It should only be accessed and destructed on the creating sequence.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     : public MessageReceiverWithResponder {
  public:
-  // |receiver| is okay to be null. If it is not null, it must outlive this
-  // object.
+  // Constructs a new InterfaceEndpointClient for use on `task_runner`. Unless
+  // otherwise noted, all methods (including the destructor) must be called on
+  // `task_runner`. This does not need to run tasks on the same sequence that
+  // called the constructor.
+  //
+  // `receiver` may be null, but if non-null it must outlive this object.
   InterfaceEndpointClient(ScopedInterfaceEndpointHandle handle,
                           MessageReceiverWithResponderStatus* receiver,
                           std::unique_ptr<MessageReceiver> payload_validator,
                           bool expect_sync_requests,
-                          scoped_refptr<base::SequencedTaskRunner> runner,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
                           const char* interface_name);
   ~InterfaceEndpointClient() override;
@@ -266,7 +269,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   ConnectionErrorWithReasonCallback error_with_reason_handler_;
   bool encountered_error_ = false;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;

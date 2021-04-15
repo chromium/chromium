@@ -13,10 +13,8 @@ namespace internal {
 scoped_refptr<base::SequencedTaskRunner>
 GetTaskRunnerToUseFromUserProvidedTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> runner) {
-  if (runner) {
-    DCHECK(runner->RunsTasksInCurrentSequence());
+  if (runner)
     return runner;
-  }
   return base::SequencedTaskRunnerHandle::Get();
 }
 

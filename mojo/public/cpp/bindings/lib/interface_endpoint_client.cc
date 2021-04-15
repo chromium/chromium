@@ -147,17 +147,18 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     MessageReceiverWithResponderStatus* receiver,
     std::unique_ptr<MessageReceiver> payload_validator,
     bool expect_sync_requests,
-    scoped_refptr<base::SequencedTaskRunner> runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     uint32_t interface_version,
     const char* interface_name)
     : expect_sync_requests_(expect_sync_requests),
       handle_(std::move(handle)),
       incoming_receiver_(receiver),
       dispatcher_(&thunk_),
-      task_runner_(std::move(runner)),
+      task_runner_(std::move(task_runner)),
       control_message_handler_(this, interface_version),
       interface_name_(interface_name) {
   DCHECK(handle_.is_valid());
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // TODO(yzshen): the way to use validator (or message filter in general)
   // directly is a little awkward.
@@ -167,6 +168,11 @@ InterfaceEndpointClient::InterfaceEndpointClient(
   if (handle_.pending_association()) {
     handle_.SetAssociationEventHandler(base::BindOnce(
         &InterfaceEndpointClient::OnAssociationEvent, base::Unretained(this)));
+  } else if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&InterfaceEndpointClient::InitControllerIfNecessary,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     InitControllerIfNecessary();
   }

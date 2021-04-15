@@ -312,13 +312,35 @@ struct MultiplexRouter::Task {
   DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
+// static
+scoped_refptr<MultiplexRouter> MultiplexRouter::Create(
+    ScopedMessagePipeHandle message_pipe,
+    Config config,
+    bool set_interface_id_namespace_bit,
+    scoped_refptr<base::SequencedTaskRunner> runner,
+    const char* primary_interface_name) {
+  auto router = base::MakeRefCounted<MultiplexRouter>(
+      base::PassKey<MultiplexRouter>(), std::move(message_pipe), config,
+      set_interface_id_namespace_bit, runner, primary_interface_name);
+  if (runner->RunsTasksInCurrentSequence()) {
+    router->BindToCurrentSequence();
+  } else {
+    runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MultiplexRouter::BindToCurrentSequence, router));
+  }
+  return router;
+}
+
 MultiplexRouter::MultiplexRouter(
+    base::PassKey<MultiplexRouter>,
     ScopedMessagePipeHandle message_pipe,
     Config config,
     bool set_interface_id_namespace_bit,
     scoped_refptr<base::SequencedTaskRunner> runner,
     const char* primary_interface_name)
-    : set_interface_id_namespace_bit_(set_interface_id_namespace_bit),
+    : config_(config),
+      set_interface_id_namespace_bit_(set_interface_id_namespace_bit),
       task_runner_(runner),
       dispatcher_(this),
       connector_(std::move(message_pipe),
@@ -328,13 +350,18 @@ MultiplexRouter::MultiplexRouter(
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-  if (config == MULTI_INTERFACE)
+void MultiplexRouter::BindToCurrentSequence() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (config_ == MULTI_INTERFACE)
     lock_.emplace();
 
-  if (config == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
-      config == MULTI_INTERFACE) {
+  if (config_ == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
+      config_ == MULTI_INTERFACE) {
     // Always participate in sync handle watching in multi-interface mode,
     // because even if it doesn't expect sync requests during sync handle
     // watching, it may still need to dispatch messages to associated endpoints
@@ -356,8 +383,8 @@ MultiplexRouter::MultiplexRouter(
   header_validator_ = header_validator.get();
   dispatcher_.SetValidator(std::move(header_validator));
 
+  const char* primary_interface_name = connector_.interface_name();
   if (primary_interface_name) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     header_validator_->SetDescription(base::JoinString(
         {primary_interface_name, "[primary] MessageHeaderValidator"}, " "));
     control_message_handler_.SetDescription(base::JoinString(
@@ -504,7 +531,8 @@ void MultiplexRouter::RaiseError() {
     connector_.RaiseError();
   } else {
     task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&MultiplexRouter::RaiseError, this));
+                           base::BindOnce(&MultiplexRouter::RaiseError,
+                                          base::WrapRefCounted(this)));
   }
 }
 
@@ -687,7 +715,8 @@ bool MultiplexRouter::WaitForFlushToComplete(ScopedMessagePipeHandle pipe) {
   flush_pipe_watcher_->Watch(
       pipe.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      base::BindRepeating(&MultiplexRouter::OnFlushPipeSignaled, this));
+      base::BindRepeating(&MultiplexRouter::OnFlushPipeSignaled,
+                          base::WrapRefCounted(this)));
   if (flush_pipe_watcher_->Arm() != MOJO_RESULT_OK) {
     // The peer must already be closed, so consider the flush to be complete.
     flush_pipe_watcher_.reset();
@@ -969,8 +998,8 @@ void MultiplexRouter::MaybePostToProcessTasks(
   posted_to_process_tasks_ = true;
   posted_to_task_runner_ = task_runner;
   task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MultiplexRouter::LockAndCallProcessTasks, this));
+      FROM_HERE, base::BindOnce(&MultiplexRouter::LockAndCallProcessTasks,
+                                base::WrapRefCounted(this)));
 }
 
 void MultiplexRouter::LockAndCallProcessTasks() {

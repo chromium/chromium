@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
             const char* interface_name = "unknown interface");
   ~Connector() override;
 
+  const char* interface_name() const { return interface_name_; }
+
   // Sets outgoing serialization mode.
   void SetOutgoingSerializationMode(OutgoingSerializationMode mode);
   void SetIncomingSerializationMode(IncomingSerializationMode mode);
@@ -310,7 +312,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   // A cached pointer to the RunLoopNestingObserver for the thread on which this
   // Connector was created.
-  RunLoopNestingObserver* const nesting_observer_;
+  RunLoopNestingObserver* nesting_observer_ = nullptr;
 
   // |true| iff the Connector is currently dispatching a message. Used to detect
   // nested dispatch operations.
