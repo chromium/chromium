@@ -519,16 +519,19 @@ class BoxCreateUploadSessionApiCallFlowTest
 
   void OnResponse(bool success,
                   int response_code,
-                  base::Value session_endpoints) {
+                  base::Value session_endpoints,
+                  size_t part_size) {
     processed_success_ = success;
     response_code_ = response_code;
     if (success) {
+      ASSERT_TRUE(session_endpoints.is_dict());
       session_upload_endpoint_ =
           session_endpoints.FindPath("upload_part")->GetString();
       session_abort_endpoint_ =
           session_endpoints.FindPath("abort")->GetString();
       session_commit_endpoint_ =
           session_endpoints.FindPath("commit")->GetString();
+      part_size_ = part_size;
     }
     if (quit_closure_)
       std::move(quit_closure_).Run();
@@ -537,6 +540,7 @@ class BoxCreateUploadSessionApiCallFlowTest
   std::string session_upload_endpoint_;
   std::string session_abort_endpoint_;
   std::string session_commit_endpoint_;
+  size_t part_size_ = 0;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder decoder_;
@@ -573,8 +577,9 @@ TEST_F(BoxCreateUploadSessionApiCallFlowTest, ProcessApiCallSuccess) {
   quit_closure_ = run_loop.QuitClosure();
 
   flow_->ProcessApiCallSuccess(
-      http_head.get(), std::make_unique<std::string>(
-                           kFileSystemBoxCreateUploadSessionResponseBody));
+      http_head.get(),
+      std::make_unique<std::string>(
+          kFileSystemBoxChunkedUploadCreateSessionResponseBody));
   run_loop.Run();
 
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
@@ -582,6 +587,8 @@ TEST_F(BoxCreateUploadSessionApiCallFlowTest, ProcessApiCallSuccess) {
   EXPECT_EQ(session_upload_endpoint_, kFileSystemBoxChunkedUploadSessionUrl);
   EXPECT_EQ(session_abort_endpoint_, kFileSystemBoxChunkedUploadSessionUrl);
   EXPECT_EQ(session_commit_endpoint_, kFileSystemBoxChunkedUploadCommitUrl);
+  EXPECT_EQ(part_size_,
+            kFileSystemBoxChunkedUploadCreateSessionResponsePartSize);
 }
 
 TEST_F(BoxCreateUploadSessionApiCallFlowTest,
@@ -871,7 +878,7 @@ class BoxCommitUploadSessionApiCallFlowTest
     : public BoxApiCallFlowTest<BoxCommitUploadSessionApiCallFlowForTest> {
  protected:
   BoxCommitUploadSessionApiCallFlowTest()
-      : upload_session_parts_(base::Value::Type::DICTIONARY) {
+      : upload_session_parts_(base::Value::Type::LIST) {
     base::Value part1(base::Value::Type::DICTIONARY);
     part1.SetStringKey("part_id", "BFDF5379");
     part1.SetIntKey("offset", 0);
@@ -884,12 +891,15 @@ class BoxCommitUploadSessionApiCallFlowTest
     part2.SetIntKey("size", 1611392);
     part2.SetStringKey("sha1", "234b65934ed521fcfe3424b7d814ab8ded5185dc");
 
-    base::Value parts(base::Value::Type::LIST);
-    parts.Append(std::move(part1));
-    parts.Append(std::move(part2));
+    upload_session_parts_.Append(std::move(part1));
+    upload_session_parts_.Append(std::move(part2));
 
-    upload_session_parts_.SetKey("parts", std::move(parts));
-    base::JSONWriter::Write(upload_session_parts_, &expected_body_);
+    base::Value parts_body(base::Value::Type::DICTIONARY);
+    parts_body.SetKey("parts", upload_session_parts_.Clone());
+    // The request body should be in the form of "parts": [list of parts], but
+    // only the list is passed into the class.
+
+    base::JSONWriter::Write(parts_body, &expected_body_);
   }
 
   void SetUp() override {

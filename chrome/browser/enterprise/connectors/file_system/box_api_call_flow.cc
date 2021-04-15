@@ -74,9 +74,12 @@ base::Value CreateSingleFieldDict(const std::string& key,
 }
 
 bool VerifyChunkedUploadParts(const base::Value& parts) {
+  DCHECK(parts.is_dict()) << parts;
+  DCHECK(parts.FindPath("parts")->is_list()) << parts;
   auto parts_list = parts.FindPath("parts")->GetList();
   DCHECK(!parts_list.empty());
   for (auto p = parts_list.begin(); p != parts_list.end(); ++p) {
+    DCHECK(p->is_dict()) << parts;
     DCHECK(p->FindPath("part_id")) << parts;
     DCHECK(p->FindPath("offset")) << parts;
     DCHECK(p->FindPath("size")) << parts;
@@ -201,7 +204,6 @@ void BoxFindUpstreamFolderApiCallFlow::OnJsonParsed(
 
   DLOG(ERROR) << "[BoxApiCallFlow] FindUpstreamFolder returned invalid entries";
   std::move(callback_).Run(false, net::HTTP_OK, std::string());
-  return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +270,6 @@ void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(
                 << (result.error ? result.error->data()
                                  : "<no error info available>");
   }
-  // TODO(1157641): store folder_id in profile pref to handle indexing latency.
   std::move(callback_).Run(!folder_id.empty(), net::HTTP_CREATED, folder_id);
   return;
 }
@@ -463,7 +464,7 @@ BoxCreateUploadSessionApiCallFlow::~BoxCreateUploadSessionApiCallFlow() =
     default;
 
 GURL BoxCreateUploadSessionApiCallFlow::CreateApiCallUrl() {
-  return GURL("https://upload.box.com/api/2.0/files/upload_sessions/");
+  return GURL("https://upload.box.com/api/2.0/files/upload_sessions");
 }
 
 std::string BoxCreateUploadSessionApiCallFlow::CreateApiCallBody() {
@@ -505,31 +506,33 @@ void BoxCreateUploadSessionApiCallFlow::ProcessApiCallFailure(
   if (!body->empty()) {
     LOG(ERROR) << "Body: " << *body;
   }
-  std::move(callback_).Run(false, response_code, CreateEmptyDict());
+  std::move(callback_).Run(false, response_code, CreateEmptyDict(), 0);
 }
 
 void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  bool valid_response = result.value.has_value();
+  if (!valid_response) {
     LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession succeeded but unable "
                   "to parse response";
-    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict());
+    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict(), 0);
     return;
   }
 
-  auto* session_endpoints = result.value->FindPath("session_endpoints");
-  bool valid_endpoints = session_endpoints &&
-                         session_endpoints->FindPath("upload_part") &&
-                         session_endpoints->FindPath("commit") &&
-                         session_endpoints->FindPath("abort");
-  if (!valid_endpoints) {
+  auto* endpoints = result.value->FindPath("session_endpoints");
+  auto* part_size = result.value->FindPath("part_size");
+  valid_response =
+      endpoints && part_size && endpoints->FindPath("upload_part") &&
+      endpoints->FindPath("commit") && endpoints->FindPath("abort");
+  if (!valid_response) {
     LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession succeeded but "
-                  "some endpoints returned are invalid: "
+                  "response returned is invalid: "
                << *result.value;
+    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict(), 0);
+  } else {
+    std::move(callback_).Run(true, net::HTTP_CREATED, std::move(*endpoints),
+                             part_size->GetInt());
   }
-  std::move(callback_).Run(
-      valid_endpoints, net::HTTP_CREATED,
-      session_endpoints ? std::move(*session_endpoints) : CreateEmptyDict());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -636,16 +639,13 @@ void BoxPartFileUploadApiCallFlow::OnJsonParsed(
     return;
   }
 
-  base::Value* part = result.value ? result.value->FindPath("part") : nullptr;
+  base::Value* part = result.value->FindPath("part");
   if (!part) {
-    const char* msg =
-        result.value ? "<no part>"
-                     : (result.error ? result.error->data() : "<no error>");
-    DVLOG(1) << "BoxPartFileUploadApiCallFlow::OnJsonParsed: " << msg;
+    DLOG(ERROR) << "[BoxApiCallFlow] No info for uploaded part";
     std::move(callback_).Run(false, net::HTTP_OK, base::Value());
-    return;
+  } else {
+    std::move(callback_).Run(true, net::HTTP_OK, std::move(*part));
   }
-  std::move(callback_).Run(true, net::HTTP_OK, std::move(*part));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -698,8 +698,8 @@ BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
     const std::string digest)
     : BoxChunkedUploadBaseApiCallFlow(GURL(session_endpoint)),
       callback_(std::move(callback)),
-      upload_session_parts_(parts.Clone()),
-      sha_digest_(digest) {}
+      sha_digest_(digest),
+      upload_session_parts_(parts.Clone()) {}
 
 BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
     default;
@@ -707,14 +707,17 @@ BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
 net::HttpRequestHeaders
 BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
-  headers.SetHeader("digest", sha_digest_);
+  headers.SetHeader("digest",
+                    base::StringPrintf(sha_digest_.c_str(), "sha=%="));
   return headers;
 }
 
 std::string BoxCommitUploadSessionApiCallFlow::CreateApiCallBody() {
-  DCHECK(VerifyChunkedUploadParts(upload_session_parts_));
+  base::Value parts(base::Value::Type::DICTIONARY);
+  parts.SetKey("parts", std::move(upload_session_parts_));
+  DCHECK(VerifyChunkedUploadParts(parts));
   std::string body;
-  base::JSONWriter::Write(upload_session_parts_, &body);
+  base::JSONWriter::Write(parts, &body);
   return body;
 }
 
@@ -746,7 +749,7 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
     std::unique_ptr<std::string> body) {
   auto response_code = head->headers->response_code();
   LOG(ERROR) << "[BoxApiCallFlow] CommitUploadSession failed. Error code "
-             << response_code;
+             << response_code << " " << (body ? *body : "");
   std::move(callback_).Run(false, response_code, base::TimeDelta());
 }
 

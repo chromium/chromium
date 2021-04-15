@@ -170,9 +170,9 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
 // in Box.
 class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
-  // Additional callback arg is: session endpoints provided in API request
-  // response.
-  using TaskCallback = base::OnceCallback<void(bool, int, base::Value)>;
+  // Additional callback args are: session endpoints provided in API request
+  // response, and part_size for each chunk to be uploaded.
+  using TaskCallback = base::OnceCallback<void(bool, int, base::Value, size_t)>;
   BoxCreateUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& folder_id,
                                     const size_t file_size,
@@ -258,8 +258,8 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
   base::WeakPtrFactory<BoxPartFileUploadApiCallFlow> weak_factory_{this};
 };
 
-// Helper for committing an upload session once all the parts are uploaded
-// successfully.
+// Helper for aborting an upload session if there's unrecoverable failure during
+// uploading file chunks.
 class BoxAbortUploadSessionApiCallFlow
     : public BoxChunkedUploadBaseApiCallFlow {
  public:
@@ -307,8 +307,8 @@ class BoxCommitUploadSessionApiCallFlow
  private:
   TaskCallback callback_;
   const GURL commit_endpoint_;
-  const base::Value upload_session_parts_;
   const std::string sha_digest_;
+  base::Value upload_session_parts_;
   base::TimeDelta retry_after_;
 };
 
