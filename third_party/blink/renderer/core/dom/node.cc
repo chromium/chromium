@@ -1483,6 +1483,17 @@ bool Node::IsDescendantOf(const Node* other) const {
   return false;
 }
 
+bool Node::IsDescendantOrShadowDescendantOf(const Node* other) const {
+  if (IsDescendantOf(other))
+    return true;
+
+  for (auto* host = OwnerShadowHost(); host; host = host->OwnerShadowHost()) {
+    if (other->contains(host))
+      return true;
+  }
+  return false;
+}
+
 bool Node::contains(const Node* node) const {
   if (!node)
     return false;

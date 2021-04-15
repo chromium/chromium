@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS offsetParent should return node in the same node tree in open shadow root.
+PASS offsetParent should return node in the same node tree in closed shadow root.
+PASS offsetParent should return an unclosed node in a open shadow from closed shadow.
+PASS offsetParent should return an unclosed node in a closed shadow from open shadow.
+FAIL offsetParent should return an unclosed node. assert_equals: expected "container_open" but got "host_open2"
+PASS offsetParent should skip any non-unclosed nodes.
+FAIL offsetParent should return node in the open shadow root because it is unclosed. assert_equals: expected Element node <div id="container" style="position: relative;">
+      <s... but got Element node <div id="host_open4" class="container">
+  
+  <div id="hos...
+FAIL offsetParent should return null in case position:fixed offsetParent is not unclosed. assert_equals: expected null but got Element node <body><div id="host_open0">
+  
+</div>
+
+<div id="host_clos...
+FAIL All position:static elements should be skipped for offsetParent. assert_equals: expected Element node <div id="relative" style="position: relative;">
+        <... but got Element node <body><div id="host_open0">
+  
+</div>
+
+<div id="host_clos...
+Harness: the test ran to completion.
+

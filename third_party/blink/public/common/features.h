@@ -176,6 +176,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebviewAccelerateSmallCanvases;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDiscardCodeCacheAfterFirstUse;
 
+// TODO(crbug.com/920069): Remove OffsetParentNewSpecBehavior after the feature
+// is in stable with no issues.
+BLINK_COMMON_EXPORT extern const base::Feature kOffsetParentNewSpecBehavior;
+
 BLINK_COMMON_EXPORT extern const base::Feature kFontPreloadingDelaysRendering;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFontPreloadingDelaysRenderingParam;

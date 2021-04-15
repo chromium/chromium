@@ -789,6 +789,15 @@
     "args": [ "--js-flags=--harmony-weak-refs" ]
   },
   {
+    "prefix": "offsetparent-old-behavior",
+    "bases": [
+      "external/wpt/css/css-contain/content-visibility",
+      "external/wpt/shadow-dom",
+      "fast/dom/shadow"
+    ],
+    "args": ["--disable-features=OffsetParentNewSpecBehavior"]
+  },
+  {
     "prefix": "document-domain-disabled-by-default",
     "bases": [
       "external/wpt/document-policy/experimental-features/document-domain"

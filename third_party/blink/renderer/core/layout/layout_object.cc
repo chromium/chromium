@@ -4160,6 +4160,17 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
     if (!node)
       continue;
 
+    // In the case where |base| is getting slotted into a shadow root, we
+    // shouldn't return anything inside the shadow root. The returned node must
+    // be in the same shadow root or document as |base|.
+    // https://github.com/w3c/csswg-drafts/issues/159
+    // TODO(crbug.com/920069): Remove the feature check here when the feature
+    // has gotten to stable without any issues.
+    if (RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled() && base &&
+        !base->IsDescendantOrShadowDescendantOf(&node->TreeRoot())) {
+      continue;
+    }
+
     // TODO(kochi): If |base| or |node| is nested deep in shadow roots, this
     // loop may get expensive, as isUnclosedNodeOf() can take up to O(N+M) time
     // (N and M are depths).

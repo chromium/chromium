@@ -1416,6 +1416,12 @@
       status: "experimental",
     },
     {
+      // TODO(crbug.com/920069): Remove OffsetParentNewSpecBehavior after the
+      // feature is in stable with no issues.
+      name: "OffsetParentNewSpecBehavior",
+      status: "stable"
+    },
+    {
       name: "OnDeviceChange",
       // Android does not yet support SystemMonitor.
       status: {"Android": "", "default": "stable"},

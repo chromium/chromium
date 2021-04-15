@@ -111,6 +111,8 @@ https://github.com/w3c/csswg-drafts/issues/159
 </div>
 
 <script>
+// TODO(crbug.com/920069): Remove this test when the
+// OffsetParentNewSpecBehavior feature has landed in stable with no issues.
 test(() => {
   convertTemplatesToShadowRootsWithin(host_open2);
   convertTemplatesToShadowRootsWithin(host_closed2);
@@ -169,6 +171,8 @@ As #container is unclosed to #inner_node, inner_node.offsetParent should return
 </div>
 
 <script>
+// TODO(crbug.com/920069): Remove this test when the
+// OffsetParentNewSpecBehavior feature has landed in stable with no issues.
 test(() => {
   convertTemplatesToShadowRootsWithin(host_open4);
   let container = root_open4.querySelector('#container');
@@ -201,6 +205,8 @@ find unclosed ancestor, but should return null.  If it is unclosed, return it.
 </div>
 
 <script>
+// TODO(crbug.com/920069): Remove this test when the
+// OffsetParentNewSpecBehavior feature has landed in stable with no issues.
 test(() => {
   convertTemplatesToShadowRootsWithin(host_closed5);
   assert_equals(inner_node5.offsetParent, null);
@@ -235,6 +241,8 @@ Check if all position: static elements are properly skipped in searching offsetP
 </div>
 
 <script>
+// TODO(crbug.com/920069): Remove this test when the
+// OffsetParentNewSpecBehavior feature has landed in stable with no issues.
 test(() => {
   convertTemplatesToShadowRootsWithin(host_open6);
   assert_not_equals(inner_node6.offsetParent, null);

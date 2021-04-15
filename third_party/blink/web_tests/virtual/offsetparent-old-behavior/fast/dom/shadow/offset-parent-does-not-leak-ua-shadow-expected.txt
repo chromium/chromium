@@ -2,7 +2,7 @@ offsetParent should not leak nodes in user agent Shadow DOM.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS child.offsetParent is container
+FAIL child.offsetParent should be [object HTMLDivElement]. Was [object HTMLDivElement].
 PASS child.offsetParent is container
 PASS child.offsetParent is container
 PASS child.offsetParent is container

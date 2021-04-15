@@ -55,8 +55,44 @@ function createLeakedPasswordItem(entry) {
 }
 
 function isElementVisible(element) {
+  function composedOffsetParent(node) {
+    let offsetParent = node.offsetParent;
+    let ancestor = node;
+    let foundInsideSlot = false;
+    while (ancestor && ancestor !== offsetParent) {
+      const assignedSlot = ancestor.assignedSlot;
+      if (assignedSlot) {
+        let newOffsetParent = assignedSlot.offsetParent;
+
+        if (getComputedStyle(assignedSlot)['display'] === 'contents') {
+          const hadStyleAttribute = assignedSlot.hasAttribute('style');
+          const oldDisplay = assignedSlot.style.display;
+          assignedSlot.style.display = getComputedStyle(ancestor).display;
+
+          newOffsetParent = assignedSlot.offsetParent;
+
+          assignedSlot.style.display = oldDisplay;
+          if (!hadStyleAttribute) {
+            assignedSlot.removeAttribute('style');
+          }
+        }
+
+        ancestor = assignedSlot;
+        if (offsetParent !== newOffsetParent) {
+          offsetParent = newOffsetParent;
+          foundInsideSlot = true;
+        }
+      } else if (ancestor.host && foundInsideSlot) {
+        break;
+      }
+      ancestor = ancestor.host || ancestor.parentNode;
+    }
+    return offsetParent;
+  }
+
   return !!element && !element.hidden && element.style.display !== 'none' &&
-      element.offsetParent !== null;  // Considers parents hiding |element|.
+      composedOffsetParent(element) !==
+      null;  // Considers parents hiding |element|.
 }
 
 

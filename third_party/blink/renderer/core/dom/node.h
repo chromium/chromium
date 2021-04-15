@@ -642,6 +642,7 @@ class CORE_EXPORT Node : public EventTarget {
   unsigned CountChildren() const;
 
   bool IsDescendantOf(const Node*) const;
+  bool IsDescendantOrShadowDescendantOf(const Node*) const;
   bool contains(const Node*) const;
   // https://dom.spec.whatwg.org/#concept-shadow-including-inclusive-ancestor
   bool IsShadowIncludingInclusiveAncestorOf(const Node&) const;

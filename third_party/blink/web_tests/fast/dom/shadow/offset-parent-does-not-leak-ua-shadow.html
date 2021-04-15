@@ -32,7 +32,7 @@ var child = document.createElement('div');
 host.appendChild(child);
 var shadow = host.attachShadow({mode: 'open'});
 configureShadowRoot(shadow);
-shouldBe('child.offsetParent', 'shadow.positionedElement');
+shouldBe('child.offsetParent', 'container');
 
 // Test that offsetParent works 'through' Shadow DOM when there is no
 // positioned ancestor in user agent Shadow DOM
