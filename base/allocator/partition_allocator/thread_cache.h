@@ -214,6 +214,7 @@ class BASE_EXPORT ThreadCache {
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
   void Purge();
+  size_t CachedMemory() const;
   void AccumulateStats(ThreadCacheStats* stats) const;
 
   size_t bucket_count_for_testing(size_t index) const {

@@ -142,7 +142,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   // Don't completely empty the thread cache outside of low memory situations,
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
-  if (PartitionPurgeAggressiveReclaim)
+  if (flags & PartitionPurgeAggressiveReclaim)
     internal::ThreadCacheRegistry::Instance().PurgeAll();
 #endif
 

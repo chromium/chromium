@@ -7,11 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+#include "base/allocator/partition_allocator/thread_cache.h"
+#endif
 
 // Otherwise, PartitionAlloc doesn't allocate any memory, and the tests are
 // meaningless.
@@ -107,6 +114,48 @@ TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
     EXPECT_LE(committed_initially, committed_after);
   }
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+
+namespace {
+// malloc() / free() pairs can be removed by the compiler, this is enough (for
+// now) to prevent that.
+NOINLINE void FreeForTest(void* data) {
+  free(data);
+}
+}  // namespace
+
+TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
+  for (size_t i = 0; i < internal::ThreadCache::kDefaultSizeThreshold; i++) {
+    void* data = malloc(i);
+    FreeForTest(data);
+  }
+
+  auto* tcache = internal::ThreadCache::Get();
+  ASSERT_TRUE(tcache);
+  size_t cached_size = tcache->CachedMemory();
+
+  StartReclaimer();
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+
+  // No thread cache purging during periodic purge, but with ReclaimAll().
+  //
+  // Cannot assert on the exact size of the thread cache, since it can shrink
+  // when a buffer is overfull, and this may happen through other malloc()
+  // allocations in the test harness.
+  EXPECT_GT(tcache->CachedMemory(), cached_size / 2);
+
+  PartitionAllocMemoryReclaimer::Instance()->ReclaimPeriodically();
+  EXPECT_GT(tcache->CachedMemory(), cached_size / 2);
+
+  PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+  EXPECT_LT(tcache->CachedMemory(), cached_size / 2);
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 }  // namespace base
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

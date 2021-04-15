@@ -574,6 +574,14 @@ void ThreadCache::ResetForTesting() {
   should_purge_.store(false, std::memory_order_relaxed);
 }
 
+size_t ThreadCache::CachedMemory() const {
+  size_t total = 0;
+  for (const Bucket& bucket : buckets_)
+    total += bucket.count * static_cast<size_t>(bucket.slot_size);
+
+  return total;
+}
+
 void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->alloc_count += stats_.alloc_count;
   stats->alloc_hits += stats_.alloc_hits;
@@ -595,10 +603,7 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   }
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 
-  for (const Bucket& bucket : buckets_) {
-    stats->bucket_total_memory +=
-        bucket.count * static_cast<size_t>(bucket.slot_size);
-  }
+  stats->bucket_total_memory += CachedMemory();
   stats->metadata_overhead += sizeof(*this);
 }
 
