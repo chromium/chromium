@@ -6611,6 +6611,10 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--board=eve",
+          "--flash"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
