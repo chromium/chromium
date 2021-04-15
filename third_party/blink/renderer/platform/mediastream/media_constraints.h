@@ -278,11 +278,6 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint goog_combined_audio_video_bwe;
   LongConstraint goog_screencast_min_bitrate;
   BooleanConstraint goog_cpu_overuse_detection;
-  LongConstraint goog_cpu_underuse_threshold;
-  LongConstraint goog_cpu_overuse_threshold;
-  LongConstraint goog_cpu_underuse_encode_rsd_threshold;
-  LongConstraint goog_cpu_overuse_encode_rsd_threshold;
-  BooleanConstraint goog_cpu_overuse_encode_usage;
   LongConstraint goog_high_start_bitrate;
   BooleanConstraint goog_payload_padding;
   LongConstraint goog_latency_ms;

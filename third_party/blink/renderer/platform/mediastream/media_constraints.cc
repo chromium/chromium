@@ -382,12 +382,6 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       goog_combined_audio_video_bwe("googCombinedAudioVideoBwe"),
       goog_screencast_min_bitrate("googScreencastMinBitrate"),
       goog_cpu_overuse_detection("googCpuOveruseDetection"),
-      goog_cpu_underuse_threshold("googCpuUnderuseThreshold"),
-      goog_cpu_overuse_threshold("googCpuOveruseThreshold"),
-      goog_cpu_underuse_encode_rsd_threshold(
-          "googCpuUnderuseEncodeRsdThreshold"),
-      goog_cpu_overuse_encode_rsd_threshold("googCpuOveruseEncodeRsdThreshold"),
-      goog_cpu_overuse_encode_usage("googCpuOveruseEncodeUsage"),
       goog_high_start_bitrate("googHighStartBitrate"),
       goog_payload_padding("googPayloadPadding"),
       goog_latency_ms("latencyMs") {}
@@ -440,11 +434,6 @@ Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
           &goog_combined_audio_video_bwe,
           &goog_screencast_min_bitrate,
           &goog_cpu_overuse_detection,
-          &goog_cpu_underuse_threshold,
-          &goog_cpu_overuse_threshold,
-          &goog_cpu_underuse_encode_rsd_threshold,
-          &goog_cpu_overuse_encode_rsd_threshold,
-          &goog_cpu_overuse_encode_usage,
           &goog_high_start_bitrate,
           &goog_payload_padding,
           &goog_latency_ms};

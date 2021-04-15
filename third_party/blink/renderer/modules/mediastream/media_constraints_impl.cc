@@ -396,21 +396,6 @@ static void ParseOldStyleNames(
           atoi(constraint.value_.Utf8().c_str()));
     } else if (constraint.name_.Equals(kCpuOveruseDetection)) {
       result.goog_cpu_overuse_detection.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kCpuUnderuseThreshold)) {
-      result.goog_cpu_underuse_threshold.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuOveruseThreshold)) {
-      result.goog_cpu_overuse_threshold.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuUnderuseEncodeRsdThreshold)) {
-      result.goog_cpu_underuse_encode_rsd_threshold.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuOveruseEncodeRsdThreshold)) {
-      result.goog_cpu_overuse_encode_rsd_threshold.SetExact(
-          atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kCpuOveruseEncodeUsage)) {
-      result.goog_cpu_overuse_encode_usage.SetExact(
-          ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kHighStartBitrate)) {
       result.goog_high_start_bitrate.SetExact(
           atoi(constraint.value_.Utf8().c_str()));
@@ -418,7 +403,12 @@ static void ParseOldStyleNames(
       result.goog_payload_padding.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kAudioLatency)) {
       result.goog_latency_ms.SetExact(atoi(constraint.value_.Utf8().c_str()));
-    } else if (constraint.name_.Equals(kGoogLeakyBucket) ||
+    } else if (constraint.name_.Equals(kCpuUnderuseThreshold) ||
+               constraint.name_.Equals(kCpuOveruseThreshold) ||
+               constraint.name_.Equals(kCpuUnderuseEncodeRsdThreshold) ||
+               constraint.name_.Equals(kCpuOveruseEncodeRsdThreshold) ||
+               constraint.name_.Equals(kCpuOveruseEncodeUsage) ||
+               constraint.name_.Equals(kGoogLeakyBucket) ||
                constraint.name_.Equals(kGoogBeamforming) ||
                constraint.name_.Equals(kGoogArrayGeometry) ||
                constraint.name_.Equals(kPowerLineFrequency) ||
