@@ -100,7 +100,16 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
     Interface();
     ~Interface();
 
-    const mojom::UsbInterfaceInfo* info;
+    // This may be nullptr in the rare case of a device which doesn't have any
+    // interfaces. In that case the Windows API still considers the device to
+    // have a single function which is represented here by initializing
+    // |interface_number| and |first_interface| to create a fake interface 0.
+    const mojom::UsbInterfaceInfo* info = nullptr;
+
+    // These fields are copied from |info| and initialized to 0 in case it is
+    // nullptr.
+    uint8_t interface_number = 0;
+    uint8_t first_interface = 0;
 
     // In a composite device each function has its own driver and path to open.
     std::wstring function_driver;
