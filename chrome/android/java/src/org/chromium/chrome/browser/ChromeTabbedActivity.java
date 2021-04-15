@@ -1197,7 +1197,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                 mPendingInitialTabCreation = true;
                 PartnerBrowserCustomizations.getInstance().setOnInitializeAsyncFinished(() -> {
-                    if (!isActivityFinishingOrDestroyed()) createInitialTab();
+                    if (!isActivityFinishingOrDestroyed()) {
+                        createInitialTab();
+                    }
                 }, INITIAL_TAB_CREATION_TIMEOUT_MS);
             }
         } finally {
@@ -1215,6 +1217,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      * Create an initial tab for cold start without restored tabs.
      */
     private void createInitialTab() {
+        Log.i(TAG, "#createInitialTab executed.");
         mPendingInitialTabCreation = false;
 
         // If the start surface will be shown on start, do not create a new tab.

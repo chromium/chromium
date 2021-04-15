@@ -406,6 +406,9 @@ public class PartnerBrowserCustomizations {
 
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mInitializeAsyncCallbacks.remove(callback)) {
+                if (!mIsInitialized) {
+                    Log.w(TAG, "mInitializeAsyncCallbacks executed as timeout expired.");
+                }
                 callback.run();
             }
         }, mIsInitialized ? 0 : timeoutMs);
