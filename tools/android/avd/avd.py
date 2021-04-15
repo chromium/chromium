@@ -95,6 +95,11 @@ def main(raw_args):
       default=True,
       help='Run a modifiable emulator. Will save snapshots on exit.')
   start_parser.add_argument(
+      '--writable-system',
+      action='store_true',
+      default=False,
+      help='Makes system & vendor image writable after adb remount.')
+  start_parser.add_argument(
       '--emulator-window',
       action='store_true',
       default=False,
@@ -113,6 +118,7 @@ def main(raw_args):
         read_only=args.read_only,
         snapshot_save=not args.read_only,
         window=args.emulator_window,
+        writable_system=args.writable_system,
         debug_tags=args.debug_tags)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
