@@ -379,6 +379,14 @@ Polymer({
   },
 
   /**
+   * Handles user closes the dialog on the SAML page.
+   * @private
+   */
+  closeSaml_() {
+    this.cancel();
+  },
+
+  /**
    * Loads the authenticator and updates the UI to reflect the loading state.
    * @param {boolean} doSamlRedirect If the authenticator should do
    *     authentication by automatic redirection to the SAML-based enrollment
