@@ -138,6 +138,9 @@ constexpr char kProcessLifetimeEventsDisplayCompositor[] =
 const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
   switch (gpu_mode) {
     // TODO(rivr): Add separate histograms for the different hardware modes.
+    case gpu::GpuMode::UNKNOWN:
+      NOTREACHED();
+      return nullptr;
     case gpu::GpuMode::HARDWARE_GL:
     case gpu::GpuMode::HARDWARE_METAL:
     case gpu::GpuMode::HARDWARE_VULKAN:
@@ -146,9 +149,6 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
       return kProcessLifetimeEventsSwiftShader;
     case gpu::GpuMode::DISPLAY_COMPOSITOR:
       return kProcessLifetimeEventsDisplayCompositor;
-    default:
-      NOTREACHED();
-      return nullptr;
   }
 }
 
@@ -547,14 +547,6 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind, bool force_create) {
                           ? BrowserThread::UI
                           : BrowserThread::IO);
 
-  // Don't grant further access to GPU if it is not allowed.
-  GpuDataManagerImpl* gpu_data_manager = GpuDataManagerImpl::GetInstance();
-  DCHECK(gpu_data_manager);
-  if (!gpu_data_manager->GpuProcessStartAllowed()) {
-    DLOG(ERROR) << "!GpuDataManagerImpl::GpuProcessStartAllowed()";
-    return nullptr;
-  }
-
   // Do not launch the unsandboxed GPU info collection process if GPU is
   // disabled
   if (kind == GPU_PROCESS_KIND_INFO_COLLECTION) {
@@ -874,7 +866,6 @@ bool GpuProcessHost::Init() {
   process_->GetHost()->CreateChannelMojo();
 
   mode_ = GpuDataManagerImpl::GetInstance()->GetGpuMode();
-  DCHECK_NE(mode_, gpu::GpuMode::DISABLED);
 
   if (in_process_) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)

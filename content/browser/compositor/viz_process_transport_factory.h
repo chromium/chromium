@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
-#include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -134,10 +133,6 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   scoped_refptr<viz::ContextProviderCommandBuffer> main_context_provider_;
 
   std::unique_ptr<cc::SingleThreadTaskGraphRunner> task_graph_runner_;
-
-  // Will start and run the VizCompositorThread for using an in-process display
-  // compositor.
-  std::unique_ptr<viz::VizCompositorThreadRunnerImpl> viz_compositor_thread_;
 
   base::flat_map<ui::Compositor*, CompositorData> compositor_data_map_;
 
