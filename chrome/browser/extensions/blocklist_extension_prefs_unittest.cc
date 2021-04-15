@@ -84,12 +84,11 @@ TEST_F(BlocklistExtensionPrefsUnitTest, AcknowledgedBlocklistState) {
   EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state1, extension_prefs()));
 
-  blocklist_prefs::RemoveAcknowledgedBlocklistState(kExtensionId, state1,
-                                                    extension_prefs());
+  blocklist_prefs::ClearAcknowledgedBlocklistState(kExtensionId,
+                                                   extension_prefs());
   EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state1, extension_prefs()));
-  // Doesn't remove the other blocklist state.
-  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state2, extension_prefs()));
 }
 

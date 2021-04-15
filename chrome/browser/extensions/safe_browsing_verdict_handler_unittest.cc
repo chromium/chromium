@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 
+#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
@@ -26,7 +27,18 @@ constexpr char kGood2[] = "bjafgdebaacbbbecmhlhpofkepfkgcpa";
 }  // namespace
 
 // Test suite to test safe browsing verdict handler.
-using SafeBrowsingVerdictHandlerUnitTest = ExtensionServiceTestBase;
+class SafeBrowsingVerdictHandlerUnitTest : public ExtensionServiceTestBase {
+ protected:
+  void SetBlocklistStateForExtension(const std::string& extension_id,
+                                     BlocklistState state,
+                                     TestBlocklist& test_blocklist) {
+    // Reset cache in blocklist to make sure the latest blocklist state is
+    // fetched.
+    service()->blocklist_->ResetBlocklistStateCacheForTest();
+    test_blocklist.SetBlocklistState(extension_id, state, true);
+    task_environment()->RunUntilIdle();
+  }
+};
 
 #if defined(ENABLE_BLOCKLIST_TESTS)
 // Extension is added to blocklist with BLOCKLISTED_POTENTIALLY_UNWANTED state
@@ -197,26 +209,273 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       registry()->blocklisted_extensions();
 
   // Add the extension to blocklist
-  test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_MALWARE, true);
-  task_environment()->RunUntilIdle();
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_MALWARE, test_blocklist);
 
   EXPECT_FALSE(enabled_extensions.Contains(kGood0));
   // False because the extension should be unloaded.
   EXPECT_FALSE(disabled_extensions.Contains(kGood0));
   EXPECT_TRUE(blocklisted_extensions.Contains(kGood0));
 
-  // Reset cache in blocklist to make sure the latest blocklist state is
-  // fetched.
-  service()->blocklist_->ResetBlocklistStateCacheForTest();
   // Remove the extension from blocklist and add it to greylist
-  test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
-                                   true);
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
   content::RunAllTasksUntilIdle();
 
   // The extension is reloaded, but remains disabled.
   EXPECT_FALSE(enabled_extensions.Contains(kGood0));
   EXPECT_TRUE(disabled_extensions.Contains(kGood0));
   EXPECT_FALSE(blocklisted_extensions.Contains(kGood0));
+}
+
+// When extension is on the greylist, do not disable it if it is
+// re-enabled by user.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       GreylistedExtensionDoesNotDisableAgain) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 is disabled.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Now user enables kGood0.
+  service()->EnableExtension(kGood0);
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should not be cleared when the extension is
+  // re-enabled.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Set the blocklist to the same greylist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 should still be enabled.
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should not be cleared.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+}
+
+// When extension is removed from the greylist and re-added, disable the
+// extension again.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       GreylistedExtensionDisableAgainIfReAdded) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 is disabled.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Now user enables kGood0.
+  service()->EnableExtension(kGood0);
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should not be cleared when the extension is
+  // re-enabled.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Remove kGood0 from blocklist.
+  SetBlocklistStateForExtension(kGood0, NOT_BLOCKLISTED, test_blocklist);
+
+  // kGood0 should still be enabled.
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should be cleared when the extension is removed from
+  // the blocklist.
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Set the blocklist to the same greylist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 is disabled again.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should be set again.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+}
+
+// When extension is on the greylist, disable it again if the greylist state
+// changes, even if the user has re-enabled it.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       DisableExtensionForDifferentGreylistState) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 is disabled.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Now user enables kGood0.
+  service()->EnableExtension(kGood0);
+
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+
+  // Set the blocklist to another greylist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_POTENTIALLY_UNWANTED,
+                                test_blocklist);
+
+  // The extension should be disabled again.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  // The old acknowledged state should be cleared and the new one should be set.
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      extension_prefs));
+}
+
+// Add the extension to greylist state1, and then switch to greylist state2, and
+// then the user re-enables the extension, and then the extension is switched
+// back to greylist state1, the extension should be disabled again.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       DisableExtensionWhenSwitchingBetweenGreylistStates) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // Set the blocklist to another greylist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_POTENTIALLY_UNWANTED,
+                                test_blocklist);
+
+  // kGood0 is disabled.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      extension_prefs));
+
+  // Now user enables kGood0.
+  service()->EnableExtension(kGood0);
+
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+
+  // Set the blocklist to the original blocklist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // The extension should be disabled again.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+  // The acknowledged state should be set to the current state.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      extension_prefs));
+}
+
+// Old greylisted extensions are not re-enabled.
+// This test is for checking backward compatibility.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+
+  const ExtensionSet& enabled_extensions = registry()->enabled_extensions();
+  const ExtensionSet& disabled_extensions = registry()->disabled_extensions();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 is disabled.
+  EXPECT_FALSE(enabled_extensions.Contains(kGood0));
+  EXPECT_TRUE(disabled_extensions.Contains(kGood0));
+
+  // Now user enables kGood0.
+  service()->EnableExtension(kGood0);
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
+
+  // To simulate an old Chrome version, the acknowledged state is cleared.
+  blocklist_prefs::ClearAcknowledgedBlocklistState(
+      kGood0, ExtensionPrefs::Get(profile()));
+  // The browser is restarted.
+  service()->safe_browsing_verdict_handler_.Init();
+
+  // The acknowledged state should be restored.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kGood0, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs));
+
+  // Set the blocklist to the same greylist state.
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
+                                test_blocklist);
+
+  // kGood0 should remain enabled.
+  EXPECT_TRUE(enabled_extensions.Contains(kGood0));
+  EXPECT_FALSE(disabled_extensions.Contains(kGood0));
 }
 
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)

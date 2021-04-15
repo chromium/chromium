@@ -270,6 +270,19 @@ class ExtensionService : public ExtensionServiceInterface,
   // nothing.
   void EnableExtension(const std::string& extension_id);
 
+  // Takes Safe Browsing and Omaha blocklist states into account and decides
+  // whether to remove greylist disabled reason. Called when a greylisted
+  // state is removed from the Safe Browsing blocklist or Omaha blocklist. Also
+  // clears all acknowledged states if the greylist disabled reason is removed.
+  void ClearGreylistedAcknowledgedStateAndMaybeReenable(
+      const std::string& extension_id);
+
+  // Takes acknowledged blocklist states into account and decides whether to
+  // disable the greylisted extension. Called when a new greylisted state is
+  // added to the Safe Browsing blocklist or Omaha blocklist.
+  void MaybeDisableGreylistedExtension(const std::string& extension_id,
+                                       BitMapBlocklistState new_state);
+
   // Removes the disable reason and enable the extension if there are no disable
   // reasons left and is not blocked for another reason.
   void RemoveDisableReasonAndMaybeEnable(const std::string& extension_id,
@@ -759,7 +772,18 @@ class ExtensionService : public ExtensionServiceInterface,
                            GreylistUnknownDontChange);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
                            UnblocklistedExtensionStillGreylisted);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           GreylistedExtensionDoesNotDisableAgain);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           GreylistedExtensionDisableAgainIfReAdded);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           DisableExtensionForDifferentGreylistState);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           DisableExtensionWhenSwitchingBetweenGreylistStates);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           AcknowledgedStateBackFilled);
   friend class ::BlocklistedExtensionSyncServiceTest;
+  friend class SafeBrowsingVerdictHandlerUnitTest;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionService);
 };
