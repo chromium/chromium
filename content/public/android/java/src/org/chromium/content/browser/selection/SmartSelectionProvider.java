@@ -109,6 +109,9 @@ public class SmartSelectionProvider {
     public TextClassifier getTextClassifier() {
         if (mTextClassifier != null) return mTextClassifier;
 
+        if (mWindowAndroid == null) {
+            return null;
+        }
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return null;
 
@@ -123,6 +126,9 @@ public class SmartSelectionProvider {
 
     @TargetApi(Build.VERSION_CODES.O)
     private TextClassifier getTextClassificationSession() {
+        if (mWindowAndroid == null) {
+            return null;
+        }
         Context context = mWindowAndroid.getContext().get();
         if (context == null) {
             return null;
