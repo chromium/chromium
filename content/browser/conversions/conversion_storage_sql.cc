@@ -75,6 +75,16 @@ void RecordInitializationStatus(const ConversionStorageSql::InitStatus status) {
                                 ConversionStorageSql::InitStatus::kMaxValue);
 }
 
+void RecordImpressionsDeleted(int count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Conversions.ImpressionsDeletedInDataClearOperation", count);
+}
+
+void RecordReportsDeleted(int count) {
+  UMA_HISTOGRAM_COUNTS_1000("Conversions.ReportsDeletedInDataClearOperation",
+                            count);
+}
+
 }  // namespace
 
 // static
@@ -552,6 +562,9 @@ void ConversionStorageSql::ClearData(
       return;
   }
 
+  int num_conversions_deleted =
+      static_cast<int>(conversion_ids_to_delete.size());
+
   // Careful! At this point we can still have some vestigial entries in the DB.
   // For example, if an impression has two conversions, and one conversion is
   // deleted, the above logic will delete the impression as well, leaving the
@@ -566,6 +579,8 @@ void ConversionStorageSql::ClearData(
     delete_vestigial_statement.BindInt64(0, impression_id);
     if (!delete_vestigial_statement.Run())
       return;
+
+    num_conversions_deleted += db_->GetLastChangeCount();
   }
 
   if (!rate_limit_table_.ClearDataForImpressionIds(
@@ -576,7 +591,12 @@ void ConversionStorageSql::ClearData(
                                                     delete_end, filter))
     return;
 
-  transaction.Commit();
+  if (!transaction.Commit())
+    return;
+
+  RecordImpressionsDeleted(
+      static_cast<int>(unique_impression_ids_to_delete.size()));
+  RecordReportsDeleted(num_conversions_deleted);
 }
 
 void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
@@ -641,6 +661,8 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
   if (!delete_conversions_statement.Run())
     return;
 
+  int num_conversions_deleted = db_->GetLastChangeCount();
+
   if (!rate_limit_table_.ClearDataForImpressionIds(db_.get(),
                                                    impression_ids_to_delete))
     return;
@@ -649,7 +671,11 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
                                              delete_end))
     return;
 
-  transaction.Commit();
+  if (!transaction.Commit())
+    return;
+
+  RecordImpressionsDeleted(static_cast<int>(impression_ids_to_delete.size()));
+  RecordReportsDeleted(num_conversions_deleted);
 }
 
 void ConversionStorageSql::ClearAllDataAllTime() {
@@ -664,11 +690,22 @@ void ConversionStorageSql::ClearAllDataAllTime() {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllImpressionsSql));
   if (!delete_all_conversions_statement.Run())
     return;
+
+  int num_conversions_deleted = db_->GetLastChangeCount();
+
   if (!delete_all_impressions_statement.Run())
     return;
+
+  int num_impressions_deleted = db_->GetLastChangeCount();
+
   if (!rate_limit_table_.ClearAllDataAllTime(db_.get()))
     return;
-  transaction.Commit();
+
+  if (!transaction.Commit())
+    return;
+
+  RecordImpressionsDeleted(num_impressions_deleted);
+  RecordReportsDeleted(num_conversions_deleted);
 }
 
 bool ConversionStorageSql::HasCapacityForStoringImpression(

@@ -146,6 +146,8 @@ TEST_F(ConversionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
 //  will target C2, which will in turn delete the impression. We should ensure
 //  that C1 is properly deleted (conversions should not be stored unattributed).
 TEST_F(ConversionStorageSqlTest, ClearDataWithVestigialConversion) {
+  base::HistogramTester histograms;
+
   OpenDatabase();
 
   base::Time start = clock()->Now();
@@ -183,10 +185,17 @@ TEST_F(ConversionStorageSqlTest, ClearDataWithVestigialConversion) {
   EXPECT_EQ(0u, conversion_rows);
   EXPECT_EQ(0u, impression_rows);
   EXPECT_EQ(0u, rate_limit_rows);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
 }
 
 // Same as the above test, but with a null filter.
 TEST_F(ConversionStorageSqlTest, ClearAllDataWithVestigialConversion) {
+  base::HistogramTester histograms;
+
   OpenDatabase();
 
   base::Time start = clock()->Now();
@@ -223,10 +232,17 @@ TEST_F(ConversionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   EXPECT_EQ(0u, conversion_rows);
   EXPECT_EQ(0u, impression_rows);
   EXPECT_EQ(0u, rate_limit_rows);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
 }
 
 // The max time range with a null filter should delete everything.
 TEST_F(ConversionStorageSqlTest, DeleteEverything) {
+  base::HistogramTester histograms;
+
   OpenDatabase();
 
   base::Time start = clock()->Now();
@@ -264,6 +280,11 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
   EXPECT_EQ(0u, conversion_rows);
   EXPECT_EQ(0u, impression_rows);
   EXPECT_EQ(0u, rate_limit_rows);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.ImpressionsDeletedInDataClearOperation", 10, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation", 20, 1);
 }
 
 TEST_F(ConversionStorageSqlTest, MaxImpressionsPerOrigin) {
