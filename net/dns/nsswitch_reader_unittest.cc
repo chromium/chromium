@@ -475,5 +475,120 @@ TEST_F(NsswitchReaderTest, IgnoresEmptyActions) {
                   NsswitchReader::Service::kMdnsMinimal)));
 }
 
+TEST_F(NsswitchReaderTest, IgnoresRepeatedActionBrackets) {
+  const std::string kFile = "hosts: mdns [[SUCCESS=RETURN]]]dns";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(
+      services,
+      testing::ElementsAre(
+          NsswitchReader::ServiceSpecification(
+              NsswitchReader::Service::kMdns,
+              {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                NsswitchReader::Action::kReturn}}),
+          NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)));
+}
+
+TEST_F(NsswitchReaderTest, IgnoresRepeatedActionBracketsWithWhitespace) {
+  const std::string kFile = "hosts: mdns [ [ SUCCESS=RETURN ]\t] ]\t  mdns6";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kMdns,
+                      {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                        NsswitchReader::Action::kReturn}}),
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kMdns6)));
+}
+
+TEST_F(NsswitchReaderTest, RejectsNonSensicalActionBrackets) {
+  const std::string kFile = "hosts: mdns4 [UNAVAIL[=MERGE]]";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kMdns4,
+                  {{/*negated=*/false, NsswitchReader::Status::kUnknown,
+                    NsswitchReader::Action::kMerge}})));
+}
+
+TEST_F(NsswitchReaderTest, RejectsServicesWithBrackets) {
+  const std::string kFile = "hosts: se]r[vice[name";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kUnknown)));
+}
+
+// Other than the case of repeating opening brackets, nested brackets are not
+// valid and should just get treated as part of an action label.
+TEST_F(NsswitchReaderTest, RejectsNestedActionBrackets) {
+  const std::string kFile =
+      "hosts: nis [SUCCESS=RETURN [NOTFOUND=CONTINUE] UNAVAIL=MERGE]";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kNis,
+                      {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                        NsswitchReader::Action::kReturn},
+                       {/*negated=*/false, NsswitchReader::Status::kUnknown,
+                        NsswitchReader::Action::kContinue}}),
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kUnknown)));
+}
+
+TEST_F(NsswitchReaderTest, IgnoresEmptyActionWithRepeatedBrackets) {
+  const std::string kFile = "hosts: files [[[]]]] mdns";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                                       NsswitchReader::Service::kFiles),
+                                   NsswitchReader::ServiceSpecification(
+                                       NsswitchReader::Service::kMdns)));
+}
+
+TEST_F(NsswitchReaderTest, IgnoresEmptyActionAtEndOfString) {
+  const std::string kFile = "hosts: dns [[";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kDns)));
+}
+
 }  // namespace
 }  // namespace net
