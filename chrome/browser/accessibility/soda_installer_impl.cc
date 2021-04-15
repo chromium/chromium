@@ -77,11 +77,10 @@ base::FilePath SodaInstallerImpl::GetLanguagePath() const {
   return base::FilePath();
 }
 
-void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
+void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
   soda_binary_installed_ = false;
   component_updater::RegisterSodaComponent(
-      g_browser_process->component_updater(), prefs,
-      g_browser_process->local_state(),
+      g_browser_process->component_updater(), global_prefs,
       base::BindOnce(&SodaInstallerImpl::OnSodaBinaryInstalled,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
@@ -93,11 +92,11 @@ void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
   }
 }
 
-void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
+void SodaInstallerImpl::InstallLanguage(PrefService* profile_prefs,
+                                        PrefService* global_prefs) {
   language_installed_ = false;
   component_updater::RegisterSodaLanguageComponent(
-      g_browser_process->component_updater(), prefs,
-      g_browser_process->local_state(),
+      g_browser_process->component_updater(), profile_prefs, global_prefs,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
                      weak_factory_.GetWeakPtr()));
 

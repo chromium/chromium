@@ -66,13 +66,13 @@ class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
 void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry);
 
 // Call once during startup to make the component update service aware of
-// the File Type Policies component.
+// the File Type Policies component. Should only be called by SodaInstaller.
 void RegisterSodaComponent(ComponentUpdateService* cus,
-                           PrefService* profile_prefs,
                            PrefService* global_prefs,
                            base::OnceClosure on_ready_callback,
                            base::OnceClosure on_registered_callback);
 
+// Should only be called by SodaInstaller.
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* profile_prefs,
                                    PrefService* global_prefs,

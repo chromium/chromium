@@ -5,7 +5,10 @@
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
+#include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -19,6 +22,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "media/base/media_switches.h"
+
+#include <memory>
+#include <utility>
 
 #if defined(OS_WIN)
 #include <aclapi.h>
@@ -187,7 +193,6 @@ void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
 }
 
 void RegisterSodaComponent(ComponentUpdateService* cus,
-                           PrefService* profile_prefs,
                            PrefService* global_prefs,
                            base::OnceClosure on_ready_callback,
                            base::OnceClosure on_registered_callback) {
@@ -195,24 +200,21 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       base::FeatureList::IsEnabled(media::kLiveCaption)) {
-    if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-      global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
-      auto installer = base::MakeRefCounted<ComponentInstaller>(
-          std::make_unique<SodaComponentInstallerPolicy>(
-              base::BindRepeating(
-                  [](ComponentUpdateService* cus, PrefService* global_prefs,
-                     const base::FilePath& install_dir) {
-                    content::GetUIThreadTaskRunner(
-                        {base::TaskPriority::USER_BLOCKING})
-                        ->PostTask(FROM_HERE,
-                                   base::BindOnce(&UpdateSodaInstallDirPref,
-                                                  global_prefs, install_dir));
-                  },
-                  cus, global_prefs),
-              std::move(on_ready_callback)));
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<SodaComponentInstallerPolicy>(
+            base::BindRepeating(
+                [](ComponentUpdateService* cus, PrefService* global_prefs,
+                   const base::FilePath& install_dir) {
+                  content::GetUIThreadTaskRunner(
+                      {base::TaskPriority::USER_BLOCKING})
+                      ->PostTask(FROM_HERE,
+                                 base::BindOnce(&UpdateSodaInstallDirPref,
+                                                global_prefs, install_dir));
+                },
+                cus, global_prefs),
+            std::move(on_ready_callback)));
 
-      installer->Register(cus, std::move(on_registered_callback));
-    }
+    installer->Register(cus, std::move(on_registered_callback));
   }
 }
 
@@ -224,14 +226,12 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       base::FeatureList::IsEnabled(media::kLiveCaption)) {
-    if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-      base::Optional<speech::SodaLanguagePackComponentConfig> config =
-          speech::GetLanguageComponentConfig(
-              profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
-      if (config) {
-        RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
-                                          std::move(on_ready_callback));
-      }
+    base::Optional<speech::SodaLanguagePackComponentConfig> config =
+        speech::GetLanguageComponentConfig(
+            profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+    if (config) {
+      RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
+                                        std::move(on_ready_callback));
     }
   }
 }

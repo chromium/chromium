@@ -37,8 +37,9 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   base::FilePath GetLanguagePath() const override;
 
   // SodaInstaller:
-  void InstallSoda(PrefService* prefs) override;
-  void InstallLanguage(PrefService* prefs) override;
+  void InstallSoda(PrefService* global_prefs) override;
+  void InstallLanguage(PrefService* profile_prefs,
+                       PrefService* global_prefs) override;
   bool IsSodaInstalled() const override;
   bool IsLanguageInstalled(
       const std::string& locale_or_language) const override;

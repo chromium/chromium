@@ -65,7 +65,7 @@ TEST_F(SodaComponentInstallerTest,
   std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
       new SodaComponentMockComponentUpdateService());
   EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);
-  RegisterSodaComponent(component_updater.get(), &profile_prefs_, &local_state_,
+  RegisterSodaComponent(component_updater.get(), &local_state_,
                         base::OnceClosure(), base::OnceClosure());
   task_environment_.RunUntilIdle();
 }
@@ -78,43 +78,9 @@ TEST_F(SodaComponentInstallerTest,
   std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
       new SodaComponentMockComponentUpdateService());
   EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);
-  RegisterSodaComponent(component_updater.get(), &profile_prefs_, &local_state_,
+  RegisterSodaComponent(component_updater.get(), &local_state_,
                         base::OnceClosure(), base::OnceClosure());
   task_environment_.RunUntilIdle();
-}
-
-TEST_F(SodaComponentInstallerTest,
-       TestComponentRegistrationWhenToggleDisabled) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitWithFeatures(
-      {media::kUseSodaForLiveCaption, media::kLiveCaption}, {});
-  profile_prefs_.SetBoolean(prefs::kLiveCaptionEnabled, false);
-  std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
-      new SodaComponentMockComponentUpdateService());
-  EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);
-  RegisterSodaComponent(component_updater.get(), &profile_prefs_, &local_state_,
-                        base::OnceClosure(), base::OnceClosure());
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(SodaComponentInstallerTest,
-       TestComponentRegistrationWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitWithFeatures(
-      {media::kUseSodaForLiveCaption, media::kLiveCaption}, {});
-  profile_prefs_.SetBoolean(prefs::kLiveCaptionEnabled, true);
-  std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
-      new SodaComponentMockComponentUpdateService());
-  EXPECT_CALL(*component_updater, RegisterComponent(testing::_))
-      .Times(1)
-      .WillOnce(testing::Return(true));
-  RegisterSodaComponent(component_updater.get(), &profile_prefs_, &local_state_,
-                        base::OnceClosure(), base::OnceClosure());
-  task_environment_.RunUntilIdle();
-
-  base::Time deletion_time =
-      local_state_.GetTime(prefs::kSodaScheduledDeletionTime);
-  ASSERT_EQ(base::Time(), deletion_time);
 }
 
 }  // namespace component_updater

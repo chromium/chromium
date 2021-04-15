@@ -40,7 +40,7 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath() const {
   return language_path_;
 }
 
-void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
+void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
@@ -61,7 +61,8 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
                           base::Unretained(this)));
 }
 
-void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
+void SodaInstallerImplChromeOS::InstallLanguage(PrefService* profile_prefs,
+                                                PrefService* global_prefs) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
@@ -72,7 +73,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
   // TODO(crbug.com/1055150): Compare user's language to a list of
   // supported languages and map it to a DLC ID. For now, default to
   // installing the SODA English-US DLC.
-  std::string user_language = prefs->GetString(prefs::kLiveCaptionLanguageCode);
+  const std::string user_language =
+      profile_prefs->GetString(prefs::kLiveCaptionLanguageCode);
   DCHECK_EQ(user_language, "en-US");
 
   language_installed_ = false;

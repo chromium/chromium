@@ -59,18 +59,18 @@ class SodaInstaller {
   // other platforms.
   virtual base::FilePath GetLanguagePath() const = 0;
 
-  // Installs the SODA binary. Called by CaptionController when the
-  // kLiveCaptionEnabled preference changes. PrefService is passed to share
-  // Live Captions preferences: whether it is enabled, which language to
-  // download, and what the download filepath should be.
-  virtual void InstallSoda(PrefService* prefs) = 0;
+  // Installs the SODA binary. `global_prefs` is passed as part of component
+  // registration for the non-ChromeOS implementation.
+  virtual void InstallSoda(PrefService* global_prefs) = 0;
 
   // Installs the user-selected SODA language model. Called by CaptionController
   // when the kLiveCaptionEnabled or kLiveCaptionLanguageCode preferences
-  // change. PrefService is passed to share Live Captions preferences: whether
-  // it is enabled, which language to download, and what the download filepath
-  // should be.
-  virtual void InstallLanguage(PrefService* prefs) = 0;
+  // change. `profile_prefs` is passed to share Live Captions preferences:
+  // whether it is enabled, which language to download, and what the download
+  // filepath should be. `global_prefs` is passed as part of component
+  // registration for the non-ChromeOS implementation.
+  virtual void InstallLanguage(PrefService* profile_prefs,
+                               PrefService* global_prefs) = 0;
 
   // Returns whether or not SODA is installed on this device. Will return a
   // stale value until InstallSoda() and InstallLanguage() have run and
