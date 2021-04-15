@@ -2812,11 +2812,8 @@ IN_PROC_BROWSER_TEST_P(
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(
-      postSharedArrayBuffer.error,
-      HasSubstr(
-          "Failed to execute 'postMessage' on 'Window': SharedArrayBuffer "
-          "transfer requires self.crossOriginIsolated"));
+  EXPECT_THAT(postSharedArrayBuffer.error,
+              HasSubstr("Failed to execute 'postMessage' on 'Window':"));
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
@@ -2961,14 +2958,8 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 #endif  // defined(OS_ANDROID)
 }
 
-// Flaky on Android. http://crbug.com/1198777
-#if defined(OS_ANDROID)
-#define MAYBE_TransferSharedArrayBuffer DISABLED_TransferSharedArrayBuffer
-#else
-#define MAYBE_TransferSharedArrayBuffer TransferSharedArrayBuffer
-#endif
 IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
-                       MAYBE_TransferSharedArrayBuffer) {
+                       TransferSharedArrayBuffer) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         DCHECK_EQ(params->url_request.url, OriginTrialURL());
@@ -3017,11 +3008,8 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(
-      postSharedArrayBuffer.error,
-      HasSubstr(
-          "Failed to execute 'postMessage' on 'Window': ArrayBuffer is not "
-          "detachable and could not be cloned."));
+  EXPECT_THAT(postSharedArrayBuffer.error,
+              HasSubstr("Failed to execute 'postMessage' on 'Window'"));
 #endif  // defined(OS_ANDROID)
 }
 
