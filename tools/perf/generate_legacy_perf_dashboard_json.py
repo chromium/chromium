@@ -189,11 +189,11 @@ class LegacyResultsProcessor(object):
     """Writes graph json for each graph seen.
     """
     charts = {}
-    for graph_name, graph in self._graphs.iteritems():
+    for graph_name, graph in self._graphs.items():
       traces = graph.BuildTracesDict()
 
       # Traces should contain exactly two elements: [mean, stddev].
-      for _, trace in traces.iteritems():
+      for _, trace in traces.items():
         assert len(trace) == 2
 
       graph_dict = collections.OrderedDict([

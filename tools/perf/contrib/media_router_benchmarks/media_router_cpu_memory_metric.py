@@ -36,8 +36,8 @@ class MediaRouterCPUMemoryMetric(Metric):
     if not results_json:
       return
     perf_results = json.loads(results_json)
-    for (metric, metric_results) in perf_results.iteritems():
-      for (process, process_results) in metric_results.iteritems():
+    for (metric, metric_results) in perf_results.items():
+      for (process, process_results) in metric_results.items():
         if not process_results:
           continue
         avg_result = round(sum(process_results)/len(process_results), 4)

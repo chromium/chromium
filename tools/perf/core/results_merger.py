@@ -215,7 +215,7 @@ def merge_tries(source, dest):
   pending_nodes = [('', dest, source)]
   while pending_nodes:
     prefix, dest_node, curr_node = pending_nodes.pop()
-    for k, v in curr_node.iteritems():
+    for k, v in curr_node.items():
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
@@ -246,7 +246,7 @@ def merge_tries_v2(source, dest):
   pending_nodes = [('', dest, source)]
   while pending_nodes:
     prefix, dest_node, curr_node = pending_nodes.pop()
-    for k, v in curr_node.iteritems():
+    for k, v in curr_node.items():
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
@@ -270,7 +270,7 @@ def _merging_cross_device_results(src, dest):
   # 2. append each item under the 'artifacts' and 'times'.
   if 'artifacts' in src:
     if 'artifacts' in dest:
-      for artifact, artifact_list in src['artifacts'].iteritems():
+      for artifact, artifact_list in src['artifacts'].items():
         if artifact in dest['artifacts']:
           dest['artifacts'][artifact] += artifact_list
         else:
@@ -308,7 +308,7 @@ def sum_dicts(source, dest):
 
   This is intended for use as a merge_func parameter to merge_value.
   """
-  for k, v in source.iteritems():
+  for k, v in source.items():
     dest.setdefault(k, 0)
     dest[k] += v
 

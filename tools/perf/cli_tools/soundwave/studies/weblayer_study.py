@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 from core.services import dashboard_service
 from cli_tools.soundwave.tables import timeseries
 
@@ -55,8 +56,8 @@ def IterTestPaths():
     for series in SYSTEM_HEALTH:
       measurement = series['measurement']
       for test_case in test_cases:
-        print timeseries.Key.FromDict(
-            series, bot=bot, measurement=measurement, test_case=test_case)
+        print(timeseries.Key.FromDict(
+            series, bot=bot, measurement=measurement, test_case=test_case))
         yield timeseries.Key.FromDict(
             series, bot=bot, measurement=measurement, test_case=test_case)
 

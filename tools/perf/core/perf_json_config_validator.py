@@ -45,7 +45,7 @@ _VALID_WEBVIEW_BROWSERS = {
 
 def _ValidateSwarmingDimension(builder_name, swarming_dimensions):
   for dimension in swarming_dimensions:
-    for k, v in dimension.iteritems():
+    for k, v in dimension.items():
       if k not in _VALID_SWARMING_DIMENSIONS:
         raise ValueError('Invalid swarming dimension in %s: %s' % (
             builder_name, k))
@@ -175,7 +175,7 @@ def _IsTestingBuilder(builder_name, builder_data):
 def ValidatePerfConfigFile(file_handle, is_main_perf_waterfall):
   perf_data = json.load(file_handle)
   perf_testing_builder_names = set()
-  for key, value in perf_data.iteritems():
+  for key, value in perf_data.items():
     if not _IsBuilderName(key):
       continue
     if _IsTestingBuilder(builder_name=key, builder_data=value):

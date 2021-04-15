@@ -39,7 +39,7 @@ class JetstreamStory(press_story.PressStory):
     result = json.loads(result.partition(': ')[2])
 
     all_score_lists = []
-    for k, v in result.iteritems():
+    for k, v in result.items():
       self.AddMeasurement(k.replace('.', '_'), 'score', v['result'])
       # Collect all test scores to compute geometric mean.
       for i, score in enumerate(v['result']):

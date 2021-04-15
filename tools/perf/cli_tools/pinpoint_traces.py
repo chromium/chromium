@@ -4,6 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import argparse
 import csv
 import datetime
@@ -268,7 +269,7 @@ def ExtractFromOneTraceThrowing(args):
   """
   (label, trace_index, html_trace, json_dir, compiled_regex) = args
   if not os.path.exists(json_dir):
-    print 'Converting trace to json: {}'.format(json_dir)
+    print('Converting trace to json: {}'.format(json_dir))
     tmp_json_dir = json_dir + '.tmp'
     if os.path.exists(tmp_json_dir) and os.path.isdir(tmp_json_dir):
       shutil.rmtree(tmp_json_dir)
@@ -285,27 +286,27 @@ def ExtractFromOneTraceThrowing(args):
   # begin and end in different jsons.
   # Step 1: Merge events from all traces.
   merged_tids = None
-  print 'Taking trace: {}'.format(html_trace)
+  print('Taking trace: {}'.format(html_trace))
   for json_file in os.listdir(json_dir):
     if not json_file.startswith('json'):
-      print '{} not starting with json'.format(json_file)
+      print('{} not starting with json'.format(json_file))
       continue
     full_json_file = os.path.join(json_dir, json_file)
     tids = LoadJsonFile(full_json_file, compiled_regex)
     if not merged_tids:
       merged_tids = tids
     else:
-      for tid, ts_to_events in tids.iteritems():
+      for tid, ts_to_events in tids.items():
         merged_ts_to_events = merged_tids.setdefault(tid, {})
-        for ts, events in ts_to_events.iteritems():
+        for ts, events in ts_to_events.items():
           merged_event_list = merged_ts_to_events.setdefault(ts, [])
           merged_event_list.extend(events)
 
   # Step 2: Sort by ts and compute event durations.
   csv_events = []
-  for tid, ts_to_events in merged_tids.iteritems():
+  for tid, ts_to_events in merged_tids.items():
     begin_events = {}
-    for ts, events in sorted(ts_to_events.iteritems()):
+    for ts, events in sorted(ts_to_events.items()):
       for event in events:
         duration = 0
         thread_duration = 0
@@ -391,16 +392,16 @@ def ExtractEvents(regex, working_dir, csv_path):
 def main():
   args = ParseArgs()
   if args.command == 'fetch':
-    print 'Fetching job_results.csv'
+    print('Fetching job_results.csv')
     csv_file = FetchTraces(LastAfterSlash(args.job))
-    print 'See job results in {}'.format(csv_file)
+    print('See job results in {}'.format(csv_file))
   elif args.command == 'extract':
     top_dir = os.path.expanduser('~/.local/share/pinpoint_traces')
     working_dir = os.path.join(top_dir,
                                os.readlink(os.path.join(top_dir, 'latest')))
     assert os.path.exists(working_dir), 'Broken symlink'
     ExtractEvents(args.event, working_dir, args.output)
-    print 'Wrote output: {}'.format(args.output)
+    print('Wrote output: {}'.format(args.output))
   return 0
 
 

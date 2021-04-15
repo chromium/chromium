@@ -24,7 +24,7 @@ def TestHistogram(name, units, values, **kwargs):
 
   hist = histogram.Histogram(name, units)
   hist.diagnostics.update(
-      (key, DiagnosticValue(value)) for key, value in kwargs.iteritems())
+      (key, DiagnosticValue(value)) for key, value in kwargs.items())
   for value in values:
     hist.AddSample(value)
   return hist

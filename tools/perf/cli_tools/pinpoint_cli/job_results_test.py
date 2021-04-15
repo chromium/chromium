@@ -22,7 +22,7 @@ def Change(*args, **kwargs):
 def Execution(**kwargs):
   execution = {'completed': kwargs.pop('completed', True)}
   execution['details'] = [
-      {'key': k, 'value': v} for k, v in kwargs.iteritems()]
+      {'key': k, 'value': v} for k, v in kwargs.items()]
   return execution
 
 

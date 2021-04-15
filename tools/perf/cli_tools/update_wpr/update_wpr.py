@@ -238,7 +238,7 @@ class WprUpdater(object):
       return None, False
     archive = archive['DEFAULT']
     used_in_other_stories = any(
-        archive in config.values() for story, config in archives.iteritems()
+        archive in config.values() for story, config in archives.items()
         if story != self.story)
     return os.path.join(DATA_DIR, archive), used_in_other_stories
 

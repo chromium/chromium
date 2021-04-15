@@ -157,7 +157,7 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
     add_diagnostics_args.extend(['--build_urls_k', 'Build Status'])
     add_diagnostics_args.extend(['--build_urls_v', build_status_url])
 
-  for k, v in revisions_dict.iteritems():
+  for k, v in revisions_dict.items():
     add_diagnostics_args.extend((k, v))
 
   add_diagnostics_args.append(histograms_file)

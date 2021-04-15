@@ -183,7 +183,7 @@ def _handle_perf_json_test_results(
   """
   begin_time = time.time()
   benchmark_enabled_map = {}
-  for benchmark_name, directories in benchmark_directory_map.iteritems():
+  for benchmark_name, directories in benchmark_directory_map.items():
     for directory in directories:
       # Obtain the test name we are running
       is_ref = '.reference' in benchmark_name
@@ -236,7 +236,7 @@ def _handle_perf_logs(benchmark_directory_map, extra_links):
   begin_time = time.time()
   benchmark_logs_links = collections.defaultdict(list)
 
-  for benchmark_name, directories in benchmark_directory_map.iteritems():
+  for benchmark_name, directories in benchmark_directory_map.items():
     for directory in directories:
       benchmark_log_file = os.path.join(directory, 'benchmark_log.txt')
       if os.path.exists(benchmark_log_file):
@@ -521,7 +521,7 @@ def _handle_perf_results(
   results_dict = {}
 
   invocations = []
-  for benchmark_name, directories in benchmark_directory_map.iteritems():
+  for benchmark_name, directories in benchmark_directory_map.items():
     if not benchmark_enabled_map.get(benchmark_name, False):
       continue
     # Create a place to write the perf results that you will write out to
@@ -565,7 +565,7 @@ def _handle_perf_results(
   upload_failures_counter = 0
   logdog_stream = None
   logdog_label = 'Results Dashboard'
-  for benchmark_name, output_file in results_dict.iteritems():
+  for benchmark_name, output_file in results_dict.items():
     upload_succeed = benchmark_upload_result_map[benchmark_name]
     if not upload_succeed:
       upload_failures_counter += 1

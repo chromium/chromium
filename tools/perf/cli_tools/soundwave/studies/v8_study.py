@@ -44,7 +44,7 @@ def IterTestPaths():
 
   for bot in [PIXEL_32_BITS, PIXEL_64_BITS]:
     bot_path = bot.replace(':', "/")
-    for test_suite, measurements in BROWSING_TEST_SUITES.iteritems():
+    for test_suite, measurements in BROWSING_TEST_SUITES.items():
       # v8.browsing_mobile only runs 'browse:*' stories, while other benchmarks
       # run all of them.
       browse_only = 'browsing' in test_suite

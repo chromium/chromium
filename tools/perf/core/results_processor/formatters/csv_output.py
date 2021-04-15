@@ -30,7 +30,7 @@ def _ReadCsv(input_stream):
 def _WriteCsv(dicts, output_stream):
   header = []
   for d in dicts:
-    for k in d.iterkeys():
+    for k in d:
       if k not in header:
         header.append(k)
   rows = [header]

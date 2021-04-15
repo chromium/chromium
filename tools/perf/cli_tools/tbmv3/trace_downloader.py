@@ -32,7 +32,7 @@ def _GetProtoTraceLinkFromTraceEventsDir(link_prefix):
                                    proto_link_prefix):
       if link.endswith('.pb.gz') or link.endswith('.pb'):
         return link[1:]  # Strip the initial '/'.
-  except cloud_storage.NotFoundError, e:
+  except cloud_storage.NotFoundError as e:
     # This directory doesn't exist at all.
     raise cloud_storage.NotFoundError('No URLs match the prefix %s: %s' %
                                       (proto_link_prefix, str(e)))

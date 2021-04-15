@@ -107,7 +107,7 @@ def Ask(question, answers=None, default=None):
   # 'neg' would be accepted.
   inputs = {}
   common_prefixes = set()
-  for ans, retval in answers.iteritems():
+  for ans, retval in answers.items():
     for i in range(len(ans)):
       inp = ans[:i+1]
       if inp in inputs:

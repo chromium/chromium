@@ -22,7 +22,7 @@ def BuildersDataFrame(data):
   """Convert a builders request response into a data frame."""
   def iter_rows():
     for master in data['masters']:
-      for test_type, builders in master['tests'].iteritems():
+      for test_type, builders in master['tests'].items():
         for builder_name in builders['builders']:
           yield master['name'], builder_name, test_type
 
@@ -106,7 +106,7 @@ def _IterTestResults(tests_dict, test_path=None):
   else:
     if test_path is None:
       test_path = []
-    for test_name, subtests_dict in tests_dict.iteritems():
+    for test_name, subtests_dict in tests_dict.items():
       test_path.append(test_name)
       for test_row in _IterTestResults(subtests_dict, test_path):
         yield test_row
@@ -132,7 +132,7 @@ def TestResultsDataFrame(data):
   assert data['version'] == 4
 
   dfs = []
-  for builder, builder_data in data.iteritems():
+  for builder, builder_data in data.items():
     if builder == 'version':
       continue  # Skip, not a builder.
     builds = pandas.DataFrame()

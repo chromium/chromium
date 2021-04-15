@@ -270,7 +270,7 @@ def _ParseBenchmarks(shard_map_path):
   all_benchmarks = set()
   with open(shard_map_path) as f:
     shard_map = json.load(f)
-  for shard, benchmarks_in_shard in shard_map.iteritems():
+  for shard, benchmarks_in_shard in shard_map.items():
     if "extra_infos" in shard:
       continue
     if benchmarks_in_shard.get('benchmarks'):

@@ -96,7 +96,7 @@ def IterAllSystemHealthStoryClasses():
   for unused_cls_name, cls in sorted(discover.DiscoverClasses(
       start_dir=start_dir,
       top_level_dir=os.path.dirname(start_dir),
-      base_class=system_health_story.SystemHealthStory).iteritems()):
+      base_class=system_health_story.SystemHealthStory).items()):
     yield cls
 
 

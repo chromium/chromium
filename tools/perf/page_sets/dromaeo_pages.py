@@ -74,7 +74,7 @@ class DromaeoStory(press_story.PressStory):
       collection_name = data['collection']
       AggregateData(aggregated, collection_name, data['mean'])
 
-    for key, value in aggregated.iteritems():
+    for key, value in aggregated.items():
       AddResult(key, math.exp(value['sum'] / value['count']))
 
 

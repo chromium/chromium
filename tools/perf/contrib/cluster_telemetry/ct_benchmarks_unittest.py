@@ -69,7 +69,7 @@ class CTBenchmarks(unittest.TestCase):
       try:
         benchmark.CreateStorySet(parser)
         self.fail('Expected ValueError')
-      except ValueError, e:
+      except ValueError as e:
         self.assertEquals('user_agent mobileeeeee is unrecognized', e.message)
 
   def testCTBenchmarks_missingDataFile(self):
@@ -84,7 +84,7 @@ class CTBenchmarks(unittest.TestCase):
       try:
         benchmark.ProcessCommandLineArgs(None, parser)
         self.fail('Expected AttributeError')
-      except AttributeError, e:
+      except AttributeError as e:
         self.assertEquals(
             'OptionParser instance has no attribute \'archive_data_file\'',
             e.message)
@@ -119,7 +119,7 @@ class CTBenchmarks(unittest.TestCase):
       try:
         benchmark.ProcessCommandLineArgs(None, parser)
         self.fail('Expected AttributeError')
-      except AttributeError, e:
+      except AttributeError as e:
         self.assertEquals(
             'OptionParser instance has no attribute \'urls_list\'',
             e.message)
