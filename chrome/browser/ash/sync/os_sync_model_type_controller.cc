@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/sync/os_sync_model_type_controller.h"
+#include "chrome/browser/ash/sync/os_sync_model_type_controller.h"
 
 #include <memory>
 #include <utility>

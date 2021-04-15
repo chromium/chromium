@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/sync/apps_model_type_controller.h"
+#include "chrome/browser/ash/sync/apps_model_type_controller.h"
 
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/sync/os_sync_model_type_controller.h"
+#include "chrome/browser/ash/sync/os_sync_model_type_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"

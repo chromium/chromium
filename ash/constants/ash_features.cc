@@ -651,7 +651,7 @@ const base::Feature kSmartDimExperimentalComponent{
 //
 // NOTE: The feature is rolling out via a client-side Finch trial, so the actual
 // state will vary. See config in
-// chrome/browser/chromeos/sync/split_settings_sync_field_trial.cc
+// chrome/browser/ash/sync/split_settings_sync_field_trial.cc
 const base::Feature kSplitSettingsSync{"SplitSettingsSync",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

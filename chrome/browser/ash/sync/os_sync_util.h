@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SYNC_OS_SYNC_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_SYNC_OS_SYNC_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_OS_SYNC_UTIL_H_
+#define CHROME_BROWSER_ASH_SYNC_OS_SYNC_UTIL_H_
 
 class PrefService;
 
@@ -15,4 +15,4 @@ void MigrateOsSyncPreferences(PrefService* prefs);
 
 }  // namespace os_sync_util
 
-#endif  // CHROME_BROWSER_CHROMEOS_SYNC_OS_SYNC_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_OS_SYNC_UTIL_H_

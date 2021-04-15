@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SYNC_TURN_SYNC_ON_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_SYNC_TURN_SYNC_ON_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_
+#define CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_
 
 #include <memory>
 
@@ -92,4 +92,4 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
       scoped_login_ui_service_observer_{this};
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_SYNC_TURN_SYNC_ON_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_

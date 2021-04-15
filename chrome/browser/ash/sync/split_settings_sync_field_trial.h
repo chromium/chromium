@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_
-#define CHROME_BROWSER_CHROMEOS_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_
+#define CHROME_BROWSER_ASH_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_
 
 class PrefRegistrySimple;
 class PrefService;
@@ -41,4 +41,4 @@ void Create(base::FeatureList* feature_list, PrefService* local_state);
 
 }  // namespace split_settings_sync_field_trial
 
-#endif  // CHROME_BROWSER_CHROMEOS_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_SPLIT_SETTINGS_SYNC_FIELD_TRIAL_H_

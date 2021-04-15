@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -50,4 +50,4 @@ class AppSettingsModelTypeController
   PrefChangeRegistrar pref_registrar_;
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_APP_SETTINGS_MODEL_TYPE_CONTROLLER_H_

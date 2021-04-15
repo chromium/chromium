@@ -37,7 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/sync/split_settings_sync_field_trial.h"
+#include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
 #include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 

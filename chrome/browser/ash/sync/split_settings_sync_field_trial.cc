@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/sync/split_settings_sync_field_trial.h"
+#include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
