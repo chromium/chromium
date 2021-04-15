@@ -224,10 +224,10 @@ class LenientMockObserver : public PageNodeImpl::Observer {
 
   MOCK_METHOD1(OnPageNodeAdded, void(const PageNode*));
   MOCK_METHOD1(OnBeforePageNodeRemoved, void(const PageNode*));
-  // Note that opener functionality is actually tested in the FrameNodeImpl
+  // Note that embedder functionality is actually tested in the FrameNodeImpl
   // and GraphImpl unittests.
-  MOCK_METHOD3(OnOpenerFrameNodeChanged,
-               void(const PageNode*, const FrameNode*, OpenedType));
+  MOCK_METHOD3(OnEmbedderFrameNodeChanged,
+               void(const PageNode*, const FrameNode*, EmbeddingType));
   MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnLoadingStateChanged, void(const PageNode*));

@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
-                       PopupOpenerTrackingWorks) {
+                       PopupEmbedderTrackingWorks) {
   // Load a page that will load a popup.
   GURL url(embedded_test_server()->GetURL("a.com", "/a_popup_a.html"));
   content::ShellAddedObserver shell_added_observer;
@@ -106,10 +106,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
       FROM_HERE, base::BindLambdaForTesting([&page, &run_loop]() {
         EXPECT_TRUE(page);
         auto* frame = page->GetMainFrameNode();
-        EXPECT_EQ(1u, frame->GetOpenedPageNodes().size());
-        auto* opened_page = *(frame->GetOpenedPageNodes().begin());
-        EXPECT_EQ(PageNode::OpenedType::kPopup, opened_page->GetOpenedType());
-        EXPECT_EQ(frame, opened_page->GetOpenerFrameNode());
+        EXPECT_EQ(1u, frame->GetEmbeddedPageNodes().size());
+        auto* embedded_page = *(frame->GetEmbeddedPageNodes().begin());
+        EXPECT_EQ(PageNode::EmbeddingType::kPopup,
+                  embedded_page->GetEmbeddingType());
+        EXPECT_EQ(frame, embedded_page->GetEmbedderFrameNode());
         run_loop.Quit();
       }));
   run_loop.Run();

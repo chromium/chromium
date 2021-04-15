@@ -108,7 +108,7 @@ class FrameNodeImpl
 
   // Getters for non-const properties. These are not thread safe.
   const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
-  const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
+  const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
   LifecycleState lifecycle_state() const;
   bool has_nonempty_beforeunload() const;
   const GURL& url() const;
@@ -145,17 +145,18 @@ class FrameNodeImpl
   base::WeakPtr<FrameNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<FrameNodeImpl> GetWeakPtr();
 
-  void SeverOpenedPagesAndMaybeReparentForTesting() {
-    SeverOpenedPagesAndMaybeReparent();
+  void SeverEmbeddedPagesAndMaybeReparentForTesting() {
+    SeverEmbeddedPagesAndMaybeReparent();
   }
 
   // Implementation details below this point.
 
-  // Invoked by opened pages when this frame is set/cleared as their opener.
-  // See PageNodeImpl::(Set|Clear)OpenerFrameNodeAndOpenedType.
-  void AddOpenedPage(base::PassKey<PageNodeImpl> key, PageNodeImpl* page_node);
-  void RemoveOpenedPage(base::PassKey<PageNodeImpl> key,
-                        PageNodeImpl* page_node);
+  // Invoked by embedded pages when this frame is set/cleared as their embedder.
+  // See PageNodeImpl::(Set|Clear)EmbedderFrameNodeAndEmbeddingType.
+  void AddEmbeddedPage(base::PassKey<PageNodeImpl> key,
+                       PageNodeImpl* page_node);
+  void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
+                          PageNodeImpl* page_node);
 
   // Used by the ExecutionContextRegistry mechanism.
   std::unique_ptr<NodeAttachedData>* GetExecutionContextStorage(
@@ -179,8 +180,8 @@ class FrameNodeImpl
   int32_t GetSiteInstanceId() const override;
   bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetChildFrameNodes() const override;
-  bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const override;
-  const base::flat_set<const PageNode*> GetOpenedPageNodes() const override;
+  bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const override;
+  const base::flat_set<const PageNode*> GetEmbeddedPageNodes() const override;
   LifecycleState GetLifecycleState() const override;
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
@@ -236,11 +237,11 @@ class FrameNodeImpl
   void OnBeforeLeavingGraph() override;
   void RemoveNodeAttachedData() override;
 
-  // Helper function to sever all opened page relationships. This is called
+  // Helper function to sever all embedded page relationships. This is called
   // before destroying the frame node in "OnBeforeLeavingGraph". Note that this
-  // will reparent opened pages to this frame's parent so that tracking is
+  // will reparent embedded pages to this frame's parent so that tracking is
   // maintained.
-  void SeverOpenedPagesAndMaybeReparent();
+  void SeverEmbeddedPagesAndMaybeReparent();
 
   // This is not quite the same as GetMainFrame, because there can be multiple
   // main frames while the main frame is navigating. This explicitly walks up
@@ -286,8 +287,8 @@ class FrameNodeImpl
 
   base::flat_set<FrameNodeImpl*> child_frame_nodes_;
 
-  // The set of pages that have been opened by this frame.
-  base::flat_set<PageNodeImpl*> opened_page_nodes_;
+  // The set of pages that have been embedded by this frame.
+  base::flat_set<PageNodeImpl*> embedded_page_nodes_;
 
   // Does *not* change when a navigation is committed.
   ObservedProperty::NotifiesOnlyOnChanges<

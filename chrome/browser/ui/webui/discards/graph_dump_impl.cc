@@ -291,10 +291,10 @@ void DiscardsGraphDumpImpl::OnBeforePageNodeRemoved(
   RemoveNode(page_node);
 }
 
-void DiscardsGraphDumpImpl::OnOpenerFrameNodeChanged(
+void DiscardsGraphDumpImpl::OnEmbedderFrameNodeChanged(
     const performance_manager::PageNode* page_node,
     const performance_manager::FrameNode*,
-    OpenedType) {
+    EmbeddingType) {
   DCHECK(HasNode(page_node));
   SendPageNotification(page_node, false);
 }
@@ -505,7 +505,7 @@ void DiscardsGraphDumpImpl::SendPageNotification(
 
   page_info->id = GetNodeId(page_node);
   page_info->main_frame_url = page_node->GetMainFrameUrl();
-  page_info->opener_frame_id = GetNodeId(page_node->GetOpenerFrameNode());
+  page_info->embedder_frame_id = GetNodeId(page_node->GetEmbedderFrameNode());
   page_info->description_json = ToJSON(
       graph_->GetNodeDataDescriberRegistry()->DescribeNodeData(page_node));
 

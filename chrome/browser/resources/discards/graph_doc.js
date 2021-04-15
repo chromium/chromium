@@ -396,8 +396,8 @@ class PageNode extends GraphNode {
 
   /** override */
   get dashedLinkTargets() {
-    if (this.page.openerFrameId) {
-      return [this.page.openerFrameId];
+    if (this.page.embedderFrameId) {
+      return [this.page.embedderFrameId];
     }
     return [];
   }

@@ -322,7 +322,7 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
   EXPECT_EQ(0u, descr.DictSize());
 }
 
-TEST_F(GraphImplTest, OpenersClearedOnTeardown) {
+TEST_F(GraphImplTest, EmbeddersClearedOnTeardown) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto pageA = CreateNode<PageNodeImpl>();
   auto frameA1 = CreateFrameNodeAutoId(process.get(), pageA.get());
@@ -333,13 +333,13 @@ TEST_F(GraphImplTest, OpenersClearedOnTeardown) {
   auto pageC = CreateNode<PageNodeImpl>();
   auto frameC1 = CreateFrameNodeAutoId(process.get(), pageC.get());
 
-  // Set up some opener relationships. These should be gracefully torn down as
+  // Set up some embedder relationships. These should be gracefully torn down as
   // the graph cleans up nodes, otherwise the frame and page node destructors
   // will explode.
-  pageB->SetOpenerFrameNodeAndOpenedType(frameA1.get(),
-                                         PageNode::OpenedType::kGuestView);
-  pageC->SetOpenerFrameNodeAndOpenedType(frameA2.get(),
-                                         PageNode::OpenedType::kPopup);
+  pageB->SetEmbedderFrameNodeAndEmbeddingType(
+      frameA1.get(), PageNode::EmbeddingType::kGuestView);
+  pageC->SetEmbedderFrameNodeAndEmbeddingType(frameA2.get(),
+                                              PageNode::EmbeddingType::kPopup);
 }
 
 }  // namespace performance_manager

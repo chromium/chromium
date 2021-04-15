@@ -113,10 +113,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnPageNodeAdded(const performance_manager::PageNode* page_node) override;
   void OnBeforePageNodeRemoved(
       const performance_manager::PageNode* page_node) override;
-  void OnOpenerFrameNodeChanged(
+  void OnEmbedderFrameNodeChanged(
       const performance_manager::PageNode* page_node,
-      const performance_manager::FrameNode* previous_opener,
-      OpenedType previous_opened_type) override;
+      const performance_manager::FrameNode* previous_embedder,
+      EmbeddingType previous_embedding_type) override;
   // Ignored.
   void OnIsVisibleChanged(
       const performance_manager::PageNode* page_node) override {}

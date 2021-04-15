@@ -36,8 +36,8 @@ PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
 
 PageNodeImpl::~PageNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(nullptr, opener_frame_node_);
-  DCHECK_EQ(OpenedType::kInvalid, opened_type_);
+  DCHECK_EQ(nullptr, embedder_frame_node_);
+  DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
   DCHECK(!page_load_tracker_data_);
   DCHECK(!site_data_);
   DCHECK(!frozen_frame_data_);
@@ -164,16 +164,16 @@ FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
   return *main_frame_nodes_.begin();
 }
 
-FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
+FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(opener_frame_node_ || opened_type_ == OpenedType::kInvalid);
-  return opener_frame_node_;
+  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
+  return embedder_frame_node_;
 }
 
-PageNodeImpl::OpenedType PageNodeImpl::opened_type() const {
+PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(opener_frame_node_ || opened_type_ == OpenedType::kInvalid);
-  return opened_type_;
+  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
+  return embedding_type_;
 }
 
 bool PageNodeImpl::is_visible() const {
@@ -257,41 +257,44 @@ const base::Optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
   return freezing_vote_.value();
 }
 
-void PageNodeImpl::SetOpenerFrameNodeAndOpenedType(FrameNodeImpl* opener,
-                                                   OpenedType opened_type) {
+void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
+    FrameNodeImpl* embedder,
+    EmbeddingType embedding_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(opener);
-  DCHECK(graph()->NodeInGraph(opener));
-  DCHECK_NE(this, opener->page_node());
-  DCHECK_NE(OpenedType::kInvalid, opened_type);
+  DCHECK(embedder);
+  DCHECK(graph()->NodeInGraph(embedder));
+  DCHECK_NE(this, embedder->page_node());
+  DCHECK_NE(EmbeddingType::kInvalid, embedding_type);
 
-  auto* previous_opener = opener_frame_node_;
-  auto previous_type = opened_type_;
+  auto* previous_embedder = embedder_frame_node_;
+  auto previous_type = embedding_type_;
 
-  if (previous_opener)
-    previous_opener->RemoveOpenedPage(PassKey(), this);
-  opener_frame_node_ = opener;
-  opened_type_ = opened_type;
-  opener->AddOpenedPage(PassKey(), this);
+  if (previous_embedder)
+    previous_embedder->RemoveEmbeddedPage(PassKey(), this);
+  embedder_frame_node_ = embedder;
+  embedding_type_ = embedding_type;
+  embedder->AddEmbeddedPage(PassKey(), this);
 
   for (auto* observer : GetObservers())
-    observer->OnOpenerFrameNodeChanged(this, previous_opener, previous_type);
+    observer->OnEmbedderFrameNodeChanged(this, previous_embedder,
+                                         previous_type);
 }
 
-void PageNodeImpl::ClearOpenerFrameNodeAndOpenedType() {
+void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(nullptr, opener_frame_node_);
-  DCHECK_NE(OpenedType::kInvalid, opened_type_);
+  DCHECK_NE(nullptr, embedder_frame_node_);
+  DCHECK_NE(EmbeddingType::kInvalid, embedding_type_);
 
-  auto* previous_opener = opener_frame_node_;
-  auto previous_type = opened_type_;
+  auto* previous_embedder = embedder_frame_node_;
+  auto previous_type = embedding_type_;
 
-  opener_frame_node_->RemoveOpenedPage(PassKey(), this);
-  opener_frame_node_ = nullptr;
-  opened_type_ = OpenedType::kInvalid;
+  embedder_frame_node_->RemoveEmbeddedPage(PassKey(), this);
+  embedder_frame_node_ = nullptr;
+  embedding_type_ = EmbeddingType::kInvalid;
 
   for (auto* observer : GetObservers())
-    observer->OnOpenerFrameNodeChanged(this, previous_opener, previous_type);
+    observer->OnEmbedderFrameNodeChanged(this, previous_embedder,
+                                         previous_type);
 }
 
 void PageNodeImpl::set_usage_estimate_time(
@@ -331,9 +334,9 @@ void PageNodeImpl::OnJoiningGraph() {
 void PageNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Sever opener relationships.
-  if (opener_frame_node_)
-    ClearOpenerFrameNodeAndOpenedType();
+  // Sever embedder relationships.
+  if (embedder_frame_node_)
+    ClearEmbedderFrameNodeAndEmbeddingType();
 
   DCHECK_EQ(0u, frame_node_count_);
 }
@@ -351,14 +354,14 @@ const std::string& PageNodeImpl::GetBrowserContextID() const {
   return browser_context_id();
 }
 
-const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {
+const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return opener_frame_node();
+  return embedder_frame_node();
 }
 
-PageNodeImpl::OpenedType PageNodeImpl::GetOpenedType() const {
+PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return opened_type();
+  return embedding_type();
 }
 
 bool PageNodeImpl::IsVisible() const {

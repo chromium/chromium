@@ -83,8 +83,8 @@ class PageNodeImpl
 
   // Accessors.
   const std::string& browser_context_id() const;
-  FrameNodeImpl* opener_frame_node() const;
-  OpenedType opened_type() const;
+  FrameNodeImpl* embedder_frame_node() const;
+  EmbeddingType embedding_type() const;
   bool is_visible() const;
   bool is_audible() const;
   LoadingState loading_state() const;
@@ -101,10 +101,10 @@ class PageNodeImpl
   bool had_form_interaction() const;
   const base::Optional<freezing::FreezingVote>& freezing_vote() const;
 
-  // Invoked to set/clear the opener of this page.
-  void SetOpenerFrameNodeAndOpenedType(FrameNodeImpl* opener,
-                                       OpenedType opened_type);
-  void ClearOpenerFrameNodeAndOpenedType();
+  // Invoked to set/clear the embedder of this page.
+  void SetEmbedderFrameNodeAndEmbeddingType(FrameNodeImpl* embedder,
+                                            EmbeddingType embedder_type);
+  void ClearEmbedderFrameNodeAndEmbeddingType();
 
   void set_usage_estimate_time(base::TimeTicks usage_estimate_time);
   void set_private_footprint_kb_estimate(
@@ -185,8 +185,8 @@ class PageNodeImpl
 
   // PageNode implementation.
   const std::string& GetBrowserContextID() const override;
-  const FrameNode* GetOpenerFrameNode() const override;
-  OpenedType GetOpenedType() const override;
+  const FrameNode* GetEmbedderFrameNode() const override;
+  EmbeddingType GetEmbeddingType() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
@@ -268,13 +268,13 @@ class PageNodeImpl
   // The unique ID of the browser context that this page belongs to.
   const std::string browser_context_id_;
 
-  // The opener of this page, if there is one.
-  FrameNodeImpl* opener_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  // The embedder of this page, if there is one.
+  FrameNodeImpl* embedder_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 
-  // The way in which this page was opened, if it was opened.
-  OpenedType opened_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      OpenedType::kInvalid;
+  // The way in which this page was embedded, if it was embedded.
+  EmbeddingType embedding_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      EmbeddingType::kInvalid;
 
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.
