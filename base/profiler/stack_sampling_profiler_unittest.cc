@@ -1340,8 +1340,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
 PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
   SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
-  params.samples_per_profile = 1;
+  params.sampling_interval = TimeDelta::FromMilliseconds(10);
+  params.samples_per_profile = 2;
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
@@ -1380,9 +1380,11 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
 
   // The sample should have one frame from the context values and one from the
   // TestAuxUnwinder.
-  ASSERT_EQ(1u, profile.samples.size());
-  const std::vector<Frame>& frames = profile.samples[0];
+  ASSERT_EQ(2u, profile.samples.size());
 
+  // Whether the aux unwinder is available for the first sample is racy, so rely
+  // on the second sample.
+  const std::vector<Frame>& frames = profile.samples[1];
   ASSERT_EQ(2u, frames.size());
   EXPECT_EQ(23u, frames[1].instruction_pointer);
   EXPECT_EQ(nullptr, frames[1].module);
