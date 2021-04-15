@@ -5,9 +5,8 @@
 import './iframe.js';
 import './realbox/realbox.js';
 import './logo.js';
-import './modules/module_wrapper.js';
+import './modules/modules.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -21,7 +20,6 @@ import {BackgroundManager} from './background_manager.js';
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 import {loadTimeData} from './i18n_setup.js';
 import {recordLoadDuration} from './metrics_utils.js';
-import {Module} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
@@ -206,13 +204,22 @@ class AppElement extends PolymerElement {
       },
 
       /** @private */
-      modulesVisibilityDetermined_: Boolean,
+      modulesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesEnabled'),
+      },
 
       /** @private */
-      middleSlotPromoLoaded_: Boolean,
+      middleSlotPromoLoaded_: {
+        type: Boolean,
+        value: false,
+      },
 
       /** @private */
-      modulesLoaded_: Boolean,
+      modulesLoaded_: {
+        type: Boolean,
+        value: false,
+      },
 
       /**
        * In order to avoid flicker, the promo and modules are hidden until both
@@ -224,16 +231,7 @@ class AppElement extends PolymerElement {
         type: Boolean,
         computed: `computePromoAndModulesLoaded_(middleSlotPromoLoaded_,
             modulesLoaded_)`,
-        reflectToAttribute: true,
-      },
-
-      /** @private */
-      modulesLoadedAndVisibilityDetermined_: {
-        type: Boolean,
-        computed: `computeModulesLoadedAndVisibilityDetermined_(
-          promoAndModulesLoaded_,
-          modulesVisibilityDetermined_)`,
-        observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
+        observer: 'onPromoAndModulesLoadedChange_',
       },
 
       /**
@@ -242,31 +240,6 @@ class AppElement extends PolymerElement {
        * @private
        */
       lazyRender_: Boolean,
-
-      /** @private {!Array<!Module>} */
-      modules_: Object,
-
-      /** @private {!Array<string>} */
-      dismissedModules_: {
-        type: Array,
-        value: () => [],
-      },
-
-      /** @private {!{all: boolean, ids: !Array<string>}} */
-      disabledModules_: {
-        type: Object,
-        value: () => ({all: true, ids: []}),
-      },
-
-      /**
-       * Data about the most recently removed module.
-       * @type {?{message: string, undo: function()}}
-       * @private
-       */
-      removedModuleData_: {
-        type: Object,
-        value: null,
-      },
     };
   }
 
@@ -281,8 +254,6 @@ class AppElement extends PolymerElement {
     this.backgroundManager_ = BackgroundManager.getInstance();
     /** @private {?number} */
     this.setThemeListenerId_ = null;
-    /** @private {?number} */
-    this.setDisabledModulesListenerId_ = null;
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
     this.loadOneGoogleBar_();
@@ -307,12 +278,6 @@ class AppElement extends PolymerElement {
           performance.measure('theme-set');
           this.theme_ = theme;
         });
-    this.setDisabledModulesListenerId_ =
-        this.callbackRouter_.setDisabledModules.addListener((all, ids) => {
-          this.disabledModules_ = {all, ids};
-          this.modulesVisibilityDetermined_ = true;
-        });
-    this.pageHandler_.updateDisabledModules();
     this.eventTracker_.add(window, 'message', (event) => {
       /** @type {!Object} */
       const data = event.data;
@@ -351,8 +316,6 @@ class AppElement extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(assert(this.setThemeListenerId_));
-    this.callbackRouter_.removeListener(
-        assert(this.setDisabledModulesListenerId_));
     this.eventTracker_.removeAll();
   }
 
@@ -536,14 +499,6 @@ class AppElement extends PolymerElement {
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeModulesLoadedAndVisibilityDetermined_() {
-    return this.promoAndModulesLoaded_ && this.modulesVisibilityDetermined_;
-  }
-
   /** @private */
   async onLazyRendered_() {
     // Instantiate modules even if |modulesEnabled| is false to counterfactually
@@ -557,10 +512,6 @@ class AppElement extends PolymerElement {
     if (modules) {
       this.pageHandler_.onModulesLoadedWithData();
     }
-    if (!loadTimeData.getBoolean('modulesEnabled')) {
-      return;
-    }
-    this.modules_ = modules;
   }
 
   /** @private */
@@ -602,9 +553,6 @@ class AppElement extends PolymerElement {
       this.showVoiceSearchOverlay_ = true;
       this.pageHandler_.onVoiceSearchAction(
           newTabPage.mojom.VoiceSearchAction.kActivateKeyboard);
-    }
-    if (ctrlKeyPressed && e.key === 'z') {
-      this.onUndoRemoveModuleButtonClick_();
     }
   }
 
@@ -648,19 +596,10 @@ class AppElement extends PolymerElement {
   }
 
   /** @private */
-  onModulesLoadedAndVisibilityDeterminedChange_() {
-    if (this.modulesLoadedAndVisibilityDetermined_ &&
-        loadTimeData.getBoolean('modulesEnabled')) {
+  onPromoAndModulesLoadedChange_() {
+    if (this.promoAndModulesLoaded_) {
       recordLoadDuration(
           'NewTabPage.Modules.ShownTime', WindowProxy.getInstance().now());
-      this.modules_.forEach(({descriptor: {id}}) => {
-        chrome.metricsPrivate.recordBoolean(
-            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
-            !this.disabledModules_.all &&
-                !this.disabledModules_.ids.includes(id));
-      });
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
     }
   }
 
@@ -890,95 +829,10 @@ class AppElement extends PolymerElement {
     this.modulesLoaded_ = true;
   }
 
-  /**
-   * @param {!CustomEvent<{message: string, restoreCallback: function()}>} e
-   *     Event notifying a module was dismissed. Contains the message to show in
-   *     the toast.
-   * @private
-   */
-  onDismissModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
-    const restoreCallback = e.detail.restoreCallback;
-    this.removedModuleData_ = {
-      message: e.detail.message,
-      undo: () => {
-        this.splice('dismissedModules_', this.dismissedModules_.indexOf(id), 1);
-        restoreCallback();
-        this.pageHandler_.onRestoreModule(id);
-      },
-    };
-    if (!this.dismissedModules_.includes(id)) {
-      this.push('dismissedModules_', id);
-    }
-
-    // Notify the user.
-    $$(this, '#removeModuleToast').show();
-    // Notify the backend.
-    this.pageHandler_.onDismissModule(id);
-  }
-
-  /**
-   * @param {!CustomEvent<{message: string, restoreCallback: ?function()}>} e
-   *     Event notifying a module was disabled. Contains the message to show in
-   *     the toast.
-   * @private
-   */
-  onDisableModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
-    const restoreCallback = e.detail.restoreCallback;
-    this.removedModuleData_ = {
-      message: e.detail.message,
-      undo: () => {
-        if (restoreCallback) {
-          restoreCallback();
-        }
-        this.pageHandler_.setModuleDisabled(id, false);
-        chrome.metricsPrivate.recordSparseHashable(
-            'NewTabPage.Modules.Enabled', id);
-        chrome.metricsPrivate.recordSparseHashable(
-            'NewTabPage.Modules.Enabled.Toast', id);
-      },
-    };
-
-    this.pageHandler_.setModuleDisabled(id, true);
-    $$(this, '#removeModuleToast').show();
-    chrome.metricsPrivate.recordSparseHashable(
-        'NewTabPage.Modules.Disabled', id);
-    chrome.metricsPrivate.recordSparseHashable(
-        'NewTabPage.Modules.Disabled.ModuleRequest', id);
-  }
-
   /** @private */
   onCustomizeModule_() {
     this.showCustomizeDialog_ = true;
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
-  }
-
-  /**
-   * @param {string} id
-   * @return {boolean}
-   * @private
-   */
-  moduleDisabled_(id) {
-    return this.disabledModules_.all || this.dismissedModules_.includes(id) ||
-        this.disabledModules_.ids.includes(id);
-  }
-
-  /**
-   * @private
-   */
-  onUndoRemoveModuleButtonClick_() {
-    if (!this.removedModuleData_) {
-      return;
-    }
-
-    // Restore the module.
-    this.removedModuleData_.undo();
-
-    // Notify the user.
-    $$(this, '#removeModuleToast').hide();
-
-    this.removedModuleData_ = null;
   }
 
   /**

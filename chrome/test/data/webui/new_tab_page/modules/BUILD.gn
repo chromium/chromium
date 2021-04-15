@@ -18,3 +18,13 @@ js_library("module_registry_test") {
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
+
+js_library("modules_test") {
+  deps = [
+    "..:metrics_test_support",
+    "..:test_support",
+    "//chrome/browser/resources/new_tab_page",
+    "//chrome/test/data/webui:test_browser_proxy.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

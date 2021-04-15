@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
     ":test_support",
     "modules:module_header_test",
     "modules:module_registry_test",
+    "modules:modules_test",
   ]
 }
 

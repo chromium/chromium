@@ -128,11 +128,9 @@ class MiddleSlotPromoElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.hidden = true;
     renderPromo().then(container => {
       if (container) {
         this.shadowRoot.appendChild(container);
-        this.hidden = false;
       }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));

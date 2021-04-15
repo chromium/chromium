@@ -9,6 +9,23 @@ import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
+js_library("modules") {
+  deps = [
+    ":module_descriptor",
+    ":module_registry",
+    ":module_wrapper",
+    "..:new_tab_page_proxy",
+    "..:utils",
+    "..:utils",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 js_library("module_descriptor") {
   deps = [
     "..:metrics_utils",
@@ -59,6 +76,7 @@ html_to_js("web_components_local") {
   js_files = [
     "module_header.js",
     "module_wrapper.js",
+    "modules.js",
   ]
 }
 
@@ -120,6 +138,7 @@ preprocess_if_expr("preprocess_gen") {
   in_files = [
     "module_header.js",
     "module_wrapper.js",
+    "modules.js",
     "task_module/module.js",
     "cart/module.js",
     "drive/module.js",

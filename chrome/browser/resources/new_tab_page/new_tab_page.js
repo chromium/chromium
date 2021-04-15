@@ -24,9 +24,10 @@ export {driveDescriptor} from './modules/drive/module.js';
 export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
 // </if>
-export {ModuleDescriptor} from './modules/module_descriptor.js';
+export {Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
+export {ModulesElement} from './modules/modules.js';
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';

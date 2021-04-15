@@ -75,7 +75,7 @@
   }
 
   ntp-realbox,
-  ntp-module-wrapper {
+  ntp-modules {
     flex-shrink: 0;
     width: var(--ntp-search-box-width);
   }
@@ -95,15 +95,9 @@
   }
 
   /* ~ because the dom-if results in a template between the middle-slot-promo
-     and the first ntp-module-wrapper. */
-  ntp-middle-slot-promo:not([hidden]) ~ ntp-module-wrapper,
-  ntp-module-wrapper + ntp-module-wrapper {
+     and ntp-modules. */
+  ntp-middle-slot-promo:not([hidden]) ~ ntp-modules {
     margin-top: 16px;
-  }
-
-  :host(:not([promo-and-modules-loaded_])) ntp-middle-slot-promo,
-  :host(:not([promo-and-modules-loaded_])) ntp-module-wrapper {
-    display: none;
   }
 
   #customizeButtonContainer {
@@ -279,19 +273,16 @@
       </template>
       <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
         <ntp-middle-slot-promo
-            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
+            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_"
+            hidden="[[!promoAndModulesLoaded_]]">
         </ntp-middle-slot-promo>
       </template>
-      <template is="dom-repeat" items="[[modules_]]" id="modules"
-          on-dom-change="onModulesLoaded_">
-        <ntp-module-wrapper module="[[item]]"
-            on-dismiss-module="onDismissModule_"
-            on-disable-module="onDisableModule_"
+      <template is="dom-if" if="[[modulesEnabled_]]" >
+        <ntp-modules id="modules"
+            on-modules-loaded="onModulesLoaded_"
             on-customize-module="onCustomizeModule_"
-            hidden="[[moduleDisabled_(item.descriptor.id,
-                                      dismissedModules_.*,
-                                      disabledModules_)]]">
-        </ntp-module-wrapper>
+            hidden="[[!promoAndModulesLoaded_]]">
+        </ntp-modules>
       </template>
       <a id="backgroundImageAttribution"
           href="[[backgroundImageAttributionUrl_]]"
@@ -334,7 +325,8 @@
     </ntp-voice-search-overlay>
   </template>
 </dom-if>
-<template is="dom-if" if="[[showCustomizeDialog_]]" restamp>
+<template id="customizeDialogIf" is="dom-if" if="[[showCustomizeDialog_]]"
+    restamp>
   <ntp-customize-dialog
       on-close="onCustomizeDialogClose_"
       theme="[[theme_]]"
@@ -342,18 +334,6 @@
       selected-page="[[selectedCustomizeDialogPage_]]">
   </ntp-customize-dialog>
 </template>
-<dom-if if="[[lazyRender_]]" restamp>
-  <template>
-    <cr-toast id="removeModuleToast" duration="10000">
-      <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
-      <cr-button id="undoRemoveModuleButton"
-          aria-label="$i18n{undoDescription}"
-          on-click="onUndoRemoveModuleButtonClick_">
-        $i18n{undo}
-      </cr-button>
-    </cr-toast>
-  </template>
-</dom-if>
 <div id="oneGoogleBarOverlayBackdrop"></div>
 <svg>
   <defs>
