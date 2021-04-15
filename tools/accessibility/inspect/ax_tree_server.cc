@@ -61,7 +61,8 @@ void AXTreeServer::Run(BuildTree build_tree,
     LOG(ERROR) << "Failed to parse filters";
     return;
   }
-  formatter->SetPropertyFilters(filters);
+  formatter->SetPropertyFilters(filters,
+                                ui::AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
   base::Value dict = std::move(build_tree).Run(formatter.get());
@@ -77,9 +78,7 @@ void AXTreeServer::Run(BuildTree build_tree,
 std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
     const base::FilePath& filters_path) {
   if (filters_path.empty()) {
-    return {
-      ui::AXPropertyFilter("*", ui::AXPropertyFilter::ALLOW),
-    };
+    return {};
   }
 
   std::string raw_filters_text;

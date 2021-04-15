@@ -54,6 +54,8 @@ To watch accessibility events, run:
 
 ## Options
 
+### Selectors
+
 At your convenience the number of pre-defined application selectors are available:
 * `--chrome` for Chrome browser
 * `--chromium` for Chromium browser
@@ -75,10 +77,26 @@ Note, to use a hex window handle prefix it with `0x`.
 Or by application PID on Mac and Linux:
 `--pid=process_id`
 
-Other options:
-`--filters=absolute_path_to_filters.txt` to filter properties, use where
-the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See
-example-tree-filters.txt in tools/accessibility/inspect.
+### Filters
+
+By default a pre-defined set of property filters is applied. If you want to tune
+up the output, then use `--filters` option which specifies a file containing
+filtering rules:
+
+`--filters=absolute_path_to_filters.txt`
+
+The format of the file is a plain text where each line defines a property
+filter. The supported property filters are:
+
+* @ALLOW filter means to include the attribute having non empty values;
+* @ALLOW-EMPTY filter means to include the attribute even if its value is empty;
+* @DENY filter means to exclude an attribute.
+
+For example, `@ALLOW:AXARIALive` will add AXARIALive attributes to the
+result tree. Also see example-tree-filters.txt in tools/accessibility/inspect
+for more examples.
+
+### Other options
 
 `--help` for help
 
