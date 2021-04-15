@@ -38,6 +38,59 @@ suite('input page', () => {
     const settingsPrivate =
         new settings.FakeSettingsPrivate(settings.getFakeLanguagePrefs());
     prefElement.initialize(settingsPrivate);
+
+    /**
+     * Prefs listener to emulate SpellcheckService listeners.
+     * As we use a mocked prefs object in tests, we also need to mock the
+     * behavior of SpellcheckService as it relies on a C++ PrefChangeRegistrar
+     * to listen to pref changes - which do not work when the prefs are mocked.
+     * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
+     */
+    function spellCheckServiceListener(prefs) {
+      for (const pref of prefs) {
+        switch (pref.key) {
+          case 'spellcheck.dictionaries':
+            // Emulate SpellcheckService::OnSpellCheckDictionariesChanged:
+            // If there are no dictionaries, set browser.enable_spellchecking
+            // to false.
+            if (pref.value.length === 0) {
+              settingsPrivate.setPref(
+                  'browser.enable_spellchecking', false, '', () => {});
+            }
+            break;
+
+          case 'intl.accept_languages':
+            // Emulate SpellcheckService::OnAcceptLanguagesChanged:
+            // Filter spellcheck.dictionaries and remove all dictionaries not
+            // in intl.accept_languages. We won't "normalize" it here as it is
+            // extremely difficult to do in JavaScript, and should not matter
+            // for tests.
+
+            // Normally, getting prefs is an asynchronous action with callbacks,
+            // but we can cheat in tests using FakeSettingsPrivate.
+            const dictionaries =
+                settingsPrivate.prefs['spellcheck.dictionaries'].value;
+            const acceptLanguages = new Set(pref.value.split(','));
+
+            const filteredDictionaries = dictionaries.filter(
+                dictionary => acceptLanguages.has(dictionary));
+            settingsPrivate.setPref(
+                'spellcheck.dictionaries', filteredDictionaries, '', () => {});
+            break;
+        }
+      }
+    }
+
+    // Listen to prefs changes using settingsPrivate.onPrefsChanged.
+    // While prefElement (<settings-prefs>) is normally a synchronous wrapper
+    // around the asynchronous settingsPrivate, the two's prefs are always
+    // synchronously kept in sync both ways in tests.
+    // However, it's possible that a settingsPrivate.onPrefsChanged listener
+    // receives a change before prefElement does if the change is made by
+    // settingsPrivate, so prefer to use settingsPrivate getters/setters
+    // whenever possible.
+    settingsPrivate.onPrefsChanged.addListener(spellCheckServiceListener);
+
     document.body.appendChild(prefElement);
 
     return CrSettingsPrefs.initialized.then(() => {
@@ -466,6 +519,11 @@ suite('input page', () => {
       assertFalse(spellCheckLanguageToggle.checked);
       assertDeepEquals([], languageHelper.prefs.spellcheck.dictionaries.value);
 
+      // The spell check toggle should be off now.
+      assertFalse(spellCheckToggle.checked);
+      spellCheckToggle.click();
+      assertTrue(spellCheckToggle.checked);
+
       // toggle on
       spellCheckLanguageToggle.click();
 
@@ -490,6 +548,11 @@ suite('input page', () => {
           assertFalse(spellCheckLanguageToggle.checked);
           assertDeepEquals(
               [], languageHelper.prefs.spellcheck.dictionaries.value);
+
+          // The spell check toggle should be off now.
+          assertFalse(spellCheckToggle.checked);
+          spellCheckToggle.click();
+          assertTrue(spellCheckToggle.checked);
 
           // toggle on by clicking name
           spellCheckList[0].querySelector('.name-with-error').click();
@@ -947,6 +1010,45 @@ suite('input page', () => {
           newSpellCheckList[1].textContent.includes('English (United States)'));
       assertTrue(newSpellCheckList[2].textContent.includes('Norwegian Bokmål'));
       assertTrue(newSpellCheckList[3].textContent.includes('Swahili'));
+    });
+
+    test('removing all languages, then adding enabled language works', () => {
+      // See https://crbug.com/1197386 for more information.
+      // Remove en-US so there are no spell check languages.
+      const spellCheckLanguageToggle =
+          spellCheckList[0].querySelector('cr-icon-button');
+      spellCheckLanguageToggle.click();
+      Polymer.dom.flush();
+
+      let newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should just have "add languages".
+      assertEquals(0 + 1, newSpellCheckList.length);
+      // The "enable spellchecking" toggle should be off as well.
+      assertFalse(spellCheckToggle.checked);
+
+      // Enable spell checking again.
+      spellCheckToggle.click();
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      // The spell check list shouldn't have changed...
+      assertEquals(0 + 1, newSpellCheckList.length);
+      // ...but the "enable spellchecking" toggle should be checked.
+      assertTrue(spellCheckToggle.checked);
+
+      // Add an enabled language (en-US).
+      languageHelper.toggleSpellCheck('en-US', true);
+      Polymer.dom.flush();
+
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      // The spell check list should now have en-US.
+      assertEquals(1 + 1, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      // Spell check should still be enabled.
+      assertTrue(spellCheckToggle.checked);
     });
 
     test('error handling', () => {

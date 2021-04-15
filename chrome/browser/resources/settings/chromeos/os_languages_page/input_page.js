@@ -91,10 +91,6 @@ Polymer({
         settings.LanguagesMetricsProxyImpl.getInstance();
   },
 
-  observers: [
-    'updateSpellcheckPref_(spellCheckLanguages_)',
-  ],
-
   /**
    * @param {!settings.Route} route
    * @param {!settings.Route} oldRoute
@@ -379,21 +375,6 @@ Polymer({
     });
 
     return supportedSpellcheckLanguages;
-  },
-
-  /** @private */
-  updateSpellcheckPref_() {
-    if (this.spellCheckLanguages_ === undefined) {
-      return;
-    }
-
-    // TODO(crbug/1126239): Investigate feasibility of moving this pref update
-    // to spellcheck_service.
-    if (this.spellCheckLanguages_.length === 0) {
-      // If there are no supported spell check languages, automatically turn
-      // off spell check to indicate no spell check will happen.
-      this.setPrefValue('browser.enable_spellchecking', false);
-    }
   },
 
   /**
