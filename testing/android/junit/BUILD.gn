@@ -12,7 +12,6 @@ java_library("junit_test_support") {
   testonly = true
   sources = [
     "java/src/org/chromium/testing/local/CustomShadowApplicationPackageManager.java",
-    "java/src/org/chromium/testing/local/CustomShadowUserManager.java",
     "java/src/org/chromium/testing/local/GtestComputer.java",
     "java/src/org/chromium/testing/local/GtestFilter.java",
     "java/src/org/chromium/testing/local/GtestListener.java",

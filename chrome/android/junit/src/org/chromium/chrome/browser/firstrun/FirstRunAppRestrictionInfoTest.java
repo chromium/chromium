@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -31,7 +32,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.policy.PolicySwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.testing.local.CustomShadowUserManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +42,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class, ShadowPostTask.class,
-                CustomShadowUserManager.class})
+        shadows = {ShadowRecordHistogram.class, ShadowPostTask.class, ShadowUserManager.class})
 public class FirstRunAppRestrictionInfoTest {
     private static final List<String> HISTOGRAM_NAMES =
             Arrays.asList("Enterprise.FirstRun.AppRestrictionLoadTime",
@@ -89,7 +88,7 @@ public class FirstRunAppRestrictionInfoTest {
 
         Context context = ContextUtils.getApplicationContext();
         UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-        CustomShadowUserManager shadowUserManager = (CustomShadowUserManager) shadowOf(userManager);
+        ShadowUserManager shadowUserManager = shadowOf(userManager);
         shadowUserManager.setApplicationRestrictions(context.getPackageName(), mMockBundle);
     }
 
