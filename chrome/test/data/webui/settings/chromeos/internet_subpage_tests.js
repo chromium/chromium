@@ -199,41 +199,39 @@ suite('InternetSubpage', function() {
           'Device enabled should be focused for settingId=22.');
     });
 
-    test('Fire show cellular setup event on add cellular clicked', () => {
-      initSubpage(true);
+    test('Deep link to add cellular button', async () => {
+      initSubpage(true /* isUpdatedCellularUiEnabled */);
+      addCellularNetworks();
       const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
-      setNetworksForTest(mojom.NetworkType.kCellular, [
-        OncMojo.getDefaultNetworkState(
-            mojom.NetworkType.kCellular, 'cellular1'),
-      ]);
-      internetSubpage.deviceState = {
+      await flushAsync();
+      const cellularNetworkList = internetSubpage.$$('#cellularNetworkList');
+      cellularNetworkList.deviceState = {
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
         inhibitReason: mojom.InhibitReason.kNotInhibited
       };
-      internetSubpage.globalPolicy = {
+      cellularNetworkList.globalPolicy = {
         allowOnlyPolicyNetworksToConnect: false,
       };
+      await flushAsync();
 
-      return flushAsync().then(async () => {
-        // Banner should not exist if device is not inhibited.
-        const cellularBanner = internetSubpage.$$('cellular-banner');
-        assertFalse(!!cellularBanner);
+      const params = new URLSearchParams;
+      params.append('settingId', '26');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.INTERNET_NETWORKS, params);
 
-        const addCellularButton = internetSubpage.$$('#addCellularButton');
-        assertTrue(!!addCellularButton);
+      await flushAsync();
+      assertTrue(!!cellularNetworkList);
 
-        const showCellularSetupPromise =
-            test_util.eventToPromise('show-cellular-setup', internetSubpage);
-        addCellularButton.click();
-        await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
-      });
+      const deepLinkElement = cellularNetworkList.getAddEsimButton();
+      assertTrue(!!deepLinkElement);
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Add cellular button should be focused for settingId=26.');
     });
-
     test(
-        'Device inhibited disables toggle, add cellular and shows banner',
-        async () => {
+        'Device inhibited disables toggle and shows banner', async () => {
           initSubpage(true);
           const mojom = chromeos.networkConfig.mojom;
           mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
@@ -251,9 +249,6 @@ suite('InternetSubpage', function() {
           };
 
           await flushAsync();
-          const addCellularButton = internetSubpage.$$('#addCellularButton');
-          assertTrue(!!addCellularButton);
-          assertTrue(addCellularButton.disabled);
 
           const deviceEnabledButton =
               internetSubpage.$$('#deviceEnabledButton');
