@@ -460,13 +460,14 @@ struct FidoDeviceAuthenticator::EnumerateCredentialsState {
   EnumerateCredentialsState& operator=(EnumerateCredentialsState&&) = default;
 
   pin::TokenResponse pin_token;
-  bool is_first_rp = true;
-  bool is_first_credential = true;
-  size_t rp_count;
-  size_t current_rp_credential_count;
+
+  size_t rp_count = 0;
+  size_t current_rp = 0;
+  size_t current_rp_credential_count = 0;
 
   FidoDeviceAuthenticator::EnumerateCredentialsCallback callback;
   std::vector<AggregatedEnumerateCredentialsResponse> responses;
+  std::vector<std::array<uint8_t, kRpIdHashLength>> rp_id_hashes;
 };
 
 void FidoDeviceAuthenticator::EnumerateCredentials(
@@ -558,27 +559,42 @@ void FidoDeviceAuthenticator::OnEnumerateRPsDone(
     EnumerateCredentialsState state,
     CtapDeviceResponseCode status,
     base::Optional<EnumerateRPsResponse> response) {
+  DCHECK_EQ(state.rp_id_hashes.size(), state.responses.size());
+  DCHECK_LE(state.rp_id_hashes.size(), state.rp_count);
+
   if (status != CtapDeviceResponseCode::kSuccess) {
     std::move(state.callback).Run(status, base::nullopt);
     return;
   }
-  if (state.is_first_rp) {
+  if (state.rp_count == 0) {
     if (response->rp_count == 0) {
       std::move(state.callback).Run(status, std::move(state.responses));
       return;
     }
     state.rp_count = response->rp_count;
-    state.is_first_rp = false;
   }
   DCHECK(response->rp);
   DCHECK(response->rp_id_hash);
 
-  state.is_first_credential = true;
-  state.responses.emplace_back(std::move(*response->rp));
+  state.rp_id_hashes.push_back(*response->rp_id_hash);
+  state.responses.push_back(
+      AggregatedEnumerateCredentialsResponse(*response->rp));
+
+  if (state.rp_id_hashes.size() < state.rp_count) {
+    // Get the next RP.
+    RunOperation<CredentialManagementRequest, EnumerateRPsResponse>(
+        CredentialManagementRequest::ForEnumerateRPsGetNext(
+            GetCredentialManagementRequestVersion(*Options())),
+        base::BindOnce(&FidoDeviceAuthenticator::OnEnumerateRPsDone,
+                       weak_factory_.GetWeakPtr(), std::move(state)),
+        base::BindOnce(&EnumerateRPsResponse::Parse, /*expect_rp_count=*/false),
+        &EnumerateRPsResponse::StringFixupPredicate);
+    return;
+  }
 
   auto request = CredentialManagementRequest::ForEnumerateCredentialsBegin(
       GetCredentialManagementRequestVersion(*Options()), state.pin_token,
-      std::move(*response->rp_id_hash));
+      state.rp_id_hashes.front());
   RunOperation<CredentialManagementRequest, EnumerateCredentialsResponse>(
       std::move(request),
       base::BindOnce(&FidoDeviceAuthenticator::OnEnumerateCredentialsDone,
@@ -592,18 +608,27 @@ void FidoDeviceAuthenticator::OnEnumerateCredentialsDone(
     EnumerateCredentialsState state,
     CtapDeviceResponseCode status,
     base::Optional<EnumerateCredentialsResponse> response) {
+  DCHECK_EQ(state.rp_id_hashes.size(), state.responses.size());
+  DCHECK_EQ(state.rp_id_hashes.size(), state.rp_count);
+  DCHECK_LT(state.current_rp, state.rp_count);
+
   if (status != CtapDeviceResponseCode::kSuccess) {
     std::move(state.callback).Run(status, base::nullopt);
     return;
   }
-  if (state.is_first_credential) {
-    state.current_rp_credential_count = response->credential_count;
-    state.is_first_credential = false;
-  }
-  state.responses.back().credentials.emplace_back(std::move(*response));
 
-  if (state.responses.back().credentials.size() <
+  if (state.current_rp_credential_count == 0) {
+    // First credential for this RP.
+    DCHECK_GT(response->credential_count, 0u);
+    state.current_rp_credential_count = response->credential_count;
+  }
+  AggregatedEnumerateCredentialsResponse& current_aggregated_response =
+      state.responses.at(state.current_rp);
+  current_aggregated_response.credentials.push_back(std::move(*response));
+
+  if (current_aggregated_response.credentials.size() <
       state.current_rp_credential_count) {
+    // Fetch the next credential for this RP.
     RunOperation<CredentialManagementRequest, EnumerateCredentialsResponse>(
         CredentialManagementRequest::ForEnumerateCredentialsGetNext(
             GetCredentialManagementRequestVersion(*Options())),
@@ -615,15 +640,19 @@ void FidoDeviceAuthenticator::OnEnumerateCredentialsDone(
     return;
   }
 
-  if (state.responses.size() < state.rp_count) {
-    RunOperation<CredentialManagementRequest, EnumerateRPsResponse>(
-        CredentialManagementRequest::ForEnumerateRPsGetNext(
-            GetCredentialManagementRequestVersion(*Options())),
-        base::BindOnce(&FidoDeviceAuthenticator::OnEnumerateRPsDone,
+  if (++state.current_rp < state.rp_count) {
+    // Enumerate credentials for the next RP.
+    state.current_rp_credential_count = 0;
+    auto request = CredentialManagementRequest::ForEnumerateCredentialsBegin(
+        GetCredentialManagementRequestVersion(*Options()), state.pin_token,
+        state.rp_id_hashes.at(state.current_rp));
+    RunOperation<CredentialManagementRequest, EnumerateCredentialsResponse>(
+        std::move(request),
+        base::BindOnce(&FidoDeviceAuthenticator::OnEnumerateCredentialsDone,
                        weak_factory_.GetWeakPtr(), std::move(state)),
-        base::BindOnce(&EnumerateRPsResponse::Parse,
-                       /*expect_rp_count=*/false),
-        &EnumerateRPsResponse::StringFixupPredicate);
+        base::BindOnce(&EnumerateCredentialsResponse::Parse,
+                       /*expect_credential_count=*/true),
+        &EnumerateCredentialsResponse::StringFixupPredicate);
     return;
   }
 

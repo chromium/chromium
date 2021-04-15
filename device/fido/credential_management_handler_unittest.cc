@@ -16,10 +16,13 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 namespace {
+
+using testing::UnorderedElementsAreArray;
 
 constexpr char kPIN[] = "1234";
 constexpr uint8_t kCredentialID[] = {0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa,
@@ -193,6 +196,64 @@ TEST_F(CredentialManagementHandlerTest,
       PublicKeyCredentialUserEntity(fido_parsing_utils::Materialize(kUserID),
                                     user_name, display_name,
                                     /*icon_url=*/base::nullopt));
+}
+
+TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
+  VirtualCtap2Device::Config ctap_config;
+  ctap_config.pin_support = true;
+  ctap_config.resident_key_support = true;
+  ctap_config.credential_management_support = true;
+  ctap_config.resident_credential_storage = 100;
+  virtual_device_factory_.SetCtap2Config(ctap_config);
+  virtual_device_factory_.SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  virtual_device_factory_.mutable_state()->pin = kPIN;
+  virtual_device_factory_.mutable_state()->pin_retries = device::kMaxPinRetries;
+
+  const PublicKeyCredentialRpEntity rps[] = {
+      {"foo.com", "foo", base::nullopt},
+      {"bar.com", "bar", base::nullopt},
+      {"foobar.com", "foobar", base::nullopt},
+  };
+  const PublicKeyCredentialUserEntity users[] = {
+      {{0}, "alice", "Alice", base::nullopt},
+      {{1}, "bob", "Bob", base::nullopt},
+  };
+
+  uint8_t credential_id[] = {0};
+  for (const auto& rp : rps) {
+    for (const auto& user : users) {
+      ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(
+          credential_id, rp, user));
+      credential_id[0]++;
+    }
+  }
+
+  auto handler = MakeHandler();
+  ready_callback_.WaitForCallback();
+
+  handler->GetCredentials(get_credentials_callback_.callback());
+  get_credentials_callback_.WaitForCallback();
+
+  auto result = get_credentials_callback_.TakeResult();
+  ASSERT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
+
+  std::vector<AggregatedEnumerateCredentialsResponse> responses =
+      std::move(*std::get<1>(result));
+  ASSERT_EQ(responses.size(), 3u);
+
+  PublicKeyCredentialRpEntity got_rps[3];
+  std::transform(responses.begin(), responses.end(), std::begin(got_rps),
+                 [](const auto& response) { return response.rp; });
+  EXPECT_THAT(got_rps, UnorderedElementsAreArray(rps));
+
+  for (const AggregatedEnumerateCredentialsResponse& response : responses) {
+    ASSERT_EQ(response.credentials.size(), 2u);
+    PublicKeyCredentialUserEntity got_users[2];
+    std::transform(response.credentials.begin(), response.credentials.end(),
+                   std::begin(got_users),
+                   [](const auto& credential) { return credential.user; });
+    EXPECT_THAT(got_users, UnorderedElementsAreArray(users));
+  }
 }
 
 }  // namespace

@@ -221,19 +221,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // upon returning the error.
     bool bio_enrollment_next_sample_timeout = false;
 
-    // pending_assertions contains the second and subsequent assertions
-    // resulting from a GetAssertion call. These values are awaiting a
-    // GetNextAssertion request.
-    std::vector<std::vector<uint8_t>> pending_assertions;
-
-    // pending_rps contains the remaining RPs to return a previous
-    // authenticatorCredentialManagement command.
-    std::list<device::PublicKeyCredentialRpEntity> pending_rps;
-
-    // pending_registrations contains the remaining |is_resident| registration
-    // to return from a previous authenticatorCredentialManagement command.
-    std::list<cbor::Value::MapValue> pending_registrations;
-
     // allow_list_sizes contains the lengths of the allow_lists that have been
     // seen in assertion requests. This is for tests to confirm that the
     // expected sequence of requests was sent.
@@ -241,12 +228,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     // The large-blob array.
     std::vector<uint8_t> large_blob;
-
-    // Buffer that gets progressively filled with large blob fragments until
-    // committed.
-    std::vector<uint8_t> large_blob_buffer;
-    uint64_t large_blob_expected_next_offset = 0;
-    uint64_t large_blob_expected_length = 0;
 
     FidoTransportProtocol transport =
         FidoTransportProtocol::kUsbHumanInterfaceDevice;

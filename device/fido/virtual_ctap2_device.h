@@ -207,6 +207,48 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
  private:
+  // RequestState encapsulates state for what CTAP 2.1 calls "stateful commands"
+  // (https://drafts.fidoalliance.org/fido-2/latest/fido-client-to-authenticator-protocol-v2.1-rd-20210308.html#authenticator-api).
+  struct RequestState {
+    RequestState();
+    RequestState(RequestState&) = delete;
+    RequestState& operator=(RequestState&) = delete;
+    ~RequestState();
+
+    // Reset should be called at the beginning of every authenticator operation
+    // that is not a direct continuation of another stateful operation. CTAP 2.1
+    // specifies that authenticators may assume that stateful commands are never
+    // interleaved by other operations.
+    void Reset() {
+      pending_assertions.clear();
+      pending_rps.clear();
+      pending_registrations.clear();
+      large_blob_buffer.clear();
+      large_blob_expected_next_offset = 0;
+      large_blob_expected_length = 0;
+    }
+
+    // pending_assertions contains the second and subsequent assertions
+    // resulting from a GetAssertion call. These values are awaiting a
+    // GetNextAssertion request.
+    std::vector<std::vector<uint8_t>> pending_assertions;
+
+    // pending_rps contains the remaining RPs to return from a previous
+    // authenticatorCredentialManagement/enumerateRPs command.
+    std::list<device::PublicKeyCredentialRpEntity> pending_rps;
+
+    // pending_registrations contains the remaining |is_resident| registrations
+    // to return from a previous
+    // authenticatorCredentialManagement/enumerateCredentials command.
+    std::list<cbor::Value::MapValue> pending_registrations;
+
+    // Buffer that gets progressively filled with large blob fragments until
+    // committed.
+    std::vector<uint8_t> large_blob_buffer;
+    uint64_t large_blob_expected_next_offset = 0;
+    uint64_t large_blob_expected_length = 0;
+  };
+
   // Init performs initialization that's common across the constructors.
   void Init(std::vector<ProtocolVersion> versions);
 
@@ -259,6 +301,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   std::unique_ptr<VirtualU2fDevice> u2f_device_;
 
   const Config config_;
+  RequestState request_state_;
   base::WeakPtrFactory<FidoDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VirtualCtap2Device);

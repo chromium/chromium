@@ -291,6 +291,7 @@ EnumerateCredentialsResponse::Parse(
     it = response_map.find(cbor::Value(
         static_cast<int>(CredentialManagementResponseKey::kTotalCredentials)));
     if (it == response_map.end() || !it->second.is_unsigned() ||
+        it->second.GetUnsigned() == 0 ||
         it->second.GetUnsigned() > std::numeric_limits<size_t>::max()) {
       return base::nullopt;
     }
