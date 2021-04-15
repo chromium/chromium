@@ -77,8 +77,21 @@ template("test") {
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
-    _use_raw_android_executable = defined(invoker.use_raw_android_executable) &&
-                                  invoker.use_raw_android_executable
+    _use_default_launcher =
+        !defined(invoker.use_default_launcher) || invoker.use_default_launcher
+    if (!defined(invoker.use_raw_android_executable)) {
+      # Checkouts where build_with_chromium == false often have a custom GN
+      # template wrapper around test() which sets use_default_launcher == false.
+      # Set the _use_raw_android_executable default so that test() targets which
+      # do not use the custom wrapper
+      # (1) Do not cause "gn gen" to fail
+      # (2) Do not need to be moved into if(build_with_chromium) block.
+      _use_raw_android_executable =
+          !build_with_chromium && _use_default_launcher
+    } else {
+      not_needed([ "_use_default_launcher" ])
+      _use_raw_android_executable = invoker.use_raw_android_executable
+    }
 
     # output_name is used to allow targets with the same name but in different
     # packages to still produce unique runner scripts.
@@ -164,6 +177,7 @@ template("test") {
         "android_manifest_template",
         "app_as_shared_lib",
         "enable_multidex",
+        "generate_final_jni",
         "product_config_java_packages",
         "min_sdk_version",
         "proguard_configs",
@@ -173,9 +187,6 @@ template("test") {
         "use_default_launcher",
         "use_native_activity",
       ]
-
-      _use_default_launcher =
-          !defined(invoker.use_default_launcher) || invoker.use_default_launcher
 
       # Adds the unwind tables from unstripped binary as an asset file in the
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
