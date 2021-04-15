@@ -52,10 +52,7 @@ ios_appex_bundle("share_extension") {
     "ui_util.mm",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":system_strings",
