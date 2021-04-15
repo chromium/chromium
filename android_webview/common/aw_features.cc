@@ -63,6 +63,12 @@ const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
 const base::Feature kWebViewPowerSchedulerThrottleIdle{
     "WebViewPowerSchedulerThrottleIdle", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
+// is not same origin with the main frame.
+const base::Feature kWebViewSuppressDifferentOriginSubframeJSDialogs{
+    "WebViewSuppressDifferentOriginSubframeJSDialogs",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // A Feature used for WebView variations tests. Not used in production.
 const base::Feature kWebViewTestFeature{"WebViewTestFeature",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

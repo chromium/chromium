@@ -1044,6 +1044,12 @@ bool AwContentBrowserClient::HasErrorPage(int http_status_code) {
   return http_status_code >= 400;
 }
 
+bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(
+      features::kWebViewSuppressDifferentOriginSubframeJSDialogs);
+}
+
 // static
 void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;
