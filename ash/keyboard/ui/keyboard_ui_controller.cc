@@ -43,8 +43,6 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/ozone/public/input_controller.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -71,13 +69,6 @@ constexpr base::TimeDelta kReportLingeringStateDelay =
 // after the user enters their username.
 constexpr base::TimeDelta kTransientBlurThreshold =
     base::TimeDelta::FromMilliseconds(3500);
-
-void SetTouchEventLogging(bool enable) {
-  ui::InputController* controller =
-      ui::OzonePlatform::GetInstance()->GetInputController();
-  if (controller)
-    controller->SetTouchEventLoggingEnabled(enable);
-}
 
 // An enumeration of different keyboard control events that should be logged.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -559,8 +550,6 @@ void KeyboardUIController::HideKeyboard(HideReason reason) {
 
     case KeyboardUIState::kWillHide:
     case KeyboardUIState::kShown: {
-      SetTouchEventLogging(true /* enable */);
-
       // Log whether this was a user or system (automatic) action.
       switch (reason) {
         case HIDE_REASON_SYSTEM_EXPLICIT:
@@ -879,8 +868,6 @@ void KeyboardUIController::PopulateKeyboardContent(
   }
 
   ui_->ReloadKeyboardIfNeeded();
-
-  SetTouchEventLogging(false /* enable */);
 
   switch (model_.state()) {
     case KeyboardUIState::kWillHide:
