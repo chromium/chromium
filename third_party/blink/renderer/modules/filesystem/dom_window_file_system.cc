@@ -87,6 +87,11 @@ void DOMWindowFileSystem::webkitRequestFileSystem(
         .Record(ukm_recorder->Get());
   } else if (file_system_type == mojom::blink::FileSystemType::kPersistent) {
     UseCounter::Count(window, WebFeature::kRequestedFileSystemPersistent);
+
+    // Record persistent usage in third-party contexts.
+    window.CountUseOnlyInCrossSiteIframe(
+        WebFeature::kRequestedFileSystemPersistentThirdPartyContext);
+
     ukm::builders::FileSystemAPI_WebRequest(source_id)
         .SetPersistent(true)
         .Record(ukm_recorder->Get());

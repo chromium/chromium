@@ -3189,6 +3189,7 @@ enum WebFeature {
   kSameOriginDocumentsWithDifferentCOOPStatus = 3876,
   kHTMLMediaElementSetSinkId = 3877,
   kPrefixedStorageQuotaThirdPartyContext = 3878,
+  kRequestedFileSystemPersistentThirdPartyContext = 3879,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
