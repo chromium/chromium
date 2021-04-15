@@ -189,6 +189,11 @@ class PermissionRequestManager
     return prediction_grant_likelihood_;
   }
 
+  base::Optional<permissions::PermissionPromptDisposition>
+  current_request_prompt_disposition_for_testing() {
+    return current_request_prompt_disposition_;
+  }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
@@ -266,6 +271,13 @@ class PermissionRequestManager
   // the object alive. The infobar system hides the actual infobar UI and modals
   // prevent tab switching.
   std::unique_ptr<PermissionPrompt> view_;
+
+  // The disposition for the currently active permission prompt, if any.
+  // Recorded separately because the `view_` might not be available at prompt
+  // resolution in order to determine the disposition.
+  base::Optional<permissions::PermissionPromptDisposition>
+      current_request_prompt_disposition_;
+
   // We only show new prompts when |tab_is_hidden_| is false.
   bool tab_is_hidden_;
 
