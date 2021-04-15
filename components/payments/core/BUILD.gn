@@ -76,8 +76,6 @@ static_library("core") {
       "payments_profile_comparator.h",
       "strings_util.cc",
       "strings_util.h",
-      "web_payment_request.cc",
-      "web_payment_request.h",
     ]
   }
 
@@ -184,7 +182,6 @@ source_set("unit_tests") {
       "payment_request_data_util_unittest.cc",
       "payment_response_unittest.cc",
       "payments_profile_comparator_unittest.cc",
-      "web_payment_request_unittest.cc",
     ]
   }
 
