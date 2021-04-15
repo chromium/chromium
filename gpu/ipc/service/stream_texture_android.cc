@@ -162,13 +162,25 @@ void StreamTexture::UpdateTexImage(BindingsMode bindings_mode) {
 
   if (!has_pending_frame_) return;
 
-  auto scoped_make_current = MakeCurrent(context_state_.get());
+  std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
+  base::Optional<ScopedRestoreTextureBinding> scoped_restore_texture;
+  if (texture_owner_->binds_texture_on_update() ||
+      (bindings_mode == BindingsMode::kEnsureTexImageBound)) {
+    // If the texture_owner() binds the texture while doing the texture update
+    // (UpdateTexImage), like in SurfaceTexture case, OR if it was explicitly
+    // specified to bind the texture via bindings_mode, then only make the
+    // context current. For AImageReader, since we only acquire the latest image
+    // from it during the texture update process, there is no need to make it's
+    // context current if its not specified via bindings_mode.
+    scoped_make_current = MakeCurrent(context_state_.get());
 
-  // We also restore the previous binding even if the previous binding is same
-  // as the one which we are going to bind. This could be little inefficient.
-  // TODO(vikassoni): Update logic similar to what CodecImage does to optimize.
-  gl::ScopedTextureBinder scoped_bind_texture(GL_TEXTURE_EXTERNAL_OES,
-                                              texture_owner_->GetTextureId());
+    // If updating the image will implicitly update the texture bindings then
+    // restore if requested or the update needed a context switch.
+    if (bindings_mode == BindingsMode::kRestoreIfBound ||
+        !!scoped_make_current) {
+      scoped_restore_texture.emplace();
+    }
+  }
   texture_owner_->UpdateTexImage();
   EnsureBoundIfNeeded(bindings_mode);
   has_pending_frame_ = false;

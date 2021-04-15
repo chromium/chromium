@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_STREAM_TEXTURE_SHARED_IMAGE_INTERFACE_H_
 
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image.h"
 
 namespace gpu {
@@ -54,6 +55,20 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
 
  protected:
   ~StreamTextureSharedImageInterface() override = default;
+};
+
+// Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
+class ScopedRestoreTextureBinding {
+ public:
+  ScopedRestoreTextureBinding() {
+    glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
+  }
+  ~ScopedRestoreTextureBinding() {
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
+  }
+
+ private:
+  GLint bound_service_id_;
 };
 
 }  // namespace gpu
