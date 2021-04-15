@@ -2679,3 +2679,64 @@ IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest,
 
   CloseDevToolsWindow();
 }
+
+namespace {
+
+class DevToolsFetchTest : public DevToolsTest {
+ protected:
+  content::EvalJsResult Fetch(
+      const content::ToRenderFrameHost& execution_target,
+      const std::string& url) {
+    return content::EvalJs(execution_target, content::JsReplace(R"(
+      (async function() {
+        const response = await fetch($1);
+        return response.status;
+      })();
+    )",
+                                                                url));
+  }
+
+  content::EvalJsResult FetchFromDevToolsWindow(const std::string& url) {
+    WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+    return Fetch(wc, url);
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest,
+                       DevToolsFetchFromDevToolsSchemeUndocked) {
+  OpenDevToolsWindow("about:blank", false);
+
+  EXPECT_EQ(200, FetchFromDevToolsWindow(
+                     "devtools://devtools/bundled/Images/whatsnew.avif"));
+
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest,
+                       DevToolsFetchFromDevToolsSchemeDocked) {
+  OpenDevToolsWindow("about:blank", true);
+
+  EXPECT_EQ(200, FetchFromDevToolsWindow(
+                     "devtools://devtools/bundled/Images/whatsnew.avif"));
+
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, DevToolsFetchFromHttpDisallowed) {
+  OpenDevToolsWindow("about:blank", true);
+
+  const auto result = FetchFromDevToolsWindow("http://www.google.com");
+  EXPECT_EQ("a JavaScript error:\nTypeError: Failed to fetch\n", result.error);
+
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+  const auto result = Fetch(GetInspectedTab(),
+                            "devtools://devtools/bundled/Images/whatsnew.avif");
+  EXPECT_EQ("a JavaScript error:\nTypeError: Failed to fetch\n", result.error);
+}
