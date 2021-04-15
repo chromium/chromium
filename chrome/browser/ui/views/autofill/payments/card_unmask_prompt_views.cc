@@ -318,7 +318,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   // Inset the whole main section.
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
 
   auto controls_container = std::make_unique<views::View>();
   controls_container->SetLayoutManager(std::make_unique<views::BoxLayout>(

@@ -74,8 +74,8 @@ std::u16string RequestSystemProxyCredentialsView::GetPassword() const {
 
 void RequestSystemProxyCredentialsView::Init() {
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT)));
+  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText)));
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_OK_BUTTON));

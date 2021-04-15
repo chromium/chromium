@@ -282,7 +282,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL),
+      provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kControl),
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
   auto description_label = std::make_unique<views::Label>();

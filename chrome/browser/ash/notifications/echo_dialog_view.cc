@@ -116,8 +116,8 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
       label_font_list.GetBaseline() - label_font_list.GetCapHeight();
 
   gfx::Insets insets =
-      views::LayoutProvider::Get()->GetDialogInsetsForContentType(views::TEXT,
-                                                                  views::TEXT);
+      views::LayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kText);
   insets += gfx::Insets(top_inset_padding, 0, 0, 0);
   SetBorder(views::CreateEmptyBorder(insets));
 

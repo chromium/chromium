@@ -73,8 +73,8 @@ SessionAbortedDialog::~SessionAbortedDialog() = default;
 
 void SessionAbortedDialog::InitDialog(const std::string& user_email) {
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT)));
+  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText)));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Explanation string.

@@ -96,7 +96,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
   ...
  const LayoutProvider* provider = LayoutProvider::Get();
   set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+      provider->GetDialogInsetsForContentType(views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =
@@ -506,7 +506,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
 
   const LayoutProvider* provider = LayoutProvider::Get();
   set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+      provider->GetDialogInsetsForContentType(views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =

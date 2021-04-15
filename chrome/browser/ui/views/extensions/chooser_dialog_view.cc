@@ -52,7 +52,8 @@ ChooserDialogView::ChooserDialogView(
       new DeviceChooserContentView(this, std::move(chooser_controller));
   device_chooser_content_view_->SetBorder(views::CreateEmptyBorder(
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::CONTROL)));
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl)));
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
   SetModalType(ui::MODAL_TYPE_CHILD);

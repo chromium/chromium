@@ -74,7 +74,7 @@ CrostiniForceCloseView::CrostiniForceCloseView(
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::TEXT, views::DialogContentType::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   views::Label* message_label = new views::Label(
       app_name.empty()

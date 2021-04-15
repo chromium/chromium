@@ -86,8 +86,8 @@ ChromeCleanerDialog::ChromeCleanerDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  set_margins(
-      layout_provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(layout_provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       layout_provider->GetDistanceMetric(

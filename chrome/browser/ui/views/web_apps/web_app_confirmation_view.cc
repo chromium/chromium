@@ -58,8 +58,8 @@ WebAppConfirmationView::WebAppConfirmationView(
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(views::CONTROL,
-                                                             views::TEXT));
+  set_margins(layout_provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kText));
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   constexpr int kColumnSetId = 0;

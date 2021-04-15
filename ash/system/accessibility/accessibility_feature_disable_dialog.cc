@@ -40,7 +40,7 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
 
   auto body_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(window_title_text_id),
@@ -49,7 +49,7 @@ AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
   AddChildView(body_label.release());
 
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   // Parent the dialog widget to the LockSystemModalContainer, or
   // OverlayContainer to ensure that it will get displayed on respective

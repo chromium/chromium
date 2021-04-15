@@ -278,30 +278,31 @@ void MessageBoxView::ResetLayoutManager() {
   layout->StartRow(0, kMessageViewColumnSetId);
   layout->AddExistingView(scroll_view_);
 
-  views::DialogContentType trailing_content_type = views::TEXT;
+  views::DialogContentType trailing_content_type =
+      views::DialogContentType::kText;
   if (prompt_field_->GetVisible()) {
     layout->AddPaddingRow(0, inter_row_vertical_spacing_);
     layout->StartRow(0, kExtraViewColumnSetId);
     layout->AddExistingView(prompt_field_);
-    trailing_content_type = views::CONTROL;
+    trailing_content_type = views::DialogContentType::kControl;
   }
 
   if (checkbox_->GetVisible()) {
     layout->AddPaddingRow(0, inter_row_vertical_spacing_);
     layout->StartRow(0, kExtraViewColumnSetId);
     layout->AddExistingView(checkbox_);
-    trailing_content_type = views::TEXT;
+    trailing_content_type = views::DialogContentType::kText;
   }
 
   if (link_->GetVisible()) {
     layout->AddPaddingRow(0, inter_row_vertical_spacing_);
     layout->StartRow(0, kExtraViewColumnSetId);
     layout->AddExistingView(link_);
-    trailing_content_type = views::TEXT;
+    trailing_content_type = views::DialogContentType::kText;
   }
 
   gfx::Insets border_insets = provider->GetDialogInsetsForContentType(
-      views::TEXT, trailing_content_type);
+      views::DialogContentType::kText, trailing_content_type);
   // Horizontal insets have already been applied to the message contents and
   // controls as padding columns. Only apply the missing vertical insets.
   border_insets.Set(border_insets.top(), 0, border_insets.bottom(), 0);

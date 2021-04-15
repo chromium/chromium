@@ -77,7 +77,7 @@ RequestFileSystemDialogView::RequestFileSystemDialogView(
 
   DCHECK(!callback_.is_null());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   const std::u16string app_name = base::UTF8ToUTF16(extension_name);
   // TODO(mtomasz): Improve the dialog contents, so it's easier for the user

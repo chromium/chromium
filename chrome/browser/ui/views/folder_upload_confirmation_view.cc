@@ -60,7 +60,7 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(label));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 }
 
 FolderUploadConfirmationView::~FolderUploadConfirmationView() {

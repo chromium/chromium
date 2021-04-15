@@ -122,7 +122,7 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::TEXT, views::DialogContentType::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
 
   auto subtext_label = std::make_unique<views::Label>();
   subtext_label->SetMultiLine(true);

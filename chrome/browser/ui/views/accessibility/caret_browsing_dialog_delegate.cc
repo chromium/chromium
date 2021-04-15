@@ -42,7 +42,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
 
   std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);

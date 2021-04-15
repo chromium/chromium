@@ -68,7 +68,7 @@ is necessary.
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::CONTROL, views::CONTROL));
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
 
   textfield_ = AddChildView(std::make_unique<views::Textfield>());
   textfield_->SetPlaceholderText(

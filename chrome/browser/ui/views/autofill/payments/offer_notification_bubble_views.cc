@@ -27,7 +27,7 @@ OfferNotificationBubbleViews::OfferNotificationBubbleViews(
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetOkButtonLabel());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 }
 
 OfferNotificationBubbleViews::~OfferNotificationBubbleViews() {

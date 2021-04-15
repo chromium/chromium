@@ -130,8 +130,8 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   set_draggable(true);
 
   auto warning_label = CreateWarningLabel();

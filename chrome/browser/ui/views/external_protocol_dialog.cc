@@ -100,8 +100,8 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       new views::MessageBoxView(GetMessageTextForOrigin(initiating_origin_));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

@@ -459,8 +459,8 @@ void ExtensionInstallDialogView::CreateContents() {
 
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto extension_info_container = std::make_unique<CustomScrollableView>(this);
-  const gfx::Insets content_insets =
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL);
+  const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
   extension_info_container->SetBorder(views::CreateEmptyBorder(
       0, content_insets.left(), 0, content_insets.right()));
   extension_info_container->SetLayoutManager(std::make_unique<views::BoxLayout>(

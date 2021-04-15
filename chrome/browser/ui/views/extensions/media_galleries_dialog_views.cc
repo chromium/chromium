@@ -124,8 +124,10 @@ void MediaGalleriesDialogViews::InitChildViews() {
   checkbox_map_.clear();
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  contents_->SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL)));
+  contents_->SetBorder(
+      views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText,
+          views::DialogContentType::kControl)));
 
   const int dialog_content_width = views::Widget::GetLocalizedContentsWidth(
       IDS_MEDIA_GALLERIES_DIALOG_CONTENT_WIDTH_CHARS);

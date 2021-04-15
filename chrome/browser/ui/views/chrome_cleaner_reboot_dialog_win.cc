@@ -78,7 +78,7 @@ ChromeCleanerRebootDialog::ChromeCleanerRebootDialog(
                                   &Controller::Close));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 }
 
 ChromeCleanerRebootDialog::~ChromeCleanerRebootDialog() {

@@ -196,7 +196,7 @@ void ProfileSigninConfirmationDialogViews::BuildDefaultView() {
   // Layout the components.
   const gfx::Insets content_insets =
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::TEXT);
+          views::DialogContentType::kControl, views::DialogContentType::kText);
   // The prompt bar needs to go to the edge of the dialog, so remove horizontal
   // insets.
   SetBorder(views::CreateEmptyBorder(content_insets.top(), 0,
@@ -294,7 +294,7 @@ void ProfileSigninConfirmationDialogViews::BuildWorkProfileView() {
   // Layout the components.
   const gfx::Insets content_insets =
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::TEXT);
+          views::DialogContentType::kControl, views::DialogContentType::kText);
   // The prompt bar needs to go to the edge of the dialog, so remove horizontal
   // insets.
   SetBorder(views::CreateEmptyBorder(content_insets.top(), 0,

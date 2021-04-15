@@ -203,8 +203,8 @@ void QRCodeGeneratorBubble::WindowClosing() {
 void QRCodeGeneratorBubble::Init() {
   // Requesting TEXT for trailing prevents extra padding at bottom of dialog.
   gfx::Insets insets =
-      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(views::CONTROL,
-                                                                 views::TEXT);
+      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kControl, views::DialogContentType::kText);
   set_margins(insets);
 
   // Internal IDs for column layout; no effect on UI.

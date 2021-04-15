@@ -152,8 +152,8 @@ void RequestPinView::UpdateHeaderText() {
 
 void RequestPinView::Init() {
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT)));
+  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText)));
 
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());

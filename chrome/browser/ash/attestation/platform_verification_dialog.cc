@@ -93,7 +93,7 @@ PlatformVerificationDialog::PlatformVerificationDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
 
   auto run_callback = [](PlatformVerificationDialog* dialog,
                          ConsentResponse response) {

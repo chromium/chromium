@@ -41,7 +41,7 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
   std::unique_ptr<views::Label> label =
       std::make_unique<views::Label>(dialog_text);
   label->SetMultiLine(true);

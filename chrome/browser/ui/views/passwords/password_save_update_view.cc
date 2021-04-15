@@ -415,7 +415,7 @@ void PasswordSaveUpdateView::ReplaceWithPromo() {
   password_view_button_ = nullptr;
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   if (controller_.state() == password_manager::ui::CHROME_SIGN_IN_PROMO_STATE) {
     sign_in_promo_ = new PasswordSignInPromoView(controller_.GetWebContents());
     AddChildView(sign_in_promo_);

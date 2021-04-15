@@ -62,7 +62,8 @@ std::unique_ptr<views::View> SetupContent(const std::u16string& title) {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   content->SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::CONTROL)));
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl)));
 
   auto title_label = std::make_unique<views::Label>(
       title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
@@ -222,8 +223,8 @@ void PasswordReuseModalWarningDialog::
 void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
     views::Label* message_body_label) {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   // Makes message label align with title label.
   const int horizontal_adjustment =

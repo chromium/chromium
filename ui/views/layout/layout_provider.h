@@ -114,9 +114,9 @@ enum DistanceMetric {
   VIEWS_DISTANCE_MAX = 0x2000
 };
 
-// The type of a dialog content element. TEXT should be used for Labels or other
-// elements that only show text. Otherwise CONTROL should be used.
-enum DialogContentType { CONTROL, TEXT };
+// The type of a dialog content element. kText should be used for Labels or
+// other elements that only show text. Otherwise kControl should be used.
+enum class DialogContentType { kControl, kText };
 
 enum class Emphasis {
   // No emphasis needed for shadows, corner radius, etc.

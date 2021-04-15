@@ -213,8 +213,8 @@ void SharingDialogView::Init() {
       views::BoxLayout::Orientation::kVertical));
 
   auto* provider = ChromeLayoutProvider::Get();
-  gfx::Insets insets =
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT);
+  gfx::Insets insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText);
 
   SharingDialogType type = GetDialogType();
   LogSharingDialogShown(data_.prefix, type);

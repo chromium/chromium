@@ -128,7 +128,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_CERT_INFO_BUTTON)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
 
   // |provider_names| and |identities_| are parallel arrays.
   // The entry at index |i| is the provider name for |identities_[i]|.

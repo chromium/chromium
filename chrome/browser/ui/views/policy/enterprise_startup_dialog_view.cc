@@ -52,7 +52,7 @@ constexpr int kLogoHeight = 20;  // The height of Chrome enterprise logo.
 
 gfx::Insets GetDialogInsets() {
   return ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::CONTROL, views::TEXT);
+      views::DialogContentType::kControl, views::DialogContentType::kText);
 }
 
 std::unique_ptr<views::Label> CreateText(const std::u16string& message) {

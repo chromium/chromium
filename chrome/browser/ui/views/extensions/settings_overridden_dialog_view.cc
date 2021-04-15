@@ -29,8 +29,8 @@ SettingsOverriddenDialogView::SettingsOverriddenDialogView(
                      IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_KEEP_IT));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   ChromeLayoutProvider* const layout_provider = ChromeLayoutProvider::Get();
-  set_margins(
-      layout_provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(layout_provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   using DialogResult = SettingsOverriddenDialogController::DialogResult;
   auto make_result_callback = [this](DialogResult result) {

@@ -53,7 +53,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
   label_ =
       AddChildView(std::make_unique<views::Label>(GetRevertTimeoutString()));
   label_->SetMultiLine(true);

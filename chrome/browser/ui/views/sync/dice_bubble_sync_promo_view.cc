@@ -42,7 +42,8 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()
-          ->GetDialogInsetsForContentType(views::TEXT, views::TEXT)
+          ->GetDialogInsetsForContentType(views::DialogContentType::kText,
+                                          views::DialogContentType::kText)
           .bottom());
   SetLayoutManager(std::move(layout));
 

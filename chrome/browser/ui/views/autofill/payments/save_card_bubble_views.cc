@@ -199,13 +199,15 @@ void SaveCardBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   // For server cards, there is an explanation between the title and the
-  // controls; use views::TEXT. For local cards, since there is no explanation,
-  // use views::CONTROL instead.
+  // controls; use DialogContentType::kText. For local cards, since there is no
+  // explanation, use DialogContentType::kControl instead.
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      controller_->GetExplanatoryMessage().empty() ? views::CONTROL
-                                                   : views::TEXT,
-      GetDialogButtons() == ui::DIALOG_BUTTON_NONE ? views::TEXT
-                                                   : views::CONTROL));
+      controller_->GetExplanatoryMessage().empty()
+          ? views::DialogContentType::kControl
+          : views::DialogContentType::kText,
+      GetDialogButtons() == ui::DIALOG_BUTTON_NONE
+          ? views::DialogContentType::kText
+          : views::DialogContentType::kControl));
   AddChildView(CreateMainContentView().release());
 }
 

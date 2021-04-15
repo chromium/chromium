@@ -132,7 +132,8 @@ void CredentialLeakDialogView::InitWindow() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::CONTROL)));
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl)));
 
   auto description_label = std::make_unique<views::Label>(
       controller_->GetDescription(), views::style::CONTEXT_LABEL,

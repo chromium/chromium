@@ -276,7 +276,7 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
     : web_contents_(web_contents) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
   auto info_label = std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);

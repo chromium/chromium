@@ -88,8 +88,8 @@ LoginBubbleDialogView::LoginBubbleDialogView(
                  l10n_util::GetStringUTF16(IDS_LOGIN_OK_BUTTON_LABEL));
 
   const LayoutProvider* provider = LayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =

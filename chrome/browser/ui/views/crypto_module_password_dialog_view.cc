@@ -42,7 +42,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
       base::Unretained(this)));
   SetModalType(ui::MODAL_TYPE_WINDOW);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::CONTROL));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
   Init(hostname, slot_name, reason);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CRYPTO_PASSWORD);
 }

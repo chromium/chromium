@@ -67,7 +67,7 @@ FileSystemAccessRestrictedDirectoryDialogView::
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);

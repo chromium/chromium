@@ -149,11 +149,11 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
     DialogContentType leading,
     DialogContentType trailing) const {
   const int top_margin =
-      leading == CONTROL
+      leading == DialogContentType::kControl
           ? GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL)
           : GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT);
   const int bottom_margin =
-      trailing == CONTROL
+      trailing == DialogContentType::kControl
           ? GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL)
           : GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
   const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);

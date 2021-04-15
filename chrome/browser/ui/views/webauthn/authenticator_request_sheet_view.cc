@@ -116,7 +116,8 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
     // between the top/left side of the back button and the dialog borders.
     const gfx::Insets dialog_insets =
         views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::CONTROL, views::CONTROL);
+            views::DialogContentType::kControl,
+            views::DialogContentType::kControl);
     auto color_reference = std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_PRIMARY);
@@ -143,7 +144,8 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
 
   contents->SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::CONTROL, views::CONTROL)));
+          views::DialogContentType::kControl,
+          views::DialogContentType::kControl)));
 
   auto label_container = std::make_unique<views::View>();
   label_container->SetLayoutManager(std::make_unique<BoxLayout>(

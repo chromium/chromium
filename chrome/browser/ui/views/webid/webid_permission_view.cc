@@ -47,7 +47,7 @@ std::unique_ptr<views::View> CreateInitialMessage(
   auto view = std::make_unique<views::View>();
   auto* layout = view->SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto insets = views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT);
+      views::DialogContentType::kText, views::DialogContentType::kText);
 
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -96,7 +96,7 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
   auto view = std::make_unique<views::View>();
   auto* layout = view->SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto insets = views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT);
+      views::DialogContentType::kText, views::DialogContentType::kText);
 
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)

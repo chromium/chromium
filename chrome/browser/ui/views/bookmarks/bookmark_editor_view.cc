@@ -75,7 +75,7 @@ BookmarkEditorView::BookmarkEditorView(
     new_folder_button_->SetEnabled(bb_model_->loaded());
   }
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::CONTROL, views::CONTROL));
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   Init();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK_EDITOR);
 }

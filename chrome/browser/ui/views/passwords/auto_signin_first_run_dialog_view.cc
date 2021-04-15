@@ -76,7 +76,7 @@ void AutoSigninFirstRunDialogView::WindowClosing() {
 
 void AutoSigninFirstRunDialogView::InitWindow() {
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto label = std::make_unique<views::Label>(

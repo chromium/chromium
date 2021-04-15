@@ -91,7 +91,8 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   SetBorder(views::CreateEmptyBorder(
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::CONTROL)));
+          views::DialogContentType::kText,
+          views::DialogContentType::kControl)));
 
   auto* instructions = AddChildView(std::make_unique<views::Label>(
       controller_->GetContentExplanation(),

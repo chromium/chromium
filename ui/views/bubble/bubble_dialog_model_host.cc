@@ -31,18 +31,18 @@ namespace {
 DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
   switch (type) {
     case ui::DialogModelField::kButton:
-      return DialogContentType::CONTROL;
+      return DialogContentType::kControl;
     case ui::DialogModelField::kBodyText:
-      return DialogContentType::TEXT;
+      return DialogContentType::kText;
     case ui::DialogModelField::kCheckbox:
-      return DialogContentType::CONTROL;
+      return DialogContentType::kControl;
     case ui::DialogModelField::kTextfield:
-      return DialogContentType::CONTROL;
+      return DialogContentType::kControl;
     case ui::DialogModelField::kCombobox:
-      return DialogContentType::CONTROL;
+      return DialogContentType::kControl;
   }
   NOTREACHED();
-  return DialogContentType::CONTROL;
+  return DialogContentType::kControl;
 }
 
 // A subclass of Checkbox that allows using an external Label/StyledLabel view
@@ -363,7 +363,7 @@ void BubbleDialogModelHost::AddInitialFields() {
 void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   const DialogContentType first_field_content_type =
       children().empty()
-          ? DialogContentType::CONTROL
+          ? DialogContentType::kControl
           : FieldTypeToContentType(FindDialogModelHostField(children().front())
                                        .dialog_model_field->type(GetPassKey()));
   DialogContentType last_field_content_type = first_field_content_type;
@@ -378,8 +378,8 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
     } else {
       int padding_margin = LayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_UNRELATED_CONTROL_VERTICAL);
-      if (last_field_content_type == DialogContentType::CONTROL &&
-          field_content_type == DialogContentType::CONTROL) {
+      if (last_field_content_type == DialogContentType::kControl &&
+          field_content_type == DialogContentType::kControl) {
         // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
         // views::LayoutProvider and replace "12" here.
         padding_margin = 12;

@@ -130,7 +130,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   // Use CONTROL insets, because the icon is non-text (see documentation for
   // DialogContentType).
   gfx::Insets margin_insets = layout_provider->GetDialogInsetsForContentType(
-      views::CONTROL, views::CONTROL);
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
   set_margins(margin_insets);
 
   int icon_label_spacing = layout_provider->GetDistanceMetric(

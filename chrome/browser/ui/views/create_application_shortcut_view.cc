@@ -89,7 +89,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetAcceptCallback(
       base::BindOnce(&CreateChromeApplicationShortcutView::OnDialogAccepted,
                      base::Unretained(this)));

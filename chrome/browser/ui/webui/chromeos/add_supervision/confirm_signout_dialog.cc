@@ -41,7 +41,7 @@ ConfirmSignoutDialog::ConfirmSignoutDialog() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::DialogContentType::TEXT, views::DialogContentType::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
 
   // |body| will be owned by the views system.
   views::Label* body = new views::Label;

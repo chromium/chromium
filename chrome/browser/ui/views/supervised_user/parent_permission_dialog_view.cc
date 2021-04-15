@@ -206,8 +206,8 @@ class ParentPermissionInputSection : public views::TextfieldController {
     credential_input_field_->set_controller(this);
 
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-    const gfx::Insets content_insets =
-        provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL);
+    const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
+        views::DialogContentType::kControl, views::DialogContentType::kControl);
     view->SetBorder(views::CreateEmptyBorder(0, content_insets.left(), 0,
                                              content_insets.right()));
 
@@ -407,8 +407,8 @@ void ParentPermissionDialogView::CreateContents() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets()));
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const gfx::Insets content_insets =
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL);
+  const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
   const int content_width = GetPreferredSize().width() - content_insets.width();
   set_margins(gfx::Insets(content_insets.top(), 0, content_insets.bottom(), 0));
 

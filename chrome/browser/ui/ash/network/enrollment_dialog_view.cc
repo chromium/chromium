@@ -90,7 +90,7 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ENROLLMENT);
 }
 

@@ -77,7 +77,7 @@ FirstRunDialog::FirstRunDialog(Profile* profile) {
                                         GURL(chrome::kLearnMoreReportingURL)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
 

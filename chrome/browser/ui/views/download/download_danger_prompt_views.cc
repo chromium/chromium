@@ -108,7 +108,7 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   download_->AddObserver(this);
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetUseDefaultFillLayout(true);
 
   auto message_body_label = std::make_unique<views::Label>(GetMessageBody());

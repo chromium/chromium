@@ -42,8 +42,8 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   SetBorder(views::CreateEmptyBorder(
-      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(views::TEXT,
-                                                                 views::TEXT)));
+      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kText)));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   views::Label* label = new views::Label(

@@ -129,7 +129,7 @@ OneClickSigninDialogView::OneClickSigninDialogView(
   SetTitle(IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW);
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ONE_CLICK_SIGNIN);
 }
 

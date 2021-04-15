@@ -103,8 +103,8 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::RELAUNCH_REQUIRED);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT));
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   auto label = std::make_unique<views::Label>(
       l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_REQUIRED_BODY,

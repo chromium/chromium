@@ -74,7 +74,7 @@ SettingsResetPromptDialog::SettingsResetPromptDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   views::StyledLabel* const dialog_label =
