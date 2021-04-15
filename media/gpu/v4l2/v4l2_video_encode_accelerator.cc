@@ -1795,7 +1795,7 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
   // These values were copied from the VA-API encoder.
   // Ignore return values as these controls are optional.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                       {V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 42});
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_H264_MAX_QP, 42)});
   // Don't set MIN_QP with other controls since it is not supported by
   // some devices and may prevent other controls from being set.
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
