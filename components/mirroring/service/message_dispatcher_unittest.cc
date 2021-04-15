@@ -38,6 +38,16 @@ constexpr char kValidAnswerResponse[] = R"(
             }
           })";
 
+constexpr char kValidCapabilitiesResponse[] = R"({
+  "capabilities": {
+    "keySystems": [],
+    "mediaCaps": ["video", "h264", "vp8", "hevc", "vp9", "audio", "aac", "opus"]
+  },
+  "result": "ok",
+  "seqNum": 820263770,
+  "type": "CAPABILITIES_RESPONSE"
+})";
+
 bool IsEqual(const CastMessage& message1, const CastMessage& message2) {
   return message1.message_namespace == message2.message_namespace &&
          message1.json_format_data == message2.json_format_data;
@@ -165,12 +175,13 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   message_dispatcher_->Unsubscribe(ResponseType::ANSWER);
   SendInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
+  // The answer should be ignored now that we are unsubscribed.
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
-  EXPECT_FALSE(last_error_message_.empty());  // Expect an error reported.
+  EXPECT_TRUE(last_error_message_.empty());
   last_error_message_.clear();
 
-  // However, RPC messages should still be dispatcher to the
+  // However, RPC messages should still be dispatched to the
   // remaining subscriber.
   SendInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
@@ -183,16 +194,18 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   // either an ANSWER or a RPC message, nothing should happen.
   message_dispatcher_->Unsubscribe(ResponseType::RPC);
   SendInboundMessage(answer_message);
+
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
-  EXPECT_FALSE(last_error_message_.empty());
+  EXPECT_TRUE(last_error_message_.empty());
   last_error_message_.clear();
   SendInboundMessage(rpc_message);
+
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
-  EXPECT_FALSE(last_error_message_.empty());
+  EXPECT_TRUE(last_error_message_.empty());
 }
 
 TEST_F(MessageDispatcherTest, IgnoreMalformedMessage) {
@@ -215,15 +228,25 @@ TEST_F(MessageDispatcherTest, IgnoreMessageWithWrongNamespace) {
   // Messages with different namespace are ignored with no error reported.
   EXPECT_TRUE(last_error_message_.empty());
 }
+TEST_F(MessageDispatcherTest, IgnoreMessageWithNoSubscribers) {
+  const CastMessage unexpected_message{mojom::kWebRtcNamespace,
+                                       kValidCapabilitiesResponse};
+  SendInboundMessage(unexpected_message);
+  task_environment_.RunUntilIdle();
+  // Messages with no subscribers are ignored with no error reported.
+  EXPECT_FALSE(last_answer_response_);
+  EXPECT_FALSE(last_rpc_);
+  EXPECT_TRUE(last_error_message_.empty());
+}
 
 TEST_F(MessageDispatcherTest, RequestReply) {
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
   message_dispatcher_->Unsubscribe(ResponseType::ANSWER);
   task_environment_.RunUntilIdle();
-  const std::string fake_offer = "{\"type\":\"OFFER\",\"seqNum\":45623}";
+  constexpr char kFakeOffer[] = "{\"type\":\"OFFER\",\"seqNum\":45623}";
   const CastMessage offer_message =
-      CastMessage{mojom::kWebRtcNamespace, fake_offer};
+      CastMessage{mojom::kWebRtcNamespace, kFakeOffer};
   message_dispatcher_->RequestReply(
       offer_message.Clone(), ResponseType::ANSWER, 45623,
       base::TimeDelta::FromMilliseconds(100),
@@ -271,7 +294,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
-  EXPECT_FALSE(last_error_message_.empty());
+  EXPECT_TRUE(last_error_message_.empty());
   last_error_message_.clear();
 
   const CastMessage fake_message = CastMessage{
