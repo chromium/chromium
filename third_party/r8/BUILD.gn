@@ -13,3 +13,7 @@ java_library("custom_d8_java") {
   # version.
   input_jars_paths = [ "//third_party/r8/lib/r8.jar" ]
 }
+
+java_prebuilt("r8_java") {
+  jar_path = "//third_party/r8/lib/r8.jar"
+}

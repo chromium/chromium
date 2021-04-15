@@ -2653,6 +2653,38 @@ if (enable_java_templates) {
     }
   }
 
+  template("unused_resources") {
+    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+    _shrinker_dep = "//build/android/gyp/resources_shrinker:resources_shrinker"
+    _shrinker_script = "$root_build_dir/bin/helper/resources_shrinker"
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      script = "//build/android/gyp/resources_shrinker/shrinker.py"
+      inputs = [
+        invoker.build_config,
+        invoker.proguard_mapping_path,
+        _shrinker_script,
+      ]
+      outputs = [ invoker.output_config ]
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ _shrinker_dep ]
+      args = [
+        "--script",
+        rebase_path(_shrinker_script, root_build_dir),
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
+        "--proguard-mapping",
+        rebase_path(invoker.proguard_mapping_path, root_build_dir),
+        "--r-text=@FileArg($_rebased_build_config:deps_info:r_text_path)",
+        "--dex=@FileArg($_rebased_build_config:final_dex:path)",
+        "--android-manifest=@FileArg($_rebased_build_config:deps_info:android_manifest)",
+        "--output-config",
+        rebase_path(invoker.output_config, root_build_dir),
+      ]
+    }
+  }
+
   # Create an .jar.info file by merging several .jar.info files into one.
   #
   # Variables:
