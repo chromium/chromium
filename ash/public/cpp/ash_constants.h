@@ -67,7 +67,7 @@ constexpr FloatingMenuPosition kDefaultFloatingMenuPosition =
 constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 
 // Whether dark mode is enabled by default.
-constexpr bool kDefaultDarkModeEnabled = true;
+constexpr bool kDefaultDarkModeEnabled = false;
 
 // Whether color mode is themed by default.
 constexpr bool kDefaultColorModeThemed = true;
