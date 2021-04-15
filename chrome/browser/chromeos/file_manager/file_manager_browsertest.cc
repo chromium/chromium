@@ -515,9 +515,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarDeleteEntry"),
         TestCase("toolbarDeleteEntry").DisableJsModules(),
         TestCase("toolbarDeleteEntry").EnableTrash(),
-        TestCase("toolbarRefreshButtonWithSelection").EnableArc(),
+        TestCase("toolbarRefreshButtonWithSelection")
+            .EnableGenericDocumentsProvider(),
         TestCase("toolbarAltACommand"),
-        TestCase("toolbarRefreshButtonHiddenInRecents"),
+        TestCase("toolbarRefreshButtonHiddenInRecents")
+            .EnableUnifiedMediaView(),
         TestCase("toolbarMultiMenuFollowsButton"),
         TestCase("toolbarSharesheetButtonWithSelection").EnableSharesheet(),
         TestCase("toolbarSharesheetContextMenuWithSelection")

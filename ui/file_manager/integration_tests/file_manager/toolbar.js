@@ -157,26 +157,25 @@ testcase.toolbarDeleteEntry = async () => {
 
 /**
  * Tests that refresh button hides in selection mode.
- * Non-watchable volumes display refresh button so users can refresh the file
- * list content. However this button should be hidden when entering the
- * selection mode. crbug.com/978383
  *
+ * Non-watchable volumes (other than Recent views) display the refresh
+ * button so users can refresh the file list content. However this
+ * button should be hidden when entering the selection mode.
+ * crbug.com/978383
  */
 testcase.toolbarRefreshButtonWithSelection = async () => {
-  // Enable media views which are non-watchable.
-  await sendTestMessage({name: 'mountMediaView'});
-
-  // Add some content to media view "Images".
-  await addEntries(['media_view_images'], [ENTRIES.desktop]);
-
   // Open files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  // Navigate to Images media view.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Images"]');
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Images');
+  // Add files to the DocumentsProvider volume (which is non-watchable)
+  await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Wait for the DocumentsProvider volume to mount.
+  const documentsProviderVolumeQuery =
+      '[volume-type-icon="documents_provider"]';
+  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/DocumentsProvider');
 
   // Check that refresh button is visible.
   await remoteCall.waitForElement(appId, '#refresh-button:not([hidden])');
@@ -190,7 +189,9 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
 };
 
 /**
- * Tests that refresh button is not shown when Recent is selected.
+ * Tests that refresh button is not shown when any of the Recent views
+ * (or views built on top of them, such as the Media Views) are
+ * selected.
  */
 testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   // Open files app.
@@ -201,6 +202,14 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#directory-tree [entry-label="Recent"]');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Recent');
+
+  // Check that the button should be hidden.
+  await remoteCall.waitForElement(appId, '#refresh-button[hidden]');
+
+  // Navigate to Images.
+  await remoteCall.waitAndClickElement(
+      appId, '#directory-tree [entry-label="Images"]');
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Images');
 
   // Check that the button should be hidden.
   await remoteCall.waitForElement(appId, '#refresh-button[hidden]');

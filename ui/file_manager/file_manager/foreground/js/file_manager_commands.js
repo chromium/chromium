@@ -2905,7 +2905,7 @@ CommandHandler.COMMANDS_['refresh'] = new class extends FilesCommand {
 };
 
 /**
- * Refreshes the currently selected directory.
+ * Sets the system wallpaper to the selected file.
  */
 CommandHandler.COMMANDS_['set-wallpaper'] = new class extends FilesCommand {
   execute(event, fileManager) {
