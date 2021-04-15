@@ -13,11 +13,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
-#include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -111,67 +113,50 @@ struct Uniquifier {
 
 // Types and macros for generating enum converters ----------------------------
 template <typename T>
-struct EnumStrings {
-  struct EnumString {
-    T enum_value;
-    std::u16string str_value;
-  };
-
-  explicit EnumStrings(std::vector<EnumString> init_val)
-      : pairs(std::move(init_val)) {}
-
-  ValidStrings GetStringValues() const {
-    ValidStrings string_values;
-    for (const auto& pair : pairs)
-      string_values.push_back(pair.str_value);
-    return string_values;
-  }
-
-  const std::vector<EnumString> pairs;
-};
-
-template <typename T>
-static const EnumStrings<T>& GetEnumStringsInstance();
+struct EnumStringsMap;
 
 // Generate the code to define a enum type to and from std::u16string
 // conversions. The first argument is the type T, and the rest of the argument
 // should have the enum value and string pairs defined in a format like
 // "{enum_value0, string16_value0}, {enum_value1, string16_value1} ...".
-#define DEFINE_ENUM_CONVERTERS(T, ...)                             \
-  template <>                                                      \
-  const views::metadata::EnumStrings<T>&                           \
-  views::metadata::GetEnumStringsInstance<T>() {                   \
-    static const base::NoDestructor<EnumStrings<T>> instance(      \
-        std::vector<views::metadata::EnumStrings<T>::EnumString>(  \
-            {__VA_ARGS__}));                                       \
-    return *instance;                                              \
-  }                                                                \
-                                                                   \
-  template <>                                                      \
-  std::u16string views::metadata::TypeConverter<T>::ToString(      \
-      ArgType<T> source_value) {                                   \
-    for (const auto& pair : GetEnumStringsInstance<T>().pairs) {   \
-      if (source_value == pair.enum_value)                         \
-        return pair.str_value;                                     \
-    }                                                              \
-    return std::u16string();                                       \
-  }                                                                \
-                                                                   \
-  template <>                                                      \
-  base::Optional<T> views::metadata::TypeConverter<T>::FromString( \
-      const std::u16string& source_value) {                        \
-    for (const auto& pair : GetEnumStringsInstance<T>().pairs) {   \
-      if (source_value == pair.str_value) {                        \
-        return pair.enum_value;                                    \
-      }                                                            \
-    }                                                              \
-    return base::nullopt;                                          \
-  }                                                                \
-                                                                   \
-  template <>                                                      \
-  views::metadata::ValidStrings                                    \
-  views::metadata::TypeConverter<T>::GetValidStrings() {           \
-    return GetEnumStringsInstance<T>().GetStringValues();          \
+// Both enum_values and string16_values need to be compile time constants.
+#define DEFINE_ENUM_CONVERTERS(T, ...)                                       \
+  template <>                                                                \
+  struct views::metadata::EnumStringsMap<T> {                                \
+    static_assert(std::is_enum<T>::value, "Error: " #T " is not an enum.");  \
+                                                                             \
+    static const auto& Get() {                                               \
+      static constexpr auto kMap =                                           \
+          base::MakeFixedFlatMap<T, base::StringPiece16>({__VA_ARGS__});     \
+      return kMap;                                                           \
+    }                                                                        \
+  };                                                                         \
+                                                                             \
+  template <>                                                                \
+  std::u16string views::metadata::TypeConverter<T>::ToString(                \
+      ArgType<T> source_value) {                                             \
+    const auto& map = EnumStringsMap<T>::Get();                              \
+    auto* it = map.find(source_value);                                       \
+    return it != map.end() ? std::u16string(it->second) : std::u16string();  \
+  }                                                                          \
+                                                                             \
+  template <>                                                                \
+  base::Optional<T> views::metadata::TypeConverter<T>::FromString(           \
+      const std::u16string& str) {                                           \
+    const auto& map = EnumStringsMap<T>::Get();                              \
+    using Pair = base::ranges::range_value_t<decltype(map)>;                 \
+    auto* it = base::ranges::find(map, str, &Pair::second);                  \
+    return it != map.end() ? base::make_optional(it->first) : base::nullopt; \
+  }                                                                          \
+                                                                             \
+  template <>                                                                \
+  views::metadata::ValidStrings                                              \
+  views::metadata::TypeConverter<T>::GetValidStrings() {                     \
+    ValidStrings string_values;                                              \
+    base::ranges::transform(                                                 \
+        EnumStringsMap<T>::Get(), std::back_inserter(string_values),         \
+        [](const auto& pair) { return std::u16string(pair.second); });       \
+    return string_values;                                                    \
   }
 
 // String Conversions ---------------------------------------------------------
