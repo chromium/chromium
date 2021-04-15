@@ -17,7 +17,6 @@ js_modulizer("modulize") {
     "final_page_test.js",
     "provisioning_page_test.js",
     "psim_flow_ui_test.js",
-    "setup_selection_flow_test.js",
     "setup_loading_page_test.js",
     "fake_cellular_setup_delegate.js",
     "fake_cellular_setup_remote.js",

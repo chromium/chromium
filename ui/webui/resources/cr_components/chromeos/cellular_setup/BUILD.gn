@@ -30,7 +30,6 @@ js_type_check("closure_compile_module") {
     ":provisioning_page.m",
     ":psim_flow_ui.m",
     ":setup_loading_page.m",
-    ":setup_selection_flow.m",
     ":subflow_behavior.m",
     ":webview_post_util.m",
   ]
@@ -222,18 +221,6 @@ js_library("esim_flow_ui.m") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("setup_selection_flow.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/setup_selection_flow.m.js" ]
-  deps = [
-    ":cellular_types.m",
-    ":subflow_behavior.m",
-    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-  extra_deps = [ ":setup_selection_flow_module" ]
-}
-
 js_library("cellular_eid_popup.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_eid_popup.m.js" ]
   deps = [ "//ui/webui/resources/js:i18n_behavior.m" ]
@@ -248,7 +235,6 @@ js_library("cellular_setup.m") {
     ":cellular_types.m",
     ":esim_flow_ui.m",
     ":psim_flow_ui.m",
-    ":setup_selection_flow.m",
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -273,7 +259,6 @@ group("polymer3_elements") {
     ":provisioning_page_module",
     ":psim_flow_ui_module",
     ":setup_loading_page_module",
-    ":setup_selection_flow_module",
   ]
 }
 
@@ -360,14 +345,6 @@ polymer_modulizer("psim_flow_ui") {
 polymer_modulizer("esim_flow_ui") {
   js_file = "esim_flow_ui.js"
   html_file = "esim_flow_ui.html"
-  html_type = "dom-module"
-  namespace_rewrites = cr_components_chromeos_namespace_rewrites
-  auto_imports = cr_components_chromeos_auto_imports
-}
-
-polymer_modulizer("setup_selection_flow") {
-  js_file = "setup_selection_flow.js"
-  html_file = "setup_selection_flow.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports

@@ -54,7 +54,6 @@ GEN('#include "content/public/test/browser_test.h"');
  ['FinalPage', 'cellular_setup/final_page_test.m.js'],
  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.m.js'],
  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.m.js'],
- ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.m.js'],
  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.m.js'],
 ].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
 // clang-format on

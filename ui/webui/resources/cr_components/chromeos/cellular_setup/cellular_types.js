@@ -10,7 +10,6 @@ cr.define('cellularSetup', function() {
   /* #export */ const CellularSetupPageName = {
     ESIM_FLOW_UI: 'esim-flow-ui',
     PSIM_FLOW_UI: 'psim-flow-ui',
-    SETUP_FLOW_SELECTION: 'setup-selection-flow'
   };
 
   /** @enum {number} */

@@ -47,8 +47,7 @@ Polymer({
     /**
      * DOM Element corresponding to the visible page.
      *
-     * @private {!SetupSelectionFlowElement|!PsimFlowUiElement|
-     *           !EsimFlowUiElement}
+     * @private {!PsimFlowUiElement|!EsimFlowUiElement}
      */
     currentPage_: {
       type: Object,
@@ -111,13 +110,6 @@ Polymer({
 
   /** @private */
   onForwardNavRequested_() {
-    // Switch current page to user selected flow when navigating forward from
-    // setup selection.
-    if (this.currentPageName ===
-        cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION) {
-      this.currentPageName = this.selectedFlow_;
-      return;
-    }
     this.currentPage_.navigateForward();
   },
 
