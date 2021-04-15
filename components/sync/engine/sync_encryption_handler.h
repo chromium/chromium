@@ -116,12 +116,12 @@ class SyncEncryptionHandler {
   // Reads the nigori node, updates internal state as needed, and, if an
   // empty/stale nigori node is detected, overwrites the existing
   // nigori node. Upon completion, if the cryptographer is still ready
-  // attempts to re-encrypt all sync data. Returns false in case of error.
+  // attempts to re-encrypt all sync data.
   // Note: This method is expensive (it iterates through all encrypted types),
   // so should only be used sparingly (e.g. on startup).
   // TODO(crbug.com/): Rename to something like NotifyStateToObservers() or
   // even delete this API altogether.
-  virtual bool Init() = 0;
+  virtual void Init() = 0;
 
   // TODO(crbug.com/1178418): Add similar getters for the rest of the state
   // notified to the observers.

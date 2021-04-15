@@ -506,7 +506,7 @@ void NigoriSyncBridgeImpl::RemoveObserver(Observer* observer) {
   broadcasting_observer_->RemoveObserver(observer);
 }
 
-bool NigoriSyncBridgeImpl::Init() {
+void NigoriSyncBridgeImpl::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We need to expose whole bridge state through notifications, because it
   // can be different from default due to restoring from the file or
@@ -548,7 +548,6 @@ bool NigoriSyncBridgeImpl::Init() {
     UMA_HISTOGRAM_BOOLEAN("Sync.KeystoreDecryptionFailed",
                           !state_.keystore_keys_cryptographer->IsEmpty());
   }
-  return true;
 }
 
 void NigoriSyncBridgeImpl::SetEncryptionPassphrase(

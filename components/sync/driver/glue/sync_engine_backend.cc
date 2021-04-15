@@ -343,11 +343,7 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
   DVLOG(1) << "Initilalizing Control Types";
 
   // Initialize encryption.
-  if (!sync_manager_->GetEncryptionHandler()->Init()) {
-    host_.Call(FROM_HERE,
-               &SyncEngineImpl::HandleInitializationFailureOnFrontendLoop);
-    return;
-  }
+  sync_manager_->GetEncryptionHandler()->Init();
 
   if (!sync_manager_->InitialSyncEndedTypes().HasAll(ControlTypes())) {
     LOG(ERROR) << "Failed to download control types";
