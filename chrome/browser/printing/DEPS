@@ -3,8 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "print_backend_browsertest.cc": [
+  "print_backend_service_test_impl.h": [
     "+chrome/services/printing/print_backend_service_impl.h",
-    "+chrome/services/printing/print_backend_service_test_impl.h",
   ]
 }

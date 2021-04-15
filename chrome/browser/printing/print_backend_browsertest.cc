@@ -15,7 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "chrome/services/printing/print_backend_service_test_impl.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"

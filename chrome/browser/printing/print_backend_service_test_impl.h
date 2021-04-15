@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_
-#define CHROME_SERVICES_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_
+#ifndef CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_
+#define CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -49,4 +49,4 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
 
 }  // namespace printing
 
-#endif  // CHROME_SERVICES_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_
+#endif  // CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_TEST_IMPL_H_

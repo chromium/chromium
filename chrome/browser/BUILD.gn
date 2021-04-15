@@ -6924,6 +6924,20 @@ static_library("test_support") {
     ]
   }
 
+  if (enable_basic_printing) {
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [
+        "printing/print_backend_service_test_impl.cc",
+        "printing/print_backend_service_test_impl.h",
+      ]
+      deps += [
+        "//chrome/services/printing:lib",
+        "//chrome/services/printing/public/mojom",
+        "//printing:test_support",
+      ]
+    }
+  }
+
   if (enable_extensions) {
     sources += [
       "extensions/api/messaging/native_messaging_test_util.cc",

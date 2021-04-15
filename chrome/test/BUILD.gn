@@ -3159,11 +3159,7 @@ if (!is_android) {
     }
     if (enable_basic_printing &&
         (is_win || is_mac || is_linux || is_chromeos)) {
-      sources += [
-        "../browser/printing/print_backend_browsertest.cc",
-        "../services/printing/print_backend_service_test_impl.cc",
-        "../services/printing/print_backend_service_test_impl.h",
-      ]
+      sources += [ "../browser/printing/print_backend_browsertest.cc" ]
       deps += [
         "//chrome/services/printing:lib",
         "//printing:test_support",
@@ -5882,13 +5878,6 @@ test("unit_tests") {
       "//printing:test_support",
       "//printing/mojom",
     ]
-
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [
-        "../services/printing/print_backend_service_test_impl.cc",
-        "../services/printing/print_backend_service_test_impl.h",
-      ]
-    }
 
     if (enable_print_preview) {
       sources += [
