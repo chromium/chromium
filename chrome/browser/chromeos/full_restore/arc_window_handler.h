@@ -26,6 +26,13 @@ class ArcWindowHandler {
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler() = default;
+
+  void OnAppInstanceConnected();
+
+ private:
+  // The ghost windows would not send window info to app instance if the
+  // instance had not connected yet.
+  bool app_instance_connected_ = false;
 };
 
 }  // namespace full_restore

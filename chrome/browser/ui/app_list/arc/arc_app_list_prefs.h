@@ -231,6 +231,9 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that ArcAppListPrefs is destroyed.
     virtual void OnArcAppListPrefsDestroyed() {}
 
+    // Notifies that App instance connection is ready.
+    virtual void OnConnectionReady() {}
+
    protected:
     ~Observer() override;
   };

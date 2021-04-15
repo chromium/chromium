@@ -23,6 +23,7 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
     return;
 
   arc_prefs_observer_.Observe(prefs);
+  window_handler_ = std::make_unique<ArcWindowHandler>();
 }
 
 FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() = default;
@@ -38,6 +39,10 @@ void FullRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
 
 void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
   ::full_restore::OnTaskDestroyed(task_id);
+}
+
+void FullRestoreArcTaskHandler::OnConnectionReady() {
+  window_handler_->OnAppInstanceConnected();
 }
 
 }  // namespace full_restore

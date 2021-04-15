@@ -40,5 +40,11 @@ apps::mojom::WindowInfoPtr ConvertToArcBounds(
   return window_info;
 }
 
+void ArcWindowHandler::OnAppInstanceConnected() {
+  // TODO(sstan): Send existed ghost window info to ARC once ghost window
+  // has been introduced.
+  app_instance_connected_ = true;
+}
+
 }  // namespace full_restore
 }  // namespace chromeos
