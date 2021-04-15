@@ -29,7 +29,6 @@ class ExtensionsMenuItemView;
 
 // This bubble view displays a list of user extensions and a button to get to
 // managing the user's extensions (chrome://extensions).
-// This class is only used with the kExtensionsToolbarMenu feature.
 class ExtensionsMenuView : public views::BubbleDialogDelegateView,
                            public TabStripModelObserver,
                            public ToolbarActionsModel::Observer {

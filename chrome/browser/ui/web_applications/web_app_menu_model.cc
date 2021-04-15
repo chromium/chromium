@@ -46,8 +46,7 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
     case kUninstallAppCommandId:
       return browser()->app_controller()->CanUninstall();
     case kExtensionsMenuCommandId:
-      return base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu) &&
-             base::FeatureList::IsEnabled(
+      return base::FeatureList::IsEnabled(
                  features::kDesktopPWAsElidedExtensionsMenu) &&
              browser()->window()->GetExtensionsContainer() &&
              browser()->window()->GetExtensionsContainer()->HasAnyExtensions();

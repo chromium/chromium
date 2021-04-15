@@ -17,7 +17,7 @@ class ExtensionsMenuView;
 class ExtensionsToolbarContainer;
 
 // An implementation of ExtensionActionTestHelper that works with the
-// ExtensionsMenu (i.e., when features::kExtensionsToolbarMenu is enabled).
+// ExtensionsMenu.
 class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
  public:
   ExtensionsMenuTestUtil(Browser* browser, bool is_real_window);

@@ -30,8 +30,6 @@ extern const base::Feature kCommander;
 
 extern const base::Feature kEvDetailsInPageInfo;
 
-extern const base::Feature kExtensionsToolbarMenu;
-
 extern const base::Feature kNewProfilePicker;
 
 extern const base::Feature kNewTabstripAnimation;

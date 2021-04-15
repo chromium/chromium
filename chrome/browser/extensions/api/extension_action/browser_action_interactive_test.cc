@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -591,12 +590,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, BrowserActionPopup) {
     content::WebContentsAddedObserver popup_observer;
     actions_bar->Press(0);
     content::WebContents* popup = popup_observer.GetWebContents();
-
-    if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-      actions_bar->WaitForExtensionsContainerLayout();
-    } else {
-      RunScheduledLayouts();
-    }
+    actions_bar->WaitForExtensionsContainerLayout();
 
     gfx::Size max_available_size =
         actions_bar->GetMaxAvailableSizeToFitBubbleOnScreen(0);

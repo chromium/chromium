@@ -26,10 +26,6 @@ const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables an extension menu in the toolbar. See https://crbug.com/943702
-const base::Feature kExtensionsToolbarMenu{"ExtensionsToolbarMenu",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the new profile picker.
 // https:://crbug.com/1063856
 const base::Feature kNewProfilePicker{"NewProfilePicker",
