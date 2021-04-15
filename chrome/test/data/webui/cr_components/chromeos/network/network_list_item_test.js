@@ -246,8 +246,9 @@ suite('NetworkListItemTest', function() {
     managedPropertiesUnavailable.typeProperties.cellular.paymentPortal = {};
     mojoApi_.setManagedPropertiesForTest(managedPropertiesUnavailable);
 
-    listItem.item =
+    const networkState =
         OncMojo.managedPropertiesToNetworkState(managedPropertiesUnavailable);
+    listItem.item = networkState;
     await flushAsync();
 
     // Activate button should not be showing.
@@ -262,6 +263,12 @@ suite('NetworkListItemTest', function() {
     // Arrow button should still be visible.
     const arrow = listItem.$$('#subpageButton');
     assertTrue(!!arrow);
+
+    // Selecting the row should fire the show-detail event.
+    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    listItem.$.divOuter.click();
+    const showDetailEvent = await showDetailPromise;
+    assertEquals(showDetailEvent.detail, networkState);
   });
 
   test('Activating pSIM spinner visibility', async () => {
@@ -304,8 +311,9 @@ suite('NetworkListItemTest', function() {
         mojom.ActivationStateType.kActivating;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivating);
 
-    listItem.item =
+    const networkState =
         OncMojo.managedPropertiesToNetworkState(managedPropertiesActivating);
+    listItem.item = networkState;
     await flushAsync();
 
     // Activating spinner should now be showing.
@@ -314,6 +322,12 @@ suite('NetworkListItemTest', function() {
     // Arrow button should also be visible.
     let arrow = listItem.$$('#subpageButton');
     assertTrue(!!arrow);
+
+    // Selecting the row should fire the show-detail event.
+    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    listItem.$.divOuter.click();
+    const showDetailEvent = await showDetailPromise;
+    assertEquals(showDetailEvent.detail, networkState);
   });
 
   test(
