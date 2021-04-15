@@ -1512,7 +1512,9 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureForImportTask(
 
   if (pixel_format != gl_image_format_fourcc_->ToVideoPixelFormat()) {
     LOG(ERROR) << "Unsupported import format: "
-               << VideoPixelFormatToString(pixel_format);
+               << VideoPixelFormatToString(pixel_format) << ", expected "
+               << VideoPixelFormatToString(
+                      gl_image_format_fourcc_->ToVideoPixelFormat());
     NOTIFY_ERROR(INVALID_ARGUMENT);
     return;
   }

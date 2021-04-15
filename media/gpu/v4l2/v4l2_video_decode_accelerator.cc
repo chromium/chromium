@@ -590,7 +590,9 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureForImportTask(
   // the final output format from the image processor (if exists).
   // Use |egl_image_format_fourcc_|, it will be the final output format.
   if (pixel_format != egl_image_format_fourcc_->ToVideoPixelFormat()) {
-    LOG(ERROR) << "Unsupported import format: " << pixel_format;
+    LOG(ERROR) << "Unsupported import format: " << pixel_format << ", expected "
+               << VideoPixelFormatToString(
+                      egl_image_format_fourcc_->ToVideoPixelFormat());
     NOTIFY_ERROR(INVALID_ARGUMENT);
     return;
   }
