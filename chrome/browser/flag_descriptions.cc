@@ -1569,7 +1569,7 @@ const char kDestroyProfileOnBrowserCloseDescription[] =
 
 const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =
-    "Enables the new experimental USB backends for macOS and Windows";
+    "Enables the new experimental USB backend for macOS";
 
 const char kNewTabstripAnimationName[] = "New tabstrip animations";
 const char kNewTabstripAnimationDescription[] =

@@ -4147,11 +4147,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kGdiTextPrinting)},
 #endif  // defined(OS_WIN)
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_MAC)
     {"new-usb-backend", flag_descriptions::kNewUsbBackendName,
-     flag_descriptions::kNewUsbBackendDescription, kOsWin | kOsMac,
+     flag_descriptions::kNewUsbBackendDescription, kOsMac,
      FEATURE_VALUE_TYPE(device::kNewUsbBackend)},
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID)
     {"omnibox-adaptive-suggestions-count",
