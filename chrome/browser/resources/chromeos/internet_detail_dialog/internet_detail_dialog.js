@@ -412,7 +412,8 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
    * @return {boolean}
    * @private
    */
@@ -422,11 +423,15 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
    * @return {boolean}
    * @private
    */
   showConnect_(managedProperties) {
+    if (!managedProperties) {
+      return false;
+    }
     return managedProperties.connectable &&
         managedProperties.type !=
         chromeos.networkConfig.mojom.NetworkType.kEthernet &&
@@ -435,11 +440,15 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
    * @return {boolean}
    * @private
    */
   showDisconnect_(managedProperties) {
+    if (!managedProperties) {
+      return false;
+    }
     return managedProperties.type !=
         chromeos.networkConfig.mojom.NetworkType.kEthernet &&
         managedProperties.connectionState !=

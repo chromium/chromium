@@ -118,7 +118,8 @@ suite('internet-detail-dialog', () => {
     assertTrue(internetDetailDialog.showCellularSim_(managedProperties));
     assertFalse(!!internetDetailDialog.$$('network-siminfo'));
 
-    assertFalse(!!internetDetailDialog.$$('cr-button'));
+    // The 'Forget' and 'ConnectDisconnect' buttons should still be showing.
+    assertTrue(!!internetDetailDialog.$$('cr-button'));
   });
 
   test('Network on active sim, show configurations', async () => {
@@ -134,8 +135,6 @@ suite('internet-detail-dialog', () => {
     const managedProperties = internetDetailDialog.managedProperties_;
     assertTrue(internetDetailDialog.showCellularSim_(managedProperties));
     assertTrue(!!internetDetailDialog.$$('network-siminfo'));
-
-    assertTrue(!!internetDetailDialog.$$('cr-button'));
   });
 
   test('Dialog disabled when inhibited', async () => {
