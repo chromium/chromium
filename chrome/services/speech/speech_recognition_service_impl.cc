@@ -56,6 +56,7 @@ SpeechRecognitionServiceImpl::GetUrlLoaderFactory() {
 void SpeechRecognitionServiceImpl::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
@@ -68,7 +69,7 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
 
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), weak_factory_.GetWeakPtr(),
-      binary_path_, config_path_);
+      std::move(options), binary_path_, config_path_);
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -76,6 +77,7 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
 void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
@@ -90,8 +92,8 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(client), weak_factory_.GetWeakPtr(), binary_path_,
-          config_path_));
+          std::move(client), weak_factory_.GetWeakPtr(), std::move(options),
+          binary_path_, config_path_));
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }

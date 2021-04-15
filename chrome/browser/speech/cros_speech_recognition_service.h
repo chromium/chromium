@@ -36,11 +36,13 @@ class CrosSpeechRecognitionService
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           client,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
   void BindAudioSourceFetcher(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           client,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
 
  private:

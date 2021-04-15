@@ -35,14 +35,15 @@ void CrosSpeechRecognitionService::Create(
 void CrosSpeechRecognitionService::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
   PopulateFilePaths(binary_path, languagepack_path);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client),
-      nullptr /* =SpeechRecognitionService WeakPtr*/, binary_path,
-      languagepack_path);
+      nullptr /* =SpeechRecognitionService WeakPtr*/, std::move(options),
+      binary_path, languagepack_path);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -50,6 +51,7 @@ void CrosSpeechRecognitionService::BindRecognizer(
 void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   base::FilePath binary_path, languagepack_path;
   PopulateFilePaths(binary_path, languagepack_path);
@@ -65,7 +67,7 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
           &AudioSourceFetcherImpl::Create, std::move(fetcher_receiver),
           std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
               std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
-              binary_path, languagepack_path)));
+              std::move(options), binary_path, languagepack_path)));
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }

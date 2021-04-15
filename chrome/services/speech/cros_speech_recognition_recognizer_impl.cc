@@ -22,12 +22,13 @@ void CrosSpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
           std::move(remote), std::move(speech_recognition_service_impl),
-          binary_path, config_path),
+          std::move(options), binary_path, config_path),
       std::move(receiver));
 }
 CrosSpeechRecognitionRecognizerImpl::~CrosSpeechRecognitionRecognizerImpl() =
@@ -36,11 +37,13 @@ CrosSpeechRecognitionRecognizerImpl::~CrosSpeechRecognitionRecognizerImpl() =
 CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
     : SpeechRecognitionRecognizerImpl(
           std::move(remote),
           std::move(speech_recognition_service_impl),
+          std::move(options),
           binary_path,
           config_path),
       enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),

@@ -36,6 +36,7 @@ class SpeechRecognitionRecognizerImpl
           remote,
       base::WeakPtr<SpeechRecognitionServiceImpl>
           speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
   ~SpeechRecognitionRecognizerImpl() override;
@@ -49,6 +50,7 @@ class SpeechRecognitionRecognizerImpl
           remote,
       base::WeakPtr<SpeechRecognitionServiceImpl>
           speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
 
@@ -113,6 +115,7 @@ class SpeechRecognitionRecognizerImpl
   int sample_rate_ = 0;
   int channel_count_ = 0;
   LanguageCode language_ = LanguageCode::kNone;
+  media::mojom::SpeechRecognitionOptionsPtr options_;
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;

@@ -145,6 +145,8 @@ void ChromeSpeechRecognitionClient::Initialize() {
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kCaption),
       media::BindToCurrentLoop(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));

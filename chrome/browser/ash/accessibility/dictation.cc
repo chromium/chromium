@@ -85,7 +85,8 @@ bool Dictation::OnToggleDictation() {
     // On-device recognition is behind a flag and then only available if
     // SODA is installed on-device.
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        weak_ptr_factory_.GetWeakPtr(), profile_, language);
+        weak_ptr_factory_.GetWeakPtr(), profile_, language,
+        /*recognition_mode_ime=*/true);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
   } else {

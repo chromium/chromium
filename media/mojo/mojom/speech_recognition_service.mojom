@@ -30,7 +30,8 @@ interface SpeechRecognitionContext {
   // indicating whether multichannel audio is supported by the speech
   // recognition service.
   BindRecognizer(pending_receiver<SpeechRecognitionRecognizer> receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client)
+                 pending_remote<SpeechRecognitionRecognizerClient> client,
+                 SpeechRecognitionOptions options)
                  => (bool is_multichannel_supported);
 
   // Prepares microphone audio to be captured from within the
@@ -38,7 +39,8 @@ interface SpeechRecognitionContext {
   // SpeechRecognitionRecognizerClient.
   BindAudioSourceFetcher(
                  pending_receiver<AudioSourceFetcher> fetcher_receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client)
+                 pending_remote<SpeechRecognitionRecognizerClient> client,
+                 SpeechRecognitionOptions options)
                  => (bool is_multichannel_supported);
 };
 
@@ -163,4 +165,24 @@ interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
   BindSpeechRecognitionBrowserObserver(
     pending_remote<SpeechRecognitionBrowserObserver> observer);
+};
+
+// Corresponds to ExtendedSodaConfigMsg in
+// chrome/services/speech/soda/proto/soda_api.proto.
+enum SpeechRecognitionMode {
+  kUnknown,
+  // Intended for voice input for keyboard usage.
+  kIme,
+  // Intended to caption a stream of audio.
+  kCaption,
+};
+
+// Options for speech recognition.
+// TODO(crbug.com/1195916): Add language identifier.
+// TODO(crbug.com/1165437): Add option to include timing metrics in the result.
+struct SpeechRecognitionOptions {
+  // What kind of recognition to use.
+  // In the case of web fallback (not for launch, used for development only),
+  // this option will be ignored.
+  SpeechRecognitionMode recognition_mode;
 };

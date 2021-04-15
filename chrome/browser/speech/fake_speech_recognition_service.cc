@@ -21,6 +21,7 @@ void FakeSpeechRecognitionService::Create(
 void FakeSpeechRecognitionService::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   recognizer_receiver_.Bind(std::move(receiver));
   recognizer_client_remote_.Bind(std::move(client));
@@ -33,6 +34,7 @@ void FakeSpeechRecognitionService::BindRecognizer(
 void FakeSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
   fetcher_receiver_.Bind(std::move(fetcher_receiver));
   recognizer_client_remote_.Bind(std::move(client));

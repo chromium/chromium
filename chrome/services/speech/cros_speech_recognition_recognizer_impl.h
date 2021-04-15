@@ -33,6 +33,7 @@ class CrosSpeechRecognitionRecognizerImpl
           remote,
       base::WeakPtr<SpeechRecognitionServiceImpl>
           speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
   ~CrosSpeechRecognitionRecognizerImpl() override;
@@ -43,6 +44,7 @@ class CrosSpeechRecognitionRecognizerImpl
           remote,
       base::WeakPtr<SpeechRecognitionServiceImpl>
           speech_recognition_service_impl,
+      media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
 

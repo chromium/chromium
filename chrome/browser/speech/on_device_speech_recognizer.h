@@ -31,10 +31,14 @@ class OnDeviceSpeechRecognizer
   static bool IsOnDeviceSpeechRecognizerAvailable(
       std::string language_or_locale);
 
+  // |language_or_locale| specificies the recognition language.
+  // |recognition_mode_ime| is whether to use speech recognition configured for
+  // IME or Captions.
   OnDeviceSpeechRecognizer(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       Profile* profile,
-      std::string language_or_locale);
+      std::string language_or_locale,
+      bool recognition_mode_ime);
   ~OnDeviceSpeechRecognizer() override;
   OnDeviceSpeechRecognizer(const OnDeviceSpeechRecognizer&) = delete;
   OnDeviceSpeechRecognizer& operator=(const OnDeviceSpeechRecognizer&) = delete;

@@ -71,7 +71,8 @@ bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
 OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
     Profile* profile,
-    std::string language_or_locale)
+    std::string language_or_locale,
+    bool recognition_mode_ime)
     : SpeechRecognizer(delegate),
       state_(SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF),
       is_multichannel_supported_(false),
@@ -87,6 +88,9 @@ OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
   speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::mojom::SpeechRecognitionOptions::New(
+          recognition_mode_ime ? media::mojom::SpeechRecognitionMode::kIme
+                               : media::mojom::SpeechRecognitionMode::kCaption),
       media::BindToCurrentLoop(
           base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));

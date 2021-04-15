@@ -132,7 +132,8 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit))
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        mock_speech_delegate_->GetWeakPtr(), browser()->profile(), "en-US");
+        mock_speech_delegate_->GetWeakPtr(), browser()->profile(), "en-US",
+        true /* is IME */);
     loop.Run();
   }
 

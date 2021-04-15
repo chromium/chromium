@@ -90,6 +90,19 @@ void OnSodaResponse(const char* serialized_proto,
   }
 }
 
+speech::soda::chrome::ExtendedSodaConfigMsg::RecognitionMode
+GetSodaSpeechRecognitionMode(
+    media::mojom::SpeechRecognitionMode recognition_mode) {
+  switch (recognition_mode) {
+    case media::mojom::SpeechRecognitionMode::kUnknown:
+      return soda::chrome::ExtendedSodaConfigMsg::UNKNOWN;
+    case media::mojom::SpeechRecognitionMode::kIme:
+      return soda::chrome::ExtendedSodaConfigMsg::IME;
+    case media::mojom::SpeechRecognitionMode::kCaption:
+      return soda::chrome::ExtendedSodaConfigMsg::CAPTION;
+  }
+}
+
 }  // namespace
 
 SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
@@ -101,12 +114,13 @@ void SpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(remote), std::move(speech_recognition_service_impl),
-          binary_path, config_path),
+          std::move(options), binary_path, config_path),
       std::move(receiver));
 }
 
@@ -132,9 +146,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
+    media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)
-    : client_remote_(std::move(remote)), config_path_(config_path) {
+    : client_remote_(std::move(remote)),
+      config_path_(config_path),
+      options_(std::move(options)) {
   recognition_event_callback_ = media::BindToCurrentLoop(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
@@ -303,8 +320,8 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_language_pack_directory(language_pack_directory);
   config_msg.set_simulate_realtime_testonly(false);
   config_msg.set_enable_lang_id(false);
-  // SODA wants to listen as CAPTION.
-  config_msg.set_recognition_mode(soda::chrome::ExtendedSodaConfigMsg::CAPTION);
+  config_msg.set_recognition_mode(
+      GetSodaSpeechRecognitionMode(options_->recognition_mode));
   auto serialized = config_msg.SerializeAsString();
 
   SerializedSodaConfig config;

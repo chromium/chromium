@@ -212,6 +212,8 @@ void SpeechRecognitionServiceTest::LaunchService() {
   speech_recognition_context_->BindRecognizer(
       std::move(pending_recognizer_receiver),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kCaption),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {
@@ -241,6 +243,8 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
   speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kIme),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {
