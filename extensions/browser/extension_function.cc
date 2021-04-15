@@ -661,11 +661,12 @@ void ExtensionFunction::OnResponded() {
     extensions::mojom::Renderer* renderer =
         extensions::RendererStartupHelperFactory::GetForBrowserContext(
             browser_context())
-            ->GetRenderer(render_frame_host_->GetProcess());
+            ->GetRenderer(
+                content::RenderProcessHost::FromID(source_process_id()));
     if (renderer) {
-      renderer->TransferBlobs(base::BindOnce(
-          &ExtensionFunction::OnTransferBlobsAck, this,
-          render_frame_host_->GetProcess()->GetID(), transferred_blob_uuids_));
+      renderer->TransferBlobs(
+          base::BindOnce(&ExtensionFunction::OnTransferBlobsAck, this,
+                         source_process_id(), transferred_blob_uuids_));
     }
   }
 }

@@ -220,7 +220,7 @@ void PrinterProviderInternalGetPrintDataFunction::OnBlob(
 
   extensions::BlobHolder* holder =
       extensions::BlobHolder::FromRenderProcessHost(
-          render_frame_host()->GetProcess());
+          content::RenderProcessHost::FromID(source_process_id()));
   holder->HoldBlobReference(std::move(blob));
 
   SetTransferredBlobUUIDs(uuids);
