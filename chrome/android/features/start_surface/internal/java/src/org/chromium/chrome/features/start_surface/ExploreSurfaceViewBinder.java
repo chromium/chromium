@@ -85,9 +85,9 @@ class ExploreSurfaceViewBinder {
 
     private static void resetScrollPosition(PropertyModel model) {
         FeedSurfaceCoordinator feedLoadingCoordinator = model.get(FEED_SURFACE_COORDINATOR);
-        if (feedLoadingCoordinator == null || feedLoadingCoordinator.getStream() == null) return;
+        if (feedLoadingCoordinator == null) return;
 
-        RecyclerView feedStreamView = (RecyclerView) feedLoadingCoordinator.getStream().getView();
+        RecyclerView feedStreamView = feedLoadingCoordinator.getRecyclerView();
         if (feedStreamView != null) {
             feedStreamView.scrollToPosition(0);
         }

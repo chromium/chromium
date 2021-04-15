@@ -14,20 +14,22 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.feed.NtpListContentManager;
+
 import java.util.HashSet;
 
 /**
  * Tracks position of slice views. When a slice's view is first 2/3rds visible in the viewport,
  * the observer is notified.
  */
-class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener {
+public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener {
     private static final String TAG = "FeedSliceViewTracker";
     private static final double DEFAULT_VIEW_LOG_THRESHOLD = .66;
 
     @Nullable
     private RecyclerView mRootView;
     @Nullable
-    private FeedListContentManager mContentManager;
+    private NtpListContentManager mContentManager;
     // The set of content keys already reported as visible.
     private HashSet<String> mContentKeysVisible = new HashSet<String>();
     private boolean mFeedContentVisible;
@@ -44,18 +46,27 @@ class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener {
     }
 
     FeedSliceViewTracker(@NonNull RecyclerView rootView,
-            @NonNull FeedListContentManager contentManager, @NonNull Observer observer) {
-        mRootView = (RecyclerView) rootView;
+            @NonNull NtpListContentManager contentManager, @NonNull Observer observer) {
+        mRootView = rootView;
         mContentManager = contentManager;
         mObserver = observer;
+    }
+
+    /** Attaches the tracker to the root view. */
+    public void bind() {
         mRootView.getViewTreeObserver().addOnPreDrawListener(this);
+    }
+
+    /** Detaches the tracker from the view. */
+    public void unbind() {
+        if (mRootView != null && mRootView.getViewTreeObserver().isAlive()) {
+            mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
+        }
     }
 
     /** Stop observing rootView. Prevents further calls to observer. */
     public void destroy() {
-        if (mRootView != null && mRootView.getViewTreeObserver().isAlive()) {
-            mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
-        }
+        unbind();
         mRootView = null;
         mObserver = null;
         mContentManager = null;

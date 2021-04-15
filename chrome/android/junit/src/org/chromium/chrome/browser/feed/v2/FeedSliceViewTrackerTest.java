@@ -32,6 +32,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
 
 import java.util.Arrays;
 
@@ -48,7 +49,7 @@ public class FeedSliceViewTrackerTest {
     LinearLayoutManager mLayoutManager;
     @Mock
     ViewTreeObserver mViewTreeObserver;
-    FeedListContentManager mContentManager;
+    NtpListContentManager mContentManager;
 
     FeedSliceViewTracker mTracker;
 
@@ -61,7 +62,7 @@ public class FeedSliceViewTrackerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContentManager = new FeedListContentManager(null, null);
+        mContentManager = new NtpListContentManager();
         doReturn(mLayoutManager).when(mParentView).getLayoutManager();
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
         mTracker = Mockito.spy(new FeedSliceViewTracker(mParentView, mContentManager, mObserver));
@@ -111,9 +112,9 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testOnPreDraw_BothVisibleAreReportedExactlyOnce() {
         mContentManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        new FeedListContentManager.NativeViewContent("c/key1", mChildA),
-                        new FeedListContentManager.NativeViewContent("c/key2", mChildB),
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent("c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent("c/key2", mChildB),
                 }));
         doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
         doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
@@ -136,9 +137,9 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testOnPreDraw_AfterClearReportsAgain() {
         mContentManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        new FeedListContentManager.NativeViewContent("c/key1", mChildA),
-                        new FeedListContentManager.NativeViewContent("c/key2", mChildB),
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent("c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent("c/key2", mChildB),
                 }));
         doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
         doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
@@ -161,9 +162,9 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testOnPreDraw_IgnoresNonContentViews() {
         mContentManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        new FeedListContentManager.NativeViewContent("non-content-key1", mChildA),
-                        new FeedListContentManager.NativeViewContent("non-content-key2", mChildB),
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent("non-content-key1", mChildA),
+                        new NtpListContentManager.NativeViewContent("non-content-key2", mChildB),
                 }));
         doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
         doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
@@ -185,9 +186,9 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testOnPreDraw_OnlyOneVisible() {
         mContentManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        new FeedListContentManager.NativeViewContent("c/key1", mChildA),
-                        new FeedListContentManager.NativeViewContent("c/key2", mChildB),
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent("c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent("c/key2", mChildB),
                 }));
         doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
         doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
@@ -206,9 +207,9 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testOnPreDraw_EmptyRecyclerView() {
         mContentManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        new FeedListContentManager.NativeViewContent("c/key1", mChildA),
-                        new FeedListContentManager.NativeViewContent("c/key2", mChildB),
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent("c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent("c/key2", mChildB),
                 }));
         doReturn(RecyclerView.NO_POSITION).when(mLayoutManager).findFirstVisibleItemPosition();
         doReturn(RecyclerView.NO_POSITION).when(mLayoutManager).findLastVisibleItemPosition();

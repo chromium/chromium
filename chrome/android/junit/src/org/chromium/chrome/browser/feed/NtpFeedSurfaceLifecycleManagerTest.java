@@ -41,11 +41,11 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.prefs.PrefService;
 
 /**
- * Unit tests for {@link StreamLifecycleManager}.
+ * Unit tests for {@link FeedSurfaceLifecycleManager}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class NtpStreamLifecycleManagerTest {
+public class NtpFeedSurfaceLifecycleManagerTest {
     @Mock
     private Activity mActivity;
     @Mock
@@ -55,7 +55,7 @@ public class NtpStreamLifecycleManagerTest {
     @Mock
     private PrefService mPrefService;
 
-    private NtpStreamLifecycleManager mNtpStreamLifecycleManager;
+    private NtpFeedSurfaceLifecycleManager mNtpStreamLifecycleManager;
 
     @Before
     public void setUp() {
@@ -64,16 +64,16 @@ public class NtpStreamLifecycleManagerTest {
         // Initialize a test instance for PrefService.
         when(mPrefService.getBoolean(anyString())).thenReturn(true);
         doNothing().when(mPrefService).setBoolean(anyString(), anyBoolean());
-        NtpStreamLifecycleManager.setPrefServiceForTesting(mPrefService);
+        NtpFeedSurfaceLifecycleManager.setPrefServiceForTesting(mPrefService);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        mNtpStreamLifecycleManager = new NtpStreamLifecycleManager(mStream, mActivity, mTab);
+        mNtpStreamLifecycleManager = new NtpFeedSurfaceLifecycleManager(mActivity, mTab, null);
         verify(mStream, times(1)).onCreate(or(any(String.class), isNull()));
     }
 
     @After
     public void tearDown() {
-        NtpStreamLifecycleManager.setPrefServiceForTesting(null);
+        NtpFeedSurfaceLifecycleManager.setPrefServiceForTesting(null);
     }
 
     @Test

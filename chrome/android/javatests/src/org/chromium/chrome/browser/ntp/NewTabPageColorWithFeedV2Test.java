@@ -21,7 +21,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feed.v2.FeedStreamSurface;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -65,7 +64,6 @@ public class NewTabPageColorWithFeedV2Test {
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
         // Allow rendering external items without the external renderer.
-        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
@@ -93,8 +91,7 @@ public class NewTabPageColorWithFeedV2Test {
             ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
     public void testTextBoxBackgroundColor() throws Exception {
         // clang-format on
-        RecyclerView recycleView =
-                (RecyclerView) mNtp.getCoordinatorForTesting().getStreamForTesting().getView();
+        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
         Resources resources = mActivityTestRule.getActivity().getResources();
         Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(resources, false),
@@ -102,7 +99,7 @@ public class NewTabPageColorWithFeedV2Test {
 
         // Wait for the test feed items to be available in the feed.
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD,
-                (RecyclerView) mNtp.getCoordinatorForTesting().getStreamForTesting().getView());
+                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
 
         // Scroll to the bottom.
         RecyclerViewTestUtils.scrollToBottom(recycleView);

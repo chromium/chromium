@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_SURFACE_H_
-#define CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_SURFACE_H_
+#ifndef CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_
+#define CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -17,17 +17,17 @@ class StreamUpdate;
 namespace feed {
 namespace android {
 
-// Native access to |FeedStreamSurface| in Java.
+// Native access to |FeedStream| in Java.
 // Created once for each NTP/start surface.
-class FeedStreamSurface : public ::feed::FeedStreamSurface {
+class FeedStream : public ::feed::FeedStreamSurface {
  public:
-  explicit FeedStreamSurface(const base::android::JavaRef<jobject>& j_this);
-  FeedStreamSurface(const FeedStreamSurface&) = delete;
-  FeedStreamSurface& operator=(const FeedStreamSurface&) = delete;
+  explicit FeedStream(const base::android::JavaRef<jobject>& j_this);
+  FeedStream(const FeedStream&) = delete;
+  FeedStream& operator=(const FeedStream&) = delete;
 
-  ~FeedStreamSurface() override;
+  ~FeedStream() override;
 
-  // FeedStreamSurface implementation.
+  // FeedStream implementation.
   void StreamUpdate(const feedui::StreamUpdate& update) override;
   void ReplaceDataStoreEntry(base::StringPiece key,
                              base::StringPiece data) override;
@@ -118,4 +118,4 @@ class FeedStreamSurface : public ::feed::FeedStreamSurface {
 }  // namespace android
 }  // namespace feed
 
-#endif  // CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_SURFACE_H_
+#endif  // CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_

@@ -21,10 +21,13 @@ feed_deps = [
 
 feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProvider.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpStreamLifecycleManager.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/StreamLifecycleManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpListContentManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
@@ -34,32 +37,31 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/stream/Stream.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/ui/MaterialSpinnerView.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/CardMenuBottomSheetContent.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedListContentManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedPersistentKeyValueCache.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProvider.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedServiceBridgeDelegateImpl.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTracker.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStream.java",
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurface.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2/NativeViewListRenderer.java",
 ]
 
 feed_srcjar_deps = []
 
 feed_junit_test_java_sources = [
+  "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinatorTest.java",
+  "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
-  "junit/src/org/chromium/chrome/browser/feed/v2/FeedListContentManagerTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProviderTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
-  "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurfaceTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
   "junit/src/org/chromium/chrome/browser/feed/v2/NativeViewListRendererTest.java",
+  "junit/src/org/chromium/chrome/browser/feed/v2/NtpListContentManagerTest.java",
 ]
 
 feed_test_java_sources = [
+  "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedV2NewTabPageTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProviderNativeTest.java",
-  "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2NewTabPageTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2TestHelper.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/TestFeedServer.java",
 ]

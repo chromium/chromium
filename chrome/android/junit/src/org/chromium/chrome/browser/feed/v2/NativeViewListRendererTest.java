@@ -32,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
 
 /** Unit tests for {@link NativeViewListRenderer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,7 +47,7 @@ public class NativeViewListRendererTest {
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {}
     }
 
-    private FeedListContentManager mManager;
+    private NtpListContentManager mManager;
     private Context mContext;
     private NativeViewListRenderer mRenderer;
 
@@ -58,10 +59,8 @@ public class NativeViewListRendererTest {
 
         // Note: this behaves both like a mock and a real object.
         // Methods calls can be mocked or tracked to validate class behavior.
-        mManager = Mockito.mock(FeedListContentManager.class,
-                Mockito.withSettings()
-                        .useConstructor(null, null)
-                        .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        mManager = Mockito.mock(NtpListContentManager.class,
+                Mockito.withSettings().useConstructor().defaultAnswer(Mockito.CALLS_REAL_METHODS));
         mRenderer = Mockito.mock(NativeViewListRenderer.class,
                 Mockito.withSettings().useConstructor(mContext).defaultAnswer(
                         Mockito.CALLS_REAL_METHODS));
@@ -170,9 +169,9 @@ public class NativeViewListRendererTest {
         verify(mRenderer, times(1)).notifyItemMoved(2, 1);
     }
 
-    private FeedListContentManager.FeedContent createContent(String text) {
+    private NtpListContentManager.FeedContent createContent(String text) {
         TextView v = new TextView(mContext);
         v.setText(text);
-        return new FeedListContentManager.NativeViewContent(v.toString(), v);
+        return new NtpListContentManager.NativeViewContent(v.toString(), v);
     }
 }

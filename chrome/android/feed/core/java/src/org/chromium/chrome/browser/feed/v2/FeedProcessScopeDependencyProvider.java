@@ -11,23 +11,17 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.FeedImageFetchClient;
-import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -44,7 +38,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @VisibleForTesting
     static PrivacyPreferencesManager sPrivacyPreferencesManagerForTest;
 
-    FeedProcessScopeDependencyProvider() {
+    public FeedProcessScopeDependencyProvider() {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
         mImageFetchClient = new FeedImageFetchClient();
         mPersistentKeyValueCache = new FeedPersistentKeyValueCache();
@@ -58,31 +52,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public Context getContext() {
         return mContext;
-    }
-
-    @Deprecated
-    @Override
-    public String getAccountName() {
-        assert ThreadUtils.runningOnUiThread();
-        CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        return (primaryAccount == null) ? "" : primaryAccount.getEmail();
-    }
-
-    @Deprecated
-    @Override
-    public int[] getExperimentIds() {
-        // Note: this is thread-safe.
-        return FeedStreamSurfaceJni.get().getExperimentIds();
-    }
-
-    @Deprecated
-    @Override
-    public String getClientInstanceId() {
-        assert ThreadUtils.runningOnUiThread();
-        return FeedServiceBridge.getClientInstanceId();
     }
 
     @Override

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -56,6 +56,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
+import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -160,7 +162,6 @@ public class FeedV2NewTabPageTest {
     public void setUp() throws Exception {
         SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
         mActivityTestRule.startMainActivityWithURL("about:blank");
-        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
@@ -229,7 +230,7 @@ public class FeedV2NewTabPageTest {
                                                             .getSignInPromoForTesting()
                                                             .getSigninObserverForTesting();
         RecyclerView recyclerView =
-                (RecyclerView) mNtp.getCoordinatorForTesting().getStreamForTesting().getView();
+                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
         // Prioritize RecyclerView's focusability so that the sign-in promo button and the action
         // button don't get focused initially to avoid flakiness.
@@ -293,8 +294,7 @@ public class FeedV2NewTabPageTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         SIGNIN_PROMO_POSITION, SWIPE_LEFT));
 
-        ViewGroup view =
-                (ViewGroup) mNtp.getCoordinatorForTesting().getStreamForTesting().getView();
+        ViewGroup view = (ViewGroup) mNtp.getCoordinatorForTesting().getRecyclerView();
         waitForView(view, withId(R.id.signin_promo_view_container), VIEW_NULL);
         waitForView(view, allOf(withId(R.id.header_title), isDisplayed()));
 
@@ -344,7 +344,7 @@ public class FeedV2NewTabPageTest {
         TextView headerStatusView = sectionHeaderView.findViewById(R.id.header_title);
 
         // Assert that the feed is expanded and that the header title text is correct.
-        Assert.assertTrue(mNtp.getCoordinatorForTesting().getSectionHeaderModel().get(
+        Assert.assertTrue(mNtp.getCoordinatorForTesting().getSectionHeaderModelForTest().get(
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_on),
                 headerStatusView.getText());
@@ -353,7 +353,7 @@ public class FeedV2NewTabPageTest {
         toggleHeader(false);
 
         // Assert that the feed is collapsed and that the header title text is correct.
-        Assert.assertFalse(mNtp.getCoordinatorForTesting().getSectionHeaderModel().get(
+        Assert.assertFalse(mNtp.getCoordinatorForTesting().getSectionHeaderModelForTest().get(
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
                 headerStatusView.getText());
@@ -361,7 +361,6 @@ public class FeedV2NewTabPageTest {
 
     /**
      * Toggles the header and checks whether the header has the right status.
-     * @param rootView The {@link ViewGroup} that contains the header view.
      * @param expanded Whether the header should be expanded.
      */
     private void toggleHeader(boolean expanded) {

@@ -7,21 +7,22 @@ package org.chromium.chrome.browser.feed.shared;
 import android.app.Activity;
 import android.view.MotionEvent;
 
-import org.chromium.chrome.browser.feed.StreamLifecycleManager;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 
 /**
  * The delegate of the {@link FeedSurfaceProvider} creator needs to implement.
  */
 public interface FeedSurfaceDelegate {
     /**
-     * Creates {@link StreamLifecycleManager} for the specified {@link Stream} in the {@link
-     * Activity}.
-     * @param stream The {@link Stream} managed by the {@link StreamLifecycleManager}.
-     * @param activity The associated {@link Activity} of the {@link Stream}.
-     * @return The {@link StreamLifecycleManager}.
+     * Creates {@link FeedSurfaceLifecycleManager} for the specified {@link FeedSurfaceCoordinator}
+     * in the {@link Activity}.
+     * @param activity The associated {@link Activity} of the {@link FeedSurfaceCoordinator}.
+     * @param coordinator The coordinator managing the feed surface.
+     * @return The {@link FeedSurfaceLifecycleManager}.
      */
-    StreamLifecycleManager createStreamLifecycleManager(Stream stream, Activity activity);
+    FeedSurfaceLifecycleManager createStreamLifecycleManager(
+            Activity activity, FeedSurfaceCoordinator coordinator);
 
     /**
      * Checks whether the delegate want to intercept the given touch event.

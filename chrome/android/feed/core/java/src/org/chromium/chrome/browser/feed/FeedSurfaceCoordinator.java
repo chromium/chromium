@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,10 +31,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
-import org.chromium.chrome.browser.feed.shared.stream.Header;
-import org.chromium.chrome.browser.feed.shared.stream.NonDismissibleHeader;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.v2.FeedStream;
+import org.chromium.chrome.browser.feed.v2.NativeViewListRenderer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -52,6 +52,9 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -68,7 +71,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -94,8 +96,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
-    private Tracker mTracker;
     private long mStreamCreatedTimeMs;
+    private boolean mIsActive;
+    private int mHeaderCount;
 
     // Enhanced Protection promo view will be not-null once we have it created, until it is
     // destroyed.
@@ -103,18 +106,24 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable EnhancedProtectionPromoController mEnhancedProtectionPromoController;
 
     // Used when Feed is enabled.
-    private @Nullable Stream mStream;
-    private @Nullable StreamLifecycleManager mStreamLifecycleManager;
+    private @Nullable Profile mProfile;
+    private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
+    private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
+    private @Nullable PersonalizedSigninPromoView mSigninPromoView;
+    private @Nullable ViewResizer mStreamViewResizer;
+    private @Nullable FeedStream mStream;
+    // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
     private @Nullable SectionHeaderView mSectionHeaderView;
     private @Nullable ListModelChangeProcessor<PropertyListModel<PropertyModel, PropertyKey>,
             SectionHeaderView, PropertyKey> mSectionHeaderListModelChangeProcessor;
     private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
             mSectionHeaderModelChangeProcessor;
-    private @Nullable PersonalizedSigninPromoView mSigninPromoView;
-    private @Nullable ViewResizer mStreamViewResizer;
-    private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
-    private @Nullable Profile mProfile;
+    // Feed RecyclerView/xSurface fields.
+    private @Nullable NtpListContentManager mContentManager;
+    private @Nullable RecyclerView mRecyclerView;
+    private @Nullable SurfaceScope mSurfaceScope;
+    private @Nullable HybridListRenderer mHybridListRenderer;
 
     // Used when Feed is disabled by policy.
     private @Nullable ScrollView mScrollViewForPolicy;
@@ -124,39 +133,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
-
-    private class SignInPromoHeader implements Header {
-        @Override
-        public View getView() {
-            return getSigninPromoView();
-        }
-
-        @Override
-        public boolean isDismissible() {
-            return true;
-        }
-
-        @Override
-        public void onDismissed() {
-            mMediator.onSignInPromoDismissed();
-        }
-    }
-
-    private class EnhancedProtectionPromoHeader implements Header {
-        @Override
-        public View getView() {
-            assert mEnhancedProtectionPromoView != null;
-            return mEnhancedProtectionPromoView;
-        }
-
-        @Override
-        public boolean isDismissible() {
-            return false;
-        }
-
-        @Override
-        public void onDismissed() {}
-    }
 
     /**
      * Provides the additional capabilities needed for the container view.
@@ -257,6 +233,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate) {
+        FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -288,8 +265,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         // MVC setup for feed header.
         mSectionHeaderView = sectionHeaderView;
+        mSectionHeaderModel = SectionHeaderListProperties.create();
         if (mSectionHeaderView != null) {
-            mSectionHeaderModel = SectionHeaderListProperties.create();
             SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
             mSectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mSectionHeaderModel, mSectionHeaderView, binder);
@@ -303,14 +280,17 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(
                 this, mActivity, snapScrollHelper, mPageNavigationDelegate, mSectionHeaderModel);
+        // Creates streams, initiates content changes.
+        mMediator.updateContent();
+        FeedSurfaceTracker.getInstance().trackSurface(this);
     }
 
     @Override
     public void destroy() {
         stopIph();
         mMediator.destroy();
-        if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
-        mStreamLifecycleManager = null;
+        if (mFeedSurfaceLifecycleManager != null) mFeedSurfaceLifecycleManager.destroy();
+        mFeedSurfaceLifecycleManager = null;
         if (mEnhancedProtectionPromoController != null) {
             mEnhancedProtectionPromoController.destroy();
         }
@@ -320,6 +300,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .removeObserver(mSectionHeaderListModelChangeProcessor);
         }
+        FeedSurfaceTracker.getInstance().untrackSurface(this);
+        if (mHybridListRenderer != null) {
+            mHybridListRenderer.unbind();
+        }
+        mRootView.removeAllViews();
     }
 
     @Override
@@ -354,14 +339,15 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     /**
-     * @return The {@link StreamLifecycleManager} that manages the lifecycle of the {@link Stream}.
+     * @return The {@link FeedSurfaceLifecycleManager} that manages the lifecycle of the {@link
+     *         Stream}.
      */
-    StreamLifecycleManager getStreamLifecycleManager() {
-        return mStreamLifecycleManager;
+    FeedSurfaceLifecycleManager getSurfaceLifecycleManager() {
+        return mFeedSurfaceLifecycleManager;
     }
 
     /** @return The {@link Stream} that this class holds. */
-    public Stream getStream() {
+    Stream getStream() {
         return mStream;
     }
 
@@ -377,6 +363,87 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 mActivity, FeedAutoplaySettingsFragment.class, new Bundle());
     }
 
+    /** @return whether this coordinator is currently active. */
+    boolean isActive() {
+        return mIsActive;
+    }
+
+    /** Shows the feed. */
+    public void onSurfaceOpened() {
+        // Guard on isStartupCalled.
+        if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
+        mIsActive = true;
+
+        mMediator.rebindStream();
+    }
+
+    /** Hides the feed. */
+    public void onSurfaceClosed() {
+        if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
+        mIsActive = false;
+        mMediator.unbindStream();
+    }
+
+    /** Returns a string usable for restoring the UI to current state. */
+    public String getSavedInstanceStateString() {
+        return mMediator.getSavedInstanceString();
+    }
+
+    /** Restores the UI to a previously saved state. */
+    public void restoreInstanceState(String state) {
+        mMediator.restoreSavedInstanceState(state);
+    }
+
+    private RecyclerView setUpView() {
+        mContentManager = new NtpListContentManager();
+        Context context = new ContextThemeWrapper(
+                mActivity, (mShowDarkBackground ? R.style.Dark : R.style.Light));
+        ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
+        if (processScope != null) {
+            mSurfaceScope = processScope.obtainSurfaceScope(new FeedSurfaceScopeDependencyProvider(
+                    mActivity, context, mShowDarkBackground, mStream));
+        } else {
+            mSurfaceScope = null;
+        }
+
+        if (mSurfaceScope != null) {
+            mHybridListRenderer = mSurfaceScope.provideListRenderer();
+        } else {
+            mHybridListRenderer = new NativeViewListRenderer(context);
+        }
+
+        RecyclerView view;
+        if (mHybridListRenderer != null) {
+            // XSurface returns a View, but it should be a RecyclerView.
+            view = (RecyclerView) mHybridListRenderer.bind(mContentManager);
+            view.setId(R.id.feed_stream_recycler_view);
+            view.setClipToPadding(false);
+        } else {
+            view = null;
+        }
+        return view;
+    }
+
+    /** @return The {@link RecyclerView} associated with this feed. */
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
+
+    /** @return The {@link SurfaceScope} used to create this feed. */
+    SurfaceScope getSurfaceScope() {
+        return mSurfaceScope;
+    }
+
+    /** @return The {@link HybridListRenderer} used to render this feed. */
+    HybridListRenderer getHybridListRenderer() {
+        return mHybridListRenderer;
+    }
+
+    /** @return The {@link NtpListContentManager} managing the contents of this feed. */
+    NtpListContentManager getContentManager() {
+        return mContentManager;
+    }
+
     /**
      * Create a {@link Stream} for this class.
      */
@@ -389,22 +456,17 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
-        mStream = new FeedStream(mActivity, mShowDarkBackground, mSnackbarManager,
-                mPageNavigationDelegate, mBottomSheetController, mIsPlaceholderShownInitially,
-                mWindowAndroid, mShareSupplier);
+        mStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
+                mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
+                mShareSupplier);
+        mRecyclerView = setUpView();
+        mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
 
-        mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
+        mRecyclerView.setBackgroundResource(R.color.default_bg_color);
 
-        View view = mStream.getView();
-        view.setBackgroundResource(R.color.default_bg_color);
-        if (isPlaceholderShown()) {
-            // Set recyclerView as transparent until first patch of articles are loaded. Before
-            // that, the placeholder is shown.
-            view.getBackground().setAlpha(0);
-        }
-        mRootView.addView(view);
+        mRootView.addView(mRecyclerView);
         mStreamViewResizer = ViewResizer.createAndAttach(
-                view, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
+                mRecyclerView, mUiConfig, mDefaultMarginPixels, mWideMarginPixels);
 
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
         if (mSectionHeaderView != null) UiUtils.removeViewFromParent(mSectionHeaderView);
@@ -413,22 +475,44 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             UiUtils.removeViewFromParent(mEnhancedProtectionPromoView);
         }
 
+        // Directly add header views to content manager.
+        List<View> headerList = new ArrayList<>();
         if (mNtpHeader != null) {
-            mStream.setHeaderViews(Arrays.asList(new NonDismissibleHeader(mNtpHeader),
-                    new NonDismissibleHeader(mSectionHeaderView)));
-        } else if (mSectionHeaderView != null) {
-            mStream.setHeaderViews(Arrays.asList(new NonDismissibleHeader(mSectionHeaderView)));
+            headerList.add(mNtpHeader);
         }
+        if (mSectionHeaderView != null) {
+            headerList.add(mSectionHeaderView);
+        }
+        setHeaders(headerList);
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
         // toggling dark mode.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            view.setDefaultFocusHighlightEnabled(false);
+            mRecyclerView.setDefaultFocusHighlightEnabled(false);
         }
 
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
         // the scroll container for policy is removed.
-        view.requestFocus();
+        mRecyclerView.requestFocus();
+    }
+
+    private void setHeaders(List<View> headerViews) {
+        // Remove current headers.
+        if (mHeaderCount > 0) {
+            mContentManager.removeContents(0, mHeaderCount);
+        }
+
+        // Add new headers.
+        List<NtpListContentManager.FeedContent> headerList = new ArrayList<>();
+        for (View header : headerViews) {
+            headerList.add(new NtpListContentManager.NativeViewContent(
+                    "Header" + header.hashCode(), header));
+        }
+        mHeaderCount = headerList.size();
+        if (mHeaderCount > 0) {
+            mContentManager.addContents(0, headerList);
+        }
+        mMediator.notifyHeadersChanged(mHeaderCount);
     }
 
     /**
@@ -447,13 +531,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (mStream != null) {
             mStreamViewResizer.detach();
             mStreamViewResizer = null;
-            mRootView.removeView(mStream.getView());
-            assert mStreamLifecycleManager
+            mRootView.removeView(mRecyclerView);
+            assert mFeedSurfaceLifecycleManager
                     != null
-                : "StreamLifecycleManager should not be null when the Stream is not null.";
-            mStreamLifecycleManager.destroy();
-            mStreamLifecycleManager = null;
-            // Do not call mStream.onDestroy(), the mStreamLifecycleManager has done that for us.
+                : "SurfaceLifecycleManager should not be null when the Stream is not null.";
+            mFeedSurfaceLifecycleManager.destroy();
+            mFeedSurfaceLifecycleManager = null;
             mStream = null;
             mSectionHeaderView = null;
             mSigninPromoView = null;
@@ -487,15 +570,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mScrollViewForPolicy.requestFocus();
     }
 
-    /** @return The {@link SectionHeaderView} for the Feed section header. */
-    SectionHeaderView getSectionHeaderView() {
-        return mSectionHeaderView;
-    }
-
     /** @return The {@link SectionHeaderListProperties} model for the Feed section header. */
-    // TODO(chili): Make this package-private when we remove v2 folder.
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public PropertyModel getSectionHeaderModel() {
+    @VisibleForTesting
+    PropertyModel getSectionHeaderModelForTest() {
         return mSectionHeaderModel;
     }
 
@@ -511,44 +588,31 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     /**
-     * Show the sign-in view with the same fade-in animation as Feed articles' add-animation.
+     * Update header views in the Feed.
      */
-    void fadeInSigninView() {
-        if (mSigninPromoView != null) {
-            mSigninPromoView.setAlpha(0f);
-            mSigninPromoView.setVisibility(View.VISIBLE);
-            mSigninPromoView.animate().alpha(1f).setDuration(
-                    ((RecyclerView) mStream.getView()).getItemAnimator().getAddDuration());
-        }
-    }
-
-    /**
-     *  Update header views in the Stream.
-     *  */
     void updateHeaderViews(
             boolean isSignInPromoVisible, @Nullable View enhancedProtectionPromoView) {
         if (mStream == null) return;
 
-        List<Header> headers = new ArrayList<>();
+        List<View> headers = new ArrayList<>();
         if (mNtpHeader != null) {
             assert mSectionHeaderView != null;
-            headers.add(new NonDismissibleHeader(mNtpHeader));
+            headers.add(mNtpHeader);
         }
 
         if (enhancedProtectionPromoView != null) {
             mEnhancedProtectionPromoView = enhancedProtectionPromoView;
-            headers.add(new EnhancedProtectionPromoHeader());
+            headers.add(enhancedProtectionPromoView);
         }
 
         if (mSectionHeaderView != null) {
-            headers.add(new NonDismissibleHeader(mSectionHeaderView));
+            headers.add(mSectionHeaderView);
         }
 
         if (isSignInPromoVisible) {
-            headers.add(new SignInPromoHeader());
+            headers.add(getSigninPromoView());
         }
-
-        mStream.setHeaderViews(headers);
+        setHeaders(headers);
     }
 
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
@@ -577,12 +641,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     @VisibleForTesting
     public View getSectionHeaderViewForTesting() {
-        return getSectionHeaderView();
-    }
-
-    @VisibleForTesting
-    public Stream getStreamForTesting() {
-        return getStream();
+        return mSectionHeaderView;
     }
 
     /**

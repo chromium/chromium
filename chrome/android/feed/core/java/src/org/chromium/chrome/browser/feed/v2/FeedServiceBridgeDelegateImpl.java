@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.feed.v2;
 
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
-class FeedServiceBridgeDelegateImpl implements FeedServiceBridge.Delegate {
+/**
+ * Implementation of {@link FeedServiceBridge.Delegate}.
+ */
+public class FeedServiceBridgeDelegateImpl implements FeedServiceBridge.Delegate {
     private ProcessScope mXSurfaceProcessScope;
 
-    FeedServiceBridgeDelegateImpl() {}
+    public FeedServiceBridgeDelegateImpl() {}
 
     @Override
     public ProcessScope getProcessScope() {
@@ -24,6 +28,6 @@ class FeedServiceBridgeDelegateImpl implements FeedServiceBridge.Delegate {
 
     @Override
     public void clearAll() {
-        FeedStreamSurface.clearAll();
+        FeedSurfaceTracker.getInstance().clearAll();
     }
 }

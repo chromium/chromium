@@ -28,15 +28,16 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
 
 import java.util.List;
 
-/** Unit tests for {@link FeedListContentManager}. */
+/** Unit tests for {@link NtpListContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class FeedListContentManagerTest implements ListContentManagerObserver {
-    private FeedListContentManager mManager;
+public class NtpListContentManagerTest implements ListContentManagerObserver {
+    private NtpListContentManager mManager;
     private Context mContext;
     private LinearLayout mParent;
 
@@ -57,16 +58,16 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     public void setUp() {
         mContext = Robolectric.buildActivity(Activity.class).get();
         mParent = new LinearLayout(mContext);
-        mManager = new FeedListContentManager(null, null);
+        mManager = new NtpListContentManager();
         mManager.addObserver(this);
     }
 
     @Test
     @SmallTest
     public void testFindContentPositionByKey() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
-        FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        FeedListContentManager.FeedContent c3 = createExternalViewContent("c");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("a");
+        NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
+        NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
 
         addContents(0, ImmutableList.of(c1, c2, c3));
         assertEquals(3, mManager.getItemCount());
@@ -79,9 +80,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testAddContents() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
-        FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        FeedListContentManager.FeedContent c3 = createExternalViewContent("c");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("a");
+        NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
+        NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
 
         addContents(0, ImmutableList.of(c1));
         assertEquals(1, mManager.getItemCount());
@@ -105,11 +106,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testRemoveContents() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
-        FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        FeedListContentManager.FeedContent c3 = createExternalViewContent("c");
-        FeedListContentManager.FeedContent c4 = createExternalViewContent("d");
-        FeedListContentManager.FeedContent c5 = createExternalViewContent("e");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("a");
+        NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
+        NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
+        NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
+        NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
         addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
         assertEquals(5, mManager.getItemCount());
@@ -131,11 +132,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testUpdateContents() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
-        FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        FeedListContentManager.FeedContent c3 = createExternalViewContent("c");
-        FeedListContentManager.FeedContent c4 = createExternalViewContent("d");
-        FeedListContentManager.FeedContent c5 = createExternalViewContent("e");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("a");
+        NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
+        NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
+        NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
+        NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
         addContents(0, ImmutableList.of(c1, c2, c3));
         assertEquals(3, mManager.getItemCount());
@@ -150,11 +151,11 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testMoveContent() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
-        FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
-        FeedListContentManager.FeedContent c3 = createExternalViewContent("c");
-        FeedListContentManager.FeedContent c4 = createExternalViewContent("d");
-        FeedListContentManager.FeedContent c5 = createExternalViewContent("e");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("a");
+        NtpListContentManager.FeedContent c2 = createExternalViewContent("b");
+        NtpListContentManager.FeedContent c3 = createExternalViewContent("c");
+        NtpListContentManager.FeedContent c4 = createExternalViewContent("d");
+        NtpListContentManager.FeedContent c5 = createExternalViewContent("e");
 
         addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
         assertEquals(5, mManager.getItemCount());
@@ -179,14 +180,14 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @Test
     @SmallTest
     public void testGetViewData() {
-        FeedListContentManager.FeedContent c1 = createExternalViewContent("foo");
+        NtpListContentManager.FeedContent c1 = createExternalViewContent("foo");
         View v2 = new View(mContext);
-        FeedListContentManager.FeedContent c2 = createNativeViewContent(v2);
+        NtpListContentManager.FeedContent c2 = createNativeViewContent(v2);
         View v3 = new View(mContext);
-        FeedListContentManager.FeedContent c3 = createNativeViewContent(v3);
-        FeedListContentManager.FeedContent c4 = createExternalViewContent("hello");
+        NtpListContentManager.FeedContent c3 = createNativeViewContent(v3);
+        NtpListContentManager.FeedContent c4 = createExternalViewContent("hello");
         View v5 = new View(mContext);
-        FeedListContentManager.FeedContent c5 = createNativeViewContent(v5);
+        NtpListContentManager.FeedContent c5 = createNativeViewContent(v5);
 
         addContents(0, ImmutableList.of(c1, c2, c3, c4, c5));
         assertEquals(5, mManager.getItemCount());
@@ -208,7 +209,7 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @SmallTest
     public void testGetViewDataCreatesEnclosingViewOnce() {
         View v = new View(mContext);
-        FeedListContentManager.FeedContent c = createNativeViewContent(v);
+        NtpListContentManager.FeedContent c = createNativeViewContent(v);
 
         addContents(0, ImmutableList.of(c));
 
@@ -228,9 +229,9 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     @SmallTest
     public void testGetNativeViewAfterMove() {
         View v1 = new View(mContext);
-        FeedListContentManager.FeedContent c1 = createNativeViewContent(v1);
+        NtpListContentManager.FeedContent c1 = createNativeViewContent(v1);
         View v0 = new View(mContext);
-        FeedListContentManager.FeedContent c0 = createNativeViewContent(v0);
+        NtpListContentManager.FeedContent c0 = createNativeViewContent(v0);
 
         addContents(0, ImmutableList.of(c1));
         int t1 = mManager.getViewType(0);
@@ -274,7 +275,7 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
         mItemMovedNewIndex = newIndex;
     }
 
-    private void addContents(int index, List<FeedListContentManager.FeedContent> contents) {
+    private void addContents(int index, List<NtpListContentManager.FeedContent> contents) {
         mItemRangeInserted = false;
         mItemRangeInsertedStartIndex = -1;
         mItemRangeInsertedCount = -1;
@@ -294,7 +295,7 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
         assertEquals(count, mItemRangeRemovedCount);
     }
 
-    private void updateContents(int index, List<FeedListContentManager.FeedContent> contents) {
+    private void updateContents(int index, List<NtpListContentManager.FeedContent> contents) {
         mItemRangeChanged = false;
         mItemRangeChangedStartIndex = -1;
         mItemRangeChangedCount = -1;
@@ -314,12 +315,12 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
         assertEquals(newIndex, mItemMovedNewIndex);
     }
 
-    private FeedListContentManager.FeedContent createExternalViewContent(String s) {
-        return new FeedListContentManager.ExternalViewContent(s, s.getBytes());
+    private NtpListContentManager.FeedContent createExternalViewContent(String s) {
+        return new NtpListContentManager.ExternalViewContent(s, s.getBytes());
     }
 
-    private FeedListContentManager.FeedContent createNativeViewContent(View v) {
-        return new FeedListContentManager.NativeViewContent(v.toString(), v);
+    private NtpListContentManager.FeedContent createNativeViewContent(View v) {
+        return new NtpListContentManager.NativeViewContent(v.toString(), v);
     }
 
     private View getNativeView(int viewType) {

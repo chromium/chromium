@@ -6,22 +6,24 @@ package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.feed.StreamLifecycleManager;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/** Explore surface feed stream lifecycle manager. */
-class ExploreSurfaceStreamLifecycleManager extends StreamLifecycleManager {
+/** Explore surface feed lifecycle manager. */
+class ExploreSurfaceFeedLifecycleManager extends FeedSurfaceLifecycleManager {
     private final boolean mHasHeader;
     /**
      * The constructor.
-     * @param stream The {@link Stream} this manager manages.
-     * @param activity The activity the {@link Stream} associates with.
+     * @param activity The activity the {@link FeedSurfaceCoordinator} associates with.
+     * @param hasHeader Whether the feed has a header to work with.
+     * @param coordinator The coordinator for which this manages the feed lifecycle of.
      */
-    ExploreSurfaceStreamLifecycleManager(Stream stream, Activity activity, boolean hasHeader) {
-        super(stream, activity);
+    ExploreSurfaceFeedLifecycleManager(
+            Activity activity, boolean hasHeader, FeedSurfaceCoordinator coordinator) {
+        super(activity, coordinator);
         mHasHeader = hasHeader;
         start();
     }
@@ -31,15 +33,10 @@ class ExploreSurfaceStreamLifecycleManager extends StreamLifecycleManager {
         return super.canShow() && shouldShowFeed();
     }
 
-    @Override
-    protected boolean canActivate() {
-        return super.canShow() && shouldShowFeed();
-    }
-
     private boolean shouldShowFeed() {
         // If there is a header to opt out from article suggestions, we don't call
-        // Stream#onShow to prevent feed services from being warmed up if the user
-        // has opted out during the previous session.
+        // FeedSurfaceCoordinator#onSurfaceOpened to prevent feed services from being warmed up if
+        // the user has opted out during the previous session.
         return !mHasHeader
                 || UserPrefs.get(Profile.getLastUsedRegularProfile())
                            .getBoolean(Pref.ARTICLES_LIST_VISIBLE);

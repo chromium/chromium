@@ -12,9 +12,8 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.StreamLifecycleManager;
+import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
@@ -78,8 +77,9 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
 
     // Implements FeedSurfaceDelegate.
     @Override
-    public StreamLifecycleManager createStreamLifecycleManager(Stream stream, Activity activity) {
-        return new ExploreSurfaceStreamLifecycleManager(stream, activity, mHasHeader);
+    public FeedSurfaceLifecycleManager createStreamLifecycleManager(
+            Activity activity, FeedSurfaceCoordinator coordinator) {
+        return new ExploreSurfaceFeedLifecycleManager(activity, mHasHeader, coordinator);
     }
 
     @Override

@@ -9,7 +9,6 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -25,44 +24,43 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.url.GURL;
 
 /**
- * Manages the lifecycle of a {@link Stream} associated with a Tab in an Activity.
+ * Manages the lifecycle of a {@link FeedSurfaceCoordinator} associated with a Tab in an Activity.
  */
-public class NtpStreamLifecycleManager extends StreamLifecycleManager {
-    /** Key for the Stream instance state that may be stored in a navigation entry. */
-    private static final String STREAM_SAVED_INSTANCE_STATE_KEY = "StreamSavedInstanceState";
+public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager {
+    /** Key for the Feed instance state that may be stored in a navigation entry. */
+    private static final String FEED_SAVED_INSTANCE_STATE_KEY = "FeedSavedInstanceState";
 
     private static PrefService sPrefServiceForTesting;
 
-    /** The {@link Tab} that {@link #mStream} is attached to. */
+    /** The {@link Tab} that {@link #mCoordinator} is attached to. */
     private final Tab mTab;
 
     /**
-     * The {@link TabObserver} that observes tab state changes and notifies the {@link Stream}
-     * accordingly.
+     * The {@link TabObserver} that observes tab state changes and notifies the {@link
+     * FeedSurfaceCoordinator} accordingly.
      */
     private final TabObserver mTabObserver;
 
     /**
-     * @param stream The {@link Stream} that this class manages.
-     * @param activity The {@link Activity} that the {@link Stream} is attached to.
-     * @param tab The {@link Tab} that the {@link Stream} is attached to.
+     * @param activity The {@link Activity} that the {@link FeedSurfaceCoordinator} is attached to.
+     * @param tab The {@link Tab} that the {@link FeedSurfaceCoordinator} is attached to.
+     * @param coordinator The coordinator of the feed.
      */
-    public NtpStreamLifecycleManager(Stream stream, Activity activity, Tab tab) {
-        super(stream, activity);
+    public NtpFeedSurfaceLifecycleManager(
+            Activity activity, Tab tab, FeedSurfaceCoordinator coordinator) {
+        super(activity, coordinator);
 
         // Set mTab before 'start' since 'restoreInstanceState' will use it.
         mTab = tab;
         start();
 
-        // We don't need to handle mStream#onDestroy here since this class will be destroyed when
-        // the associated NewTabPage is destroyed.
+        // We don't need to handle EmptyTabObserver#onDestroy here since this class will be
+        // destroyed when the associated NewTabPage is destroyed.
         mTabObserver = new EmptyTabObserver() {
             @Override
             public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
                 if (isInteractable) {
-                    activate();
-                } else {
-                    deactivate();
+                    show();
                 }
             }
 
@@ -84,35 +82,28 @@ public class NtpStreamLifecycleManager extends StreamLifecycleManager {
         mTab.addObserver(mTabObserver);
     }
 
-    /** @return Whether the {@link Stream} can be shown. */
+    /** @return Whether the {@link FeedSurfaceCoordinator} can be shown. */
     @Override
     protected boolean canShow() {
-        // We don't call Stream#onShow to prevent feed services from being warmed up if the user
-        // has opted out from article suggestions during the previous session.
+        // We don't call FeedSurfaceCoordinator#onShow to prevent feed services from being warmed up
+        // if the user has opted out from article suggestions during the previous session.
         return super.canShow() && getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE)
                 && !mTab.isHidden();
     }
 
-    /** @return Whether the {@link Stream} can be activated. */
-    @Override
-    protected boolean canActivate() {
-        return super.canActivate() && getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE)
-                && mTab.isUserInteractable();
-    }
-
     /**
-     * Clears any dependencies and calls {@link Stream#onDestroy()} when this class is not needed
+     * Clears any dependencies when this class is not needed
      * anymore.
      */
     @Override
     protected void destroy() {
-        if (mStreamState == StreamState.DESTROYED) return;
+        if (mSurfaceState == SurfaceState.DESTROYED) return;
 
         super.destroy();
         mTab.removeObserver(mTabObserver);
     }
 
-    /** Save the Stream instance state to the navigation entry if necessary. */
+    /** Save the Feed instance state to the navigation entry if necessary. */
     @Override
     protected void saveInstanceState() {
         if (mTab.getWebContents() == null) return;
@@ -129,11 +120,11 @@ public class NtpStreamLifecycleManager extends StreamLifecycleManager {
         if (!UrlUtilities.isNTPUrl(entry.getUrl())) return;
 
         controller.setEntryExtraData(
-                index, STREAM_SAVED_INSTANCE_STATE_KEY, mStream.getSavedInstanceStateString());
+                index, FEED_SAVED_INSTANCE_STATE_KEY, mCoordinator.getSavedInstanceStateString());
     }
 
     /**
-     * @return The Stream instance state saved in navigation entry, or null if it is not previously
+     * @return The feed instance state saved in navigation entry, or null if it is not previously
      *         saved.
      */
     @Override
@@ -143,7 +134,7 @@ public class NtpStreamLifecycleManager extends StreamLifecycleManager {
 
         NavigationController controller = mTab.getWebContents().getNavigationController();
         int index = controller.getLastCommittedEntryIndex();
-        return controller.getEntryExtraData(index, STREAM_SAVED_INSTANCE_STATE_KEY);
+        return controller.getEntryExtraData(index, FEED_SAVED_INSTANCE_STATE_KEY);
     }
 
     @VisibleForTesting

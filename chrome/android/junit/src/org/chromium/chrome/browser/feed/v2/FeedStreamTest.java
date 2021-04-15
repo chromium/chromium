@@ -6,26 +6,33 @@ package org.chromium.chrome.browser.feed.v2;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.feed.shared.stream.Stream.POSITION_NOT_KNOWN;
-
 import android.app.Activity;
+import android.support.test.filters.SmallTest;
 import android.util.TypedValue;
-import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.junit.Assert;
+import com.google.protobuf.ByteString;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -33,26 +40,58 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.feed.NtpListContentManager;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
+import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowRecordHistogram.class})
 public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
     private static final int LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP = 100;
+    private static final String TEST_DATA = "test";
+    private static final String TEST_URL = "https://www.chromium.org";
+    private static final String HEADER_PREFIX = "header";
+
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
+    private SurfaceScopeDependencyProvider mDependencyProvider;
+    private NtpListContentManager mContentManager;
+
+    @Mock
+    private FeedStream.Natives mFeedStreamJniMock;
+    @Mock
+    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
     @Mock
     private SnackbarManager mSnackbarManager;
@@ -61,35 +100,55 @@ public class FeedStreamTest {
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private FeedStreamSurface.Natives mFeedStreamSurfaceJniMock;
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    private HelpAndFeedbackLauncherImpl mHelpAndFeedbackLauncherImpl;
     @Mock
     private WindowAndroid mWindowAndroid;
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock
+    private FeedActionsHandler.SnackbarController mSnackbarController;
+    @Mock
+    private FeedStream.ShareHelperWrapper mShareHelper;
+    @Mock
+    private Profile mProfileMock;
+    @Mock
+    private HybridListRenderer mRenderer;
+    @Mock
+    private SurfaceScope mSurfaceScope;
+    @Mock
+    private RecyclerView.Adapter mAdapter;
+
+    @Captor
+    private ArgumentCaptor<Map<String, String>> mMapCaptor;
 
     @Rule
     public JniMocker mocker = new JniMocker();
+    // Enable the Features class, so we can call code which checks to see if features are enabled
+    // without crashing.
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
-        mocker.mock(FeedStreamSurfaceJni.TEST_HOOKS, mFeedStreamSurfaceJniMock);
+
+        mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
+        Profile.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
-        // Surfaces won't open until after startup.
-        FeedStreamSurface.startup();
-        mFeedStream = new FeedStream(mActivity, false, mSnackbarManager, mPageNavigationDelegate,
+        mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
                 mShareDelegateSupplier);
-        mFeedStream.onCreate(null);
-        mRecyclerView = (RecyclerView) mFeedStream.getView();
+        mDependencyProvider =
+                new FeedSurfaceScopeDependencyProvider(mActivity, mActivity, false, mFeedStream);
+        mRecyclerView = new RecyclerView(mActivity);
+        mRecyclerView.setAdapter(mAdapter);
+        mContentManager = new NtpListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -98,150 +157,288 @@ public class FeedStreamTest {
     }
 
     @Test
-    public void testIsChildAtPositionVisible() {
-        mLayoutManager.setFirstVisiblePosition(0);
-        mLayoutManager.setLastVisiblePosition(1);
-        assertThat(mFeedStream.isChildAtPositionVisible(-2)).isFalse();
-        assertThat(mFeedStream.isChildAtPositionVisible(-1)).isFalse();
-        assertThat(mFeedStream.isChildAtPositionVisible(0)).isTrue();
-        assertThat(mFeedStream.isChildAtPositionVisible(1)).isTrue();
-        assertThat(mFeedStream.isChildAtPositionVisible(2)).isFalse();
+    public void testBindUnbind_keepsHeaderViews() {
+        // Have header content.
+        createHeaderContent(3);
+        mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer);
+
+        // Add feed content.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+
+        mFeedStream.unbind();
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
+        assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(1).getKey());
+        assertEquals(HEADER_PREFIX + "2", mContentManager.getContent(2).getKey());
     }
 
     @Test
-    public void testIsChildAtPositionVisible_nothingVisible() {
-        assertThat(mFeedStream.isChildAtPositionVisible(0)).isFalse();
+    public void testBindUnbind_HeaderViewCountChangeAfterBind() {
+        // Have header content.
+        createHeaderContent(3);
+        mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer);
+
+        // Add feed content.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+
+        // Add header content.
+        createHeaderContent(2);
+        mFeedStream.notifyNewHeaderCount(5);
+
+        mFeedStream.unbind();
+
+        assertEquals(5, mContentManager.getItemCount());
+        assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
+        assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(1).getKey());
+        assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(2).getKey());
+        assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(3).getKey());
+        assertEquals(HEADER_PREFIX + "2", mContentManager.getContent(4).getKey());
     }
 
     @Test
-    public void testIsChildAtPositionVisible_validTop() {
-        mLayoutManager.setFirstVisiblePosition(0);
-        assertThat(mFeedStream.isChildAtPositionVisible(0)).isFalse();
+    public void testBind() {
+        bindToView();
+        // Called surfaceOpened.
+        verify(mFeedStreamJniMock).surfaceOpened(anyLong(), any(FeedStream.class));
+        // Set handlers in contentmanager.
+        assertEquals(2, mContentManager.getContextValues(0).size());
     }
 
     @Test
-    public void testIsChildAtPositionVisible_validBottom() {
-        mLayoutManager.setLastVisiblePosition(1);
-        assertThat(mFeedStream.isChildAtPositionVisible(0)).isFalse();
+    public void testUnbind() {
+        bindToView();
+        mFeedStream.unbind();
+        verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
+        // Unset handlers in contentmanager.
+        assertEquals(0, mContentManager.getContextValues(0).size());
     }
 
     @Test
-    public void testGetChildTopAt_noVisibleChild() {
-        assertThat(mFeedStream.getChildTopAt(0)).isEqualTo(POSITION_NOT_KNOWN);
+    @SmallTest
+    public void testAddSlicesOnStreamUpdated() {
+        bindToView();
+        // Add 3 new slices at first.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
+
+        // Add 2 more slices.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("a"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("b"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("c"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("d"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("e"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(5, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
+        assertEquals(3, mContentManager.findContentPositionByKey("d"));
+        assertEquals(4, mContentManager.findContentPositionByKey("e"));
     }
 
     @Test
-    public void testGetChildTopAt_noChild() {
-        mLayoutManager.setFirstVisiblePosition(0);
-        mLayoutManager.setLastVisiblePosition(1);
-        assertThat(mFeedStream.getChildTopAt(0)).isEqualTo(POSITION_NOT_KNOWN);
+    @SmallTest
+    public void testAddNewSlicesWithSameIds() {
+        bindToView();
+        // Add 2 new slices at first.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+
+        // Add 2 new slice with same ids as before.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("b"));
+        assertEquals(1, mContentManager.findContentPositionByKey("a"));
     }
 
     @Test
-    public void testGetChildTopAt() {
-        mLayoutManager.setFirstVisiblePosition(0);
-        mLayoutManager.setLastVisiblePosition(1);
-        View view = new FrameLayout(mActivity);
-        mLayoutManager.addChildToPosition(0, view);
+    @SmallTest
+    public void testRemoveSlicesOnStreamUpdated() {
+        bindToView();
+        // Add 3 new slices at first.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
 
-        assertThat(mFeedStream.getChildTopAt(0)).isEqualTo(view.getTop());
+        // Remove 1 slice.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("a"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("c"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("c"));
+
+        // Remove 2 slices.
+        update = FeedUiProto.StreamUpdate.newBuilder().build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(0, mContentManager.getItemCount());
     }
 
     @Test
-    public void testSurfaceNotOpenedInitially() {
-        Assert.assertFalse(mFeedStream.mFeedStreamSurface.isOpened());
+    @SmallTest
+    public void testReorderSlicesOnStreamUpdated() {
+        bindToView();
+        // Add 3 new slices at first.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
+
+        // Reorder 1 slice.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("c"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("a"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("b"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("c"));
+        assertEquals(1, mContentManager.findContentPositionByKey("a"));
+        assertEquals(2, mContentManager.findContentPositionByKey("b"));
+
+        // Reorder 2 slices.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("a"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("b"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("c"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
     }
 
     @Test
-    public void testSurfaceOpenedAfterSetStreamContentVisibility() {
-        mFeedStream.onShow();
-        mFeedStream.setStreamContentVisibility(true);
+    @SmallTest
+    public void testComplexOperationsOnStreamUpdated() {
+        bindToView();
+        // Add 3 new slices at first.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("c"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("d"))
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("e"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(5, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("a"));
+        assertEquals(1, mContentManager.findContentPositionByKey("b"));
+        assertEquals(2, mContentManager.findContentPositionByKey("c"));
+        assertEquals(3, mContentManager.findContentPositionByKey("d"));
+        assertEquals(4, mContentManager.findContentPositionByKey("e"));
 
-        Assert.assertTrue(mFeedStream.mFeedStreamSurface.isOpened());
+        // Combo of add, remove and reorder operations.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("f"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("g"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("a"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("h"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("c"))
+                         .addUpdatedSlices(createSliceUpdateForExistingSlice("e"))
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("i"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(7, mContentManager.getItemCount());
+        assertEquals(0, mContentManager.findContentPositionByKey("f"));
+        assertEquals(1, mContentManager.findContentPositionByKey("g"));
+        assertEquals(2, mContentManager.findContentPositionByKey("a"));
+        assertEquals(3, mContentManager.findContentPositionByKey("h"));
+        assertEquals(4, mContentManager.findContentPositionByKey("c"));
+        assertEquals(5, mContentManager.findContentPositionByKey("e"));
+        assertEquals(6, mContentManager.findContentPositionByKey("i"));
     }
 
     @Test
-    public void testSurfaceNotOpenedAfterSetStreamContentVisibilityIfNotShow() {
-        mFeedStream.setStreamContentVisibility(true);
-
-        Assert.assertFalse(mFeedStream.mFeedStreamSurface.isOpened());
-    }
-
-    @Test
-    public void testSurfaceOpenedOnShow() {
-        mFeedStream.setStreamContentVisibility(true);
-        mFeedStream.onShow();
-
-        Assert.assertTrue(mFeedStream.mFeedStreamSurface.isOpened());
-    }
-
-    @Test
-    public void testSurfaceNotOnShowIfStreamContentNotVisible() {
-        mFeedStream.onShow();
-
-        Assert.assertFalse(mFeedStream.mFeedStreamSurface.isOpened());
-    }
-
-    @Test
-    public void testSurfaceClosedOnHide() {
-        mFeedStream.setStreamContentVisibility(true);
-        mFeedStream.onShow();
-
-        mFeedStream.onHide();
-
-        Assert.assertFalse(mFeedStream.mFeedStreamSurface.isOpened());
-    }
-
-    @Test
-    public void testSurfaceClosedOnContentNotVisible() {
-        mFeedStream.setStreamContentVisibility(true);
-        mFeedStream.onShow();
-
-        mFeedStream.setStreamContentVisibility(false);
-
-        Assert.assertFalse(mFeedStream.mFeedStreamSurface.isOpened());
-    }
-
-    @Test
-    public void testCheckScrollingForLoadMore_StreamContentHidden() {
+    public void testLoadMore_unbound() {
         // By default, stream content is not visible.
         final int triggerDistance = getLoadMoreTriggerScrollDistance();
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
-        verify(mFeedStreamSurfaceJniMock, never())
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock, never())
+                .loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
     }
 
     @Test
-    public void testCheckScrollingForLoadMore_StreamContentVisible() {
-        mFeedStream.onShow();
-        mFeedStream.setStreamContentVisibility(true);
+    public void testLoadMore_bound() {
+        bindToView();
         final int triggerDistance = getLoadMoreTriggerScrollDistance();
         final int itemCount = 10;
 
         // loadMore not triggered due to not enough accumulated scrolling distance.
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
-        verify(mFeedStreamSurfaceJniMock, never())
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock, never())
+                .loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
 
         // loadMore not triggered due to last visible item not falling into lookahead range.
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD - 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
-        verify(mFeedStreamSurfaceJniMock, never())
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock, never())
+                .loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
 
         // loadMore triggered.
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
-        verify(mFeedStreamSurfaceJniMock)
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock).loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
     }
 
     @Test
-    public void testCheckScrollingForLoadMore_LoadMoreAfterHide() {
-        mFeedStream.onShow();
-        mFeedStream.setStreamContentVisibility(true);
+    public void testContentAfterUnbind() {
+        bindToView();
         final int triggerDistance = getLoadMoreTriggerScrollDistance();
         final int itemCount = 10;
 
@@ -249,66 +446,236 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
-        verify(mFeedStreamSurfaceJniMock)
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock).loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
 
         // loadMore triggered again after hide&show.
         mFeedStream.checkScrollingForLoadMore(-triggerDistance);
-        mFeedStream.onHide();
-        mFeedStream.onShow();
+        mFeedStream.unbind();
+        bindToView();
 
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
-        verify(mFeedStreamSurfaceJniMock)
-                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+        verify(mFeedStreamJniMock).loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
     }
 
     @Test
-    public void testSerializeScrollState() {
-        FeedStream.ScrollState state = new FeedStream.ScrollState();
-        state.position = 2;
-        state.lastPosition = 4;
-        state.offset = 50;
+    @SmallTest
+    public void testNavigateTab() {
+        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
+                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
+        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.navigateTab(TEST_URL, null);
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        any());
 
-        FeedStream.ScrollState deserializedState = FeedStream.ScrollState.fromJson(state.toJson());
-
-        Assert.assertEquals(2, deserializedState.position);
-        Assert.assertEquals(4, deserializedState.lastPosition);
-        Assert.assertEquals(50, deserializedState.offset);
-        Assert.assertEquals(state.toJson(), deserializedState.toJson());
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
     }
 
     @Test
-    public void testGetSavedInstanceStateString() {
-        mFeedStream.onShow();
-        mFeedStream.setStreamContentVisibility(true);
+    @SmallTest
+    public void testNavigateNewTab() {
+        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
+                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
+        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
 
-        View view1 = new FrameLayout(mActivity);
-        mLayoutManager.addChildToPosition(0, new FrameLayout(mActivity));
-        mLayoutManager.addChildToPosition(1, view1);
-        mLayoutManager.addChildToPosition(2, new FrameLayout(mActivity));
-        mLayoutManager.addChildToPosition(3, new FrameLayout(mActivity));
-
-        mLayoutManager.setFirstVisiblePosition(1);
-        mLayoutManager.setLastVisiblePosition(3);
-
-        String json = mFeedStream.getSavedInstanceStateString();
-        Assert.assertNotEquals("", json);
-
-        FeedStream.ScrollState state = FeedStream.ScrollState.fromJson(json);
-        Assert.assertEquals(1, state.position);
-        Assert.assertEquals(3, state.lastPosition);
+        handler.navigateNewTab(TEST_URL, null);
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
+                        any());
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
     }
 
     @Test
-    public void testScrollStateFromInvalidJson() {
-        Assert.assertEquals(null, FeedStream.ScrollState.fromJson("{{=xcg"));
+    @SmallTest
+    public void testNavigateIncognitoTab() {
+        MetricsUtils.HistogramDelta actionOpenedSnippetDelta = new MetricsUtils.HistogramDelta(
+                "NewTabPage.ActionAndroid2", NewTabPageUma.ACTION_OPENED_SNIPPET);
+        when(mPageNavigationDelegate.openUrl(anyInt(), any())).thenReturn(new MockTab(1, false));
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.navigateIncognitoTab(TEST_URL);
+        verify(mPageNavigationDelegate)
+                .openUrl(ArgumentMatchers.eq(
+                                 org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
+                        any());
+        assertEquals(1, actionOpenedSnippetDelta.getDelta());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBottomSheet() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.showBottomSheet(new TextView(mActivity), null);
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testDismissBottomSheet() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.showBottomSheet(new TextView(mActivity), null);
+        mFeedStream.dismissBottomSheet();
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testSendFeedback() {
+        final String testUrl = "https://www.chromium.org";
+        final String testTitle = "Chromium based browsers for the win!";
+        final String xSurfaceCardTitle = "Card Title";
+        final String cardTitle = "CardTitle";
+        final String cardUrl = "CardUrl";
+        // Arrange.
+        Map<String, String> productSpecificDataMap = new HashMap<>();
+        productSpecificDataMap.put(FeedStream.FeedActionsHandlerImpl.XSURFACE_CARD_URL, testUrl);
+        productSpecificDataMap.put(xSurfaceCardTitle, testTitle);
+
+        mFeedStream.setHelpAndFeedbackLauncherForTest(mHelpAndFeedbackLauncherImpl);
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        // Act.
+        handler.sendFeedback(productSpecificDataMap);
+
+        // Assert.
+        verify(mHelpAndFeedbackLauncherImpl)
+                .showFeedback(any(), any(), eq(testUrl),
+                        eq(FeedStream.FeedActionsHandlerImpl.FEEDBACK_REPORT_TYPE),
+                        mMapCaptor.capture());
+
+        // Check that the map contents are as expected.
+        assertThat(mMapCaptor.getValue()).containsEntry(cardUrl, testUrl);
+        assertThat(mMapCaptor.getValue()).containsEntry(cardTitle, testTitle);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowSnackbar() {
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.showSnackbar(
+                "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testShare() {
+        mFeedStream.setShareWrapperForTest(mShareHelper);
+
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        String url = "http://www.foo.com";
+        String title = "fooTitle";
+        handler.share(url, title);
+        verify(mShareHelper).share(url, title);
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadMoreOnDismissal() {
+        bindToView();
+        final int itemCount = 10;
+
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        // loadMore not triggered due to last visible item not falling into lookahead range.
+        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD - 1);
+        mLayoutManager.setItemCount(itemCount);
+        handler.commitDismissal(0);
+        verify(mFeedStreamJniMock, never())
+                .loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
+
+        // loadMore triggered.
+        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setItemCount(itemCount);
+        handler.commitDismissal(0);
+        verify(mFeedStreamJniMock).loadMore(anyLong(), any(FeedStream.class), any(Callback.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollIsReportedOnUnbind() {
+        bindToView();
+
+        // RecyclerView prevents scrolling if there's no content to scroll. We hack
+        // the scroll listener directly.
+        mFeedStream.getScrollListenerForTest().onScrolled(mRecyclerView, 0, 100);
+        mFeedStream.unbind();
+
+        verify(mFeedStreamJniMock).reportStreamScrollStart(anyLong(), any(FeedStream.class));
+        verify(mFeedStreamJniMock).reportStreamScrolled(anyLong(), any(FeedStream.class), eq(100));
     }
 
     private int getLoadMoreTriggerScrollDistance() {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
                 mRecyclerView.getResources().getDisplayMetrics());
+    }
+
+    private FeedUiProto.StreamUpdate.SliceUpdate createSliceUpdateForExistingSlice(String sliceId) {
+        return FeedUiProto.StreamUpdate.SliceUpdate.newBuilder().setSliceId(sliceId).build();
+    }
+
+    private FeedUiProto.StreamUpdate.SliceUpdate createSliceUpdateForNewXSurfaceSlice(
+            String sliceId) {
+        return FeedUiProto.StreamUpdate.SliceUpdate.newBuilder()
+                .setSlice(createXSurfaceSSlice(sliceId))
+                .build();
+    }
+
+    private FeedUiProto.Slice createXSurfaceSSlice(String sliceId) {
+        return FeedUiProto.Slice.newBuilder()
+                .setSliceId(sliceId)
+                .setXsurfaceSlice(FeedUiProto.XSurfaceSlice.newBuilder()
+                                          .setXsurfaceFrame(ByteString.copyFromUtf8(TEST_DATA))
+                                          .build())
+                .build();
+    }
+
+    private void createHeaderContent(int number) {
+        List<NtpListContentManager.FeedContent> contentList = new ArrayList<>();
+        for (int i = 0; i < number; i++) {
+            contentList.add(new NtpListContentManager.NativeViewContent(
+                    HEADER_PREFIX + i, new TextView(mActivity)));
+        }
+        mContentManager.addContents(0, contentList);
+    }
+
+    void bindToView() {
+        mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer);
     }
 }

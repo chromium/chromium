@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.shared;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -25,6 +27,8 @@ public final class FeedFeatures {
 
     private static PrefChangeRegistrar sPrefChangeRegistrar;
 
+    private static PrefService sFakePrefServiceForTest;
+
     /**
      * @return Whether the feed is allowed to be used. The feed is disabled if supervised user or
      * enterprise policy has once been added within the current session. The value returned by
@@ -39,9 +43,7 @@ public final class FeedFeatures {
         if (sEverDisabledForPolicy) return false;
 
         if (sPrefChangeRegistrar == null) {
-            sPrefChangeRegistrar = new PrefChangeRegistrar();
-            sPrefChangeRegistrar.addObserver(
-                    Pref.ENABLE_SNIPPETS, FeedFeatures::articlesEnabledPrefChange);
+            setPrefChangeRegistrar(new PrefChangeRegistrar());
         }
 
         if (!sEverDisabledForPolicy) {
@@ -55,9 +57,8 @@ public final class FeedFeatures {
      * @return Whether the WebFeed UI is enabled.
      */
     public static boolean isWebFeedUIEnabled() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && prefService.getBoolean(Pref.ENABLE_WEB_FEED_UI);
+                && getPrefService().getBoolean(Pref.ENABLE_WEB_FEED_UI);
     }
 
     private static void articlesEnabledPrefChange() {
@@ -73,6 +74,23 @@ public final class FeedFeatures {
     }
 
     private static PrefService getPrefService() {
+        if (sFakePrefServiceForTest != null) {
+            return sFakePrefServiceForTest;
+        }
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
+    private static void setPrefChangeRegistrar(PrefChangeRegistrar registrar) {
+        sPrefChangeRegistrar = registrar;
+        if (sPrefChangeRegistrar != null) {
+            sPrefChangeRegistrar.addObserver(
+                    Pref.ENABLE_SNIPPETS, FeedFeatures::articlesEnabledPrefChange);
+        }
+    }
+
+    @VisibleForTesting
+    public static void setFakePrefsForTest(PrefService fakePref, PrefChangeRegistrar fakeRegistar) {
+        sFakePrefServiceForTest = fakePref;
+        setPrefChangeRegistrar(fakeRegistar);
     }
 }

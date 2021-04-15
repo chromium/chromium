@@ -36,11 +36,10 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.NtpStreamLifecycleManager;
-import org.chromium.chrome.browser.feed.StreamLifecycleManager;
+import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
+import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -849,8 +848,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
     // Implements FeedSurfaceDelegate
     @Override
-    public StreamLifecycleManager createStreamLifecycleManager(Stream stream, Activity activity) {
-        return new NtpStreamLifecycleManager(stream, activity, mTab);
+    public FeedSurfaceLifecycleManager createStreamLifecycleManager(
+            Activity activity, FeedSurfaceCoordinator coordinator) {
+        return new NtpFeedSurfaceLifecycleManager(activity, mTab, coordinator);
     }
 
     @Override

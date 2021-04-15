@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,10 +14,8 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
-import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ import java.util.Map;
  * Implementation of ListContentManager that manages a list of feed contents that are supported by
  * either native view or external surface controlled view.
  */
-public class FeedListContentManager implements ListContentManager {
+public class NtpListContentManager implements ListContentManager {
     /**
      * Encapsulates the content of an item stored and managed by ListContentManager.
      */
@@ -144,28 +142,24 @@ public class FeedListContentManager implements ListContentManager {
             mViewType = viewType;
         }
 
-        public View getNestedView() {
-            return mNativeView;
-        }
-
         @Override
         public boolean isNativeView() {
             return true;
         }
     }
 
-    private ArrayList<FeedContent> mFeedContentList;
-    private ArrayList<ListContentManagerObserver> mObservers;
-    private final Map<String, Object> mHandlers;
+    private final ArrayList<FeedContent> mFeedContentList = new ArrayList<>();
+    private final ArrayList<ListContentManagerObserver> mObservers = new ArrayList<>();
+    private final Map<String, Object> mHandlers = new HashMap<>();
     private int mPreviousViewType;
 
-    FeedListContentManager(
-            SurfaceActionsHandler surfaceActionsHandler, FeedActionsHandler feedActionsHandler) {
-        mFeedContentList = new ArrayList<FeedContent>();
-        mObservers = new ArrayList<ListContentManagerObserver>();
-        mHandlers = new HashMap<String, Object>();
-        mHandlers.put(SurfaceActionsHandler.KEY, surfaceActionsHandler);
-        mHandlers.put(FeedActionsHandler.KEY, feedActionsHandler);
+    /**
+     * Clears existing handlers and sets current handlers to newHandlers.
+     * @param newHandlers handlers to set.
+     */
+    public void setHandlers(Map<String, Object> newHandlers) {
+        mHandlers.clear();
+        mHandlers.putAll(newHandlers);
     }
 
     /**
