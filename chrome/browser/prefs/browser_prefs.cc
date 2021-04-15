@@ -1207,6 +1207,7 @@ void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif
 
 // This method should be periodically pruned of year+ old migrations.
+// See chrome/browser/prefs/README.md for details.
 void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
@@ -1254,6 +1255,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 }
 
 // This method should be periodically pruned of year+ old migrations.
+// See chrome/browser/prefs/README.md for details.
 void MigrateObsoleteProfilePrefs(Profile* profile) {
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
