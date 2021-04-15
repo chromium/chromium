@@ -831,9 +831,8 @@ const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
 
 // Makes freezing of frame-associated task queues happen even when KeepActive is
 // true.
-// TODO(https://crbug.com/1179590): Disable this before M91 branch cut.
 const base::Feature kFreezeWhileKeepActive{"FreezeWhileKeepActive",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Kill switch for the new behavior whereby anchors with target=_blank get
 // noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.
