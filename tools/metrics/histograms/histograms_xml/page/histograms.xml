@@ -1886,7 +1886,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
     enum="LargestContentType" expires_after="2021-10-10">
-  <owner>maxlg@chromium.org</owner>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1900,7 +1899,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType"
     enum="LargestContentType" expires_after="2021-10-10">
-  <owner>maxlg@chromium.org</owner>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2348,7 +2346,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2021-10-10">
-  <owner>maxlg@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -2372,7 +2370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame"
     units="ms" expires_after="2021-10-10">
-  <owner>maxlg@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the

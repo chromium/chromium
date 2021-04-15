@@ -597,7 +597,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="RendererScheduler.UpdateForSameDocumentNavigationCount"
     enum="SinglePageAppNavigationType" expires_after="M85">
-  <owner>maxlg@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The count of same-document-navigations split by whether it is the
     same-document backward/forward navigation, history API navigation, or other
