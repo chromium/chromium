@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/metrics/android_incognito_session_durations_service.h"
+#include "chrome/browser/android/metrics/android_session_durations_service.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -30,12 +30,14 @@ TEST_F(AndroidIncognitoSessionDurationsServiceTest, RegularIncognitoClose) {
 
   {
     // Start service.
-    AndroidIncognitoSessionDurationsService service;
+    auto service = std::make_unique<AndroidSessionDurationsService>();
+    service->InitializeForIncognitoProfile();
+
     histograms.ExpectTotalCount(resume_metric_name, 0);
     histograms.ExpectTotalCount(background_metric_name, 0);
 
     // Close service (happens when Incognito profile is properly closed).
-    service.Shutdown();
+    service->Shutdown();
   }
 
   // Check after service shutdown and destruction.
@@ -48,12 +50,14 @@ TEST_F(AndroidIncognitoSessionDurationsServiceTest, DieInBackground) {
 
   {
     // Start service.
-    AndroidIncognitoSessionDurationsService service;
+    auto service = std::make_unique<AndroidSessionDurationsService>();
+    service->InitializeForIncognitoProfile();
+
     histograms.ExpectTotalCount(resume_metric_name, 0);
     histograms.ExpectTotalCount(background_metric_name, 0);
 
     // Go background.
-    service.OnAppEnterBackground();
+    service->OnAppEnterBackground(base::TimeDelta());
     histograms.ExpectTotalCount(resume_metric_name, 0);
     histograms.ExpectBucketCount(background_metric_name, 0, 1);
   }
@@ -67,8 +71,10 @@ TEST_F(AndroidIncognitoSessionDurationsServiceTest, DoubleForeground) {
   base::HistogramTester histograms;
 
   // Start service and move to foreground and expect no recording.
-  AndroidIncognitoSessionDurationsService service;
-  service.OnAppEnterForeground();
+  auto service = std::make_unique<AndroidSessionDurationsService>();
+  service->InitializeForIncognitoProfile();
+
+  service->OnAppEnterForeground(base::TimeTicks());
   histograms.ExpectTotalCount(resume_metric_name, 0);
   histograms.ExpectTotalCount(background_metric_name, 0);
 }
@@ -76,25 +82,26 @@ TEST_F(AndroidIncognitoSessionDurationsServiceTest, DoubleForeground) {
 TEST_F(AndroidIncognitoSessionDurationsServiceTest, MultipleStateChange) {
   base::HistogramTester histograms;
 
-  AndroidIncognitoSessionDurationsService service;
+  auto service = std::make_unique<AndroidSessionDurationsService>();
+  service->InitializeForIncognitoProfile();
 
   // Go background.
-  service.OnAppEnterBackground();
+  service->OnAppEnterBackground(base::TimeDelta());
   histograms.ExpectTotalCount(resume_metric_name, 0);
   histograms.ExpectBucketCount(background_metric_name, 0, 1);
 
   // Go foreground.
-  service.OnAppEnterForeground();
+  service->OnAppEnterForeground(base::TimeTicks());
   histograms.ExpectBucketCount(resume_metric_name, 0, 1);
 
   // Assume session start was 1 hour ago and go background.
-  service.SetSessionStartTimeForTesting(base::Time::Now() -
-                                        base::TimeDelta::FromSeconds(60) * 60);
-  service.OnAppEnterBackground();
+  service->SetSessionStartTimeForTesting(base::Time::Now() -
+                                         base::TimeDelta::FromSeconds(60) * 60);
+  service->OnAppEnterBackground(base::TimeDelta());
   histograms.ExpectBucketCount(background_metric_name, 60, 1);
 
   // Go foreground.
-  service.OnAppEnterForeground();
+  service->OnAppEnterForeground(base::TimeTicks());
   histograms.ExpectBucketCount(resume_metric_name, 60, 1);
   histograms.ExpectTotalCount(background_metric_name, 2);
 }

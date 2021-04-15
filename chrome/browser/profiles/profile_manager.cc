@@ -129,9 +129,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/metrics/android_profile_session_durations_service_factory.h"
-#else
+#if !defined(OS_ANDROID)
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
@@ -1543,12 +1541,10 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   // because ProfileSyncService needs the URL context getter.
   UnifiedConsentServiceFactory::GetForProfile(profile);
 
-#if defined(OS_ANDROID)
-  AndroidProfileSessionDurationsServiceFactory::GetForProfile(profile);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)  // !OS_ANDROID && IS_CHROMEOS_ASH
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::ProfileHelper::IsSigninProfile(profile))
     captions::CaptionControllerFactory::GetForProfile(profile)->Init();
-#else                             // !OS_ANDROID && !IS_CHROMEOS_ASH
+#elif !defined(OS_ANDROID)  // !OS_ANDROID && !IS_CHROMEOS_ASH
   captions::CaptionControllerFactory::GetForProfile(profile)->Init();
 #endif
 
