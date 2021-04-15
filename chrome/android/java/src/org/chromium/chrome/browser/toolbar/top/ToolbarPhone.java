@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -932,10 +931,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         int toolbarButtonVisibility = getToolbarButtonVisibility();
         mToolbarButtonsContainer.setVisibility(toolbarButtonVisibility);
-        if (!getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
-            if (mHomeButton != null && mHomeButton.getVisibility() != GONE) {
-                mHomeButton.setVisibility(toolbarButtonVisibility);
-            }
+        if (mHomeButton != null && mHomeButton.getVisibility() != GONE) {
+            mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
         updateLocationBarLayoutForExpansionAnimation();
@@ -945,7 +942,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * @return The visibility for {@link #mToolbarButtonsContainer}.
      */
     private int getToolbarButtonVisibility() {
-        return mUrlExpansionFraction == 1f ? INVISIBLE : VISIBLE;
+        return (mUrlExpansionFraction == 1f
+                       || getToolbarDataProvider().isInOverviewAndShowingOmnibox())
+                ? INVISIBLE
+                : VISIBLE;
     }
 
     /**
@@ -1598,8 +1598,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public void updateButtonVisibility() {
         if (mHomeButton != null) {
             boolean hideHomeButton = !mIsHomeButtonEnabled
-                    || ReturnToChromeExperimentsUtil.shouldHideHomeButtonForStartSurface(
-                            isIncognito(), false /* isTablet */);
+                    || getToolbarDataProvider().isInOverviewAndShowingOmnibox();
             if (hideHomeButton) {
                 removeHomeButton();
             } else {

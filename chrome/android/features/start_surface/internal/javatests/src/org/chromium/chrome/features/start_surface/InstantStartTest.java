@@ -955,18 +955,7 @@ public class InstantStartTest {
         waitForTabModel();
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 0, 0);
 
-        /** Drag the {@link R.id.placeholders_layout} to scroll the toolbar to the top. */
-        int toY = -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
-                org.chromium.chrome.start_surface.R.dimen.toolbar_height_no_shadow);
-        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity().findViewById(R.id.placeholders_layout), 0, 0, 0,
-                toY, 1);
-
-        // Toolbar layout view should show.
-        onViewWaiting(withId(R.id.toolbar));
-
-        // The start surface toolbar should be scrolled up and not be displayed.
-        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
+        scrollToolbar();
 
         View surface = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         ChromeRenderTestRule.sanitize(surface);
@@ -1152,6 +1141,7 @@ public class InstantStartTest {
         pressHomePageButton();
 
         // Wait for thumbnail to show.
+        waitForOverviewVisible();
         onViewWaiting(allOf(withId(R.id.tab_thumbnail), isDisplayed()));
 
         View tabThumbnail = mActivityTestRule.getActivity().findViewById(R.id.tab_thumbnail);
@@ -1159,15 +1149,6 @@ public class InstantStartTest {
         defaultRatio = MathUtils.clamp(defaultRatio, 0.5f, 2.0f);
         assertEquals(tabThumbnail.getMeasuredHeight(),
                 (int) (tabThumbnail.getMeasuredWidth() * 1.0 / defaultRatio), 2);
-    }
-
-    private void pressHomePageButton() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity()
-                    .getToolbarManager()
-                    .getToolbarTabControllerForTesting()
-                    .openHomepage();
-        });
     }
 
     @Test
@@ -1350,6 +1331,75 @@ public class InstantStartTest {
                 mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EXPLORE_SITES})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS +
+                    "/start_surface_variation/single"})
+    public void testToolbarPhoneHomeButtonVisibility() {
+        // clang-format on
+        startMainActivityFromLauncher();
+        waitForOverviewVisible();
+        // Initializes native.
+        startAndWaitNativeInitialization();
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 0, 0);
+
+        // The home button shouldn't show on homepage.
+        onView(withId(R.id.home_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        scrollToolbar();
+        onView(withId(R.id.home_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+        // Open a tab from search box.
+        MatcherAssert.assertThat(
+                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
+                equalTo(0));
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onView(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+                .perform(replaceText("about:blank"));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        hideWatcher.waitForBehavior();
+        MatcherAssert.assertThat(
+                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
+                equalTo(1));
+
+        // The home button should show on a normal tab.
+        onViewWaiting(withId(R.id.home_button)).check(matches(isDisplayed()));
+    }
+
+    private void scrollToolbar() {
+        /** Drag the {@link R.id.placeholders_layout} to scroll the toolbar to the top. */
+        int toY = -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
+                org.chromium.chrome.start_surface.R.dimen.toolbar_height_no_shadow);
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity().findViewById(R.id.placeholders_layout), 0, 0, 0,
+                toY, 1);
+
+        // Toolbar layout view should show.
+        onViewWaiting(withId(R.id.toolbar));
+
+        // The start surface toolbar should be scrolled up and not be displayed.
+        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
+    }
+
+    private void pressHomePageButton() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getToolbarManager()
+                    .getToolbarTabControllerForTesting()
+                    .openHomepage();
         });
     }
 
