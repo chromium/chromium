@@ -172,7 +172,6 @@ export class EmojiPicker extends PolymerElement {
         ev => this.onShowEmojiVariants(
             /** @type {!EmojiVariantsShownEvent} */ (ev)));
     this.addEventListener('click', () => this.hideDialogs());
-    this.apiProxy_.showUI();
     this.getHistory();
   }
 
@@ -452,7 +451,15 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onEmojiDataLoaded(data) {
-    this.emojiData = /** @type {!EmojiGroupData} */ (JSON.parse(data));
+    const emojidata = /** @type {!EmojiGroupData} */ (JSON.parse(data));
+    // There is quite a lot of emoji data to load which causes slow rendering.
+    // Just load the first emoji category immediately, and defer loading of the
+    // other categories (which will be off screen).
+    this.emojiData = [emojidata[0]];
+    afterNextRender(this, () => {
+      this.apiProxy_.showUI();
+      this.emojiData = emojidata;
+    });
   }
 
   /**
