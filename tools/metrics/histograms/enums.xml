@@ -21358,6 +21358,13 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Bad gamma value"/>
 </enum>
 
+<enum name="EditableContentType">
+  <int value="0" label="Not editable"/>
+  <int value="1" label="Content editable"/>
+  <int value="2" label="Text area"/>
+  <int value="3" label="Input"/>
+</enum>
+
 <enum name="EduCoexistenceFlowResult">
   <obsolete>
     Deprecated in M91 after v2 EduCoexistence.
