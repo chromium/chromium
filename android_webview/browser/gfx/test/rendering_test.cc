@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -50,6 +51,7 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
 RenderingTest::RenderingTest()
     : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
   ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  android_webview::GpuServiceWebView::GetInstance();
 }
 
 RenderingTest::~RenderingTest() {

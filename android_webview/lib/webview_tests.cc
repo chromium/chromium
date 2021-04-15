@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/test_suite.h"
@@ -20,7 +19,6 @@ int main(int argc, char** argv) {
                                   ",VizForWebViewDefault");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
-  android_webview::GpuServiceWebView::GetInstance();
   base::TestSuite test_suite(argc, argv);
   mojo::core::Init();
   return test_suite.Run();
