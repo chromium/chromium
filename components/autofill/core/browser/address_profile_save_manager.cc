@@ -48,6 +48,10 @@ void AddressProfileSaveManager::SaveProfilePromptCallback(
     case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
     case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
       break;
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined:
+    case AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked:
+      NOTREACHED();
+      break;
   }
 }
 

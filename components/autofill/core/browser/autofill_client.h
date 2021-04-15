@@ -136,6 +136,8 @@ class AutofillClient : public RiskDataLoader {
   };
 
   enum class SaveAddressProfileOfferUserDecision {
+    kUndefined,
+    kUserNotAsked,
     kAccepted,
     kEdited,
     kDeclined,
