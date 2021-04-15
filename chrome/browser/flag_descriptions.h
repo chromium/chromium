@@ -1432,9 +1432,6 @@ extern const char kTouchSelectionStrategyDescription[];
 extern const char kTouchSelectionStrategyCharacter[];
 extern const char kTouchSelectionStrategyDirection[];
 
-extern const char kTouchpadOverscrollHistoryNavigationName[];
-extern const char kTouchpadOverscrollHistoryNavigationDescription[];
-
 extern const char kTraceUploadUrlName[];
 extern const char kTraceUploadUrlDescription[];
 extern const char kTraceUploadUrlChoiceOther[];

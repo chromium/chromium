@@ -5057,11 +5057,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "touchpad-overscroll-history-navigation",
-    "owners": [ "chaopeng", "input-dev" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "trace-upload-url",
     "owners": [ "oysteine" ],
     "expiry_milestone": 85
