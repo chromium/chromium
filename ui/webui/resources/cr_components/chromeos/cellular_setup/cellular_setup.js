@@ -90,13 +90,7 @@ Polymer({
 
   /** @private */
   onBackwardNavRequested_() {
-    const isNavHandled = this.currentPage_.attemptBackwardNavigation();
-
-    // Subflow returns false in a state where it cannot perform backward
-    // navigation any more. Close dialog.
-    if (!isNavHandled) {
-      this.fire('exit-cellular-setup');
-    }
+    this.currentPage_.navigateBackward();
   },
 
   onCancelRequested_() {
