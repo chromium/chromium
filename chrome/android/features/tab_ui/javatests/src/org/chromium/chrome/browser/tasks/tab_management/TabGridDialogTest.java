@@ -1067,7 +1067,8 @@ public class TabGridDialogTest {
             return;
         }
         @ColorInt
-        int scrimDefaultColor = ApiCompatibilityUtils.getColor(resources, R.color.black_alpha_65);
+        int scrimDefaultColor =
+                ApiCompatibilityUtils.getColor(resources, R.color.default_scrim_color);
         @ColorInt
         int navigationBarColor =
                 ApiCompatibilityUtils.getColor(resources, R.color.bottom_system_nav_color);

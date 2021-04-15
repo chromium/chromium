@@ -64,7 +64,7 @@ public class StatusBarColorControllerTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mScrimColor = ApiCompatibilityUtils.getColor(mActivityTestRule.getActivity().getResources(),
-                org.chromium.chrome.R.color.black_alpha_65);
+                org.chromium.chrome.R.color.default_scrim_color);
     }
 
     /**

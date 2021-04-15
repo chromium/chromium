@@ -370,7 +370,7 @@ public class StatusBarColorController
         if (mScrimColor == 0) {
             final View root = mWindow.getDecorView().getRootView();
             final Resources resources = root.getResources();
-            mScrimColor = ApiCompatibilityUtils.getColor(resources, R.color.black_alpha_65);
+            mScrimColor = ApiCompatibilityUtils.getColor(resources, R.color.default_scrim_color);
         }
         // Apply a color overlay if the scrim is showing.
         float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
