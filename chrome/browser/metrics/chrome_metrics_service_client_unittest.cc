@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/process/process_handle.h"
@@ -270,26 +271,39 @@ TEST_F(ChromeMetricsServiceClientTest, IsWebstoreExtension) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
-  const std::string signed_key =
+  const std::string signing_key =
       chrome_metrics_service_client->GetUploadSigningKey();
-  // The signed key should never be an empty string for a Chrome-branded build.
-  EXPECT_FALSE(signed_key.empty());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The signing key should never be an empty string for a Chrome-branded build.
+  EXPECT_FALSE(signing_key.empty());
+#else
+  // In non-branded builds, we may still have a valid signing key if
+  // USE_OFFICIAL_GOOGLE_API_KEYS is true. However, that macro is not available
+  // in this file.
+  ALLOW_UNUSED_LOCAL(signing_key);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
-  const std::string signed_key =
+  const std::string signing_key =
       chrome_metrics_service_client->GetUploadSigningKey();
 
   std::string signature;
+  bool sign_success = metrics::UnsentLogStore::ComputeHMACForLog(
+      "Test Log Data", signing_key, &signature);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The signing key should be able to sign data for a Chrome-branded build.
-  EXPECT_TRUE(metrics::UnsentLogStore::ComputeHMACForLog(
-      "Test Log Data", signed_key, &signature));
+  EXPECT_TRUE(sign_success);
   EXPECT_FALSE(signature.empty());
-}
+#else
+  // In non-branded builds, we may still have a valid signing key if
+  // USE_OFFICIAL_GOOGLE_API_KEYS is true. However, that macro is not available
+  // in this file, so just check that success == a non-empty signature.
+  EXPECT_EQ(sign_success, !signature.empty());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}

@@ -6,13 +6,16 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/ukm_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -154,4 +157,41 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestUkmProvidersWhenDisabled) {
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
   // Verify that the UKM service is not instantiated when disabled.
   EXPECT_FALSE(chrome_metrics_service_client->GetUkmService());
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
+  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+  const std::string signing_key =
+      chrome_metrics_service_client->GetUploadSigningKey();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The signing key should never be an empty string for a Chrome-branded build.
+  EXPECT_FALSE(signing_key.empty());
+#else
+  // In non-branded builds, we may still have a valid signing key if
+  // USE_OFFICIAL_GOOGLE_API_KEYS is true. However, that macro is not available
+  // in this file.
+  ALLOW_UNUSED_LOCAL(signing_key);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
+  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+  const std::string signing_key =
+      chrome_metrics_service_client->GetUploadSigningKey();
+
+  std::string signature;
+  bool sign_success = metrics::UnsentLogStore::ComputeHMACForLog(
+      "Test Log Data", signing_key, &signature);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The signing key should be able to sign data for a Chrome-branded build.
+  EXPECT_TRUE(sign_success);
+  EXPECT_FALSE(signature.empty());
+#else
+  // In non-branded builds, we may still have a valid signing key if
+  // USE_OFFICIAL_GOOGLE_API_KEYS is true. However, that macro is not available
+  // in this file, so just check that success == a non-empty signature.
+  EXPECT_EQ(sign_success, !signature.empty());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
