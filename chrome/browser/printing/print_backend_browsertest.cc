@@ -239,8 +239,8 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
           &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
           base::Unretained(this), &printer_caps));
   WaitUntilCallbackReceived();
-  EXPECT_TRUE(printer_caps.has_value());
-  EXPECT_EQ(printer_caps->copies_max, kCopiesMax);
+  ASSERT_TRUE(printer_caps.has_value());
+  EXPECT_EQ(printer_caps.value().copies_max, kCopiesMax);
 
   // Requesting for an invalid printer should not return capabilities.
   GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
@@ -268,11 +268,11 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
                      base::Unretained(this), &printer_info,
                      &user_defined_papers, &printer_caps));
   WaitUntilCallbackReceived();
-  EXPECT_TRUE(printer_info.has_value());
+  ASSERT_TRUE(printer_info.has_value());
   EXPECT_TRUE(user_defined_papers.has_value());
-  EXPECT_TRUE(printer_caps.has_value());
-  EXPECT_TRUE(printer_info->is_default);
-  EXPECT_EQ(printer_caps->copies_max, kCopiesMax);
+  ASSERT_TRUE(printer_caps.has_value());
+  EXPECT_TRUE(printer_info.value().is_default);
+  EXPECT_EQ(printer_caps.value().copies_max, kCopiesMax);
 
   // Requesting for an invalid printer should not return capabilities.
   GetPrintBackendService()->FetchCapabilities(
