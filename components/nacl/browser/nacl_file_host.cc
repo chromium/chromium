@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/content_features.h"
 #include "ipc/ipc_platform_file.h"
 
 using content::BrowserThread;
@@ -55,7 +56,9 @@ void DoRegisterOpenedNaClExecutableFile(
     IPC::Message* reply_msg,
     WriteFileInfoReply write_reply_message) {
   // IO thread owns the NaClBrowser singleton.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   nacl::NaClBrowser* nacl_browser = nacl::NaClBrowser::GetInstance();
   uint64_t file_token_lo = 0;
@@ -102,7 +105,10 @@ void DoOpenPnaclFile(
   // Not all PNaCl files are executable. Only register those that are
   // executable in the NaCl file_path cache.
   if (is_executable) {
-    content::GetIOThreadTaskRunner({})->PostTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&DoRegisterOpenedNaClExecutableFile,
                        nacl_host_message_filter, std::move(file_to_open),
@@ -146,7 +152,11 @@ void DoOpenNaClExecutableOnThreadPool(
     if (enable_validation_caching) {
       // This function is running on the blocking pool, but the path needs to be
       // registered in a structure owned by the IO thread.
-      content::GetIOThreadTaskRunner({})->PostTask(
+      auto task_runner =
+          base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+              ? content::GetUIThreadTaskRunner({})
+              : content::GetIOThreadTaskRunner({});
+      task_runner->PostTask(
           FROM_HERE,
           base::BindOnce(
               &DoRegisterOpenedNaClExecutableFile, nacl_host_message_filter,

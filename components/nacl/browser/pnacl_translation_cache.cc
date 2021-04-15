@@ -19,6 +19,7 @@
 #include "components/nacl/common/pnacl_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -152,13 +153,16 @@ PnaclTranslationCacheEntry::PnaclTranslationCacheEntry(
 PnaclTranslationCacheEntry::~PnaclTranslationCacheEntry() {
   // Ensure we have called the user's callback
   if (step_ != FINISHED) {
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
     if (!read_callback_.is_null()) {
-      content::GetIOThreadTaskRunner({})->PostTask(
+      task_runner->PostTask(
           FROM_HERE, base::BindOnce(std::move(read_callback_), net::ERR_ABORTED,
                                     scoped_refptr<net::DrainableIOBuffer>()));
     }
     if (!write_callback_.is_null()) {
-      content::GetIOThreadTaskRunner({})->PostTask(
+      task_runner->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(write_callback_), net::ERR_ABORTED));
     }
@@ -214,22 +218,28 @@ void PnaclTranslationCacheEntry::CloseEntry(int rv) {
     LOG(ERROR) << "Failed to close entry: " << net::ErrorToString(rv);
     entry_->Doom();
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CloseDiskCacheEntry, entry_));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&CloseDiskCacheEntry, entry_));
   Finish(rv);
 }
 
 void PnaclTranslationCacheEntry::Finish(int rv) {
   step_ = FINISHED;
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
   if (is_read_) {
     if (!read_callback_.is_null()) {
-      content::GetIOThreadTaskRunner({})->PostTask(
+      task_runner->PostTask(
           FROM_HERE, base::BindOnce(std::move(read_callback_), rv, io_buf_));
     }
   } else {
     if (!write_callback_.is_null()) {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(write_callback_), rv));
+      task_runner->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(write_callback_), rv));
     }
   }
   cache_->OpComplete(this);
@@ -356,8 +366,11 @@ void PnaclTranslationCache::OnCreateBackendComplete(int rv) {
   }
   // Invoke our client's callback function.
   if (!init_callback_.is_null()) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(init_callback_), rv));
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(std::move(init_callback_), rv));
   }
 }
 

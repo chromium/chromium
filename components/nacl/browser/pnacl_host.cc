@@ -18,6 +18,7 @@
 #include "components/nacl/browser/pnacl_translation_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -141,7 +142,9 @@ void PnaclHost::OnCacheInitialized(int net_error) {
 void PnaclHost::Init() {
   // Extra check that we're on the real IO thread since this version of
   // Init isn't used in unit tests.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
   DCHECK(thread_checker_.CalledOnValidThread());
   base::FilePath cache_path(GetCachePath());
   if (cache_path.empty() || cache_state_ != CacheUninitialized)
@@ -201,8 +204,10 @@ void PnaclHost::DoCreateTemporaryFile(base::FilePath temp_dir,
     if (!file.IsValid())
       PLOG(ERROR) << "Temp file open failed: " << file.error_details();
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(cb, std::move(file)));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE, base::BindOnce(cb, std::move(file)));
 }
 
 void PnaclHost::CreateTemporaryFile(TempFileCallback cb) {
@@ -229,7 +234,10 @@ void PnaclHost::GetNexeFd(int render_process_id,
   }
   if (cache_state_ != CacheReady) {
     // If the backend hasn't yet initialized, try the request again later.
-    content::GetIOThreadTaskRunner({})->PostDelayedTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PnaclHost::GetNexeFd, base::Unretained(this),
                        render_process_id, render_view_id, pp_instance,
@@ -577,9 +585,11 @@ void PnaclHost::RendererClosing(int render_process_id) {
         RequeryMatchingTranslations(key);
     }
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PnaclHost::DeInitIfSafe, base::Unretained(this)));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&PnaclHost::DeInitIfSafe,
+                                                  base::Unretained(this)));
 }
 
 ////////////////// Cache data removal
@@ -593,7 +603,10 @@ void PnaclHost::ClearTranslationCacheEntriesBetween(
   }
   if (cache_state_ == CacheInitializing) {
     // If the backend hasn't yet initialized, try the request again later.
-    content::GetIOThreadTaskRunner({})->PostDelayedTask(
+    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                           ? content::GetUIThreadTaskRunner({})
+                           : content::GetIOThreadTaskRunner({});
+    task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PnaclHost::ClearTranslationCacheEntriesBetween,
                        base::Unretained(this), initial_time, end_time,
@@ -616,14 +629,16 @@ void PnaclHost::ClearTranslationCacheEntriesBetween(
 
 void PnaclHost::OnEntriesDoomed(base::OnceClosure callback, int net_error) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(FROM_HERE, std::move(callback));
   pending_backend_operations_--;
   // When clearing the cache, the UI is blocked on all the cache-clearing
   // operations, and freeing the backend actually blocks the IO thread. So
   // instead of calling DeInitIfSafe directly, post it for later.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PnaclHost::DeInitIfSafe, base::Unretained(this)));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&PnaclHost::DeInitIfSafe,
+                                                  base::Unretained(this)));
 }
 
 // Destroying the cache backend causes it to post tasks to the cache thread to

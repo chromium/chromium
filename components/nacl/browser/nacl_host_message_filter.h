@@ -62,7 +62,7 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
       IPC::Message* reply_msg,
       bool nonsfi_mode_allowed,
       NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback);
-  void LaunchNaClContinuationOnIOThread(
+  void LaunchNaClContinuationOnProcessThread(
       const nacl::NaClLaunchParams& launch_params,
       IPC::Message* reply_msg,
       const std::vector<NaClResourcePrefetchResult>& prefetched_resource_files,
