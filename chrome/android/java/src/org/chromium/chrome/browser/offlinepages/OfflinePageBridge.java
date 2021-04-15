@@ -655,7 +655,7 @@ public class OfflinePageBridge {
             Map<String, String> headers = new HashMap<String, String>();
             headers.put(extraHeaderKey, extraHeaderValue);
             loadUrlParams.setExtraHeaders(headers);
-            loadUrlParams.setVerbatimHeaders(extraHeaderKey + ": " + extraHeaderValue);
+            loadUrlParams.setVerbatimHeaders(extraHeaderKey + ":" + extraHeaderValue);
         }
         return loadUrlParams;
     }

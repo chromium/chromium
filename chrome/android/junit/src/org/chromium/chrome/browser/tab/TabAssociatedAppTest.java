@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.TabLoadStatus;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -70,7 +69,7 @@ public class TabAssociatedAppTest {
 
         mTabObserverCaptor.getValue().onLoadUrl(mTab,
                 new LoadUrlParams("foobar.com", PageTransition.FROM_ADDRESS_BAR),
-                TabLoadStatus.DEFAULT_PAGE_LOAD);
+                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
 
         Assert.assertNull(tabAssociatedApp.getAppId());
     }
@@ -84,7 +83,7 @@ public class TabAssociatedAppTest {
 
         mTabObserverCaptor.getValue().onLoadUrl(mTab,
                 new LoadUrlParams("foobar.com", PageTransition.LINK),
-                TabLoadStatus.DEFAULT_PAGE_LOAD);
+                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
 
         Assert.assertEquals(APP_ID, tabAssociatedApp.getAppId());
     }

@@ -17,6 +17,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * The NavigationControllerImpl Java wrapper to allow communicating with the native
@@ -161,15 +162,22 @@ import org.chromium.url.GURL;
     @Override
     public void loadUrl(LoadUrlParams params) {
         if (mNativeNavigationControllerAndroid != 0) {
+            String headers = params.getExtraHeaders() == null ? params.getVerbatimHeaders()
+                                                              : params.getExtraHeadersString();
+            long inputStart = params.getInputStartTimestamp() == 0
+                    ? params.getIntentReceivedTimestamp()
+                    : params.getInputStartTimestamp();
             NavigationControllerImplJni.get().loadUrl(mNativeNavigationControllerAndroid,
                     NavigationControllerImpl.this, params.getUrl(), params.getLoadUrlType(),
                     params.getTransitionType(),
                     params.getReferrer() != null ? params.getReferrer().getUrl() : null,
                     params.getReferrer() != null ? params.getReferrer().getPolicy() : 0,
-                    params.getUserAgentOverrideOption(), params.getExtraHeadersString(),
-                    params.getPostData(), params.getBaseUrl(), params.getVirtualUrlForDataUrl(),
+                    params.getUserAgentOverrideOption(), headers, params.getPostData(),
+                    params.getBaseUrl(), params.getVirtualUrlForDataUrl(),
                     params.getDataUrlAsString(), params.getCanLoadLocalResources(),
-                    params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry());
+                    params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry(),
+                    params.getInitiatorOrigin(), params.getHasUserGesture(),
+                    params.getShouldClearHistoryList(), inputStart);
         }
     }
 
@@ -348,7 +356,8 @@ import org.chromium.url.GURL;
                 int referrerPolicy, int uaOverrideOption, String extraHeaders,
                 ResourceRequestBody postData, String baseUrlForDataUrl, String virtualUrlForDataUrl,
                 String dataUrlAsString, boolean canLoadLocalResources, boolean isRendererInitiated,
-                boolean shouldReplaceCurrentEntry);
+                boolean shouldReplaceCurrentEntry, Origin initiatorOrigin, boolean hasUserGesture,
+                boolean shouldClearHistoryList, long inputStart);
         void clearHistory(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
         int getNavigationHistory(long nativeNavigationControllerAndroid,
                 NavigationControllerImpl caller, Object history);

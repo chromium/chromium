@@ -25,6 +25,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
@@ -52,19 +53,18 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
@@ -494,28 +494,43 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             // Request desktop sites for large screen tablets.
             params.setOverrideUserAgent(calculateUserAgentOverrideOption());
 
-            // We load the URL from the tab rather than directly from the ContentView so the tab has
-            // a chance of using a prerenderer page is any.
-            int loadType = TabImplJni.get().loadUrl(mNativeTabAndroid, params.getUrl(),
-                    params.getInitiatorOrigin(), params.getVerbatimHeaders(), params.getPostData(),
-                    params.getTransitionType(),
-                    params.getReferrer() != null ? params.getReferrer().getUrl() : null,
-                    // Policy will be ignored for null referrer url, 0 is just a placeholder.
-                    // TODO(ppi): Should we pass Referrer jobject and add JNI methods to read it
-                    //            from the native?
-                    params.getReferrer() != null ? params.getReferrer().getPolicy() : 0,
-                    params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry(),
-                    params.getHasUserGesture(), params.getShouldClearHistoryList(),
-                    params.getInputStartTimestamp(), params.getIntentReceivedTimestamp(),
-                    params.getUserAgentOverrideOption());
+            @TabLoadStatus
+            int result = loadUrlInternal(params);
 
             for (TabObserver observer : mObservers) {
-                observer.onLoadUrl(this, params, loadType);
+                observer.onLoadUrl(this, params, result);
             }
-            return loadType;
+            return result;
         } finally {
             TraceEvent.end("Tab.loadUrl");
         }
+    }
+
+    private @TabLoadStatus int loadUrlInternal(LoadUrlParams params) {
+        if (mWebContents == null) return TabLoadStatus.PAGE_LOAD_FAILED;
+
+        // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
+        // FixupURL explicitly says not to use it on URLs coming from untrustworthy
+        // sources, like other apps. Once migrations of Java code to GURL are complete
+        // and incoming URLs are converted to GURLs at their source, we can make
+        // decisions of whether or not to fix up GURLs on a case-by-case basis based
+        // on trustworthiness of the incoming URL.
+        GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
+        if (!fixedUrl.isValid()) return TabLoadStatus.PAGE_LOAD_FAILED;
+
+        // Record UMA "ShowHistory" here. That way it'll pick up both user
+        // typing chrome://history as well as selecting from the drop down menu.
+        if (fixedUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
+            RecordUserAction.record("ShowHistory");
+        }
+
+        if (TabImplJni.get().handleNonNavigationAboutURL(fixedUrl)) {
+            return TabLoadStatus.DEFAULT_PAGE_LOAD;
+        }
+
+        params.setUrl(fixedUrl.getSpec());
+        mWebContents.getNavigationController().loadUrl(params);
+        return TabLoadStatus.DEFAULT_PAGE_LOAD;
     }
 
     @Override
@@ -1707,11 +1722,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         void releaseWebContents(long nativeTabAndroid);
         void onPhysicalBackingSizeChanged(
                 long nativeTabAndroid, WebContents webContents, int width, int height);
-        int loadUrl(long nativeTabAndroid, String url, Origin initiatorOrigin, String extraHeaders,
-                ResourceRequestBody postData, int transition, String referrerUrl,
-                int referrerPolicy, boolean isRendererInitiated, boolean shoulReplaceCurrentEntry,
-                boolean hasUserGesture, boolean shouldClearHistoryList, long inputStartTimestamp,
-                long intentReceivedTimestamp, int userAgentOverrideOption);
         void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
         void loadOriginalImage(long nativeTabAndroid);
         void setAddApi2TransitionToFutureNavigations(long nativeTabAndroid, boolean shouldAdd);
@@ -1720,5 +1730,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         boolean getHideFutureNavigations(long nativeTabAndroid);
         void setShouldBlockNewNotificationRequests(long nativeTabAndroid, boolean value);
         boolean getShouldBlockNewNotificationRequests(long nativeTabAndroid);
+        boolean handleNonNavigationAboutURL(GURL url);
     }
 }
