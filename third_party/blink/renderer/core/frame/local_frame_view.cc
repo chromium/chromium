@@ -2569,8 +2569,12 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   while (true) {
     for (LocalFrameView* frame_view : unthrottled_frame_views) {
-      frame_view->Lifecycle().EnsureStateAtMost(
-          DocumentLifecycle::kVisualUpdatePending);
+      // RunResizeObserverSteps may run arbitrary script, which can cause a
+      // frame to become detached.
+      if (frame_view->GetFrame().IsAttached()) {
+        frame_view->Lifecycle().EnsureStateAtMost(
+            DocumentLifecycle::kVisualUpdatePending);
+      }
     }
     bool run_more_lifecycle_phases =
         RunStyleAndLayoutLifecyclePhases(target_state);
