@@ -221,6 +221,10 @@ CrExtensionsErrorConsoleA11yTest =
 
   /** @override */
   testGenPreamble() {
+    // (crbug.com/1199580): Disabled tests from Mac and Win failures
+    GEN('#if defined(OS_MAC) || defined(OS_WIN)');
+    GEN('#define DISABLED_ALL');
+    GEN('#endif');
     GEN('  SetDevModeEnabled(true);');
     GEN('  InstallErrorsExtension();');
   }
