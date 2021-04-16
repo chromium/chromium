@@ -354,6 +354,11 @@ TrayBackgroundView::CreateInkDropHighlight() const {
   return highlight;
 }
 
+void TrayBackgroundView::OnThemeChanged() {
+  ActionableView::OnThemeChanged();
+  UpdateBackground();
+}
+
 void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {
   // We call the base class' SetVisible to skip animations.
   if (GetVisible() != GetEffectiveVisibility())
