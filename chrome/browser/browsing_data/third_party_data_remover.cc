@@ -14,7 +14,7 @@
 namespace {
 
 bool DoesOriginHaveThirdPartyAccessRecord(
-    const std::set<const url::Origin>& third_party_storage_origins,
+    const std::set<url::Origin>& third_party_storage_origins,
     const url::Origin& origin,
     storage::SpecialStoragePolicy* policy) {
   return third_party_storage_origins.find(origin) !=
@@ -25,7 +25,7 @@ void OnGetStorageAccessRecords(
     base::OnceClosure closure,
     content::BrowserContext* context,
     std::vector<AccessContextAuditDatabase::AccessRecord> records) {
-  std::set<const url::Origin> origins;
+  std::set<url::Origin> origins;
   for (const auto& record : records) {
     origins.insert(std::move(record.origin));
   }
