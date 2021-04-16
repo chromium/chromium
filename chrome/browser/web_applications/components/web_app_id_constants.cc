@@ -93,6 +93,10 @@ const char kScanningAppId[] = "cdkahakpgkdaoffdmfgnhgomkelkocfo";
 const char kSettingsAppId[] = "inogagmajamaleonmanpkpkkigmklfad";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://shortcut-customization"))
+const char kShortcutCustomizationAppId[] = "ihgeegogifolehadhdgelgcnbnmemikp";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://www.showtime.com/"))
 const char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
 

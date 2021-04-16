@@ -31,6 +31,7 @@ enum class SystemAppType {
   ECHE = 13,
   CROSH = 14,
   PERSONALIZATION = 15,
+  SHORTCUT_CUSTOMIZATION = 16,
 
   // When adding a new System App, remember to:
   //

@@ -52,10 +52,12 @@
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "chrome/browser/ash/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
@@ -68,6 +70,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/ash/web_applications/scanning_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/shortcut_customization_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
@@ -261,6 +264,17 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     personalization_info.capture_navigations = true;
   }
 
+  if (SystemWebAppManager::IsAppEnabled(
+          SystemAppType::SHORTCUT_CUSTOMIZATION)) {
+    infos.emplace(
+        SystemAppType::SHORTCUT_CUSTOMIZATION,
+        SystemAppInfo(
+            "ShortcutCustomization",
+            GURL(ash::kChromeUIShortcutCustomizationAppURL),
+            base::BindRepeating(
+                &CreateWebAppInfoForShortcutCustomizationSystemWebApp)));
+  }
+
 #if !defined(OFFICIAL_BUILD)
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::TELEMETRY)) {
     infos.emplace(
@@ -403,6 +417,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
     case SystemAppType::PERSONALIZATION:
       return chromeos::features::IsWallpaperWebUIEnabled();
+    case SystemAppType::SHORTCUT_CUSTOMIZATION:
+      return features::IsShortcutCustomizationAppEnabled();
   }
 #else
   return false;

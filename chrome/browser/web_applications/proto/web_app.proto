@@ -74,6 +74,7 @@ message SystemWebAppDataProto {
     ECHE = 13;
     CROSH = 14;
     PERSONALIZATION = 15;
+    SHORTCUT_CUSTOMIZATION = 16;
   };
 
   optional SystemAppType system_app_type = 1;

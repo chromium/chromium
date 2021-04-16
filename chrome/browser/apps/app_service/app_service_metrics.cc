@@ -63,10 +63,11 @@ enum class DefaultAppName {
   kScanningApp = 41,
   kDiagnosticsApp = 42,
   kPrintManagementApp = 43,
+  kShortcutCustomizationApp = 44,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kPrintManagementApp,
+  kMaxValue = kShortcutCustomizationApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -199,85 +200,90 @@ namespace apps {
 
 void RecordAppLaunch(const std::string& app_id,
                      apps::mojom::LaunchSource launch_source) {
-  if (app_id == extension_misc::kCalculatorAppId)
+  if (app_id == extension_misc::kCalculatorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
-  else if (app_id == extension_misc::kTextEditorAppId)
+  } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
-  else if (app_id == file_manager::kGalleryAppId)
+  } else if (app_id == file_manager::kGalleryAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kGallery, launch_source);
-  else if (app_id == file_manager::kVideoPlayerAppId)
+  } else if (app_id == file_manager::kVideoPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kVideoPlayer, launch_source);
-  else if (app_id == file_manager::kAudioPlayerAppId)
+  } else if (app_id == file_manager::kAudioPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kAudioPlayer, launch_source);
-  else if (app_id == web_app::kCanvasAppId)
+  } else if (app_id == web_app::kCanvasAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
-  else if (app_id == extension_misc::kCameraAppId)
+  } else if (app_id == extension_misc::kCameraAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
-  else if (app_id == web_app::kCameraAppId)
+  } else if (app_id == web_app::kCameraAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
-  else if (app_id == web_app::kHelpAppId)
+  } else if (app_id == web_app::kHelpAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
-  else if (app_id == web_app::kMediaAppId)
+  } else if (app_id == web_app::kMediaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
-  else if (app_id == extension_misc::kChromeAppId)
+  } else if (app_id == extension_misc::kChromeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
-  else if (app_id == extension_misc::kGoogleDocAppId)
+  } else if (app_id == extension_misc::kGoogleDocAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDocs, launch_source);
-  else if (app_id == extension_misc::kDriveHostedAppId)
+  } else if (app_id == extension_misc::kDriveHostedAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDrive, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == arc::kGoogleDuoAppId)
+  } else if (app_id == arc::kGoogleDuoAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == extension_misc::kFilesManagerAppId)
+  } else if (app_id == extension_misc::kFilesManagerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == extension_misc::kGmailAppId || app_id == arc::kGmailAppId)
+  } else if (app_id == extension_misc::kGmailAppId ||
+             app_id == arc::kGmailAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kGmail, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == extension_misc::kGoogleKeepAppId)
+  } else if (app_id == extension_misc::kGoogleKeepAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kKeep, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == extension_misc::kGooglePhotosAppId)
+  } else if (app_id == extension_misc::kGooglePhotosAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPhotos, launch_source);
-  else if (app_id == arc::kPlayBooksAppId)
+  } else if (app_id == arc::kPlayBooksAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayBooks, launch_source);
-  else if (app_id == arc::kPlayGamesAppId)
+  } else if (app_id == arc::kPlayGamesAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayGames, launch_source);
-  else if (app_id == arc::kPlayMoviesAppId ||
-           app_id == extension_misc::kGooglePlayMoviesAppId)
+  } else if (app_id == arc::kPlayMoviesAppId ||
+             app_id == extension_misc::kGooglePlayMoviesAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayMovies, launch_source);
-  else if (app_id == arc::kPlayMusicAppId ||
-           app_id == extension_misc::kGooglePlayMusicAppId)
+  } else if (app_id == arc::kPlayMusicAppId ||
+             app_id == extension_misc::kGooglePlayMusicAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayMusic, launch_source);
-  else if (app_id == arc::kPlayStoreAppId)
+  } else if (app_id == arc::kPlayStoreAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayStore, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == web_app::kOsSettingsAppId)
+  } else if (app_id == web_app::kOsSettingsAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kSettings, launch_source);
-  else if (app_id == extension_misc::kGoogleSheetsAppId)
+  } else if (app_id == extension_misc::kGoogleSheetsAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kSheets, launch_source);
-  else if (app_id == extension_misc::kGoogleSlidesAppId)
+  } else if (app_id == extension_misc::kGoogleSlidesAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kSlides, launch_source);
-  else if (app_id == extensions::kWebStoreAppId)
+  } else if (app_id == extensions::kWebStoreAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kWebStore, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == extension_misc::kYoutubeAppId ||
-           app_id == arc::kYoutubeAppId)
+  } else if (app_id == extension_misc::kYoutubeAppId ||
+             app_id == arc::kYoutubeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kYouTube, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == web_app::kYoutubeMusicAppId)
+  } else if (app_id == web_app::kYoutubeMusicAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
-  else if (app_id == web_app::kStadiaAppId)
+  } else if (app_id == web_app::kStadiaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kStadia, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  else if (app_id == web_app::kScanningAppId)
+  } else if (app_id == web_app::kScanningAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kScanningApp, launch_source);
-  else if (app_id == web_app::kDiagnosticsAppId)
+  } else if (app_id == web_app::kDiagnosticsAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDiagnosticsApp, launch_source);
-  else if (app_id == web_app::kPrintManagementAppId)
+  } else if (app_id == web_app::kPrintManagementAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPrintManagementApp, launch_source);
+  } else if (app_id == web_app::kShortcutCustomizationAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kShortcutCustomizationApp,
+                           launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   // Above are default apps; below are built-in apps.
 

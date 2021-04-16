@@ -3552,6 +3552,11 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_BODY" desc="Notification body text that explains to the user that their peripheral is not supported because it is not part of the approved peripherals list.">
         Only approved Thunderbolt devices are compatible with your Chromebook
       </message>
+
+      <!-- Shortcut Customization App -->
+      <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" translateable="false" desc="The title of the shortcut customization system web app. Shortcut customization lets users to customize their system shortcuts.">
+        Shortcut Customization
+      </message>
     </messages>
   </release>
 </grit>

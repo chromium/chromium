@@ -8,6 +8,7 @@
 namespace ash {
 
 extern const char kChromeUIShortcutCustomizationAppHost[];
+extern const char kChromeUIShortcutCustomizationAppURL[];
 
 }  // namespace ash
 
