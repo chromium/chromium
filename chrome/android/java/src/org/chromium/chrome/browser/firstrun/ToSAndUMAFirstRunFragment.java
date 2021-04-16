@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -87,7 +88,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
         mAcceptButton.setOnClickListener((v) -> onTosButtonClicked());
 
-        mSendReportCheckBox.setChecked(FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING);
+        mSendReportCheckBox.setChecked(getUmaCheckBoxInitialState());
         if (!canShowUmaCheckBox()) {
             mSendReportCheckBox.setVisibility(View.GONE);
         }
@@ -182,6 +183,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         assert !isWaitingForNativeAndPolicyInit();
 
         setSpinnerVisible(false);
+        mSendReportCheckBox.setChecked(getUmaCheckBoxInitialState());
     }
 
     private void onTosButtonClicked() {
@@ -224,6 +226,15 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
     private boolean isWaitingForNativeAndPolicyInit() {
         return !mNativeInitialized || getPageDelegate().getPolicyLoadListener().get() == null;
+    }
+
+    private boolean getUmaCheckBoxInitialState() {
+        // The shared preference behind PrivacyPreferencesManagerImpl#isMetricsUploadPermitted is
+        // set after ToS is accepted. If ToS is not accepted yet, use the default value.
+        return FirstRunUtils.didAcceptTermsOfService()
+                ? PrivacyPreferencesManagerImpl.getInstance()
+                          .isUsageAndCrashReportingPermittedByUser()
+                : FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING;
     }
 
     // Exposed methods for ToSAndUMACCTFirstRunFragment

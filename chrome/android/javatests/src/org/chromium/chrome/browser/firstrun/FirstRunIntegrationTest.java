@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -405,13 +406,26 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testResetOnBackPress() throws Exception {
+        testResetOnBackPressImpl(true);
+    }
+
+    @Test
+    @MediumTest
+    public void testResetOnBackPress_NoUmaAccepted() throws Exception {
+        testResetOnBackPressImpl(false);
+    }
+
+    private void testResetOnBackPressImpl(boolean allowedCrashUpLoad) throws Exception {
         // Inspired by crbug.com/1192854.
         // When the policy initialization is finishing after ToS accepted, the small loading circle
         // will be shown on the screen. If user decide to go back with backpress, the UI should be
         // reset with ToS UI visible.
         FirstRunStatus.setSkipWelcomePage(true);
-        SharedPreferencesManager.getInstance().writeBoolean(
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        sharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
+        sharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, allowedCrashUpLoad);
         setHasAppRestrictionForMock(false);
         FirstRunActivity freActivity = launchFirstRunActivity();
 
@@ -427,11 +441,14 @@ public class FirstRunIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.onBackPressed());
 
         View tosAndPrivacy = mLastActivity.findViewById(R.id.tos_and_privacy);
-        View umaCheckbox = mLastActivity.findViewById(R.id.send_report_checkbox);
-        Assert.assertNotNull(tosAndPrivacy);
-        Assert.assertNotNull(umaCheckbox);
-        Assert.assertEquals(View.VISIBLE, tosAndPrivacy.getVisibility());
-        Assert.assertEquals(View.VISIBLE, umaCheckbox.getVisibility());
+        CheckBox umaCheckbox = mLastActivity.findViewById(R.id.send_report_checkbox);
+        Assert.assertNotNull("ToS should not be null.", tosAndPrivacy);
+        Assert.assertNotNull("UMA Checkbox should not be null.", umaCheckbox);
+        Assert.assertEquals("ToS should be visible.", View.VISIBLE, tosAndPrivacy.getVisibility());
+        Assert.assertEquals(
+                "UMA Checkbox should be visible.", View.VISIBLE, umaCheckbox.getVisibility());
+        Assert.assertEquals(
+                "UMA Checkbox state is different.", allowedCrashUpLoad, umaCheckbox.isChecked());
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {
