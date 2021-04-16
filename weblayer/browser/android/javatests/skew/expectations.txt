@@ -19,6 +19,10 @@ crbug.com/1174169 [ client_lte_87 ] org.chromium.weblayer.test.NavigationTest#te
 # The test was changed in the main branch in crrev.com/c/2377987 and the changes won't be merged into M88
 crbug.com/1155565 [ client_lte_88 ] org.chromium.weblayer.test.CookieManagerTest#testSetCookieNotSet [ Skip ]
 
+# No real changes to weblayer APIs, changes should only affect chrome-internal behavior around
+# navigation which the test depends on.
+crbug.com/1196803 [ client_lte_91 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
+
 # Bulk disable to get bot green.
 crbug.com/1191751 [ impl_lte_91 ] org.chromium.weblayer.test.FullscreenCallbackTest* [ Skip ]
 crbug.com/1191751 [ impl_lte_91 ] org.chromium.weblayer.test.MediaSessionTest#basic [ Skip ]
