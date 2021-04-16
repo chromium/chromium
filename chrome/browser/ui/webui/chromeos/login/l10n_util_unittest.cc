@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/customization/customization_document.h"
+#include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util_test_util.h"
 #include "chromeos/system/fake_statistics_provider.h"

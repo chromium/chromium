@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/customization/customization_document.h"
+#include "chrome/browser/ash/customization/customization_document.h"
 
 #include <algorithm>
 #include <memory>
@@ -28,10 +28,10 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
+#include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/customization/customization_wallpaper_downloader.h"
-#include "chrome/browser/chromeos/customization/customization_wallpaper_util.h"
 #include "chrome/browser/chromeos/extensions/default_app_order.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/extensions/external_loader.h"

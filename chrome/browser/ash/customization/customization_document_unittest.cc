@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/customization/customization_document.h"
+#include "chrome/browser/ash/customization/customization_document.h"
 
 #include <utility>
 

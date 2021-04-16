@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/customization/customization_wallpaper_util.h"
+#include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -10,9 +10,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
