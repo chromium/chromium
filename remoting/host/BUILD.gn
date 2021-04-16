@@ -820,40 +820,39 @@ if (enable_remoting_host) {
   }
 
   # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action_foreach("remoting_infoplist_strings") {
-    sources = [
-      "it2me/remote_assistance_host-InfoPlist.strings.jinja2",
-      "remoting_me2me_host-InfoPlist.strings.jinja2",
-      "setup/native_messaging_host-InfoPlist.strings.jinja2",
-    ]
+  if (is_mac) {
+    python2_action_foreach("remoting_infoplist_strings") {
+      sources = [
+        "installer/mac/uninstaller/remoting_uninstaller-InfoPlist.strings.jinja2",
+        "it2me/remote_assistance_host-InfoPlist.strings.jinja2",
+        "remoting_me2me_host-InfoPlist.strings.jinja2",
+        "setup/native_messaging_host-InfoPlist.strings.jinja2",
+      ]
 
-    if (is_mac) {
-      sources += [ "installer/mac/uninstaller/remoting_uninstaller-InfoPlist.strings.jinja2" ]
+      script = "//remoting/tools/build/remoting_localize.py"
+      args = [
+               "--locale_dir",
+               rebase_path(resources_locale_dir, root_build_dir),
+               "--variables",
+               rebase_path(branding_path, root_build_dir),
+               "--template",
+               "{{source}}",
+               "--locale_output",
+               rebase_path(
+                   "$root_gen_dir/remoting/host/{{source_name_part}}/@{json_suffix}.lproj/InfoPlist.strings",
+                   root_build_dir),
+             ] + remoting_locales_with_underscores
+
+      outputs = []
+      foreach(locale, remoting_locales_with_underscores) {
+        outputs += [ "$root_gen_dir/remoting/host/{{source_name_part}}/$locale.lproj/InfoPlist.strings" ]
+      }
+
+      deps = [
+        "//remoting/resources",
+        "//remoting/resources:strings",
+      ]
     }
-
-    script = "//remoting/tools/build/remoting_localize.py"
-    args = [
-             "--locale_dir",
-             rebase_path(resources_locale_dir, root_build_dir),
-             "--variables",
-             rebase_path(branding_path, root_build_dir),
-             "--template",
-             "{{source}}",
-             "--locale_output",
-             rebase_path(
-                 "$root_gen_dir/remoting/host/{{source_name_part}}/@{json_suffix}.lproj/InfoPlist.strings",
-                 root_build_dir),
-           ] + remoting_locales_with_underscores
-
-    outputs = []
-    foreach(locale, remoting_locales_with_underscores) {
-      outputs += [ "$root_gen_dir/remoting/host/{{source_name_part}}/$locale.lproj/InfoPlist.strings" ]
-    }
-
-    deps = [
-      "//remoting/resources",
-      "//remoting/resources:strings",
-    ]
   }
 }
 

@@ -105,7 +105,6 @@ executable("remoting_native_messaging_host") {
     "//remoting/base:breakpad",
     "//remoting/host",
     "//remoting/host:base",
-    "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/native_messaging",
     "//remoting/host/setup",
     "//services/network:network_service",
