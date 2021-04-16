@@ -28,7 +28,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -43,7 +42,15 @@ namespace content {
 
 class WebUISecurityTest : public ContentBrowserTest {
  public:
-  WebUISecurityTest() = default;
+  WebUISecurityTest() {
+    WebUIControllerFactory::RegisterFactory(&factory_);
+    WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
+  }
+
+  ~WebUISecurityTest() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
+    WebUIControllerFactory::UnregisterFactoryForTesting(&untrusted_factory_);
+  }
 
   TestWebUIControllerFactory* factory() { return &factory_; }
   ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
@@ -52,10 +59,7 @@ class WebUISecurityTest : public ContentBrowserTest {
 
  private:
   TestWebUIControllerFactory factory_;
-  ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
-      &untrusted_factory_};
 
   DISALLOW_COPY_AND_ASSIGN(WebUISecurityTest);
 };

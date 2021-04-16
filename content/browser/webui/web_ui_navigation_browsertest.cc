@@ -18,7 +18,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_ui_browsertest_util.h"
@@ -58,7 +57,14 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 
 class WebUINavigationBrowserTest : public ContentBrowserTest {
  public:
-  WebUINavigationBrowserTest() = default;
+  WebUINavigationBrowserTest() {
+    WebUIControllerFactory::RegisterFactory(&factory_);
+    WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
+  }
+  ~WebUINavigationBrowserTest() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(&untrusted_factory_);
+    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -195,10 +201,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
 
  private:
   TestWebUIControllerFactory factory_;
-  ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
-      &untrusted_factory_};
 
   DISALLOW_COPY_AND_ASSIGN(WebUINavigationBrowserTest);
 };

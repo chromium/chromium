@@ -87,6 +87,7 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(SystemAppType type,
   if (GetWebUIType(info.install_url) == WebUIType::kChrome) {
     auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
         GetDataSourceNameFromSystemAppInstallUrl(info.install_url));
+    content::WebUIControllerFactory::RegisterFactory(factory.get());
     web_ui_controller_factories_.push_back(std::move(factory));
   }
 
@@ -112,7 +113,10 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
       base::Unretained(this)));
 }
 
-TestSystemWebAppInstallation::~TestSystemWebAppInstallation() = default;
+TestSystemWebAppInstallation::~TestSystemWebAppInstallation() {
+  for (auto& factory : web_ui_controller_factories_)
+    content::WebUIControllerFactory::UnregisterFactoryForTesting(factory.get());
+}
 
 std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
   auto info = std::make_unique<WebApplicationInfo>();
@@ -274,6 +278,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
                                                )));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
       kInitiatingAppUrl.host());
+  content::WebUIControllerFactory::RegisterFactory(factory.get());
   installation->web_ui_controller_factories_.push_back(std::move(factory));
 
   return base::WrapUnique(installation);

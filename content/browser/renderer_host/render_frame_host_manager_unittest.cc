@@ -50,7 +50,6 @@
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/fake_remote_frame.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -315,6 +314,7 @@ class RenderFrameHostManagerTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
+    WebUIControllerFactory::RegisterFactory(&factory_);
 
     if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
       // Isolate |isolated_cross_site_url()|so it cannot share a process
@@ -328,6 +328,11 @@ class RenderFrameHostManagerTest
       // all BrowsingInstances used in the test.
       SetContents(CreateTestWebContents());
     }
+  }
+
+  void TearDown() override {
+    RenderViewHostImplTestHarness::TearDown();
+    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
   }
 
   GURL isolated_cross_site_url() const {
@@ -443,7 +448,6 @@ class RenderFrameHostManagerTest
 
  private:
   RenderFrameHostManagerTestWebUIControllerFactory factory_;
-  ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
   base::test::ScopedFeatureList feature_list_;
 };
 

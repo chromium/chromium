@@ -17,7 +17,6 @@
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
@@ -121,14 +120,15 @@ class JsLibraryTestWebUIControllerFactory
                       const GURL& url) override {
     return IsSystemAppTestURL(url);
   }
-
- private:
-  content::ScopedWebUIControllerFactoryRegistration scoped_registration_{this};
 };
 
 }  // namespace
 
 JsLibraryTest::JsLibraryTest()
-    : factory_(std::make_unique<JsLibraryTestWebUIControllerFactory>()) {}
+    : factory_(std::make_unique<JsLibraryTestWebUIControllerFactory>()) {
+  content::WebUIControllerFactory::RegisterFactory(factory_.get());
+}
 
-JsLibraryTest::~JsLibraryTest() = default;
+JsLibraryTest::~JsLibraryTest() {
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(factory_.get());
+}

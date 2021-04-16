@@ -42,7 +42,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_ui_data.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -194,7 +193,7 @@ TEST(TimeSmoother, ClockBackwardsJump) {
 class NavigationControllerTest : public RenderViewHostImplTestHarness,
                                  public WebContentsObserver {
  public:
-  NavigationControllerTest() = default;
+  NavigationControllerTest() {}
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -202,9 +201,14 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
     ASSERT_TRUE(web_contents);  // The WebContents should be created by now.
     WebContentsObserver::Observe(web_contents);
 
-    factory_registration_ =
-        std::make_unique<ScopedWebUIControllerFactoryRegistration>(
-            ContentWebUIControllerFactory::GetInstance());
+    WebUIControllerFactory::RegisterFactory(
+        ContentWebUIControllerFactory::GetInstance());
+  }
+
+  void TearDown() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(
+        ContentWebUIControllerFactory::GetInstance());
+    RenderViewHostImplTestHarness::TearDown();
   }
 
   // WebContentsObserver:
@@ -272,10 +276,6 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   size_t navigation_entries_deleted_counter_ = 0;
   PrunedDetails last_navigation_entry_pruned_details_;
   ReloadType last_reload_type_;
-
- private:
-  std::unique_ptr<ScopedWebUIControllerFactoryRegistration>
-      factory_registration_;
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {

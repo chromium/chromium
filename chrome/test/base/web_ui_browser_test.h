@@ -25,7 +25,6 @@ class Value;
 
 namespace content {
 class RenderFrameHost;
-class ScopedWebUIControllerFactoryRegistration;
 class WebUI;
 }
 
@@ -182,8 +181,6 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   content::WebUI* override_selected_web_ui_ = nullptr;
 
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
-  std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
-      factory_registration_;
 };
 
 class WebUIBrowserTest : public BaseWebUIBrowserTest {

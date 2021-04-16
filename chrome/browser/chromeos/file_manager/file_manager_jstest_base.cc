@@ -17,13 +17,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/test_data_source.h"
+#include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "net/base/filename_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -222,12 +222,13 @@ void FileManagerJsTestBase::RunTestImpl(const GURL& url) {
 void FileManagerJsTestBase::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      ChromeWebUIControllerFactory::GetInstance());
+
   webui_controller_factory_ =
       std::make_unique<TestChromeWebUIControllerFactory>();
-  webui_controller_factory_registration_ =
-      std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
-          webui_controller_factory_.get(),
-          ChromeWebUIControllerFactory::GetInstance());
+  content::WebUIControllerFactory::RegisterFactory(
+      webui_controller_factory_.get());
   webui_controller_factory_->AddFactoryOverride(TestResourceUrl().host(),
                                                 test_webui_provider_.Pointer());
   Profile* profile = browser()->profile();
@@ -238,4 +239,13 @@ void FileManagerJsTestBase::TearDownOnMainThread() {
   InProcessBrowserTest::TearDownOnMainThread();
 
   webui_controller_factory_->RemoveFactoryOverride(TestResourceUrl().host());
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      webui_controller_factory_.get());
+
+  // This is needed to avoid a debug assert after the test completes, see stack
+  // trace in http://crrev.com/179347
+  content::WebUIControllerFactory::RegisterFactory(
+      ChromeWebUIControllerFactory::GetInstance());
+
+  webui_controller_factory_.reset();
 }

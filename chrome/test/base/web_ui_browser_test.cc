@@ -40,7 +40,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
@@ -457,10 +456,12 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 
   logging::SetLogMessageHandler(&LogHandler);
 
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      ChromeWebUIControllerFactory::GetInstance());
+
   test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();
-  factory_registration_ =
-      std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
-          test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
+
+  content::WebUIControllerFactory::RegisterFactory(test_factory_.get());
 
   test_factory_->AddFactoryOverride(DummyUrl().host(),
                                     mock_provider_.Pointer());
@@ -472,6 +473,14 @@ void BaseWebUIBrowserTest::TearDownOnMainThread() {
   logging::SetLogMessageHandler(nullptr);
 
   test_factory_->RemoveFactoryOverride(DummyUrl().host());
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      test_factory_.get());
+
+  // This is needed to avoid a debug assert after the test completes, see stack
+  // trace in http://crrev.com/179347
+  content::WebUIControllerFactory::RegisterFactory(
+      ChromeWebUIControllerFactory::GetInstance());
+
   test_factory_.reset();
 }
 

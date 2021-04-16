@@ -50,7 +50,6 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -591,12 +590,13 @@ TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
   CreatePeopleHandler();
   // We set up a factory override here to prevent a new web ui from being
   // created when we navigate to a page that would normally create one.
-  TestChromeWebUIControllerFactory test_factory;
-  content::ScopedWebUIControllerFactoryRegistration factory_registration(
-      &test_factory, ChromeWebUIControllerFactory::GetInstance());
-  test_factory.AddFactoryOverride(
+  test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();
+  test_factory_->AddFactoryOverride(
       chrome::GetSettingsUrl(chrome::kSyncSetupSubPage).host(),
       &test_provider_);
+  content::WebUIControllerFactory::RegisterFactory(test_factory_.get());
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      ChromeWebUIControllerFactory::GetInstance());
 
   EXPECT_FALSE(handler_->sync_blocker_);
 
@@ -606,6 +606,10 @@ TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
   handler_->InitializeSyncBlocker();
 
   EXPECT_TRUE(handler_->sync_blocker_);
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      test_factory_.get());
+  content::WebUIControllerFactory::RegisterFactory(
+      ChromeWebUIControllerFactory::GetInstance());
 }
 
 TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
