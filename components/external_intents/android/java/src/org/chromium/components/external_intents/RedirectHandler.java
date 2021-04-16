@@ -48,6 +48,7 @@ public class RedirectHandler {
     private int mLastCommittedEntryIndexBeforeStartingNavigation;
 
     private boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
+    private boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
     private boolean mExternalIntentStartedTask;
 
     public static RedirectHandler create() {
@@ -114,6 +115,7 @@ public class RedirectHandler {
         mIsOnEffectiveRedirectChain = false;
         mLastCommittedEntryIndexBeforeStartingNavigation = 0;
         mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = false;
+        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
     }
 
     /**
@@ -122,6 +124,14 @@ public class RedirectHandler {
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
         mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = true;
+    }
+
+    /**
+     * Will cause shouldNotBlockUrlLoadingOverrideOnCurrentRedirectionChain() to return true until
+     * a new user-initiated navigation occurs.
+     */
+    public void setShouldNotBlockUrlLoadingOverrideOnCurrentRedirectionChain() {
+        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = true;
     }
 
     /**
@@ -193,6 +203,7 @@ public class RedirectHandler {
             mIsOnEffectiveRedirectChain = false;
             mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
             mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = false;
+            mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
         } else if (mInitialNavigationType != NAVIGATION_TYPE_NONE) {
             // Redirect chain starts from the second url loading.
             mIsOnEffectiveRedirectChain = true;
@@ -265,6 +276,16 @@ public class RedirectHandler {
      */
     public boolean shouldNotOverrideUrlLoading() {
         return mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
+    }
+
+    /**
+     * @return whether we should continue allowing navigation handling in the current redirection
+     * chain.
+     */
+    public boolean getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain() {
+        boolean value = mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
+        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
+        return value;
     }
 
     /**
