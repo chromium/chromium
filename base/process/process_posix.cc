@@ -319,6 +319,12 @@ bool Process::Terminate(int exit_code, bool wait) const {
   DCHECK(IsValid());
   CHECK_GT(process_, 0);
 
+  // When recording/replaying the child process is responsible for exiting
+  // so that it can finish uploading any in progress recording.
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    return false;
+  }
+
   bool did_terminate = kill(process_, SIGTERM) == 0;
 
   if (wait && did_terminate) {
