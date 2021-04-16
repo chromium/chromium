@@ -3990,7 +3990,6 @@ virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-grid-container-parent-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-gaps-001.html [ Crash Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-gaps-rtl-001.html [ Crash Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-implicit-grid-001.html [ Crash ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-within-grid-implicit-track-001.html [ Crash Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/positioned-grid-items-negative-indices-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-align-justify-overflow.html [ Failure ]

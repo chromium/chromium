@@ -649,6 +649,10 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::EndLineOfImplicitGrid() const {
+  if (ranges_.IsEmpty())
+    return 0;
+
+  DCHECK_GT(RangeCount(), 0U);
   wtf_size_t last_range_index = RangeCount() - 1;
   return RangeTrackNumber(last_range_index) + RangeTrackCount(last_range_index);
 }
