@@ -738,7 +738,11 @@ config("compiler") {
 
   if (is_clang && !is_nacl && show_includes) {
     assert(!is_win, "show_includes is not supported on Windows")
-    cflags += [ "-H" ]
+    cflags += [
+      "-H",
+      "-Xclang",
+      "-show-skipped-includes",
+    ]
   }
 
   # This flag enforces that member pointer base types are complete. It helps
