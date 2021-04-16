@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace helpers = extension_web_request_api_helpers;
@@ -237,8 +237,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
   scoped_refptr<Extension> extension2_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosChromeServiceTestHelper
-      scoped_lacros_chrome_service_test_helper_;
+  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

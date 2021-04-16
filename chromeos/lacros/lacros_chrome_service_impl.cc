@@ -30,10 +30,6 @@ namespace {
 
 using Crosapi = crosapi::mojom::Crosapi;
 
-// Tests will set this to |true| which will make all crosapi functionality
-// unavailable.
-bool g_disable_all_crosapi_for_tests = false;
-
 // We use a std::atomic here rather than a base::NoDestructor because we want to
 // allow instances of LacrosChromeServiceImpl to be destroyed to facilitate
 // testing.
@@ -104,7 +100,7 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
-  if (g_disable_all_crosapi_for_tests) {
+  if (disable_crosapi_for_testing_) {
     // Tests don't call BrowserService::InitDeprecated(), so provide
     // BrowserInitParams with default values.
     init_params_ = crosapi::mojom::BrowserInitParams::New();
@@ -302,11 +298,6 @@ void LacrosChromeServiceImpl::BindReceiver(
   }
 }
 
-// static
-void LacrosChromeServiceImpl::DisableCrosapiForTests() {
-  g_disable_all_crosapi_for_tests = true;
-}
-
 bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
   base::Optional<uint32_t> version = CrosapiVersion();
   return version &&
@@ -495,7 +486,7 @@ bool LacrosChromeServiceImpl::IsVideoCaptureDeviceFactoryAvailable() const {
 
 int LacrosChromeServiceImpl::GetInterfaceVersion(
     base::Token interface_uuid) const {
-  if (g_disable_all_crosapi_for_tests)
+  if (disable_crosapi_for_testing_)
     return -1;
   if (!init_params_->interface_versions)
     return -1;
@@ -546,7 +537,7 @@ void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
 }
 
 base::Optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
-  if (g_disable_all_crosapi_for_tests)
+  if (disable_crosapi_for_testing_)
     return base::nullopt;
   DCHECK(did_bind_receiver_);
   return init_params_->crosapi_version;
@@ -602,5 +593,8 @@ void LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence(
   observer_list_->Notify(FROM_HERE, &Observer::NotifyPolicyUpdate,
                          policy_fetch_response);
 }
+
+// static
+bool LacrosChromeServiceImpl::disable_crosapi_for_testing_ = false;
 
 }  // namespace chromeos

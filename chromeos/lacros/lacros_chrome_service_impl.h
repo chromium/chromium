@@ -102,12 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver);
 
-  // Called during tests on affine sequence to disable all crosapi
-  // functionality.
-  // TODO(https://crbug.com/1131722): Ideally we could stub this out or make
-  // this functional for tests without modifying production code
-  static void DisableCrosapiForTests();
-
   // Each of these functions guards usage of access to the corresponding remote.
   // Keep these in alphabetical order.
   // Most use-cases of these methods can be replaced by IsAvailable(). See
@@ -340,6 +334,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // this class.
   friend class LacrosChromeServiceImplNeverBlockingState;
 
+  // Needs to access |disable_crosapi_for_testing_|.
+  friend class ScopedDisableCrosapiForTesting;
+
   // Forward declare inner class to give it access to private members.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
@@ -402,6 +399,12 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
             uint32_t MethodMinVersion>
   void ConstructRemote();
+
+  // Tests will set this to |true| which will make all crosapi functionality
+  // unavailable. Should be set from ScopedDisableCrosapiForTesting always.
+  // TODO(https://crbug.com/1131722): Ideally we could stub this out or make
+  // this functional for tests without modifying production code
+  static bool disable_crosapi_for_testing_;
 
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.

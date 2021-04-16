@@ -123,7 +123,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -410,7 +410,8 @@ void BrowserTestBase::SetUp() {
     std::string socket_path =
         command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
     if (socket_path.empty()) {
-      chromeos::LacrosChromeServiceImpl::Get()->DisableCrosapiForTests();
+      disable_crosapi_ =
+          std::make_unique<chromeos::ScopedDisableCrosapiForTesting>();
     } else {
       auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
       base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();

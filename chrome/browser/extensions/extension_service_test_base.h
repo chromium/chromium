@@ -33,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class Profile;
@@ -220,8 +220,7 @@ class ExtensionServiceTestBase : public testing::Test {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosChromeServiceTestHelper
-      scoped_lacros_chrome_service_test_helper_;
+  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // An override that ignores CRX3 publisher signatures.

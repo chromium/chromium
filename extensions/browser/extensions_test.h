@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 class ExtensionPrefValueMap;
@@ -85,8 +85,7 @@ class ExtensionsTest : public testing::Test {
       std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosChromeServiceTestHelper
-      scoped_lacros_chrome_service_test_helper_;
+  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
 #endif
 
   content::TestContentClientInitializer content_client_initializer_;

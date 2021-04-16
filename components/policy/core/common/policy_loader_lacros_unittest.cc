@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
@@ -62,11 +62,10 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
 TEST_F(PolicyLoaderLacrosTest, BasicTest) {
   std::vector<uint8_t> data = GetValidPolicyFetchResponse();
 
-  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
-  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
+  chromeos::ScopedLacrosServiceTestHelper test_helper;
   auto init_params = crosapi::mojom::BrowserInitParams::New();
   init_params->device_account_policy = data;
-  lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
   base::RunLoop().RunUntilIdle();
@@ -76,9 +75,8 @@ TEST_F(PolicyLoaderLacrosTest, BasicTest) {
 TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
   auto init_params = crosapi::mojom::BrowserInitParams::New();
 
-  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
-  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
-  lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
+  chromeos::ScopedLacrosServiceTestHelper test_helper;
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* loader =
       new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner());

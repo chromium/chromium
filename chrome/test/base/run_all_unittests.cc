@@ -18,14 +18,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
 int main(int argc, char** argv) {
   base::PlatformThread::SetName("MainThread");
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
+  chromeos::ScopedDisableCrosapiForTesting disable_crosapi;
 #endif
 
   // unit_tests don't currently work with the Network Service enabled.

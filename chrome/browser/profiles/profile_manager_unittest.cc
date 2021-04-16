@@ -76,8 +76,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -160,9 +159,8 @@ class ProfileManagerTest : public testing::Test {
 
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
-    lacros_chrome_service_impl_ =
-        std::make_unique<chromeos::LacrosChromeServiceImpl>(nullptr);
+    lacros_service_test_helper_ =
+        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
 #endif
 
     // Create a new temporary directory, and store the path
@@ -283,8 +281,8 @@ class ProfileManagerTest : public testing::Test {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosChromeServiceImpl>
-      lacros_chrome_service_impl_;
+  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
+      lacros_service_test_helper_;
 #endif
 };
 
