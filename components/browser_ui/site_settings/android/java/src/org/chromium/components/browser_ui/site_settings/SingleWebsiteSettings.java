@@ -38,6 +38,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -117,6 +118,21 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             ContentSettingsType.SENSORS,
     };
 
+    private static final int[] CHOOSER_PERMISSIONS = {
+            ContentSettingsType.USB_CHOOSER_DATA,
+            // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
+            ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
+    };
+
+    private static boolean arrayContains(int[] array, int element) {
+        for (int e : array) {
+            if (e == element) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @param type ContentSettingsType
      * @return The preference key of this type
@@ -168,10 +184,27 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
     }
 
+    /**
+     * @param types A list of ContentSettingsTypes
+     * @return The highest priority permission that is available in SiteSettings. Returns DEFAULT
+     *         when called with empty list or only with entries not represented in this UI.
+     */
     public static @ContentSettingsType int getHighestPriorityPermission(
             @ContentSettingsType @NonNull int[] types) {
         for (@ContentSettingsType int setting : SETTINGS_ORDER) {
             for (@ContentSettingsType int type : types) {
+                if (setting == type) {
+                    return type;
+                }
+            }
+        }
+        for (@ContentSettingsType int setting : CHOOSER_PERMISSIONS) {
+            for (@ContentSettingsType int type : types) {
+                if (type == ContentSettingsType.BLUETOOTH_CHOOSER_DATA
+                        && !ContentFeatureList.isEnabled(
+                                ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
+                    continue;
+                }
                 if (setting == type) {
                     return type;
                 }
@@ -484,9 +517,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
         findPreference(PREF_SITE_TITLE).setTitle(mSite.getTitle());
         setupContentSettingsPreferences();
+        setUpChosenObjectPreferences();
         setupResetSitePreference();
         setUpClearDataPreference();
-        setUpChosenObjectPreferences();
         setUpOsWarningPreferences();
 
         setUpAdsInformationalBanner();
@@ -783,7 +816,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         for (ChosenObjectInfo info : mSite.getChosenObjectInfo()) {
             ChromeImageViewPreference preference =
                     new ChromeImageViewPreference(getStyledContext());
-
+            assert arrayContains(CHOOSER_PERMISSIONS, info.getContentSettingsType());
             preference.setKey(CHOOSER_PERMISSION_PREFERENCE_KEY);
             preference.setIcon(getContentSettingsIcon(info.getContentSettingsType(), null));
             preference.setTitle(info.getName());
