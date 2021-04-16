@@ -1638,7 +1638,7 @@ component("base") {
     sources += [
       "base_paths_fuchsia.cc",
       "base_paths_fuchsia.h",
-      "debug/debugger_posix.cc",
+      "debug/debugger_fuchsia.cc",
       "debug/elf_reader.cc",
       "debug/elf_reader.h",
       "debug/stack_trace_fuchsia.cc",
