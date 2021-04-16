@@ -35,10 +35,16 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   explicit AppHistory(LocalDOMWindow&);
   ~AppHistory() final = default;
 
-  void UpdateForCommit(HistoryItem*);
+  void InitializeForNavigation(
+      HistoryItem& current,
+      const WebVector<WebHistoryItem>& back_entries,
+      const WebVector<WebHistoryItem>& forward_entries);
+  void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
+  void CloneFromPrevious(AppHistory&);
 
   // Web-exposed:
   AppHistoryEntry* current() const;
+  HeapVector<Member<AppHistoryEntry>> entries();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
@@ -61,7 +67,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   void Trace(Visitor*) const final;
 
  private:
-  Member<AppHistoryEntry> current_;
+  HeapVector<Member<AppHistoryEntry>> entries_;
+  int current_index_ = -1;
 };
 
 }  // namespace blink

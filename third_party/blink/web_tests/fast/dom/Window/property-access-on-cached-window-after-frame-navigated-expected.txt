@@ -3,10 +3,7 @@ Tests property access on a cached DOMWindow after the associated frame is naviga
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS oldChildWindow.appHistory.current.id is newChildWindow.appHistory.current.id
-PASS oldChildWindow.appHistory.current.key is newChildWindow.appHistory.current.key
-PASS oldChildWindow.appHistory.current.sameDocument is newChildWindow.appHistory.current.sameDocument
-PASS oldChildWindow.appHistory.current.url is newChildWindow.appHistory.current.url
+PASS oldChildWindow.appHistory.current is newChildWindow.appHistory.current
 PASS oldChildWindow.appHistory.onnavigate is newChildWindow.appHistory.onnavigate
 PASS oldChildWindow.appHistory.onnavigateerror is newChildWindow.appHistory.onnavigateerror
 PASS oldChildWindow.appHistory.onnavigatesuccess is newChildWindow.appHistory.onnavigatesuccess

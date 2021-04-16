@@ -967,7 +967,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
-          /*old_page_info=*/nullptr, /*http_response_code=*/-1);
+          /*old_page_info=*/nullptr, /*http_response_code=*/-1,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1078,8 +1082,12 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           false /* origin_agent_cluster */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */,
-          nullptr /* old_page_info */, http_response_code);
+          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
+          http_response_code,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -3926,6 +3934,9 @@ void NavigationRequest::CommitNavigation() {
   // then.
   commit_params_->is_prerendering =
       frame_tree_node_->frame_tree()->is_prerendering();
+
+  if (!IsSameDocument())
+    GetNavigationController()->PopulateAppHistoryEntryVectors(this);
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

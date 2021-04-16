@@ -306,6 +306,8 @@ struct SameSizeAsDocumentLoader
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
   bool is_cross_site_cross_browsing_context_group;
+  WebVector<WebHistoryItem> app_history_back_entries;
+  WebVector<WebHistoryItem> app_history_forward_entries;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -409,7 +411,9 @@ DocumentLoader::DocumentLoader(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
       origin_agent_cluster_(params_->origin_agent_cluster),
       is_cross_site_cross_browsing_context_group_(
-          params_->is_cross_site_cross_browsing_context_group) {
+          params_->is_cross_site_cross_browsing_context_group),
+      app_history_back_entries_(params_->app_history_back_entries),
+      app_history_forward_entries_(params_->app_history_forward_entries) {
   DCHECK(frame_);
 
   // See `archive_` attribute documentation.
@@ -763,7 +767,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-    app_history->UpdateForCommit(history_item_);
+    app_history->UpdateForNavigation(*history_item_, type);
 
   WebHistoryCommitType commit_type = LoadTypeToCommitType(type);
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
@@ -2063,11 +2067,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     frame_->DomWindow()->ParseAndSetReferrerPolicy(referrer_policy_header,
                                                    kPolicySourceHttpHeader);
   }
-
-  if (commit_reason_ != CommitReason::kInitialization) {
-    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-      app_history->UpdateForCommit(history_item_);
-  }
 }
 
 void DocumentLoader::CommitNavigation() {
@@ -2191,6 +2190,33 @@ void DocumentLoader::CommitNavigation() {
     KURL main_resource_url = main_resource ? main_resource->Url() : KURL();
     if (!main_resource_url.IsEmpty())
       document->SetBaseURLOverride(main_resource_url);
+  }
+
+  // appHistory is not set on the initial about:blank document.
+  if (commit_reason_ != CommitReason::kInitialization) {
+    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+      // Under most circumstances, the browser process provides the information
+      // need to initialize appHistory's entries array from
+      // |app_history_back_entries_| and |app_history_forward_entries_|.
+      // However, these are not available when the renderer handles the
+      // navigation entirely, so in those cases (javascript: urls, XSLT commits,
+      // and non-back/forward about:blank), copy the array from the previous
+      // window and use the same update algorithm as same-document navigations.
+      if (commit_reason_ != CommitReason::kRegular ||
+          (url_.ProtocolIsAbout() && !IsBackForwardLoadType(load_type_))) {
+        app_history->CloneFromPrevious(
+            *AppHistory::appHistory(*previous_window));
+        app_history->UpdateForNavigation(*history_item_, load_type_);
+      } else {
+        app_history->InitializeForNavigation(*history_item_,
+                                             app_history_back_entries_,
+                                             app_history_forward_entries_);
+      }
+    }
+    // Now that appHistory's entries array is initialized, we don't need to
+    // retain the state from which it was initialized.
+    app_history_back_entries_.Clear();
+    app_history_forward_entries_.Clear();
   }
 
   if (commit_reason_ == CommitReason::kXSLT)

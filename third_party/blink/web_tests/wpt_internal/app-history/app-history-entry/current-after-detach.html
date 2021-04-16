@@ -8,8 +8,10 @@ async_test(t => {
     let i_appHistory = i.contentWindow.appHistory;
     assert_not_equals(i_appHistory, null);
     assert_not_equals(i_appHistory.current, null);
+    assert_equals(i_appHistory.entries().length, 1);
     i.remove();
     assert_equals(i_appHistory.current, null);
+    assert_equals(i_appHistory.entries().length, 0);
   });
 }, "appHistory.current should be null after iframe removal");
 </script>

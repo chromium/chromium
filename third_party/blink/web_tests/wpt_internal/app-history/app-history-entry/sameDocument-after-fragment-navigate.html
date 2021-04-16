@@ -20,6 +20,11 @@ async_test(t => {
     assert_not_equals(entry2, entry3);
     assert_true(entry1.sameDocument);
     assert_true(entry2.sameDocument);
+
+    assert_equals(appHistory.entries().length, 3);
+    assert_equals(appHistory.entries()[0], entry1);
+    assert_equals(appHistory.entries()[1], entry2);
+    assert_equals(appHistory.entries()[2], entry3);
   }), 0) };
 }, "AppHistoryEntry.sameDocument after same-document navigations");
 </script>

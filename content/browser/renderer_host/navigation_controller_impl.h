@@ -354,6 +354,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool should_replace_entry,
       WebContents* web_contents);
 
+  // Called just before sending the commit to the renderer. Walks the
+  // session history entries for the committing FrameTreeNode, forward and
+  // backward from the pending entry. All contiguous and same-origin
+  // FrameNavigationEntries are serialized and added to |request|'s commit
+  // params.
+  void PopulateAppHistoryEntryVectors(NavigationRequest* request);
+
  private:
   friend class RestoreHelper;
 
@@ -661,6 +668,16 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void LogStoragePartitionIdCrashKeys(
       const StoragePartitionId& original_partition_id,
       const StoragePartitionId& new_partition_id);
+
+  // Used by PopulateAppHistoryEntryVectors to initialize a single vector.
+  enum class Direction { kForward, kBack };
+  std::vector<mojom::AppHistoryEntryPtr> PopulateSingleAppHistoryEntryVector(
+      Direction direction,
+      int entry_index,
+      const url::Origin& pending_origin,
+      FrameTreeNode* node,
+      SiteInstance* site_instance,
+      int64_t previous_item_sequence_number);
 
   // ---------------------------------------------------------------------------
 

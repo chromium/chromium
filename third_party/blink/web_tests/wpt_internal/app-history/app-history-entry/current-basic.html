@@ -1,12 +1,9 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/is_uuid.js"></script>
 <script>
 test(() => {
-  function isUUID(key) {
-    return /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/.test(key);
-  }
-
   let first_entry = appHistory.current;
   assert_not_equals(first_entry, null);
   assert_not_equals(first_entry.key, null);
@@ -15,6 +12,8 @@ test(() => {
   assert_true(isUUID(first_entry.id));
   assert_equals(first_entry.url, location.href);
   assert_true(first_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 1);
+  assert_equals(first_entry, appHistory.entries()[0]);
 
   history.replaceState(2, "", "#2");
   let second_entry = appHistory.current;
@@ -25,6 +24,8 @@ test(() => {
   assert_true(isUUID(second_entry.id));
   assert_equals(second_entry.url, location.href);
   assert_true(second_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 1);
+  assert_equals(second_entry, appHistory.entries()[0]);
 
   history.pushState(3, "", "#3");
   let third_entry = appHistory.current;
@@ -35,6 +36,8 @@ test(() => {
   assert_true(isUUID(third_entry.id));
   assert_equals(third_entry.url, location.href);
   assert_true(third_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 2);
+  assert_equals(third_entry, appHistory.entries()[1]);
 
   history.pushState(4, "");
   let fourth_entry = appHistory.current;
@@ -45,6 +48,8 @@ test(() => {
   assert_true(isUUID(fourth_entry.id));
   assert_equals(fourth_entry.url, third_entry.url);
   assert_true(fourth_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 3);
+  assert_equals(fourth_entry, appHistory.entries()[2]);
 
   history.replaceState(5, "");
   let fifth_entry = appHistory.current;
@@ -55,6 +60,8 @@ test(() => {
   assert_true(isUUID(fifth_entry.id));
   assert_equals(fifth_entry.url, fourth_entry.url);
   assert_true(fifth_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 3);
+  assert_equals(fifth_entry, appHistory.entries()[2]);
 
   history.pushState(5, "");
   let fifth_entry_after_push = appHistory.current;
@@ -65,6 +72,8 @@ test(() => {
   assert_true(isUUID(fifth_entry_after_push.id));
   assert_equals(fifth_entry_after_push.url, fifth_entry.url);
   assert_true(fifth_entry_after_push.sameDocument);
+  assert_equals(appHistory.entries().length, 4);
+  assert_equals(fifth_entry_after_push, appHistory.entries()[3]);
 
   history.replaceState(5, "");
   let fifth_entry_after_replace = appHistory.current;
@@ -75,6 +84,8 @@ test(() => {
   assert_true(isUUID(fifth_entry_after_replace.id));
   assert_equals(fifth_entry_after_replace.url, fifth_entry_after_push.url);
   assert_true(fifth_entry_after_replace.sameDocument);
+  assert_equals(appHistory.entries().length, 4);
+  assert_equals(fifth_entry_after_replace, appHistory.entries()[3]);
 
   location.hash = "6";
   let sixth_entry = appHistory.current;
@@ -85,5 +96,12 @@ test(() => {
   assert_true(isUUID(sixth_entry.id));
   assert_not_equals(sixth_entry.url, fifth_entry_after_replace.url);
   assert_true(sixth_entry.sameDocument);
+  assert_equals(appHistory.entries().length, 4);
+  assert_equals(sixth_entry, appHistory.entries()[3]);
+
+  appHistory.entries().forEach(entry => {
+    assert_true(isUUID(entry.id));
+    assert_true(isUUID(entry.key));
+  });
 }, "Basic tests for appHistory.current");
 </script>

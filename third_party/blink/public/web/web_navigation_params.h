@@ -422,6 +422,12 @@ struct BLINK_EXPORT WebNavigationParams {
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;
+
+  // These are used to construct a subset of the back/forward list for the
+  // appHistory API. They only have the attributes that are needed for
+  // appHistory.
+  WebVector<WebHistoryItem> app_history_back_entries;
+  WebVector<WebHistoryItem> app_history_forward_entries;
 };
 
 }  // namespace blink
