@@ -202,50 +202,107 @@ If you're testing on Android and have built and deployed
 `ChromePublic.apk` to the device, use `--browser=android-chromium` to
 invoke it.
 
-**Note:** If you are on Linux and see this test harness exit immediately with
-`**Non zero exit code**`, it's probably because of some incompatible Python
-packages being installed. Please uninstall the `python-egenix-mxdatetime` and
-`python-logilab-common` packages in this case; see [Issue
-716241](http://crbug.com/716241). This should not be happening any more since
-the GPU tests were switched to use the infra team's `vpython` harness.
+**Note:** The tests require some third-party Python packages. Obtaining these
+packages is handled automatically by `vpython`, and the script's shebang should
+use vpython if running the script directly. If you're used to invoking `python`
+to run a script, simply use `vpython` instead, e.g.
+`vpython run_gpu_integration_test.py ...`.
 
 You can run a subset of tests with this harness:
 
 *   `run_gpu_integration_test.py webgl_conformance --browser=release
     --test-filter=conformance_attribs`
 
-Figuring out the exact command line that was used to invoke the test on the
-bots can be a little tricky. The bots all run their tests via Swarming and
-isolates, meaning that the invocation of a step like `[trigger]
-webgl_conformance_tests on NVIDIA GPU...` will look like:
+The exact command used to invoke the test on the bots can be found in one of
+two ways:
 
-*   `python -u
-    'E:\b\build\slave\Win7_Release__NVIDIA_\build\src\tools\swarming_client\swarming.py'
-    trigger --swarming https://chromium-swarm.appspot.com
-    --isolate-server https://isolateserver.appspot.com
-    --priority 25 --shards 1 --task-name 'webgl_conformance_tests on NVIDIA GPU...'`
+1. Looking at the [json.input][trigger_input] of the trigger step under
+   `requests[task_slices][command]`. The arguments after the last `--` are
+   used to actually run the test.
+1. Looking at the top of a [swarming task][sample_swarming_task].
 
-You can figure out the additional command line arguments that were passed to
-each test on the bots by examining the trigger step and searching for the
-argument separator (<code> -- </code>). For a recent invocation of
-`webgl_conformance_tests`, this looked like:
+In both cases, the following can be omitted when running locally since they're
+only necessary on swarming:
+* `testing/test_env.py`
+* `testing/scripts/run_gpu_integration_test_as_googletest.py`
+* `--isolated-script-test-output`
+* `--isolated-script-test-perf-output`
 
-*   `webgl_conformance --show-stdout '--browser=release' -v
-    '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc'
-    '--isolated-script-test-output=${ISOLATED_OUTDIR}/output.json'`
 
-You can leave off the --isolated-script-test-output argument, because that's
-used only by wrapper scripts, so this would leave a full command line of:
-
-*   `run_gpu_integration_test.py
-    webgl_conformance --show-stdout '--browser=release' -v
-    '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc'`
+[trigger_input]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8849851608240828544/+/u/test_pre_run__14_/l_trigger__webgl2_conformance_d3d11_passthrough_tests_on_NVIDIA_GPU_on_Windows_on_Windows-10-18363/json.input
+[sample_swarming_task]: https://chromium-swarm.appspot.com/task?id=52f06058bfb31b10
 
 The Maps test requires you to authenticate to cloud storage in order to access
 the Web Page Reply archive containing the test. See [Cloud Storage Credentials]
 for documentation on setting this up.
 
 [Cloud Storage Credentials]: gpu_testing_bot_details.md#Cloud-storage-credentials
+
+### Telemetry Test Suites
+The Telemetry-based tests are all technically the same target,
+`telemetry_gpu_integration_test`, just run with different runtime arguments. The
+first positional argument passed determines which suite will run, and additional
+runtime arguments may cause the step name to change on the bots. Here is a list
+of all suites and resulting step names as of April 15th 2021:
+
+* `context_lost`
+  * `context_lost_passthrough_tests`
+  * `context_lost_tests`
+  * `context_lost_validating_tests`
+  * `gl_renderer_context_lost_tests`
+* `depth_capture`
+  * `depth_capture_tests`
+  * `gl_renderer_depth_capture_tests`
+* `hardware_accelerated_feature`
+  * `gl_renderer_hardware_accelerated_feature_tests`
+  * `hardware_accelerated_feature_tests`
+* `gpu_process`
+  * `gl_renderer_gpu_process_launch_tests`
+  * `gpu_process_launch_tests`
+* `info_collection`
+  * `info_collection_tests`
+* `maps`
+  * `gl_renderer_maps_pixel_tests`
+  * `maps_pixel_passthrough_test`
+  * `maps_pixel_test`
+  * `maps_pixel_validating_test`
+  * `maps_tests`
+* `pixel`
+  * `android_webview_pixel_skia_gold_test`
+  * `dawn_pixel_skia_gold_test`
+  * `egl_pixel_skia_gold_test`
+  * `gl_renderer_pixel_skia_gold_tests`
+  * `pixel_skia_gold_passthrough_test`
+  * `pixel_skia_gold_validating_test`
+  * `pixel_tests`
+  * `skia_renderer_pixel_skia_gold_test`
+  * `vulkan_pixel_skia_gold_test`
+* `power`
+  * `power_measurement_test`
+* `screenshot_sync`
+  * `gl_renderer_screenshot_sync_tests`
+  * `screenshot_sync_passthrough_tests`
+  * `screenshot_sync_tests`
+  * `screenshot_sync_validating_tests`
+* `trace_test`
+  * `trace_test`
+* `webgl_conformance`
+  * `webgl2_conformance_d3d11_passthrough_tests`
+  * `webgl2_conformance_gl_passthrough_tests`
+  * `webgl2_conformance_gles_passthrough_tests`
+  * `webgl2_conformance_tests`
+  * `webgl2_conformance_validating_tests`
+  * `webgl_conformance_d3d11_passthrough_tests`
+  * `webgl_conformance_d3d9_passthrough_tests`
+  * `webgl_conformance_fast_call_tests`
+  * `webgl_conformance_gl_passthrough_tests`
+  * `webgl_conformance_gles_passthrough_tests`
+  * `webgl_conformance_metal_passthrough_tests`
+  * `webgl_conformance_swangle_passthrough_tests`
+  * `webgl_conformance_swiftshader_validating_tests`
+  * `webgl_conformance_tests`
+  * `webgl_conformance_validating_tests`
+  * `webgl_conformance_vulkan_passthrough_tests`
 
 ### Running the pixel tests locally
 
@@ -334,31 +391,15 @@ As of this writing, there seems to be a
 [bug](https://github.com/luci/luci-py/issues/250)
 when attempting to re-run the Telemetry based GPU tests in this way. For the
 time being, this can be worked around by instead downloading the contents of
-the isolate. To do so, look more deeply into the trigger step's log:
+the isolate. To do so, look into the "Reproducing the task locally" section on
+a swarming task, which contains something like:
 
-*   <code>python -u
-    /b/build/slave/Mac_10_10_Release__Intel_/build/src/tools/swarming_client/swarming.py
-    trigger [...more args...] --tag data:[ISOLATE_HASH] [...more args...]
-    [ISOLATE_HASH] -- **[...TEST_ARGS...]**</code>
-
-As of this writing, the isolate hash appears twice in the command line. To
-download the isolate's contents into directory `foo` (note, this is in the
-"Help" section associated with the page for the isolate's task, but I'm not
-sure whether that's accessible only to Google employees or all members of the
-chromium.org organization):
-
-*   `python isolateserver.py download -I https://isolateserver.appspot.com
-    --namespace default-gzip -s [ISOLATE_HASH] --target foo`
-
-`isolateserver.py` will tell you the approximate command line to use. You
-should concatenate the `TEST_ARGS` highlighted in red above with
-`isolateserver.py`'s recommendation. The `ISOLATED_OUTDIR` variable can be
-safely replaced with `/tmp`.
-
-Note that `isolateserver.py` downloads a large number of files (everything
-needed to run the test) and may take a while. There is a way to use
-`run_isolated.py` to achieve the same result, but as of this writing, there
-were problems doing so, so this procedure is not documented at this time.
+```
+Download inputs files into directory foo:
+# (if needed, use "\${platform}" as-is) cipd install "infra/tools/luci/isolated/\${platform}" -root bar
+# (if needed) ./bar/isolated login
+./bar/isolated download -I https://isolateserver.appspot.com --namespace default-gzip -isolated 07f20bcb2b29b3d8f4ba73166313a37efd651746 -output-dir foo
+```
 
 Before attempting to download an isolate, you must ensure you have permission
 to access the isolate server. Full instructions can be [found
@@ -379,7 +420,7 @@ See the [Swarming documentation] for instructions on how to upload your binaries
 
 Be sure to use the correct swarming dimensions for your desired GPU e.g. "1002:6613" instead of "AMD Radeon R7 240 (1002:6613)" which is how it appears on swarming task page.  You can query bots in the chromium.tests.gpu pool to find the correct dimensions:
 
-*   `python tools\swarming_client\swarming.py bots -S chromium-swarm.appspot.com -d pool chromium.tests.gpu`
+*   `vpython tools\swarming_client\swarming.py bots -S chromium-swarm.appspot.com -d pool chromium.tests.gpu`
 
 [Swarming documentation]: https://www.chromium.org/developers/testing/isolated-testing/for-swes#TOC-Run-a-test-built-locally-on-Swarming
 
@@ -390,7 +431,7 @@ the Telemetry-based GPU tests' dependencies, which you can then move
 to another machine for testing:
 
 1. Build Chrome (into `out/Release` in this example).
-1. `python tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
+1. `vpython tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
 
 Then copy telemetry_gpu_integration_test.zip to another machine. Unzip
 it, and cd into the resulting directory. Invoke
