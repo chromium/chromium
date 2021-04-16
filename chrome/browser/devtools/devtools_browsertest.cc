@@ -1620,7 +1620,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkRawHeadersText) {
+// TODO(https://crbug.com/1199825): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TestNetworkRawHeadersText DISABLED_TestNetworkRawHeadersText
+#else
+#define MAYBE_TestNetworkRawHeadersText TestNetworkRawHeadersText
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkRawHeadersText) {
   // This test expects headers to be exactly 112 bytes in length, so add an
   // extra header to reach that length.
   RunTest("testNetworkRawHeadersText",
