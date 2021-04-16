@@ -83,15 +83,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   virtual void OnHermesPropertiesUpdated() = 0;
   void NotifyESimProfileListUpdated();
 
-  const NetworkStateHandler* network_state_handler() const {
-    return network_state_handler_;
-  }
-
   NetworkStateHandler* network_state_handler() {
     return network_state_handler_;
   }
-
-  virtual void InitInternal() {}
 
  private:
   // HermesManagerClient::Observer:

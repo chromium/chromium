@@ -13,7 +13,6 @@
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace chromeos {
@@ -39,20 +38,7 @@ void CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
 
 CellularESimProfileHandlerImpl::CellularESimProfileHandlerImpl() = default;
 
-CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() {
-  network_state_handler()->RemoveObserver(this, FROM_HERE);
-}
-
-void CellularESimProfileHandlerImpl::DeviceListChanged() {
-  if (!device_prefs_)
-    return;
-
-  RefreshEuiccsIfNecessary();
-}
-
-void CellularESimProfileHandlerImpl::InitInternal() {
-  network_state_handler()->AddObserver(this, FROM_HERE);
-}
+CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() = default;
 
 std::vector<CellularESimProfile>
 CellularESimProfileHandlerImpl::GetESimProfiles() {
@@ -101,9 +87,6 @@ void CellularESimProfileHandlerImpl::OnHermesPropertiesUpdated() {
 }
 
 void CellularESimProfileHandlerImpl::RefreshEuiccsIfNecessary() {
-  if (!CellularDeviceExists())
-    return;
-
   base::flat_set<std::string> euicc_paths_from_hermes =
       GetEuiccPathsFromHermes();
   base::flat_set<std::string> euicc_paths_from_prefs = GetEuiccPathsFromPrefs();
@@ -151,7 +134,6 @@ void CellularESimProfileHandlerImpl::RefreshEuiccsIfNecessary() {
 
 base::flat_set<std::string>
 CellularESimProfileHandlerImpl::GetEuiccPathsFromPrefs() const {
-  DCHECK(device_prefs_);
   const base::ListValue* euicc_paths_from_prefs =
       device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
   if (!euicc_paths_from_prefs) {
@@ -212,11 +194,6 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
 
   network_state_handler()->SyncStubCellularNetworks();
   NotifyESimProfileListUpdated();
-}
-
-bool CellularESimProfileHandlerImpl::CellularDeviceExists() const {
-  return network_state_handler()->GetDeviceStateByType(
-             NetworkTypePattern::Cellular()) != nullptr;
 }
 
 }  // namespace chromeos
