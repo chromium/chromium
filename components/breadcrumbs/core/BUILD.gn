@@ -23,5 +23,8 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  sources = [ "breadcrumb_manager_unittest.cc" ]
+  sources = [
+    "breadcrumb_manager_observer_unittest.cc",
+    "breadcrumb_manager_unittest.cc",
+  ]
 }

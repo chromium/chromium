@@ -4,17 +4,19 @@
 
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
+#include <string>
+
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#import "ios/web/public/test/web_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace breadcrumbs {
 
 namespace {
-class FakeBreadcrumbManagerObserver
-    : public breadcrumbs::BreadcrumbManagerObserver {
+
+class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
  public:
   FakeBreadcrumbManagerObserver() {}
   ~FakeBreadcrumbManagerObserver() override = default;
@@ -24,23 +26,23 @@ class FakeBreadcrumbManagerObserver
       const FakeBreadcrumbManagerObserver&) = delete;
 
   // BreadcrumbManagerObserver
-  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
+  void EventAdded(BreadcrumbManager* manager,
                   const std::string& event) override {
     event_added_last_received_manager_ = manager;
     event_added_last_received_event_ = event;
   }
 
-  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override {
+  void OldEventsRemoved(BreadcrumbManager* manager) override {
     old_events_removed_last_received_manager_ = manager;
   }
 
-  breadcrumbs::BreadcrumbManager* event_added_last_received_manager_ = nullptr;
+  BreadcrumbManager* event_added_last_received_manager_ = nullptr;
   std::string event_added_last_received_event_;
 
-  breadcrumbs::BreadcrumbManager* old_events_removed_last_received_manager_ =
-      nullptr;
+  BreadcrumbManager* old_events_removed_last_received_manager_ = nullptr;
 };
-}
+
+}  // namespace
 
 class BreadcrumbManagerObserverTest : public PlatformTest {
  protected:
@@ -50,11 +52,10 @@ class BreadcrumbManagerObserverTest : public PlatformTest {
     manager_.RemoveObserver(&observer_);
   }
 
-  web::WebTaskEnvironment task_env_{
-      web::WebTaskEnvironment::Options::DEFAULT,
+  base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  breadcrumbs::BreadcrumbManager manager_;
+  BreadcrumbManager manager_;
   FakeBreadcrumbManagerObserver observer_;
 };
 
@@ -87,3 +88,5 @@ TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
 
   EXPECT_EQ(&manager_, observer_.old_events_removed_last_received_manager_);
 }
+
+}  // namespace breadcrumbs
