@@ -42,10 +42,6 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Adds a pending item to the NavigationManager associated with the WebState.
   void AddPendingItem(const GURL& url, ui::PageTransition transition);
 
-  // Adds a transient item to the NavigationManager associated with the
-  // WebState.
-  void AddTransientItem(const GURL& url);
-
   // Loads the specified HTML content with URL into the WebState.
   void LoadHtml(NSString* html, const GURL& url);
   // Loads the specified HTML content into the WebState, using test url name.

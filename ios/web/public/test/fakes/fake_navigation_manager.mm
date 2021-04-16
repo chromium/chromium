@@ -56,11 +56,6 @@ void FakeNavigationManager::SetPendingItem(NavigationItem* item) {
   pending_item_ = item;
 }
 
-web::NavigationItem* FakeNavigationManager::GetTransientItem() const {
-  NOTREACHED();
-  return nullptr;
-}
-
 void FakeNavigationManager::DiscardNonCommittedItems() {
   SetPendingItem(nullptr);
 }

@@ -666,7 +666,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)stopLoading {
   base::RecordAction(base::UserMetricsAction("Stop"));
-  // Discard all pending and transient items before notifying WebState observers
+  // Discard all pending items before notifying WebState observers
   self.navigationManagerImpl->DiscardNonCommittedItems();
   for (__strong id navigation in
        [self.navigationHandler.navigationStates pendingNavigations]) {

@@ -206,41 +206,30 @@ enum class BackForwardNavigationType {
 - (void)reloadWithRendererInitiatedNavigation:(BOOL)rendererInitiated {
   GURL URL = self.currentNavItem->GetURL();
 
-  web::NavigationItem* transientItem =
-      self.navigationManagerImpl->GetTransientItem();
-  if (transientItem) {
-    // If there's a transient item, a reload is considered a new navigation to
-    // the transient item's URL (as on other platforms).
-    web::NavigationManager::WebLoadParams reloadParams(transientItem->GetURL());
-    reloadParams.transition_type = ui::PAGE_TRANSITION_RELOAD;
-    reloadParams.extra_headers = [transientItem->GetHttpRequestHeaders() copy];
-    self.webState->GetNavigationManager()->LoadURLWithParams(reloadParams);
+  self.currentNavItem->SetTransitionType(
+      ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  if (!web::GetWebClient()->IsAppSpecificURL(
+          net::GURLWithNSURL(self.webView.URL))) {
+    // New navigation manager can delegate directly to WKWebView to reload
+    // for non-app-specific URLs. The necessary navigation states will be
+    // updated in WKNavigationDelegate callbacks.
+    WKNavigation* navigation = [self.webView reload];
+    [self.navigationHandler.navigationStates
+             setState:web::WKNavigationState::REQUESTED
+        forNavigation:navigation];
+    std::unique_ptr<web::NavigationContextImpl> navigationContext = [self
+        registerLoadRequestForURL:URL
+                         referrer:self.currentNavItemReferrer
+                       transition:ui::PageTransition::PAGE_TRANSITION_RELOAD
+           sameDocumentNavigation:NO
+                   hasUserGesture:YES
+                rendererInitiated:rendererInitiated
+            placeholderNavigation:NO];
+    [self.navigationHandler.navigationStates
+           setContext:std::move(navigationContext)
+        forNavigation:navigation];
   } else {
-    self.currentNavItem->SetTransitionType(
-        ui::PageTransition::PAGE_TRANSITION_RELOAD);
-    if (!web::GetWebClient()->IsAppSpecificURL(
-            net::GURLWithNSURL(self.webView.URL))) {
-      // New navigation manager can delegate directly to WKWebView to reload
-      // for non-app-specific URLs. The necessary navigation states will be
-      // updated in WKNavigationDelegate callbacks.
-      WKNavigation* navigation = [self.webView reload];
-      [self.navigationHandler.navigationStates
-               setState:web::WKNavigationState::REQUESTED
-          forNavigation:navigation];
-      std::unique_ptr<web::NavigationContextImpl> navigationContext = [self
-          registerLoadRequestForURL:URL
-                           referrer:self.currentNavItemReferrer
-                         transition:ui::PageTransition::PAGE_TRANSITION_RELOAD
-             sameDocumentNavigation:NO
-                     hasUserGesture:YES
-                  rendererInitiated:rendererInitiated
-              placeholderNavigation:NO];
-      [self.navigationHandler.navigationStates
-             setContext:std::move(navigationContext)
-          forNavigation:navigation];
-    } else {
-      [self loadCurrentURLWithRendererInitiatedNavigation:rendererInitiated];
-    }
+    [self loadCurrentURLWithRendererInitiatedNavigation:rendererInitiated];
   }
 }
 

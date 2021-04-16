@@ -299,7 +299,6 @@ using web::wk_navigation_util::IsPlaceholderUrl;
       // location.replace is called with about:blank#hash in an empty window
       // open tab. See crbug.com/866142.
       DCHECK(self.webStateImpl->HasOpener());
-      DCHECK(!self.navigationManagerImpl->GetTransientItem());
       DCHECK(!self.navigationManagerImpl->GetPendingItem());
       currentItem = self.navigationManagerImpl->GetLastCommittedItem();
     }

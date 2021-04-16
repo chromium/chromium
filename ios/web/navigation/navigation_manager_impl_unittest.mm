@@ -298,40 +298,8 @@ TEST_F(NavigationManagerTest, CanGoBackWithoutCommitedItem) {
   EXPECT_FALSE(navigation_manager()->CanGoToOffset(-1));
 }
 
-// Tests that going back or negative offset is not possible if there is a
-// transient item, but not committed items.
-TEST_F(NavigationManagerTest, CanGoBackWithTransientItem) {
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com"));
-
-  EXPECT_FALSE(navigation_manager()->CanGoBack());
-  EXPECT_FALSE(navigation_manager()->CanGoToOffset(-1));
-}
-
-// Tests that going back or negative offset is possible if there is a transient
-// item and at least one committed item.
-TEST_F(NavigationManagerTest, CanGoBackWithTransientItemAndCommittedItem) {
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-
-  [mock_wk_list_ setCurrentURL:@"http://www.url.com"];
-  navigation_manager()->CommitPendingItem();
-
-  // Setup a pending item for which a transient item can be added.
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.2.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/0"));
-
-  EXPECT_TRUE(navigation_manager()->CanGoBack());
-  EXPECT_TRUE(navigation_manager()->CanGoToOffset(-1));
-}
-
 // Tests that going back or negative offset is not possible if there is ony one
-// committed item and no transient item.
+// committed item.
 TEST_F(NavigationManagerTest, CanGoBackWithSingleCommitedItem) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -395,7 +363,7 @@ TEST_F(NavigationManagerTest, CanGoForwardWithoutCommitedItem) {
 }
 
 // Tests that going forward or positive offset is not possible if there is ony
-// one committed item and no transient item.
+// one committed item.
 TEST_F(NavigationManagerTest, CanGoForwardWithSingleCommitedItem) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -811,9 +779,8 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItem) {
 }
 
 // Tests that calling |Reload| with web::ReloadType::NORMAL is no-op when there
-// are no transient, pending and committed items.
+// are no pending or committed items.
 TEST_F(NavigationManagerTest, ReloadEmptyWithNormalType) {
-  ASSERT_FALSE(navigation_manager()->GetTransientItem());
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 
@@ -821,7 +788,6 @@ TEST_F(NavigationManagerTest, ReloadEmptyWithNormalType) {
   navigation_manager()->Reload(web::ReloadType::NORMAL,
                                false /* check_for_repost */);
 
-  ASSERT_FALSE(navigation_manager()->GetTransientItem());
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 }
@@ -934,9 +900,8 @@ TEST_F(NavigationManagerTest,
 }
 
 // Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL is
-// no-op when there are no transient, pending and committed items.
+// no-op when there are no pending or committed items.
 TEST_F(NavigationManagerTest, ReloadEmptyWithOriginalType) {
-  ASSERT_FALSE(navigation_manager()->GetTransientItem());
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 
@@ -944,7 +909,6 @@ TEST_F(NavigationManagerTest, ReloadEmptyWithOriginalType) {
   navigation_manager()->Reload(web::ReloadType::ORIGINAL_REQUEST_URL,
                                false /* check_for_repost */);
 
-  ASSERT_FALSE(navigation_manager()->GetTransientItem());
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 }
@@ -1440,68 +1404,6 @@ TEST_F(NavigationManagerTest, NewPendingItemIsHiddenFromHistory) {
   EXPECT_EQ("http://www.url.com/0", back_items[0]->GetURL().spec());
 }
 
-// Tests that all committed items are considered history if there is a transient
-// item. This can happen if an interstitial was loaded for SSL error.
-// See crbug.com/691311.
-TEST_F(NavigationManagerTest,
-       BackwardItemsShouldContainAllCommittedIfCurrentIsTransient) {
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-
-  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
-  navigation_manager()->CommitPendingItem();
-
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/1"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/1"));
-
-  EXPECT_EQ(0, navigation_manager()->GetLastCommittedItemIndex());
-  EXPECT_TRUE(navigation_manager()->GetTransientItem());
-
-  NavigationItemList back_items = navigation_manager()->GetBackwardItems();
-  EXPECT_EQ(1U, back_items.size());
-  EXPECT_EQ("http://www.url.com/0", back_items[0]->GetURL().spec());
-}
-
-TEST_F(NavigationManagerTest, BackwardItemsShouldBeEmptyIfFirstIsTransient) {
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/0"));
-
-  EXPECT_EQ(-1, navigation_manager()->GetLastCommittedItemIndex());
-  EXPECT_TRUE(navigation_manager()->GetTransientItem());
-
-  NavigationItemList back_items = navigation_manager()->GetBackwardItems();
-  EXPECT_TRUE(back_items.empty());
-}
-
-TEST_F(NavigationManagerTest, VisibleItemIsTransientItemIfPresent) {
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/1"));
-
-  ASSERT_TRUE(navigation_manager()->GetVisibleItem());
-  EXPECT_EQ("http://www.url.com/1",
-            navigation_manager()->GetVisibleItem()->GetURL().spec());
-
-  // Visible item is still transient item even if there is a committed item.
-  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
-  navigation_manager()->CommitPendingItem();
-
-  navigation_manager()->AddPendingItem(
-      GURL("http://www.url.com/2"), Referrer(), ui::PAGE_TRANSITION_TYPED,
-      web::NavigationInitiationType::BROWSER_INITIATED);
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/3"));
-
-  ASSERT_TRUE(navigation_manager()->GetVisibleItem());
-  EXPECT_EQ("http://www.url.com/3",
-            navigation_manager()->GetVisibleItem()->GetURL().spec());
-}
-
 TEST_F(NavigationManagerTest, PendingItemIsVisibleIfNewAndUserInitiated) {
   delegate_.SetWebState(&web_state_);
   web_state_.SetLoading(true);
@@ -1842,8 +1744,8 @@ TEST_F(NavigationManagerTest, LoadIfNecessary) {
   navigation_manager()->LoadIfNecessary();
 }
 
-// Tests that GetCurrentItemImpl() returns the transient item, pending item or
-// last committed item in that precedence order.
+// Tests that GetCurrentItemImpl() returns the pending item or last committed
+// item in that precedence order.
 TEST_F(NavigationManagerTest, GetCurrentItemImpl) {
   ASSERT_EQ(nullptr, navigation_manager()->GetCurrentItemImpl());
 
@@ -1863,11 +1765,6 @@ TEST_F(NavigationManagerTest, GetCurrentItemImpl) {
   NavigationItem* pending_item = navigation_manager()->GetPendingItem();
   ASSERT_NE(pending_item, nullptr);
   EXPECT_EQ(pending_item, navigation_manager()->GetCurrentItemImpl());
-
-  navigation_manager()->AddTransientItem(GURL("http://www.url.com/2"));
-  NavigationItem* transient_item = navigation_manager()->GetTransientItem();
-  ASSERT_NE(transient_item, nullptr);
-  EXPECT_EQ(transient_item, navigation_manager()->GetCurrentItemImpl());
 }
 
 TEST_F(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
@@ -2140,10 +2037,6 @@ TEST_F(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
   NavigationItem* item0 = manager_->GetItemAtIndex(0);
   EXPECT_EQ(GURL("http://www.0.com"), item0->GetURL());
 
-  // Transient URL rewriters do not apply to transient items.
-  manager_->AddTransientItem(GURL("http://www.1.com"));
-  EXPECT_EQ(GURL("http://www.1.com"), manager_->GetTransientItem()->GetURL());
-
   // Transient URL rewriters are applied to a new pending item.
   manager_->AddPendingItem(GURL("http://www.2.com"), Referrer(),
                            ui::PAGE_TRANSITION_TYPED,
@@ -2151,24 +2044,20 @@ TEST_F(NavigationManagerTest, TransientURLRewritersOnlyUsedForPendingItem) {
   EXPECT_EQ(kRewrittenQueryParam, manager_->GetPendingItem()->GetURL().query());
 }
 
-// Tests DiscardNonCommittedItems discards both pending and transient items.
+// Tests DiscardNonCommittedItems discards pending items.
 TEST_F(NavigationManagerTest, DiscardNonCommittedItems) {
   manager_->AddPendingItem(GURL("http://www.0.com"), Referrer(),
                            ui::PAGE_TRANSITION_TYPED,
                            web::NavigationInitiationType::BROWSER_INITIATED);
-  manager_->AddTransientItem(GURL("http://www.1.com"));
 
   EXPECT_NE(nullptr, manager_->GetPendingItem());
-  EXPECT_NE(nullptr, manager_->GetTransientItem());
 
   manager_->DiscardNonCommittedItems();
   EXPECT_EQ(nullptr, manager_->GetPendingItem());
-  EXPECT_EQ(nullptr, manager_->GetTransientItem());
 }
 
-// Tests that in the absence of a transient item, going back is delegated to the
-// underlying WKWebView.
-TEST_F(NavigationManagerTest, GoBackWithoutTransientItem) {
+// Tests that going back is delegated to the underlying WKWebView.
+TEST_F(NavigationManagerTest, GoBack) {
   ASSERT_FALSE(manager_->CanGoBack());
 
   manager_->AddPendingItem(GURL("http://www.0.com"), Referrer(),
@@ -2192,33 +2081,6 @@ TEST_F(NavigationManagerTest, GoBackWithoutTransientItem) {
                   /*has_user_gesture=*/true));
   manager_->GoBack();
   [mock_web_view_ verify];
-}
-
-// Tests that going back from a transient item will discard the transient item
-// and the pending item associated with it.
-TEST_F(NavigationManagerTest, GoBackFromTransientItem) {
-  manager_->AddPendingItem(GURL("http://www.0.com"), Referrer(),
-                           ui::PAGE_TRANSITION_TYPED,
-                           web::NavigationInitiationType::BROWSER_INITIATED);
-  [mock_wk_list_ setCurrentURL:@"http://www.0.com"];
-  manager_->CommitPendingItem();
-
-  manager_->AddPendingItem(GURL("http://www.1.com"), Referrer(),
-                           ui::PAGE_TRANSITION_TYPED,
-                           web::NavigationInitiationType::BROWSER_INITIATED);
-  manager_->AddTransientItem(GURL("http://www.1.com/transient"));
-
-  ASSERT_TRUE(manager_->CanGoBack());
-  EXPECT_CALL(delegate_,
-              GoToBackForwardListItem(
-                  mock_wk_list_.currentItem, manager_->GetItemAtIndex(0),
-                  NavigationInitiationType::BROWSER_INITIATED,
-                  /*has_user_gesture=*/true));
-  manager_->GoBack();
-  [mock_web_view_ verify];
-
-  EXPECT_EQ(nullptr, manager_->GetPendingItem());
-  EXPECT_EQ(nullptr, manager_->GetTransientItem());
 }
 
 // Tests that going forward is always delegated to the underlying WKWebView
@@ -2270,10 +2132,8 @@ TEST_F(NavigationManagerTest, GoForwardShouldDiscardsUncommittedItems) {
   manager_->AddPendingItem(GURL("http://www.0.com"), Referrer(),
                            ui::PAGE_TRANSITION_TYPED,
                            web::NavigationInitiationType::BROWSER_INITIATED);
-  manager_->AddTransientItem(GURL("http://www.1.com"));
 
   EXPECT_NE(nullptr, manager_->GetPendingItem());
-  EXPECT_NE(nullptr, manager_->GetTransientItem());
 
   EXPECT_CALL(delegate_,
               GoToBackForwardListItem(
@@ -2284,7 +2144,6 @@ TEST_F(NavigationManagerTest, GoForwardShouldDiscardsUncommittedItems) {
   [mock_web_view_ verify];
 
   EXPECT_EQ(nullptr, manager_->GetPendingItem());
-  EXPECT_EQ(nullptr, manager_->GetTransientItem());
 }
 
 // Tests CanGoToOffset API for positive, negative and zero delta.
@@ -2358,20 +2217,6 @@ TEST_F(NavigationManagerTest, CanGoToOffset) {
   // Test with large values
   EXPECT_FALSE(manager_->CanGoToOffset(INT_MAX));
   EXPECT_FALSE(manager_->CanGoToOffset(INT_MIN));
-
-  // Test with transient entry.
-  manager_->AddPendingItem(GURL("http://www.url.com/3"), Referrer(),
-                           ui::PAGE_TRANSITION_LINK,
-                           web::NavigationInitiationType::BROWSER_INITIATED);
-  manager_->AddTransientItem(GURL("http://www.url.com/3"));
-  ASSERT_EQ(3, manager_->GetItemCount());
-  ASSERT_EQ(2, manager_->GetLastCommittedItemIndex());
-  EXPECT_TRUE(manager_->CanGoToOffset(-1));
-  EXPECT_EQ(2, manager_->GetIndexForOffset(-1));
-  EXPECT_TRUE(manager_->CanGoToOffset(-3));
-  EXPECT_EQ(0, manager_->GetIndexForOffset(-3));
-  EXPECT_FALSE(manager_->CanGoToOffset(-4));
-  EXPECT_FALSE(manager_->CanGoToOffset(1));
 
   // Simulate a history navigation pending item.
   [mock_wk_list_ moveCurrentToIndex:1];

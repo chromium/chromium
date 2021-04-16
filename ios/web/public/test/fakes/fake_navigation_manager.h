@@ -24,7 +24,6 @@ class FakeNavigationManager : public NavigationManager {
   NavigationItem* GetVisibleItem() const override;
   NavigationItem* GetLastCommittedItem() const override;
   NavigationItem* GetPendingItem() const override;
-  NavigationItem* GetTransientItem() const override;
   void DiscardNonCommittedItems() override;
   void LoadURLWithParams(const NavigationManager::WebLoadParams&) override;
   void LoadIfNecessary() override;

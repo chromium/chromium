@@ -152,14 +152,12 @@ TEST_F(WebStateTest, OverridingWebKitObject) {
 // manager is empty.
 TEST_F(WebStateTest, ReloadWithNormalTypeWithEmptyNavigationManager) {
   NavigationManager* navigation_manager = web_state()->GetNavigationManager();
-  ASSERT_FALSE(navigation_manager->GetTransientItem());
   ASSERT_FALSE(navigation_manager->GetPendingItem());
   ASSERT_FALSE(navigation_manager->GetLastCommittedItem());
 
   navigation_manager->Reload(web::ReloadType::NORMAL,
                              false /* check_for_repost */);
 
-  ASSERT_FALSE(navigation_manager->GetTransientItem());
   ASSERT_FALSE(navigation_manager->GetPendingItem());
   ASSERT_FALSE(navigation_manager->GetLastCommittedItem());
 }
@@ -168,14 +166,12 @@ TEST_F(WebStateTest, ReloadWithNormalTypeWithEmptyNavigationManager) {
 // navigation manager is empty.
 TEST_F(WebStateTest, ReloadWithOriginalTypeWithEmptyNavigationManager) {
   NavigationManager* navigation_manager = web_state()->GetNavigationManager();
-  ASSERT_FALSE(navigation_manager->GetTransientItem());
   ASSERT_FALSE(navigation_manager->GetPendingItem());
   ASSERT_FALSE(navigation_manager->GetLastCommittedItem());
 
   navigation_manager->Reload(web::ReloadType::ORIGINAL_REQUEST_URL,
                              false /* check_for_repost */);
 
-  ASSERT_FALSE(navigation_manager->GetTransientItem());
   ASSERT_FALSE(navigation_manager->GetPendingItem());
   ASSERT_FALSE(navigation_manager->GetLastCommittedItem());
 }
@@ -539,7 +535,6 @@ TEST_F(WebStateTest, RestoreLargeSession) {
     EXPECT_TRUE(visible_item);
     EXPECT_TRUE(visible_item && visible_item->GetURL() == "http://www.0.com/");
     EXPECT_FALSE(navigation_manager->CanGoBack());
-    EXPECT_FALSE(navigation_manager->GetTransientItem());
     EXPECT_FALSE(IsWKInternalUrl(web_state_ptr->GetVisibleURL()));
 
     return restored;

@@ -22,11 +22,6 @@ NavigationItemImpl* GetItemWithUniqueID(
     return context->GetItem();
 
   int unique_id = context->GetNavigationItemUniqueID();
-  NavigationItemImpl* transient_item =
-      navigation_manager->GetTransientItemImpl();
-  if (transient_item && transient_item->GetUniqueID() == unique_id)
-    return transient_item;
-
   NavigationItemImpl* pending_item =
       navigation_manager->GetPendingItemInCurrentOrRestoredSession();
   if (pending_item && pending_item->GetUniqueID() == unique_id)

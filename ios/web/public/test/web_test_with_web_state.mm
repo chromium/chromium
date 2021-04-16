@@ -78,12 +78,6 @@ void WebTestWithWebState::AddPendingItem(const GURL& url,
                       web::NavigationInitiationType::BROWSER_INITIATED);
 }
 
-void WebTestWithWebState::AddTransientItem(const GURL& url) {
-  GetWebController(web_state())
-      .webStateImpl->GetNavigationManagerImpl()
-      .AddTransientItem(url);
-}
-
 bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
   NSString* block_all = @"[{"
                          "  \"trigger\": {"

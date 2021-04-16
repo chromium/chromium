@@ -175,18 +175,6 @@ void NavigationManagerImpl::DetachFromWebView() {
   is_restore_session_in_progress_ = false;
 }
 
-void NavigationManagerImpl::AddTransientItem(const GURL& url) {
-  DCHECK(web_view_cache_.IsAttachedToWebView());
-  NavigationItem* last_committed_item = GetLastCommittedItem();
-  transient_item_ = CreateNavigationItemWithRewriters(
-      url, Referrer(), ui::PAGE_TRANSITION_CLIENT_REDIRECT,
-      NavigationInitiationType::BROWSER_INITIATED,
-      last_committed_item ? last_committed_item->GetURL() : GURL::EmptyGURL(),
-      nullptr /* use default rewriters only */);
-  transient_item_->SetTimestamp(
-      time_smoother_.GetSmoothedTime(base::Time::Now()));
-}
-
 void NavigationManagerImpl::AddPendingItem(
     const GURL& url,
     const web::Referrer& referrer,
@@ -424,12 +412,6 @@ int NavigationManagerImpl::GetIndexForOffset(int offset) const {
         empty_window_open_item_ ? 0 : web_view_cache_.GetCurrentItemIndex();
   }
 
-  if (offset < 0 && GetTransientItem() && pending_item_index_ == -1) {
-    // Going back from transient item that added to the end navigation stack
-    // is a matter of discarding it as there is no need to move navigation
-    // index back.
-    offset++;
-  }
   return current_item_index + offset;
 }
 
@@ -491,8 +473,7 @@ void NavigationManagerImpl::UpdatePendingItemUrl(const GURL& url) const {
     return;
 
   // UpdatePendingItemUrl is used to handle redirects after loading starts for
-  // the currenting pending item. No transient item should exists at this point.
-  DCHECK(!GetTransientItem());
+  // the currenting pending item.
   pending_item->SetURL(url);
   pending_item->SetVirtualURL(url);
   // Redirects (3xx response code), or client side navigation must change POST
@@ -502,10 +483,6 @@ void NavigationManagerImpl::UpdatePendingItemUrl(const GURL& url) const {
 }
 
 NavigationItemImpl* NavigationManagerImpl::GetCurrentItemImpl() const {
-  NavigationItemImpl* transient_item = GetTransientItemImpl();
-  if (transient_item)
-    return transient_item;
-
   NavigationItemImpl* pending_item = GetPendingItemInCurrentOrRestoredSession();
   if (pending_item)
     return pending_item;
@@ -535,7 +512,6 @@ NavigationItemImpl* NavigationManagerImpl::GetLastCommittedItemImpl() const {
 void NavigationManagerImpl::UpdateCurrentItemForReplaceState(
     const GURL& url,
     NSString* state_object) {
-  DCHECK(!GetTransientItem());
   NavigationItemImpl* current_item = GetCurrentItemImpl();
   current_item->SetURL(url);
   current_item->SetSerializedStateObject(state_object);
@@ -551,9 +527,7 @@ void NavigationManagerImpl::GoToIndex(int index,
     return;
   }
 
-  if (!GetTransientItem()) {
-    delegate_->RecordPageStateInNavigationItem();
-  }
+  delegate_->RecordPageStateInNavigationItem();
   delegate_->ClearDialogs();
 
   if (!web_view_cache_.IsAttachedToWebView()) {
@@ -605,11 +579,6 @@ WebState* NavigationManagerImpl::GetWebState() const {
 NavigationItem* NavigationManagerImpl::GetVisibleItem() const {
   if (is_restore_session_in_progress_ || restored_visible_item_)
     return restored_visible_item_.get();
-
-  NavigationItem* transient_item = GetTransientItem();
-  if (transient_item) {
-    return transient_item;
-  }
 
   // Only return pending_item_ for new (non-history), user-initiated
   // navigations in order to prevent URL spoof attacks.
@@ -669,13 +638,8 @@ NavigationItem* NavigationManagerImpl::GetPendingItem() const {
   return GetPendingItemInCurrentOrRestoredSession();
 }
 
-NavigationItem* NavigationManagerImpl::GetTransientItem() const {
-  return GetTransientItemImpl();
-}
-
 void NavigationManagerImpl::DiscardNonCommittedItems() {
   pending_item_.reset();
-  transient_item_.reset();
   pending_item_index_ = -1;
 }
 
@@ -720,12 +684,7 @@ void NavigationManagerImpl::LoadURLWithParams(
   }
 
   // Add additional headers to the NavigationItem before loading it in the web
-  // view. This implementation must match CRWWebController's |currentNavItem|.
-  // However, to avoid introducing a GetCurrentItem() that is only used here,
-  // the logic in |currentNavItem| is inlined here with the small simplification
-  // since AddPendingItem() implies that any transient item would have been
-  // cleared.
-  DCHECK(!GetTransientItem());
+  // view.
   NavigationItemImpl* added_item =
       pending_item ? pending_item
                    : GetLastCommittedItemInCurrentOrRestoredSession();
@@ -851,25 +810,21 @@ void NavigationManagerImpl::Reload(ReloadType reload_type,
   // GetLastCommittedItem() so restore session URL's aren't suppressed.
   // Otherwise a cancelled/stopped navigation during the first post-restore
   // navigation will always return early from Reload.
-  if (!GetTransientItem() && !GetPendingItem() &&
-      !GetLastCommittedItemInCurrentOrRestoredSession())
+  if (!GetPendingItem() && !GetLastCommittedItemInCurrentOrRestoredSession())
     return;
 
   delegate_->ClearDialogs();
 
   // Reload with ORIGINAL_REQUEST_URL type should reload with the original
-  // request url of the transient item, or pending item if transient doesn't
-  // exist, or last committed item if both of them don't exist. The reason is
-  // that a server side redirect may change the item's url.
-  // For example, the user visits www.chromium.org and is then redirected
-  // to m.chromium.org, when the user wants to refresh the page with a different
-  // configuration (e.g. user agent), the user would be expecting to visit
-  // www.chromium.org instead of m.chromium.org.
+  // request url of the pending item, or last committed item if the pending item
+  // doesn't exist. The reason is that a server side redirect may change the
+  // item's url. For example, the user visits www.chromium.org and is then
+  // redirected to m.chromium.org, when the user wants to refresh the page with
+  // a different configuration (e.g. user agent), the user would be expecting to
+  // visit www.chromium.org instead of m.chromium.org.
   if (reload_type == web::ReloadType::ORIGINAL_REQUEST_URL) {
     NavigationItem* reload_item = nullptr;
-    if (GetTransientItem())
-      reload_item = GetTransientItem();
-    else if (GetPendingItem())
+    if (GetPendingItem())
       reload_item = GetPendingItem();
     else
       reload_item = GetLastCommittedItemInCurrentOrRestoredSession();
@@ -893,10 +848,7 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
     UserAgentType user_agent_type) {
   DCHECK_NE(user_agent_type, UserAgentType::NONE);
 
-  NavigationItem* item_to_reload = GetTransientItem();
-  if (!item_to_reload ||
-      ui::PageTransitionIsRedirect(item_to_reload->GetTransitionType()))
-    item_to_reload = GetVisibleItem();
+  NavigationItem* item_to_reload = GetVisibleItem();
   if (!item_to_reload) {
     NavigationItem* last_committed_item = GetLastCommittedItem();
     if (last_committed_item) {
@@ -931,14 +883,7 @@ NavigationItemList NavigationManagerImpl::GetBackwardItems() const {
   if (is_restore_session_in_progress_)
     return items;
 
-  // If the current navigation item is a transient item (e.g. SSL
-  // interstitial), the last committed item should also be considered part of
-  // the backward history.
   int current_back_forward_item_index = web_view_cache_.GetCurrentItemIndex();
-  if (GetTransientItem() && current_back_forward_item_index >= 0) {
-    items.push_back(GetItemAtIndex(current_back_forward_item_index));
-  }
-
   for (int index = current_back_forward_item_index - 1; index >= 0; index--) {
     items.push_back(GetItemAtIndex(index));
   }
@@ -1006,10 +951,6 @@ NavigationManagerImpl::GetPendingItemInCurrentOrRestoredSession() const {
     return pending_item_.get();
   }
   return GetNavigationItemImplAtIndex(pending_item_index_);
-}
-
-NavigationItemImpl* NavigationManagerImpl::GetTransientItemImpl() const {
-  return transient_item_.get();
 }
 
 NavigationItemImpl*
@@ -1174,8 +1115,7 @@ void NavigationManagerImpl::UnsafeRestore(
   // Ordering is important. Cache the visible item of the restored session
   // before starting the new navigation, which may trigger client lookup of
   // visible item. The visible item of the restored session is the last
-  // committed item, because a restored session has no pending or transient
-  // item.
+  // committed item, because a restored session has no pending item.
   is_restore_session_in_progress_ = true;
   if (last_committed_item_index > -1)
     restored_visible_item_ = std::move(items[last_committed_item_index]);

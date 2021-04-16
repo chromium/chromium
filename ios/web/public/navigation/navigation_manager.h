@@ -90,14 +90,7 @@ class NavigationManager {
   // in progress, or null if there is none.
   virtual NavigationItem* GetPendingItem() const = 0;
 
-  // Returns the transient item if any. This is an item which is removed and
-  // discarded if any navigation occurs. Note that the returned item is owned
-  // by the navigation manager and may be deleted at any time.
-  // TODO(crbug.com/1028755): Remove the transient item once SafeBrowsing is
-  // launched.
-  virtual NavigationItem* GetTransientItem() const = 0;
-
-  // Removes the transient and pending NavigationItems.
+  // Removes the pending NavigationItem.
   virtual void DiscardNonCommittedItems() = 0;
 
   // Loads the URL with specified |params|.
@@ -119,7 +112,7 @@ class NavigationManager {
       BrowserURLRewriter::URLRewriter rewriter) = 0;
 
   // Returns the number of items in the NavigationManager, excluding
-  // pending and transient entries.
+  // pending entries.
   // TODO(crbug.com/533848): Update to return size_t.
   virtual int GetItemCount() const = 0;
 
@@ -154,8 +147,7 @@ class NavigationManager {
   // Reloads the visible item under the specified ReloadType. If
   // |check_for_repost| is true and the current item has POST data the user is
   // prompted to see if they really want to reload the page. Pass in true if the
-  // reload is explicitly initiated by the user. If a transient item is showing,
-  // initiates a new navigation to its URL.
+  // reload is explicitly initiated by the user.
   // TODO(crbug.com/700958): implement the logic for |check_for_repost|.
   virtual void Reload(ReloadType reload_type, bool check_for_repost) = 0;
 
