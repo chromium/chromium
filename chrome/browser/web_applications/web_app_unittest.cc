@@ -8,6 +8,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -198,47 +199,47 @@ system_web_app:
 
 TEST(WebAppTest, SampleAppToDebugString) {
   std::string debug_string = WebAppToPlatformAgnosticString(
-      test::CreateRandomWebApp("https://example.com/", /*seed=*/1234));
+      test::CreateRandomWebApp(GURL("https://example.com/"), /*seed=*/1234));
   EXPECT_EQ(debug_string,
-            R"(app_id: omfgndaololjebhmknofljogcpffijdi
+            R"(app_id: eajjdjobhihlgobdfaehiiheinneagde
 manifest_url: https://example.com/manifest1234.json
 manifest_id: nullopt
 name: Name1234
-start_url: https://example.com/1234
+start_url: https://example.com/scope1234/start1234
 launch_query_params: 3248422070
-scope: https://example.com//scope1234
-theme_color: rgba(220,247,174,0.6470588235294118)
-background_color: rgba(151,34,83,0.8823529411764706)
+scope: https://example.com/scope1234/
+theme_color: rgba(151,34,83,0.8823529411764706)
+background_color: rgba(77,188,194,0.9686274509803922)
 display_mode: fullscreen
-display_override: browser
+display_override:
 user_display_mode: standalone
 user_page_ordinal: INVALID[]
 user_launch_ordinal: INVALID[]
-sources: System Sync Default
+sources: WebAppStore Sync Default
 is_locally_installed: 1
-is_in_sync_install: 1
+is_in_sync_install: 0
 sync_fallback_data:
   name: SyncName1234
-  theme_color: rgba(77,188,194,0.9686274509803922)
-  scope: https://example.com//scope1234
+  theme_color: rgba(61,127,69,0.8431372549019608)
+  scope: https://example.com/scope1234/
   icon_infos:
-    url: https://example.com//icon1783899413
+    url: https://example.com/icon1783899413
       square_size_px: none
       purpose: ANY
-    url: https://example.com//icon3011162902
+    url: https://example.com/icon3011162902
       square_size_px: none
       purpose: ANY
 description: Description1234
-last_badging_time: 1970-01-15 00:09:41.850 UTC
-last_launch_time: 1970-01-12 14:48:29.918 UTC
-install_time: 1970-01-02 16:03:30.110 UTC
+last_badging_time: 1970-01-12 14:48:29.918 UTC
+last_launch_time: 1970-01-02 16:03:30.110 UTC
+install_time: 1970-01-09 06:11:52.363 UTC
 is_generated_icon: 1
 run_on_os_login_mode: minimized
 icon_infos:
-  url: https://example.com//icon1783899413
+  url: https://example.com/icon1783899413
     square_size_px: none
     purpose: ANY
-  url: https://example.com//icon3011162902
+  url: https://example.com/icon3011162902
     square_size_px: none
     purpose: ANY
 downloaded_icon_sizes_any: 256
@@ -246,24 +247,24 @@ downloaded_icon_sizes_monochrome:
 downloaded_icon_sizes_maskable:
 shortcuts_menu_item_infos:
   name: shortcut24741963851
-    url: https://example.com//shortcut24741963851
+    url: https://example.com/scope1234/shortcut24741963851
     icons:
       any:
-        url: https://example.com//shortcuts/icon247419638511
+        url: https://example.com/shortcuts/icon247419638511
         square_size_px: 11
-        url: https://example.com//shortcuts/icon247419638510
+        url: https://example.com/shortcuts/icon247419638510
         square_size_px: 1
       maskable:
-        url: https://example.com//shortcuts/icon247419638512
+        url: https://example.com/shortcuts/icon247419638512
         square_size_px: 28
   name: shortcut24741963850
-    url: https://example.com//shortcut24741963850
+    url: https://example.com/scope1234/shortcut24741963850
     icons:
       any:
-        url: https://example.com//shortcuts/icon247419638501
+        url: https://example.com/shortcuts/icon247419638501
         square_size_px: 18
       maskable:
-        url: https://example.com//shortcuts/icon247419638500
+        url: https://example.com/shortcuts/icon247419638500
         square_size_px: 9
 downloaded_shortcuts_menu_icons_sizes:
   index: 0:
@@ -328,11 +329,11 @@ additional_search_terms:
   Foo_1234_2
   Foo_1234_3
 protocol_handlers:
-  protocol: web+test244307310 url: https://example.com/%s
-  protocol: web+test244307311 url: https://example.com/%s
-  protocol: web+test244307312 url: https://example.com/%s
-  protocol: web+test244307313 url: https://example.com/%s
-  protocol: web+test244307314 url: https://example.com/%s
+  protocol: web+test244307310 url: https://example.com/244307310
+  protocol: web+test244307311 url: https://example.com/244307311
+  protocol: web+test244307312 url: https://example.com/244307312
+  protocol: web+test244307313 url: https://example.com/244307313
+  protocol: web+test244307314 url: https://example.com/244307314
 note_taking_new_note_url: 
 url_handlers:
   origin: https://app-9974471690.com

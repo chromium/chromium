@@ -68,15 +68,17 @@ class WebAppDatabaseTest : public WebAppTest {
     run_loop.Run();
   }
 
-  Registry WriteWebApps(const std::string& base_url, int num_apps) {
+  Registry WriteWebApps(const GURL& base_url, int num_apps) {
     Registry registry;
 
     auto write_batch = database_factory().store()->CreateWriteBatch();
 
     for (int i = 0; i < num_apps; ++i) {
-      auto app = test::CreateRandomWebApp(base_url, /*seed=*/i);
-      auto proto = WebAppDatabase::CreateWebAppProto(*app);
-      const auto app_id = app->app_id();
+      std::unique_ptr<WebApp> app =
+          test::CreateRandomWebApp(base_url, /*seed=*/i);
+      std::unique_ptr<WebAppProto> proto =
+          WebAppDatabase::CreateWebAppProto(*app);
+      const AppId app_id = app->app_id();
 
       write_batch->WriteData(app_id, proto->SerializeAsString());
 
@@ -114,15 +116,16 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   EXPECT_TRUE(registrar().is_empty());
 
   const int num_apps = 20;
-  const std::string base_url = "https://example.com/path";
+  const GURL base_url("https://example.com/path");
 
-  auto app = test::CreateRandomWebApp(base_url, /*seed=*/0);
-  auto app_id = app->app_id();
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp(base_url, /*seed=*/0);
+  AppId app_id = app->app_id();
   controller().RegisterApp(std::move(app));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
   for (int i = 1; i <= num_apps; ++i) {
-    auto extra_app = test::CreateRandomWebApp(base_url, /*seed=*/i);
+    std::unique_ptr<WebApp> extra_app =
+        test::CreateRandomWebApp(base_url, /*seed=*/i);
     controller().RegisterApp(std::move(extra_app));
   }
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
@@ -139,7 +142,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   EXPECT_TRUE(registrar().is_empty());
 
   const int num_apps = 10;
-  const std::string base_url = "https://example.com/path";
+  const GURL base_url("https://example.com/path");
 
   RegistryUpdateData::Apps apps_to_create;
   std::vector<AppId> apps_to_delete;
@@ -196,7 +199,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps("https://example.com/path", 20);
+  Registry registry = WriteWebApps(GURL("https://example.com/path"), 20);
 
   controller().Init();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
@@ -383,16 +386,16 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   controller().Init();
 
   const int num_icons = 32;
-  const std::string base_url = "https://example.com/path";
+  const GURL base_url("https://example.com/path");
 
-  auto app = test::CreateRandomWebApp(base_url, /*seed=*/0);
-  auto app_id = app->app_id();
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp(base_url, /*seed=*/0);
+  AppId app_id = app->app_id();
 
   std::vector<WebApplicationIconInfo> icons;
   std::vector<SquareSizePx> sizes;
   for (int i = 1; i <= num_icons; ++i) {
     WebApplicationIconInfo icon;
-    icon.url = GURL(base_url + "/icon" + base::NumberToString(num_icons));
+    icon.url = base_url.Resolve("icon" + base::NumberToString(num_icons));
     // Let size equals the icon's number squared.
     icon.square_size_px = i * i;
     sizes.push_back(*icon.square_size_px);

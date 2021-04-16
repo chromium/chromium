@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 
 struct WebApplicationInfo;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -21,7 +22,7 @@ class WebContents;
 namespace web_app {
 namespace test {
 
-std::unique_ptr<WebApp> CreateRandomWebApp(const std::string& base_url,
+std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
                                            const uint32_t seed);
 
 void TestAcceptDialogCallback(

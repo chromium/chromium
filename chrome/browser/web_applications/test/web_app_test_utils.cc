@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "url/gurl.h"
 
 namespace web_app {
 namespace test {
@@ -103,7 +104,7 @@ std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
 
     apps::ProtocolHandlerInfo protocol_handler;
     protocol_handler.protocol = "web+test" + suffix_str;
-    protocol_handler.url = GURL("https://example.com/%s");
+    protocol_handler.url = GURL("https://example.com/").Resolve(suffix_str);
 
     protocol_handlers.push_back(std::move(protocol_handler));
   }
@@ -134,15 +135,14 @@ blink::mojom::CaptureLinks CreateRandomCaptureLinks(uint32_t suffix) {
 }
 
 std::vector<WebApplicationShortcutsMenuItemInfo>
-CreateRandomShortcutsMenuItemInfos(const std::string& base_url,
-                                   RandomHelper& random) {
+CreateRandomShortcutsMenuItemInfos(const GURL& scope, RandomHelper& random) {
   const uint32_t suffix = random.next_uint();
   std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (int i = random.next_uint(4) + 1; i >= 0; --i) {
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
     WebApplicationShortcutsMenuItemInfo shortcut_info;
-    shortcut_info.url = GURL(base_url + "/shortcut" + suffix_str);
+    shortcut_info.url = scope.Resolve("shortcut" + suffix_str);
     shortcut_info.name = base::UTF8ToUTF16("shortcut" + suffix_str);
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons_any;
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
@@ -150,7 +150,7 @@ CreateRandomShortcutsMenuItemInfos(const std::string& base_url,
     for (int j = random.next_uint(4) + 1; j >= 0; --j) {
       std::string icon_suffix_str = suffix_str + base::NumberToString(j);
       WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon;
-      shortcut_icon.url = GURL(base_url + "/shortcuts/icon" + icon_suffix_str);
+      shortcut_icon.url = scope.Resolve("/shortcuts/icon" + icon_suffix_str);
       // Within each shortcut_icons_*, square_size_px must be unique.
       shortcut_icon.square_size_px = (j * 10) + random.next_uint(10);
       if (random.next_bool())
@@ -190,16 +190,20 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
 
 }  // namespace
 
-std::unique_ptr<WebApp> CreateRandomWebApp(const std::string& base_url,
+std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
                                            const uint32_t seed) {
   RandomHelper random(seed);
 
   const std::string seed_str = base::NumberToString(seed);
-  const auto start_url = base_url + seed_str;
-  const AppId app_id = GenerateAppIdFromURL(GURL(start_url));
+  base::Optional<std::string> manifest_id;
+  if (random.next_bool())
+    manifest_id = "manifest_id_" + seed_str;
+  const GURL scope = base_url.Resolve("scope" + seed_str + "/");
+  const GURL start_url = scope.Resolve("start" + seed_str);
+  const AppId app_id = GenerateAppId(manifest_id, start_url);
+
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
-  const std::string scope = base_url + "/scope" + seed_str;
   const base::Optional<SkColor> theme_color = random.next_uint();
   const base::Optional<SkColor> background_color = random.next_uint();
   const base::Optional<SkColor> synced_theme_color = random.next_uint();
@@ -222,6 +226,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const std::string& base_url,
 
   app->SetName(name);
   app->SetDescription(description);
+  app->SetManifestId(manifest_id);
   app->SetStartUrl(GURL(start_url));
   app->SetScope(GURL(scope));
   app->SetThemeColor(theme_color);
@@ -273,7 +278,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const std::string& base_url,
   for (int i = 0; i < num_icons; i++) {
     WebApplicationIconInfo icon;
     icon.url =
-        GURL(base_url + "/icon" + base::NumberToString(random.next_uint()));
+        base_url.Resolve("/icon" + base::NumberToString(random.next_uint()));
     if (random.next_bool())
       icon.square_size_px = size;
 
@@ -309,10 +314,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const std::string& base_url,
   app->SetAdditionalSearchTerms(std::move(additional_search_terms));
 
   app->SetShortcutsMenuItemInfos(
-      CreateRandomShortcutsMenuItemInfos(base_url, random));
+      CreateRandomShortcutsMenuItemInfos(scope, random));
   app->SetDownloadedShortcutsMenuIconsSizes(
       CreateRandomDownloadedShortcutsMenuIconsSizes(random));
-  app->SetManifestUrl(GURL(base_url + "manifest" + seed_str + ".json"));
+  app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
   if (IsChromeOs()) {
     auto chromeos_data = base::make_optional<WebAppChromeOsData>();
