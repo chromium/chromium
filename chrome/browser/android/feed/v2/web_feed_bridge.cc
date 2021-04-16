@@ -18,6 +18,7 @@
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -67,6 +68,10 @@ WebFeedSubscriptions* GetSubscriptions() {
 }
 
 // ToJava functions convert C++ types to Java. Used in `AdaptCallbackForJava`.
+
+bool ToJava(JNIEnv* env, WebFeedSubscriptions::RefreshResult value) {
+  return value.success;
+}
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
@@ -123,14 +128,22 @@ base::OnceCallback<void(WebFeedMetadata)> AdaptWebFeedMetadataCallback(
                         base::android::ScopedJavaGlobalRef<jobject>(callback));
 }
 
+void RunJavaCallback(const base::android::JavaRef<jobject>& callback,
+                     const base::android::JavaRef<jobject>& arg) {
+  base::android::RunObjectCallbackAndroid(callback, arg);
+}
+void RunJavaCallback(const base::android::JavaRef<jobject>& callback,
+                     bool arg) {
+  base::android::RunBooleanCallbackAndroid(callback, arg);
+}
+
 template <typename T>
 base::OnceCallback<void(T)> AdaptCallbackForJava(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& callback) {
   auto adaptor = [](const base::android::JavaRef<jobject>& callback, T result) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    base::android::RunObjectCallbackAndroid(callback,
-                                            ToJava(env, std::move(result)));
+    RunJavaCallback(callback, ToJava(env, std::move(result)));
   };
 
   return base::BindOnce(adaptor,
@@ -228,6 +241,20 @@ static void JNI_WebFeedBridge_GetAllSubscriptions(
     return;
   }
   subscriptions->GetAllSubscriptions(std::move(callback));
+}
+
+static void JNI_WebFeedBridge_RefreshSubscriptions(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  base::OnceCallback<void(WebFeedSubscriptions::RefreshResult)> callback =
+      AdaptCallbackForJava<WebFeedSubscriptions::RefreshResult>(env,
+                                                                j_callback);
+  WebFeedSubscriptions* subscriptions = GetSubscriptions();
+  if (!subscriptions) {
+    std::move(callback).Run({});
+    return;
+  }
+  subscriptions->RefreshSubscriptions(std::move(callback));
 }
 
 static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(

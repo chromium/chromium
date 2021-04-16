@@ -126,6 +126,14 @@ public class WebFeedBridge {
         });
     }
 
+    /**
+     * Refreshes the list of followed web feeds from the server. See
+     * `WebFeedSubscriptions.RefreshSubscriptions`.
+     */
+    public void refreshFollowedWebFeeds(Callback<Boolean> callback) {
+        WebFeedBridgeJni.get().refreshSubscriptions(callback);
+    }
+
     /** Container for results from a follow request. */
     public static class FollowResults {
         // TODO(crbug/1152592): replace `boolean success` with `FollowUrlResponseStatus status`.
@@ -263,6 +271,7 @@ public class WebFeedBridge {
                 WebFeedPageInformation pageInfo, Callback<WebFeedMetadata> callback);
         void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
         void getAllSubscriptions(Callback<Object[]> callback);
+        void refreshSubscriptions(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
     }
 }

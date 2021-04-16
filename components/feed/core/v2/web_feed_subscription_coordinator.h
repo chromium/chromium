@@ -60,6 +60,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       base::OnceCallback<void(WebFeedMetadata)> callback) override;
   void GetAllSubscriptions(
       base::OnceCallback<void(std::vector<WebFeedMetadata>)> callback) override;
+  void RefreshSubscriptions(
+      base::OnceCallback<void(RefreshResult)> callback) override;
 
   // Types / functions exposed for task implementations.
 
@@ -151,6 +153,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void FetchSubscribedWebFeedsStart();
   void FetchSubscribedWebFeedsComplete(
       FetchSubscribedWebFeedsTask::Result result);
+  void CallRefreshCompleteCallbacks(RefreshResult);
 
   FeedStream* feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
@@ -167,6 +170,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   // Chrome process goes down.
   std::vector<feedstore::WebFeedInfo> recent_unsubscribed_;
   std::vector<base::OnceClosure> when_model_loads_;
+  std::vector<base::OnceCallback<void(RefreshResult)>>
+      on_refresh_subscriptions_;
   bool fetching_recommended_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_ = false;
 

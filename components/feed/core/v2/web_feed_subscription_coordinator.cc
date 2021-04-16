@@ -572,6 +572,15 @@ void WebFeedSubscriptionCoordinator::GetAllSubscriptionsStart(
   std::move(callback).Run(std::move(result));
 }
 
+void WebFeedSubscriptionCoordinator::RefreshSubscriptions(
+    base::OnceCallback<void(RefreshResult)> callback) {
+  on_refresh_subscriptions_.push_back(std::move(callback));
+
+  WithModel(base::BindOnce(
+      &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart,
+      base::Unretained(this)));
+}
+
 SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfo(
     const WebFeedPageInformation& page_info) {
   DCHECK(model_);
@@ -599,7 +608,7 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
 
 void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart() {
   DCHECK(model_);
-  if (fetching_recommended_web_feeds_)
+  if (fetching_recommended_web_feeds_ || !IsSignedInAndWebFeedsEnabled())
     return;
   fetching_recommended_web_feeds_ = true;
   feed_stream_->GetTaskQueue().AddTask(
@@ -638,6 +647,10 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart() {
   DCHECK(model_);
   if (fetching_subscribed_web_feeds_)
     return;
+  if (!IsSignedInAndWebFeedsEnabled()) {
+    CallRefreshCompleteCallbacks({});
+    return;
+  }
   fetching_subscribed_web_feeds_ = true;
   feed_stream_->GetTaskQueue().AddTask(
       std::make_unique<FetchSubscribedWebFeedsTask>(
@@ -655,6 +668,18 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsComplete(
       result.status, result.subscribed_web_feeds.size());
   if (result.status == WebFeedRefreshStatus::kSuccess)
     model_->UpdateSubscribedFeeds(std::move(result.subscribed_web_feeds));
+
+  CallRefreshCompleteCallbacks(
+      RefreshResult{result.status == WebFeedRefreshStatus::kSuccess});
+}
+
+void WebFeedSubscriptionCoordinator::CallRefreshCompleteCallbacks(
+    RefreshResult result) {
+  std::vector<base::OnceCallback<void(RefreshResult)>> callbacks;
+  on_refresh_subscriptions_.swap(callbacks);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
 }
 
 }  // namespace feed

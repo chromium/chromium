@@ -6,8 +6,10 @@
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -887,6 +889,52 @@ TEST_F(FeedApiSubscriptionsTest,
         "publisher_url=https://catsv2.com/ status=kSubscribed } }",
         PrintToString(CheckAllSubscriptions()));
   }
+}
+
+TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsSuccess) {
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> result;
+  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshSubscriptions(result.Bind());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_TRUE(result.RunAndGetResult().success);
+
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
+      "publisher_url=https://cats.com/ status=kSubscribed } }",
+      PrintToString(CheckAllSubscriptions()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsFail) {
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> result;
+
+  network_.InjectApiRawResponse<ListWebFeedsDiscoverApi>(MakeFailedResponse());
+  subscriptions().RefreshSubscriptions(result.Bind());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_FALSE(result.RunAndGetResult().success);
+}
+
+// Two calls to RefreshSubscriptions at the same time, so only one refresh
+// occurs.
+TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> result1;
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> result2;
+  InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshSubscriptions(result1.Bind());
+  subscriptions().RefreshSubscriptions(result2.Bind());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_TRUE(result1.RunAndGetResult().success);
+  EXPECT_TRUE(result2.RunAndGetResult().success);
+
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
+      "publisher_url=https://cats.com/ status=kSubscribed } }",
+      PrintToString(CheckAllSubscriptions()));
 }
 
 }  // namespace
