@@ -143,7 +143,7 @@ MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 void MemoriesRemoteModelHelper::GetMemories(
     const std::vector<MemoriesVisit>& visits,
     MemoriesCallback callback) {
-  const GURL endpoint(history_clusters::RemoteModelEndpoint());
+  const GURL endpoint(history_clusters::RemoteModelEndpointForDebugging());
   if (!endpoint.is_valid() || visits.empty()) {
     std::move(callback).Run({});
     return;

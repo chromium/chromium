@@ -77,7 +77,7 @@ void MemoriesHandler::QueryMemories(
   auto result_callback = base::BindOnce(
       &MemoriesHandler::OnMemoriesQueryResults, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), std::move(result_mojom));
-  if (history_clusters::RemoteModelEndpoint().is_valid()) {
+  if (history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
     auto* memory_service =
         MemoriesServiceFactory::GetForBrowserContext(profile_);
     memory_service->QueryMemories(std::move(query_params),

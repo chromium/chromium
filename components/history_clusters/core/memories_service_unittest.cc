@@ -60,6 +60,22 @@ class MemoriesServiceTest : public testing::Test {
   MemoriesServiceTest(const MemoriesServiceTest&) = delete;
   MemoriesServiceTest& operator=(const MemoriesServiceTest&) = delete;
 
+  void EnableMemoriesWithEndpoint(const std::string& endpoint_url) {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeaturesAndParameters(
+        {
+            {
+                history_clusters::kMemories,
+                {},
+            },
+            {
+                history_clusters::kRemoteModelForDebugging,
+                {{"MemoriesRemoteModelEndpoint", endpoint_url}},
+            },
+        },
+        {});
+  }
+
   void AddVisit(int time, const GURL& url) {
     auto& visit =
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
@@ -87,6 +103,9 @@ class MemoriesServiceTest : public testing::Test {
     return std::string(element.As<network::DataElementBytes>().AsStringPiece());
   }
 
+  static constexpr char kFakeEndpoint[] = "https://endpoint.com/";
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<history_clusters::MemoriesService> memories_service_;
@@ -105,12 +124,11 @@ class MemoriesServiceTest : public testing::Test {
   int64_t next_navigation_id_ = 0;
 };
 
+// Useless, but required by the C++14 standard. Please deliver us, C++17.
+constexpr char MemoriesServiceTest::kFakeEndpoint[];
+
 TEST_F(MemoriesServiceTest, QueryMemories) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   auto AddVisitWithDetails = [&](int time, const GURL& url,
                                  const std::u16string title, int visit_id,
@@ -127,7 +145,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
   AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       // This "expect" block is not run until after the fake response is sent
@@ -171,7 +189,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
           }));
 
   // Verify the serialized request.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(GetPendingRequestBody(), StripWhitespace(R"(
       {
         "visits": [
@@ -202,7 +220,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
 
   // Fake a response from the endpoint. There's a 'description' field even
   // though we don't parse it. This is to test that we can handle extra fields.
-  test_url_loader_factory_.AddResponse(endpoint, R"(
+  test_url_loader_factory_.AddResponse(kFakeEndpoint, R"(
       {
         "clusters": [
           {
@@ -223,20 +241,16 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
           }
         ]
       })");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -250,17 +264,14 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
           }));
 
   // Verify no request is made.
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, ""}});
+  EnableMemoriesWithEndpoint("");
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
@@ -286,16 +297,12 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -309,27 +316,23 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
           }));
 
   // Verify a request is made.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, "");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  test_url_loader_factory_.AddResponse(kFakeEndpoint, "");
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -343,27 +346,24 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
           }));
 
   // Verify a request is made.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, "{waka404woko.weke) !*(&,");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  test_url_loader_factory_.AddResponse(kFakeEndpoint,
+                                       "{waka404woko.weke) !*(&,");
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -377,27 +377,23 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
           }));
 
   // Verify a request is made.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, "{}");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  test_url_loader_factory_.AddResponse(kFakeEndpoint, "{}");
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
-  const char endpoint[] = "https://endpoint.com/";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      history_clusters::kMemories,
-      {{history_clusters::kRemoteModelEndpointParam, endpoint}});
+  EnableMemoriesWithEndpoint(kFakeEndpoint);
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
 
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -407,7 +403,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
             EXPECT_TRUE(false);
           }));
 
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       history_clusters::mojom::QueryParams::New(),
       base::BindLambdaForTesting(
@@ -421,12 +417,13 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
           }));
 
   // Verify there's a single request to the endpoint.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, R"({"clusters": [{}, {}]})");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
+  test_url_loader_factory_.AddResponse(kFakeEndpoint,
+                                       R"({"clusters": [{}, {}]})");
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();

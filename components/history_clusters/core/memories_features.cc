@@ -8,16 +8,20 @@
 
 namespace history_clusters {
 
-GURL RemoteModelEndpoint() {
+GURL RemoteModelEndpointForDebugging() {
   return GURL(base::GetFieldTrialParamValueByFeature(
-      kMemories, kRemoteModelEndpointParam));
+      kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint"));
 }
 
 // Enables the Chrome Memories history clustering feature.
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
-const char kRemoteModelEndpointParam[] = "MemoriesRemoteModelEndpoint";
 
 // Enables debug info; e.g. shows visit metadata on chrome://history entries.
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables using a remote model endpoint for Memories clustering for debugging
+// purposes. This should not be ever enabled in production.
+const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace history_clusters

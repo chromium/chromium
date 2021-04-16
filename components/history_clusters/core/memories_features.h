@@ -10,14 +10,13 @@
 
 namespace history_clusters {
 
-GURL RemoteModelEndpoint();
+// Returns the remote model debug endpoint used to cluster visits into memories.
+// Returns an empty GURL() when the remote model debug endpoint is disabled.
+GURL RemoteModelEndpointForDebugging();
 
 extern const base::Feature kMemories;
-// The remote model endpoint used to cluster visits into memories.
-extern const char kRemoteModelEndpointParam[];
-
-// Enables debug features; e.g. displaying typed_count on chrome://history.
 extern const base::Feature kDebug;
+extern const base::Feature kRemoteModelForDebugging;
 
 }  // namespace history_clusters
 
