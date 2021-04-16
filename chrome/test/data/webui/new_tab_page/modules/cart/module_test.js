@@ -5,7 +5,7 @@
 import {$$, chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
 
@@ -87,7 +87,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(4, cartItems.length);
-    assertEquals(216, chromeCartDescriptor.element.offsetHeight);
+    assertEquals(220, chromeCartDescriptor.element.offsetHeight);
 
     assertEquals('https://amazon.com/', cartItems[0].href);
     assertEquals('Amazon', cartItems[0].querySelector('.merchant').innerText);
@@ -164,7 +164,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(
         loadTimeData.getString('modulesCartWarmWelcome'),
         headerDescription.innerText);
-    assertEquals(226, chromeCartDescriptor.element.offsetHeight);
+    assertEquals(227, chromeCartDescriptor.element.offsetHeight);
   });
 
   test('Backend is notified when module is dismissed or restored', async () => {
@@ -557,6 +557,50 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     checkScrollButtonVisibility(moduleElement, false, false);
     checkVisibleRange(moduleElement, 0, 3);
+  });
+
+  test('shows discount chip', async () => {
+    const carts = [
+      {
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [],
+        discountText: '15% off',
+      },
+      {
+        merchant: 'eBay',
+        cartUrl: {url: 'https://ebay.com'},
+        productImageUrls: [],
+        discountText: '50$ off',
+      },
+      {
+        merchant: 'BestBuy',
+        cartUrl: {url: 'https://bestbuy.com'},
+        productImageUrls: [],
+        discountText: '',
+      },
+    ];
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Act.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+
+    // Assert.
+    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
+    assertEquals(3, cartItems.length);
+
+    assertEquals('https://amazon.com/', cartItems[0].href);
+    assertEquals(
+        '15% off', cartItems[0].querySelector('.discount-chip').innerText);
+    assertEquals('https://ebay.com/', cartItems[1].href);
+    assertEquals(
+        '50$ off', cartItems[1].querySelector('.discount-chip').innerText);
+    assertEquals('https://bestbuy.com/', cartItems[2].href);
+    assertEquals(null, cartItems[2].querySelector('.discount-chip'));
   });
 
   function checkScrollButtonVisibility(

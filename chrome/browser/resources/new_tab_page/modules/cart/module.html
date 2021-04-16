@@ -4,6 +4,23 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+    --discount-chip-background-color: rgb(230, 244, 234);
+    --discount-chip-text-color: var(--google-green-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --discount-chip-background-color: linear-gradient(0deg,
+          rgba(129, 201, 149, 0.12), rgba(129, 201, 149, 0.12)), #202124;
+      --discount-chip-text-color: rgb(129,201,149);
+    }
+  }
+
+  /* Adjusting header margin and cartCarousel to make sure
+   * the discount chip doesn't get clipped due to
+   * overflow-x: hidden */
+  ntp-module-header {
+    margin-bottom: 0;
   }
 
   :host(:hover) .side-scroll-button {
@@ -12,20 +29,41 @@
 
   #moduleContent {
     display: flex;
-    height: 142px;
-    padding-bottom: 20px;
+    height: 166px;
+    padding-bottom: 16px;
     position: relative;
   }
 
   :host([header-description-text]) #moduleContent {
-    padding-bottom: 15px;
+    height: 158px;
   }
 
   #cartCarousel {
     display: inline-block;
     overflow-x: hidden;
+    padding-top: 24px;
     white-space: nowrap;
     z-index: 0;
+  }
+
+  :host([header-description-text]) #cartCarousel {
+    padding-top: 16px;
+  }
+
+  .discount-chip {
+    background: var(--discount-chip-background-color);
+    border-radius: 4px;
+    color: var(--discount-chip-text-color);
+    font-size: 12px;
+    height: 24px;
+    left: 50%;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    top: -18px;
+    transform: translateX(-50%);
+    width: 102px;
+    z-index: 1;
   }
 
   .cart-item {
@@ -152,8 +190,8 @@
     background-color: var(--ntp-module-scroll-button-color);
     border-radius: 50%;
     position: absolute;
-    top: 45%;
-    transform: translateY(-45%);
+    top: 50%;
+    transform: translateY(-50%);
     visibility: hidden;
     z-index: 2;
   }
@@ -206,6 +244,9 @@
       <a class="cart-item" title="[[item.merchant]]"
           href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
           on-auxclick="onCartItemClick_">
+        <template is="dom-if" if="[[item.discountText]]">
+          <div class="discount-chip">[[item.discountText]]</div>
+        </template>
         <cr-icon-button class="icon-more-vert"
             title="$i18n{moreActions}" on-click="onCartMenuButtonClick_">
         </cr-icon-button>

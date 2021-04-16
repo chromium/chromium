@@ -73,6 +73,8 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
       for (std::string image_url : proto_pair.second.product_image_urls()) {
         cart->product_image_urls.emplace_back(std::move(image_url));
       }
+      cart->discount_text =
+          std::move(proto_pair.second.discount_info().discount_text());
     }
     carts.push_back(std::move(cart));
   }

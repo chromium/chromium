@@ -14,6 +14,8 @@ struct MerchantCart {
   url.mojom.Url cart_url;
   // List of URLs for product image to show in the cart.
   array<url.mojom.Url> product_image_urls;
+  // Text content of the discount on this cart (e.g. 15% off).
+  string discount_text;
 };
 
 // Browser-side handler for requests from JS.

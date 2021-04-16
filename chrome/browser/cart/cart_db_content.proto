@@ -8,6 +8,11 @@ option optimize_for = LITE_RUNTIME;
 
 package cart_db;
 
+message ChromeCartDiscountProto {
+  // String indicating the content of the discount on this cart (e.g. 15% off).
+  string discount_text = 1;
+}
+
 // Used for storing ChromeCart Content.
 message ChromeCartContentProto {
   // Original key for data.
@@ -32,4 +37,7 @@ message ChromeCartContentProto {
   // Whether the cart has been permanently removed. Removed cart will be deleted
   // from the database.
   bool is_removed = 7;
+
+  // Information about current discount on the cart.
+  ChromeCartDiscountProto discount_info = 8;
 }

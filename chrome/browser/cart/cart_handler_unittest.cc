@@ -25,6 +25,7 @@ void GetEvaluationMerchantCarts(
   for (size_t i = 0; i < expected.size(); i++) {
     ASSERT_EQ(expected[i]->merchant, found[i]->merchant);
     ASSERT_EQ(expected[i]->cart_url, found[i]->cart_url);
+    ASSERT_EQ(expected[i]->discount_text, found[i]->discount_text);
     ASSERT_EQ(expected[i]->product_image_urls.size(),
               found[i]->product_image_urls.size());
     for (size_t j = 0; j < expected[i]->product_image_urls.size(); j++) {
@@ -384,5 +385,47 @@ TEST_F(CartHandlerNtpModuleTest, TestShowWelcomeSurface) {
   handler_->GetMerchantCarts(base::BindOnce(
       &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
       std::move(carts_with_product)));
+  run_loop[run_loop_index++].Run();
+}
+
+// Verifies discount data fetching.
+TEST_F(CartHandlerNtpModuleTest, TestDiscountDataFetching) {
+  base::RunLoop run_loop[7];
+  int run_loop_index = 0;
+  // Add a cart with discount.
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
+  merchant_proto.mutable_discount_info()->set_discount_text("15% off");
+  service_->AddCart(kMockMerchantBKey, base::nullopt, merchant_proto);
+  task_environment_.RunUntilIdle();
+
+  // Discount should not show in welcome surface.
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit; i++) {
+    // Build a callback result without discount.
+    auto expect_cart = chrome_cart::mojom::MerchantCart::New();
+    expect_cart->merchant = kMockMerchantB;
+    expect_cart->cart_url = GURL(kMockMerchantURLB);
+    std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+    carts.push_back(std::move(expect_cart));
+    handler_->GetWarmWelcomeVisible(base::BindOnce(
+        &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
+        base::Unretained(this), run_loop[run_loop_index].QuitClosure(), true));
+    run_loop[run_loop_index++].Run();
+    handler_->GetMerchantCarts(base::BindOnce(
+        &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
+        std::move(carts)));
+    run_loop[run_loop_index++].Run();
+  }
+
+  // Discount should show in normal cart module.
+  auto expect_cart = chrome_cart::mojom::MerchantCart::New();
+  expect_cart->merchant = kMockMerchantB;
+  expect_cart->cart_url = GURL(kMockMerchantURLB);
+  expect_cart->discount_text = "15% off";
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  carts.push_back(std::move(expect_cart));
+  handler_->GetMerchantCarts(
+      base::BindOnce(&GetEvaluationMerchantCarts,
+                     run_loop[run_loop_index].QuitClosure(), std::move(carts)));
   run_loop[run_loop_index++].Run();
 }
