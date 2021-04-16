@@ -279,8 +279,7 @@ CryptotokenPrivateRecordRegisterRequestFunction::Run() {
   }
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      frame, page_load_metrics::mojom::PageLoadFeatures(
-                 {blink::mojom::WebFeature::kU2FCryptotokenRegister}, {}, {}));
+      frame, blink::mojom::WebFeature::kU2FCryptotokenRegister);
   return RespondNow(NoArguments());
 }
 
@@ -296,8 +295,7 @@ CryptotokenPrivateRecordSignRequestFunction::Run() {
   }
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      frame, page_load_metrics::mojom::PageLoadFeatures(
-                 {blink::mojom::WebFeature::kU2FCryptotokenSign}, {}, {}));
+      frame, blink::mojom::WebFeature::kU2FCryptotokenSign);
   return RespondNow(NoArguments());
 }
 

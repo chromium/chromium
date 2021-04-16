@@ -71,9 +71,6 @@ void PrerenderPageLoadMetricsObserver::OnStorageAccessed(
 
 void PrerenderPageLoadMetricsObserver::RecordFeatureUse(
     blink::mojom::WebFeature feature) {
-  page_load_metrics::mojom::PageLoadFeatures page_load_features;
-  page_load_features.features.push_back(feature);
-
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      GetDelegate().GetWebContents()->GetMainFrame(), page_load_features);
+      GetDelegate().GetWebContents()->GetMainFrame(), feature);
 }

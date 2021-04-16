@@ -51,10 +51,6 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   std::vector<WebFeature> features_0(
       {WebFeature::kFetch, WebFeature::kFetchBodyStream});
   std::vector<WebFeature> features_1({WebFeature::kWindowFind});
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_0;
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_1;
-  page_load_features_0.features = features_0;
-  page_load_features_1.features = features_1;
 
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -63,8 +59,8 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   // Navigate to A.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
   content::RenderFrameHost* rfh_a = top_frame_host();
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      rfh_a, page_load_features_0);
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a,
+                                                                    features_0);
 
   // Navigate to B.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -75,10 +71,11 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(rfh_a, top_frame_host());
+
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      rfh_a, page_load_features_1);
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a,
+                                                                    features_1);
 
   // The RenderFrameHost for the page B was likely in the back-forward cache
   // just after the history navigation, but now this might be evicted due to
@@ -96,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  for (auto feature : page_load_features_0.features) {
+  for (auto feature : features_0) {
     histogram_tester().ExpectBucketCount(
         internal::kFeaturesHistogramName,
         static_cast<base::Histogram::Sample>(feature), 1);
@@ -104,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
         internal::kFeaturesHistogramMainFrameName,
         static_cast<base::Histogram::Sample>(feature), 1);
   }
-  for (auto feature : page_load_features_1.features) {
+  for (auto feature : features_1) {
     histogram_tester().ExpectBucketCount(
         internal::kFeaturesHistogramName,
         static_cast<base::Histogram::Sample>(feature), 1);

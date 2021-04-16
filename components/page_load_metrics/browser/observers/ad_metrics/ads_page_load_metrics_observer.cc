@@ -100,11 +100,10 @@ content::RenderFrameHost* FindFrameMaybeUnsafe(
                    handle->GetFrameTreeNodeId());
 }
 
+// TODO(crbug.com/1194678): Remove this level of abstraction.
 void RecordFeatureUsage(content::RenderFrameHost* rfh,
                         blink::mojom::WebFeature web_feature) {
-  mojom::PageLoadFeatures page_load_features(
-      {web_feature}, {} /* css_properties */, {} /* animated_css_properties */);
-  MetricsWebContentsObserver::RecordFeatureUsage(rfh, page_load_features);
+  MetricsWebContentsObserver::RecordFeatureUsage(rfh, web_feature);
 }
 
 std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,

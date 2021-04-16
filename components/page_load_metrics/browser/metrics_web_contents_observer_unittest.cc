@@ -1450,11 +1450,9 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsage) {
       web_contents(), GURL(kDefaultTestUrl));
   ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl));
 
-  std::vector<blink::mojom::WebFeature> web_features;
-  web_features.push_back(blink::mojom::WebFeature::kHTMLMarqueeElement);
-  web_features.push_back(blink::mojom::WebFeature::kFormAttribute);
-  mojom::PageLoadFeatures features(web_features, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), {blink::mojom::WebFeature::kHTMLMarqueeElement,
+                   blink::mojom::WebFeature::kFormAttribute});
 
   ASSERT_EQ(observed_features().size(), 1ul);
   ASSERT_EQ(observed_features()[0].features.size(), 2ul);
@@ -1471,11 +1469,9 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
 
   // This call should just do nothing, and should not crash - if that happens,
   // we are good.
-  std::vector<blink::mojom::WebFeature> web_features;
-  web_features.push_back(blink::mojom::WebFeature::kHTMLMarqueeElement);
-  web_features.push_back(blink::mojom::WebFeature::kFormAttribute);
-  mojom::PageLoadFeatures features(web_features, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), {blink::mojom::WebFeature::kHTMLMarqueeElement,
+                   blink::mojom::WebFeature::kFormAttribute});
 }
 
 class MetricsWebContentsObserverBackForwardCacheTest
@@ -1530,19 +1526,15 @@ TEST_F(MetricsWebContentsObserverBackForwardCacheTest,
       web_contents(), GURL(kDefaultTestUrl));
   ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(), GURL(kDefaultTestUrl));
 
-  std::vector<blink::mojom::WebFeature> web_features1{
-      blink::mojom::WebFeature::kHTMLMarqueeElement};
-  mojom::PageLoadFeatures features1(web_features1, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features1);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), blink::mojom::WebFeature::kHTMLMarqueeElement);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl2));
   content::NavigationSimulator::GoBack(web_contents());
 
-  std::vector<blink::mojom::WebFeature> web_features2{
-      blink::mojom::WebFeature::kFormAttribute};
-  mojom::PageLoadFeatures features2(web_features2, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features2);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), blink::mojom::WebFeature::kFormAttribute);
 
   std::vector<std::vector<blink::mojom::WebFeature>> features;
   for (const auto& observation : observed_features()) {
@@ -1551,7 +1543,9 @@ TEST_F(MetricsWebContentsObserverBackForwardCacheTest,
 
   // For now back-forward cached navigations are not tracked and the events
   // after the history navigation are not tracked.
-  EXPECT_THAT(features, testing::ElementsAre(web_features1));
+  EXPECT_THAT(features,
+              testing::ElementsAre(std::vector<blink::mojom::WebFeature>{
+                  blink::mojom::WebFeature::kHTMLMarqueeElement}));
 }
 
 // Checks OnEnterBackForwardCache is called appropriately with back-forward

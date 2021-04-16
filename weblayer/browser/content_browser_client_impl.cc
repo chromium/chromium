@@ -400,9 +400,8 @@ ContentBrowserClientImpl::CreateDevToolsManagerDelegate() {
 void ContentBrowserClientImpl::LogWebFeatureForCurrentPage(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::WebFeature feature) {
-  page_load_metrics::mojom::PageLoadFeatures new_features({feature}, {}, {});
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      render_frame_host, new_features);
+      render_frame_host, feature);
 }
 
 std::string ContentBrowserClientImpl::GetProduct() {

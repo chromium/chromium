@@ -96,11 +96,9 @@ TEST_F(MetricsWebContentsObserverTest,
   ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(),
             GURL(chrome_extension_url));
 
-  std::vector<blink::mojom::WebFeature> web_features;
-  web_features.push_back(blink::mojom::WebFeature::kHTMLMarqueeElement);
-  web_features.push_back(blink::mojom::WebFeature::kFormAttribute);
-  mojom::PageLoadFeatures features(web_features, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), {blink::mojom::WebFeature::kHTMLMarqueeElement,
+                   blink::mojom::WebFeature::kFormAttribute});
 
   // The features come from an extension source, so shouldn't be counted.
   EXPECT_EQ(observed_features().size(), 0ul);

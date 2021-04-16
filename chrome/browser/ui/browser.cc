@@ -1689,18 +1689,18 @@ void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
   if (is_type_normal())
     return;
 
-  page_load_metrics::mojom::PageLoadFeatures features;
-  features.features.push_back(blink::mojom::WebFeature::kMovedOrResizedPopup);
+  std::vector<blink::mojom::WebFeature> features = {
+      blink::mojom::WebFeature::kMovedOrResizedPopup};
   if (creation_timer_.Elapsed() > base::TimeDelta::FromSeconds(2)) {
     // Additionally measure whether a popup was moved after creation, to
     // distinguish between popups that reposition themselves after load and
     // those which move popups continuously.
-    features.features.push_back(
+    features.push_back(
         blink::mojom::WebFeature::kMovedOrResizedPopup2sAfterCreation);
   }
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      source->GetMainFrame(), features);
+      source->GetMainFrame(), std::move(features));
   window_->SetBounds(bounds);
 }
 

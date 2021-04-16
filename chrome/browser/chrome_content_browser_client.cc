@@ -5452,9 +5452,8 @@ void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::WebFeature feature) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  page_load_metrics::mojom::PageLoadFeatures new_features({feature}, {}, {});
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      render_frame_host, new_features);
+      render_frame_host, feature);
 
   // For the SameSite-by-default-cookies related features, log
   // the site engagement score for the site whose cookie was blocked. This is to
