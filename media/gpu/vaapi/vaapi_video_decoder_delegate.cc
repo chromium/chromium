@@ -243,14 +243,17 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
       segment_info.partial_aes_block_size = partial_block_size;
       memcpy(segment_info.aes_cbc_iv_or_ctr, iv.data(),
              DecryptConfig::kDecryptionKeySize);
-      // If we are finishing a block, increment the counter.
-      if (partial_block_size && entry.cypher_bytes > partial_block_size)
-        ctr128_inc64(iv.data());
-      // Increment the counter for every complete block we are adding.
-      for (size_t block = 0; block < (entry.cypher_bytes - partial_block_size) /
-                                         DecryptConfig::kDecryptionKeySize;
-           ++block)
-        ctr128_inc64(iv.data());
+      if (entry.cypher_bytes > partial_block_size) {
+        // If we are finishing a block, increment the counter.
+        if (partial_block_size)
+          ctr128_inc64(iv.data());
+        // Increment the counter for every complete block we are adding.
+        for (size_t block = 0;
+             block < (entry.cypher_bytes - partial_block_size) /
+                         DecryptConfig::kDecryptionKeySize;
+             ++block)
+          ctr128_inc64(iv.data());
+      }
       total_cypher_size += entry.cypher_bytes;
       segment_info.init_byte_length = entry.clear_bytes;
       offset += entry.clear_bytes + entry.cypher_bytes;
