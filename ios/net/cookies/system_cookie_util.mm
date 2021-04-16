@@ -23,14 +23,6 @@ namespace net {
 
 namespace {
 
-// Used to report cookie loss events in UMA.
-enum CookieLossType {
-  LOSS,
-  NOT_ENOUGH_COOKIES,  // Not enough cookies, error checking is disabled.
-  NO_LOSS,
-  COOKIE_LOSS_ENUM_COUNT
-};
-
 // Undocumented property of NSHTTPCookie.
 NSString* const kNSHTTPCookieHttpOnly = @"HttpOnly";
 
@@ -38,37 +30,6 @@ NSString* const kNSHTTPCookieHttpOnly = @"HttpOnly";
 // any other value, it uses the empty value to represent none, and any value
 // that is not "strict" or "lax" will be considered as none.
 NSString* const kNSHTTPCookieSameSiteNone = @"none";
-
-// Key in NSUserDefaults telling wether a low cookie count must be reported as
-// an error.
-NSString* const kCheckCookieLossKey = @"CookieUtilIOSCheckCookieLoss";
-
-// When the cookie count reaches |kCookieThresholdHigh|, and then drops below
-// |kCookieThresholdLow|, an error is reported.
-// Cookies count immediately after installation may fluctuate due to session
-// cookies that can expire quickly. In order to catch true cookie loss, it is
-// better to wait till a sufficiently large number of cookies have been
-// accumulated before checking for sudden drop in cookies count.
-const size_t kCookieThresholdHigh = 100;
-const size_t kCookieThresholdLow = 30;
-
-// Updates the cookie loss histograms.
-// |event| determines which histogram is updated, and |loss| is the value to add
-// to this histogram.
-void ReportUMACookieLoss(CookieLossType loss, CookieEvent event) {
-  // Histogram macros require constant histogram names. Use the string constants
-  // explicitly instead of using a variable.
-  switch (event) {
-    case COOKIES_READ:
-      UMA_HISTOGRAM_ENUMERATION("CookieStoreIOS.LossOnRead", loss,
-                                COOKIE_LOSS_ENUM_COUNT);
-      break;
-    case COOKIES_APPLICATION_FOREGROUNDED:
-      UMA_HISTOGRAM_ENUMERATION("CookieStoreIOS.LossOnForegrounding", loss,
-                                COOKIE_LOSS_ENUM_COUNT);
-      break;
-  }
-}
 
 }  // namespace
 
@@ -199,49 +160,6 @@ NSArray<NSHTTPCookie*>* SystemCookiesFromCanonicalCookieList(
     [cookies addObject:net::SystemCookieFromCanonicalCookie(cookie)];
   }
   return [cookies copy];
-}
-
-void CheckForCookieLoss(size_t cookie_count, CookieEvent event) {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  BOOL check_cookie_loss = [defaults boolForKey:kCheckCookieLossKey];
-
-  // Start reporting errors if the cookie count goes above kCookieThresholdHigh.
-  if (!check_cookie_loss && cookie_count >= kCookieThresholdHigh) {
-    [defaults setBool:YES forKey:kCheckCookieLossKey];
-    [defaults synchronize];
-    return;
-  }
-
-  if (!check_cookie_loss) {
-    // Error reporting is disabled.
-    ReportUMACookieLoss(NOT_ENOUGH_COOKIES, event);
-    return;
-  }
-
-  if (cookie_count > kCookieThresholdLow) {
-    // No cookie loss.
-    ReportUMACookieLoss(NO_LOSS, event);
-    return;
-  }
-
-#if 0
-  // TODO(ios): [Merge 277884]: crbug.com/386074 ERROR_REPORT is no longer
-  // supported.
-  LOG(ERROR_REPORT) << "Possible cookie issue (crbug/370024)\nCookie count: "
-                    << cookie_count;
-#endif
-
-  ReportUMACookieLoss(LOSS, event);
-
-  // Disable reporting until the cookie count rises above kCookieThresholdHigh
-  // again.
-  ResetCookieCountMetrics();
-}
-
-void ResetCookieCountMetrics() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setBool:NO forKey:kCheckCookieLossKey];
-  [defaults synchronize];
 }
 
 }  // namespace net

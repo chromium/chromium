@@ -332,9 +332,6 @@ void CookieStoreIOS::DeleteAllCreatedInTimeRangeAsync(
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
-
   CookieDeletionInfo delete_info(creation_range.start(), creation_range.end());
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
 }
@@ -347,9 +344,6 @@ void CookieStoreIOS::DeleteAllMatchingInfoAsync(CookieDeletionInfo delete_info,
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
-
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
 }
 
@@ -359,9 +353,6 @@ void CookieStoreIOS::DeleteSessionCookiesAsync(DeleteCallback callback) {
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
   // instead.
   DCHECK(SystemCookiesAllowed());
-
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
 
   CookieDeletionInfo delete_info;
   delete_info.session_control =

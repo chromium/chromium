@@ -72,12 +72,6 @@ void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,
 // store with type |store_type|.
 void ReportGetCookiesForURLCall(SystemCookieStoreType store_type);
 
-// Report metrics if the number of cookies drops unexpectedly.
-void CheckForCookieLoss(size_t cookie_count, CookieEvent event);
-
-// Reset the cookie count internally used by the CheckForCookieLoss() function.
-void ResetCookieCountMetrics();
-
 }  // namespace net
 
 #endif  // IOS_NET_COOKIES_SYSTEM_COOKIE_UTIL_H_

@@ -654,13 +654,8 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
       [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
   id applicationDelegate =
       [OCMockObject mockForClass:[MainApplicationDelegate class]];
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
-  interfaceProvider.mainInterface.userInteractionEnabled = YES;
-
   [[[browserLauncher stub] andReturnValue:@(INITIALIZATION_STAGE_FOREGROUND)]
       browserInitializationStage];
-  [[[browserLauncher stub] andReturn:interfaceProvider] interfaceProvider];
 
   id startupInformation =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
@@ -684,7 +679,10 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformation);
   EXPECT_OCMOCK_VERIFY(application);
-  EXPECT_FALSE(interfaceProvider.mainInterface.userInteractionEnabled);
+  for (SceneState* connectedScene in appState.connectedScenes) {
+    EXPECT_FALSE(
+        connectedScene.interfaceProvider.mainInterface.userInteractionEnabled);
+  }
   FakeAppDistributionProvider* provider =
       static_cast<FakeAppDistributionProvider*>(
           ios::GetChromeBrowserProvider()->GetAppDistributionProvider());

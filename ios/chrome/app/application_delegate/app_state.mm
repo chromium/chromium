@@ -53,7 +53,6 @@
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #include "ios/net/cookies/cookie_store_ios.h"
-#include "ios/net/cookies/system_cookie_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
@@ -248,10 +247,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
   _applicationInBackground = YES;
 
-  ChromeBrowserState* browserState =
-      _browserLauncher.interfaceProvider.mainInterface.browserState;
-  if (browserState) {
-    AuthenticationServiceFactory::GetForBrowserState(browserState)
+  if (self.mainBrowserState) {
+    AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
         ->OnApplicationDidEnterBackground();
   }
 
@@ -343,10 +340,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     return;
 
   _applicationInBackground = NO;
-  ChromeBrowserState* browserState =
-      _browserLauncher.interfaceProvider.mainInterface.browserState;
-  if (browserState) {
-    AuthenticationServiceFactory::GetForBrowserState(browserState)
+  if (self.mainBrowserState) {
+    AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
         ->OnApplicationWillEnterForeground();
   }
 
@@ -366,26 +361,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  // If the current browser state is not OTR, check for cookie loss.
-  ChromeBrowserState* currentBrowserState =
-      _browserLauncher.interfaceProvider.currentInterface.browserState;
-  if (currentBrowserState && !currentBrowserState->IsOffTheRecord() &&
-      currentBrowserState->GetOriginalChromeBrowserState()
-              ->GetStatePath()
-              .BaseName()
-              .value() == kIOSChromeInitialBrowserState) {
-    NSUInteger cookie_count =
-        [[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies] count];
-    UMA_HISTOGRAM_COUNTS_10000("CookieIOS.CookieCountOnForegrounding",
-                               cookie_count);
-    net::CheckForCookieLoss(cookie_count,
-                            net::COOKIES_APPLICATION_FOREGROUNDED);
-  }
-
-  if (currentBrowserState) {
+  if (self.mainBrowserState) {
     // Send the "Chrome Opened" event to the feature_engagement::Tracker on a
     // warm start.
-    feature_engagement::TrackerFactory::GetForBrowserState(currentBrowserState)
+    feature_engagement::TrackerFactory::GetForBrowserState(
+        self.mainBrowserState)
         ->NotifyEvent(feature_engagement::events::kChromeOpened);
   }
 
@@ -407,8 +387,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   DCHECK([_browserLauncher browserInitializationStage] ==
          INITIALIZATION_STAGE_FOREGROUND);
 
+  // This is for iOS 12-compatibility only.
+  DCHECK(self.mainSceneState);
+
   id<BrowserInterface> currentInterface =
-      _browserLauncher.interfaceProvider.currentInterface;
+      self.mainSceneState.interfaceProvider.currentInterface;
   CommandDispatcher* dispatcher =
       currentInterface.browser->GetCommandDispatcher();
   if ([connectionInformation startupParameters]) {
@@ -468,14 +451,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
   // provider (and no tabs)
-  // TODO(crbug.com/1113097): Factor out this check by not having app layer
-  // logic use interface providers.
-  BOOL scenesAreAvailable = [self connectedScenes].count > 0;
-
-  if (scenesAreAvailable && [_browserLauncher browserInitializationStage] >=
-                                INITIALIZATION_STAGE_FOREGROUND) {
-    _browserLauncher.interfaceProvider.currentInterface.userInteractionEnabled =
-        NO;
+  if ([_browserLauncher browserInitializationStage] >=
+      INITIALIZATION_STAGE_FOREGROUND) {
+    for (SceneState* sceneState in self.connectedScenes) {
+      sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
+    }
   }
 
   // Trigger UI teardown on iOS 12.
@@ -522,24 +502,17 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // time the app becomes active.
   [self.startupInformation setIsColdStart:NO];
 
-  id<BrowserInterface> currentInterface =
-      _browserLauncher.interfaceProvider.currentInterface;
-
-  // Record session metrics (currentInterface.browserState may be null during
-  // tests).
-  if (currentInterface.browserState) {
-    ChromeBrowserState* mainChromeBrowserState =
-        currentInterface.browserState->GetOriginalChromeBrowserState();
-
-    SessionMetrics::FromBrowserState(mainChromeBrowserState)
+  // Record session metrics (self.mainBrowserState may be null during tests).
+  if (self.mainBrowserState) {
+    SessionMetrics::FromBrowserState(self.mainBrowserState)
         ->RecordAndClearSessionMetrics(
             MetricsToRecordFlags::kOpenedTabCount |
             MetricsToRecordFlags::kClosedTabCount |
             MetricsToRecordFlags::kActivatedTabCount);
 
-    if (mainChromeBrowserState->HasOffTheRecordChromeBrowserState()) {
+    if (self.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
       ChromeBrowserState* otrChromeBrowserState =
-          mainChromeBrowserState->GetOffTheRecordChromeBrowserState();
+          self.mainBrowserState->GetOffTheRecordChromeBrowserState();
 
       SessionMetrics::FromBrowserState(otrChromeBrowserState)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
