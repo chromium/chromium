@@ -621,6 +621,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   int text_size = 16;
   int line_height = 24;
   int bubble_height = 48;
+  int bubble_width = 536;
   int error_icon_height = 20;
   ui::CaptionStyle caption_style;
 
@@ -631,6 +632,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the text size to 200%.
   caption_style.text_size = "200%";
@@ -640,6 +642,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height * 2, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height * 2, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width * 2);
 
   // Set the text size to the empty string.
   caption_style.text_size = "";
@@ -649,6 +652,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the text size to 50% !important.
   caption_style.text_size = "50% !important";
@@ -658,6 +662,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height / 2, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height / 2, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height / 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width / 2);
 
   // Set the text size to a bad string.
   caption_style.text_size = "Ostriches can run up to 45mph";
@@ -667,6 +672,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the caption style to a floating point percent.
   caption_style.text_size = "62.5%";
@@ -676,6 +682,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height * 0.625, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height * 0.625, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 0.625);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width * 0.625);
 
   // Set the error message.
   caption_style.text_size = "50%";
@@ -684,6 +691,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height / 2, GetErrorText()->GetLineHeight());
   EXPECT_EQ(error_icon_height / 2, GetErrorIcon()->GetImageBounds().height());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), line_height / 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width / 2);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,

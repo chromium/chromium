@@ -483,7 +483,6 @@ void CaptionBubble::Init() {
 
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
-  label->SetMaximumWidth(kMaxWidthDip - kSidePaddingDip * 2);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
@@ -821,6 +820,7 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   error_text_->SetFontList(font_list);
 
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
+  label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
   error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   error_icon_->SetImageSize(gfx::Size(kErrorImageSizeDip * textScaleFactor,
@@ -865,6 +865,7 @@ void CaptionBubble::SetBackgroundColor() {
 
 void CaptionBubble::UpdateContentSize() {
   double text_scale_factor = GetTextScaleFactor();
+  int width = kMaxWidthDip * text_scale_factor;
   int content_height =
       (model_ && model_->HasError())
           ? kLineHeightDip * text_scale_factor
@@ -873,13 +874,11 @@ void CaptionBubble::UpdateContentSize() {
   int label_height = title_->GetVisible()
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
-  label_->SetPreferredSize(
-      gfx::Size(kMaxWidthDip - kSidePaddingDip, label_height));
-  content_container_->SetPreferredSize(gfx::Size(kMaxWidthDip, content_height));
-  SetPreferredSize(
-      gfx::Size(kMaxWidthDip, content_height +
-                                  close_button_->GetPreferredSize().height() +
-                                  expand_button_->GetPreferredSize().height()));
+  label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
+  content_container_->SetPreferredSize(gfx::Size(width, content_height));
+  SetPreferredSize(gfx::Size(
+      width, content_height + close_button_->GetPreferredSize().height() +
+                 expand_button_->GetPreferredSize().height()));
 }
 
 void CaptionBubble::Redraw() {
