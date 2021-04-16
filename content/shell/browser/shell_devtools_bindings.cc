@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -139,7 +140,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
 
   const int stream_id_;
   const int request_id_;
-  ShellDevToolsBindings* const bindings_;
+  const CheckedPtr<ShellDevToolsBindings> bindings_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 

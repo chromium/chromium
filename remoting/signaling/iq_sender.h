@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -74,7 +75,7 @@ class IqSender : public SignalStrategy::Listener {
   // Removes |request| from the list of pending requests. Called by IqRequest.
   void RemoveRequest(IqRequest* request);
 
-  SignalStrategy* signal_strategy_;
+  CheckedPtr<SignalStrategy> signal_strategy_;
   IqRequestMap requests_;
 
   DISALLOW_COPY_AND_ASSIGN(IqSender);

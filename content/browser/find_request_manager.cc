@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -210,7 +211,7 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
   }
 
   // The FindRequestManager that owns this FrameObserver.
-  FindRequestManager* const manager_;
+  const CheckedPtr<FindRequestManager> manager_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameObserver);
 };

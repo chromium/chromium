@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -33,7 +34,7 @@ class TestDialog : public DialogDelegateView {
  public:
   TestDialog() : input_(new views::Textfield()) {
     DialogDelegate::set_draggable(true);
-    AddChildView(input_);
+    AddChildView(input_.get());
   }
   ~TestDialog() override = default;
 
@@ -74,7 +75,7 @@ class TestDialog : public DialogDelegateView {
   views::Textfield* input() { return input_; }
 
  private:
-  views::Textfield* input_;
+  CheckedPtr<views::Textfield> input_;
   std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
@@ -145,7 +146,7 @@ class DialogTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  TestDialog* dialog_ = nullptr;
+  CheckedPtr<TestDialog> dialog_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DialogTest);
 };
@@ -494,8 +495,8 @@ class TestDialogDelegateView : public DialogDelegateView {
     return true;
   }
 
-  bool* accepted_;
-  bool* cancelled_;
+  CheckedPtr<bool> accepted_;
+  CheckedPtr<bool> cancelled_;
 };
 
 TEST_F(DialogDelegateCloseTest, OldClosePathDoesNotDoubleClose) {

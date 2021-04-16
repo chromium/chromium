@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -101,7 +102,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
 
-  DiceTurnSyncOnHelperTest* test_fixture_;
+  CheckedPtr<DiceTurnSyncOnHelperTest> test_fixture_;
 };
 
 // Simple ProfileManager creating testing profiles.
@@ -522,7 +523,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  FakeUserPolicySigninService* user_policy_signin_service_ = nullptr;
+  CheckedPtr<FakeUserPolicySigninService> user_policy_signin_service_ = nullptr;
   std::string initial_device_id_;
   testing::NiceMock<syncer::SyncUserSettingsMock> mock_sync_settings_;
 
@@ -538,7 +539,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;
   bool switched_to_new_profile_ = false;
-  Profile* new_profile_ = nullptr;
+  CheckedPtr<Profile> new_profile_ = nullptr;
   bool sync_confirmation_shown_ = false;
   SyncDisabledConfirmation sync_disabled_confirmation_ = kNotShown;
   bool sync_settings_shown_ = false;

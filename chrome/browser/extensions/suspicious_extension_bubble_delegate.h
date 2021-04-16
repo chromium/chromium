@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -45,7 +46,7 @@ class SuspiciousExtensionBubbleDelegate
   bool SupportsPolicyIndicator() override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(SuspiciousExtensionBubbleDelegate);
 };

@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -91,7 +92,7 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
       test_->BindSharedWorkerFactory(GetID(), receiver.PassPipe());
     }
 
-    SharedWorkerServiceImplTest* const test_;
+    const CheckedPtr<SharedWorkerServiceImplTest> test_;
   };
 
   class MockRenderProcessHostFactoryForSharedWorker
@@ -120,7 +121,7 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
     }
 
    private:
-    SharedWorkerServiceImplTest* const test_;
+    const CheckedPtr<SharedWorkerServiceImplTest> test_;
     std::vector<std::unique_ptr<MockRenderProcessHostForSharedWorker>>
         processes_;
   };

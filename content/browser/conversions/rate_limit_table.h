@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -77,10 +78,10 @@ class CONTENT_EXPORT RateLimitTable {
   int DeleteExpiredRateLimits(sql::Database* db);
 
   // Must outlive |this|.
-  const ConversionStorage::Delegate* delegate_;
+  CheckedPtr<const ConversionStorage::Delegate> delegate_;
 
   // Must outlive |this|.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

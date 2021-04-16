@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/common/cursors/webcursor.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -130,7 +131,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // Called when ack for injected touch has been received.
   void OnInjectedTouchCompleted();
 
-  TouchEmulatorClient* const client_;
+  const CheckedPtr<TouchEmulatorClient> client_;
 
   // Emulator is enabled iff gesture provider is created.
   // Disabled emulator does only process touch acks left from previous
@@ -160,7 +161,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   blink::WebTouchEvent touch_event_;
   int emulated_stream_active_sequence_count_;
   int native_stream_active_sequence_count_;
-  RenderWidgetHostViewBase* last_emulated_start_target_;
+  CheckedPtr<RenderWidgetHostViewBase> last_emulated_start_target_;
   // TODO(einbinder): this relies on synchronous tap gesture generation and does
   // not work for any other gestures. We should switch to callbacks which go
   // through touches and gestures once that's available.

@@ -5,6 +5,7 @@
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
@@ -237,14 +238,14 @@ class PresentationServiceDelegateImplTest
             profile()));
   }
 
-  MockMediaRouter* router_;
-  PresentationServiceDelegateImpl* delegate_impl_;
+  CheckedPtr<MockMediaRouter> router_;
+  CheckedPtr<PresentationServiceDelegateImpl> delegate_impl_;
   const GURL presentation_url1_;
   const GURL presentation_url2_;
   std::vector<GURL> presentation_urls_;
   const GURL frame_url_;
   const url::Origin frame_origin_;
-  MockLocalPresentationManager* mock_local_manager_;
+  CheckedPtr<MockLocalPresentationManager> mock_local_manager_;
 
   // |source1_| and |source2_| correspond to |presentation_url1_| and
   // |presentation_url2_|, respectively.

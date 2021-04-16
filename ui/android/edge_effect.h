@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -58,7 +59,7 @@ class UI_ANDROID_EXPORT EdgeEffect {
   void SetParent(cc::Layer* parent);
 
  private:
-  ui::ResourceManager* const resource_manager_;
+  const CheckedPtr<ui::ResourceManager> resource_manager_;
 
   scoped_refptr<cc::UIResourceLayer> glow_;
 

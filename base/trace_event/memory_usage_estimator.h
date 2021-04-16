@@ -28,6 +28,7 @@
 #include "base/containers/linked_list.h"
 #include "base/containers/mru_cache.h"
 #include "base/containers/queue.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
 
@@ -396,10 +397,10 @@ size_t EstimateMemoryUsage(const std::shared_ptr<T>& ptr) {
   // Model shared_ptr after libc++,
   // see __shared_ptr_pointer from include/memory
   struct SharedPointer {
-    void* vtbl;
+    CheckedPtr<void> vtbl;
     long shared_owners;
     long shared_weak_owners;
-    T* value;
+    CheckedPtr<T> value;
   };
   // If object of size S shared N > S times we prefer to (potentially)
   // overestimate than to return 0.
@@ -428,8 +429,8 @@ template <class T, class A>
 size_t EstimateMemoryUsage(const std::list<T, A>& list) {
   using value_type = typename std::list<T, A>::value_type;
   struct Node {
-    Node* prev;
-    Node* next;
+    CheckedPtr<Node> prev;
+    CheckedPtr<Node> next;
     value_type value;
   };
   return sizeof(Node) * list.size() +
@@ -455,9 +456,9 @@ size_t EstimateTreeMemoryUsage(size_t size) {
   // Tree containers are modeled after libc++
   // (__tree_node from include/__tree)
   struct Node {
-    Node* left;
-    Node* right;
-    Node* parent;
+    CheckedPtr<Node> left;
+    CheckedPtr<Node> right;
+    CheckedPtr<Node> parent;
     bool is_black;
     V value;
   };
@@ -519,7 +520,7 @@ size_t EstimateHashMapMemoryUsage(size_t bucket_count, size_t size) {
   // Hashtable containers are modeled after libc++
   // (__hash_node from include/__hash_table)
   struct Node {
-    void* next;
+    CheckedPtr<void> next;
     size_t hash;
     V value;
   };

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -68,15 +69,15 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
   void RunCloseCallback(bool accepted);
 
   const GURL url_;
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   const base::CommandLine command_line_;
   const std::vector<std::string> app_ids_;
   base::OnceCallback<void(bool)> close_callback_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   std::vector<WebAppHoverButton*> hover_buttons_;
-  views::Checkbox* remember_selection_checkbox_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
+  CheckedPtr<views::Checkbox> remember_selection_checkbox_ = nullptr;
+  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
 
   // Pre-select the first app on the list.
   size_t selected_app_tag_ = 0;

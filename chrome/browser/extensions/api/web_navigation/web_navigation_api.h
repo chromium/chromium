@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -141,7 +142,7 @@ class WebNavigationEventRouter : public TabStripModelObserver,
     int source_render_process_id_ = -1;
     // The Extensions API ID for the source frame.
     int source_extension_frame_id_ = -1;
-    content::WebContents* target_web_contents_ = nullptr;
+    CheckedPtr<content::WebContents> target_web_contents_ = nullptr;
     GURL target_url_;
     base::OnceCallback<void(content::WebContents*)> on_destroy_;
 
@@ -169,7 +170,7 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   std::map<content::WebContents*, PendingWebContents> pending_web_contents_;
 
   // The profile that owns us via ExtensionService.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
@@ -210,7 +211,7 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
   friend class BrowserContextKeyedAPIFactory<WebNavigationAPI>;
   friend class WebNavigationTabObserver;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

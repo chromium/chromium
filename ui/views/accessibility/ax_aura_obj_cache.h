@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -142,7 +143,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // The window that should take a11y focus. This is for a window that needs to
   // work with accessiblity features, but cannot take real focus. Gets set to
   // null if the window is destroyed.
-  aura::Window* a11y_override_window_ = nullptr;
+  CheckedPtr<aura::Window> a11y_override_window_ = nullptr;
 
   // Observes |a11y_override_window_| for destruction and sets it to null in
   // that case.
@@ -154,13 +155,13 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   std::map<ui::AXNodeID, std::unique_ptr<AXAuraObjWrapper>> cache_;
 
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
   std::set<aura::Window*> root_windows_;
 
-  aura::Window* focused_window_ = nullptr;
+  CheckedPtr<aura::Window> focused_window_ = nullptr;
 
-  views::Widget* focused_widget_for_testing_ = nullptr;
+  CheckedPtr<views::Widget> focused_widget_for_testing_ = nullptr;
 };
 
 }  // namespace views

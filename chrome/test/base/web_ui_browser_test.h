@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/javascript_browser_test.h"
@@ -178,7 +179,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
 
   // When this is non-NULL, this is The WebUI instance used for testing.
   // Otherwise the selected tab's web_ui is used.
-  content::WebUI* override_selected_web_ui_ = nullptr;
+  CheckedPtr<content::WebUI> override_selected_web_ui_ = nullptr;
 
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
 };
@@ -192,7 +193,7 @@ class WebUIBrowserTest : public BaseWebUIBrowserTest {
 
  private:
   // Owned by |test_handler_| in BaseWebUIBrowserTest.
-  WebUITestMessageHandler* const test_message_handler_;
+  const CheckedPtr<WebUITestMessageHandler> test_message_handler_;
 };
 
 #endif  // CHROME_TEST_BASE_WEB_UI_BROWSER_TEST_H_

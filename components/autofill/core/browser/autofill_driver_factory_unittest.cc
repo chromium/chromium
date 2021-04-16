@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -37,7 +38,7 @@ class CountingAutofillDriver : public TestAutofillDriver {
   ~CountingAutofillDriver() override { --*instance_counter_; }
 
  private:
-  int* const instance_counter_;
+  const CheckedPtr<int> instance_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(CountingAutofillDriver);
 };

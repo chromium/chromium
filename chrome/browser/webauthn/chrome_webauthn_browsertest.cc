@@ -7,6 +7,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -292,7 +293,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       }
     };
 
-    WebAuthnCableSecondFactor* const parent_;
+    const CheckedPtr<WebAuthnCableSecondFactor> parent_;
     base::RepeatingCallback<void(device::cablev2::PairingEvent)>
         pairing_callback_;
     base::RepeatingClosure add_authenticator_callback_;
@@ -386,13 +387,13 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       return phone;
     }
 
-    WebAuthnCableSecondFactor* const parent_;
+    const CheckedPtr<WebAuthnCableSecondFactor> parent_;
   };
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::ostringstream trace_;
-  AuthenticatorRequestDialogModel* model_ = nullptr;
+  CheckedPtr<AuthenticatorRequestDialogModel> model_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, Test) {

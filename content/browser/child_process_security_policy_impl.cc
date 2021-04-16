@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
@@ -713,8 +714,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // The set of isolated filesystems the child process is permitted to access.
   FileSystemMap filesystem_permissions_;
 
-  BrowserContext* browser_context_;
-  ResourceContext* resource_context_;
+  CheckedPtr<BrowserContext> browser_context_;
+  CheckedPtr<ResourceContext> resource_context_;
 
   DISALLOW_COPY_AND_ASSIGN(SecurityState);
 };

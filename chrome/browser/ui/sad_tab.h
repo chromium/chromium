@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/sad_tab_types.h"
@@ -65,7 +66,7 @@ class SadTab {
   content::WebContents* web_contents() const { return web_contents_; }
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   SadTabKind kind_;
   // True if a crash happened in the last ten seconds. Repeated crashes
   // may suggest additional troubleshooting steps.

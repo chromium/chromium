@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -62,7 +63,7 @@ class PrimaryAccountObserver : public signin::IdentityManager::Observer {
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
-  signin::IdentityManager* const identity_manager_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
   CoreAccountInfo primary_account_;
 };
 

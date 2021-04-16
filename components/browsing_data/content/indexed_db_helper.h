@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -49,7 +50,7 @@ class IndexedDBHelper : public base::RefCountedThreadSafe<IndexedDBHelper> {
  protected:
   virtual ~IndexedDBHelper();
 
-  content::StoragePartition* storage_partition_;
+  CheckedPtr<content::StoragePartition> storage_partition_;
 
  private:
   friend class base::RefCountedThreadSafe<IndexedDBHelper>;

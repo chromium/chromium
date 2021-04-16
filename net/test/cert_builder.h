@@ -5,6 +5,7 @@
 #ifndef NET_TEST_CERT_BUILDER_H_
 #define NET_TEST_CERT_BUILDER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/signature_algorithm.h"
@@ -228,7 +229,7 @@ class CertBuilder {
   bssl::UniquePtr<CRYPTO_BUFFER> cert_;
   bssl::UniquePtr<EVP_PKEY> key_;
 
-  CertBuilder* issuer_ = nullptr;
+  CheckedPtr<CertBuilder> issuer_ = nullptr;
 };
 
 }  // namespace net

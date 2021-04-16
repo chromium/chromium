@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/base_ui_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -126,7 +127,7 @@ class BaseBlockingPage
 
  private:
   // For reporting back user actions.
-  BaseUIManager* ui_manager_;
+  CheckedPtr<BaseUIManager> ui_manager_;
 
   // The URL of the main frame that caused the warning.
   GURL main_frame_url_;

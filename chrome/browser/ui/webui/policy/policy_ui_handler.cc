@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -313,7 +314,7 @@ class CloudPolicyCoreStatusProvider
  protected:
   // Policy status is read from the CloudPolicyClient, CloudPolicyStore and
   // CloudPolicyRefreshScheduler hosted by this |core_|.
-  policy::CloudPolicyCore* core_;
+  CheckedPtr<policy::CloudPolicyCore> core_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CloudPolicyCoreStatusProvider);
@@ -330,7 +331,7 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
   void GetStatus(base::DictionaryValue* dict) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProvider);
 };
 
@@ -368,7 +369,7 @@ class MachineLevelUserCloudPolicyStatusProvider
   void OnStoreError(policy::CloudPolicyStore* store) override;
 
  private:
-  policy::CloudPolicyCore* core_;
+  CheckedPtr<policy::CloudPolicyCore> core_;
 
   DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStatusProvider);
 };

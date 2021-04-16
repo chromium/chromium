@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/containers/small_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "components/media_router/browser/media_router.h"
@@ -134,8 +135,8 @@ class PresentationFrame {
   content::GlobalFrameRoutingId render_frame_host_id_;
 
   // References to the owning WebContents, and the corresponding MediaRouter.
-  content::WebContents* web_contents_;
-  MediaRouter* router_;
+  CheckedPtr<content::WebContents> web_contents_;
+  CheckedPtr<MediaRouter> router_;
 };
 
 PresentationFrame::PresentationFrame(

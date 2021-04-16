@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -82,7 +83,7 @@ class AffiliationServiceImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<syncer::TestSyncService> sync_service_;
   AffiliationServiceImpl service_;
-  MockAffiliationFetcherFactory* mock_fetcher_factory_;
+  CheckedPtr<MockAffiliationFetcherFactory> mock_fetcher_factory_;
 };
 
 TEST_F(AffiliationServiceImplTest, GetChangePasswordURLReturnsEmpty) {

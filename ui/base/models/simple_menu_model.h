@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
@@ -226,8 +227,8 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     ImageModel minor_icon;
     ImageModel icon;
     int group_id = -1;
-    MenuModel* submenu = nullptr;
-    ButtonMenuItemModel* button_model = nullptr;
+    CheckedPtr<MenuModel> submenu = nullptr;
+    CheckedPtr<ButtonMenuItemModel> button_model = nullptr;
     MenuSeparatorType separator_type = NORMAL_SEPARATOR;
     bool enabled = true;
     bool visible = true;

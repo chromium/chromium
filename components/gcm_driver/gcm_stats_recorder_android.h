@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/gcm_driver/gcm_activity.h"
 
 namespace gcm {
@@ -74,7 +75,7 @@ class GCMStatsRecorderAndroid {
                           const std::string& details);
 
   // Delegate made available by the container. May be a nullptr.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // Toggle determining whether the recorder is recording.
   bool is_recording_ = false;

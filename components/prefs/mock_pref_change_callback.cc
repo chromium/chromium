@@ -20,5 +20,5 @@ PrefChangeRegistrar::NamedChangeCallback MockPrefChangeCallback::GetCallback() {
 void MockPrefChangeCallback::Expect(const std::string& pref_name,
                                     const base::Value* value) {
   EXPECT_CALL(*this, OnPreferenceChanged(pref_name))
-      .With(PrefValueMatches(prefs_, pref_name, value));
+      .With(PrefValueMatches(prefs_.get(), pref_name, value));
 }

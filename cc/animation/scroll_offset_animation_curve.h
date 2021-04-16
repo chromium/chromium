@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -161,7 +162,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
   static base::Optional<double> animation_duration_for_testing_;
 
-  Target* target_ = nullptr;
+  CheckedPtr<Target> target_ = nullptr;
 };
 
 }  // namespace cc

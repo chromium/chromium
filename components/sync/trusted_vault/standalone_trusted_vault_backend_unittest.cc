@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -176,8 +177,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
-  testing::NiceMock<MockDelegate>* delegate_;
-  testing::NiceMock<MockTrustedVaultConnection>* connection_;
+  CheckedPtr<testing::NiceMock<MockDelegate>> delegate_;
+  CheckedPtr<testing::NiceMock<MockTrustedVaultConnection>> connection_;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };

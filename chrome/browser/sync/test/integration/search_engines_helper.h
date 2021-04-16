@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/search_engines/template_url_service.h"
@@ -109,7 +110,7 @@ class HasSearchEngineChecker : public StatusChangeChecker,
   void OnTemplateURLServiceChanged() override;
 
  private:
-  TemplateURLService* const service_;
+  const CheckedPtr<TemplateURLService> service_;
   const std::u16string keyword_;
   ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
       this};

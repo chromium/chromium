@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -70,12 +71,12 @@ class RedirectLoader : public network::mojom::URLLoader {
     client_->OnReceiveRedirect(redirect_info, std::move(head));
   }
 
-  TestNetworkInterceptor::Impl* const interceptor_impl_;
+  const CheckedPtr<TestNetworkInterceptor::Impl> interceptor_impl_;
 
   mojo::Receiver<network::mojom::URLLoader> receiver_;
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   network::ResourceRequest url_request_;
-  TestNetworkInterceptor::Response* response_;
+  CheckedPtr<TestNetworkInterceptor::Response> response_;
   GURL url_;
   std::string method_;
 };

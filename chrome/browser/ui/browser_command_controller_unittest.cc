@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -312,7 +313,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
  private:
   bool fullscreen_;
   bool toolbar_showing_;
-  BrowserCommandControllerFullscreenTest* test_browser_;
+  CheckedPtr<BrowserCommandControllerFullscreenTest> test_browser_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenTestBrowserWindow);
 };

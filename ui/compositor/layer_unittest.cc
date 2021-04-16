@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -420,7 +421,7 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
     shutdown_ = true;
   }
 
-  ui::Compositor* compositor_;
+  CheckedPtr<ui::Compositor> compositor_;
   size_t animation_step_count_;
   bool shutdown_;
 
@@ -2046,7 +2047,7 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_;
-  Layer* layer_;
+  CheckedPtr<Layer> layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
 
@@ -2839,8 +2840,8 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
   void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
 
  private:
-  Layer* root_;
-  Layer* child_;
+  CheckedPtr<Layer> root_;
+  CheckedPtr<Layer> child_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerRemovingLayerAnimationObserver);
 };

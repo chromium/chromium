@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
+
 namespace views {
 class Widget;
 }
@@ -84,10 +86,10 @@ class CaptionBubbleModel {
   // The context widget for this caption bubble. On Chrome browser, this is the
   // top level widget of the browser window. When this feature is implemented
   // in ash, this will be the top level widget of the ash window.
-  views::Widget* context_ = nullptr;
+  CheckedPtr<views::Widget> context_ = nullptr;
 
   // The CaptionBubble observing changes to this model.
-  CaptionBubble* observer_ = nullptr;
+  CheckedPtr<CaptionBubble> observer_ = nullptr;
 };
 }  // namespace captions
 
