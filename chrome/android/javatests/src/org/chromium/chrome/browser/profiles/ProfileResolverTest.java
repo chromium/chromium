@@ -14,8 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -27,7 +27,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for ProfileResolver. Profile resolution must run on the UI thread and may invoke the given
@@ -38,26 +37,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ProfileResolverTest {
-    // TODO(skym): Move this into //base/test/android/.
-    private static class CallbackHelperWithPayload<T> extends CallbackHelper {
-        T mLastPayload;
-
-        public void notifyCalled(T payload) {
-            mLastPayload = payload;
-            notifyCalled();
-        }
-
-        public T getLastPayload() {
-            try {
-                waitForFirst();
-            } catch (TimeoutException te) {
-                throw new RuntimeException(te);
-            }
-            Assert.assertNotEquals(0, getCallCount());
-            return mLastPayload;
-        }
-    }
-
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -127,40 +106,39 @@ public class ProfileResolverTest {
     }
 
     private Profile resolveProfileSync(String token) {
-        CallbackHelperWithPayload<Profile> callbackHelper = new CallbackHelperWithPayload<>();
+        PayloadCallbackHelper<Profile> callbackHelper = new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileResolver.resolveProfile(token, (Profile p) -> callbackHelper.notifyCalled(p));
         });
-        return callbackHelper.getLastPayload();
+        return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private ProfileKey resolveProfileKeySync(String token) {
-        CallbackHelperWithPayload<ProfileKey> callbackHelper = new CallbackHelperWithPayload<>();
+        PayloadCallbackHelper<ProfileKey> callbackHelper = new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileResolver.resolveProfileKey(
                     token, (ProfileKey p) -> callbackHelper.notifyCalled(p));
         });
-        return callbackHelper.getLastPayload();
+        return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private BrowserContextHandle resolveBrowserContextSync(String token) {
-        CallbackHelperWithPayload<BrowserContextHandle> callbackHelper =
-                new CallbackHelperWithPayload<>();
+        PayloadCallbackHelper<BrowserContextHandle> callbackHelper = new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileResolver.resolveBrowserContext(
                     token, (BrowserContextHandle p) -> callbackHelper.notifyCalled(p));
         });
-        return callbackHelper.getLastPayload();
+        return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private SimpleFactoryKeyHandle resolveSimpleFactoryKeySync(String token) {
-        CallbackHelperWithPayload<SimpleFactoryKeyHandle> callbackHelper =
-                new CallbackHelperWithPayload<>();
+        PayloadCallbackHelper<SimpleFactoryKeyHandle> callbackHelper =
+                new PayloadCallbackHelper<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileResolver.resolveSimpleFactoryKey(
                     token, (SimpleFactoryKeyHandle p) -> callbackHelper.notifyCalled(p));
         });
-        return callbackHelper.getLastPayload();
+        return callbackHelper.getOnlyPayloadBlocking();
     }
 
     @Test
