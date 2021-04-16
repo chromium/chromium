@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -43,6 +42,7 @@ class GestureEventQueueTest : public testing::Test,
  public:
   GestureEventQueueTest()
       : task_environment_(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME,
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         acked_gesture_event_count_(0),
         sent_gesture_event_count_(0) {}
@@ -171,7 +171,10 @@ class GestureEventQueueTest : public testing::Test,
         ui::LatencyInfo());
   }
 
-  void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void FastForwardBy(base::TimeDelta delay) {
+    task_environment_.FastForwardBy(delay);
+  }
 
   size_t GetAndResetSentGestureEventCount() {
     size_t count = sent_gesture_event_count_;
@@ -311,10 +314,7 @@ TEST_F(GestureEventQueueTest, DebounceDefersFollowingGestureEvents) {
   EXPECT_EQ(2U, GestureEventQueueSize());
   EXPECT_EQ(2U, GestureEventDebouncingQueueSize());
 
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(5));
-  run_loop.Run();
+  FastForwardBy(base::TimeDelta::FromMilliseconds(5));
 
   // The deferred events are correctly queued in coalescing queue.
   EXPECT_EQ(2U, GetAndResetSentGestureEventCount());

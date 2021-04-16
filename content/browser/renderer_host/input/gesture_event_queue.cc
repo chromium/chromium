@@ -97,16 +97,10 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
 
   switch (gesture_event.event.GetType()) {
     case WebInputEvent::Type::kGestureScrollUpdate:
-      if (!scrolling_in_progress_) {
-        debounce_deferring_timer_.Start(
-            FROM_HERE,
-            debounce_interval_,
-            this,
-            &GestureEventQueue::SendScrollEndingEventsNow);
-      } else {
-        // Extend the bounce interval.
-        debounce_deferring_timer_.Reset();
-      }
+      // This will restart the timer if it is already running.
+      debounce_deferring_timer_.Start(
+          FROM_HERE, debounce_interval_, this,
+          &GestureEventQueue::SendScrollEndingEventsNow);
       scrolling_in_progress_ = true;
       debouncing_deferral_queue_.clear();
       return true;
