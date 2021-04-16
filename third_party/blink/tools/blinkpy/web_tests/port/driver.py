@@ -235,7 +235,7 @@ class Driver(object):
         server_process_command = self._server_process.cmd()
 
         deadline = test_begin_time + int(driver_input.timeout) / 1000.0
-        self._server_process.write(test_command)
+        self._server_process.write(test_command.encode("utf8", "replace"))
         # First block is either text or audio
         text, audio = self._read_first_block(deadline)
         # The second (optional) block is image data.

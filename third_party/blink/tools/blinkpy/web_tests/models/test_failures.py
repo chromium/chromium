@@ -25,7 +25,7 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+import six
 from six.moves import cPickle
 
 from blinkpy.web_tests.controllers import repaint_overlay
@@ -124,8 +124,16 @@ class AbstractTestResultType(object):
         if expected_driver_output:
             self.has_stderr |= expected_driver_output.has_stderr()
 
+    def _artifact_is_text(self, path):
+        ext = self.filesystem.splitext(path)[1]
+        return ext != '.png' and ext != '.wav'
+
     def _write_to_artifacts(self, typ_artifacts, artifact_name, path, content,
                             force_overwrite):
+        # TODO(crbug/1197331): May need to revisit this while investigating
+        # failures in  PY3.
+        if (six.PY3 and self._artifact_is_text(path)):
+            content = content.encode('utf8', 'replace')
         typ_artifacts.CreateArtifact(
             artifact_name, path, content, force_overwrite=force_overwrite)
 
@@ -155,12 +163,11 @@ class AbstractTestResultType(object):
             # --iterations=n or --repeat-each=n.
             if (force_overwrite or self.result != ResultType.Pass
                     or not self.filesystem.exists(artifacts_abspath)):
-                self._write_to_artifacts(
-                    typ_artifacts,
-                    'stderr',
-                    artifact_filename,
-                    self.actual_driver_output.error,
-                    force_overwrite=True)
+                self._write_to_artifacts(typ_artifacts,
+                                         'stderr',
+                                         artifact_filename,
+                                         self.actual_driver_output.error,
+                                         force_overwrite=True)
 
     @staticmethod
     def loads(s):
@@ -245,9 +252,9 @@ class FailureCrash(AbstractTestResultType):
         if self.crash_log:
             artifact_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_CRASH_LOG, '.txt')
-            self._write_to_artifacts(
-                typ_artifacts, 'crash_log', artifact_filename,
-                self.crash_log.encode('utf8', 'replace'), force_overwrite)
+            self._write_to_artifacts(typ_artifacts, 'crash_log',
+                                     artifact_filename, self.crash_log,
+                                     force_overwrite)
 
     def message(self):
         if self.pid:
