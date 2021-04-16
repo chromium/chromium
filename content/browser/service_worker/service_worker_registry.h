@@ -31,26 +31,22 @@ class ServiceWorkerVersion;
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 
-// This class manages in-memory representation of service worker registrations
+// Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
-// registrations. The instance of this class is owned by
-// ServiceWorkerContextCore and has the same lifetime of the owner.
-// The instance uses ServiceWorkerStorageControl via a mojo remote to
-// store/retrieve registrations to/from persistent storage.
-// The instance lives on the UI thread.
+// registrations. Owned by ServiceWorkerContextCore and has the same lifetime of
+// the owner. Lives on the UI thread.
 //
-// Most methods of this class take callbacks. The instance tries to execute
-// callbacks as much as possible during shutdown and/or DeleteAndStartOver. In
-// other words, the destructor of the instance calls pending callbacks with
-// default values (which imply operations are aborted). The advantage
-// of this behavior is that call sites can pass callbacks which own mojo
-// callbacks without having worry about the "not-run-but-still-connected"
-// callback problem.
-// TODO(crbug.com/1168991): Make all pending callbacks being called in the
-// destructor. Currently only some pending callbacks are executed.
-// TODO(crbug.com/1168991): Revisit the current behavior. The downside of this
-// behavior is that it might hide potential bugs in call sites, e.g., a mojo
-// connection should be closed before shutdown.
+// Communicates with ServiceWorkerStorageControl via a mojo remote to
+// store/retrieve registrations to/from persistent storage. Most methods of this
+// class call relevant mojo methods. Callbacks passed to these methods are
+// invoked after mojo calls complete.
+//
+// The implementation of ServiceWorkerStorageControl lives in the Storage
+// Service. This means that the mojo remote can be disconnected when the
+// Storage Service crashes. To avoid a situation where callbacks never get
+// invoked this class has a recovery mechanism. Upon detecting a disconnection,
+// this tries to reconnect to ServiceWorkerStorageControl then retry all
+// inflight mojo calls.
 class CONTENT_EXPORT ServiceWorkerRegistry {
  public:
   using ResourceList =
