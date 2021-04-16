@@ -1834,6 +1834,8 @@ component("ash") {
     "//chromeos/dbus/audio",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/hammerd",
+    "//chromeos/dbus/hermes:hermes_clients",
+    "//chromeos/dbus/hermes:hermes_fakes",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/services:services",

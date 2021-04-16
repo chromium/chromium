@@ -15,6 +15,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -87,6 +88,12 @@ bool IsESimSupported() {
           NetworkType::kCellular);
 
   if (!cellular_device || !cellular_device->sim_infos)
+    return false;
+
+  // Check both the SIM slot infos and the number of EUICCs because the former
+  // comes from Shill and the latter from Hermes, and so there may be instances
+  // where one may be true while they other isn't.
+  if (chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty())
     return false;
 
   for (const auto& sim_info : *cellular_device->sim_infos) {
@@ -331,23 +338,8 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
   if (!chromeos::features::IsCellularActivationUiEnabled())
     return;
 
-  if (IsESimSupported()) {
+  if (IsESimSupported())
     PerformAddExtraButtons(enabled);
-    return;
-  }
-
-  // Fetch the available networks, all of which should be PSIM networks.
-  // If any are unactivated, PerformAddExtraButtons() should be called.
-  Shell::Get()
-      ->system_tray_model()
-      ->network_state_model()
-      ->cros_network_config()
-      ->GetNetworkStateList(
-          NetworkFilter::New(
-              FilterType::kVisible, NetworkType::kCellular,
-              /*limit=*/chromeos::network_config::mojom::kNoLimit),
-          base::BindOnce(&MobileSectionHeaderView::OnCellularNetworksFetched,
-                         weak_ptr_factory_.GetWeakPtr(), enabled));
 }
 
 void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
@@ -371,22 +363,6 @@ void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
   if (!IsToggleVisible()) {
     container()->SetBorder(views::CreateEmptyBorder(
         gfx::Insets(0, 0, 0, kMobileHeaderExtraMarginRight)));
-  }
-}
-
-void MobileSectionHeaderView::OnCellularNetworksFetched(
-    bool enabled,
-    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-        networks) {
-  if (networks.empty())
-    return;
-
-  for (const auto& network : networks) {
-    if (network->type_state->get_cellular()->activation_state !=
-        chromeos::network_config::mojom::ActivationStateType::kActivated) {
-      PerformAddExtraButtons(enabled);
-      return;
-    }
   }
 }
 
