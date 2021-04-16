@@ -7139,3 +7139,6 @@ crbug.com/1199522 [ Mac ] http/tests/devtools/layers/layers-3d-view-hit-testing.
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Pass Failure ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Pass Failure ]
 crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Pass Failure ]
+
+# Sheriff 2021-04-16
+crbug.com/1199803 [ Linux ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Pass Failure ]
