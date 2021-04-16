@@ -4,11 +4,6 @@
 
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <dpapi.h>
-#endif
-
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
@@ -19,6 +14,12 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 #if defined(OS_WIN)
+// Windows include must be first for the code to compile.
+// clang-format off
+#include <windows.h>
+#include <dpapi.h>
+// clang-format on
+
 #include "base/win/registry.h"
 #endif
 
@@ -236,19 +237,21 @@ base::FilePath GetEndpointVerificationDir() {
   base::FilePath path;
   if (!GetEndpointVerificationDirOverride()->empty())
     return *GetEndpointVerificationDirOverride();
+
+  bool got_path = false;
 #if defined(OS_WIN)
-  if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path))
+  got_path = base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path);
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   path = base::nix::GetXDGDirectory(env.get(), base::nix::kXdgConfigHomeEnvVar,
                                     base::nix::kDotConfigDir);
-  if (path.empty())
+  got_path = !path.empty();
 #elif defined(OS_MAC)
-  if (!base::PathService::Get(base::DIR_APP_DATA, &path))
-#else
-  if (true)
+  got_path = base::PathService::Get(base::DIR_APP_DATA, &path);
 #endif
+  if (!got_path)
     return path;
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   path = path.AppendASCII("google");
 #else
