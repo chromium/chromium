@@ -1485,11 +1485,6 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
 
     DCHECK_NE(track_size.GetType(), kLengthTrackSizing);
 
-    // TODO(ikilpatrick): If all of are our row tracks are "inflexible" (they
-    // all have fixed min/max track breadths which are the same), we need to
-    // also apply 'align-content' upfront to ensure that orthogonal children
-    // have the correct available-size given.
-
     // For the purposes of our "base" row set geometry, we only use any fixed
     // max-track breadth. We use this for sizing any orthogonal, (or
     // %-block-size) children.
@@ -1503,6 +1498,11 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
     sets.emplace_back(set_offset, last_indefinite_index);
     ++index;
   }
+
+  // If all of our tracks have a definite size upfront, we use
+  // |ComputeSetGeometry| which will apply alignment (if present).
+  if (track_collection->AllTracksHaveDefiniteSize())
+    return ComputeSetGeometry(*track_collection);
 
   return {sets, grid_gap};
 }

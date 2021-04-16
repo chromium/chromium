@@ -537,7 +537,8 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     : non_collapsed_track_count_(0),
       direction_(block_track_collection.Direction()),
       depends_on_available_size_(false),
-      has_flex_tracks_(false) {
+      has_flex_tracks_(false),
+      all_tracks_have_definite_size_(true) {
   for (auto range_iterator = block_track_collection.RangeIterator();
        !range_iterator.IsAtEnd(); range_iterator.MoveToNextRange()) {
     const NGGridBlockTrackCollection::Range& block_track_range =
@@ -629,6 +630,11 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     // sizing function shouldn't happen as it would be normalized to 'auto'.
     DCHECK(!set_track_size.HasFlexMinTrackBreadth());
     has_flex_tracks_ |= set_track_size.HasFlexMaxTrackBreadth();
+    all_tracks_have_definite_size_ &=
+        set_track_size.HasFixedMinTrackBreadth() &&
+        set_track_size.HasFixedMaxTrackBreadth() &&
+        (set_track_size.MinTrackBreadth().length() ==
+         set_track_size.MaxTrackBreadth().length());
     is_range_spanning_flexible_track |= set_track_size.HasFlexMaxTrackBreadth();
     is_range_spanning_intrinsic_track |=
         set_track_size.HasIntrinsicMinTrackBreadth() ||
