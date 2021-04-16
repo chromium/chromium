@@ -42,7 +42,7 @@ WaylandInputEmulate::WaylandInputEmulate() {
 
   wayland_proxy->SetDelegate(this);
 
-  registry_ = wl_display_get_registry(wayland_proxy->GetDisplayWrapper());
+  registry_ = wl_display_get_registry(wayland_proxy->GetDisplay());
   if (!registry_)
     LOG(FATAL) << "Failed to get Wayland registry";
 
@@ -52,7 +52,7 @@ WaylandInputEmulate::WaylandInputEmulate() {
   wl_registry_add_listener(registry_, &registry_listener, this);
 
   // Roundtrip one time to get the weston-test global.
-  wayland_proxy->RoundTripQueue();
+  wl_display_roundtrip(wayland_proxy->GetDisplay());
   if (!weston_test_)
     LOG(FATAL) << "weston-test is not available.";
 

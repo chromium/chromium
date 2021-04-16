@@ -128,14 +128,7 @@ bool WaylandConnection::Initialize() {
     return false;
   }
 
-  wrapped_display_.reset(
-      reinterpret_cast<wl_proxy*>(wl_proxy_create_wrapper(display())));
-  // Create a non-default event queue so that we wouldn't flush messages for
-  // client applications.
-  event_queue_.reset(wl_display_create_queue(display()));
-  wl_proxy_set_queue(wrapped_display_.get(), event_queue_.get());
-
-  registry_.reset(wl_display_get_registry(display_wrapper()));
+  registry_.reset(wl_display_get_registry(display_.get()));
   if (!registry_) {
     LOG(ERROR) << "Failed to get Wayland registry";
     return false;
@@ -144,13 +137,13 @@ bool WaylandConnection::Initialize() {
   // Now that the connection with the display server has been properly
   // estabilished, initialize the event source and input objects.
   DCHECK(!event_source_);
-  event_source_ = std::make_unique<WaylandEventSource>(
-      display(), event_queue_.get(), wayland_window_manager());
+  event_source_ =
+      std::make_unique<WaylandEventSource>(display(), wayland_window_manager());
 
   wl_registry_add_listener(registry_.get(), &registry_listener, this);
   while (!wayland_output_manager_ ||
          !wayland_output_manager_->IsOutputReady()) {
-    RoundTripQueue();
+    wl_display_roundtrip(display_.get());
   }
 
   buffer_manager_host_ = std::make_unique<WaylandBufferManagerHost>(this);
@@ -175,6 +168,7 @@ bool WaylandConnection::Initialize() {
 
   if (UseTestConfigForPlatformWindows())
     wayland_proxy_ = std::make_unique<wl::WaylandProxyImpl>(this);
+
   return true;
 }
 
@@ -190,11 +184,6 @@ void WaylandConnection::ScheduleFlush() {
         base::BindOnce(&WaylandConnection::Flush, base::Unretained(this)));
     scheduled_flush_ = true;
   }
-}
-
-void WaylandConnection::RoundTripQueue() {
-  DCHECK(event_queue_.get());
-  wl_display_roundtrip_queue(display(), event_queue_.get());
 }
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {

@@ -52,12 +52,8 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // for the Delegate class.
   virtual void SetDelegate(Delegate* delegate) = 0;
 
-  // Returns the wl_display the WaylandConnection has the connection with. See
-  // WaylandConnection::display() and WaylandConnection::display_wrapper() to
-  // know the difference between the GetDisplay() and GetDisplayWrapper().
+  // Returns the wl_display the WaylandConnection has the connection with.
   virtual wl_display* GetDisplay() = 0;
-  virtual wl_display* GetDisplayWrapper() = 0;
-  virtual void RoundTripQueue() = 0;
 
   // Returns wl_surface that backs the |widget|.
   virtual wl_surface* GetWlSurfaceForAcceleratedWidget(
