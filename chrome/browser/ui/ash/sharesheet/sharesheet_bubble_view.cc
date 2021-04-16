@@ -115,6 +115,22 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
+// TODO(crbug.com/1188938): Create sharesheet_util and move there.
+// Then use this for all sharesheet labels.
+std::unique_ptr<views::Label> CreateShareLabel(
+    const std::u16string& text,
+    const int text_context,
+    const int line_height,
+    const SkColor color,
+    const gfx::HorizontalAlignment alignment,
+    const int text_style = ash::STYLE_SHARESHEET) {
+  auto label = std::make_unique<views::Label>(text, text_context, text_style);
+  label->SetLineHeight(line_height);
+  label->SetEnabledColor(color);
+  label->SetHorizontalAlignment(alignment);
+  return label;
+}
+
 }  // namespace
 
 namespace ash {
@@ -183,13 +199,9 @@ void SharesheetBubbleView::ShowBubble(
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
   std::unique_ptr<views::Label> share_title_view =
-      std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-          CONTEXT_SHARESHEET_BUBBLE_TITLE, STYLE_SHARESHEET);
-
-  share_title_view->SetLineHeight(kTitleTextLineHeight);
-  share_title_view->SetEnabledColor(kTitleTextColor);
-  share_title_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      CreateShareLabel(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+                       CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
+                       kTitleTextColor, gfx::ALIGN_LEFT);
 
   if (targets.empty() ||
       !(base::FeatureList::IsEnabled(features::kSharesheetContentPreviews))) {
@@ -214,11 +226,14 @@ void SharesheetBubbleView::ShowBubble(
     image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
         IDR_SHARESHEET_EMPTY));
     image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
-    auto* zero_state_label =
-        main_view_->AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_LABEL),
-            CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-    zero_state_label->SetLineHeight(kPrimaryTextLineHeight);
+    main_view_->AddChildView(CreateShareLabel(
+        l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL),
+        CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
+        kPrimaryTextColor, gfx::ALIGN_CENTER));
+    main_view_->AddChildView(CreateShareLabel(
+        l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL),
+        CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY, kPrimaryTextLineHeight,
+        kSecondaryTextColor, gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
   } else {
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
@@ -295,13 +310,10 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
                                  kExpandViewPaddingTop);
   expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle,
                             kSubtitleTextLineHeight);
-  auto* apps_list_label =
-      expanded_layout->AddView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
-          CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-  apps_list_label->SetLineHeight(kSubtitleTextLineHeight);
-  apps_list_label->SetEnabledColor(kPrimaryTextColor);
-  apps_list_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  expanded_layout->AddView(CreateShareLabel(
+      l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+      CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
+      kPrimaryTextColor, gfx::ALIGN_CENTER));
   expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                  kExpandViewPaddingBottom);
 
