@@ -37,6 +37,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -219,6 +220,20 @@ class WebNavigationApiTest : public ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(WebNavigationApiTest);
 };
 
+class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
+ public:
+  WebNavigationApiBackForwardCacheTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"content_injection_supported", "true"}}}},
+        {features::kBackForwardCacheMemoryControls});
+  }
+  ~WebNavigationApiBackForwardCacheTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 using ContextType = extensions::ExtensionBrowserTest::ContextType;
 
 class WebNavigationApiTestWithContextType
@@ -305,6 +320,11 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ForwardBack) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/forwardBack")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest, ForwardBack) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/backForwardCache")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, IFrame) {

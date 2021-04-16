@@ -373,9 +373,10 @@ void WebNavigationTabObserver::HandleCommit(
 
   FrameNavigationState::GetOrCreateForCurrentDocument(
       navigation_handle->GetRenderFrameHost())
-      ->StartTrackingDocumentLoad(navigation_handle->GetURL(),
-                                  navigation_handle->IsSameDocument(),
-                                  /*is_error_page=*/false);
+      ->StartTrackingDocumentLoad(
+          navigation_handle->GetURL(), navigation_handle->IsSameDocument(),
+          navigation_handle->IsServedFromBackForwardCache(),
+          /*is_error_page=*/false);
 
   events::HistogramValue histogram_value = events::UNKNOWN;
   std::string event_name;
@@ -391,6 +392,12 @@ void WebNavigationTabObserver::HandleCommit(
   }
   web_navigation_api_helpers::DispatchOnCommitted(histogram_value, event_name,
                                                   navigation_handle);
+
+  if (navigation_handle->IsServedFromBackForwardCache()) {
+    web_navigation_api_helpers::DispatchOnCompleted(
+        navigation_handle->GetWebContents(),
+        navigation_handle->GetRenderFrameHost(), navigation_handle->GetURL());
+  }
 }
 
 void WebNavigationTabObserver::HandleError(
@@ -400,6 +407,7 @@ void WebNavigationTabObserver::HandleError(
         navigation_handle->GetRenderFrameHost())
         ->StartTrackingDocumentLoad(navigation_handle->GetURL(),
                                     navigation_handle->IsSameDocument(),
+                                    /*is_from_back_forward_cache=*/false,
                                     /*is_error_page=*/true);
   }
 

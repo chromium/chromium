@@ -53,12 +53,14 @@ bool FrameNavigationState::CanSendEvents() const {
   return !error_occurred_ && IsValidUrl(url_);
 }
 
-void FrameNavigationState::StartTrackingDocumentLoad(const GURL& url,
-                                                     bool is_same_document,
-                                                     bool is_error_page) {
+void FrameNavigationState::StartTrackingDocumentLoad(
+    const GURL& url,
+    bool is_same_document,
+    bool is_from_back_forward_cache,
+    bool is_error_page) {
   error_occurred_ = is_error_page;
   url_ = url;
-  if (!is_same_document) {
+  if (!is_same_document && !is_from_back_forward_cache) {
     is_loading_ = true;
     is_parsing_ = true;
   }

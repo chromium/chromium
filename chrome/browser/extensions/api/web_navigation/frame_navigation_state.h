@@ -38,6 +38,7 @@ class FrameNavigationState
   // Starts to track a document load to |url|.
   void StartTrackingDocumentLoad(const GURL& url,
                                  bool is_same_document,
+                                 bool is_from_back_forward_cache,
                                  bool is_error_page);
 
   // Returns the URL corresponding to a tracked |frame_host|.
