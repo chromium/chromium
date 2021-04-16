@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "gin/gin_export.h"
@@ -32,6 +31,8 @@ class GIN_EXPORT PerIsolateData {
                  v8::ArrayBuffer::Allocator* allocator,
                  IsolateHolder::AccessMode access_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  PerIsolateData(const PerIsolateData&) = delete;
+  PerIsolateData& operator=(const PerIsolateData&) = delete;
   ~PerIsolateData();
 
   static PerIsolateData* From(v8::Isolate* isolate);
@@ -92,8 +93,6 @@ class GIN_EXPORT PerIsolateData {
   IndexedPropertyInterceptorMap indexed_interceptors_;
   NamedPropertyInterceptorMap named_interceptors_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerIsolateData);
 };
 
 }  // namespace gin

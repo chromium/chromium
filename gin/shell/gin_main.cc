@@ -10,7 +10,6 @@
 #include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -44,7 +43,9 @@ void Run(base::WeakPtr<Runner> runner, const base::FilePath& path) {
 
 class GinShellRunnerDelegate : public ShellRunnerDelegate {
  public:
-  GinShellRunnerDelegate() {}
+  GinShellRunnerDelegate() = default;
+  GinShellRunnerDelegate(const GinShellRunnerDelegate&) = delete;
+  GinShellRunnerDelegate& operator=(const GinShellRunnerDelegate&) = delete;
 
   v8::Local<v8::ObjectTemplate> GetGlobalTemplate(
       ShellRunner* runner,
@@ -58,9 +59,6 @@ class GinShellRunnerDelegate : public ShellRunnerDelegate {
   void UnhandledException(ShellRunner* runner, TryCatch& try_catch) override {
     LOG(ERROR) << try_catch.GetStackTrace();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GinShellRunnerDelegate);
 };
 
 }  // namespace

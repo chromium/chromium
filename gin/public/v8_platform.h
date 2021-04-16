@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/partition_alloc_buildflags.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-platform.h"
@@ -17,6 +16,9 @@ namespace gin {
 // A v8::Platform implementation to use with gin.
 class GIN_EXPORT V8Platform : public v8::Platform {
  public:
+  V8Platform(const V8Platform&) = delete;
+  V8Platform& operator=(const V8Platform&) = delete;
+
   static V8Platform* Get();
 
 // v8::Platform implementation.
@@ -51,8 +53,6 @@ class GIN_EXPORT V8Platform : public v8::Platform {
 
   class TracingControllerImpl;
   std::unique_ptr<TracingControllerImpl> tracing_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8Platform);
 };
 
 }  // namespace gin

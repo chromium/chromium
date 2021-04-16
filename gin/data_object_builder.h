@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -38,6 +37,8 @@ namespace gin {
 class GIN_EXPORT DataObjectBuilder {
  public:
   explicit DataObjectBuilder(v8::Isolate* isolate);
+  DataObjectBuilder(const DataObjectBuilder&) = delete;
+  DataObjectBuilder& operator=(const DataObjectBuilder&) = delete;
 
   template <typename T>
   DataObjectBuilder& Set(base::StringPiece key, T&& value) {
@@ -69,8 +70,6 @@ class GIN_EXPORT DataObjectBuilder {
   v8::Isolate* isolate_;
   v8::Local<v8::Context> context_;
   v8::Local<v8::Object> object_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataObjectBuilder);
 };
 
 }  // namespace gin

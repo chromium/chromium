@@ -32,7 +32,8 @@ class IdleTaskWithLocker : public v8::IdleTask {
  public:
   IdleTaskWithLocker(v8::Isolate* isolate, std::unique_ptr<v8::IdleTask> task)
       : isolate_(isolate), task_(std::move(task)) {}
-
+  IdleTaskWithLocker(const IdleTaskWithLocker&) = delete;
+  IdleTaskWithLocker& operator=(const IdleTaskWithLocker&) = delete;
   ~IdleTaskWithLocker() override = default;
 
   // v8::IdleTask implementation.
@@ -44,8 +45,6 @@ class IdleTaskWithLocker : public v8::IdleTask {
  private:
   v8::Isolate* isolate_;
   std::unique_ptr<v8::IdleTask> task_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleTaskWithLocker);
 };
 
 }  // namespace

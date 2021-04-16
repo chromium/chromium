@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/macros.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "gin/public/wrapper_info.h"
@@ -63,6 +62,10 @@ class ObjectTemplateBuilder;
 
 // Non-template base class to share code between templates instances.
 class GIN_EXPORT WrappableBase {
+ public:
+  WrappableBase(const WrappableBase&) = delete;
+  WrappableBase& operator=(const WrappableBase&) = delete;
+
  protected:
   WrappableBase();
   virtual ~WrappableBase();
@@ -85,25 +88,23 @@ class GIN_EXPORT WrappableBase {
 
   bool dead_ = false;
   v8::Global<v8::Object> wrapper_;  // Weak
-
-  DISALLOW_COPY_AND_ASSIGN(WrappableBase);
 };
 
 
 template<typename T>
 class Wrappable : public WrappableBase {
  public:
-  // Retrieve (or create) the v8 wrapper object cooresponding to this object.
+  Wrappable(const Wrappable&) = delete;
+  Wrappable& operator=(const Wrappable&) = delete;
+
+  // Retrieve (or create) the v8 wrapper object corresponding to this object.
   v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate) {
     return GetWrapperImpl(isolate, &T::kWrapperInfo);
   }
 
  protected:
-  Wrappable() {}
-  ~Wrappable() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Wrappable);
+  Wrappable() = default;
+  ~Wrappable() override = default;
 };
 
 template <typename T>

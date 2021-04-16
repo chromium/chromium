@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gin/gin_export.h"
 #include "gin/public/v8_idle_task_runner.h"
@@ -76,6 +75,8 @@ class GIN_EXPORT IsolateHolder {
       AllowAtomicsWaitMode atomics_wait_mode,
       IsolateType isolate_type,
       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal);
+  IsolateHolder(const IsolateHolder&) = delete;
+  IsolateHolder& operator=(const IsolateHolder&) = delete;
   ~IsolateHolder();
 
   // Should be invoked once before creating IsolateHolder instances to
@@ -119,8 +120,6 @@ class GIN_EXPORT IsolateHolder {
   std::unique_ptr<V8IsolateMemoryDumpProvider> isolate_memory_dump_provider_;
   AccessMode access_mode_;
   IsolateType isolate_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolateHolder);
 };
 
 }  // namespace gin

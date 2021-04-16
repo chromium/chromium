@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gin/gin_export.h"
 
@@ -20,6 +19,9 @@ class GIN_EXPORT V8SharedMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
   V8SharedMemoryDumpProvider();
+  V8SharedMemoryDumpProvider(const V8SharedMemoryDumpProvider&) = delete;
+  V8SharedMemoryDumpProvider& operator=(const V8SharedMemoryDumpProvider&) =
+      delete;
 
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(
@@ -27,9 +29,6 @@ class GIN_EXPORT V8SharedMemoryDumpProvider
       base::trace_event::ProcessMemoryDump* process_memory_dump) override;
 
   static void Register();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V8SharedMemoryDumpProvider);
 };
 
 }  // namespace gin

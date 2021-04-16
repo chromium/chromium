@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/gin_export.h"
 #include "gin/public/context_holder.h"
@@ -19,6 +18,8 @@ namespace gin {
 class GIN_EXPORT Runner {
  public:
   Runner();
+  Runner(const Runner&) = delete;
+  Runner& operator=(const Runner&) = delete;
   virtual ~Runner();
 
   // Before running script in this context, you'll need to enter the runner's
@@ -40,22 +41,20 @@ class GIN_EXPORT Runner {
   class GIN_EXPORT Scope {
    public:
     explicit Scope(Runner* runner);
+    Scope(const Scope&) = delete;
+    Scope& operator=(const Scope&) = delete;
     ~Scope();
 
    private:
     v8::Isolate::Scope isolate_scope_;
     v8::HandleScope handle_scope_;
     v8::Context::Scope scope_;
-
-    DISALLOW_COPY_AND_ASSIGN(Scope);
   };
 
  private:
   friend class Scope;
 
   base::WeakPtrFactory<Runner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Runner);
 };
 
 }  // namespace gin

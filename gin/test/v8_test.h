@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
@@ -22,6 +21,8 @@ class IsolateHolder;
 class V8Test : public testing::Test {
  public:
   V8Test();
+  V8Test(const V8Test&) = delete;
+  V8Test& operator=(const V8Test&) = delete;
   ~V8Test() override;
 
   void SetUp() override;
@@ -33,9 +34,6 @@ class V8Test : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IsolateHolder> instance_;
   v8::Persistent<v8::Context> context_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V8Test);
 };
 
 }  // namespace gin

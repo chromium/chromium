@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"
 
@@ -23,6 +22,8 @@ class WrappableBase;
 class GIN_EXPORT NamedPropertyInterceptor {
  public:
   NamedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  NamedPropertyInterceptor(const NamedPropertyInterceptor&) = delete;
+  NamedPropertyInterceptor& operator=(const NamedPropertyInterceptor&) = delete;
   virtual ~NamedPropertyInterceptor();
 
   virtual v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
@@ -37,13 +38,14 @@ class GIN_EXPORT NamedPropertyInterceptor {
  private:
   v8::Isolate* isolate_;
   WrappableBase* base_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedPropertyInterceptor);
 };
 
 class GIN_EXPORT IndexedPropertyInterceptor {
  public:
   IndexedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  IndexedPropertyInterceptor(const IndexedPropertyInterceptor&) = delete;
+  IndexedPropertyInterceptor& operator=(const IndexedPropertyInterceptor&) =
+      delete;
   virtual ~IndexedPropertyInterceptor();
 
   virtual v8::Local<v8::Value> GetIndexedProperty(v8::Isolate* isolate,
@@ -58,8 +60,6 @@ class GIN_EXPORT IndexedPropertyInterceptor {
  private:
   v8::Isolate* isolate_;
   WrappableBase* base_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedPropertyInterceptor);
 };
 
 }  // namespace gin

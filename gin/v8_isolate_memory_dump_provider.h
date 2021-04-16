@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gin/gin_export.h"
@@ -24,6 +23,9 @@ class V8IsolateMemoryDumpProvider
   V8IsolateMemoryDumpProvider(
       IsolateHolder* isolate_holder,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  V8IsolateMemoryDumpProvider(const V8IsolateMemoryDumpProvider&) = delete;
+  V8IsolateMemoryDumpProvider& operator=(const V8IsolateMemoryDumpProvider&) =
+      delete;
   ~V8IsolateMemoryDumpProvider() override;
 
   // MemoryDumpProvider implementation.
@@ -37,8 +39,6 @@ class V8IsolateMemoryDumpProvider
       base::trace_event::ProcessMemoryDump* process_memory_dump);
 
   IsolateHolder* isolate_holder_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(V8IsolateMemoryDumpProvider);
 };
 
 }  // namespace gin

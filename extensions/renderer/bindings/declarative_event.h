@@ -29,6 +29,8 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
                    const std::vector<std::string>& actions_list,
                    const std::vector<std::string>& conditions_list,
                    int webview_instance_id);
+  DeclarativeEvent(const DeclarativeEvent&) = delete;
+  DeclarativeEvent& operator=(const DeclarativeEvent&) = delete;
   ~DeclarativeEvent() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -55,8 +57,6 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
   APIRequestHandler* request_handler_;
 
   const int webview_instance_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeEvent);
 };
 
 }  // namespace extensions

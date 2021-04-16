@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"
 
@@ -17,6 +16,8 @@ namespace gin {
 class GIN_EXPORT TryCatch {
  public:
   explicit TryCatch(v8::Isolate* isolate);
+  TryCatch(const TryCatch&) = delete;
+  TryCatch& operator=(const TryCatch&) = delete;
   ~TryCatch();
 
   bool HasCaught();
@@ -25,8 +26,6 @@ class GIN_EXPORT TryCatch {
  private:
   v8::Isolate* isolate_;
   v8::TryCatch try_catch_;
-
-  DISALLOW_COPY_AND_ASSIGN(TryCatch);
 };
 
 }  // namespace gin
