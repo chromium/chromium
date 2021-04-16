@@ -559,7 +559,8 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
   const base::Value* service_type = service_dict->FindKeyOfType(
       shill::kTypeProperty, base::Value::Type::STRING);
   if (!visible_property || !visible_property->GetBool() || !service_type ||
-      (service_type->GetString() == shill::kTypeVPN)) {
+      (service_type->GetString() == shill::kTypeVPN) ||
+      (service_type->GetString() == shill::kTypeCellular)) {
     stub_services_.RemoveKey(service_path);
     RemoveService(service_path);
     return true;

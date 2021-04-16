@@ -181,6 +181,38 @@ void FakeHermesEuiccClient::AddCarrierProfile(
       installed_profiles);
 }
 
+bool FakeHermesEuiccClient::RemoveCarrierProfile(
+    const dbus::ObjectPath& euicc_path,
+    const dbus::ObjectPath& carrier_profile_path) {
+  // Remove entry from profile service path map.
+  auto profile_service_path_map_iter =
+      profile_service_path_map_.find(carrier_profile_path);
+  if (profile_service_path_map_iter == profile_service_path_map_.end()) {
+    return false;
+  }
+  profile_service_path_map_.erase(profile_service_path_map_iter);
+
+  // Remove profile from Euicc properties.
+  Properties* euicc_properties = GetProperties(euicc_path);
+  std::vector<dbus::ObjectPath> installed_profiles =
+      euicc_properties->installed_carrier_profiles().value();
+  auto installed_carrier_profiles_iter =
+      std::find(installed_profiles.begin(), installed_profiles.end(),
+                carrier_profile_path);
+  if (installed_carrier_profiles_iter == installed_profiles.end()) {
+    return false;
+  }
+
+  installed_profiles.erase(installed_carrier_profiles_iter);
+  euicc_properties->installed_carrier_profiles().ReplaceValue(
+      installed_profiles);
+
+  // Remove profile dbus object.
+  HermesProfileClient::Get()->GetTestInterface()->ClearProfile(
+      carrier_profile_path);
+  return true;
+}
+
 void FakeHermesEuiccClient::QueueHermesErrorStatus(
     HermesResponseStatus status) {
   error_status_queue_.push(status);
@@ -410,20 +442,11 @@ void FakeHermesEuiccClient::DoUninstallProfile(
     return;
   }
 
-  Properties* euicc_properties = GetProperties(euicc_path);
-  std::vector<dbus::ObjectPath> installed_profiles =
-      euicc_properties->installed_carrier_profiles().value();
-  auto it = std::find(installed_profiles.begin(), installed_profiles.end(),
-                      carrier_profile_path);
-  if (it == installed_profiles.end()) {
-    std::move(callback).Run(HermesResponseStatus::kErrorUnknown);
-    return;
-  }
-
-  installed_profiles.erase(it);
-  euicc_properties->installed_carrier_profiles().ReplaceValue(
-      installed_profiles);
-  std::move(callback).Run(HermesResponseStatus::kSuccess);
+  // TODO(azeemarshad): Remove Shill service after removing carrier profile.
+  bool remove_success = RemoveCarrierProfile(euicc_path, carrier_profile_path);
+  std::move(callback).Run(remove_success
+                              ? HermesResponseStatus::kSuccess
+                              : HermesResponseStatus::kErrorInvalidIccid);
 }
 
 // Creates cellular service in shill for the given carrier profile path.

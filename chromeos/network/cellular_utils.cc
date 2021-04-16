@@ -64,6 +64,10 @@ std::vector<CellularESimProfile> GenerateProfilesFromEuicc(
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
 
+    // Skip profiles that haven't received iccid property updates yet.
+    if (profile_properties->iccid().value().empty())
+      continue;
+
     // Only consider profiles of type kOperational. Other profile types are only
     // used for testing and should not be exposed to the UI.
     if (profile_properties->profile_class().value() !=
