@@ -213,35 +213,29 @@ END_METADATA
 class CaptionBubbleLabel : public views::Label {
  public:
   METADATA_HEADER(CaptionBubbleLabel);
-  CaptionBubbleLabel() {
-    // TODO(crbug.com/1191091): Override GetAccessibleNodeData and set the role
-    // of the CaptionBubbleLabel to be kDocument, rather than adding a kDocument
-    // as a virtual view. This is a temporary fix to ensure that the kDocument
-    // node appears in the accessibility tree.
+  CaptionBubbleLabel() = default;
+
+  ~CaptionBubbleLabel() override = default;
+  CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
+  CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     // Views are not supposed to be documents (see
     // `ViewAccessibility::IsValidRoleForViews` for more information) but we
     // make an exception here. The CaptionBubbleLabel is designed to be
     // interacted with by a braille display in virtual buffer mode. In order to
     // activate the virtual buffer in NVDA, we set the top-level virtual view in
     // CaptionBubbleLabel to be a readonly document.
-    auto ax_document = std::make_unique<views::AXVirtualView>();
-    ax_document->GetCustomData().role = ax::mojom::Role::kDocument;
-    ax_document->GetCustomData().SetRestriction(
-        ax::mojom::Restriction::kReadOnly);
-    GetViewAccessibility().AddVirtualChildView(std::move(ax_document));
+    node_data->role = ax::mojom::Role::kDocument;
+    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   }
-
-  ~CaptionBubbleLabel() override = default;
-  CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
-  CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
 
   void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
-    auto& ax_document = GetViewAccessibility().virtual_children()[0];
-    auto& ax_lines = ax_document->children();
+    auto& ax_lines = GetViewAccessibility().virtual_children();
     if (text.empty() && !ax_lines.empty()) {
-      ax_document->RemoveAllChildViews();
+      GetViewAccessibility().RemoveAllVirtualChildViews();
       return;
     }
 
@@ -261,7 +255,7 @@ class CaptionBubbleLabel : public views::Label {
     // Remove all ax_lines that don't have a corresponding line.
     size_t num_ax_lines = ax_lines.size();
     for (size_t i = num_lines; i < num_ax_lines; ++i) {
-      ax_document->RemoveChildView(ax_lines.back().get());
+      GetViewAccessibility().RemoveVirtualChildView(ax_lines.back().get());
     }
 
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
@@ -271,15 +265,14 @@ class CaptionBubbleLabel : public views::Label {
   void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
-    auto& ax_document = GetViewAccessibility().virtual_children()[0];
-    auto& ax_lines = ax_document->children();
+    auto& ax_lines = GetViewAccessibility().virtual_children();
 
     // Add a new virtual child for a new line of text.
     DCHECK(line_index <= ax_lines.size());
     if (line_index == ax_lines.size()) {
       auto ax_line = std::make_unique<views::AXVirtualView>();
       ax_line->GetCustomData().role = ax::mojom::Role::kStaticText;
-      ax_document->AddChildView(std::move(ax_line));
+      GetViewAccessibility().AddVirtualChildView(std::move(ax_line));
     }
 
     // Set the virtual child's name as line text.

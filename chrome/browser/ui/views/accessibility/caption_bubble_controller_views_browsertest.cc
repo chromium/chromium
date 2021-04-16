@@ -162,24 +162,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
   }
 
-  size_t GetNumberAXDocumentNodes() {
-    return GetLabel()->GetViewAccessibility().virtual_children().size();
-  }
-
-  ui::AXNodeData GetAXDocumentNodeData() {
-    auto& ax_document =
-        GetLabel()->GetViewAccessibility().virtual_children()[0];
-    return ax_document->GetCustomData();
-  }
-
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {
     std::vector<ui::AXNodeData> node_datas;
     views::Label* label = GetLabel();
     if (!label)
       return node_datas;
-    auto& ax_document =
-        GetLabel()->GetViewAccessibility().virtual_children()[0];
-    auto& ax_lines = ax_document->children();
+    auto& ax_lines = GetLabel()->GetViewAccessibility().virtual_children();
     for (auto& ax_line : ax_lines) {
       node_datas.push_back(ax_line->GetCustomData());
     }
@@ -866,13 +854,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
   OnPartialTranscription("Capybaras are the world's largest rodents.");
 
-  // There is 1 readonly document in the label.
-  EXPECT_EQ(1u, GetNumberAXDocumentNodes());
-  EXPECT_EQ(ax::mojom::Role::kDocument, GetAXDocumentNodeData().role);
-  EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
-            GetAXDocumentNodeData().GetRestriction());
+  // The label is a readonly document.
+  ui::AXNodeData node_data;
+  GetLabel()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
+  EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
 
-  // There is 1 staticText node in the document.
+  // There is 1 staticText node in the label.
   EXPECT_EQ(1u, GetAXLinesNodeData().size());
   EXPECT_EQ(ax::mojom::Role::kStaticText, GetAXLinesNodeData()[0].role);
   EXPECT_EQ("Capybaras are the world's largest rodents.",
