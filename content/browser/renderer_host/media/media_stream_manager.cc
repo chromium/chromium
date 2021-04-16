@@ -699,7 +699,7 @@ void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
         base::BindOnce(&MediaStreamManager::SendMessageToNativeLog, message));
     return;
   }
-  DVLOG(1) << message;
+  VLOG(1) << message;
 
   MediaStreamManager* msm = g_media_stream_manager_tls_ptr.Pointer()->Get();
   if (!msm) {
