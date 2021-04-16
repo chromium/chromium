@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "gin/interceptor.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
@@ -33,7 +34,8 @@ namespace chrome_pdf {
 // `PostMessageReceiver`'s lifetime is managed by the V8 garbage collector,
 // meaning it can outlive the `Client`. Messages are dropped if the `Client` is
 // destroyed.
-class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver> {
+class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver>,
+                                  public gin::NamedPropertyInterceptor {
  public:
   // The interface for a plugin client that handles messages from its embedder.
   class Client {
@@ -72,6 +74,15 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver> {
       v8::Isolate* isolate) override;
   const char* GetTypeName() override;
 
+  // gin::NamedPropertyInterceptor:
+  v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
+                                        const std::string& property) override;
+  std::vector<std::string> EnumerateNamedProperties(
+      v8::Isolate* isolate) override;
+
+  // Lazily creates and retrieves `function_template_`.
+  v8::Local<v8::FunctionTemplate> GetFunctionTemplate();
+
   // Converts `message` so it can be consumed by `client_`.
   std::unique_ptr<base::Value> ConvertMessage(v8::Local<v8::Value> message);
 
@@ -80,11 +91,15 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver> {
 
   std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
 
+  v8::Persistent<v8::FunctionTemplate> function_template_;
+
   v8::Isolate* isolate_;
 
   base::WeakPtr<Client> client_;
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
+
+  base::WeakPtrFactory<PostMessageReceiver> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf

@@ -5,9 +5,12 @@
 #include "pdf/post_message_receiver.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,13 +18,21 @@
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "gin/function_template.h"
 #include "gin/handle.h"
+#include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+constexpr char kPropertyName[] = "postMessage";
+
+}  // namespace
 
 // static
 gin::WrapperInfo PostMessageReceiver::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -44,29 +55,63 @@ PostMessageReceiver::PostMessageReceiver(
     v8::Isolate* isolate,
     base::WeakPtr<Client> client,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner)
-    : isolate_(isolate),
+    : gin::NamedPropertyInterceptor(isolate, this),
+      isolate_(isolate),
       client_(std::move(client)),
       client_task_runner_(std::move(client_task_runner)) {}
 
 gin::ObjectTemplateBuilder PostMessageReceiver::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  // The function template needs to be created with a repeating callback instead
-  // of a member function pointer (MFP). Gin expects the first parameter for a
-  // callback to a MFP to be the JavaScript `this` object corresponding to this
-  // scriptable object exposed through Blink. However, the actual receiving
-  // object for a plugins is a HTMLEmbedElement and Blink internally forwards
-  // the parameters to this scriptable object.
+  // `gin::ObjectTemplateBuilder::SetMethod()` can't be used here because it
+  // would create a function template which expects the first parameter to a
+  // member function pointer to be the JavaScript `this` object corresponding
+  // to this scriptable object exposed through Blink. However, the actual
+  // receiving object for a plugin is an HTMLEmbedElement and Blink internally
+  // forwards the parameters to this scriptable object.
   //
-  // `base::Unretained(this)` is safe to use because the callback will only be
-  // called within the lifetime of the wrapped PostMessageReceiver object.
+  // Also, passing a callback would cause Gin to ignore the target. Because Gin
+  // creates the object template of a type only once per isolate, the member
+  // method of the first `PostMessageReceiver` instance would get effectively
+  // treated like a static method for all other instances.
+  //
+  // An interceptor allows for the creation of a function template per instance.
   return gin::Wrappable<PostMessageReceiver>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("postMessage",
-                 base::BindRepeating(&PostMessageReceiver::PostMessage,
-                                     base::Unretained(this)));
+      .AddNamedPropertyInterceptor();
 }
 
 const char* PostMessageReceiver::GetTypeName() {
   return "ChromePdfPostMessageReceiver";
+}
+
+v8::Local<v8::Value> PostMessageReceiver::GetNamedProperty(
+    v8::Isolate* isolate,
+    const std::string& property) {
+  DCHECK_EQ(isolate_, isolate);
+
+  if (property != kPropertyName)
+    return v8::Local<v8::Value>();
+
+  return GetFunctionTemplate()
+      ->GetFunction(isolate->GetCurrentContext())
+      .ToLocalChecked();
+}
+
+std::vector<std::string> PostMessageReceiver::EnumerateNamedProperties(
+    v8::Isolate* isolate) {
+  DCHECK_EQ(isolate_, isolate);
+  return {kPropertyName};
+}
+
+v8::Local<v8::FunctionTemplate> PostMessageReceiver::GetFunctionTemplate() {
+  if (function_template_.IsEmpty()) {
+    function_template_.Reset(
+        isolate_,
+        gin::CreateFunctionTemplate(
+            isolate_, base::BindRepeating(&PostMessageReceiver::PostMessage,
+                                          weak_factory_.GetWeakPtr())));
+  }
+
+  return function_template_.Get(isolate_);
 }
 
 std::unique_ptr<base::Value> PostMessageReceiver::ConvertMessage(
