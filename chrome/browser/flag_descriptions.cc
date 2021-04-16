@@ -3958,6 +3958,10 @@ const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "
     "streaming";
 
+const char kCategoricalSearchName[] = "Launcher Categorical Search";
+const char kCategoricalSearchDescription[] =
+    "Launcher search results grouped by categories";
+
 const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";
 const char kCdmFactoryDaemonDescription[] =
     "Use the CDM daemon instead of the library CDM";

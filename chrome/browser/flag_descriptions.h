@@ -2278,6 +2278,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 
+extern const char kCategoricalSearchName[];
+extern const char kCategoricalSearchDescription[];
+
 extern const char kCdmFactoryDaemonName[];
 extern const char kCdmFactoryDaemonDescription[];
 

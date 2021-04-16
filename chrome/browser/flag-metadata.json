@@ -503,6 +503,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "categorical-search",
+    "owners": [ "tby", "thanhdng", "wrong" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "cct-incognito",
     "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 93

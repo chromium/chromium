@@ -79,6 +79,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
+// Enables normalization of search results in the launcher.
+ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
+
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListSearchAutocompleteEnabled();
 bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
@@ -97,10 +100,12 @@ bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
 bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
 bool ASH_PUBLIC_EXPORT IsOmniboxRichEntitiesEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
+bool ASH_PUBLIC_EXPORT IsCategoricalSearchEnabled();
 
 std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
 std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();
 std::string ASH_PUBLIC_EXPORT AppSearchResultRankerPredictorName();
+std::string ASH_PUBLIC_EXPORT CategoricalSearchType();
 
 }  // namespace app_list_features
 

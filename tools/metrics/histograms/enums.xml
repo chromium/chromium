@@ -47483,6 +47483,7 @@ from previous Chrome versions.
   <int value="975104092" label="show-taps"/>
   <int value="975463471" label="WebViewExtraHeadersSameOriginOnly:enabled"/>
   <int value="976079108" label="TouchpadOverscrollHistoryNavigation:disabled"/>
+  <int value="976767701" label="CategoricalSearch:disabled"/>
   <int value="977140835" label="OmniboxMostVisitedTiles:disabled"/>
   <int value="977968353" label="WebUITabStrip:disabled"/>
   <int value="978712907" label="PrintServerUi:disabled"/>
@@ -47557,6 +47558,7 @@ from previous Chrome versions.
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>
   <int value="1043291220" label="OverviewSwipeToClose:disabled"/>
   <int value="1043334401" label="disable-slimming-paint-invalidation"/>
+  <int value="1043511715" label="CategoricalSearch:enabled"/>
   <int value="1044210009" label="SharingPeerConnectionReceiver:disabled"/>
   <int value="1044928476"
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
