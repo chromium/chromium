@@ -535,9 +535,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginDelay) {
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
-    int delay;
-    if (value.GetAsInteger(&delay))
-      device_local_accounts->set_auto_login_delay(delay);
+    if (value.is_int())
+      device_local_accounts->set_auto_login_delay(value.GetInt());
     else
       NOTREACHED();
   } else if (path == kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled) {
