@@ -46,6 +46,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cras.DeviceGain" units="level" expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The gain of a device which is recorded when closing a device. The original
+    value of UI gain scaler is between 0 to 10. The gain here has been
+    multiplied by 100.
+  </summary>
+</histogram>
+
 <histogram name="Cras.DeviceTypeInput" enum="CrasDeviceType"
     expires_after="2021-12-01">
   <owner>yuhsuan@chromium.org</owner>

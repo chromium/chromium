@@ -3879,6 +3879,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SilentHotword" label="Silent hotword device."/>
   <suffix name="Unknown" label="Unknown device. It should not be used."/>
   <suffix name="USB" label="USB device."/>
+  <affected-histogram name="Cras.DeviceGain"/>
   <affected-histogram name="Cras.DeviceVolume"/>
 </histogram_suffixes>
 
