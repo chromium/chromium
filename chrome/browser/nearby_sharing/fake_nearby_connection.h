@@ -25,11 +25,14 @@ class FakeNearbyConnection : public NearbyConnection {
   std::vector<uint8_t> GetWrittenData();
 
   bool IsClosed();
+  bool has_read_callback_been_run() { return has_read_callback_been_run_; }
 
  private:
   void MaybeRunCallback();
 
   bool closed_ = false;
+  bool has_read_callback_been_run_ = false;
+
   ReadCallback callback_;
   std::queue<std::vector<uint8_t>> read_data_;
   std::queue<std::vector<uint8_t>> write_data_;
