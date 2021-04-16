@@ -302,6 +302,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self setContentOffset:offset];
 }
 
+- (void)setContentOffsetToTop {
+  [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+}
+
 - (void)updateContentSuggestionForCurrentLayout {
   [self updateFeedInsetsForContentSuggestions];
 

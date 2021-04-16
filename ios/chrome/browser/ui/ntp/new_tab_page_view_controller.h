@@ -69,6 +69,9 @@
 // set the initial scroll position.
 - (void)setSavedContentOffset:(CGFloat)offset;
 
+// Sets the feed collection contentOffset to the top of the page.
+- (void)setContentOffsetToTop;
+
 // Updates the ContentSuggestionsViewController and its header for the current
 // layout.
 // TODO(crbug.com/1170995): Remove once ContentSuggestions can be added as part

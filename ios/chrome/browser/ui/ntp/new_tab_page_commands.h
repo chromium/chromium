@@ -16,6 +16,10 @@
 // layout to reflect this.
 - (void)updateDiscoverFeedLayout;
 
+// Called when the NTP's content offset needs to be set to return to the top of
+// the page.
+- (void)setContentOffsetToTop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMMANDS_H_

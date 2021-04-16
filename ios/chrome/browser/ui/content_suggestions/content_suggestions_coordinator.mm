@@ -594,6 +594,15 @@
   [self.ntpCommandHandler updateDiscoverFeedLayout];
 }
 
+- (void)returnToRecentTabWasAdded {
+  [self.ntpCommandHandler updateDiscoverFeedLayout];
+  if ([self.ntpMediator isRefactoredFeedVisible]) {
+    [self.ntpCommandHandler setContentOffsetToTop];
+  } else {
+    [self.suggestionsViewController setContentOffset:0];
+  }
+}
+
 #pragma mark - ContentSuggestionsActionHandler
 
 - (void)loadMoreFeedArticles {

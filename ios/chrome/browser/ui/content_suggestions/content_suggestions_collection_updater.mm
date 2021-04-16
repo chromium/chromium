@@ -331,6 +331,35 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
   [self.collectionViewController.collectionView reloadData];
 }
 
+- (void)addSection:(ContentSuggestionsSectionInformation*)sectionInfo
+        completion:(void (^)(void))completion {
+  SectionIdentifier sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
+  CSCollectionViewModel* model =
+      self.collectionViewController.collectionViewModel;
+
+  if ([model hasSectionForSectionIdentifier:sectionIdentifier])
+    return;
+
+  auto addSectionBlock = ^{
+    NSIndexSet* addedSection =
+        [self addSectionsForSectionInfoToModel:@[ sectionInfo ]];
+    [self.collectionViewController.collectionView insertSections:addedSection];
+    NSArray<NSIndexPath*>* addedItems = [self
+        addSuggestionsToModel:[self.dataSource itemsForSectionInfo:sectionInfo]
+              withSectionInfo:sectionInfo];
+    [self.collectionViewController.collectionView
+        insertItemsAtIndexPaths:addedItems];
+  };
+
+  [UIView performWithoutAnimation:^{
+    [self.collectionViewController.collectionView
+        performBatchUpdates:addSectionBlock
+                 completion:^(BOOL finished) {
+                   completion();
+                 }];
+  }];
+}
+
 - (void)clearSection:(ContentSuggestionsSectionInformation*)sectionInfo {
   SectionIdentifier sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
   CSCollectionViewModel* model =

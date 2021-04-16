@@ -310,8 +310,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   self.returnToRecentTabItem.subtitle = subtitle;
   self.showMostRecentTabStartSurfaceTile = YES;
 
-  // TODO(crbug.com/1187303): Create insert section to add a section.
-  [self.dataSink reloadAllData];
+  [self.dataSink addSection:self.returnToRecentTabSectionInfo
+                 completion:^{
+                   [self.discoverFeedDelegate returnToRecentTabWasAdded];
+                 }];
 }
 
 - (void)hideRecentTabTile {
