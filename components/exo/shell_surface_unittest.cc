@@ -1452,6 +1452,11 @@ TEST_F(ShellSurfaceTest, Overlay) {
   EXPECT_NE(shell_surface->GetWidget()->GetFocusManager()->GetFocusedView(),
             textfield_ptr);
 
+  EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+  EXPECT_EQ(gfx::Size(100, 100), shell_surface->overlay_widget_for_testing()
+                                     ->GetWindowBoundsInScreen()
+                                     .size());
+
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressKey(ui::VKEY_X, 0);
   generator->ReleaseKey(ui::VKEY_X, 0);
@@ -1495,6 +1500,63 @@ TEST_F(ShellSurfaceTest, Overlay) {
   generator->ReleaseKey(ui::VKEY_Y, 0);
   EXPECT_EQ(textfield_ptr->GetText(), u"y");
   EXPECT_TRUE(textfield_ptr->GetSelectedText().empty());
+}
+
+TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kSkipImeProcessing, true);
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+
+  EXPECT_FALSE(shell_surface->HasOverlay());
+
+  ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+  params.overlaps_frame = false;
+  shell_surface->AddOverlay(std::move(params));
+  EXPECT_TRUE(shell_surface->HasOverlay());
+
+  {
+    gfx::Size overlay_size =
+        shell_surface->GetWidget()->GetWindowBoundsInScreen().size();
+    overlay_size.set_height(overlay_size.height() - views::kCaptionButtonWidth);
+    EXPECT_EQ(overlay_size, shell_surface->overlay_widget_for_testing()
+                                ->GetWindowBoundsInScreen()
+                                .size());
+  }
+
+  shell_surface->OnSetFrame(SurfaceFrameType::NONE);
+  {
+    gfx::Size overlay_size =
+        shell_surface->GetWidget()->GetWindowBoundsInScreen().size();
+    EXPECT_EQ(overlay_size, shell_surface->overlay_widget_for_testing()
+                                ->GetWindowBoundsInScreen()
+                                .size());
+  }
+}
+
+TEST_F(ShellSurfaceTest, OverlayCanResize) {
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kSkipImeProcessing, true);
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+
+  EXPECT_FALSE(shell_surface->HasOverlay());
+  {
+    ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+    params.can_resize = false;
+    shell_surface->AddOverlay(std::move(params));
+  }
+  EXPECT_FALSE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+
+  shell_surface->RemoveOverlay();
+  {
+    ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+    params.can_resize = true;
+    shell_surface->AddOverlay(std::move(params));
+  }
+  EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
 }
 
 }  // namespace exo

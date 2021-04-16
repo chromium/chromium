@@ -150,6 +150,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     ~OverlayParams();
 
     bool translucent = false;
+    bool overlaps_frame = true;
+    base::Optional<bool> can_resize;
+    // TODO(oshima): It's unlikely for overlay not to request focus.
+    // Remove this.
     bool focusable = true;
     std::unique_ptr<views::View> contents_view;
   };
@@ -239,6 +243,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   }
 
   bool server_side_resize() const { return server_side_resize_; }
+
+  const views::Widget* overlay_widget_for_testing() const {
+    return overlay_widget_.get();
+  }
 
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
@@ -358,8 +366,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
 
-  bool skip_ime_processing_ = false;
+  // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;
+  bool skip_ime_processing_ = false;
+  bool overlay_overlaps_frame_ = true;
+  base::Optional<bool> overlay_can_resize_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellSurfaceBase);
 };
