@@ -303,11 +303,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "autofill-enable-company-name",
-    "owners": [ "sebsg" ],
-    "expiry_milestone": 73
-  },
-  {
     "name": "autofill-enable-google-issued-card",
     "owners": [ "siashah" ],
     "expiry_milestone": 92
@@ -343,21 +338,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "autofill-enforce-min-required-fields-for-heuristics",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 73
-  },
-  {
-    "name": "autofill-enforce-min-required-fields-for-query",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 73
-  },
-  {
-    "name": "autofill-enforce-min-required-fields-for-upload",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 73
-  },
-  {
     "name": "autofill-fix-offer-in-incognito",
     "owners": [ "siyua" ],
     "expiry_milestone": 97
@@ -391,11 +371,6 @@
     "name": "autofill-prune-suggestions",
     "owners": [ "ftirelo", "tmartino" ],
     "expiry_milestone": 78
-  },
-  {
-    "name": "autofill-restrict-formless-form-extraction",
-    "owners": [ "rogerm" ],
-    "expiry_milestone": 76
   },
   {
     "name": "autofill-save-card-dismiss-on-navigation",
@@ -1140,11 +1115,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "discover-app",
-    "owners": [ "alemate" ],
-    "expiry_milestone": 80
-  },
-  {
     "name": "display-alignment-assistance",
     "owners": [ "baileyberro", "cros-peripherals@google.com" ],
     "expiry_milestone": 89
@@ -1510,11 +1480,6 @@
     "name": "enable-core-location-implementation",
     "owners": [ "jameshollyer@google.com" ],
     "expiry_milestone": 88
-  },
-  {
-    "name": "enable-credit-card-assist",
-    "owners": [ "ftirelo", "gogerald" ],
-    "expiry_milestone": 76
   },
   {
     "name": "enable-critical-persisted-tab-data",
