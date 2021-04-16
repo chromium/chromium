@@ -67,6 +67,14 @@ class TtsService : public mojom::TtsService,
     return pending_tts_stream_factory_receivers_;
   }
 
+  void set_keep_process_alive_for_testing(bool value) {
+    keep_process_alive_for_testing_ = value;
+  }
+
+  mojo::Receiver<mojom::TtsService>* receiver_for_testing() {
+    return &service_receiver_;
+  }
+
   // mojom::TtsService:
   void BindTtsStreamFactory(
       mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
@@ -137,6 +145,9 @@ class TtsService : public mojom::TtsService,
 
   // The main thread's task runner handle.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Keeps this process alive for testing.
+  bool keep_process_alive_for_testing_ = false;
 
   base::WeakPtrFactory<TtsService> weak_factory_{this};
 };

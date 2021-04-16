@@ -15,12 +15,14 @@ PlaybackTtsStream::PlaybackTtsStream(
     mojo::PendingReceiver<mojom::PlaybackTtsStream> receiver)
     : owner_(owner), stream_receiver_(this, std::move(receiver)) {
   stream_receiver_.set_disconnect_handler(base::BindOnce(
-      [](TtsService* owner) {
+      [](TtsService* owner,
+         mojo::Receiver<mojom::PlaybackTtsStream>* receiver) {
         // The remote which lives in component extension js has been
         // disconnected due to destruction or error.
+        receiver->reset();
         owner->MaybeExit();
       },
-      owner));
+      owner, &stream_receiver_));
 }
 
 PlaybackTtsStream::~PlaybackTtsStream() = default;

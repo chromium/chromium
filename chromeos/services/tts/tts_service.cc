@@ -113,9 +113,11 @@ void TtsService::Resume() {
 }
 
 void TtsService::MaybeExit() {
-  if (google_tts_stream_ && !google_tts_stream_->IsBound() &&
-      playback_tts_stream_ && !playback_tts_stream_->IsBound()) {
-    exit(0);
+  if ((!google_tts_stream_ || !google_tts_stream_->IsBound()) &&
+      (!playback_tts_stream_ || !playback_tts_stream_->IsBound())) {
+    service_receiver_.reset();
+    if (!keep_process_alive_for_testing_)
+      exit(0);
   }
 }
 

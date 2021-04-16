@@ -164,6 +164,12 @@ void TtsEngineExtensionObserverChromeOS::BindTtsStreamFactory(
             content::ServiceProcessHost::Options()
                 .WithDisplayName("TtsService")
                 .Pass());
+
+    tts_service_.set_disconnect_handler(base::BindOnce(
+        [](mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service) {
+          tts_service->reset();
+        },
+        &tts_service_));
   }
 
   // Always create a new audio stream for the tts stream. It is assumed once the

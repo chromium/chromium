@@ -52,12 +52,13 @@ GoogleTtsStream::GoogleTtsStream(
   }
 
   stream_receiver_.set_disconnect_handler(base::BindOnce(
-      [](TtsService* owner) {
+      [](TtsService* owner, mojo::Receiver<mojom::GoogleTtsStream>* receiver) {
         // The remote which lives in component extension js has been
         // disconnected due to destruction or error.
+        receiver->reset();
         owner->MaybeExit();
       },
-      owner));
+      owner, &stream_receiver_));
 }
 
 GoogleTtsStream::~GoogleTtsStream() = default;

@@ -125,6 +125,9 @@ class TtsServiceTest : public testing::Test {
     tts_stream_factory.FlushForTesting();
   }
 
+  // testing::Test:
+  void SetUp() override { service_.set_keep_process_alive_for_testing(true); }
+
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::TtsService> remote_service_;
   TtsService service_;
@@ -140,10 +143,20 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
   InitTtsStreamFactory(&tts_stream_factory1);
   EXPECT_TRUE(
       service_.pending_tts_stream_factory_receivers_for_testing().empty());
-  tts_stream_factory1->CreatePlaybackTtsStream(
-      base::BindOnce([](PendingRemote<mojom::PlaybackTtsStream> stream,
-                        int32_t sample_rate, int32_t buffer_size) {}));
+
+  // Hang on to the pending remote obtained in the callback. Otherwise, it
+  // disconnects and the tts service tries to exit.
+  PendingRemote<mojom::PlaybackTtsStream> playback_remote;
+  tts_stream_factory1->CreatePlaybackTtsStream(base::BindOnce(
+      [](PendingRemote<mojom::PlaybackTtsStream>* outer_remote,
+         PendingRemote<mojom::PlaybackTtsStream> stream, int32_t sample_rate,
+         int32_t buffer_size) { *outer_remote = std::move(stream); },
+      &playback_remote));
   tts_stream_factory1.FlushForTesting();
+
+  // There's an active playback stream, so the tts service receiver should still
+  // be bound.
+  EXPECT_TRUE(service_.receiver_for_testing()->is_bound());
 
   // The receiver resets the connection once the playback stream is created.
   EXPECT_FALSE(tts_stream_factory1.is_connected());
@@ -158,7 +171,10 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
       service_.pending_tts_stream_factory_receivers_for_testing().empty());
   tts_stream_factory2->CreatePlaybackTtsStream(
       base::BindOnce([](PendingRemote<mojom::PlaybackTtsStream> stream,
-                        int32_t sample_rate, int32_t buffer_size) {}));
+                        int32_t sample_rate, int32_t buffer_size) {
+        // |stream| goes out of scope here and disconnects the playback stream,
+        // triggering tts service to exit.
+      }));
   tts_stream_factory2.FlushForTesting();
 
   // Neither remote is connected.
@@ -169,6 +185,10 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
   EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
   EXPECT_TRUE(
       service_.pending_tts_stream_factory_receivers_for_testing().empty());
+
+  // Finally, the tts service receiver should have been reset, indicating the
+  // process would have been exited in production.
+  EXPECT_FALSE(service_.receiver_for_testing()->is_bound());
 }
 
 TEST_F(TtsServiceTest, BindMultipleStreamFactoriesCreateInterleaved) {
