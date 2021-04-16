@@ -112,12 +112,6 @@ struct URLResponseHead {
   FetchResponseSource service_worker_response_source =
       FetchResponseSource.kUnspecified;
 
-  // True when a request whose mode is |CORS| or |CORS-with-forced-preflight|
-  // is sent to a ServiceWorker but FetchEvent.respondWith is not called. So the
-  // renderer has to resend the request with skip service worker flag
-  // considering the CORS preflight logic.
-  bool was_fallback_required_by_service_worker = false;
-
   // The URL list of the Response object the service worker passed to
   // respondWith() to create this response. For example, if the service worker
   // calls respondWith(fetch('http://example.com/a')) and http://example.com/a

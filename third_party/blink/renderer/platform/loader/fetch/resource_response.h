@@ -344,15 +344,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     service_worker_response_source_ = value;
   }
 
-  // Obsolete after OOB-CORS.
-  // TODO(falken): Remove this.
-  bool WasFallbackRequiredByServiceWorker() const {
-    return was_fallback_required_by_service_worker_;
-  }
-  void SetWasFallbackRequiredByServiceWorker(bool value) {
-    was_fallback_required_by_service_worker_ = value;
-  }
-
   network::mojom::FetchResponseType GetType() const { return response_type_; }
   void SetType(network::mojom::FetchResponseType value) {
     response_type_ = value;
@@ -587,9 +578,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   // kUnspecified if |was_fetched_via_service_worker| is false.
   network::mojom::FetchResponseSource service_worker_response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
-
-  // Was the fallback request with skip service worker flag required.
-  bool was_fallback_required_by_service_worker_ = false;
 
   // True if service worker navigation preload was performed due to
   // the request for this resource.

@@ -285,7 +285,6 @@ void ThreadableLoader::ResponseReceived(Resource* resource,
                                         const ResourceResponse& response) {
   DCHECK(client_);
   DCHECK_EQ(resource, GetResource());
-  DCHECK(!response.WasFallbackRequiredByServiceWorker());
 
   checker_.ResponseReceived();
 

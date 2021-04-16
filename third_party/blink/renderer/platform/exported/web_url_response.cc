@@ -362,10 +362,6 @@ void WebURLResponse::SetServiceWorkerResponseSource(
   resource_response_->SetServiceWorkerResponseSource(value);
 }
 
-void WebURLResponse::SetWasFallbackRequiredByServiceWorker(bool value) {
-  resource_response_->SetWasFallbackRequiredByServiceWorker(value);
-}
-
 void WebURLResponse::SetType(network::mojom::FetchResponseType value) {
   resource_response_->SetType(value);
 }

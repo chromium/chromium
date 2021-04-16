@@ -803,8 +803,6 @@ void WebURLLoader::PopulateURLResponse(
   response->SetWasFetchedViaSPDY(head.was_fetched_via_spdy);
   response->SetWasFetchedViaServiceWorker(head.was_fetched_via_service_worker);
   response->SetServiceWorkerResponseSource(head.service_worker_response_source);
-  response->SetWasFallbackRequiredByServiceWorker(
-      head.was_fallback_required_by_service_worker);
   response->SetType(head.response_type);
   response->SetPadding(head.padding);
   WebVector<KURL> url_list_via_service_worker(

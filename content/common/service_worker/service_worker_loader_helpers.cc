@@ -90,7 +90,6 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
     const blink::mojom::FetchAPIResponse& response,
     network::mojom::URLResponseHead* out_head) {
   out_head->was_fetched_via_service_worker = true;
-  out_head->was_fallback_required_by_service_worker = false;
   out_head->url_list_via_service_worker = response.url_list;
   out_head->response_type = response.response_type;
   out_head->padding = response.padding;

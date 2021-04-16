@@ -257,10 +257,6 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetServiceWorkerResponseSource(
       network::mojom::FetchResponseSource);
 
-  // Obsolete after OOB-CORS.
-  // TODO(falken): Remove this.
-  BLINK_PLATFORM_EXPORT void SetWasFallbackRequiredByServiceWorker(bool);
-
   // https://fetch.spec.whatwg.org/#concept-response-type
   BLINK_PLATFORM_EXPORT void SetType(network::mojom::FetchResponseType);
   BLINK_PLATFORM_EXPORT network::mojom::FetchResponseType GetType() const;

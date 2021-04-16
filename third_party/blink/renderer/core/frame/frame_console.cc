@@ -104,8 +104,6 @@ void FrameConsole::ReportResourceResponseReceived(
     return;
   if (response.HttpStatusCode() < 400)
     return;
-  if (response.WasFallbackRequiredByServiceWorker())
-    return;
   String message =
       "Failed to load resource: the server responded with a status of " +
       String::Number(response.HttpStatusCode()) + " (" +
