@@ -91,8 +91,8 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 // TabGridDialog is showing. If so, don't show the undo bar because TabGridDialog
                 // has its own undo bar. See crbug.com/1119899. Note that we don't disable attempts
                 // to dismiss snack bar to make sure that snack bar state is in sync with tab model.
-                if (dialogVisibilitySupplier != null && dialogVisibilitySupplier.get()
-                        && showingUndoBar) {
+                if (showingUndoBar && dialogVisibilitySupplier != null
+                        && dialogVisibilitySupplier.get()) {
                     return true;
                 }
                 // If grid / group M5 is enabled, show the undo snack bar regardless of whether
