@@ -1385,27 +1385,14 @@ void LayoutGrid::LayoutGridItems() {
     UpdateAutoMarginsInColumnAxisIfNeeded(*child);
     UpdateAutoMarginsInRowAxisIfNeeded(*child);
 
-    const GridArea& area = grid_->GridItemArea(*child);
 #if DCHECK_IS_ON()
+    const GridArea& area = grid_->GridItemArea(*child);
     DCHECK_LT(area.columns.StartLine(),
               track_sizing_algorithm_.Tracks(kForColumns).size());
     DCHECK_LT(area.rows.StartLine(),
               track_sizing_algorithm_.Tracks(kForRows).size());
 #endif
     SetLogicalPositionForChild(*child);
-
-    // Keep track of children overflowing their grid area as we might need to
-    // paint them even if the grid-area is not visible. Using physical
-    // dimensions for simplicity, so we can forget about orthogonalty.
-    LayoutUnit child_grid_area_height =
-        child->OverrideContainingBlockContentHeight();
-    LayoutUnit child_grid_area_width =
-        child->OverrideContainingBlockContentWidth();
-    LayoutRect grid_area_rect(
-        GridAreaLogicalPosition(area),
-        LayoutSize(child_grid_area_width, child_grid_area_height));
-    LayoutRect child_overflow_rect = child->FrameRect();
-    child_overflow_rect.SetSize(child->VisualOverflowRect().Size());
   }
 }
 
