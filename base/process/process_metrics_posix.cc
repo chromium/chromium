@@ -24,6 +24,10 @@
 #include <malloc.h>
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#include <features.h>
+#endif
+
 namespace base {
 
 int64_t TimeValToMicroseconds(const struct timeval& tv) {
@@ -114,18 +118,37 @@ size_t GetPageSize() {
   return pagesize;
 }
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+namespace {
+
+size_t GetMallocUsageMallinfo() {
+#if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+#if __GLIBC_PREREQ(2, 33)
+#define MALLINFO2_FOUND_IN_LIBC
+  struct mallinfo2 minfo = mallinfo2();
+#endif
+#endif  // defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+#if !defined(MALLINFO2_FOUND_IN_LIBC)
+  struct mallinfo minfo = mallinfo();
+#endif
+#undef MALLINFO2_FOUND_IN_LIBC
+#if BUILDFLAG(USE_TCMALLOC)
+  return minfo.uordblks;
+#else
+  return minfo.hblkhd + minfo.arena;
+#endif
+}
+
+}  // namespace
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+
 size_t ProcessMetrics::GetMallocUsage() {
 #if defined(OS_APPLE)
   malloc_statistics_t stats = {0};
   malloc_zone_statistics(nullptr, &stats);
   return stats.size_in_use;
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  struct mallinfo minfo = mallinfo();
-#if BUILDFLAG(USE_TCMALLOC)
-  return minfo.uordblks;
-#else
-  return minfo.hblkhd + minfo.arena;
-#endif
+  return GetMallocUsageMallinfo();
 #elif defined(OS_FUCHSIA)
   // TODO(fuchsia): Not currently exposed. https://crbug.com/735087.
   return 0;
