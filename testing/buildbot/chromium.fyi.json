@@ -19,32 +19,6 @@
       }
     ]
   },
-  "Linux Builder (goma cache silo)": {
-    "additional_compile_targets": [
-      "all"
-    ],
-    "scripts": [
-      {
-        "isolate_profile_data": true,
-        "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
-      }
-    ]
-  },
-  "Linux Builder (j-100) (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ],
-    "scripts": [
-      {
-        "isolate_profile_data": true,
-        "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
-      }
-    ]
-  },
   "Linux Builder (j-250) (reclient)": {
     "additional_compile_targets": [
       "all"
@@ -58,7 +32,7 @@
       }
     ]
   },
-  "Linux Builder (reclient)": {
+  "Linux Builder (j-500) (reclient)": {
     "additional_compile_targets": [
       "all"
     ],

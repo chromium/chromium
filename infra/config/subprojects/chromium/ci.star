@@ -3502,15 +3502,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "Linux Builder (goma cache silo)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "lgc",
-    ),
-    os = os.LINUX_DEFAULT,
-)
-
-ci.fyi_builder(
     name = "Linux Builder (deps-cache) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -3518,20 +3509,7 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
-    configure_kitchen = True,
-    kitchen_emulate_gce = True,
-    os = os.LINUX_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "Linux Builder (j-100) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "re",
-    ),
-    goma_backend = None,
-    reclient_instance = "rbe-chromium-trusted",
-    reclient_jobs = 100,
+    reclient_jobs = 500,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
@@ -3552,13 +3530,14 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "Linux Builder (reclient)",
+    name = "Linux Builder (j-500) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "re",
     ),
     goma_backend = None,
-    reclient_instance = "goma-rbe-chromium",
+    reclient_instance = "rbe-chromium-trusted",
+    reclient_jobs = 500,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
