@@ -2585,9 +2585,13 @@ source_set("spdy_test_tools") {
 
 source_set("quiche_test_tools") {
   testonly = true
-  sources = [ "quiche/common/platform/impl/quiche_test_impl.h" ]
+  sources = [
+    "quiche/common/platform/impl/quiche_test_helpers_impl.h",
+    "quiche/common/platform/impl/quiche_test_impl.h",
+  ]
   deps = [
     ":net",
+    ":test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -4377,7 +4381,6 @@ test("net_unittests") {
     "spdy/header_coalescer_test.cc",
     "spdy/http2_priority_dependencies_unittest.cc",
     "spdy/http2_push_promise_index_test.cc",
-    "spdy/platform/impl/spdy_test_helpers_impl.h",
     "spdy/spdy_buffer_unittest.cc",
     "spdy/spdy_http_stream_unittest.cc",
     "spdy/spdy_http_utils_unittest.cc",
