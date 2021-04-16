@@ -3,22 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/testing_browser_process_platform_part.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
-#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
+
+#if defined(OS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
 
 TestingBrowserProcessPlatformPart::TestingBrowserProcessPlatformPart() {
 #if defined(OS_MAC)
-  location_permission_manager_ =
-      std::make_unique<FakeSystemGeolocationPermissionsManager>();
+  geolocation_manager_ = std::make_unique<device::FakeGeolocationManager>();
 #endif
 }
 
 TestingBrowserProcessPlatformPart::~TestingBrowserProcessPlatformPart() {
 }
 #if defined(OS_MAC)
-void TestingBrowserProcessPlatformPart::SetLocationPermissionManager(
-    std::unique_ptr<device::GeolocationSystemPermissionManager>
-        location_permission_manager) {
-  location_permission_manager_ = std::move(location_permission_manager);
+void TestingBrowserProcessPlatformPart::SetGeolocationManager(
+    std::unique_ptr<device::GeolocationManager> geolocation_manager) {
+  geolocation_manager_ = std::move(geolocation_manager);
 }
 #endif

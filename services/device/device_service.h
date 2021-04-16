@@ -72,12 +72,12 @@ class SerialPortManagerImpl;
 #endif
 
 class DeviceService;
+class GeolocationManager;
 class PlatformSensorProvider;
 class PowerMonitorMessageBroadcaster;
 class PublicIpAddressLocationNotifier;
 class SensorProviderImpl;
 class TimeZoneMonitor;
-class GeolocationSystemPermissionManager;
 
 // NOTE: See the comments on the definitions of PublicIpAddressLocationNotifier,
 // |WakeLockContextCallback|, |CustomLocationProviderCallback| and
@@ -93,7 +93,7 @@ struct DeviceServiceParams {
   std::string geolocation_api_key;
   CustomLocationProviderCallback custom_location_provider_callback;
   bool use_gms_core_location_provider = false;
-  GeolocationSystemPermissionManager* location_permission_manager = nullptr;
+  GeolocationManager* geolocation_manager = nullptr;
   WakeLockContextCallback wake_lock_context_callback;
 
 #if defined(OS_ANDROID)

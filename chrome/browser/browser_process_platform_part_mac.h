@@ -17,7 +17,7 @@ class AppShimManager;
 }  // namespace apps
 
 namespace device {
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 }  // namespace device
 
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
@@ -33,15 +33,13 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   AppShimListener* app_shim_listener();
   apps::AppShimManager* app_shim_manager();
-  device::GeolocationSystemPermissionManager* location_permission_manager();
+  device::GeolocationManager* geolocation_manager();
 
   void SetGeolocationManagerForTesting(
-      std::unique_ptr<device::GeolocationSystemPermissionManager>
-          fake_location_manager);
+      std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
 
  protected:
-  std::unique_ptr<device::GeolocationSystemPermissionManager>
-      location_permission_manager_;
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 
  private:
   std::unique_ptr<apps::AppShimManager> app_shim_manager_;

@@ -73,8 +73,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   std::string GetUserAgent() override;
 
   bool CanAcceptUntrustedExchangesIfNeeded() override;
-  device::GeolocationSystemPermissionManager* GetLocationPermissionManager()
-      override;
+  device::GeolocationManager* GetGeolocationManager() override;
 
  private:
   class StubBadgeService;

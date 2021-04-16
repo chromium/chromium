@@ -26,7 +26,6 @@
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 #include "services/device/power_monitor/power_monitor_message_broadcaster.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/serial/serial_port_manager_impl.h"
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
@@ -95,8 +94,7 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     mojo::PendingReceiver<mojom::DeviceService> receiver) {
   GeolocationProviderImpl::SetGeolocationConfiguration(
       params->url_loader_factory, params->geolocation_api_key,
-      params->custom_location_provider_callback,
-      params->location_permission_manager,
+      params->custom_location_provider_callback, params->geolocation_manager,
       params->use_gms_core_location_provider);
   return std::make_unique<DeviceService>(std::move(params),
                                          std::move(receiver));

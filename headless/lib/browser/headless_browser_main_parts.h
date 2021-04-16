@@ -23,7 +23,7 @@
 #endif
 
 namespace device {
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 }  // namespace device
 
 namespace headless {
@@ -44,12 +44,15 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   void PostMainMessageLoopRun() override;
 #if defined(OS_MAC)
   void PreMainMessageLoopStart() override;
-  device::GeolocationSystemPermissionManager* GetLocationPermissionManager();
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void PostMainMessageLoopStart() override;
 #endif
   void QuitMainMessageLoop();
+
+#if defined(OS_MAC)
+  device::GeolocationManager* GetGeolocationManager();
+#endif
 
 #if defined(HEADLESS_USE_PREFS)
   PrefService* GetPrefs() { return local_state_.get(); }
@@ -74,8 +77,7 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
 #if defined(OS_MAC)
-  std::unique_ptr<device::GeolocationSystemPermissionManager>
-      location_permission_manager_;
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserMainParts);

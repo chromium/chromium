@@ -31,6 +31,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test/fake_geolocation_manager.cc",
+    "test/fake_geolocation_manager.h",
     "test/fake_sensor_and_provider.cc",
     "test/fake_sensor_and_provider.h",
     "test/fake_serial_port_client.cc",
@@ -70,11 +72,4 @@ source_set("test_support") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (is_mac) {
-    sources += [
-      "test/fake_geolocation_system_permission.cc",
-      "test/fake_geolocation_system_permission.h",
-    ]
-  }
 }

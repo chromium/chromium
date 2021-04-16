@@ -45,15 +45,17 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 
+#if defined(OS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
+
 using content_settings::PageSpecificContentSettings;
-using device::LocationSystemPermissionStatus;
 
 namespace {
 
@@ -276,14 +278,13 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
-  auto test_location_permission_manager =
-      std::make_unique<FakeSystemGeolocationPermissionsManager>();
-  FakeSystemGeolocationPermissionsManager* location_permission_manager =
-      test_location_permission_manager.get();
+  auto test_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  device::FakeGeolocationManager* geolocation_manager =
+      test_geolocation_manager.get();
   TestingBrowserProcess::GetGlobal()
       ->GetTestPlatformPart()
-      ->SetLocationPermissionManager(
-          std::move(test_location_permission_manager));
+      ->SetGeolocationManager(std::move(test_geolocation_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -302,8 +303,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
-  location_permission_manager->set_status(
-      LocationSystemPermissionStatus::kAllowed);
+  geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kAllowed);
 
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_ALLOW);
@@ -326,8 +327,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
             l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
   EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
 
-  location_permission_manager->set_status(
-      LocationSystemPermissionStatus::kDenied);
+  geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kDenied);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
@@ -348,14 +349,13 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
-  auto test_location_permission_manager =
-      std::make_unique<FakeSystemGeolocationPermissionsManager>();
-  test_location_permission_manager->set_status(
-      LocationSystemPermissionStatus::kNotDetermined);
+  auto test_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  test_geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kNotDetermined);
   TestingBrowserProcess::GetGlobal()
       ->GetTestPlatformPart()
-      ->SetLocationPermissionManager(
-          std::move(test_location_permission_manager));
+      ->SetGeolocationManager(std::move(test_geolocation_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),

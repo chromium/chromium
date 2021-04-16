@@ -39,7 +39,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -52,6 +51,7 @@
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
 using content::WebContents;
@@ -514,19 +514,19 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 
 #if defined(OS_MAC)
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
-  device::GeolocationSystemPermissionManager* permission_manager =
-      g_browser_process->platform_part()->location_permission_manager();
+  device::GeolocationManager* geolocation_manager =
+      g_browser_process->platform_part()->geolocation_manager();
   device::LocationSystemPermissionStatus permission =
-      permission_manager->GetSystemPermission();
+      geolocation_manager->GetSystemPermission();
 
   return permission == device::LocationSystemPermissionStatus::kAllowed;
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
-  device::GeolocationSystemPermissionManager* permission_manager =
-      g_browser_process->platform_part()->location_permission_manager();
+  device::GeolocationManager* geolocation_manager =
+      g_browser_process->platform_part()->geolocation_manager();
   device::LocationSystemPermissionStatus permission =
-      permission_manager->GetSystemPermission();
+      geolocation_manager->GetSystemPermission();
 
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 }

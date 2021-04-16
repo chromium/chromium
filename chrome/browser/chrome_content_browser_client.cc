@@ -2850,10 +2850,10 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
   return google_apis::GetAPIKey();
 }
 
-device::GeolocationSystemPermissionManager*
-ChromeContentBrowserClient::GetLocationPermissionManager() {
+device::GeolocationManager*
+ChromeContentBrowserClient::GetGeolocationManager() {
 #if defined(OS_MAC)
-  return g_browser_process->platform_part()->location_permission_manager();
+  return g_browser_process->platform_part()->geolocation_manager();
 #else
   return nullptr;
 #endif

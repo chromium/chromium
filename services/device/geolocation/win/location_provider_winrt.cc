@@ -18,6 +18,9 @@
 #include "services/device/public/cpp/geolocation/geoposition.h"
 
 namespace device {
+
+class GeolocationManager;
+
 namespace {
 using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
 using ABI::Windows::Devices::Enumeration::DeviceClass;
@@ -456,8 +459,9 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
   return hr;
 }
 
-// static
-std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
+std::unique_ptr<LocationProvider> NewSystemLocationProvider(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    GeolocationManager* geolocation_manager) {
   if (!base::FeatureList::IsEnabled(
           features::kWinrtGeolocationImplementation) ||
       !IsWinRTSupported() || !IsSystemLocationSettingEnabled()) {

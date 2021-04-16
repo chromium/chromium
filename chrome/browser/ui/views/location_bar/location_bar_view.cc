@@ -169,7 +169,7 @@ LocationBarView::LocationBarView(Browser* browser,
 
 #if defined(OS_MAC)
     geolocation_permission_observation_.Observe(
-        g_browser_process->platform_part()->location_permission_manager());
+        g_browser_process->platform_part()->geolocation_manager());
 #endif
   }
 }
@@ -791,7 +791,7 @@ LocationBarView::GetContentSettingBubbleModelDelegate() {
   return delegate_->GetContentSettingBubbleModelDelegate();
 }
 
-void LocationBarView::OnSystemPermissionUpdate(
+void LocationBarView::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   UpdateContentSettingsIcons();
 }

@@ -46,11 +46,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if defined(OS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
 
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
@@ -735,14 +738,13 @@ TEST_F(GeolocationContentSettingBubbleModelTest, Geolocation) {
   ASSERT_TRUE(profile()->CreateHistoryService());
 
 #if defined(OS_MAC)
-  auto fake_geolocation_permission_manager =
-      std::make_unique<FakeSystemGeolocationPermissionsManager>();
-  FakeSystemGeolocationPermissionsManager* geolocation_permission_manager =
-      fake_geolocation_permission_manager.get();
+  auto fake_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  device::FakeGeolocationManager* geolocation_manager =
+      fake_geolocation_manager.get();
   TestingBrowserProcess::GetGlobal()
       ->GetTestPlatformPart()
-      ->SetLocationPermissionManager(
-          std::move(fake_geolocation_permission_manager));
+      ->SetGeolocationManager(std::move(fake_geolocation_manager));
 #endif  // defined(OS_MAC)
 
   WebContentsTester::For(web_contents())
@@ -786,7 +788,7 @@ TEST_F(GeolocationContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-    geolocation_permission_manager->set_status(
+    geolocation_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 
     EXPECT_EQ(bubble_content.title,

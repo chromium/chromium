@@ -35,7 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_MAC)
-#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
 namespace device {
@@ -134,15 +134,14 @@ class GeolocationNetworkProviderTest : public testing::Test {
       bool set_permission_granted,
       const std::string& api_key = std::string()) {
 #if defined(OS_MAC)
-    fake_permission_manager_ =
-        std::make_unique<FakeSystemGeolocationPermissionsManager>();
+    fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
     auto provider = std::make_unique<NetworkLocationProvider>(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        fake_permission_manager_.get(), base::ThreadTaskRunnerHandle::Get(),
+        fake_geolocation_manager_.get(), base::ThreadTaskRunnerHandle::Get(),
         api_key, &position_cache_);
     // For macOS we must simulate the granting of location permission
     if (grant_system_permission_by_default_) {
-      fake_permission_manager_->set_status(
+      fake_geolocation_manager_->SetSystemPermission(
           LocationSystemPermissionStatus::kAllowed);
       base::RunLoop().RunUntilIdle();
     }
@@ -161,8 +160,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
   bool grant_system_permission_by_default_ = true;
 
 #if defined(OS_MAC)
-  std::unique_ptr<FakeSystemGeolocationPermissionsManager>
-      fake_permission_manager_;
+  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
  protected:
@@ -624,7 +622,7 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Ensure that we immediately make a new network request to acquire the
   // location when permission is granted.
   static_cast<NetworkLocationProvider*>(provider.get())
-      ->OnSystemPermissionUpdate(LocationSystemPermissionStatus::kAllowed);
+      ->OnSystemPermissionUpdated(LocationSystemPermissionStatus::kAllowed);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
   // Clear pending requests for later testing.
@@ -645,7 +643,7 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Ensure more network requests are not sent out when permission is denied
   // again.
   static_cast<NetworkLocationProvider*>(provider.get())
-      ->OnSystemPermissionUpdate(LocationSystemPermissionStatus::kDenied);
+      ->OnSystemPermissionUpdated(LocationSystemPermissionStatus::kDenied);
   provider->StartProvider(false);
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(4));
   base::RunLoop().RunUntilIdle();

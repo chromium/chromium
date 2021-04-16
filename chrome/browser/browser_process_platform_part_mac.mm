@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/common/chrome_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager_impl_mac.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
 }
@@ -76,9 +76,8 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  if (!location_permission_manager_) {
-    location_permission_manager_ =
-        device::GeolocationSystemPermissionManager::Create();
+  if (!geolocation_manager_) {
+    geolocation_manager_ = device::GeolocationManagerImpl::Create();
   }
 }
 
@@ -90,13 +89,11 @@ AppShimListener* BrowserProcessPlatformPart::app_shim_listener() {
   return app_shim_listener_.get();
 }
 
-device::GeolocationSystemPermissionManager*
-BrowserProcessPlatformPart::location_permission_manager() {
-  return location_permission_manager_.get();
+device::GeolocationManager* BrowserProcessPlatformPart::geolocation_manager() {
+  return geolocation_manager_.get();
 }
 
 void BrowserProcessPlatformPart::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationSystemPermissionManager>
-        fake_location_manager) {
-  location_permission_manager_ = std::move(fake_location_manager);
+    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
+  geolocation_manager_ = std::move(fake_geolocation_manager);
 }

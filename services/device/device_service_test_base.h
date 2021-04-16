@@ -17,7 +17,7 @@
 namespace device {
 
 class DeviceService;
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 
 const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 
@@ -49,8 +49,7 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
 #if defined(OS_MAC)
-  std::unique_ptr<GeolocationSystemPermissionManager>
-      fake_location_permission_manager_;
+  std::unique_ptr<GeolocationManager> fake_geolocation_manager_;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;

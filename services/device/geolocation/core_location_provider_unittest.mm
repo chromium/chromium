@@ -7,56 +7,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-@interface FakeCLLocationManager : NSObject {
-  CLLocationAccuracy _desiredAccuracy;
-  id<CLLocationManagerDelegate> _delegate;
-  bool _updating;
-}
-@property(assign, nonatomic) CLLocationAccuracy desiredAccuracy;
-@property(weak, nonatomic) id<CLLocationManagerDelegate> delegate;
-// CLLocationManager implementation.
-- (void)stopUpdatingLocation;
-- (void)startUpdatingLocation;
-- (bool)updating;
-
-// Utility functions.
-- (void)fakeUpdatePosition:(CLLocation*)test_location;
-- (void)fakeUpdatePermission:(CLAuthorizationStatus)status;
-@end
-
-@implementation FakeCLLocationManager
-@synthesize desiredAccuracy = _desiredAccuracy;
-@synthesize delegate = _delegate;
-- (instancetype)init {
-  self = [super init];
-  _updating = false;
-  return self;
-}
-
-- (void)stopUpdatingLocation {
-  _updating = false;
-}
-
-- (void)startUpdatingLocation {
-  _updating = true;
-}
-
-- (bool)updating {
-  return _updating;
-}
-
-- (void)fakeUpdatePosition:(CLLocation*)testLocation {
-  [_delegate locationManager:(id)self didUpdateLocations:@[ testLocation ]];
-}
-
-- (void)fakeUpdatePermission:(CLAuthorizationStatus)status {
-  [_delegate locationManager:(id)self didChangeAuthorizationStatus:status];
-}
-
-@end
 
 namespace device {
 
@@ -68,16 +22,16 @@ class CoreLocationProviderTest : public testing::Test {
   CoreLocationProviderTest() {}
 
   void InitializeProvider() {
-    fake_location_manager_ = [[FakeCLLocationManager alloc] init];
-    provider_ = std::make_unique<CoreLocationProvider>();
-    provider_->SetManagerForTesting((id)fake_location_manager_);
+    fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
+    provider_ = std::make_unique<CoreLocationProvider>(
+        base::ThreadTaskRunnerHandle::Get(), fake_geolocation_manager_.get());
   }
 
-  bool IsUpdating() { return [fake_location_manager_ updating]; }
+  bool IsUpdating() { return fake_geolocation_manager_->watching_position(); }
 
   // updates the position synchronously
-  void FakeUpdatePosition(CLLocation* location) {
-    [fake_location_manager_ fakeUpdatePosition:location];
+  void FakeUpdatePosition(const mojom::Geoposition position) {
+    fake_geolocation_manager_->FakePositionUpdated(position);
   }
 
   const mojom::Geoposition& GetLatestPosition() {
@@ -86,7 +40,7 @@ class CoreLocationProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
-  FakeCLLocationManager* fake_location_manager_;
+  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 };
 
 TEST_F(CoreLocationProviderTest, CreateDestroy) {
@@ -97,58 +51,48 @@ TEST_F(CoreLocationProviderTest, CreateDestroy) {
 
 TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
   InitializeProvider();
-  if (@available(macOS 10.12.0, *)) {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
-  } else {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
-  }
+  fake_geolocation_manager_->SetSystemPermission(
+      LocationSystemPermissionStatus::kAllowed);
+  base::RunLoop().RunUntilIdle();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
-  EXPECT_EQ([fake_location_manager_ desiredAccuracy], kCLLocationAccuracyBest);
   provider_->StopProvider();
   EXPECT_FALSE(IsUpdating());
   provider_.reset();
 }
 
-// crbug.com/1153412: disabled due to flakiness.
-TEST_F(CoreLocationProviderTest, DISABLED_DontStartUpdatingIfPermissionDenied) {
+TEST_F(CoreLocationProviderTest, DontStartUpdatingIfPermissionDenied) {
   InitializeProvider();
-  [fake_location_manager_ fakeUpdatePermission:kCLAuthorizationStatusDenied];
+  fake_geolocation_manager_->SetSystemPermission(
+      LocationSystemPermissionStatus::kDenied);
+  base::RunLoop().RunUntilIdle();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_FALSE(IsUpdating());
+  provider_.reset();
 }
 
 TEST_F(CoreLocationProviderTest, DontStartUpdatingUntilPermissionGranted) {
   InitializeProvider();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_FALSE(IsUpdating());
-  [fake_location_manager_ fakeUpdatePermission:kCLAuthorizationStatusDenied];
+  fake_geolocation_manager_->SetSystemPermission(
+      LocationSystemPermissionStatus::kDenied);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsUpdating());
-  if (@available(macOS 10.12.0, *)) {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
-  } else {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
-  }
+  fake_geolocation_manager_->SetSystemPermission(
+      LocationSystemPermissionStatus::kAllowed);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsUpdating());
   provider_.reset();
 }
 
 TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   InitializeProvider();
-  if (@available(macOS 10.12.0, *)) {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorizedAlways];
-  } else {
-    [fake_location_manager_
-        fakeUpdatePermission:kCLAuthorizationStatusAuthorized];
-  }
+  fake_geolocation_manager_->SetSystemPermission(
+      LocationSystemPermissionStatus::kAllowed);
+  base::RunLoop().RunUntilIdle();
   provider_->StartProvider(/*high_accuracy=*/true);
   EXPECT_TRUE(IsUpdating());
-  EXPECT_EQ([fake_location_manager_ desiredAccuracy], kCLLocationAccuracyBest);
 
   // test info
   double latitude = 147.147;
@@ -156,37 +100,25 @@ TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   double altitude = 417.417;
   double accuracy = 10.5;
   double altitude_accuracy = 15.5;
-  NSDate* mac_timestamp = [NSDate date];
 
-  CLLocationCoordinate2D coors;
-  coors.latitude = latitude;
-  coors.longitude = longitude;
-  CLLocation* test_mac_location =
-      [[CLLocation alloc] initWithCoordinate:coors
-                                    altitude:altitude
-                          horizontalAccuracy:accuracy
-                            verticalAccuracy:altitude_accuracy
-                                   timestamp:mac_timestamp];
   mojom::Geoposition test_position;
   test_position.latitude = latitude;
   test_position.longitude = longitude;
   test_position.altitude = altitude;
   test_position.accuracy = accuracy;
   test_position.altitude_accuracy = altitude_accuracy;
-  test_position.timestamp =
-      base::Time::FromDoubleT(mac_timestamp.timeIntervalSince1970);
+  test_position.timestamp = base::Time::Now();
 
-  bool update_callback_called = false;
+  base::RunLoop loop;
   provider_->SetUpdateCallback(
       base::BindLambdaForTesting([&](const LocationProvider* provider,
                                      const mojom::Geoposition& position) {
-        update_callback_called = true;
         EXPECT_TRUE(test_position.Equals(position));
+        loop.Quit();
       }));
+  FakeUpdatePosition(test_position);
+  loop.Run();
 
-  FakeUpdatePosition(test_mac_location);
-
-  EXPECT_TRUE(update_callback_called);
   EXPECT_TRUE(GetLatestPosition().Equals(test_position));
 
   provider_->StopProvider();

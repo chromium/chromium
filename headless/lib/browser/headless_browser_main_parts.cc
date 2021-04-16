@@ -21,7 +21,9 @@
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #endif
 
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#if defined(OS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#endif
 
 namespace headless {
 
@@ -89,9 +91,8 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
 }
 
 #if defined(OS_MAC)
-device::GeolocationSystemPermissionManager*
-HeadlessBrowserMainParts::GetLocationPermissionManager() {
-  return location_permission_manager_.get();
+device::GeolocationManager* HeadlessBrowserMainParts::GetGeolocationManager() {
+  return geolocation_manager_.get();
 }
 #endif
 

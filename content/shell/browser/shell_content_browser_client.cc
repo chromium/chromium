@@ -71,7 +71,7 @@
 #endif
 
 #if defined(OS_MAC)
-#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
@@ -174,9 +174,8 @@ ShellContentBrowserClient* ShellContentBrowserClient::Get() {
 ShellContentBrowserClient::ShellContentBrowserClient() {
   DCHECK(!g_browser_client);
 #if defined(OS_MAC)
-  location_manager_ =
-      std::make_unique<FakeSystemGeolocationPermissionsManager>();
-  location_manager_->set_status(
+  location_manager_ = std::make_unique<device::FakeGeolocationManager>();
+  location_manager_->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
 #endif
   g_browser_client = this;
@@ -246,8 +245,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
-device::GeolocationSystemPermissionManager*
-ShellContentBrowserClient::GetLocationPermissionManager() {
+device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {
 #if defined(OS_MAC)
   return location_manager_.get();
 #else

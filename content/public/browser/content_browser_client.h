@@ -106,7 +106,7 @@ class URLLoaderThrottle;
 }  // namespace blink
 
 namespace device {
-class GeolocationSystemPermissionManager;
+class GeolocationManager;
 class LocationProvider;
 }  // namespace device
 
@@ -819,8 +819,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // * Default implementation returns empty string, meaning send no API key.
   virtual std::string GetGeolocationApiKey();
 
-  virtual device::GeolocationSystemPermissionManager*
-  GetLocationPermissionManager();
+  // Returns the global BrowserProcessPlatformParts' GeolocationManager on
+  // macOS and returns nullptr otherwise. For tests this should return a
+  // FakeGeolocationManager with the LocationSystemPermissionStatus set to
+  // allow.
+  virtual device::GeolocationManager* GetGeolocationManager();
 
 #if defined(OS_ANDROID)
   // Allows an embedder to decide whether to use the GmsCoreLocationProvider.

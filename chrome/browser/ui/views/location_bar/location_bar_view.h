@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/security_state/core/security_state.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -76,8 +76,7 @@ class LocationBarView : public LocationBar,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
                         public PageActionIconView::Delegate,
-                        public device::GeolocationSystemPermissionManager::
-                            GeolocationPermissionObserver {
+                        public device::GeolocationManager::PermissionObserver {
  public:
   METADATA_HEADER(LocationBarView);
 
@@ -207,8 +206,8 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
-  // GeolocationSystemPermissionManager::GeolocationPermissionObserver
-  void OnSystemPermissionUpdate(
+  // GeolocationManager::PermissionObserver:
+  void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
@@ -251,11 +250,10 @@ class LocationBarView : public LocationBar,
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
 
 #if defined(OS_MAC)
-  // Manage a subscription to GeolocationSystemPermissionManager, which may
+  // Manage a subscription to GeolocationManager, which may
   // outlive this object.
-  base::ScopedObservation<
-      device::GeolocationSystemPermissionManager,
-      device::GeolocationSystemPermissionManager::GeolocationPermissionObserver>
+  base::ScopedObservation<device::GeolocationManager,
+                          device::GeolocationManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
 
