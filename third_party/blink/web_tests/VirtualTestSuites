@@ -1025,5 +1025,12 @@
     "prefix": "webid",
     "bases": ["wpt_internal/webid"],
     "args": ["--enable-features=WebID"]
+  },
+  {
+    "prefix": "document-transition",
+    "bases": ["wpt_internal/document-transition"],
+    "args": ["--enable-features=DocumentTransition",
+             "--enable-threaded-compositing",
+             "--enable-gpu-rasterization"]
   }
 ]

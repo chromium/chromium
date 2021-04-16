@@ -133,6 +133,9 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
     {CompositingReason::kBackfaceInvisibility3DAncestor,
      "BackfaceInvisibility3DAncestor",
      "Ancestor in same 3D rendering context has a hidden backface"},
+    {CompositingReason::kDocumentTransitionSharedElement,
+     "DocumentTransitionSharedElement",
+     "This element is shared during document transition"},
 };
 
 }  // anonymous namespace

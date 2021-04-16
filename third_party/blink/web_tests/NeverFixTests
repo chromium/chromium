@@ -2144,3 +2144,8 @@ external/wpt/css/css-counter-styles/upper-armenian/css3-counter-styles-109.html 
 
 # Missing Ethiopic font for these tests
 crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
+
+# Document transition tests, which require a flag.
+wpt_internal/document-transition/* [ Skip ]
+virtual/document-transition/wpt_internal/document-transition/* [ Pass ]
+

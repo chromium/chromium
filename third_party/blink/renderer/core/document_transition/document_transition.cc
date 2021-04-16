@@ -264,6 +264,13 @@ void DocumentTransition::VerifySharedElements() {
     // vector, since we need to preserve the order of the elements and we
     // support nulls as a valid active element.
     // TODO(vmpstr): We should issue a console warning here.
+
+    // Invalidate the element since we should no longer be compositing it.
+    auto* box = active_element->GetLayoutBox();
+    if (box && box->HasSelfPaintingLayer()) {
+      box->SetNeedsPaintPropertyUpdate();
+      box->Layer()->SetNeedsCompositingInputsUpdate();
+    }
     active_element = nullptr;
   }
 }
