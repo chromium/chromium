@@ -36,7 +36,6 @@ class LevelDBScopes {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using EmptyRange = std::pair<std::string, std::string>;
-  static constexpr const size_t kDefaultMaxWriteBatchSizeBytes = 1024 * 1024;
 
   enum class TaskRunnerMode {
     // No new sequence runners are created. Both the cleanup and the revert
