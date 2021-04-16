@@ -2216,8 +2216,10 @@ void DocumentLoader::CommitNavigation() {
   // PaintHoldingCrossOrigin feature allows PaintHolding even for cross-origin
   // navigations, otherwise only same-origin navigations have deferred commits.
   // We also require that this be an html document served via http.
+  WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type_);
   if (base::FeatureList::IsEnabled(blink::features::kPaintHolding) &&
       IsA<HTMLDocument>(document) && Url().ProtocolIsInHTTPFamily() &&
+      history_commit_type != kWebBackForwardCommit &&
       (is_same_origin_navigation_ ||
        base::FeatureList::IsEnabled(
            blink::features::kPaintHoldingCrossOrigin))) {
@@ -2247,7 +2249,7 @@ void DocumentLoader::CommitNavigation() {
       GetLocalFrameClient().DidCommitDocumentReplacementNavigation(this);
     } else {
       GetLocalFrameClient().DispatchDidCommitLoad(
-          history_item_.Get(), LoadTypeToCommitType(load_type_),
+          history_item_.Get(), history_commit_type,
           previous_window != frame_->DomWindow(),
           security_init.PermissionsPolicyHeader(),
           document_policy_.feature_state);
