@@ -3028,9 +3028,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->DrawsContent());
   EXPECT_TRUE(clip_mask0->HitTestable());
-  // The mask layer is expanded to ensure coverage.
-  EXPECT_EQ(gfx::Vector2dF(49, 49), clip_mask0->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(302, 202), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
   // c1 should be applied in the clip mask layer.
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
@@ -3127,9 +3125,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->DrawsContent());
   EXPECT_TRUE(clip_mask0->HitTestable());
-  // The mask layer is expanded to ensure coverage.
-  EXPECT_EQ(gfx::Vector2dF(49, 49), clip_mask0->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(302, 202), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
   EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
@@ -3383,9 +3379,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
-  // The mask layer is expanded to ensure coverage.
-  EXPECT_EQ(gfx::Vector2dF(49, 49), clip_mask0->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(302, 202), clip_mask0->bounds());
+  EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
   EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
