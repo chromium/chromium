@@ -47,7 +47,7 @@ def parse_build(build_log):
   # ninja: Entering directory `out/foo'
   ENTER_DIR_RE = re.compile(r'ninja: Entering directory `(.*?)\'$')
   # ...clang... -c foo.cc -o foo.o ...
-  COMPILE_RE = re.compile(r'.*clang.* -c (.*?) ')
+  COMPILE_RE = re.compile(r'.*clang.* -c (\S*)')
   # . a.h
   # .. b.h
   # . c.h
@@ -86,7 +86,7 @@ def parse_build(build_log):
 
   def n(fn):
     if not fn in normalized:
-      x = os.path.normpath(os.path.join(build_dir, fn))
+      x = os.path.relpath(os.path.realpath(os.path.join(build_dir, fn)))
       normalized[fn] = x
     return normalized[fn]
 
