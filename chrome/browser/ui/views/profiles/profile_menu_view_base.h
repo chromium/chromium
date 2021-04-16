@@ -194,8 +194,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void ButtonPressed(base::RepeatingClosure action);
 
-  void UpdateSyncInfoContainerBackground();
-
   Browser* const browser_;
 
   views::Button* const anchor_button_;

@@ -14,14 +14,14 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
+
+namespace ui {
+class ImageModel;
+}
 
 namespace views {
 class Label;
@@ -44,7 +44,7 @@ class HoverButton : public views::LabelButton {
 
   // Creates a single line hover button with an icon.
   HoverButton(PressedCallback callback,
-              const gfx::ImageSkia& icon,
+              const ui::ImageModel& icon,
               const std::u16string& text);
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the

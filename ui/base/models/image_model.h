@@ -43,8 +43,13 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
   bool operator==(const VectorIconModel& other) const;
   bool operator!=(const VectorIconModel& other) const;
 
+  const gfx::VectorIcon* vector_icon() const { return vector_icon_; }
+  int icon_size() const { return icon_size_; }
+  int color_id() const { return absl::get<int>(color_); }
+  SkColor color() const { return absl::get<SkColor>(color_); }
+  bool has_color() const { return absl::holds_alternative<SkColor>(color_); }
+
  private:
-  friend class ThemedVectorIcon;
   friend class ImageModel;
 
   VectorIconModel(const gfx::VectorIcon& vector_icon,
@@ -55,12 +60,6 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
   VectorIconModel(const gfx::VectorIcon& vector_icon,
                   SkColor color,
                   int icon_size);
-
-  const gfx::VectorIcon* vector_icon() const { return vector_icon_; }
-  int icon_size() const { return icon_size_; }
-  int color_id() const { return absl::get<int>(color_); }
-  SkColor color() const { return absl::get<SkColor>(color_); }
-  bool has_color() const { return absl::holds_alternative<SkColor>(color_); }
 
   const gfx::VectorIcon* vector_icon_ = nullptr;
   int icon_size_ = 0;

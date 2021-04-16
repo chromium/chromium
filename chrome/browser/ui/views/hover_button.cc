@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
@@ -102,10 +103,10 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
 }
 
 HoverButton::HoverButton(PressedCallback callback,
-                         const gfx::ImageSkia& icon,
+                         const ui::ImageModel& icon,
                          const std::u16string& text)
     : HoverButton(std::move(callback), text) {
-  SetImage(STATE_NORMAL, icon);
+  SetImageModel(STATE_NORMAL, icon);
 }
 
 HoverButton::HoverButton(PressedCallback callback,

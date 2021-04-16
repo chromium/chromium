@@ -106,7 +106,7 @@ bool ImageModel::IsImage() const {
 
 gfx::Size ImageModel::Size() const {
   if (IsVectorIcon()) {
-    const int icon_size = GetVectorIcon().icon_size();
+    const int icon_size = GetVectorIcon().icon_size_;
     return gfx::Size(icon_size, icon_size);
   }
   return IsImage() ? GetImage().Size() : gfx::Size();
