@@ -69,7 +69,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -148,7 +148,7 @@ public class PageInfoViewTest {
                     .show(tab, highlightedPermission);
         });
 
-        if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {
+        if (PageInfoFeatures.PAGE_INFO_V2.isEnabled()) {
             onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
         } else {
             onViewWaiting(allOf(withId(R.id.page_info_url), isDisplayed()));
@@ -266,7 +266,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowOnInsecureHttpWebsite() throws IOException {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -279,7 +279,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowOnSecureWebsite() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsite");
@@ -291,7 +291,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowOnExpiredCertificateWebsite() throws IOException {
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -304,7 +304,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testChromePage() throws IOException {
         loadUrlAndOpenPageInfo("chrome://version/");
         mRenderTestRule.render(getPageInfoView(), "PageInfo_InternalSite");
@@ -317,7 +317,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowWithPermissions() throws IOException {
         mIsSystemLocationSettingEnabled = false;
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -331,7 +331,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowWithCookieBlocking() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -344,7 +344,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowWithPermissionsAndCookieBlocking() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -358,7 +358,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowWithDefaultSettingPermissions() throws IOException {
         addDefaultSettingPermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -371,7 +371,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowOnSecureWebsiteV2() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteV2");
@@ -383,7 +383,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowConnectionInfoSubpage() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
@@ -399,7 +399,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowPermissionsSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -415,8 +415,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(
-            {PageInfoFeatureList.PAGE_INFO_V2, SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
+    @Features.EnableFeatures({PageInfoFeatures.PAGE_INFO_V2_NAME,
+            SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
     public void
     testShowPermissionsActionableSubpage() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -432,7 +432,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowCookiesSubpage() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -448,7 +448,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testNoPermissionsSubpage() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row))
@@ -460,7 +460,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testClearCookiesOnSubpage() throws Exception {
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
@@ -485,7 +485,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testResetPermissionsOnSubpage() throws Exception {
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
@@ -512,7 +512,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testPaintPreview() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -540,7 +540,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(
-            {PageInfoFeatureList.PAGE_INFO_V2, PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+            {PageInfoFeatures.PAGE_INFO_V2_NAME, PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void
     testShowWithPermissionsAndWithoutHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -557,7 +557,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(
-            {PageInfoFeatureList.PAGE_INFO_V2, PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+            {PageInfoFeatures.PAGE_INFO_V2_NAME, PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void
     testShowWithPermissionsAndHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -573,9 +573,9 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({PageInfoFeatureList.PAGE_INFO_V2, PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY,
-            SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
+    @Features.EnableFeatures(
+            {PageInfoFeatures.PAGE_INFO_V2_NAME, PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME,
+                    SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
     public void
     testShowPermissionsSubpageWithHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
@@ -596,7 +596,7 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testCloseButton() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });

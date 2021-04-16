@@ -76,7 +76,7 @@ public class ConnectionInfoView implements OnClickListener {
 
     private ConnectionInfoView(Context context, WebContents webContents,
             ConnectionInfoDelegate delegate, VrHandler vrHandler) {
-        mIsV2Enabled = PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
+        mIsV2Enabled = PageInfoFeatures.PAGE_INFO_V2.isEnabled();
         mContext = context;
         mDelegate = delegate;
         mWebContents = webContents;

@@ -47,7 +47,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -188,7 +188,7 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @DisableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    @DisableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPageInfoDiscoverabilityFlagOff() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
 
@@ -214,7 +214,7 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPageInfoDiscoverabilityAllowPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
 
@@ -240,7 +240,7 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPageInfoDiscoverabilityBlockPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
 
@@ -263,7 +263,7 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPermissionRequestTypeEnumSize() {
         Assert.assertEquals(
                 new RequestTypeTestParams().getParameters().size(), getRequestTypeEnumSize());
@@ -272,7 +272,7 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     public void testPermissionRequestTypes(@ContentSettingsType int contentSettingsType,
             boolean isInSiteSettings) throws Exception {

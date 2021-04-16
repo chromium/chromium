@@ -34,7 +34,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -85,7 +85,7 @@ public class PageInfoViewDarkModeTest {
                     .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
 
-        if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {
+        if (PageInfoFeatures.PAGE_INFO_V2.isEnabled()) {
             onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
         } else {
             onViewWaiting(allOf(withId(R.id.page_info_url), isDisplayed()));
@@ -113,7 +113,7 @@ public class PageInfoViewDarkModeTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testShowOnSecureWebsiteDarkV2() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeNightModeTestUtils.setUpNightModeForChromeActivity(/*nightModeEnabled=*/true);

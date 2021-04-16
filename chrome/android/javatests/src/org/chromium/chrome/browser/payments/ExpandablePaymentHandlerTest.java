@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -353,7 +353,7 @@ public class ExpandablePaymentHandlerTest {
         String paymentAppUrl = mServer.getURL(
                 "/components/test/data/payments/maxpay.com/payment_handler_window.html");
 
-        if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {
+        if (PageInfoFeatures.PAGE_INFO_V2.isEnabled()) {
             // The new UI only shows a hostname by default. Expand to full URL.
             onView(withId(R.id.page_info_url_wrapper)).perform(click());
         }

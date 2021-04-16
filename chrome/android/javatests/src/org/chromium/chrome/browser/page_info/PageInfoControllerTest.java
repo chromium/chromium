@@ -27,7 +27,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.page_info.PageInfoView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -86,7 +86,7 @@ public class PageInfoControllerTest {
     @Test
     @MediumTest
     @Feature({"PageInfoController"})
-    @DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    @DisableFeatures(PageInfoFeatures.PAGE_INFO_V2_NAME)
     public void testPageInfoUrl() {
         String testUrl = mTestServer.getURLWithHostName("xn--allestrungen-9ib.ch", "/");
         sActivityTestRule.loadUrlInTab(

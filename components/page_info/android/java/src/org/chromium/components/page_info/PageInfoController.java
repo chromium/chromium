@@ -170,7 +170,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
-        mIsV2Enabled = PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2);
+        mIsV2Enabled = PageInfoFeatures.PAGE_INFO_V2.isEnabled();
         mPermissionParamsListBuilderDelegate = permissionParamsListBuilderDelegate;
         PageInfoViewParams viewParams = new PageInfoViewParams();
 
@@ -306,7 +306,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mCookiesController = new PageInfoCookiesController(
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
 
-            if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_HISTORY)) {
+            if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
                 mHistoryController = mDelegate.createHistoryController(
                         this, view2.getHistoryRowView(), mFullUrl.getSpec());
                 setupForgetSiteButton(view2.getForgetSiteButton());

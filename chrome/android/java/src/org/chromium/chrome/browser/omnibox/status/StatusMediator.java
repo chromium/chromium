@@ -36,7 +36,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
-import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -631,8 +631,7 @@ public class StatusMediator
     @Override
     public void onDialogResult(WindowAndroid window, @ContentSettingsType int[] permissions,
             @ContentSettingValues int result) {
-        if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)
-                || window != mWindowAndroid) {
+        if (!PageInfoFeatures.PAGE_INFO_DISCOVERABILITY.isEnabled() || window != mWindowAndroid) {
             return;
         }
         @ContentSettingsType
