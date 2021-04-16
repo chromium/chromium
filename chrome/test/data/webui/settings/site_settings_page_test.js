@@ -4,11 +4,12 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, defaultSettingLabel, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, defaultSettingLabel, NotificationSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 
 import {assertEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, isChildVisible} from '../test_util.m.js';
+import {eventToPromise,flushTasks, isChildVisible} from '../test_util.m.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -31,6 +32,14 @@ suite('SiteSettingsPage', function() {
     document.body.innerHTML = '';
     page = /** @type {!SettingsSiteSettingsPageElement} */ (
         document.createElement('settings-site-settings-page'));
+    page.prefs = {
+      generated: {
+        notification: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: NotificationSetting.ASK,
+        },
+      },
+    };
     document.body.appendChild(page);
     flush();
   }
@@ -68,6 +77,56 @@ suite('SiteSettingsPage', function() {
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
     assertEquals(testLabels[1], cookiesLinkRow.subLabel);
+  });
+
+  test('NotificationsLinkRowSublabel_RedesignDisabled', async function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+
+    const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
+        page.$$('#basicPermissionsList').$$('#notifications'));
+
+    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsAskBeforeSending'),
+        notificationsLinkRow.subLabel);
+
+    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsBlocked'),
+        notificationsLinkRow.subLabel);
+  });
+
+  test('NotificationsLinkRowSublabel_RedesignEnabled', async function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+
+    const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
+        page.$$('#basicPermissionsList').$$('#notifications'));
+
+    page.set(
+        'prefs.generated.notification.value',
+        NotificationSetting.QUIETER_MESSAGING);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsNotificationsPartial'),
+        notificationsLinkRow.subLabel);
+
+    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsNotificationsAllowed'),
+        notificationsLinkRow.subLabel);
+
+    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsNotificationsBlocked'),
+        notificationsLinkRow.subLabel);
   });
 
   test('ProtectedContentRow', function() {
