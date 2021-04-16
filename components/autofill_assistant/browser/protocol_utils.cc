@@ -258,18 +258,20 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
     case ActionProto::ActionInfoCase::kSendClickEvent:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_click_event().client_id(),
-          base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                         delegate->GetWeakPtr(), ClickType::CLICK));
+          base::BindOnce(&WebController::ClickOrTapElement,
+                         delegate->GetWebController()->GetWeakPtr(),
+                         ClickType::CLICK));
     case ActionProto::ActionInfoCase::kSendTapEvent:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_tap_event().client_id(),
-          base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                         delegate->GetWeakPtr(), ClickType::TAP));
+          base::BindOnce(&WebController::ClickOrTapElement,
+                         delegate->GetWebController()->GetWeakPtr(),
+                         ClickType::TAP));
     case ActionProto::ActionInfoCase::kJsClick:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.js_click().client_id(),
-          base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                         delegate->GetWeakPtr(), ClickType::JAVASCRIPT));
+          base::BindOnce(&WebController::JsClickElement,
+                         delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_keystroke_events().client_id(),

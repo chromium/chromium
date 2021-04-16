@@ -1114,6 +1114,9 @@ message WebControllerErrorInfoProto {
 
     // Set the selected option index of an element.
     SELECT_OPTION_ELEMENT = 22;
+
+    // Send a JS click to the element.
+    JS_CLICK_ELEMENT = 23;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

@@ -522,7 +522,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
   EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
   Selector expected_main_selector({"#card_expiry"});
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       ClickOrTapElement(ClickType::TAP,
                         EqualsElement(test_util::MockFindElement(
                             mock_action_delegate_, expected_main_selector)),
@@ -535,7 +535,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       ClickOrTapElement(ClickType::TAP,
                         EqualsElement(test_util::MockFindElement(
                             mock_action_delegate_, expected_option_selector)),
@@ -565,7 +565,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   Selector expected_main_selector({"#card_expiry"});
   Expectation main_click =
       EXPECT_CALL(
-          mock_action_delegate_,
+          mock_web_controller_,
           ClickOrTapElement(ClickType::TAP,
                             EqualsElement(test_util::MockFindElement(
                                 mock_action_delegate_, expected_main_selector)),
@@ -580,7 +580,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   EXPECT_CALL(mock_action_delegate_, FindElement(_, _))
       .Times(0)
       .After(main_click);
-  EXPECT_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
+  EXPECT_CALL(mock_web_controller_, ClickOrTapElement(_, _, _))
       .Times(0)
       .After(main_click);
 

@@ -95,11 +95,16 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Send a JS click to the |element|.
+  virtual void JsClickElement(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Perform a mouse left button click or a touch tap on the |element|
   // return the result through callback.
   virtual void ClickOrTapElement(
-      const ElementFinder::Result& element,
       ClickType click_type,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Get a stable position of the given element. Fail with ELEMENT_UNSTABLE if

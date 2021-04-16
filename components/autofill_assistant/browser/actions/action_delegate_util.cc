@@ -138,7 +138,11 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
   actions->emplace_back(
       base::BindOnce(&WebController::ScrollIntoView,
                      delegate->GetWebController()->GetWeakPtr(), true));
-  if (click_type != ClickType::JAVASCRIPT) {
+  if (click_type == ClickType::JAVASCRIPT) {
+    actions->emplace_back(
+        base::BindOnce(&WebController::JsClickElement,
+                       delegate->GetWebController()->GetWeakPtr()));
+  } else {
     AddStepIgnoreTiming(
         base::BindOnce(&WebController::WaitUntilElementIsStable,
                        delegate->GetWebController()->GetWeakPtr(),
@@ -149,9 +153,10 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                     base::BindOnce(&WebController::CheckOnTop,
                                    delegate->GetWebController()->GetWeakPtr()),
                     actions);
+    actions->emplace_back(
+        base::BindOnce(&WebController::ClickOrTapElement,
+                       delegate->GetWebController()->GetWeakPtr(), click_type));
   }
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                                       delegate->GetWeakPtr(), click_type));
 }
 
 void OnGetPasswordManagerValue(

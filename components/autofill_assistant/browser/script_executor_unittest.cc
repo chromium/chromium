@@ -83,8 +83,8 @@ class ScriptExecutorTest : public testing::Test,
     ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_web_controller_, OnClickOrTapElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR)));
+    ON_CALL(mock_web_controller_, ClickOrTapElement(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(ClientStatus(UNEXPECTED_JS_ERROR)));
   }
 
  protected:

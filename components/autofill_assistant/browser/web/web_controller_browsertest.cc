@@ -224,8 +224,12 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       return;
     }
 
-    web_controller_->ClickOrTapElement(element, click_type,
-                                       std::move(callback));
+    if (click_type == ClickType::JAVASCRIPT) {
+      web_controller_->JsClickElement(element, std::move(callback));
+    } else {
+      web_controller_->ClickOrTapElement(click_type, element,
+                                         std::move(callback));
+    }
   }
 
   void WaitForElementRemove(const Selector& selector) {

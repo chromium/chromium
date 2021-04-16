@@ -87,7 +87,7 @@ class SetFormFieldValueActionTest : public content::RenderViewHostTestHarness {
     ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
+    ON_CALL(mock_web_controller_, ClickOrTapElement(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_web_controller_, SendKeyboardInput(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
@@ -389,7 +389,7 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
               ScrollIntoView(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_,
@@ -450,7 +450,7 @@ TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
               ScrollIntoView(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_,

@@ -113,11 +113,6 @@ class MockActionDelegate : public ActionDelegate {
                      void(const Selector& selector,
                           ElementFinder::Callback callback));
 
-  MOCK_METHOD3(ClickOrTapElement,
-               void(ClickType click_type,
-                    const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-
   MOCK_METHOD5(Prompt,
                void(std::unique_ptr<std::vector<UserAction>> user_actions,
                     bool disable_force_expand_sheet,

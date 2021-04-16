@@ -132,12 +132,6 @@ class ActionDelegate {
   virtual void FindAllElements(const Selector& selector,
                                ElementFinder::Callback callback) const = 0;
 
-  // Click or tap the |element|.
-  virtual void ClickOrTapElement(
-      ClickType click_type,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Have the UI enter the prompt mode and make the given actions available.
   //
   // While a prompt is in progress, the UI looks the same as it does between

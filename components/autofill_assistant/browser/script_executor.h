@@ -147,10 +147,6 @@ class ScriptExecutor : public ActionDelegate,
                    ElementFinder::Callback callback) const override;
   void FindAllElements(const Selector& selector,
                        ElementFinder::Callback callback) const override;
-  void ClickOrTapElement(
-      ClickType click_type,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void CollectUserData(
       CollectUserDataOptions* collect_user_data_options) override;
   void SetLastSuccessfulUserDataOptions(std::unique_ptr<CollectUserDataOptions>

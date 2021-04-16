@@ -82,22 +82,17 @@ class MockWebController : public WebController {
                                    const std::vector<std::string>&)> callback));
   MOCK_METHOD4(WaitUntilElementIsStable,
                void(int,
-                    base::TimeDelta,
+                    base::TimeDelta wait_time,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             base::TimeDelta)> callback));
-
-  void ClickOrTapElement(
-      const ElementFinder::Result& element,
-      ClickType click_type,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
-    // Transforming callback into a references allows using RunOnceCallback on
-    // the argument.
-    OnClickOrTapElement(element, callback);
-  }
-  MOCK_METHOD2(OnClickOrTapElement,
-               void(const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
+  MOCK_METHOD2(JsClickElement,
+               void(const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(ClickOrTapElement,
+               void(ClickType click_type,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
 
   void ScrollToElementPosition(
       std::unique_ptr<ElementFinder::Result> scrollable_element,

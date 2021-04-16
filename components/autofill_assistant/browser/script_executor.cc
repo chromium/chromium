@@ -325,14 +325,6 @@ void ScriptExecutor::FindAllElements(const Selector& selector,
   delegate_->GetWebController()->FindAllElements(selector, std::move(callback));
 }
 
-void ScriptExecutor::ClickOrTapElement(
-    ClickType click_type,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->ClickOrTapElement(element, click_type,
-                                                   std::move(callback));
-}
-
 void ScriptExecutor::CollectUserData(
     CollectUserDataOptions* collect_user_data_options) {
   collect_user_data_options->confirm_callback = base::BindOnce(
