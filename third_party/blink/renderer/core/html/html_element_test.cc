@@ -246,18 +246,4 @@ TEST_F(HTMLElementTest,
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
 
-TEST_F(HTMLElementTest, DirAutoByChildChanged) {
-  ScopedCSSPseudoDirForTest scoped_feature(false);
-
-  SetBodyInnerHTML("<div id='target' dir='auto'></div>");
-  auto* element = GetDocument().getElementById("target");
-  element->setTextContent(u"\u05D1");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kRtl);
-
-  element->RemoveChildren();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kLtr);
-}
-
 }  // namespace blink
