@@ -8070,9 +8070,17 @@ class AssertForegroundHelper {
 // "visible" widget being added to the process. This test discards the spare
 // RenderProcessHost if present, to ensure that it is not used in the
 // cross-process navigation.
+// TODO(https://crbug.com/1197438): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess \
+  DISABLED_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess
+#else
+#define MAYBE_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess \
+  ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess
+#endif
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerTest,
-    ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess) {
+    MAYBE_ForegroundNavigationIsNeverBackgroundedWithoutSpareProcess) {
   StartEmbeddedServer();
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
