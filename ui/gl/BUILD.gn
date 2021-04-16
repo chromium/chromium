@@ -582,6 +582,7 @@ test("gl_unittests") {
 
   if (is_win) {
     sources += [
+      "delegated_ink_point_renderer_gpu_unittest.cc",
       "direct_composition_surface_win_unittest.cc",
       "gl_fence_win_unittest.cc",
       "gl_image_d3d_unittest.cc",

@@ -34,11 +34,7 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_scaling)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_scaling_(disable_vp_scaling),
-      ink_renderer_(
-          std::make_unique<
-              DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
-                                           IDCompositionDelegatedInkTrail>>()) {
-}
+      ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
 DCLayerTree::~DCLayerTree() = default;
 

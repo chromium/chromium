@@ -199,6 +199,8 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   void SetMonitorInfoForTesting(int num_of_monitors, gfx::Size monitor_size);
 
+  DCLayerTree* GetLayerTreeForTesting() { return layer_tree_.get(); }
+
  protected:
   ~DirectCompositionSurfaceWin() override;
 

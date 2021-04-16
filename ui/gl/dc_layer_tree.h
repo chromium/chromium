@@ -64,6 +64,10 @@ class DCLayerTree {
  public:
   using VideoProcessorMap =
       base::flat_map<VideoProcessorType, VideoProcessorWrapper>;
+  using DelegatedInkRenderer =
+      DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
+                                   IDCompositionDelegatedInkTrail,
+                                   DCompositionInkTrailPoint>;
 
   DCLayerTree(bool disable_nv12_dynamic_textures, bool disable_vp_scaling);
 
@@ -125,6 +129,10 @@ class DCLayerTree {
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver);
 
+  DelegatedInkRenderer* GetInkRendererForTesting() const {
+    return ink_renderer_.get();
+  }
+
  private:
   // This will add an ink visual to the visual tree to enable delegated ink
   // trails. This will initially always be called directly before an OS
@@ -184,9 +192,7 @@ class DCLayerTree {
   // when the DCLayerTree is created, but can only be queried to check if the
   // platform supports delegated ink trails. It must be initialized via the
   // Initialize() method in order to be used for drawing delegated ink trails.
-  std::unique_ptr<DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
-                                               IDCompositionDelegatedInkTrail>>
-      ink_renderer_;
+  std::unique_ptr<DelegatedInkRenderer> ink_renderer_;
 
   DISALLOW_COPY_AND_ASSIGN(DCLayerTree);
 };

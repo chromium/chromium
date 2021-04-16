@@ -15,6 +15,9 @@ specific_include_rules = {
   "angle_platform_impl.cc": [
     "+third_party/angle/include/platform/PlatformMethods.h",
   ],
+  "delegated_ink_point_renderer_gpu_unittest.cc": [
+    "+ui/base/win/hidden_window.h",
+  ],
   "direct_composition_surface_win_unittest.cc": [
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
