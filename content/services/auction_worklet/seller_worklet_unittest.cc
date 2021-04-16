@@ -28,7 +28,8 @@ namespace {
 // Allows using scoreAd() arguments, arbitrary values, incorrect types, etc.
 std::string CreateScoreAdScript(const std::string& raw_return_value) {
   constexpr char kSellAdScript[] = R"(
-    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+        browserSignals) {
       return %s;
     }
   )";
