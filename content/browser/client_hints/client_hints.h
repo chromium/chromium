@@ -11,6 +11,7 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 namespace content {
 
@@ -62,7 +63,8 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
-    FrameTreeNode*);
+    FrameTreeNode*,
+    const blink::ParsedPermissionsPolicy&);
 
 // Adds client hints headers for a prefetch navigation that is not associated
 // with a frame. It must be a main frame navigation. |is_javascript_enabled| is

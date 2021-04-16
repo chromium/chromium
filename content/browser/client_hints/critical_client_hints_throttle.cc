@@ -123,8 +123,11 @@ bool CriticalClientHintsThrottle::ShouldRestartWithHints(
   if (frame_tree_node) {
     AddNavigationRequestClientHintsHeaders(
         response_url, &modified_headers, context_, client_hint_delegate_,
-        frame_tree_node->navigation_request()->GetIsOverridingUserAgent(),
-        frame_tree_node);
+        frame_tree_node->navigation_request()->IsOverridingUserAgent(),
+        frame_tree_node,
+        frame_tree_node->navigation_request()
+            ->commit_params()
+            .frame_policy.container_policy);
   } else {
     AddPrefetchNavigationRequestClientHintsHeaders(
         response_url, &modified_headers, context_, client_hint_delegate_,
