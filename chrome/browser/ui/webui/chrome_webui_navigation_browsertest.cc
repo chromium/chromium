@@ -11,6 +11,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "ipc/ipc_security_test_util.h"
@@ -21,18 +22,6 @@
 
 // Tests embedder specific behavior of WebUIs.
 class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
- public:
-  ChromeWebUINavigationBrowserTest() {
-    content::WebUIControllerFactory::RegisterFactory(&factory_);
-    content::WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
-  }
-
-  ~ChromeWebUINavigationBrowserTest() override {
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(
-        &untrusted_factory_);
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -45,7 +34,11 @@ class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
 
  private:
   content::TestWebUIControllerFactory factory_;
+  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
+      &factory_};
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
+  content::ScopedWebUIControllerFactoryRegistration
+      untrusted_factory_registration_{&untrusted_factory_};
 };
 
 // Verify that a browser check stops websites from embeding chrome:// iframes.

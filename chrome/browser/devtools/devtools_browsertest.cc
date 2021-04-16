@@ -91,6 +91,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -2283,6 +2284,8 @@ class MockWebUIProvider
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        TestWindowInitializedOnNavigateBack) {
   TestChromeWebUIControllerFactory test_factory;
+  content::ScopedWebUIControllerFactoryRegistration factory_registration(
+      &test_factory);
   MockWebUIProvider mock_provider("dummyurl",
                                   "<script>\n"
                                   "  window.abc = 239;\n"
@@ -2290,7 +2293,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
                                   "</script>");
   test_factory.AddFactoryOverride(GURL("chrome://dummyurl").host(),
                                   &mock_provider);
-  content::WebUIControllerFactory::RegisterFactory(&test_factory);
 
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://dummyurl"));
   DevToolsWindow* window =
@@ -2302,7 +2304,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   RunTestFunction(window, "testWindowInitializedOnNavigateBack");
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
-  content::WebUIControllerFactory::UnregisterFactoryForTesting(&test_factory);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {

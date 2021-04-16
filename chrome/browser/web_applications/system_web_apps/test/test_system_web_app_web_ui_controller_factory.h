@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_utils.h"
 
 // WebUIControllerFactory that creates a TestWebUIController, which serves a
@@ -38,6 +39,7 @@ class TestSystemWebAppWebUIControllerFactory
 
  private:
   std::string source_name_;
+  content::ScopedWebUIControllerFactoryRegistration scoped_registration_{this};
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_

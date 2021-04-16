@@ -11,6 +11,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 
+namespace content {
+class ScopedWebUIControllerFactoryRegistration;
+}
+
 class FileManagerJsTestBase : public InProcessBrowserTest {
  protected:
   explicit FileManagerJsTestBase(const base::FilePath& base_path);
@@ -38,6 +42,8 @@ class FileManagerJsTestBase : public InProcessBrowserTest {
   void RunTestImpl(const GURL& url);
 
   std::unique_ptr<TestChromeWebUIControllerFactory> webui_controller_factory_;
+  std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
+      webui_controller_factory_registration_;
   base::FilePath base_path_;
 };
 

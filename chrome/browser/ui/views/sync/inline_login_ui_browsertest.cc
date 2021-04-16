@@ -55,6 +55,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -717,26 +718,24 @@ class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->StartAcceptingConnections();
 
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(
-        ChromeWebUIControllerFactory::GetInstance());
     test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();
-    content::WebUIControllerFactory::RegisterFactory(test_factory_.get());
+    factory_registration_ =
+        std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
+            test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
     test_factory_->AddFactoryOverride(content::GetWebUIURL("foo/").host(),
                                       &foo_provider_);
   }
 
   void TearDownOnMainThread() override {
     test_factory_->RemoveFactoryOverride(content::GetWebUIURL("foo/").host());
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(
-        test_factory_.get());
     test_factory_.reset();
-    content::WebUIControllerFactory::RegisterFactory(
-        ChromeWebUIControllerFactory::GetInstance());
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
   FooWebUIProvider foo_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
+  std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
+      factory_registration_;
 };
 
 // Make sure that the foo webui handler is working properly and that it gets

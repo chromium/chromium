@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_ui_browsertest_util.h"
@@ -49,15 +50,6 @@ namespace content {
 namespace {
 
 class WebUIImplBrowserTest : public ContentBrowserTest {
- public:
-  WebUIImplBrowserTest() {
-    WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
-  }
-
-  ~WebUIImplBrowserTest() override {
-    WebUIControllerFactory::UnregisterFactoryForTesting(&untrusted_factory_);
-  }
-
  protected:
   ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
     return untrusted_factory_;
@@ -65,6 +57,8 @@ class WebUIImplBrowserTest : public ContentBrowserTest {
 
  private:
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
+  content::ScopedWebUIControllerFactoryRegistration
+      untrusted_factory_registration_{&untrusted_factory_};
 };
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
@@ -455,13 +449,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateWhileWebUISend) {
 
 class WebUIRequestSchemesTest : public ContentBrowserTest {
  public:
-  WebUIRequestSchemesTest() {
-    WebUIControllerFactory::RegisterFactory(&factory_);
-  }
-
-  ~WebUIRequestSchemesTest() override {
-    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
-  }
+  WebUIRequestSchemesTest() = default;
 
   WebUIRequestSchemesTest(const WebUIRequestSchemesTest&) = delete;
 
@@ -471,6 +459,7 @@ class WebUIRequestSchemesTest : public ContentBrowserTest {
 
  private:
   TestWebUIControllerFactory factory_;
+  ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
 };
 
 // Verify that by default WebUI's child process security policy can request
@@ -569,15 +558,7 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest,
 
 class WebUIWorkerTest : public ContentBrowserTest {
  public:
-  WebUIWorkerTest() {
-    WebUIControllerFactory::RegisterFactory(&factory_);
-    WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
-  }
-
-  ~WebUIWorkerTest() override {
-    WebUIControllerFactory::UnregisterFactoryForTesting(&untrusted_factory_);
-    WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
-  }
+  WebUIWorkerTest() = default;
 
   WebUIWorkerTest(const WebUIWorkerTest&) = delete;
 
@@ -623,7 +604,11 @@ class WebUIWorkerTest : public ContentBrowserTest {
 
  private:
   TestWebUIControllerFactory factory_;
+  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
+      &factory_};
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
+  content::ScopedWebUIControllerFactoryRegistration
+      untrusted_factory_registration_{&untrusted_factory_};
 };
 
 class WebUIDedicatedWorkerTest : public WebUIWorkerTest,

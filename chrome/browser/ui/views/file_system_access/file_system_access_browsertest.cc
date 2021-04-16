@@ -26,10 +26,10 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
-#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -719,14 +719,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
  public:
   FileSystemAccessBrowserTestForWebUI() {
-    content::WebUIControllerFactory::RegisterFactory(&factory_);
-
     base::ScopedAllowBlockingForTesting allow_blocking;
     CHECK(temp_dir_.CreateUniqueTempDir());
-  }
-
-  ~FileSystemAccessBrowserTestForWebUI() override {
-    content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
   }
 
   // Return the evaluated value of a JavaScript |statement| as a std::string.
@@ -837,6 +831,8 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
 
  private:
   content::TestWebUIControllerFactory factory_;
+  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
+      &factory_};
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
