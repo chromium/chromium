@@ -476,11 +476,12 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
   DCHECK(!image->Data());
 
   IntRect img_rect(IntPoint(), IntSize(image->width(), image->height()));
-  const IntRect src_rect = Intersection(img_rect, parsed_options.crop_rect);
+  const IntRect& src_rect{parsed_options.crop_rect};
+  const IntRect intersect_rect = Intersection(img_rect, src_rect);
 
   // If cropRect doesn't intersect the source image, return a transparent black
   // image.
-  if (src_rect.IsEmpty())
+  if (intersect_rect.IsEmpty())
     return MakeBlankImage(parsed_options);
 
   scoped_refptr<StaticBitmapImage> result = image;
@@ -733,14 +734,14 @@ ImageBitmap::ImageBitmap(ImageData* data,
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
-  IntRect data_src_rect = IntRect(IntPoint(), data->Size());
-  IntRect src_rect = crop_rect
-                         ? Intersection(parsed_options.crop_rect, data_src_rect)
-                         : data_src_rect;
+  const IntRect& src_rect{parsed_options.crop_rect};
+  const IntRect data_src_rect = IntRect(IntPoint(), data->Size());
+  const IntRect intersect_rect =
+      crop_rect ? Intersection(src_rect, data_src_rect) : data_src_rect;
 
   // If cropRect doesn't intersect the source image, return a transparent black
   // image.
-  if (src_rect.IsEmpty()) {
+  if (intersect_rect.IsEmpty()) {
     image_ = MakeBlankImage(parsed_options);
     return;
   }

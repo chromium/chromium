@@ -119,22 +119,22 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
   image_element->SetImageForTest(original_image_content);
 
   base::Optional<IntRect> crop_rect =
-      IntRect(0, 0, image_->width(), image_->height());
+      IntRect(0, 0, image_element->width(), image_element->height());
   auto* image_bitmap_no_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_no_crop);
-  crop_rect = IntRect(image_->width() / 2, image_->height() / 2,
-                      image_->width() / 2, image_->height() / 2);
+  crop_rect = IntRect(image_element->width() / 2, image_element->height() / 2,
+                      image_element->width() / 2, image_element->height() / 2);
   auto* image_bitmap_interior_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_interior_crop);
-  crop_rect = IntRect(-image_->width() / 2, -image_->height() / 2,
-                      image_->width(), image_->height());
+  crop_rect = IntRect(-image_element->width() / 2, -image_element->height() / 2,
+                      image_element->width(), image_element->height());
   auto* image_bitmap_exterior_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_exterior_crop);
-  crop_rect = IntRect(-image_->width(), -image_->height(), image_->width(),
-                      image_->height());
+  crop_rect = IntRect(-image_element->width(), -image_element->height(),
+                      image_element->width(), image_element->height());
   auto* image_bitmap_outside_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_outside_crop);
@@ -153,7 +153,7 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
                 ->GetImage()
                 ->PaintImageForCurrentFrame()
                 .GetSwSkImage());
-  ASSERT_EQ(image_bitmap_exterior_crop->BitmapImage()
+  ASSERT_NE(image_bitmap_exterior_crop->BitmapImage()
                 ->PaintImageForCurrentFrame()
                 .GetSwSkImage(),
             image_element->CachedImage()
@@ -187,7 +187,7 @@ TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
 
   const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
   base::Optional<IntRect> crop_rect =
-      IntRect(0, 0, image_->width(), image_->height());
+      IntRect(0, 0, image->width(), image->height());
   auto* image_bitmap =
       MakeGarbageCollected<ImageBitmap>(image, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap);
