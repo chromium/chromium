@@ -443,6 +443,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
 
     // Valid selectors:
     {":is(.a, .b)"},
+    {":is(.a\n)", ":is(.a)"},
     {":is(.a .b, .c)"},
     {":is(.a :is(.b .c), .d)"},
     {":is(.a :where(.b .c), .d)"},
@@ -457,6 +458,7 @@ static const SelectorTestCase is_where_nesting_data[] = {
     {":host(:is(.a))"},
     {":host(:is(div.a))"},
     {":host(:is(.a, .b))"},
+    {":host(:is(.a\n))", ":host(:is(.a))"},
     {":host-context(:is(.a))"},
     {":host-context(:is(div.a))"},
     {":host-context(:is(.a, .b))"},

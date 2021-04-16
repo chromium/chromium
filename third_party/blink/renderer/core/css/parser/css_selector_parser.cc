@@ -212,6 +212,7 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
     std::unique_ptr<CSSParserSelector> selector =
         ConsumeCompoundSelector(argument);
+    argument.ConsumeWhitespace();
     if (selector && !failed_parsing_ && argument.AtEnd())
       selector_list.push_back(std::move(selector));
     if (range.Peek().GetType() != kCommaToken)
