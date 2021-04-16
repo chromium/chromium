@@ -297,6 +297,8 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
       VLOG(3) << "PrePaintTreeWalk::Walk(frame_view=" << &frame_view
               << ")\nLayout tree:";
       showLayoutTree(view);
+      VLOG(3) << "Fragment tree:";
+      NGPhysicalFragment::ShowFragmentTree(*view);
     }
 #endif
 
