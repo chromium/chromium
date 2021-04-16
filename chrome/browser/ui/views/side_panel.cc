@@ -15,6 +15,7 @@ namespace {
 
 // TODO(pbos): Figure out what our preferred width should be.
 constexpr int kDefaultWidth = 320;
+constexpr int kBorderWidth = 1;
 
 }  // namespace
 
@@ -27,7 +28,7 @@ SidePanel::SidePanel() {
 
 void SidePanel::SetPanelWidth(int width) {
   // Only the width is used by BrowserViewLayout.
-  SetPreferredSize(gfx::Size(width, 1));
+  SetPreferredSize(gfx::Size(width + kBorderWidth, 1));
 }
 
 SidePanel::~SidePanel() {
@@ -38,7 +39,7 @@ void SidePanel::OnThemeChanged() {
   views::View::OnThemeChanged();
   const ui::ThemeProvider* const theme_provider = GetThemeProvider();
   SetBorder(views::CreateSolidSidedBorder(
-      0, 1, 0, 0,
+      0, kBorderWidth, 0, 0,
       color_utils::GetResultingPaintColor(
           theme_provider->GetColor(
               ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
