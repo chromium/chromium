@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -161,7 +160,7 @@ class POLICY_EXPORT ForwardingSchemaRegistry
  private:
   void UpdateReadiness();
 
-  CheckedPtr<SchemaRegistry> wrapped_;
+  SchemaRegistry* wrapped_;
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingSchemaRegistry);
 };

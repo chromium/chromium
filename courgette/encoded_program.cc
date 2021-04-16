@@ -15,7 +15,6 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -163,7 +162,7 @@ class InstructionStoreReceptor : public InstructionReceptor {
 
  private:
   ExecutableType exe_type_;
-  CheckedPtr<EncodedProgram> encoded_;
+  EncodedProgram* encoded_;
 
   DISALLOW_COPY_AND_ASSIGN(InstructionStoreReceptor);
 };

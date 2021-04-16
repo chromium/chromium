@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -194,8 +193,8 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
 
  private:
-  CheckedPtr<Widget> widget_;
-  CheckedPtr<View> contents_view_ = nullptr;
+  Widget* widget_;
+  View* contents_view_ = nullptr;
   int window_closing_count_ = 0;
   gfx::Rect initial_bounds_ = gfx::Rect(100, 100, 200, 200);
   bool can_close_ = true;
@@ -217,7 +216,7 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
   View* GetInitiallyFocusedView() override;
 
  private:
-  CheckedPtr<View> view_;
+  View* view_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInitialFocusWidgetDelegate);
 };
@@ -262,7 +261,7 @@ class WidgetClosingObserver : public WidgetObserver {
   // views::WidgetObserver override:
   void OnWidgetClosing(Widget* widget) override;
 
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetClosingObserver);
@@ -284,7 +283,7 @@ class WidgetDestroyedWaiter : public WidgetObserver {
   // views::WidgetObserver
   void OnWidgetDestroyed(Widget* widget) override;
 
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetDestroyedWaiter);
@@ -308,7 +307,7 @@ class WidgetVisibleWaiter : public WidgetObserver {
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
   void OnWidgetDestroying(Widget* widget) override;
 
-  const CheckedPtr<Widget> widget_;
+  Widget* const widget_;
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };

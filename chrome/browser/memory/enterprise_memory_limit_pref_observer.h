@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEMORY_ENTERPRISE_MEMORY_LIMIT_PREF_OBSERVER_H_
 #define CHROME_BROWSER_MEMORY_ENTERPRISE_MEMORY_LIMIT_PREF_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,7 +35,7 @@ class EnterpriseMemoryLimitPrefObserver {
 
   // PrefService from which we get the preference upon notification that the
   // preference has changed.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Registrar which notifies us of changes to the preference.
   PrefChangeRegistrar pref_change_registrar_;

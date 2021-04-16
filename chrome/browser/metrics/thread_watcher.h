@@ -48,7 +48,6 @@
 #include "base/command_line.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -514,7 +513,7 @@ class ShutdownWatcherHelper {
 
  private:
   // shutdown_watchdog_ watches for hangs during shutdown.
-  CheckedPtr<base::Watchdog> shutdown_watchdog_;
+  base::Watchdog* shutdown_watchdog_;
 
   // The |thread_id_| on which this object is constructed.
   const base::PlatformThreadId thread_id_;

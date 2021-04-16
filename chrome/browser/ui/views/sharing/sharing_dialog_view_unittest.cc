@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/sharing/fake_device_info.h"
@@ -122,8 +121,8 @@ class SharingDialogViewTest : public TestWithBrowserView {
   testing::MockFunction<void(const SharingApp&)> app_callback_;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
-  CheckedPtr<SharingDialogView> dialog_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
+  SharingDialogView* dialog_ = nullptr;
 };
 
 TEST_F(SharingDialogViewTest, PopulateDialogView) {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/password_manager_test_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include <map>
 #include <string>
@@ -111,7 +110,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void QuitRunLoop();
 
   // The loop to be stopped when the target state or fallback is observed.
-  CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 
   // The state CustomManagePasswordsUIController is currently waiting for.
   base::Optional<password_manager::ui::State> target_state_;

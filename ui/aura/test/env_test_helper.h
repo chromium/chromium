@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/input_state_lookup.h"
@@ -45,7 +44,7 @@ class EnvTestHelper {
   }
 
  private:
-  CheckedPtr<Env> env_;
+  Env* env_;
 
   DISALLOW_COPY_AND_ASSIGN(EnvTestHelper);
 };

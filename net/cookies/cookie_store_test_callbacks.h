@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -52,7 +51,7 @@ class CookieCallback {
  private:
   void ValidateThread() const;
 
-  CheckedPtr<base::Thread> run_in_thread_;
+  base::Thread* run_in_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> run_in_task_runner_;
   base::RunLoop loop_to_quit_;
   bool was_run_;

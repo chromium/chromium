@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"
@@ -131,7 +130,7 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
 
   explicit Builder(HeadlessBrowserContextImpl* browser_context);
 
-  CheckedPtr<HeadlessBrowserContextImpl> browser_context_;
+  HeadlessBrowserContextImpl* browser_context_;
 
   GURL initial_url_ = GURL("about:blank");
   gfx::Size window_size_;

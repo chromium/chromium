@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
@@ -239,7 +238,7 @@ class CC_EXPORT PictureLayerImpl
   // will change transform.
   bool HasWillChangeTransformHint() const;
 
-  CheckedPtr<PictureLayerImpl> twin_layer_ = nullptr;
+  PictureLayerImpl* twin_layer_ = nullptr;
 
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();

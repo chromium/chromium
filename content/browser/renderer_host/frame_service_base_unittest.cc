@@ -5,7 +5,6 @@
 #include "content/public/browser/frame_service_base.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
@@ -99,7 +98,7 @@ class FrameServiceBaseTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  CheckedPtr<RenderFrameHost> main_rfh_ = nullptr;
+  RenderFrameHost* main_rfh_ = nullptr;
   mojo::Remote<mojom::Echo> echo_remote_;
   bool is_echo_impl_alive_ = false;
 };

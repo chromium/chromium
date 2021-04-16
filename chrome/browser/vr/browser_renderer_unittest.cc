@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/browser_renderer.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/input_delegate.h"
 #include "chrome/browser/vr/input_event.h"
@@ -195,10 +194,10 @@ class BrowserRendererTest : public testing::Test {
   }
 
  protected:
-  CheckedPtr<MockUi> ui_;
-  CheckedPtr<MockSchedulerDelegate> scheduler_delegate_;
-  CheckedPtr<MockGraphicsDelegate> graphics_delegate_;
-  CheckedPtr<MockInputDelegate> input_delegate_;
+  MockUi* ui_;
+  MockSchedulerDelegate* scheduler_delegate_;
+  MockGraphicsDelegate* graphics_delegate_;
+  MockInputDelegate* input_delegate_;
 
  private:
   BuildParams build_params_;

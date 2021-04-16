@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/table_model.h"
@@ -116,8 +115,8 @@ class TaskManagerView : public TableViewDelegate,
   // We need to own the text of the menu, the Windows API does not copy it.
   std::u16string always_on_top_menu_text_;
 
-  CheckedPtr<views::TableView> tab_table_;
-  CheckedPtr<views::View> tab_table_parent_;
+  views::TableView* tab_table_;
+  views::View* tab_table_parent_;
 
   // all possible columns, not necessarily visible
   std::vector<ui::TableColumn> columns_;

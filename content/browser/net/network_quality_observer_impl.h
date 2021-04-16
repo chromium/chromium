@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -52,7 +51,7 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
 
   // |network_quality_tracker_| is guaranteed to be non-null during the
   // lifetime of |this|.
-  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
+  network::NetworkQualityTracker* network_quality_tracker_;
 
   //  The network quality when the |ui_thread_observer_| was last notified.
   net::EffectiveConnectionType last_notified_type_;

@@ -5,7 +5,6 @@
 #ifndef UI_AURA_SCOPED_WINDOW_CAPTURE_REQUEST_H_
 #define UI_AURA_SCOPED_WINDOW_CAPTURE_REQUEST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "ui/aura/aura_export.h"
 
@@ -43,7 +42,7 @@ class AURA_EXPORT ScopedWindowCaptureRequest {
   // The window on which this request has been made. Can be |nullptr| if this is
   // an empty request (created by the default ctor), or if this object was
   // std::move()'d from.
-  CheckedPtr<Window> window_ = nullptr;
+  Window* window_ = nullptr;
 };
 
 }  // namespace aura

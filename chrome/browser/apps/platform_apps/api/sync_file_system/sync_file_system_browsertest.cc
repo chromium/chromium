@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -60,7 +59,7 @@ class FakeDriveServiceFactory
   }
 
  private:
-  CheckedPtr<drive::FakeDriveService::ChangeObserver> change_observer_;
+  drive::FakeDriveService::ChangeObserver* change_observer_;
 };
 
 }  // namespace
@@ -153,7 +152,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  CheckedPtr<drive_backend::SyncEngine> remote_service_ = nullptr;
+  drive_backend::SyncEngine* remote_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {

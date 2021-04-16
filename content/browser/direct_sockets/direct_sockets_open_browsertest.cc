@@ -5,7 +5,6 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -190,7 +189,7 @@ class MockHostResolver : public network::mojom::HostResolver {
   std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;
   mojo::Remote<network::mojom::ResolveHostClient> response_client_;
   mojo::Receiver<network::mojom::HostResolver> receiver_;
-  const CheckedPtr<net::HostResolver> internal_resolver_;
+  net::HostResolver* const internal_resolver_;
 };
 
 class MockNetworkContext : public network::TestNetworkContext {

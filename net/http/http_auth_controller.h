@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
@@ -234,9 +233,9 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // These two are owned by the HttpNetworkSession/IOThread, which own the
   // objects which reference |this|. Therefore, these raw pointers are valid
   // for the lifetime of this object.
-  const CheckedPtr<HttpAuthCache> http_auth_cache_;
-  const CheckedPtr<HttpAuthHandlerFactory> http_auth_handler_factory_;
-  const CheckedPtr<HostResolver> host_resolver_;
+  HttpAuthCache* const http_auth_cache_;
+  HttpAuthHandlerFactory* const http_auth_handler_factory_;
+  HostResolver* const host_resolver_;
 
   std::set<HttpAuth::Scheme> disabled_schemes_;
 

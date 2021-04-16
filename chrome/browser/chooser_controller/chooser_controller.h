@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace content {
 class RenderFrameHost;
@@ -178,7 +177,7 @@ class ChooserController {
 
  private:
   std::u16string title_;
-  CheckedPtr<View> view_ = nullptr;
+  View* view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserController);
 };

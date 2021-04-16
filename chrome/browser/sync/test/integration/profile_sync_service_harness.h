@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -202,10 +201,10 @@ class ProfileSyncServiceHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // ProfileSyncService object associated with |profile_|.
-  const CheckedPtr<syncer::ProfileSyncService> service_;
+  syncer::ProfileSyncService* const service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

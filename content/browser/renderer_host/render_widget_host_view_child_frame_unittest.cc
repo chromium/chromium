@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -192,15 +191,15 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  CheckedPtr<IPC::TestSink> sink_ = nullptr;
+  IPC::TestSink* sink_ = nullptr;
   MockRenderWidgetHostDelegate delegate_;
   MockWidget widget_;
 
   // Tests should set these to NULL if they've already triggered their
   // destruction.
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
-  CheckedPtr<RenderWidgetHostViewChildFrame> view_;
-  CheckedPtr<MockFrameConnector> test_frame_connector_;
+  RenderWidgetHostViewChildFrame* view_;
+  MockFrameConnector* test_frame_connector_;
 };
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {

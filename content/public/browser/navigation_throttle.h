@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
@@ -203,7 +202,7 @@ class CONTENT_EXPORT NavigationThrottle {
   virtual void CancelDeferredNavigation(ThrottleCheckResult result);
 
  private:
-  CheckedPtr<NavigationHandle> navigation_handle_;
+  NavigationHandle* navigation_handle_;
 
   // Used in tests.
   base::RepeatingClosure resume_callback_;

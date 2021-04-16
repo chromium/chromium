@@ -16,7 +16,6 @@
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
@@ -239,7 +238,7 @@ class NetworkService::DelayedDohProbeActivator {
   }
 
  private:
-  const CheckedPtr<NetworkService> network_service_;
+  NetworkService* const network_service_;
 
   // If running, DoH probes will be started on completion. If not running, DoH
   // probes may be started at any time.

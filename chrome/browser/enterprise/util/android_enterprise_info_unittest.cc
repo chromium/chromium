@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +17,7 @@ class AndroidEnterpriseInfoTest : public ::testing::Test {
     instance_->set_skip_jni_call_for_testing(true);
   }
 
-  CheckedPtr<chrome::enterprise_util::AndroidEnterpriseInfo> instance_;
+  chrome::enterprise_util::AndroidEnterpriseInfo* instance_;
 };
 
 class EnterpriseInfoCallbackHelper {

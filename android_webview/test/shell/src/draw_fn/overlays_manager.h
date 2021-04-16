@@ -9,7 +9,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 struct AwDrawFn_DrawGLParams;
@@ -46,7 +45,7 @@ class OverlaysManager {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
-  CheckedPtr<ANativeWindow> native_window_ = nullptr;
+  ANativeWindow* native_window_ = nullptr;
 };
 
 }  // namespace draw_fn

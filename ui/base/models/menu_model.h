@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -165,7 +164,7 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
 
  private:
   // MenuModelDelegate. Weak. Could be null.
-  CheckedPtr<MenuModelDelegate> menu_model_delegate_;
+  MenuModelDelegate* menu_model_delegate_;
 };
 
 }  // namespace ui

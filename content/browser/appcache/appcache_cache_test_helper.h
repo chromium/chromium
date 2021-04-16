@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_APPCACHE_APPCACHE_CACHE_TEST_HELPER_H_
 #define CONTENT_BROWSER_APPCACHE_APPCACHE_CACHE_TEST_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/appcache/mock_appcache_service.h"
 
 namespace content {
@@ -72,9 +71,9 @@ class AppCacheCacheTestHelper : public AppCacheStorage::Delegate {
   void AsyncRead(int result);
   void AsyncWrite(int result);
 
-  const CheckedPtr<const MockAppCacheService> service_;
+  const MockAppCacheService* const service_;
   const GURL manifest_url_;
-  const CheckedPtr<AppCache> cache_;
+  AppCache* const cache_;
   CacheEntries cache_entries_;
   State state_;
 
@@ -84,7 +83,7 @@ class AppCacheCacheTestHelper : public AppCacheStorage::Delegate {
   base::OnceCallback<void(int)> post_write_callback_;
 
   // Used for reading cache info and data.
-  CheckedPtr<AppCache> read_cache_;
+  AppCache* read_cache_;
   AppCache::EntryMap::const_iterator read_it_;
   int64_t read_entry_response_id_;
   scoped_refptr<AppCacheResponseInfo> read_info_response_info_;

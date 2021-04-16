@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/checked_ptr.h"
 
 namespace {
 const size_t kDefaultNumElementTypesToReserve = 32;
@@ -264,7 +263,7 @@ class ListContainerHelper::CharAllocator {
   size_t last_list_index_;
 
   // This is equivalent to |storage_[last_list_index_]|.
-  CheckedPtr<InnerList> last_list_;
+  InnerList* last_list_;
 };
 
 // PositionInCharAllocator

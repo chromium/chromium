@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/printing/cloud_print/privet_device_lister_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +69,7 @@ class MockServiceWatcher : public ServiceWatcher {
   bool started_;
   std::string service_type_;
   ServiceWatcher::UpdatedCallback callback_;
-  CheckedPtr<ServiceDiscoveryMockDelegate> mock_delegate_;
+  ServiceDiscoveryMockDelegate* mock_delegate_;
 };
 
 class MockServiceResolver : public ServiceResolver {
@@ -102,7 +101,7 @@ class MockServiceResolver : public ServiceResolver {
   bool started_resolving_;
   std::string service_name_;
   ServiceResolver::ResolveCompleteCallback callback_;
-  CheckedPtr<ServiceDiscoveryMockDelegate> mock_delegate_;
+  ServiceDiscoveryMockDelegate* mock_delegate_;
 };
 
 class MockServiceDiscoveryClient : public ServiceDiscoveryClient {
@@ -142,7 +141,7 @@ class MockServiceDiscoveryClient : public ServiceDiscoveryClient {
   }
 
  private:
-  CheckedPtr<ServiceDiscoveryMockDelegate> mock_delegate_;
+  ServiceDiscoveryMockDelegate* mock_delegate_;
 };
 
 class MockServiceDiscoveryMockDelegate : public ServiceDiscoveryMockDelegate {

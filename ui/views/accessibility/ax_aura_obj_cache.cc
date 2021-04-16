@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -64,7 +63,7 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
 
   // Pointer to the AXAuraObjCache object that owns |this|. Guaranteed not to be
   // null for the lifetime of this.
-  const CheckedPtr<AXAuraObjCache> cache_;
+  AXAuraObjCache* const cache_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -184,8 +183,8 @@ View* AXAuraObjCache::GetFocusedView() {
   if (!focused_widget) {
     // Uses the a11y override window for focus if it exists, otherwise gets the
     // last focused window.
-    focused_window = a11y_override_window_ ? a11y_override_window_.get()
-                                           : focused_window_.get();
+    focused_window =
+        a11y_override_window_ ? a11y_override_window_ : focused_window_;
 
     // Finally, fallback to searching for the focus.
     if (!focused_window) {

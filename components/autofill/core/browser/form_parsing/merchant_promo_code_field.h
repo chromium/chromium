@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/language_code.h"
@@ -42,7 +41,7 @@ class MerchantPromoCodeField : public FormField {
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeFieldTest, ParseNonPromoCode);
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeFieldTest, ParsePromoCodeFlagOff);
 
-  CheckedPtr<const AutofillField> field_;
+  const AutofillField* field_;
 };
 
 }  // namespace autofill

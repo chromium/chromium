@@ -12,7 +12,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 
@@ -86,7 +85,7 @@ class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
 
  private:
   ScopedSetIpcHash(uint32_t ipc_hash, const char* ipc_interface_name);
-  CheckedPtr<ScopedSetIpcHash> old_scoped_ipc_hash_ = nullptr;
+  ScopedSetIpcHash* old_scoped_ipc_hash_ = nullptr;
   uint32_t ipc_hash_ = 0;
   const char* ipc_interface_name_ = nullptr;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/profiles/guest_signin_observer_factory.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +39,7 @@ class GuestSigninObserver : public KeyedService,
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace

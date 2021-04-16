@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_EXPIRY_INSPECTING_RECORD_EXPIRY_DELEGATE_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_EXPIRY_INSPECTING_RECORD_EXPIRY_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 
@@ -38,8 +37,7 @@ class ExpiryInspectingRecordExpiryDelegate
                        const SuitableTrustTokenOrigin& issuer) override;
 
  private:
-  CheckedPtr<const SynchronousTrustTokenKeyCommitmentGetter>
-      key_commitment_getter_;
+  const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter_;
 };
 
 }  // namespace network

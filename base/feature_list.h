@@ -15,7 +15,6 @@
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/string_piece.h"
@@ -377,7 +376,7 @@ class BASE_EXPORT FeatureList {
   // the scenario where multiple FieldTrialList are used with the same
   // FeatureList - which can lead to overrides pointing to invalid FieldTrial
   // objects.
-  CheckedPtr<base::FieldTrialList> field_trial_list_ = nullptr;
+  base::FieldTrialList* field_trial_list_ = nullptr;
 
   // Whether this object has been fully initialized. This gets set to true as a
   // result of FinalizeInitialization().

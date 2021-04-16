@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/values.h"
@@ -178,8 +177,8 @@ class POLICY_EXPORT Schema {
 
    private:
     scoped_refptr<const InternalStorage> storage_;
-    CheckedPtr<const internal::PropertyNode> it_;
-    CheckedPtr<const internal::PropertyNode> end_;
+    const internal::PropertyNode* it_;
+    const internal::PropertyNode* end_;
   };
 
   // These methods should be called only if type() == Type::DICTIONARY,

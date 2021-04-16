@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 #define UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -48,7 +47,7 @@ class NATIVE_THEME_EXPORT ThemedVectorIcon {
  private:
   SkColor GetColor(const NativeTheme* theme) const;
 
-  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
+  const gfx::VectorIcon* icon_ = nullptr;
   int icon_size_ = 0;
   base::Optional<NativeTheme::ColorId> color_id_;
   base::Optional<SkColor> color_;

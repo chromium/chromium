@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -48,8 +47,8 @@ class PaymentRequestDisplayManager : public KeyedService {
     bool was_shown() const { return was_shown_; }
 
    private:
-    CheckedPtr<PaymentRequestDisplayManager> display_manager_;
-    CheckedPtr<ContentPaymentRequestDelegate> delegate_;
+    PaymentRequestDisplayManager* display_manager_;
+    ContentPaymentRequestDelegate* delegate_;
     bool was_shown_ = false;
     DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
   };
@@ -70,7 +69,7 @@ class PaymentRequestDisplayManager : public KeyedService {
  private:
   void set_current_handle(DisplayHandle* handle) { current_handle_ = handle; }
 
-  CheckedPtr<DisplayHandle> current_handle_;
+  DisplayHandle* current_handle_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentRequestDisplayManager);
 };

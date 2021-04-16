@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -277,10 +276,9 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   std::string intercept_request_path_;
   std::string intercept_request_response_;
 
-  CheckedPtr<PageActionIconView> pwa_install_view_ = nullptr;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
-  CheckedPtr<webapps::TestAppBannerManagerDesktop> app_banner_manager_ =
-      nullptr;
+  PageActionIconView* pwa_install_view_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
+  webapps::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PwaInstallViewBrowserTest);
 

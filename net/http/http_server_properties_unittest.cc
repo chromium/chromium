@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -137,7 +136,7 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
-  CheckedPtr<const base::TickClock> test_tick_clock_;
+  const base::TickClock* test_tick_clock_;
   base::SimpleTestClock test_clock_;
 
   // Two different non-empty network isolation keys for use in tests that need

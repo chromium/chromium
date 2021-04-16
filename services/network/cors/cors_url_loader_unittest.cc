@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -426,8 +425,7 @@ class CorsURLLoaderTest : public testing::Test {
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<mojo::Receiver<mojom::URLLoaderFactory>>
       test_url_loader_factory_receiver_;
-  CheckedPtr<MockDevToolsObserver> devtools_observer_for_next_request_ =
-      nullptr;
+  MockDevToolsObserver* devtools_observer_for_next_request_ = nullptr;
 
   // Holds URLLoader that CreateLoaderAndStart() creates.
   mojo::Remote<mojom::URLLoader> url_loader_;

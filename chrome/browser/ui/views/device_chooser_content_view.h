@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
@@ -95,15 +94,15 @@ class DeviceChooserContentView : public views::View,
   // to get the devices working in the browser.
   bool adapter_authorized_ = true;
 
-  CheckedPtr<views::ScrollView> table_parent_ = nullptr;
-  CheckedPtr<views::Checkbox> select_all_view_ = nullptr;
-  CheckedPtr<views::TableView> table_view_ = nullptr;
-  CheckedPtr<views::View> no_options_view_ = nullptr;
-  CheckedPtr<views::View> adapter_off_view_ = nullptr;
-  CheckedPtr<views::LabelButton> re_scan_button_ = nullptr;
-  CheckedPtr<views::Throbber> throbber_ = nullptr;
-  CheckedPtr<views::Label> throbber_label_ = nullptr;
-  CheckedPtr<views::View> adapter_unauthorized_view_ = nullptr;
+  views::ScrollView* table_parent_ = nullptr;
+  views::Checkbox* select_all_view_ = nullptr;
+  views::TableView* table_view_ = nullptr;
+  views::View* no_options_view_ = nullptr;
+  views::View* adapter_off_view_ = nullptr;
+  views::LabelButton* re_scan_button_ = nullptr;
+  views::Throbber* throbber_ = nullptr;
+  views::Label* throbber_label_ = nullptr;
+  views::View* adapter_unauthorized_view_ = nullptr;
 
   bool is_initialized_ = false;
   base::CallbackListSubscription select_all_subscription_;

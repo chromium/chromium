@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
@@ -132,7 +131,7 @@ class AccountStorageSettingsReader {
 
  private:
   // May be null, if no settings for this account were saved yet.
-  CheckedPtr<const base::Value> account_settings_ = nullptr;
+  const base::Value* account_settings_ = nullptr;
 };
 
 // Helper class for updating account storage settings for a given account. Like

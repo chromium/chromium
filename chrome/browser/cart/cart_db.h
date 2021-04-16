@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CART_CART_DB_H_
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -61,7 +60,7 @@ class CartDB {
                              OperationCallback callback);
 
  private:
-  CheckedPtr<ProfileProtoDB<cart_db::ChromeCartContentProto>> proto_db_;
+  ProfileProtoDB<cart_db::ChromeCartContentProto>* proto_db_;
   base::WeakPtrFactory<CartDB> weak_ptr_factory_{this};
 };
 

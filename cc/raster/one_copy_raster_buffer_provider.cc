@@ -12,7 +12,6 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -82,7 +81,7 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
   }
 
   // The ContextProvider used to clean up the mailbox
-  CheckedPtr<viz::RasterContextProvider> worker_context_provider = nullptr;
+  viz::RasterContextProvider* worker_context_provider = nullptr;
 };
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(

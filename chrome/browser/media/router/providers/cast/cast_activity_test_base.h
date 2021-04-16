@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_ACTIVITY_TEST_BASE_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_ACTIVITY_TEST_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
@@ -110,7 +109,7 @@ class CastActivityTestBase : public testing::Test,
                                       socket_service_.task_runner()};
   MediaSinkInternal sink_ = CreateCastSink(kChannelId);
   MockCastActivityManager manager_;
-  CheckedPtr<CastSession> session_ = nullptr;
+  CastSession* session_ = nullptr;
 };
 
 }  // namespace media_router

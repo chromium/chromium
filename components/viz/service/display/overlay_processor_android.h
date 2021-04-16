@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
@@ -81,7 +80,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   // overlay, if one backs them with a SurfaceView.
   PromotionHintInfoMap promotion_hint_info_map_;
 
-  CheckedPtr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
+  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_;
   // This class is created, accessed, and destroyed on the gpu thread.
   std::unique_ptr<OverlayProcessorOnGpu> processor_on_gpu_;
 

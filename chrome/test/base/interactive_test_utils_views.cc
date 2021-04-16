@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,7 +52,7 @@ class ViewFocusWaiter : public views::ViewObserver {
 
  private:
   base::RunLoop run_loop_;
-  CheckedPtr<views::View> view_;
+  views::View* view_;
   const bool target_focused_;
 };
 

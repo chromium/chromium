@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -69,7 +68,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   const base::UnguessableToken token_;
   const FileSystemAccessPermissionContext::HandleType handle_type_;
   // Raw pointer since FileSystemAccessManagerImpl owns `this`.
-  const CheckedPtr<FileSystemAccessManagerImpl> manager_;
+  FileSystemAccessManagerImpl* const manager_;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
   const FileSystemAccessManagerImpl::SharedHandleState handle_state_;

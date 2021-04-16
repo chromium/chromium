@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -139,9 +138,9 @@ class OopPixelTest : public testing::Test,
     bool requires_clear = false;
     bool preclear = false;
     SkColor preclear_color;
-    CheckedPtr<ImageDecodeCache> image_cache = nullptr;
+    ImageDecodeCache* image_cache = nullptr;
     std::vector<scoped_refptr<DisplayItemList>> additional_lists;
-    CheckedPtr<PaintShader> shader_with_animated_images = nullptr;
+    PaintShader* shader_with_animated_images = nullptr;
   };
 
   SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,

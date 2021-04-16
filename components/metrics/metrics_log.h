@@ -16,7 +16,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -211,7 +210,7 @@ class MetricsLog {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  const CheckedPtr<MetricsServiceClient> client_;
+  MetricsServiceClient* const client_;
 
   // The time when the current log was created.
   const base::TimeTicks creation_time_;

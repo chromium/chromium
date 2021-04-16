@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_OFFER_BUBBLE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_OFFER_BUBBLE_VIEWS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -52,13 +51,13 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
 
   void LinkClicked(const GURL& url);
 
-  CheckedPtr<views::Textfield> cardholder_name_textfield_ = nullptr;
+  views::Textfield* cardholder_name_textfield_ = nullptr;
 
-  CheckedPtr<LegalMessageView> legal_message_view_ = nullptr;
+  LegalMessageView* legal_message_view_ = nullptr;
 
   // Holds expiration inputs:
-  CheckedPtr<views::Combobox> month_input_dropdown_ = nullptr;
-  CheckedPtr<views::Combobox> year_input_dropdown_ = nullptr;
+  views::Combobox* month_input_dropdown_ = nullptr;
+  views::Combobox* year_input_dropdown_ = nullptr;
   MonthComboboxModel month_combobox_model_;
   YearComboboxModel year_combobox_model_;
 

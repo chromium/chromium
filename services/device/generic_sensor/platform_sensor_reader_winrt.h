@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
@@ -96,7 +95,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // threads by PlatformSensorWin.
   base::Lock lock_;
   // Null if there is no client to notify, non-null otherwise.
-  CheckedPtr<Client> client_;
+  Client* client_;
 
   // Always report the first sample received after starting the sensor.
   bool has_received_first_sample_ = false;

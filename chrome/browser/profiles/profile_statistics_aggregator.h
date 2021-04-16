@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
@@ -50,7 +49,7 @@ class ProfileStatisticsAggregator {
   // Registers, initializes and starts a BrowsingDataCounter.
   void AddCounter(std::unique_ptr<browsing_data::BrowsingDataCounter> counter);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::FilePath profile_path_;
   profiles::ProfileCategoryStats profile_category_stats_;
 

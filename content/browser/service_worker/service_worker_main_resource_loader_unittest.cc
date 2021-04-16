@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -347,7 +346,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
     kHeaders
   };
 
-  const CheckedPtr<BrowserTaskEnvironment> task_environment_;
+  BrowserTaskEnvironment* const task_environment_;
 
   ResponseMode response_mode_ = ResponseMode::kDefault;
   scoped_refptr<network::ResourceRequestBody> request_body_;
@@ -373,8 +372,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   bool has_received_fetch_event_ = false;
   base::OnceClosure quit_closure_for_fetch_event_;
 
-  const CheckedPtr<FakeEmbeddedWorkerInstanceClient>
-      embedded_worker_instance_client_;
+  FakeEmbeddedWorkerInstanceClient* const embedded_worker_instance_client_;
 
   network::mojom::FetchResponseSource response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
@@ -580,7 +578,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  CheckedPtr<FetchEventServiceWorker> service_worker_;
+  FetchEventServiceWorker* service_worker_;
   storage::BlobStorageContext blob_context_;
   network::TestURLLoaderClient client_;
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;

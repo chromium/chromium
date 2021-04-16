@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -112,11 +111,11 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
 
  protected:
   std::unique_ptr<Widget> anchor_widget_;
-  CheckedPtr<BubbleDialogDelegateView> bubble_ = nullptr;
-  CheckedPtr<Widget> widget_ = nullptr;
-  CheckedPtr<View> view1_;
-  CheckedPtr<View> view2_;
-  CheckedPtr<View> view3_;
+  BubbleDialogDelegateView* bubble_ = nullptr;
+  Widget* widget_ = nullptr;
+  View* view1_;
+  View* view2_;
+  View* view3_;
   std::unique_ptr<TestBubbleSlideAnimator> delegate_;
 };
 

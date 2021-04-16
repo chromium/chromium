@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/chromeos_buildflags.h"
@@ -226,10 +225,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Other submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> sub_menus_;
 
-  CheckedPtr<ui::AcceleratorProvider> provider_;  // weak
+  ui::AcceleratorProvider* provider_;  // weak
 
-  const CheckedPtr<Browser> browser_;  // weak
-  const CheckedPtr<AppMenuIconController> app_menu_icon_controller_;
+  Browser* const browser_;  // weak
+  AppMenuIconController* const app_menu_icon_controller_;
 
   base::CallbackListSubscription browser_zoom_subscription_;
 

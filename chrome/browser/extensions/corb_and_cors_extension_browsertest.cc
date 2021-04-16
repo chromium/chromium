@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -537,7 +536,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     return PopString(&message_queue);
   }
 
-  CheckedPtr<const Extension> extension_ = nullptr;
+  const Extension* extension_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CorbAndCorsExtensionBrowserTest);
 };

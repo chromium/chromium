@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "mojo/core/handle_signals_state.h"
@@ -58,7 +57,7 @@ class WatcherSet {
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
-  const CheckedPtr<Dispatcher> owner_;
+  Dispatcher* const owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
   base::Optional<HandleSignalsState> last_known_state_;
 

@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
@@ -80,7 +79,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
-  CheckedPtr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
+  net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceProxyDelegate);
 };

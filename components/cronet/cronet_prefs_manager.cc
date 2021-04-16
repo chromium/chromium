@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -130,7 +129,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   }
 
  private:
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   const std::string path_;
   PrefChangeRegistrar pref_change_registrar_;
 

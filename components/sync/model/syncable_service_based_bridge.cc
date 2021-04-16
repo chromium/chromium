@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -205,9 +204,9 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const ModelType type_;
   const base::RepeatingCallback<void(const base::Optional<ModelError>&)>
       error_callback_;
-  const CheckedPtr<ModelTypeStore> store_;
-  const CheckedPtr<SyncableServiceBasedBridge::InMemoryStore> in_memory_store_;
-  const CheckedPtr<ModelTypeChangeProcessor> other_;
+  ModelTypeStore* const store_;
+  SyncableServiceBasedBridge::InMemoryStore* const in_memory_store_;
+  ModelTypeChangeProcessor* const other_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(LocalChangeProcessor);

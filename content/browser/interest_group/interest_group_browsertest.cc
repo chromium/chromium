@@ -5,7 +5,6 @@
 #include <sstream>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -177,7 +176,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<InterestGroupManager> storage_;
+  InterestGroupManager* storage_;
 };
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {

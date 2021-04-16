@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_control_host.h"
-#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -477,7 +476,7 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     web_test_control_->HandleNewRenderFrameHost(render_frame_host);
   }
 
-  const CheckedPtr<WebTestControlHost> web_test_control_;
+  WebTestControlHost* const web_test_control_;
 };
 
 // WebTestControlHost -------------------------------------------------------

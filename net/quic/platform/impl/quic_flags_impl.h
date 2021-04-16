@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/export_template.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_flags.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
@@ -64,7 +63,7 @@ class TypedQuicFlagHelper : public QuicFlagHelper {
   void ResetFlag() const override { *flag_ = default_value_; }
 
  private:
-  mutable CheckedPtr<T> flag_;
+  mutable T* flag_;
   T default_value_;
 };
 

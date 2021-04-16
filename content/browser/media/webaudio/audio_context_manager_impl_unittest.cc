@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
@@ -41,7 +40,7 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock& clock() { return clock_; }
 
  private:
-  CheckedPtr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
+  AudioContextManagerImpl* audio_context_manager_ = nullptr;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };

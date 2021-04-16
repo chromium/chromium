@@ -5,7 +5,6 @@
 #ifndef BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
@@ -85,7 +84,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 
  private:
   const char* root_name_;
-  CheckedPtr<base::trace_event::ProcessMemoryDump> memory_dump_;
+  base::trace_event::ProcessMemoryDump* memory_dump_;
   uint64_t uid_ = 0;
   size_t total_mmapped_bytes_ = 0;
   size_t total_resident_bytes_ = 0;

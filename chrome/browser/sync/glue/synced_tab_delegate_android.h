@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 namespace content {
@@ -43,7 +42,7 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   void ResetWebContents();
 
  private:
-  CheckedPtr<TabAndroid> tab_android_;
+  TabAndroid* tab_android_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedTabDelegateAndroid);
 };

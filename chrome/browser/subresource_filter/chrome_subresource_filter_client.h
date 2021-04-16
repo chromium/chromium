@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
@@ -40,13 +39,13 @@ class ChromeSubresourceFilterClient
   void ShowNotification() override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
 
 #if defined(OS_ANDROID)
-  CheckedPtr<InfoBarService> infobar_service_;
+  InfoBarService* infobar_service_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);

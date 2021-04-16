@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 
 class Profile;
@@ -40,7 +39,7 @@ class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
   void OnTabRestored(const GURL& url) override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeTabRestoreServiceClient);
 };

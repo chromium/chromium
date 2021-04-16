@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -25,7 +24,7 @@ struct SharingApp {
   SharingApp(SharingApp&& other);
   ~SharingApp();
 
-  CheckedPtr<const gfx::VectorIcon> vector_icon = nullptr;
+  const gfx::VectorIcon* vector_icon = nullptr;
   gfx::Image image;
   std::u16string name;
   std::string identifier;

@@ -200,7 +200,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     double sqr_sum = 0.0;
     int count = 0;
     for (const auto* begin_event : events_to_analyze) {
-      const auto* end_event = begin_event->other_event.get();
+      const auto* end_event = begin_event->other_event;
       if (!end_event)
         continue;
       const double latency = end_event->timestamp - begin_event->timestamp;
@@ -244,7 +244,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     } else {
       int fail_count = 0;
       for (const auto* begin_event : events_to_analyze) {
-        const auto* end_event = begin_event->other_event.get();
+        const auto* end_event = begin_event->other_event;
         if (!end_event) {
           // This indicates the operation never completed, and so is counted as
           // a failure.

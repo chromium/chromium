@@ -14,7 +14,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -110,7 +109,7 @@ class StopTestOnCallback {
   }
 
  private:
-  CheckedPtr<LocalStorageHelper> local_storage_helper_;
+  LocalStorageHelper* local_storage_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {

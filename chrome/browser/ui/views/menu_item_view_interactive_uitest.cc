@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
 #include "ui/native_theme/themed_vector_icon.h"
@@ -120,7 +119,7 @@ class MenuItemViewTestInsert : public MenuTestBase {
   }
 
  private:
-  CheckedPtr<views::MenuItemView> inserted_item_ = nullptr;
+  views::MenuItemView* inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertXY inserts an item at index X and selects the
@@ -208,8 +207,8 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   }
 
  private:
-  CheckedPtr<views::MenuItemView> submenu_ = nullptr;
-  CheckedPtr<views::MenuItemView> inserted_item_ = nullptr;
+  views::MenuItemView* submenu_ = nullptr;
+  views::MenuItemView* inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertWithSubmenuX posts a menu and its submenu,
@@ -351,7 +350,7 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
   }
 
  private:
-  CheckedPtr<views::MenuItemView> submenu_ = nullptr;
+  views::MenuItemView* submenu_ = nullptr;
 };
 
 using MenuItemViewTestRemoveWithSubmenu0 = MenuItemViewTestRemoveWithSubmenu<0>;
