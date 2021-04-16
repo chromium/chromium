@@ -47,6 +47,7 @@ CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 DEFAULT_WPT = os.path.join(
     SRC_DIR, 'third_party', 'wpt_tools', 'wpt', 'wpt')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
+TOMBSTONE_PARSER = os.path.join(SRC_DIR, 'build', 'android', 'tombstones.py')
 
 if PYUTILS not in sys.path:
   sys.path.append(PYUTILS)
@@ -134,6 +135,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       "--device-serial", self._device.serial,
       "--webdriver-binary",
       self.options.webdriver_binary,
+      "--symbols-path",
+      self.output_directory,
+      '--stackwalk-binary',
+      TOMBSTONE_PARSER,
       "--headless",
       "--no-pause-after-test",
       "--no-capture-stdio",
