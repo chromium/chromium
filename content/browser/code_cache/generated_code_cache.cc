@@ -384,9 +384,18 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     // [stream1] <empty>
     // [stream0 (checksum key entry)] <empty>
     // [stream1 (checksum key entry)] data
+
+    // Make a copy of the data before hashing. A compromised renderer could
+    // change shared memory before we can compute the hash and write the data.
+    // TODO(1135729) Eliminate this copy when the shared memory can't be written
+    // by the sender.
+    mojo_base::BigBuffer copy({data.data(), data.size()});
+    if (copy.size() != data.size())
+      return;
+    data = mojo_base::BigBuffer();  // Release the old buffer.
     uint8_t result[crypto::kSHA256Length];
     crypto::SHA256HashString(
-        base::StringPiece(reinterpret_cast<char*>(data.data()), data.size()),
+        base::StringPiece(reinterpret_cast<char*>(copy.data()), copy.size()),
         result, base::size(result));
     std::string checksum_key = base::HexEncode(result, base::size(result));
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
@@ -401,7 +410,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     // Issue another write operation for the code, with the checksum as the key
     // and nothing in the header.
     auto small_buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(0);
-    auto large_buffer2 = base::MakeRefCounted<BigIOBuffer>(std::move(data));
+    auto large_buffer2 = base::MakeRefCounted<BigIOBuffer>(std::move(copy));
     auto op2 = std::make_unique<PendingOperation>(Operation::kWriteWithSHAKey,
                                                   checksum_key, small_buffer2,
                                                   large_buffer2);
