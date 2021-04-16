@@ -178,6 +178,9 @@ void SearchResultExtractorImpl::OnDestruct() {
 
 void SearchResultExtractorImpl::BindSearchResultExtractor(
     mojo::PendingAssociatedReceiver<mojom::SearchResultExtractor> receiver) {
+  // Requests can occur multiple times on the same frame. If the browser has
+  // released its endpoint and creates a new one this needs to be reset.
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 
