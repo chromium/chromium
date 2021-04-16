@@ -578,6 +578,18 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   return result;
 }
 
+bool FrameSelection::ShouldPaintCaret(
+    const NGPhysicalBoxFragment& box_fragment) const {
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kLayoutClean);
+  bool result = frame_caret_->ShouldPaintCaret(box_fragment);
+  DCHECK(!result ||
+         (ComputeVisibleSelectionInDOMTree().IsCaret() &&
+          (IsEditablePosition(ComputeVisibleSelectionInDOMTree().Start()) ||
+           frame_->IsCaretBrowsingEnabled())));
+  return result;
+}
+
 IntRect FrameSelection::AbsoluteCaretBounds() const {
   DCHECK(ComputeVisibleSelectionInDOMTree().IsValidFor(*frame_->GetDocument()));
   return frame_caret_->AbsoluteCaretBounds();

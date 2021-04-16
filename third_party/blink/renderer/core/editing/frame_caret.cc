@@ -170,6 +170,11 @@ bool FrameCaret::ShouldPaintCaret(const LayoutBlock& block) const {
   return display_item_client_->ShouldPaintCaret(block);
 }
 
+bool FrameCaret::ShouldPaintCaret(
+    const NGPhysicalBoxFragment& box_fragment) const {
+  return display_item_client_->ShouldPaintCaret(box_fragment);
+}
+
 void FrameCaret::PaintCaret(GraphicsContext& context,
                             const PhysicalOffset& paint_offset) const {
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);

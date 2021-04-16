@@ -39,6 +39,7 @@ namespace blink {
 
 class GraphicsContext;
 class LayoutBlock;
+class NGPhysicalBoxFragment;
 struct PaintInvalidatorContext;
 
 class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
@@ -63,6 +64,8 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
     return &block == layout_block_;
   }
 
+  bool ShouldPaintCaret(const NGPhysicalBoxFragment& box_fragment) const;
+
   void PaintCaret(GraphicsContext&,
                   const PhysicalOffset& paint_offset,
                   DisplayItem::Type) const;
@@ -82,6 +85,7 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
    public:
     PhysicalRect caret_rect;  // local to |painter_block|
     LayoutBlock* painter_block = nullptr;
+    const NGPhysicalBoxFragment* box_fragment = nullptr;
   };
   // Creating VisiblePosition causes synchronous layout so we should use the
   // PositionWithAffinity version if possible.
@@ -102,6 +106,8 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
   // invalidation. It is used during InvalidatePaint() to invalidate the caret
   // in the previous layout block.
   UntracedMember<const LayoutBlock> previous_layout_block_;
+
+  UntracedMember<const NGPhysicalBoxFragment> box_fragment_;
 
   bool needs_paint_invalidation_ = false;
   bool is_visible_if_active_ = true;

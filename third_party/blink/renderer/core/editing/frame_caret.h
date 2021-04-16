@@ -44,9 +44,10 @@ class FrameCaret;
 class GraphicsContext;
 class LayoutBlock;
 class LocalFrame;
-class SelectionEditor;
+class NGPhysicalBoxFragment;
 struct PaintInvalidatorContext;
 struct PhysicalOffset;
+class SelectionEditor;
 
 class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
  public:
@@ -76,6 +77,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
 
   bool ShouldPaintCaret(const LayoutBlock&) const;
+  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
   void PaintCaret(GraphicsContext&, const PhysicalOffset&) const;
 
   // For unit tests.

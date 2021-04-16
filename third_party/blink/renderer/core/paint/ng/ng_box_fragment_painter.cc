@@ -330,17 +330,16 @@ unsigned FragmentainerUniqueIdentifier(const NGPhysicalBoxFragment& fragment) {
 }
 
 bool ShouldPaintCursorCaret(const NGPhysicalBoxFragment& fragment) {
-  if (const auto* block = DynamicTo<LayoutBlock>(fragment.GetLayoutObject()))
-    return block->GetFrame()->Selection().ShouldPaintCaret(*block);
-  return false;
+  return fragment.GetLayoutObject()->GetFrame()->Selection().ShouldPaintCaret(
+      fragment);
 }
 
 bool ShouldPaintDragCaret(const NGPhysicalBoxFragment& fragment) {
-  if (const auto* block = DynamicTo<LayoutBlock>(fragment.GetLayoutObject())) {
-    return block->GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(
-        *block);
-  }
-  return false;
+  return fragment.GetLayoutObject()
+      ->GetFrame()
+      ->GetPage()
+      ->GetDragCaret()
+      .ShouldPaintCaret(fragment);
 }
 
 bool ShouldPaintCarets(const NGPhysicalBoxFragment& fragment) {

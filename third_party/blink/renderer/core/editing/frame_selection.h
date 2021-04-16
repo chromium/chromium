@@ -53,6 +53,7 @@ class GranularityStrategy;
 class GraphicsContext;
 class NGInlineCursor;
 class NGInlineCursorPosition;
+class NGPhysicalBoxFragment;
 class Range;
 class SelectionEditor;
 class LayoutSelection;
@@ -196,6 +197,7 @@ class CORE_EXPORT FrameSelection final
   // Returns true if specified layout block should paint caret. This function is
   // called during painting only.
   bool ShouldPaintCaret(const LayoutBlock&) const;
+  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
 
   // Bounds of (possibly transformed) caret in absolute coords
   IntRect AbsoluteCaretBounds() const;

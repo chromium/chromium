@@ -97,6 +97,11 @@ bool DragCaret::ShouldPaintCaret(const LayoutBlock& block) const {
   return display_item_client_->ShouldPaintCaret(block);
 }
 
+bool DragCaret::ShouldPaintCaret(
+    const NGPhysicalBoxFragment& box_fragment) const {
+  return display_item_client_->ShouldPaintCaret(box_fragment);
+}
+
 void DragCaret::PaintDragCaret(const LocalFrame* frame,
                                GraphicsContext& context,
                                const PhysicalOffset& paint_offset) const {
