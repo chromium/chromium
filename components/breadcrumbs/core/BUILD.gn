@@ -14,3 +14,14 @@ source_set("core") {
 
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":core",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  sources = [ "breadcrumb_manager_unittest.cc" ]
+}

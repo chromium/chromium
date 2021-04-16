@@ -4,22 +4,24 @@
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 
-#import "ios/web/public/test/web_task_environment.h"
+#include <list>
+#include <string>
+
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace breadcrumbs {
 
 // Test fixture for testing BreadcrumbManager class.
 class BreadcrumbManagerTest : public PlatformTest {
  protected:
   BreadcrumbManagerTest() = default;
 
-  web::WebTaskEnvironment task_env_{
-      web::WebTaskEnvironment::Options::DEFAULT,
+  base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  breadcrumbs::BreadcrumbManager breadcrumb_manager_;
+  BreadcrumbManager breadcrumb_manager_;
 };
 
 // Tests that an event is logged and returned.
@@ -86,3 +88,5 @@ TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
   std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
   EXPECT_EQ(2ul, events.size());
 }
+
+}  // namespace breadcrumbs

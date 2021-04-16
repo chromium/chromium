@@ -109,7 +109,6 @@ source_set("unit_tests") {
     "breadcrumb_manager_observer_bridge_unittest.mm",
     "breadcrumb_manager_observer_unittest.mm",
     "breadcrumb_manager_tab_helper_unittest.mm",
-    "breadcrumb_manager_unittest.mm",
     "breadcrumb_persistent_storage_manager_unittest.mm",
     "breadcrumb_persistent_storage_util_unittest.mm",
   ]
