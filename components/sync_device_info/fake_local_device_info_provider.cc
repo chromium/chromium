@@ -19,6 +19,7 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    "device_id",
                    "fake_manufacturer",
                    "fake_model",
+                   "fake_full_hardware_class",
                    /*last_updated_timestamp=*/base::Time::Now(),
                    DeviceInfoUtil::GetPulseInterval(),
                    /*send_tab_to_self_receiving_enabled=*/false,

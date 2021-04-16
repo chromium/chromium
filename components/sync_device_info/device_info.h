@@ -97,6 +97,7 @@ class DeviceInfo {
              const std::string& signin_scoped_device_id,
              const std::string& manufacturer_name,
              const std::string& model_name,
+             const std::string& full_hardware_class,
              base::Time last_updated_timestamp,
              base::TimeDelta pulse_interval,
              bool send_tab_to_self_receiving_enabled,
@@ -139,6 +140,11 @@ class DeviceInfo {
   // The device model name.
   const std::string& model_name() const;
 
+  // Returns unique hardware class string which details the
+  // HW combination of a ChromeOS device. Returns empty on other OS devices or
+  // when UMA is disabled.
+  const std::string& full_hardware_class() const;
+
   // Returns the time at which this device was last updated to the sync servers.
   base::Time last_updated_timestamp() const;
 
@@ -175,6 +181,8 @@ class DeviceInfo {
   // would lead to a stable unique id for a device which can potentially
   // be used for tracking.
   void set_public_id(const std::string& id);
+
+  void set_full_hardware_class(const std::string& full_hardware_class);
 
   void set_send_tab_to_self_receiving_enabled(bool new_value);
 
@@ -214,6 +222,8 @@ class DeviceInfo {
   const std::string manufacturer_name_;
 
   const std::string model_name_;
+
+  std::string full_hardware_class_;
 
   const base::Time last_updated_timestamp_;
 

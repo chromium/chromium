@@ -17,7 +17,16 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/device_form_factor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/system/statistics_provider.h"
+#endif
+
 namespace syncer {
+
+LocalDeviceNameInfo::LocalDeviceNameInfo() = default;
+LocalDeviceNameInfo::LocalDeviceNameInfo(const LocalDeviceNameInfo& other) =
+    default;
+LocalDeviceNameInfo::~LocalDeviceNameInfo() = default;
 
 namespace {
 
@@ -44,6 +53,18 @@ void OnPersonalizableDeviceNameReady(LocalDeviceNameInfo* name_info_ptr,
                                      base::ScopedClosureRunner done_closure,
                                      std::string personalizable_name) {
   name_info_ptr->personalizable_name = std::move(personalizable_name);
+}
+
+void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
+                               base::ScopedClosureRunner done_closure) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // |full_hardware_class| is set on Chrome OS devices if the user has UMA
+  // enabled. Otherwise |full_hardware_class| is set to an empty string.
+  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      chromeos::system::kHardwareClassKey, &name_info_ptr->full_hardware_class);
+#else
+  name_info_ptr->full_hardware_class = "";
+#endif
 }
 
 }  // namespace
@@ -88,13 +109,24 @@ void GetLocalDeviceNameInfo(
   LocalDeviceNameInfo* name_info_ptr = name_info.get();
 
   auto done_closure = base::BarrierClosure(
-      /*num_closures=*/2,
+      /*num_closures=*/3,
       base::BindOnce(&OnLocalDeviceNameInfoReady, std::move(callback),
                      std::move(name_info)));
 
   base::SysInfo::GetHardwareInfo(
       base::BindOnce(&OnHardwareInfoReady, name_info_ptr,
                      base::ScopedClosureRunner(done_closure)));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Bind hwclass once the statistics are available on ChromeOS devices.
+  chromeos::system::StatisticsProvider::GetInstance()
+      ->ScheduleOnMachineStatisticsLoaded(
+          base::BindOnce(&OnMachineStatisticsLoaded, name_info_ptr,
+                         base::ScopedClosureRunner(done_closure)));
+#else
+  OnMachineStatisticsLoaded(name_info_ptr,
+                            base::ScopedClosureRunner(done_closure));
+#endif
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

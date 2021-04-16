@@ -142,6 +142,7 @@ std::unique_ptr<DeviceInfo> SpecificsToModel(
       specifics.chrome_version(), specifics.sync_user_agent(),
       specifics.device_type(), specifics.signin_scoped_device_id(),
       specifics.manufacturer(), specifics.model(),
+      specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),
       GetPulseIntervalFromSpecifics(specifics),
       specifics.feature_fields().send_tab_to_self_receiving_enabled(),
@@ -184,6 +185,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_signin_scoped_device_id(info.signin_scoped_device_id());
   specifics->set_manufacturer(info.manufacturer_name());
   specifics->set_model(info.model_name());
+  specifics->set_full_hardware_class(info.full_hardware_class());
+
   // The local device should have not been updated yet. Set the last updated
   // timestamp to now.
   DCHECK(info.last_updated_timestamp() == base::Time());
@@ -341,6 +344,7 @@ base::Optional<ModelError> DeviceInfoSyncBridge::MergeSyncData(
       local_cache_guid_, GetLocalClientName(),
       local_device_name_info_.manufacturer_name,
       local_device_name_info_.model_name,
+      local_device_name_info_.full_hardware_class,
       /*device_info_restored_from_store=*/nullptr);
 
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -654,7 +658,9 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   local_device_info_provider_->Initialize(
       local_cache_guid_, GetLocalClientName(),
       local_device_name_info_.manufacturer_name,
-      local_device_name_info_.model_name, SpecificsToModel(*iter->second));
+      local_device_name_info_.model_name,
+      local_device_name_info_.full_hardware_class,
+      SpecificsToModel(*iter->second));
 
   // This probably isn't strictly needed, but in case the cache_guid has changed
   // we save the new one to prefs.

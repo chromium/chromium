@@ -18,6 +18,10 @@ namespace syncer {
 // |personalizable_name| for the |client_name| depending on the current
 // SyncMode. Only fully synced clients will use the personalizable name.
 struct LocalDeviceNameInfo {
+  LocalDeviceNameInfo();
+  LocalDeviceNameInfo(const LocalDeviceNameInfo& other);
+  ~LocalDeviceNameInfo();
+
   // Manufacturer name retrieved from SysInfo::GetHardwareInfo() - e.g. LENOVO.
   std::string manufacturer_name;
   // Model name retrieved from SysInfo::GetHardwareInfo() on non CrOS platforms.
@@ -26,6 +30,9 @@ struct LocalDeviceNameInfo {
   // Personalizable device name from GetPersonalizableDeviceNameBlocking(). See
   // documentation below for more information.
   std::string personalizable_name;
+  // Unique hardware class string which details the
+  // HW combination of a CrOS device. Empty on non-CrOS devices.
+  std::string full_hardware_class;
 };
 
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType();

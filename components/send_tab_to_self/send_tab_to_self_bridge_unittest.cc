@@ -83,7 +83,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
   return std::make_unique<syncer::DeviceInfo>(
       guid, name, "chrome_version", "user_agent",
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "scoped_id", "manufacturer",
-      "model", last_updated_timestamp,
+      "model", "full_hardware_class", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
       send_tab_to_self_receiving_enabled, /*sharing_info=*/base::nullopt,
       /*paask_info=*/base::nullopt,

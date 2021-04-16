@@ -35,7 +35,8 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
   return std::make_unique<syncer::DeviceInfo>(
       base::GUID::GenerateRandomV4().AsLowercaseString(), name,
       "chrome_version", "user_agent", sync_pb::SyncEnums::TYPE_UNSET,
-      "device_id", "manufacturer_name", "model_name", last_updated_timestamp,
+      "device_id", "manufacturer_name", "model_name", "full_hardware_class",
+      last_updated_timestamp,
       base::TimeDelta::FromMinutes(kPulseIntervalMinutes),
       /*send_tab_to_self_receiving_enabled=*/false,
       /*sharing_info=*/base::nullopt, /*paask_info=*/base::nullopt,

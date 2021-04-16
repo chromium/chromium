@@ -32,6 +32,10 @@
 #include "components/sync_device_info/local_device_info_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/system/fake_statistics_provider.h"
+#endif
+
 namespace syncer {
 namespace {
 
@@ -260,6 +264,7 @@ DeviceInfoSpecifics CreateSpecifics(
   specifics.set_signin_scoped_device_id(SigninScopedDeviceIdForSuffix(suffix));
   specifics.set_model(ModelForSuffix(suffix));
   specifics.set_manufacturer(ManufacturerForSuffix(suffix));
+  specifics.set_full_hardware_class("");
   specifics.set_last_updated_timestamp(TimeToProtoTime(last_updated));
   specifics.mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
       true);
@@ -341,6 +346,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
       const std::string& session_name,
       const std::string& manufacturer_name,
       const std::string& model_name,
+      const std::string& full_hardware_class,
       std::unique_ptr<DeviceInfo> device_info_restored_from_store) override {
     std::string last_fcm_registration_token;
     ModelTypeSet last_interested_data_types;
@@ -358,7 +364,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         SyncUserAgentForSuffix(kLocalSuffix),
         sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
         SigninScopedDeviceIdForSuffix(kLocalSuffix), manufacturer_name,
-        model_name, base::Time(), DeviceInfoUtil::GetPulseInterval(),
+        model_name, full_hardware_class, base::Time(),
+        DeviceInfoUtil::GetPulseInterval(),
         /*send_tab_to_self_receiving_enabled=*/true,
         DeviceInfo::SharingInfo(
             {SharingVapidFcmTokenForSuffix(kLocalSuffix),
@@ -382,6 +389,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   version_info::Channel GetChannel() const override {
     return version_info::Channel::UNKNOWN;
   }
+
+  MOCK_METHOD(bool, IsUmaEnabledOnCrOSDevice, (), (const));
 
   const DeviceInfo* GetLocalDeviceInfo() const override {
     if (local_device_info_) {
@@ -422,10 +431,15 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
                                  public DeviceInfoTracker::Observer {
  protected:
   DeviceInfoSyncBridgeTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
-        local_device_name_info_(GetLocalDeviceNameInfoBlocking()) {
+      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     DeviceInfoPrefs::RegisterProfilePrefs(pref_service_.registry());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    statistics_provider_ =
+        std::make_unique<chromeos::system::ScopedFakeStatisticsProvider>();
+#endif
+
+    local_device_name_info_ = GetLocalDeviceNameInfoBlocking();
     // By default, mimic a real processor's behavior for IsTrackingMetadata().
     ON_CALL(mock_processor_, ModelReadyToSync)
         .WillByDefault([this](std::unique_ptr<MetadataBatch> batch) {
@@ -510,6 +524,13 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   TestLocalDeviceInfoProvider* local_device() {
     return local_device_info_provider_;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::system::ScopedFakeStatisticsProvider* statistics_provider() {
+    EXPECT_TRUE(statistics_provider_);
+    return statistics_provider_.get();
+  }
+#endif
 
   // Allows access to the bridge after InitializeBridge() is called.
   DeviceInfoSyncBridge* bridge() {
@@ -650,7 +671,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   const std::unique_ptr<ModelTypeStore> store_;
 
   // Stores the local device's name information.
-  const LocalDeviceNameInfo local_device_name_info_;
+  LocalDeviceNameInfo local_device_name_info_;
 
   TestingPrefServiceSimple pref_service_;
 
@@ -659,6 +680,11 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
   TestLocalDeviceInfoProvider* local_device_info_provider_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
+      statistics_provider_;
+#endif
 };
 
 TEST_F(DeviceInfoSyncBridgeTest, BeforeSyncEnabled) {

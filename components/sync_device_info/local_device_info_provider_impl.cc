@@ -63,6 +63,14 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
     local_device_info_->set_paask_info(std::move(*paask_info));
   }
 
+  // This check is required to ensure user's who toggle UMA have their
+  // hardware class data updated on next sync.
+  if (!IsUmaEnabledOnCrOSDevice()) {
+    local_device_info_->set_full_hardware_class("");
+  } else {
+    local_device_info_->set_full_hardware_class(full_hardware_class_);
+  }
+
   return local_device_info_.get();
 }
 
@@ -74,11 +82,18 @@ LocalDeviceInfoProviderImpl::RegisterOnInitializedCallback(
   return closure_list_.Add(callback);
 }
 
+// Always return UMA disabled, (crrev/c/2816348) wires the UMA status.
+bool LocalDeviceInfoProviderImpl::IsUmaEnabledOnCrOSDevice() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return false;
+}
+
 void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& cache_guid,
     const std::string& client_name,
     const std::string& manufacturer_name,
     const std::string& model_name,
+    const std::string& full_hardware_class,
     std::unique_ptr<DeviceInfo> device_info_restored_from_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cache_guid.empty());
@@ -103,12 +118,14 @@ void LocalDeviceInfoProviderImpl::Initialize(
   local_device_info_ = std::make_unique<DeviceInfo>(
       cache_guid, client_name, version_, MakeUserAgentForSync(channel_),
       GetLocalDeviceType(), sync_client_->GetSigninScopedDeviceId(),
-      manufacturer_name, model_name,
+      manufacturer_name, model_name, full_hardware_class,
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
       sync_client_->GetLocalSharingInfo(), paask_info,
       last_fcm_registration_token, last_interested_data_types);
+
+  full_hardware_class_ = full_hardware_class;
 
   // Notify observers.
   closure_list_.Notify();
