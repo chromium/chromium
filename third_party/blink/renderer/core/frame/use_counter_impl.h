@@ -28,7 +28,7 @@
 
 #include <bitset>
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -155,14 +155,7 @@ class CORE_EXPORT UseCounterImpl final {
   // no corresponding PageVisits).
   CommitState commit_state_;
 
-  // Track what features/properties have been recorded.
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
-      features_recorded_;
-
-  static constexpr size_t kMaxSample =
-      static_cast<size_t>(mojom::blink::CSSSampleId::kMaxValue) + 1;
-  std::bitset<kMaxSample> css_recorded_;
-  std::bitset<kMaxSample> animated_css_recorded_;
+  UseCounterFeatureTracker feature_tracker_;
 
   HeapHashSet<Member<Observer>> observers_;
 

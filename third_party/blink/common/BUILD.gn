@@ -179,6 +179,7 @@ source_set("common") {
     "switches.cc",
     "thread_safe_browser_interface_broker_proxy.cc",
     "unique_name/unique_name_helper.cc",
+    "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
     "web_package/signed_exchange_consts.cc",
     "web_package/web_package_request_matcher.cc",
