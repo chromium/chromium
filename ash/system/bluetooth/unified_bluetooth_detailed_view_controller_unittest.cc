@@ -76,13 +76,14 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
 
   void AddTestDevice() {
     bluez::FakeBluetoothDeviceClient::IncomingDeviceProperties props;
-    props.device_path = "/fake/hci0/dev123";
-    props.device_address = "00:00:00:00:00:01";
+    props.device_path = base::StringPrintf("/fake/hci0/dev%02d", next_id_);
+    props.device_address = base::StringPrintf("00:00:00:00:00:%02d", next_id_);
     props.device_name = "Test Device";
-    props.device_class = 0x000104;
+    props.device_class = 0x01;
     device_client_->CreateDeviceWithProperties(
         dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
         props);
+    next_id_++;
   }
 
   void RemoveAllDevices() {
@@ -110,12 +111,14 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<UnifiedBluetoothDetailedViewController>
       bt_detailed_view_controller_;
+  int next_id_ = 1;
 };
 
 TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
   tray::BluetoothDetailedView* bluetooth_detailed_view =
       static_cast<tray::BluetoothDetailedView*>(
           bt_detailed_view_controller()->CreateView());
+  AddTestDevice();
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
   // Verify that default devices simulated by FakeBluetoothDeviceClient are

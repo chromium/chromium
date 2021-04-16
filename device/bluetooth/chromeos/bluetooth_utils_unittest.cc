@@ -116,6 +116,19 @@ TEST_F(BluetoothUtilsTest,
 }
 
 TEST_F(BluetoothUtilsTest,
+       TestFilterBluetoothDeviceList_FilterKnown_FilterPairedPhone) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
+  EXPECT_CALL(*mock_bluetooth_device, IsPaired)
+      .WillRepeatedly(testing::Return(true));
+  ON_CALL(*mock_bluetooth_device, GetDeviceType)
+      .WillByDefault(testing::Return(BluetoothDeviceType::PHONE));
+
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+}
+
+TEST_F(BluetoothUtilsTest,
        TestFilterBluetoothDeviceList_FilterKnown_RemoveInvalidDevices) {
   AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
 

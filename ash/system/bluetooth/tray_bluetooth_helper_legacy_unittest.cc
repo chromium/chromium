@@ -319,15 +319,8 @@ TEST_F(TrayBluetoothHelperLegacyTest, BluetoothAddress) {
   base::RunLoop().RunUntilIdle();
 
   const BluetoothDeviceList& devices = helper.GetAvailableBluetoothDevices();
-  ASSERT_EQ(3u, devices.size());
-  EXPECT_EQ(base::UTF8ToUTF16(
-                FakeBluetoothDeviceClient::kPairedUnconnectableDeviceAddress),
-            device::GetBluetoothAddressForDisplay(devices[0]->address));
-  EXPECT_EQ(base::UTF8ToUTF16(FakeBluetoothDeviceClient::kPairedDeviceAddress),
-            device::GetBluetoothAddressForDisplay(devices[1]->address));
-  EXPECT_EQ(
-      base::UTF8ToUTF16(FakeBluetoothDeviceClient::kDisplayPinCodeAddress),
-      device::GetBluetoothAddressForDisplay(devices[2]->address));
+  ASSERT_EQ(1u, devices.size());
+  EXPECT_EQ(kDisplayPinCodeAddress, devices[0]->address);
 }
 
 }  // namespace

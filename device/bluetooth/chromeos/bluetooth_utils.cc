@@ -79,12 +79,6 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
 
   BluetoothAdapter::DeviceList result;
   for (BluetoothDevice* device : devices) {
-    // Always allow paired devices to appear in the UI.
-    if (device->IsPaired()) {
-      result.push_back(device);
-      continue;
-    }
-
     // Always filter out laptops, etc. There is no intended use case or
     // Bluetooth profile in this context.
     if (base::FeatureList::IsEnabled(
@@ -98,6 +92,12 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
     if (base::FeatureList::IsEnabled(
             chromeos::features::kBluetoothPhoneFilter) &&
         device->GetDeviceType() == BluetoothDeviceType::PHONE) {
+      continue;
+    }
+
+    // Allow paired devices which are not filtered above to appear in the UI.
+    if (device->IsPaired()) {
+      result.push_back(device);
       continue;
     }
 
