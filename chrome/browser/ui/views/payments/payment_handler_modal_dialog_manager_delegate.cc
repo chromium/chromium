@@ -5,16 +5,18 @@
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
 
 PaymentHandlerModalDialogManagerDelegate::
     PaymentHandlerModalDialogManagerDelegate(
-        web_modal::WebContentsModalDialogHost* host)
-    : host_(host), web_contents_(nullptr) {
-  DCHECK(host);
+        content::WebContents* host_web_contents)
+    : content::WebContentsObserver(host_web_contents), web_contents_(nullptr) {
+  DCHECK(host_web_contents);
 }
 
 void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
@@ -29,7 +31,19 @@ void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
 
 web_modal::WebContentsModalDialogHost*
 PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
-  return host_;
+  if (!web_contents())
+    return nullptr;
+
+  auto* dialog_manager =
+      static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
+          chrome::FindBrowserWithWebContents(web_contents()));
+  if (!dialog_manager)
+    return nullptr;
+
+  // Borrow the browser's WebContentModalDialogHost to display modal dialogs
+  // triggered by the payment handler's web view (e.g. WebAuthn and Secure
+  // Payment Confirmation dialogs).
+  return dialog_manager->GetWebContentsModalDialogHost();
 }
 
 bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(

@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -21,14 +22,16 @@ namespace payments {
 // A delegate for presenting modal dialogs that are triggered from a web-based
 // payment handler. Since the payment sheet is itself a modal dialog, the
 // WebContentsModalDialogHost is expected to be borrowed from the browser that
-// spawned the payment sheet.
+// spawned the payment sheet. Observes the WebContents that spawned the payment
+// handler.
 class PaymentHandlerModalDialogManagerDelegate
-    : public web_modal::WebContentsModalDialogManagerDelegate {
+    : public web_modal::WebContentsModalDialogManagerDelegate,
+      public content::WebContentsObserver {
  public:
   // |host| must not be null.
   explicit PaymentHandlerModalDialogManagerDelegate(
-      web_modal::WebContentsModalDialogHost* host);
-  ~PaymentHandlerModalDialogManagerDelegate() override {}
+      content::WebContents* host_web_contents);
+  ~PaymentHandlerModalDialogManagerDelegate() override = default;
 
   // Sets the |web_contents| that is behind the modal dialogs managed by this
   // modal dialog manager. |web_contents| must not be null.
@@ -44,10 +47,6 @@ class PaymentHandlerModalDialogManagerDelegate
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
  private:
-  // A not-owned pointer to the WebContentsModalDialogHost associated with the
-  // browser that spawned the payment handler.
-  web_modal::WebContentsModalDialogHost* host_;
-
   // A not-owned pointer to the WebContents behind the modal dialogs.
   content::WebContents* web_contents_;
 
