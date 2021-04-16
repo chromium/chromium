@@ -97,10 +97,13 @@ public class LanguageItem {
             return false;
         }
 
-        // Currently the only two country variants that are translateable are zh-CN and zh-TW.
+        // Currently the only two country variants that are translateable are "zh-CN" and "zh-TW".
         if (TextUtils.equals(mCode, "zh-CN") || TextUtils.equals(mCode, "zh-TW")) {
             return true;
         }
+
+        // "no" is used by translate as the macrolanguage including "nb".
+        if (TextUtils.equals(mCode, "nb")) return false;
 
         // If not a language with supported variants check that the code is a base language.
         return !mCode.contains("-");

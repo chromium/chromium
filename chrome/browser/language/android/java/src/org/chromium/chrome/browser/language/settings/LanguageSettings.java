@@ -18,6 +18,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.LanguageSplitInstaller;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -173,13 +174,14 @@ public class LanguageSettings extends PreferenceFragmentCompat
         // Setup target language preference.
         LanguageItemPickerPreference targetLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
-        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguage());
+        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguageForChromium());
         setSelectLanguageLauncher(targetLanguagePreference,
                 AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
         mPrefChangeRegistrar.addObserver(Pref.PREF_TRANSLATE_RECENT_TARGET, () -> {
-            targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguage());
+            targetLanguagePreference.setLanguageItem(
+                    TranslateBridge.getTargetLanguageForChromium());
         });
 
         // Setup always translate preference.
@@ -250,6 +252,13 @@ public class LanguageSettings extends PreferenceFragmentCompat
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
             mAppLanguageDelegate.startLanguageSplitDownload(code);
+            if (TextUtils.equals(code, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
+                // Get the actual default system language to set as target language.
+                code = GlobalAppLocaleController.getInstance()
+                               .getOriginalSystemLocale()
+                               .getLanguage();
+            }
+            // Set the default target language to match the new app language.
             TranslateBridge.setDefaultTargetLanguage(code);
         } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
             LanguageItemPickerPreference targetLanguagePreference =
