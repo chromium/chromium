@@ -9,6 +9,7 @@ import("//build/config/fuchsia/symbol_archive.gni")
 import("//build/config/locales.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
+import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 import("//tools/grit/repack.gni")
 
 config("web_engine_implementation") {
@@ -26,6 +27,16 @@ mojom("mojom") {
     "//services/network/public/mojom",
   ]
   visibility = [ ":*" ]
+}
+
+fidl_library("fidl") {
+  visibility = [ ":web_engine_core" ]
+
+  library_name = "chromium.internal"
+
+  sources = [ "fidl/dev_tools.fidl" ]
+
+  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web" ]
 }
 
 repack("web_engine_pak") {
@@ -88,6 +99,7 @@ foreach(locale, locales_with_pseudolocales) {
 
 component("web_engine_core") {
   deps = [
+    ":fidl",
     ":mojom",
     ":switches",
     "//base",
@@ -261,6 +273,7 @@ source_set("switches") {
 
 executable("web_engine_exe") {
   deps = [
+    ":switches",
     ":web_engine_core",
     "//base",
     "//content/public/app",
@@ -278,7 +291,7 @@ source_set("webui_resources") {
 }
 
 _web_engine_excluded_files = [
-  # TODO(1022542): Swiftshader is never used under Fuchsia.
+  # TODO(crbug.com/1022542): Swiftshader is never used under Fuchsia.
   "lib/libswiftshader_libEGL.so",
   "lib/libswiftshader_libGLESv2.so",
 ]
@@ -287,6 +300,18 @@ _web_engine_excluded_files = [
 # context_provider component definition, and its dependencies.  An installer
 # script is declared for the package, for ease of development.
 
+# Component definition for WebEngine instances, each hosting one or more
+# browsing contexts, accessed via fuchsia.web.Context or fuchsia.web.FrameHost
+# capabilities.
+fuchsia_component("web_instance_component") {
+  manifest = "web_instance.cmx"
+  data_deps = [ ":web_engine_exe" ]
+  visibility = [ ":*" ]
+}
+
+# Component definition for the legacy fuchsia.web.ContextProvider service.
+# TODO(crbug.com/1010222): Remove once all callers have migrated to launching
+# instances directly as Components.
 fuchsia_component("context_provider_component") {
   manifest = "context_provider.cmx"
   data_deps = [ ":web_engine_exe" ]
@@ -294,7 +319,10 @@ fuchsia_component("context_provider_component") {
 }
 
 fuchsia_package("web_engine") {
-  deps = [ ":context_provider_component" ]
+  deps = [
+    ":context_provider_component",
+    ":web_instance_component",
+  ]
   excluded_files = _web_engine_excluded_files
 }
 
@@ -307,9 +335,20 @@ fuchsia_package_runner("web_engine_installer") {
 # resources, to allow e.g. chrome://gpu to be used.  An installer script is
 # defined, for ease of development.
 
+# TODO(crbug.com/1010222): Remove once all callers have migrated to launching
+# instances directly as Components, or the launcher supports relative component
+# URLs.
+fuchsia_component("context_provider_with_webui_component") {
+  manifest = "context_provider_with_webui.cmx"
+  manifest_output_name = "context_provider"
+  data_deps = [ ":web_engine_exe" ]
+  visibility = [ ":*" ]
+}
+
 fuchsia_package("web_engine_with_webui") {
   deps = [
-    ":context_provider_component",
+    ":context_provider_with_webui_component",
+    ":web_instance_component",
     ":webui_resources",
   ]
   excluded_files = _web_engine_excluded_files
@@ -404,6 +443,27 @@ test("web_engine_browsertests") {
   ]
 }
 
+# Creates a component manifest based on the production web_instance.cmx, with
+# the program name replaced with the web_engine_unittests binary name.
+action("web_engine_unittests_fake_instance_manifest") {
+  _manifest_input = "web_instance.cmx"
+  _manifest_output = "$target_gen_dir/web_engine_unittests_fake_instance.cmx"
+
+  script = "//build/config/fuchsia/build_cmx_from_fragment.py"
+
+  inputs = [ _manifest_input ]
+  outputs = [ _manifest_output ]
+
+  args = [
+    "--cmx-fragment",
+    rebase_path(_manifest_input),
+    "--cmx",
+    rebase_path(_manifest_output),
+    "--program",
+    "web_engine_unittests__exec",
+  ]
+}
+
 test("web_engine_unittests") {
   sources = [
     "browser/ax_tree_converter_unittest.cc",
@@ -425,6 +485,7 @@ test("web_engine_unittests") {
     ":mojom",
     ":switches",
     ":web_engine_core",
+    ":web_engine_unittests_fake_instance_manifest",
     "//base/test:test_support",
     "//content/test:test_support",
     "//fuchsia/base:test_support",
@@ -447,6 +508,13 @@ test("web_engine_unittests") {
 
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+  ]
+  additional_manifests = [
+    # Required by ContextProvider to determine the services list.
+    "web_instance.cmx",
+
+    # Required by ContextProvider unit-tests to launch the FakeContext process.
+    "$target_gen_dir/web_engine_unittests_fake_instance.cmx",
   ]
 }
 

@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "fuchsia/base/init_logging.h"
 #include "url/gurl.h"
 
@@ -183,8 +184,10 @@ int main(int argc, char** argv) {
   // Enable other WebEngine features.
   fuchsia::web::ContextFeatureFlags features =
       fuchsia::web::ContextFeatureFlags::AUDIO |
-      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
-      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
+#if defined(ARCH_CPU_ARM64)
+  features |= fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
+#endif
   if (is_headless)
     features |= fuchsia::web::ContextFeatureFlags::HEADLESS;
   else

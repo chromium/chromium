@@ -4,6 +4,9 @@
 
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 
+#include <fuchsia/web/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/outgoing_directory.h>
 #include <utility>
 #include <vector>
 
@@ -12,6 +15,7 @@
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/intl_profile_watcher.h"
+#include "base/fuchsia/process_context.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +42,9 @@
 
 namespace {
 
+base::NoDestructor<fidl::InterfaceRequest<fuchsia::web::Context>>
+    g_test_request;
+
 constexpr base::TimeDelta kMetricsReportingInterval =
     base::TimeDelta::FromMinutes(1);
 
@@ -59,13 +66,8 @@ void FetchHistogramsFromChildProcesses(
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
     content::ContentBrowserClient* browser_client,
-    const content::MainFunctionParams& parameters,
-    fidl::InterfaceRequest<fuchsia::web::Context> request)
-    : browser_client_(browser_client),
-      parameters_(parameters),
-      request_(std::move(request)) {
-  DCHECK(request_);
-}
+    const content::MainFunctionParams& parameters)
+    : browser_client_(browser_client), parameters_(parameters) {}
 
 WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
   display::Screen::SetScreenInstance(nullptr);
@@ -107,26 +109,20 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   }
 
   DCHECK_EQ(context_bindings_.size(), 0u);
-  auto browser_context = std::make_unique<WebEngineBrowserContext>(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito));
 
   devtools_controller_ = WebEngineDevToolsController::CreateFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
 
-  // TODO(crbug.com/1163073): Instead of creating a single ContextImpl instance
-  // the code below should public fuchsia.web.Context to the outgoing directory.
-  // Also it shouldn't quit main loop after Context disconnects.
-  context_bindings_.AddBinding(
-      std::make_unique<ContextImpl>(std::move(browser_context),
-                                    devtools_controller_.get()),
-      std::move(request_), /* dispatcher */ nullptr,
-      // Quit the browser main loop when the Context connection is dropped.
-      [this](zx_status_t status) {
-        ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
-            << " Context disconnected.";
-        // context_service_.reset();
-        std::move(quit_closure_).Run();
-      });
+  // TODO(crbug.com/1163073): Update tests to make a service connection to the
+  // Context and remove this workaround.
+  if (*g_test_request)
+    HandleContextRequest(std::move(*g_test_request));
+
+  // Publish the fuchsia.web.Context service, and allow exactly one connection.
+  base::ComponentContextForProcess()->outgoing()->AddPublicService(
+      fidl::InterfaceRequestHandler<fuchsia::web::Context>(fit::bind_member(
+          this, &WebEngineBrowserMainParts::HandleContextRequest)),
+      "fuchsia.web.Context");
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseLegacyMetricsService)) {
@@ -164,6 +160,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // Make sure temporary files associated with this process are cleaned up.
   base::ImportantFileWriterCleaner::GetInstance().Start();
 
+  // Now that all services have been published, it is safe to start processing
+  // requests to the service directory.
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -189,9 +189,39 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   base::ImportantFileWriterCleaner::GetInstance().Stop();
 }
 
+// static
+void WebEngineBrowserMainParts::SetContextRequestForTest(
+    fidl::InterfaceRequest<fuchsia::web::Context> request) {
+  *g_test_request.get() = std::move(request);
+}
+
 ContextImpl* WebEngineBrowserMainParts::context_for_test() const {
   DCHECK_EQ(context_bindings_.size(), 1u);
   return context_bindings_.bindings().front()->impl().get();
+}
+
+void WebEngineBrowserMainParts::HandleContextRequest(
+    fidl::InterfaceRequest<fuchsia::web::Context> request) {
+  if (context_bindings_.size() > 0) {
+    request.Close(ZX_ERR_BAD_STATE);
+    return;
+  }
+
+  // Create the Context and configure channel-disconnect to teardown
+  // the WebEngine instance.
+  auto browser_context = std::make_unique<WebEngineBrowserContext>(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito));
+  context_bindings_.AddBinding(
+      std::make_unique<ContextImpl>(std::move(browser_context),
+                                    devtools_controller_.get()),
+      std::move(request), /* dispatcher */ nullptr,
+      // Quit the browser main loop when the Context connection is
+      // dropped.
+      [this](zx_status_t status) {
+        ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
+            << " Context disconnected.";
+        std::move(quit_closure_).Run();
+      });
 }
 
 void WebEngineBrowserMainParts::OnIntlProfileChanged(

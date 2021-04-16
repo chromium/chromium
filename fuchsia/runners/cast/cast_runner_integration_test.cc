@@ -225,7 +225,7 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
 
 class TestCastComponent {
  public:
-  TestCastComponent(fuchsia::sys::Runner* cast_runner)
+  explicit TestCastComponent(fuchsia::sys::Runner* cast_runner)
       : app_config_manager_binding_(&component_services_, &app_config_manager_),
         cast_runner_(cast_runner) {
     DCHECK(cast_runner_);
@@ -494,7 +494,7 @@ class TestCastComponent {
   fuchsia::web::MessagePortPtr test_port_;
 
   base::OnceClosure component_state_created_callback_;
-  fuchsia::sys::Runner* cast_runner_;
+  fuchsia::sys::Runner* const cast_runner_;
 };
 
 enum CastRunnerFeatures {
@@ -651,9 +651,15 @@ TEST_F(CastRunnerIntegrationTest, BasicRequest) {
 }
 
 // Verify that the Runner can continue to be used even after its Context has
-// crashed. Regression test for https://crbug.com/1066826).
-// TODO(https://crbug.com/1066833): Make this a WebRunner test.
-TEST_F(CastRunnerIntegrationTest, CanRecreateContext) {
+// crashed. Regression test for https://crbug.com/1066826.
+// TODO(crbug.com/1066833): Replace this with a WebRunner test, ideally a
+//   unit-test, which can simulate Context disconnection more simply.
+// TODO(crbug.com/1010222): Once CastRunner migrates to creating the WebEngine
+//   component directly, it should be possible to rehabilitate and re-enable
+//   this test. At present it is not straightforward to terminate the
+//   WebEngine component instance, only the ContextProvider, which will not
+//   result in the WebEngine instance being torn-down.
+TEST_F(CastRunnerIntegrationTest, DISABLED_CanRecreateContext) {
   TestCastComponent component(cast_runner_.get());
   const GURL app_url = test_server_.GetURL(kBlankAppUrl);
   component.app_config_manager()->AddApp(kTestAppId, app_url);

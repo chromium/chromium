@@ -4,7 +4,6 @@
 
 #include "fuchsia/engine/browser/web_engine_content_browser_client.h"
 
-#include <fuchsia/web/cpp/fidl.h>
 #include <string>
 #include <utility>
 
@@ -78,10 +77,8 @@ std::vector<std::string> GetCorsExemptHeaders() {
 
 }  // namespace
 
-WebEngineContentBrowserClient::WebEngineContentBrowserClient(
-    fidl::InterfaceRequest<fuchsia::web::Context> request)
-    : request_(std::move(request)),
-      cors_exempt_headers_(GetCorsExemptHeaders()),
+WebEngineContentBrowserClient::WebEngineContentBrowserClient()
+    : cors_exempt_headers_(GetCorsExemptHeaders()),
       allow_insecure_content_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowRunningInsecureContent)) {}
 
@@ -90,12 +87,9 @@ WebEngineContentBrowserClient::~WebEngineContentBrowserClient() = default;
 std::unique_ptr<content::BrowserMainParts>
 WebEngineContentBrowserClient::CreateBrowserMainParts(
     const content::MainFunctionParams& parameters) {
-  DCHECK(request_);
-  auto browser_main_parts = std::make_unique<WebEngineBrowserMainParts>(
-      this, parameters, std::move(request_));
-
+  auto browser_main_parts =
+      std::make_unique<WebEngineBrowserMainParts>(this, parameters);
   main_parts_ = browser_main_parts.get();
-
   return browser_main_parts;
 }
 

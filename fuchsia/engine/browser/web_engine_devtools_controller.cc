@@ -4,12 +4,16 @@
 
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 
+#include <chromium/internal/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
+#include <lib/sys/cpp/component_context.h>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/fuchsia/process_context.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -197,12 +201,11 @@ class UserModeController : public WebEngineDevToolsController {
 // for debugging by clients on the same device. DevTools is only reported when
 // the first Frame finishes loading its main document, so that the
 // DevToolsPerContextListeners can start interacting with it immediately.
-class DebugModeController : public WebEngineDevToolsController {
+class DebugModeController : public WebEngineDevToolsController,
+                            public chromium::internal::DevToolsConnector {
  public:
-  explicit DebugModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners)
+  DebugModeController()
       : DebugModeController(
-            std::move(listeners),
             net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)) {}
   ~DebugModeController() override = default;
 
@@ -236,14 +239,10 @@ class DebugModeController : public WebEngineDevToolsController {
   }
 
  protected:
-  DebugModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
-      net::IPEndPoint ip_endpoint)
-      : ip_endpoint_(std::move(ip_endpoint)) {
-    for (auto& listener : listeners) {
-      devtools_listeners_.AddInterfacePtr(std::move(listener));
-    }
-  }
+  explicit DebugModeController(net::IPEndPoint ip_endpoint)
+      : ip_endpoint_(std::move(ip_endpoint)),
+        connector_binding_(base::ComponentContextForProcess()->outgoing().get(),
+                           this) {}
 
   virtual void OnDevToolsPortChanged(uint16_t port) {
     devtools_port_ = port;
@@ -254,6 +253,16 @@ class DebugModeController : public WebEngineDevToolsController {
   base::Optional<uint16_t> devtools_port_;
 
  private:
+  // chromium::internal::DevToolsConnector implementation.
+  void ConnectPerContextListener(
+      fuchsia::web::DevToolsPerContextListenerHandle listener_handle) override {
+    fuchsia::web::DevToolsPerContextListenerPtr listener;
+    listener.Bind(std::move(listener_handle));
+    if (frame_loaded_ && devtools_port_)
+      listener->OnHttpPortOpen(devtools_port_.value());
+    devtools_listeners_.AddInterfacePtr(std::move(listener));
+  }
+
   void MaybeSendRemoteDebuggingCallbacks() {
     if (!frame_loaded_ || !devtools_port_)
       return;
@@ -275,6 +284,9 @@ class DebugModeController : public WebEngineDevToolsController {
 
   fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
       devtools_listeners_;
+
+  const base::ScopedServiceBinding<chromium::internal::DevToolsConnector>
+      connector_binding_;
 };
 
 // "Mixed-mode" is used when both user and debug remote debugging are active at
@@ -282,11 +294,8 @@ class DebugModeController : public WebEngineDevToolsController {
 // available for remote debugging.
 class MixedModeController : public DebugModeController {
  public:
-  MixedModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
-      uint16_t server_port)
+  explicit MixedModeController(uint16_t server_port)
       : DebugModeController(
-            std::move(listeners),
             net::IPEndPoint(net::IPAddress::IPv6AllZeros(), server_port)) {}
   ~MixedModeController() override = default;
 
@@ -345,34 +354,17 @@ WebEngineDevToolsController::CreateFromCommandLine(
     }
   }
 
-  std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners;
-  if (command_line.HasSwitch(switches::kRemoteDebuggerHandles)) {
-    // Initialize the Debug devtools listeners.
-    std::string handle_ids_str =
-        command_line.GetSwitchValueASCII(switches::kRemoteDebuggerHandles);
-
-    // Extract individual handle IDs from the comma-separated list.
-    base::StringTokenizer tokenizer(handle_ids_str, ",");
-    while (tokenizer.GetNext()) {
-      uint32_t handle_id = 0;
-      if (!base::StringToUint(tokenizer.token(), &handle_id))
-        continue;
-      fuchsia::web::DevToolsPerContextListenerPtr listener;
-      listener.Bind(zx::channel(zx_take_startup_handle(handle_id)));
-      listeners.emplace_back(std::move(listener));
-    }
-  }
-
+  bool enable_debug_mode =
+      command_line.HasSwitch(switches::kEnableRemoteDebugMode);
   if (devtools_port) {
-    if (listeners.empty()) {
-      return std::make_unique<UserModeController>(devtools_port.value());
+    if (enable_debug_mode) {
+      return std::make_unique<MixedModeController>(devtools_port.value());
     } else {
-      return std::make_unique<MixedModeController>(std::move(listeners),
-                                                   devtools_port.value());
+      return std::make_unique<UserModeController>(devtools_port.value());
     }
-  } else if (listeners.empty()) {
-    return std::make_unique<NoopController>();
+  } else if (enable_debug_mode) {
+    return std::make_unique<DebugModeController>();
   } else {
-    return std::make_unique<DebugModeController>(std::move(listeners));
+    return std::make_unique<NoopController>();
   }
 }

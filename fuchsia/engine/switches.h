@@ -24,9 +24,9 @@ extern const char kIncognito[];
 // Enables PlayReady CDM and specifies the corresponding key system string.
 extern const char kPlayreadyKeySystem[];
 
-// Enables debug-mode DevTools. Value consists of a comma-separated list of
-// handle-Ids to retrieve via |zx_take_startup_handle()|.
-extern const char kRemoteDebuggerHandles[];
+// Enables publishing of a chromium.internal.DevToolsConnector service by
+// WebEngine instances, to allow debug-mode DevTools usage, for testing.
+extern const char kEnableRemoteDebugMode[];
 
 // Specifies a custom UserAgent product & version to use.
 extern const char kUserAgentProductAndVersion[];
@@ -60,6 +60,9 @@ extern const char kDataQuotaBytes[];
 
 // API Key used to access Google services.
 extern const char kGoogleApiKey[];
+
+// Used to tell the WebEngine executable to run the ContextProvider service.
+extern const char kContextProvider[];
 
 }  // namespace switches
 

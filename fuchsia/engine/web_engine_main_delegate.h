@@ -24,11 +24,8 @@ class WebEngineContentRendererClient;
 class WEB_ENGINE_EXPORT WebEngineMainDelegate
     : public content::ContentMainDelegate {
  public:
-  explicit WebEngineMainDelegate(
-      fidl::InterfaceRequest<fuchsia::web::Context> request);
+  explicit WebEngineMainDelegate();
   ~WebEngineMainDelegate() override;
-
-  static WebEngineMainDelegate* GetInstanceForTest();
 
   WebEngineContentBrowserClient* browser_client() {
     return browser_client_.get();
@@ -44,12 +41,12 @@ class WEB_ENGINE_EXPORT WebEngineMainDelegate
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
+  static WebEngineMainDelegate* GetInstanceForTest();
+
  private:
   std::unique_ptr<content::ContentClient> content_client_;
   std::unique_ptr<WebEngineContentBrowserClient> browser_client_;
   std::unique_ptr<WebEngineContentRendererClient> renderer_client_;
-
-  fidl::InterfaceRequest<fuchsia::web::Context> request_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineMainDelegate);
 };

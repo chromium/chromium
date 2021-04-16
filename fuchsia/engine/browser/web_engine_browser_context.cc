@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 
+#include <lib/fdio/namespace.h>
 #include <memory>
 #include <utility>
 
@@ -11,8 +12,10 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -30,17 +33,29 @@ namespace {
 
 // Determines whether a data directory is configured, and returns its path.
 // Passes the quota, if specified, for SysInfo to report as total disk space.
+// TODO(crbug.com/1010222): Remove this check for the presence of /data, and
+// instead rely upon the "incognito" switch.
 base::FilePath InitializeDataDirectoryAndQuotaFromCommandLine() {
   base::FilePath data_directory_path;
+  CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_directory_path));
 
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (!base::PathService::Get(base::DIR_APP_DATA, &data_directory_path) ||
-      !base::PathExists(data_directory_path)) {
-    // Run in incognito mode if /data doesn't exist.
-    return base::FilePath();
+  // Enumerating the root namespace for the presence of the /data directory
+  // avoids the need for scoped blocking, as PathExists would require.
+  fdio_flat_namespace_t* flat_root_namespace = nullptr;
+  zx_status_t status = fdio_ns_export_root(&flat_root_namespace);
+  ZX_CHECK(status == ZX_OK, status);
+  bool have_data_directory = false;
+  for (size_t i = 0; i < flat_root_namespace->count; ++i) {
+    if (data_directory_path.value().data() == flat_root_namespace->path[i]) {
+      have_data_directory = true;
+      break;
+    }
   }
+  fdio_ns_free_flat_ns(flat_root_namespace);
+  if (!have_data_directory)
+    return base::FilePath();
 
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
     // Configure SysInfo to use the specified quota as the total-disk-space
     // for the |data_dir_path_|.

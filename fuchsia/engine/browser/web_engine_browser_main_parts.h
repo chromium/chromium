@@ -39,11 +39,13 @@ class MediaResourceProviderService;
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  explicit WebEngineBrowserMainParts(
-      content::ContentBrowserClient* browser_client,
-      const content::MainFunctionParams& parameters,
-      fidl::InterfaceRequest<fuchsia::web::Context> request);
+  WebEngineBrowserMainParts(content::ContentBrowserClient* browser_client,
+                            const content::MainFunctionParams& parameters);
   ~WebEngineBrowserMainParts() override;
+
+  WebEngineBrowserMainParts(const WebEngineBrowserMainParts&) = delete;
+  WebEngineBrowserMainParts& operator=(const WebEngineBrowserMainParts&) =
+      delete;
 
   std::vector<content::BrowserContext*> browser_contexts() const;
   WebEngineDevToolsController* devtools_controller() const {
@@ -60,15 +62,18 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
+  // Methods used by tests.
+  static void SetContextRequestForTest(
+      fidl::InterfaceRequest<fuchsia::web::Context> request);
   ContextImpl* context_for_test() const;
 
  private:
+  void HandleContextRequest(
+      fidl::InterfaceRequest<fuchsia::web::Context> request);
   void OnIntlProfileChanged(const fuchsia::intl::Profile& profile);
 
   content::ContentBrowserClient* const browser_client_;
   const content::MainFunctionParams& parameters_;
-
-  fidl::InterfaceRequest<fuchsia::web::Context> request_;
 
   std::unique_ptr<display::Screen> screen_;
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
@@ -83,8 +88,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   bool run_message_loop_ = true;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineBrowserMainParts);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_MAIN_PARTS_H_

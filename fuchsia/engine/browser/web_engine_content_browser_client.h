@@ -5,9 +5,6 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_CONTENT_BROWSER_CLIENT_H_
 #define FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_CONTENT_BROWSER_CLIENT_H_
 
-#include <lib/zx/channel.h>
-
-#include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,8 +18,7 @@ class WebEngineBrowserMainParts;
 
 class WebEngineContentBrowserClient : public content::ContentBrowserClient {
  public:
-  explicit WebEngineContentBrowserClient(
-      fidl::InterfaceRequest<fuchsia::web::Context> request);
+  WebEngineContentBrowserClient();
   ~WebEngineContentBrowserClient() final;
 
   WebEngineContentBrowserClient(const WebEngineContentBrowserClient&) = delete;
@@ -81,8 +77,6 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   WebEngineBrowserMainParts* main_parts_for_test() const { return main_parts_; }
 
  private:
-  fidl::InterfaceRequest<fuchsia::web::Context> request_;
-
   const std::vector<std::string> cors_exempt_headers_;
   const bool allow_insecure_content_;
 

@@ -1,0 +1,5 @@
+{
+  "program": {
+    "binary": "web_engine_unittests__exec"
+  }
+}

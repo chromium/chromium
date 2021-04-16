@@ -5,44 +5,33 @@
 #ifndef FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_
 #define FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_
 
+#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "fuchsia/engine/web_engine_export.h"
-
-namespace base {
-class CommandLine;
-struct LaunchOptions;
-class Process;
-}  // namespace base
 
 class WEB_ENGINE_EXPORT ContextProviderImpl
     : public fuchsia::web::ContextProvider,
       public fuchsia::web::Debug {
  public:
-  using LaunchCallbackForTest = base::RepeatingCallback<base::Process(
-      const base::CommandLine& command,
-      const base::LaunchOptions& options)>;
-
-  // Handle Id used to pass the request channel to Context processes.
-  static const uint32_t kContextRequestHandleId;
+  // Component URL used to launch WebEngine instances to host Contexts.
+  static const char kWebInstanceComponentUrl[];
 
   ContextProviderImpl();
   ~ContextProviderImpl() override;
+
+  ContextProviderImpl(const ContextProviderImpl&) = delete;
+  ContextProviderImpl& operator=(const ContextProviderImpl&) = delete;
 
   // fuchsia::web::ContextProvider implementation.
   void Create(
       fuchsia::web::CreateContextParams params,
       fidl::InterfaceRequest<fuchsia::web::Context> context_request) override;
-
-  // Sets a |launch| callback to use instead of calling LaunchProcess() to
-  // create Context processes.
-  void SetLaunchCallbackForTest(LaunchCallbackForTest launch);
 
   // Sets a config to use for the test, instead of looking for the config file.
   void set_config_for_test(base::Value config) {
@@ -55,17 +44,11 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
       fidl::InterfaceHandle<fuchsia::web::DevToolsListener> listener,
       EnableDevToolsCallback callback) override;
 
-  // Set by tests to use to launch Context child processes, e.g. to allow a
-  // fake Context process to be launched.
-  LaunchCallbackForTest launch_for_test_;
-
   // Set by configuration tests.
   base::Value config_for_test_;
 
   // The DevToolsListeners registered via the Debug interface.
   fidl::InterfacePtrSet<fuchsia::web::DevToolsListener> devtools_listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextProviderImpl);
 };
 
 #endif  // FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_

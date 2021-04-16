@@ -75,6 +75,7 @@ template("cr_fuchsia_package") {
     forward_variables_from(invoker, [ "testonly" ])
 
     deps = [ ":${_component_cmx_target}" ]
+    data_deps = _package_contents
     manifest = _component_manifest
 
     if (defined(invoker.component_name_override)) {
@@ -82,19 +83,22 @@ template("cr_fuchsia_package") {
     } else {
       manifest_output_name = "${_package_name}"
     }
-
-    data_deps = _package_contents
   }
 
   # Bundle manifests providing additional entrypoints into the package.
   if (defined(invoker.additional_manifests)) {
     foreach(filename, invoker.additional_manifests) {
-      _additional_component_target = target_name + "_" + filename
+      _additional_component_target =
+          target_name + "_" + get_path_info(filename, "name")
       _package_components += [ ":${_additional_component_target}" ]
       fuchsia_component(_additional_component_target) {
         forward_variables_from(invoker, [ "testonly" ])
         data_deps = _package_contents
         manifest = filename
+
+        # Depend upon the invoker's |deps|, in case they include a dependency
+        # responsible for generating this additional component's manifest file.
+        deps = _package_contents
       }
     }
   }

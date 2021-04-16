@@ -1,7 +1,7 @@
 {
   "program": {
     "binary": "web_engine_exe",
-    "args": [ "--context-provider" ]
+    "args": [ "--context-provider", "--with-webui" ]
   },
   "sandbox": {
     "features": [

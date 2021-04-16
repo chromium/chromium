@@ -71,9 +71,7 @@ WebEngineMainDelegate* WebEngineMainDelegate::GetInstanceForTest() {
   return g_current_web_engine_main_delegate;
 }
 
-WebEngineMainDelegate::WebEngineMainDelegate(
-    fidl::InterfaceRequest<fuchsia::web::Context> request)
-    : request_(std::move(request)) {
+WebEngineMainDelegate::WebEngineMainDelegate() {
   g_current_web_engine_main_delegate = this;
 }
 
@@ -130,8 +128,7 @@ content::ContentClient* WebEngineMainDelegate::CreateContentClient() {
 content::ContentBrowserClient*
 WebEngineMainDelegate::CreateContentBrowserClient() {
   DCHECK(!browser_client_);
-  browser_client_ =
-      std::make_unique<WebEngineContentBrowserClient>(std::move(request_));
+  browser_client_ = std::make_unique<WebEngineContentBrowserClient>();
   return browser_client_.get();
 }
 

@@ -4,11 +4,14 @@
 
 #include "fuchsia/engine/context_provider_impl.h"
 
+#include <chromium/internal/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/async/default.h>
 #include <lib/fdio/directory.h>
 #include <lib/fdio/fd.h>
 #include <lib/fdio/io.h>
+#include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/service_directory.h>
 #include <lib/zx/job.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -27,8 +30,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/fuchsia/default_job.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -64,6 +67,13 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace {
+
+// Path to the definition file for web Component instances.
+constexpr char kWebInstanceComponentPath[] = "/pkg/meta/web_instance.cmx";
+
+// Test-only URL for web hosting Component instances with WebUI resources.
+const char kWebInstanceWithWebUiComponentUrl[] =
+    "fuchsia-pkg://fuchsia.com/web_engine_with_webui#meta/web_instance.cmx";
 
 // Use a constexpr instead of the existing base::Feature, because of the
 // additional dependencies required.
@@ -109,14 +119,15 @@ bool IsValidContentDirectoryName(base::StringPiece file_name) {
   return true;
 }
 
-// Maps content directories into the LaunchOptions and adds the enable flag
-// to the CommandLine.
-bool SetContentDirectoriesInLaunchOptions(
+// Maps content directories into the LaunchInfo and adds the enable flag to the
+// CommandLine.
+bool SetContentDirectoriesArgsAndLaunchInfo(
     std::vector<fuchsia::web::ContentDirectoryProvider> directories,
-    base::CommandLine* command_line,
-    base::LaunchOptions* launch_options) {
-  DCHECK(command_line);
-  DCHECK(launch_options);
+    base::CommandLine* launch_args,
+    fuchsia::sys::LaunchInfo* launch_info) {
+  DCHECK(launch_args);
+  DCHECK(launch_info);
+  DCHECK(launch_info->flat_namespace);
   DCHECK(!directories.empty());
 
   for (size_t i = 0; i < directories.size(); ++i) {
@@ -129,7 +140,7 @@ bool SetContentDirectoriesInLaunchOptions(
 
     zx::channel validated_channel = ValidateDirectoryAndTakeChannel(
         std::move(*directory.mutable_directory()));
-    if (!validated_channel.is_valid()) {
+    if (!validated_channel) {
       DLOG(ERROR) << "Service directory handle not valid for directory: "
                   << directory.name();
       return false;
@@ -139,12 +150,13 @@ bool SetContentDirectoriesInLaunchOptions(
     // stage of CreateContext() fails. This will be fixed as part of migrating
     // to launching WebEngine instances as Components.
     const base::FilePath kContentDirectories("/content-directories");
-    launch_options->paths_to_transfer.emplace_back(base::PathToTransfer{
-        .path = kContentDirectories.Append(directory.name()),
-        .handle = validated_channel.release()});
+    launch_info->flat_namespace->paths.push_back(
+        kContentDirectories.Append(directory.name()).value());
+    launch_info->flat_namespace->directories.push_back(
+        std::move(validated_channel));
   }
 
-  command_line->AppendSwitch(switches::kEnableContentDirectories);
+  launch_args->AppendSwitch(switches::kEnableContentDirectories);
 
   return true;
 }
@@ -242,10 +254,22 @@ bool IsFuchsiaCdmSupported() {
 #endif
 }
 
+std::vector<std::string> LoadWebInstanceSandboxServices() {
+  std::string cmx;
+  CHECK(ReadFileToString(base::FilePath(kWebInstanceComponentPath), &cmx));
+  base::Optional<base::Value> json = base::JSONReader::Read(cmx);
+  const base::Value* services = json->FindListPath("sandbox.services");
+  std::vector<std::string> result;
+  for (auto& entry : services->GetList())
+    result.push_back(std::move(entry.GetString()));
+  return result;
+}
+
 }  // namespace
 
-const uint32_t ContextProviderImpl::kContextRequestHandleId =
-    PA_HND(PA_USER0, 0);
+// Production URL for web hosting Component instances.
+const char ContextProviderImpl::kWebInstanceComponentUrl[] =
+    "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx";
 
 ContextProviderImpl::ContextProviderImpl() = default;
 
@@ -273,28 +297,22 @@ void ContextProviderImpl::Create(
     return;
   }
 
-  base::LaunchOptions launch_options;
-  launch_options.process_name_suffix = ":context";
+  // Base the new Component's command-line on this process' command-line.
+  base::CommandLine launch_args(*base::CommandLine::ForCurrentProcess());
+  launch_args.RemoveSwitch(switches::kContextProvider);
 
-  sandbox::policy::SandboxPolicyFuchsia sandbox_policy(
-      sandbox::policy::SandboxType::kWebContext);
-  sandbox_policy.SetServiceDirectory(std::move(service_directory));
-  sandbox_policy.UpdateLaunchOptionsForSandbox(&launch_options);
-
-  // SandboxPolicyFuchsia should isolate each Context in its own job.
-  DCHECK_NE(launch_options.job_handle, ZX_HANDLE_INVALID);
-
-  // Transfer the ContextRequest handle to a well-known location in the child
-  // process' handle table.
-  launch_options.handles_to_transfer.push_back(
-      {kContextRequestHandleId, context_request.channel().get()});
-
-  base::CommandLine launch_command(*base::CommandLine::ForCurrentProcess());
+  fuchsia::sys::LaunchInfo launch_info;
+  // TODO(1010222): Make kWebInstanceComponentUrl a relative component URL, and
+  // remove this workaround.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("with-webui"))
+    launch_info.url = kWebInstanceWithWebUiComponentUrl;
+  else
+    launch_info.url = kWebInstanceComponentUrl;
+  launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
 
   // Bind |data_directory| to /data directory, if provided.
-  zx::channel data_directory_channel;
   if (params.has_data_directory()) {
-    data_directory_channel = ValidateDirectoryAndTakeChannel(
+    zx::channel data_directory_channel = ValidateDirectoryAndTakeChannel(
         std::move(*params.mutable_data_directory()));
     if (!data_directory_channel) {
       DLOG(ERROR)
@@ -309,11 +327,12 @@ void ContextProviderImpl::Create(
       context_request.Close(ZX_ERR_INTERNAL);
       return;
     }
-    launch_options.paths_to_transfer.push_back(
-        base::PathToTransfer{data_path, data_directory_channel.release()});
+    launch_info.flat_namespace->paths.push_back(data_path.value());
+    launch_info.flat_namespace->directories.push_back(
+        std::move(data_directory_channel));
 
     if (params.has_data_quota_bytes()) {
-      launch_command.AppendSwitchNative(
+      launch_args.AppendSwitchNative(
           switches::kDataQuotaBytes,
           base::NumberToString(params.data_quota_bytes()));
     }
@@ -328,34 +347,15 @@ void ContextProviderImpl::Create(
   } else {
     web_engine_config = std::move(config_for_test_);
   }
-  if (!MaybeAddCommandLineArgsFromConfig(web_engine_config, &launch_command)) {
+  if (!MaybeAddCommandLineArgsFromConfig(web_engine_config, &launch_args)) {
     context_request.Close(ZX_ERR_INTERNAL);
     return;
   }
 
   if (params.has_remote_debugging_port()) {
-    launch_command.AppendSwitchNative(
+    launch_args.AppendSwitchNative(
         switches::kRemoteDebuggingPort,
         base::NumberToString(params.remote_debugging_port()));
-  }
-
-  std::vector<zx::channel> devtools_listener_channels;
-  if (devtools_listeners_.size() != 0) {
-    // Connect DevTools listeners to the new Context process.
-    std::vector<std::string> handles_ids;
-    for (auto& devtools_listener : devtools_listeners_.ptrs()) {
-      fidl::InterfaceHandle<fuchsia::web::DevToolsPerContextListener>
-          client_listener;
-      devtools_listener.get()->get()->OnContextDevToolsAvailable(
-          client_listener.NewRequest());
-      devtools_listener_channels.emplace_back(client_listener.TakeChannel());
-      handles_ids.push_back(
-          base::NumberToString(base::LaunchOptions::AddHandleToTransfer(
-              &launch_options.handles_to_transfer,
-              devtools_listener_channels.back().get())));
-    }
-    launch_command.AppendSwitchNative(switches::kRemoteDebuggerHandles,
-                                      base::JoinString(handles_ids, ","));
   }
 
   fuchsia::web::ContextFeatureFlags features = {};
@@ -366,14 +366,14 @@ void ContextProviderImpl::Create(
       (features & fuchsia::web::ContextFeatureFlags::HEADLESS) ==
       fuchsia::web::ContextFeatureFlags::HEADLESS;
   if (is_headless) {
-    launch_command.AppendSwitchNative(switches::kOzonePlatform,
-                                      switches::kHeadless);
-    launch_command.AppendSwitch(switches::kHeadless);
+    launch_args.AppendSwitchNative(switches::kOzonePlatform,
+                                   switches::kHeadless);
+    launch_args.AppendSwitch(switches::kHeadless);
   }
 
   if ((features & fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) ==
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) {
-    launch_command.AppendSwitch(switches::kUseLegacyMetricsService);
+    launch_args.AppendSwitch(switches::kUseLegacyMetricsService);
   }
 
   const bool enable_vulkan =
@@ -424,31 +424,29 @@ void ContextProviderImpl::Create(
       web_engine_config.FindBoolPath("use-overlays-for-video").value_or(false);
 
   if (enable_protected_graphics) {
-    launch_command.AppendSwitch(switches::kEnableVulkanProtectedMemory);
+    launch_args.AppendSwitch(switches::kEnableVulkanProtectedMemory);
     // TODO(crbug.com/1143764): Remove this after underlays are stable.
     if (force_protected_graphics || !use_overlays_for_video) {
-      launch_command.AppendSwitch(switches::kEnforceVulkanProtectedMemory);
+      launch_args.AppendSwitch(switches::kEnforceVulkanProtectedMemory);
     }
-    launch_command.AppendSwitch(switches::kEnableProtectedVideoBuffers);
+    launch_args.AppendSwitch(switches::kEnableProtectedVideoBuffers);
     bool force_protected_video_buffers =
         web_engine_config.FindBoolPath("force-protected-video-buffers")
             .value_or(false);
     if (force_protected_video_buffers) {
-      launch_command.AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
+      launch_args.AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
     }
   }
 
   if (use_overlays_for_video) {
     // Overlays are only available if OutputPresenterFuchsia is in use.
     AppendFeature(switches::kEnableFeatures,
-                  features::kUseSkiaOutputDeviceBufferQueue.name,
-                  &launch_command);
+                  features::kUseSkiaOutputDeviceBufferQueue.name, &launch_args);
     AppendFeature(switches::kEnableFeatures,
-                  features::kUseRealBuffersForPageFlipTest.name,
-                  &launch_command);
-    launch_command.AppendSwitchASCII(switches::kEnableHardwareOverlays,
-                                     "underlay");
-    launch_command.AppendSwitch(switches::kUseOverlaysForVideo);
+                  features::kUseRealBuffersForPageFlipTest.name, &launch_args);
+    launch_args.AppendSwitchASCII(switches::kEnableHardwareOverlays,
+                                  "underlay");
+    launch_args.AppendSwitch(switches::kUseOverlaysForVideo);
   }
 
   if (enable_vulkan) {
@@ -460,27 +458,27 @@ void ContextProviderImpl::Create(
 
     VLOG(1) << "Enabling Vulkan GPU acceleration.";
     // Vulkan requires use of SkiaRenderer, configured to a use Vulkan context.
-    launch_command.AppendSwitch(switches::kUseVulkan);
+    launch_args.AppendSwitch(switches::kUseVulkan);
     const std::vector<base::StringPiece> enabled_features = {
         features::kUseSkiaRenderer.name, features::kVulkan.name};
     AppendFeature(switches::kEnableFeatures,
-                  base::JoinString(enabled_features, ","), &launch_command);
+                  base::JoinString(enabled_features, ","), &launch_args);
 
     // SkiaRenderer requires out-of-process rasterization be enabled.
-    launch_command.AppendSwitch(switches::kEnableOopRasterization);
+    launch_args.AppendSwitch(switches::kEnableOopRasterization);
 
-    launch_command.AppendSwitchASCII(switches::kUseGL,
-                                     gl::kGLImplementationANGLEName);
+    launch_args.AppendSwitchASCII(switches::kUseGL,
+                                  gl::kGLImplementationANGLEName);
   } else {
     VLOG(1) << "Disabling GPU acceleration.";
     // Disable use of Vulkan GPU, and use of the software-GL rasterizer. The
     // Context will still run a GPU process, but will not support WebGL.
-    launch_command.AppendSwitch(switches::kDisableGpu);
-    launch_command.AppendSwitch(switches::kDisableSoftwareRasterizer);
+    launch_args.AppendSwitch(switches::kDisableGpu);
+    launch_args.AppendSwitch(switches::kDisableSoftwareRasterizer);
   }
 
   if (enable_widevine) {
-    launch_command.AppendSwitch(switches::kEnableWidevine);
+    launch_args.AppendSwitch(switches::kEnableWidevine);
   }
 
   if (enable_playready) {
@@ -492,8 +490,7 @@ void ContextProviderImpl::Create(
       context_request.Close(ZX_ERR_INVALID_ARGS);
       return;
     }
-    launch_command.AppendSwitchNative(switches::kPlayreadyKeySystem,
-                                      key_system);
+    launch_args.AppendSwitchNative(switches::kPlayreadyKeySystem, key_system);
   }
 
   bool enable_audio = (features & fuchsia::web::ContextFeatureFlags::AUDIO) ==
@@ -501,16 +498,15 @@ void ContextProviderImpl::Create(
   if (!enable_audio) {
     // TODO(fxbug.dev/58902): Split up audio input and output in
     // ContextFeatureFlags.
-    launch_command.AppendSwitch(switches::kDisableAudioOutput);
-    launch_command.AppendSwitch(switches::kDisableAudioInput);
+    launch_args.AppendSwitch(switches::kDisableAudioOutput);
+    launch_args.AppendSwitch(switches::kDisableAudioInput);
   }
 
-  zx::channel cdm_data_directory_channel;
   if (enable_widevine || enable_playready) {
     DCHECK(params.has_cdm_data_directory());
     const char kCdmDataPath[] = "/cdm_data";
 
-    cdm_data_directory_channel = ValidateDirectoryAndTakeChannel(
+    zx::channel cdm_data_directory_channel = ValidateDirectoryAndTakeChannel(
         std::move(*params.mutable_cdm_data_directory()));
     if (!cdm_data_directory_channel) {
       LOG(ERROR)
@@ -519,13 +515,13 @@ void ContextProviderImpl::Create(
       return;
     }
 
-    launch_command.AppendSwitchNative(switches::kCdmDataDirectory,
-                                      kCdmDataPath);
-    launch_options.paths_to_transfer.push_back(base::PathToTransfer{
-        base::FilePath(kCdmDataPath), cdm_data_directory_channel.get()});
+    launch_args.AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
+    launch_info.flat_namespace->paths.push_back(kCdmDataPath);
+    launch_info.flat_namespace->directories.push_back(
+        std::move(cdm_data_directory_channel));
 
     if (params.has_cdm_data_quota_bytes()) {
-      launch_command.AppendSwitchNative(
+      launch_args.AppendSwitchNative(
           switches::kCdmDataQuotaBytes,
           base::NumberToString(params.cdm_data_quota_bytes()));
     }
@@ -535,7 +531,7 @@ void ContextProviderImpl::Create(
       (features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
   if (!enable_hardware_video_decoder)
-    launch_command.AppendSwitch(switches::kDisableAcceleratedVideoDecode);
+    launch_args.AppendSwitch(switches::kDisableAcceleratedVideoDecode);
 
   if (enable_hardware_video_decoder && !enable_vulkan) {
     DLOG(ERROR) << "HARDWARE_VIDEO_DECODER requires VULKAN.";
@@ -555,7 +551,7 @@ void ContextProviderImpl::Create(
       return;
     }
 
-    launch_command.AppendSwitch(switches::kDisableSoftwareVideoDecoders);
+    launch_args.AppendSwitch(switches::kDisableSoftwareVideoDecoders);
   }
 
   // Validate embedder-supplied product, and optional version, and pass it to
@@ -575,8 +571,8 @@ void ContextProviderImpl::Create(
       }
       product_tag += "/" + params.user_agent_version();
     }
-    launch_command.AppendSwitchNative(switches::kUserAgentProductAndVersion,
-                                      std::move(product_tag));
+    launch_args.AppendSwitchNative(switches::kUserAgentProductAndVersion,
+                                   std::move(product_tag));
   } else if (params.has_user_agent_version()) {
     LOG(ERROR) << "Embedder version without product.";
     context_request.Close(ZX_ERR_INVALID_ARGS);
@@ -584,9 +580,9 @@ void ContextProviderImpl::Create(
   }
 
   if (params.has_content_directories() &&
-      !SetContentDirectoriesInLaunchOptions(
-          std::move(*params.mutable_content_directories()), &launch_command,
-          &launch_options)) {
+      !SetContentDirectoriesArgsAndLaunchInfo(
+          std::move(*params.mutable_content_directories()), &launch_args,
+          &launch_info)) {
     LOG(ERROR) << "Invalid content directories specified.";
     context_request.Close(ZX_ERR_INVALID_ARGS);
     return;
@@ -597,14 +593,14 @@ void ContextProviderImpl::Create(
         params.unsafely_treat_insecure_origins_as_secure();
     for (auto origin : insecure_origins) {
       if (origin == switches::kAllowRunningInsecureContent) {
-        launch_command.AppendSwitch(switches::kAllowRunningInsecureContent);
+        launch_args.AppendSwitch(switches::kAllowRunningInsecureContent);
       } else if (origin == kDisableMixedContentAutoupgradeOrigin) {
         AppendFeature(switches::kDisableFeatures,
-                      kMixedContentAutoupgradeFeatureName, &launch_command);
+                      kMixedContentAutoupgradeFeatureName, &launch_args);
       } else {
         // Pass the rest of the list to the Context process.
         AppendFeature(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-                      origin, &launch_command);
+                      origin, &launch_args);
       }
     }
   }
@@ -615,30 +611,68 @@ void ContextProviderImpl::Create(
       cors_exempt_headers.push_back(cr_fuchsia::BytesAsString(header));
     }
 
-    launch_command.AppendSwitchNative(
-        switches::kCorsExemptHeaders,
-        base::JoinString(cors_exempt_headers, ","));
+    launch_args.AppendSwitchNative(switches::kCorsExemptHeaders,
+                                   base::JoinString(cors_exempt_headers, ","));
   }
 
-  base::Process context_process;
-  if (launch_for_test_) {
-    context_process = launch_for_test_.Run(launch_command, launch_options);
-  } else {
-    context_process = base::LaunchProcess(launch_command, launch_options);
+  // In tests the ContextProvider is configured to log to stderr, so clone the
+  // handle to allow web instances to also log there.
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "enable-logging") == "stderr") {
+    launch_info.err = fuchsia::sys::FileDescriptor::New();
+    launch_info.err->type0 = PA_FD;
+    zx_status_t status = fdio_fd_clone(
+        STDERR_FILENO, launch_info.err->handle0.reset_and_get_address());
+    ZX_CHECK(status == ZX_OK, status);
   }
 
-  // |context_request|, any DevTools channels and data directory channels were
-  // transferred (not copied) to the Context process.
-  ignore_result(context_request.TakeChannel().release());
-  for (auto& channel : devtools_listener_channels)
-    ignore_result(channel.release());
-  ignore_result(data_directory_channel.release());
-  ignore_result(cdm_data_directory_channel.release());
-}
+  // Request access to the component's outgoing service directory.
+  fidl::InterfaceRequest<fuchsia::io::Directory> component_services_request;
+  auto component_services =
+      sys::ServiceDirectory::CreateWithRequest(&component_services_request);
+  launch_info.directory_request = component_services_request.TakeChannel();
 
-void ContextProviderImpl::SetLaunchCallbackForTest(
-    LaunchCallbackForTest launch) {
-  launch_for_test_ = std::move(launch);
+  // If there are DevToolsListeners active then set the remote-debugging option
+  // and create DevToolsPerContextListener channels to connect asynchronously
+  // to the instance.
+  if (devtools_listeners_.size() > 0) {
+    launch_args.AppendSwitch(switches::kEnableRemoteDebugMode);
+    chromium::internal::DevToolsConnectorPtr devtools_connector;
+    component_services->Connect(devtools_connector.NewRequest());
+    for (auto& devtools_listener : devtools_listeners_.ptrs()) {
+      fidl::InterfaceHandle<fuchsia::web::DevToolsPerContextListener> listener;
+      devtools_listener.get()->get()->OnContextDevToolsAvailable(
+          listener.NewRequest());
+      devtools_connector->ConnectPerContextListener(std::move(listener));
+    }
+  }
+
+  // Set |additional_services| to redirect requests for all services specified
+  // in the web instance component manifest to be satisfied by the caller-
+  // supplied service directory. This ensures that the instance cannot access
+  // any services outside those provided by the caller.
+  // TODO(1010222): Introduce an isolated nested-environment to host instances.
+  launch_info.additional_services = fuchsia::sys::ServiceList::New();
+  launch_info.additional_services->names = LoadWebInstanceSandboxServices();
+  launch_info.additional_services->host_directory =
+      service_directory.TakeChannel();
+
+  // Take the accumulated command line arguments, omitting the program name in
+  // argv[0], and set them in |launch_info|.
+  launch_info.arguments = std::vector<std::string>(
+      launch_args.argv().begin() + 1, launch_args.argv().end());
+
+  // Launch the component with the accumulated settings.
+  fuchsia::sys::ComponentControllerPtr component_controller;
+  base::ComponentContextForProcess()
+      ->svc()
+      ->Connect<fuchsia::sys::Launcher>()
+      ->CreateComponent(std::move(launch_info),
+                        component_controller.NewRequest());
+  component_controller->Detach();
+
+  // Route the fuchsia.web.Context request to the new Component.
+  component_services->Connect(std::move(context_request));
 }
 
 void ContextProviderImpl::EnableDevTools(

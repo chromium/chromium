@@ -4,9 +4,12 @@
 
 #include "fuchsia/engine/context_provider_impl.h"
 
+#include <fuchsia/sys/cpp/fidl_test_base.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding.h>
+#include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/zx/socket.h>
 #include <zircon/processargs.h>
 #include <zircon/types.h>
@@ -25,16 +28,18 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/fuchsia/default_job.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
+#include "base/fuchsia/scoped_service_binding.h"
+#include "base/fuchsia/test_component_context_for_process.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "fuchsia/engine/context_provider_impl.h"
 #include "fuchsia/engine/fake_context.h"
 #include "fuchsia/engine/switches.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -59,22 +64,21 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
 
+  LOG(INFO) << "SpawnContextServer test component started.";
+
   base::FilePath data_dir;
   CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
-  if (!data_dir.empty()) {
-    if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
-      auto out_file = data_dir.AppendASCII(kTestDataFileOut);
-      EXPECT_EQ(base::WriteFile(out_file, nullptr, 0), 0);
-    }
+  if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
+    auto out_file = data_dir.AppendASCII(kTestDataFileOut);
+    CHECK_EQ(base::WriteFile(out_file, nullptr, 0), 0);
   }
 
-  fidl::InterfaceRequest<fuchsia::web::Context> fuchsia_context(zx::channel(
-      zx_take_startup_handle(ContextProviderImpl::kContextRequestHandleId)));
-  CHECK(fuchsia_context);
-
+  // Publish the fake fuchsia.web.Context implementation for the test to use.
   FakeContext context;
-  fidl::Binding<fuchsia::web::Context> context_binding(
-      &context, std::move(fuchsia_context));
+  fidl::BindingSet<fuchsia::web::Context> bindings;
+  base::ComponentContextForProcess()->outgoing()->AddPublicService(
+      bindings.GetHandler(&context), "fuchsia.web.Context");
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   // When a Frame's NavigationEventListener is bound, immediately broadcast a
   // navigation event to its listeners.
@@ -93,22 +97,99 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
 
   // Quit the process when the context is destroyed.
   base::RunLoop run_loop;
-  context_binding.set_error_handler([&run_loop](zx_status_t status) {
-    run_loop.Quit();
-    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-  });
+  bindings.set_empty_set_handler(
+      [quit_loop = run_loop.QuitClosure()]() { quit_loop.Run(); });
   run_loop.Run();
 
   return 0;
 }
 
-base::Process LaunchFakeContextProcess(const base::CommandLine& command_line,
-                                       const base::LaunchOptions& options) {
-  base::LaunchOptions options_with_tmp = options;
-  options_with_tmp.paths_to_clone.push_back(base::FilePath("/tmp"));
-  return base::SpawnMultiProcessTestChild("SpawnContextServer", command_line,
-                                          options_with_tmp);
-}
+class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
+ public:
+  using CreateComponentCallback =
+      base::OnceCallback<void(const base::CommandLine&)>;
+
+  FakeSysLauncher(sys::OutgoingDirectory* outgoing_directory,
+                  fuchsia::sys::Launcher* real_launcher)
+      : scoped_binding_(outgoing_directory, this),
+        real_launcher_(real_launcher) {}
+  ~FakeSysLauncher() final {}
+
+  void set_create_component_callback(CreateComponentCallback callback) {
+    create_component_callback_ = std::move(callback);
+  }
+
+  // fuchsia::sys::Launcher implementation.
+  void CreateComponent(
+      fuchsia::sys::LaunchInfo launch_info,
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController> request) final {
+    // |arguments| should not include argv[0] (i.e. the program name), which
+    // would be empty in a no-program CommandLine instance. Verify that the
+    // |arguments| are either empty or have a non-empty first element.
+    EXPECT_TRUE(launch_info.arguments->empty() ||
+                !launch_info.arguments->at(0).empty());
+
+    // |arguments| omits argv[0] so cannot be used directly to initialize a
+    // CommandLine, but CommandLine provides useful switch processing logic.
+    // Prepend an empty element to a copy of |arguments| and use that to create
+    // a valid CommandLine.
+    std::vector<std::string> command_line_args(*launch_info.arguments);
+    command_line_args.emplace(command_line_args.begin());
+    const base::CommandLine command_line(command_line_args);
+    CHECK(!command_line.HasSwitch(switches::kTestChildProcess));
+
+    // If a create-component-callback is specified then there is no need to
+    // actually launch a component.
+    if (create_component_callback_) {
+      std::move(create_component_callback_).Run(command_line);
+      return;
+    }
+
+    // Otherwise, launch another instance of this test executable, configured to
+    // run as a test child (similar to SpawnMultiProcessTestChild()). The
+    // test-suite's component manifest cannot be re-used for this because it
+    // specifies the "isolated-persistent-data" feature, causing the framework
+    // to populate /data, which prevents the |data_directory| supplied in the
+    // CreateContextParams from being mapped.
+    // Launch the component via a fake manifest identical to the one used for
+    // web instances, but which runs this test executable.
+    EXPECT_EQ(launch_info.url, ContextProviderImpl::kWebInstanceComponentUrl);
+    launch_info.url =
+        "fuchsia-pkg://fuchsia.com/web_engine_unittests#meta/"
+        "web_engine_unittests_fake_instance.cmx";
+    launch_info.arguments->push_back(base::StrCat(
+        {"--", switches::kTestChildProcess, "=SpawnContextServer"}));
+
+    // Bind /tmp in the new Component's flat namespace, to allow it to see
+    // the GTest flagfile, if any.
+    fuchsia::io::DirectoryHandle tmp_directory;
+    zx_status_t status =
+        fdio_open("/tmp", fuchsia::io::OPEN_RIGHT_READABLE,
+                  tmp_directory.NewRequest().TakeChannel().release());
+    ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
+    launch_info.flat_namespace->paths.push_back("/tmp");
+    launch_info.flat_namespace->directories.push_back(
+        tmp_directory.TakeChannel());
+
+    // Redirect the sub-process Component's stderr to feed into the test output.
+    launch_info.err = fuchsia::sys::FileDescriptor::New();
+    launch_info.err->type0 = PA_FD;
+    status = fdio_fd_clone(STDERR_FILENO,
+                           launch_info.err->handle0.reset_and_get_address());
+    ZX_CHECK(status == ZX_OK, status);
+
+    real_launcher_->CreateComponent(std::move(launch_info), std::move(request));
+  }
+
+  void NotImplemented_(const std::string& name) final {
+    ADD_FAILURE() << "Unexpected call: " << name;
+  }
+
+ private:
+  base::ScopedServiceBinding<fuchsia::sys::Launcher> scoped_binding_;
+  fuchsia::sys::Launcher* const real_launcher_;
+  CreateComponentCallback create_component_callback_;
+};
 
 fuchsia::web::CreateContextParams BuildCreateContextParams() {
   fuchsia::web::CreateContextParams output;
@@ -142,9 +223,12 @@ fidl::InterfaceHandle<fuchsia::io::Directory> OpenCacheDirectory() {
 class ContextProviderImplTest : public base::MultiProcessTest {
  public:
   ContextProviderImplTest()
-      : provider_(std::make_unique<ContextProviderImpl>()) {
-    provider_->SetLaunchCallbackForTest(
-        base::BindRepeating(&LaunchFakeContextProcess));
+      : sys_launcher_(base::ComponentContextForProcess()
+                          ->svc()
+                          ->Connect<fuchsia::sys::Launcher>()),
+        fake_launcher_(test_component_context_.additional_services(),
+                       sys_launcher_.get()),
+        provider_(std::make_unique<ContextProviderImpl>()) {
     bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
   }
 
@@ -205,6 +289,16 @@ class ContextProviderImplTest : public base::MultiProcessTest {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  // fuchsia.sys.Launcher member must be constructed before the test component
+  // context replaces the process' component context.
+  fuchsia::sys::LauncherPtr sys_launcher_;
+
+  // Used to replaces the process component context with one providing a fake
+  // fuchsia.sys.Launcher implementation.
+  base::TestComponentContextForProcess test_component_context_;
+  FakeSysLauncher fake_launcher_;
+
   std::unique_ptr<ContextProviderImpl> provider_;
   fuchsia::web::ContextProviderPtr provider_ptr_;
   fidl::BindingSet<fuchsia::web::ContextProvider> bindings_;
@@ -395,66 +489,17 @@ TEST_F(ContextProviderImplTest, FailsDataDirectoryIsFile) {
   CheckContextUnresponsive(&context);
 }
 
-static bool WaitUntilJobIsEmpty(zx::unowned_job job, zx::duration timeout) {
-  zx_signals_t observed = 0;
-  zx_status_t status =
-      job->wait_one(ZX_JOB_NO_JOBS, zx::deadline_after(timeout), &observed);
-  ZX_CHECK(status == ZX_OK || status == ZX_ERR_TIMED_OUT, status);
-  return observed & ZX_JOB_NO_JOBS;
-}
-
-// Regression test for https://crbug.com/927403 (Job leak per-Context).
-TEST_F(ContextProviderImplTest, CleansUpContextJobs) {
-  // Replace the default job with one that is guaranteed to be empty.
-  zx::job job;
-  ASSERT_EQ(zx::job::create(*base::GetDefaultJob(), 0, &job), ZX_OK);
-  base::ScopedDefaultJobForTest empty_default_job(std::move(job));
-
-  // Bind to the ContextProvider.
-  fuchsia::web::ContextProviderPtr provider;
-  bindings_.AddBinding(provider_.get(), provider.NewRequest());
-
-  // Verify that our current default job is still empty.
-  ASSERT_TRUE(WaitUntilJobIsEmpty(base::GetDefaultJob(), zx::duration()));
-
-  // Create a Context and verify that it is functional.
-  fuchsia::web::ContextPtr context;
-  provider->Create(BuildCreateContextParams(), context.NewRequest());
-  CheckContextResponsive(&context);
-
-  // Verify that there is at least one job under our default job.
-  ASSERT_FALSE(WaitUntilJobIsEmpty(base::GetDefaultJob(), zx::duration()));
-
-  // Detach from the Context and ContextProvider, and spin the loop to allow
-  // those to be handled.
-  context.Unbind();
-  provider.Unbind();
-  base::RunLoop().RunUntilIdle();
-
-  // Wait until the default job signals that it no longer contains any child
-  // jobs; this should occur shortly after the Context process terminates.
-  EXPECT_TRUE(WaitUntilJobIsEmpty(
-      base::GetDefaultJob(),
-      zx::duration(TestTimeouts::action_timeout().InNanoseconds())));
-}
-
-TEST(ContextProviderImplConfigTest, WithConfigWithCommandLineArgs) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithConfigWithCommandLineArgs) {
   // Specify a configuration that sets valid args with valid strings.
   base::Value config_dict =
       CreateConfigWithSwitchValue("renderer-process-limit", "0");
 
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.set_config_for_test(std::move(config_dict));
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
-                                         const base::LaunchOptions& options) {
+  provider_->set_config_for_test(std::move(config_dict));
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_TRUE(command.HasSwitch("renderer-process-limit"));
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -463,28 +508,22 @@ TEST(ContextProviderImplConfigTest, WithConfigWithCommandLineArgs) {
     ZX_LOG(ERROR, status);
     ADD_FAILURE();
   });
-  context_provider.Create(BuildCreateContextParams(), context.NewRequest());
+  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
 
   loop.Run();
 }
 
-TEST(ContextProviderImplConfigTest, WithConfigWithDisallowedCommandLineArgs) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithConfigWithDisallowedCommandLineArgs) {
   // Specify a configuration that sets a disallowed command-line argument.
   base::Value config_dict =
       CreateConfigWithSwitchValue("kittens-are-nice", "0");
 
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.set_config_for_test(std::move(config_dict));
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
-                                         const base::LaunchOptions& options) {
+  provider_->set_config_for_test(std::move(config_dict));
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_FALSE(command.HasSwitch("kittens-are-nice"));
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -493,15 +532,12 @@ TEST(ContextProviderImplConfigTest, WithConfigWithDisallowedCommandLineArgs) {
     ZX_LOG(ERROR, status);
     ADD_FAILURE();
   });
-  context_provider.Create(BuildCreateContextParams(), context.NewRequest());
+  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
 
   loop.Run();
 }
 
-TEST(ContextProviderImplConfigTest, WithConfigWithWronglyTypedCommandLineArgs) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithConfigWithWronglyTypedCommandLineArgs) {
   base::Value config_dict(base::Value::Type::DICTIONARY);
 
   // Specify a configuration that sets valid args with invalid value.
@@ -510,14 +546,11 @@ TEST(ContextProviderImplConfigTest, WithConfigWithWronglyTypedCommandLineArgs) {
   config_dict.SetKey(kCommandLineArgs, std::move(args));
 
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.set_config_for_test(std::move(config_dict));
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&](const base::CommandLine& command,
-                                     const base::LaunchOptions& options) {
+  provider_->set_config_for_test(std::move(config_dict));
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         ADD_FAILURE();
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -525,22 +558,17 @@ TEST(ContextProviderImplConfigTest, WithConfigWithWronglyTypedCommandLineArgs) {
     loop.Quit();
     EXPECT_EQ(status, ZX_ERR_INTERNAL);
   });
-  context_provider.Create(BuildCreateContextParams(), context.NewRequest());
+  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
 
   loop.Run();
 }
 
 // Tests that unsafely_treat_insecure_origins_as_secure properly adds the right
 // command-line arguments to the Context process.
-TEST(ContextProviderImplParamsTest, WithInsecureOriginsAsSecure) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&](const base::CommandLine& command,
-                                     const base::LaunchOptions& options) {
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_TRUE(command.HasSwitch(switches::kAllowRunningInsecureContent));
         EXPECT_THAT(command.GetSwitchValueASCII(switches::kDisableFeatures),
@@ -548,7 +576,6 @@ TEST(ContextProviderImplParamsTest, WithInsecureOriginsAsSecure) {
         EXPECT_EQ(command.GetSwitchValueASCII(
                       network::switches::kUnsafelyTreatInsecureOriginAsSecure),
                   "http://example.com");
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -565,24 +592,18 @@ TEST(ContextProviderImplParamsTest, WithInsecureOriginsAsSecure) {
   insecure_origins.push_back("http://example.com");
   create_params.set_unsafely_treat_insecure_origins_as_secure(
       std::move(insecure_origins));
-  context_provider.Create(std::move(create_params), context.NewRequest());
+  provider_ptr_->Create(std::move(create_params), context.NewRequest());
 
   loop.Run();
 }
 
-TEST(ContextProviderImplConfigTest, WithDataQuotaBytes) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
-                                         const base::LaunchOptions& options) {
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII("data-quota-bytes"),
                   kTestQuotaBytesSwitchValue);
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -598,29 +619,24 @@ TEST(ContextProviderImplConfigTest, WithDataQuotaBytes) {
   create_params.set_data_directory(
       base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
   create_params.set_data_quota_bytes(kTestQuotaBytes);
-  context_provider.Create(std::move(create_params), context.NewRequest());
+  provider_ptr_->Create(std::move(create_params), context.NewRequest());
 
   loop.Run();
 }
 
-TEST(ContextProviderImplConfigTest, WithGoogleApiKeyValue) {
+TEST_F(ContextProviderImplTest, WithGoogleApiKeyValue) {
   constexpr char kDummyApiKey[] = "apikey123";
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   base::Value config_dict =
       CreateConfigWithSwitchValue("google-api-key", kDummyApiKey);
 
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.set_config_for_test(std::move(config_dict));
-  context_provider.SetLaunchCallbackForTest(base::BindLambdaForTesting(
-      [&loop, kDummyApiKey](const base::CommandLine& command,
-                            const base::LaunchOptions& options) {
+  provider_->set_config_for_test(std::move(config_dict));
+  fake_launcher_.set_create_component_callback(base::BindLambdaForTesting(
+      [&loop, kDummyApiKey](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey),
                   kDummyApiKey);
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -629,7 +645,7 @@ TEST(ContextProviderImplConfigTest, WithGoogleApiKeyValue) {
     ZX_LOG(ERROR, status);
     ADD_FAILURE();
   });
-  context_provider.Create(BuildCreateContextParams(), context.NewRequest());
+  provider_ptr_->Create(BuildCreateContextParams(), context.NewRequest());
 
   loop.Run();
 }
@@ -637,19 +653,13 @@ TEST(ContextProviderImplConfigTest, WithGoogleApiKeyValue) {
 // TODO(crbug.com/1013412): This test doesn't actually exercise DRM, so could
 // be executed everywhere if DRM support were configurable.
 #if defined(ARCH_CPU_ARM64)
-TEST(ContextProviderImplConfigTest, WithCdmDataQuotaBytes) {
-  const base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-
+TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
   base::RunLoop loop;
-  ContextProviderImpl context_provider;
-  context_provider.SetLaunchCallbackForTest(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command,
-                                         const base::LaunchOptions& options) {
+  fake_launcher_.set_create_component_callback(
+      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII("cdm-data-quota-bytes"),
                   kTestQuotaBytesSwitchValue);
-        return base::Process();
       }));
 
   fuchsia::web::ContextPtr context;
@@ -667,7 +677,7 @@ TEST(ContextProviderImplConfigTest, WithCdmDataQuotaBytes) {
   create_params.set_features(fuchsia::web::ContextFeatureFlags::HEADLESS |
                              fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
   create_params.set_cdm_data_quota_bytes(kTestQuotaBytes);
-  context_provider.Create(std::move(create_params), context.NewRequest());
+  provider_ptr_->Create(std::move(create_params), context.NewRequest());
 
   loop.Run();
 }
