@@ -261,17 +261,25 @@ template("generate_runner_script") {
     executable_args += [
       "--cros-cache",
       "build/cros_cache/",
-      "--board",
-      cros_board,
       "--path-to-outdir",
       rebase_path(root_out_dir, "//"),
       "-v",
     ]
 
-    if (cros_is_vm) {
-      executable_args += [ "--use-vm" ]
-    } else {
-      executable_args += [ "--flash" ]
+    # At build time, Lacros tests don't know whether they'll run on VM or HW,
+    # and instead, these flags are specified at runtime when invoking the
+    # generated runner script.
+    if (is_chromeos_ash) {
+      executable_args += [
+        "--board",
+        cros_board,
+      ]
+
+      if (cros_is_vm) {
+        executable_args += [ "--use-vm" ]
+      } else {
+        executable_args += [ "--flash" ]
+      }
     }
 
     # If we have public Chromium builds, use public Chromium OS images when
