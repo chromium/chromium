@@ -43,7 +43,9 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -106,7 +108,8 @@ String ConvertToBlink(const base::Optional<std::string>& in) {
   return ::blink::KURL(in);
 }
 
-scoped_refptr<::blink::SecurityOrigin> ConvertToBlink(const url::Origin& in) {
+scoped_refptr<const ::blink::SecurityOrigin> ConvertToBlink(
+    const url::Origin& in) {
   return ::blink::SecurityOrigin::CreateFromUrlOrigin(in);
 }
 
@@ -219,6 +222,17 @@ blink::LinkHeaderPtr ConvertToBlink(const LinkHeaderPtr& in) {
       static_cast<blink::LinkAsAttribute>(in->as),
       static_cast<blink::CrossOriginAttribute>(in->cross_origin),
       ConvertToBlink(in->mime_type));
+}
+
+blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
+  DCHECK(in);
+  switch (in->which()) {
+    case TimingAllowOrigin::Tag::kSerializedOrigins:
+      return blink::TimingAllowOrigin::NewSerializedOrigins(
+          ConvertToBlink(in->get_serialized_origins()));
+    case TimingAllowOrigin::Tag::kAll:
+      return blink::TimingAllowOrigin::NewAll(/*ignored=*/0);
+  }
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
@@ -846,6 +860,12 @@ ParseContentSecurityPolicyHeaders(
   parsed_csps.AppendRange(std::make_move_iterator(report_only_csps.begin()),
                           std::make_move_iterator(report_only_csps.end()));
   return parsed_csps;
+}
+
+network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
+    const String& header_value) {
+  return network::mojom::ConvertToBlink(
+      network::ParseTimingAllowOrigin(header_value.Latin1()));
 }
 
 }  // namespace blink

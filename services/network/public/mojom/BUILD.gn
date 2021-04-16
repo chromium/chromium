@@ -186,6 +186,7 @@ mojom("url_loader_base") {
     "quic_transport.mojom",
     "referrer_policy.mojom",
     "source_location.mojom",
+    "timing_allow_origin.mojom",
     "trust_tokens.mojom",
     "url_loader.mojom",
     "url_loader_network_service_observer.mojom",

@@ -19,6 +19,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/url_loader.h"
 #include "url/url_util.h"
@@ -670,26 +671,22 @@ bool CorsURLLoader::PassesTimingAllowOriginCheck(
   if (response_tainting_ == mojom::FetchResponseType::kBasic)
     return true;
 
-  base::Optional<std::string> tao_header =
+  base::Optional<std::string> tao_header_value =
       GetHeaderString(response, kTimingAllowOrigin);
-  if (!tao_header.has_value())
+  if (!tao_header_value)
     return false;
 
-  // Optimization for the common case when the header is a single '*'.
-  if (tao_header == "*")
+  mojom::TimingAllowOriginPtr tao = ParseTimingAllowOrigin(*tao_header_value);
+
+  if (tao->which() == mojom::TimingAllowOrigin::Tag::kAll)
     return true;
 
   url::Origin origin = tainted_ ? url::Origin() : *request_.request_initiator;
   std::string serialized_origin = origin.Serialize();
-  std::vector<std::string> tao_headers = base::SplitString(
-      *tao_header, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& header : tao_headers) {
-    if (header == "*")
-      return true;
-
-    if (header == serialized_origin)
-      return true;
+  if (base::Contains(tao->get_serialized_origins(), serialized_origin)) {
+    return true;
   }
+
   return false;
 }
 

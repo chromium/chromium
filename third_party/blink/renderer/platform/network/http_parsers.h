@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
+#include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
@@ -179,6 +180,10 @@ PLATFORM_EXPORT
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>
 ParseContentSecurityPolicyHeaders(
     const ContentSecurityPolicyResponseHeaders& headers);
+
+PLATFORM_EXPORT
+network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
+    const String& header_value);
 
 }  // namespace blink
 

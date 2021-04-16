@@ -398,22 +398,24 @@ bool Performance::PassesTimingAllowCheck(
 
   const AtomicString& timing_allow_origin_string =
       response.HttpHeaderField(http_names::kTimingAllowOrigin);
-  if (timing_allow_origin_string.IsEmpty())
+  network::mojom::blink::TimingAllowOriginPtr tao =
+      ParseTimingAllowOrigin(timing_allow_origin_string);
+
+  if (!tao)
     return false;
 
-  const String& security_origin = initiator_security_origin.ToString();
-  CommaDelimitedHeaderSet tao_headers;
-  ParseCommaDelimitedHeader(timing_allow_origin_string, tao_headers);
-  if (tao_headers.size() == 1u) {
-    if (*tao_headers.begin() == "*") {
-      UseCounter::Count(context, WebFeature::kStarInTimingAllowOrigin);
-      return true;
-    } else {
-      UseCounter::Count(context, WebFeature::kSingleOriginInTimingAllowOrigin);
-    }
-  } else if (tao_headers.size() > 1u) {
+  if (tao->which() == network::mojom::blink::TimingAllowOrigin::Tag::kAll) {
+    UseCounter::Count(context, WebFeature::kStarInTimingAllowOrigin);
+    return true;
+  }
+
+  const Vector<String>& timing_allowed_origins = tao->get_serialized_origins();
+  if (timing_allowed_origins.size() == 1) {
+    UseCounter::Count(context, WebFeature::kSingleOriginInTimingAllowOrigin);
+  } else if (timing_allowed_origins.size() > 1u) {
     UseCounter::Count(context, WebFeature::kMultipleOriginsInTimingAllowOrigin);
   }
+
   bool is_next_resource_same_origin = true;
   // Only do the origin check if |next_response| is not equal to |response|.
   if (&next_response != &response) {
@@ -423,24 +425,26 @@ bool Performance::PassesTimingAllowCheck(
   }
   if (!is_same_origin && !is_next_resource_same_origin)
     *tainted_origin_flag = true;
-  bool contains_security_origin = false;
-  for (const String& header : tao_headers) {
-    if (header == "*")
-      return true;
 
-    if (header == security_origin)
-      contains_security_origin = true;
+  const String& serialized_origin = initiator_security_origin.ToString();
+  bool contains_serialized_origin = false;
+  for (const String& timing_allowed_origin : timing_allowed_origins) {
+    if (serialized_origin == timing_allowed_origin) {
+      contains_serialized_origin = true;
+      break;
+    }
   }
   // If the tainted origin flag is set and the header contains the origin, this
   // means that this method currently passes the check but once we implement the
   // tainted origin flag properly then it will fail the check. Record this in a
   // UseCounter to track how many webpages contain resources where the new check
   // would fail.
-  if (*tainted_origin_flag && contains_security_origin) {
+  if (*tainted_origin_flag && contains_serialized_origin) {
     UseCounter::Count(context,
                       WebFeature::kResourceTimingTaintedOriginFlagFail);
   }
-  return contains_security_origin;
+
+  return contains_serialized_origin;
 }
 
 bool Performance::AllowsTimingRedirect(
