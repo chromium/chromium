@@ -4277,6 +4277,8 @@ void RenderFrameImpl::DidObserveLazyLoadBehavior(
 
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
+  v8::MicrotasksScope microtasks(blink::MainThreadIsolate(),
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||
        enable_mojo_js_bindings_) &&
       IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
