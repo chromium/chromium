@@ -123,7 +123,6 @@ class CORE_EXPORT UseCounterImpl final {
   void MuteForInspector();
   void UnmuteForInspector();
 
-  void RecordMeasurement(WebFeature, const LocalFrame&);
   void ReportAndTraceMeasurementByFeatureId(WebFeature, const LocalFrame&);
   void ReportAndTraceMeasurementByCSSSampleId(int,
                                               const LocalFrame*,

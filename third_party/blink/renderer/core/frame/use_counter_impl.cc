@@ -77,26 +77,6 @@ void UseCounterImpl::UnmuteForInspector() {
   mute_count_--;
 }
 
-void UseCounterImpl::RecordMeasurement(WebFeature web_feature,
-                                       const LocalFrame& source_frame) {
-  if (mute_count_)
-    return;
-
-  // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
-  DCHECK_NE(WebFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
-
-  if (feature_tracker_.TestAndSet(
-          {mojom::blink::UseCounterFeatureType::kWebFeature,
-           static_cast<uint32_t>(web_feature)})) {
-    return;
-  }
-
-  if (commit_state_ >= kCommited)
-    ReportAndTraceMeasurementByFeatureId(web_feature, source_frame);
-}
-
 void UseCounterImpl::ReportAndTraceMeasurementByFeatureId(
     WebFeature feature,
     const LocalFrame& source_frame) {
@@ -228,10 +208,27 @@ void UseCounterImpl::Count(CSSPropertyID property,
   }
 }
 
-void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
+void UseCounterImpl::Count(WebFeature web_feature,
+                           const LocalFrame* source_frame) {
   if (!source_frame)
     return;
-  RecordMeasurement(feature, *source_frame);
+
+  if (mute_count_)
+    return;
+
+  // PageDestruction is reserved as a scaling factor.
+  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
+  DCHECK_NE(WebFeature::kPageVisits, web_feature);
+  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
+
+  if (feature_tracker_.TestAndSet(
+          {mojom::blink::UseCounterFeatureType::kWebFeature,
+           static_cast<uint32_t>(web_feature)})) {
+    return;
+  }
+
+  if (commit_state_ >= kCommited)
+    ReportAndTraceMeasurementByFeatureId(web_feature, *source_frame);
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {

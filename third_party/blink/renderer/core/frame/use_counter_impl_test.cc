@@ -78,16 +78,16 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
 
   // Test recording a single (arbitrary) counter
   EXPECT_FALSE(use_counter0.IsCounted(item));
-  use_counter0.RecordMeasurement(item, *GetFrame());
+  use_counter0.Count(item, GetFrame());
   EXPECT_TRUE(use_counter0.IsCounted(item));
   histogram_tester_.ExpectUniqueSample(histogram, static_cast<int>(item), 1);
   // Test that repeated measurements have no effect
-  use_counter0.RecordMeasurement(item, *GetFrame());
+  use_counter0.Count(item, GetFrame());
   histogram_tester_.ExpectUniqueSample(histogram, static_cast<int>(item), 1);
 
   // Test recording a different sample
   EXPECT_FALSE(use_counter0.IsCounted(second_item));
-  use_counter0.RecordMeasurement(second_item, *GetFrame());
+  use_counter0.Count(second_item, GetFrame());
   EXPECT_TRUE(use_counter0.IsCounted(second_item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 1);
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(second_item),
@@ -107,8 +107,8 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
 
   // Now a repeat measurement should get recorded again, exactly once
   EXPECT_FALSE(use_counter1.IsCounted(item));
-  use_counter1.RecordMeasurement(item, *GetFrame());
-  use_counter1.RecordMeasurement(item, *GetFrame());
+  use_counter1.Count(item, GetFrame());
+  use_counter1.Count(item, GetFrame());
   EXPECT_TRUE(use_counter1.IsCounted(item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 2);
   histogram_tester_.ExpectTotalCount(histogram, 4);
