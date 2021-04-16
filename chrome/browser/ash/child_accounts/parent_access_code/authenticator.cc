@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 namespace {
@@ -197,4 +197,4 @@ base::Optional<AccessCode> Authenticator::ValidateInRange(
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash

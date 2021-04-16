@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 AccessCodeConfig GetDefaultTestConfig() {
@@ -34,4 +34,4 @@ void GetTestAccessCodeValues(AccessCodeValues* test_values) {
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash

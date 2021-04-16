@@ -20,7 +20,7 @@ class DictionaryValue;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 // Configuration used to generate and verify parent access code.
@@ -145,6 +145,6 @@ class Authenticator {
 };
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_AUTHENTICATOR_H_

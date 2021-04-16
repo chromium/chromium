@@ -20,12 +20,10 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 namespace {
-
-using ash::SupervisedAction;
 
 // Returns true when the device owner is a child.
 bool IsDeviceOwnedByChild() {
@@ -111,17 +109,16 @@ ParentAccessService::ParentAccessService() = default;
 
 ParentAccessService::~ParentAccessService() = default;
 
-ash::ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
+ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
     const AccountId& account_id,
     const std::string& access_code,
     base::Time validation_time) {
-  ash::ParentCodeValidationResult result =
-      ash::ParentCodeValidationResult::kInvalid;
+  ParentCodeValidationResult result = ParentCodeValidationResult::kInvalid;
 
   if (config_source_.config_map().empty() ||
       (account_id.is_valid() &&
        !base::Contains(config_source_.config_map(), account_id))) {
-    result = ash::ParentCodeValidationResult::kNoConfig;
+    result = ParentCodeValidationResult::kNoConfig;
     NotifyObservers(result, account_id);
     return result;
   }
@@ -130,7 +127,7 @@ ash::ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
     if (!account_id.is_valid() || account_id == map_entry.first) {
       for (const auto& validator : map_entry.second) {
         if (validator->Validate(access_code, validation_time)) {
-          result = ash::ParentCodeValidationResult::kValid;
+          result = ParentCodeValidationResult::kValid;
           NotifyObservers(result, account_id);
           return result;
         }
@@ -155,11 +152,11 @@ void ParentAccessService::RemoveObserver(Observer* observer) {
 }
 
 void ParentAccessService::NotifyObservers(
-    ash::ParentCodeValidationResult validation_result,
+    ParentCodeValidationResult validation_result,
     const AccountId& account_id) {
   for (auto& observer : observers_)
     observer.OnAccessCodeValidation(validation_result, account_id);
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash

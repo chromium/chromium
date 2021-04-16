@@ -17,13 +17,13 @@ class AccountId;
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
 namespace user_manager {
 class User;
-}
+}  // namespace user_manager
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 // Base class for parent access code configuration providers.
@@ -56,6 +56,6 @@ class ConfigSource {
 };
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_CONFIG_SOURCE_H_

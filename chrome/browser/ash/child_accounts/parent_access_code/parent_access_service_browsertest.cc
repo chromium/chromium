@@ -26,7 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 namespace {
@@ -68,11 +68,11 @@ class TestParentAccessServiceObserver : public ParentAccessService::Observer {
       : account_id_(account_id) {}
   ~TestParentAccessServiceObserver() override = default;
 
-  void OnAccessCodeValidation(ash::ParentCodeValidationResult result,
+  void OnAccessCodeValidation(ParentCodeValidationResult result,
                               base::Optional<AccountId> account_id) override {
     ASSERT_TRUE(account_id);
     EXPECT_EQ(account_id_, account_id.value());
-    result == ash::ParentCodeValidationResult::kValid
+    result == ParentCodeValidationResult::kValid
         ? ++validation_results_.success_count
         : ++validation_results_.failure_count;
   }
@@ -128,9 +128,8 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
 
   // Performs |code| validation on ParentAccessService singleton using the
   // |validation time| and returns the result.
-  ash::ParentCodeValidationResult ValidateAccessCode(
-      const std::string& code,
-      base::Time validation_time) {
+  ParentCodeValidationResult ValidateAccessCode(const std::string& code,
+                                                base::Time validation_time) {
     return ParentAccessService::Get().ValidateParentAccessCode(
         logged_in_user_mixin_.GetAccountId(), code, validation_time);
   }
@@ -159,7 +158,7 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, NoConfigAvailable) {
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kNoConfig,
+  EXPECT_EQ(ParentCodeValidationResult::kNoConfig,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(0, 1);
@@ -172,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, NoValidConfigAvailable) {
                                  old_configs));
 
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kInvalid,
+  EXPECT_EQ(ParentCodeValidationResult::kInvalid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(0, 1);
@@ -185,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, ValidationWithFutureConfig) {
                                  old_configs));
 
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+  EXPECT_EQ(ParentCodeValidationResult::kValid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(1, 0);
@@ -198,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, ValidationWithCurrentConfig) {
                                  old_configs));
 
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+  EXPECT_EQ(ParentCodeValidationResult::kValid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(1, 0);
@@ -212,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, ValidationWithOldConfig) {
                                  old_configs));
 
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+  EXPECT_EQ(ParentCodeValidationResult::kValid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(1, 0);
@@ -222,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, MultipleValidationAttempts) {
   AccessCodeValues::iterator test_value = test_values_.begin();
 
   // No config - validation should fail.
-  EXPECT_EQ(ash::ParentCodeValidationResult::kNoConfig,
+  EXPECT_EQ(ParentCodeValidationResult::kNoConfig,
             ValidateAccessCode(test_value->second, test_value->first));
 
   UpdatePolicy(
@@ -230,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, MultipleValidationAttempts) {
 
   // Valid config - validation should pass.
   for (auto& value : test_values_) {
-    EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+    EXPECT_EQ(ParentCodeValidationResult::kValid,
               ValidateAccessCode(value.second, value.first));
   }
 
@@ -238,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, MultipleValidationAttempts) {
       PolicyFromConfigs(GetInvalidTestConfig(), GetInvalidTestConfig(), {}));
 
   // Invalid config - validation should fail.
-  EXPECT_EQ(ash::ParentCodeValidationResult::kInvalid,
+  EXPECT_EQ(ParentCodeValidationResult::kInvalid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(test_values_.size(), 2);
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, NoObserver) {
       PolicyFromConfigs(GetInvalidTestConfig(), GetDefaultTestConfig(), {}));
 
   auto test_value = test_values_.begin();
-  EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+  EXPECT_EQ(ParentCodeValidationResult::kValid,
             ValidateAccessCode(test_value->second, test_value->first));
 
   ExpectResults(0, 0);
@@ -265,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, NoAccountId) {
 
   auto test_value = test_values_.begin();
 
-  EXPECT_EQ(ash::ParentCodeValidationResult::kValid,
+  EXPECT_EQ(ParentCodeValidationResult::kValid,
             ParentAccessService::Get().ValidateParentAccessCode(
                 EmptyAccountId(), test_value->second, test_value->first));
 }
@@ -279,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, InvalidAccountId) {
   auto test_value = test_values_.begin();
 
   AccountId other_child = AccountId::FromUserEmail("otherchild@gmail.com");
-  EXPECT_EQ(ash::ParentCodeValidationResult::kNoConfig,
+  EXPECT_EQ(ParentCodeValidationResult::kNoConfig,
             ParentAccessService::Get().ValidateParentAccessCode(
                 other_child, test_value->second, test_value->first));
 }
@@ -293,32 +292,32 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // No configuration available - reauth does not require PAC.
   // Login screen.
   EXPECT_TRUE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kAddUser));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
   EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kReauth));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUnlockTimeLimits));
+      SupervisedAction::kUnlockTimeLimits));
+  EXPECT_TRUE(
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kUpdateClock));
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateClock));
-  EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateTimezone));
+      SupervisedAction::kUpdateTimezone));
 
   // Configuration available.
   UpdatePolicy(
       PolicyFromConfigs(GetDefaultTestConfig(), GetDefaultTestConfig(), {}));
   // Login screen.
   EXPECT_TRUE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kAddUser));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
   EXPECT_TRUE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kReauth));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUnlockTimeLimits));
+      SupervisedAction::kUnlockTimeLimits));
+  EXPECT_TRUE(
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kUpdateClock));
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateClock));
-  EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateTimezone));
+      SupervisedAction::kUpdateTimezone));
 }
 
 IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
@@ -332,33 +331,33 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
   // No configuration available - reauth does not require PAC.
   // Login screen.
   EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kAddUser));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
   EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kReauth));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session. Child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUnlockTimeLimits));
+      SupervisedAction::kUnlockTimeLimits));
+  EXPECT_TRUE(
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kUpdateClock));
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateClock));
-  EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateTimezone));
+      SupervisedAction::kUpdateTimezone));
 
   // Configuration available.
   UpdatePolicy(
       PolicyFromConfigs(GetDefaultTestConfig(), GetDefaultTestConfig(), {}));
   // Login screen.
   EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kAddUser));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kAddUser));
   EXPECT_FALSE(
-      ParentAccessService::IsApprovalRequired(ash::SupervisedAction::kReauth));
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kReauth));
   // In session, because child user is logged in the test fixture.
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUnlockTimeLimits));
+      SupervisedAction::kUnlockTimeLimits));
+  EXPECT_TRUE(
+      ParentAccessService::IsApprovalRequired(SupervisedAction::kUpdateClock));
   EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateClock));
-  EXPECT_TRUE(ParentAccessService::IsApprovalRequired(
-      ash::SupervisedAction::kUpdateTimezone));
+      SupervisedAction::kUpdateTimezone));
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash

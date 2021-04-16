@@ -18,11 +18,10 @@
 class PrefRegistrySimple;
 
 namespace ash {
+
 enum class ParentCodeValidationResult;
 enum class SupervisedAction;
-}  // namespace ash
 
-namespace chromeos {
 namespace parent_access {
 
 // Parent access code validation service.
@@ -37,7 +36,7 @@ class ParentAccessService {
     // event, when it is filled it means that the validation happened
     // specifically to the account identified by the parameter.
     virtual void OnAccessCodeValidation(
-        ash::ParentCodeValidationResult result,
+        ParentCodeValidationResult result,
         base::Optional<AccountId> account_id) = 0;
   };
 
@@ -48,14 +47,14 @@ class ParentAccessService {
   static ParentAccessService& Get();
 
   // Checks if the provided |action| requires parental approval to be performed.
-  static bool IsApprovalRequired(ash::SupervisedAction action);
+  static bool IsApprovalRequired(SupervisedAction action);
 
   // Checks if |access_code| is valid for the user identified by |account_id|.
   // When account_id is empty, this method checks if the |access_code| is valid
   // for any child that was added to this device. |validation_time| is the time
   // that will be used to validate the code, it will succeed if the code was
   // valid this given time.
-  ash::ParentCodeValidationResult ValidateParentAccessCode(
+  ParentCodeValidationResult ValidateParentAccessCode(
       const AccountId& account_id,
       const std::string& access_code,
       base::Time validation_time);
@@ -72,7 +71,7 @@ class ParentAccessService {
   ParentAccessService();
   ~ParentAccessService();
 
-  void NotifyObservers(ash::ParentCodeValidationResult validation_result,
+  void NotifyObservers(ParentCodeValidationResult validation_result,
                        const AccountId& account_id);
 
   // Provides configurations to be used for validation of access codes.
@@ -83,6 +82,14 @@ class ParentAccessService {
   DISALLOW_COPY_AND_ASSIGN(ParentAccessService);
 };
 
+}  // namespace parent_access
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace parent_access {
+using ::ash::parent_access::ParentAccessService;
 }  // namespace parent_access
 }  // namespace chromeos
 

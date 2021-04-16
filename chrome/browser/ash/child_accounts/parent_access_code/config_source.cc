@@ -15,7 +15,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 namespace {
@@ -90,4 +90,4 @@ void ConfigSource::AddAuthenticator(const base::Value& dict,
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash

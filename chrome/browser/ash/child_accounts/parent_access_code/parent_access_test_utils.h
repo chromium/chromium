@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 // Values used in default parent access code configuration for tests.
@@ -39,6 +39,6 @@ AccessCodeConfig GetInvalidTestConfig();
 void GetTestAccessCodeValues(AccessCodeValues* test_values);
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CODE_PARENT_ACCESS_TEST_UTILS_H_

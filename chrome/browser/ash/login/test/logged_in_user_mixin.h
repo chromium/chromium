@@ -127,4 +127,9 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //ch/br/ash/login moved to ash.
+namespace ash {
+using ::chromeos::LoggedInUserMixin;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_

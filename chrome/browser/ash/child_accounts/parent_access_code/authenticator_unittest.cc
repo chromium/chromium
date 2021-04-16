@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace parent_access {
 
 AccessCodeConfig GetZeroClockDriftConfig() {
@@ -360,4 +360,4 @@ TEST_F(ParentAccessCodeAuthenticatorTest, UnixEpoch) {
 }
 
 }  // namespace parent_access
-}  // namespace chromeos
+}  // namespace ash
