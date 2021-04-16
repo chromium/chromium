@@ -28,11 +28,11 @@
 using base::ASCIIToUTF16;
 
 namespace {
-const char kLabelButton[] = "Label Button";
-const char kLongText[] =
-    "Start of Really Really Really Really Really Really "
-    "Really Really Really Really Really Really Really "
-    "Really Really Really Really Really Long Button Text";
+const char16_t kLabelButton[] = u"Label Button";
+const char16_t kLongText[] =
+    u"Start of Really Really Really Really Really Really "
+    u"Really Really Really Really Really Really Really "
+    u"Really Really Really Really Really Long Button Text";
 }  // namespace
 
 namespace views {
@@ -61,7 +61,7 @@ void ButtonExample::CreateExampleView(View* container) {
           .SetBackground(CreateSolidBackground(SK_ColorWHITE))
           .AddChildren({Builder<LabelButton>()
                             .CopyAddressTo(&label_button_)
-                            .SetText(ASCIIToUTF16(kLabelButton))
+                            .SetText(kLabelButton)
                             .SetRequestFocusOnPress(true)
                             .SetCallback(base::BindRepeating(
                                 &ButtonExample::LabelButtonPressed,
@@ -106,10 +106,10 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
   PrintStatus("Label Button Pressed! count: %d", ++count_);
   if (event.IsControlDown()) {
     if (event.IsShiftDown()) {
-      label_button->SetText(ASCIIToUTF16(
+      label_button->SetText(
           label_button->GetText().empty()
               ? kLongText
-              : label_button->GetText().length() > 50 ? kLabelButton : ""));
+              : label_button->GetText().length() > 50 ? kLabelButton : u"");
     } else if (event.IsAltDown()) {
       label_button->SetImageModel(
           Button::STATE_NORMAL,

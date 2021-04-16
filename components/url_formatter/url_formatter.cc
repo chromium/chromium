@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -191,8 +192,7 @@ std::u16string FormatViewSourceUrl(
     size_t* prefix_end,
     base::OffsetAdjuster::Adjustments* adjustments) {
   DCHECK(new_parsed);
-  const char kViewSource[] = "view-source:";
-  const size_t kViewSourceLength = base::size(kViewSource) - 1;
+  static constexpr base::StringPiece16 kViewSource = u"view-source:";
 
   // The URL embedded within view-source should never have destructive elisions
   // applied to it. Users of view-source likely want to see the full URL.
@@ -204,28 +204,27 @@ std::u16string FormatViewSourceUrl(
   // Format the underlying URL and record adjustments.
   const std::string& url_str(url.possibly_invalid_spec());
   adjustments->clear();
-  std::u16string result(
-      base::ASCIIToUTF16(kViewSource) +
-      FormatUrlWithAdjustments(GURL(url_str.substr(kViewSourceLength)),
-                               format_types, unescape_rules, new_parsed,
-                               prefix_end, adjustments));
+  std::u16string result = base::StrCat(
+      {kViewSource, FormatUrlWithAdjustments(
+                        GURL(url_str.substr(kViewSource.size())), format_types,
+                        unescape_rules, new_parsed, prefix_end, adjustments)});
   // Revise |adjustments| by shifting to the offsets to prefix that the above
   // call to FormatUrl didn't get to see.
-  for (auto it = adjustments->begin(); it != adjustments->end(); ++it)
-    it->original_offset += kViewSourceLength;
+  for (auto& adjustment : *adjustments)
+    adjustment.original_offset += kViewSource.size();
 
   // Adjust positions of the parsed components.
   if (new_parsed->scheme.is_nonempty()) {
     // Assume "view-source:real-scheme" as a scheme.
-    new_parsed->scheme.len += kViewSourceLength;
+    new_parsed->scheme.len += kViewSource.size();
   } else {
     new_parsed->scheme.begin = 0;
-    new_parsed->scheme.len = kViewSourceLength - 1;
+    new_parsed->scheme.len = kViewSource.size() - 1;
   }
-  AdjustAllComponentsButScheme(kViewSourceLength, new_parsed);
+  AdjustAllComponentsButScheme(kViewSource.size(), new_parsed);
 
   if (prefix_end)
-    *prefix_end += kViewSourceLength;
+    *prefix_end += kViewSource.size();
 
   return result;
 }

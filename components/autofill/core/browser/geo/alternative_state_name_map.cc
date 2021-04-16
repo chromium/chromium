@@ -16,7 +16,7 @@ namespace {
 constexpr int kMaxMapSize = 500;
 
 // The characters to be removed from the state strings before the comparison.
-constexpr char kCharsToStrip[] = ".- ";
+constexpr char16_t kCharsToStrip[] = u".- ";
 
 }  // namespace
 
@@ -31,8 +31,7 @@ AlternativeStateNameMap* AlternativeStateNameMap::GetInstance() {
 AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
     const StateName& text) {
   std::u16string normalized_text;
-  base::RemoveChars(text.value(), base::ASCIIToUTF16(kCharsToStrip),
-                    &normalized_text);
+  base::RemoveChars(text.value(), kCharsToStrip, &normalized_text);
   return StateName(normalized_text);
 }
 

@@ -310,7 +310,7 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   tail_suggest_common_prefix_width_ = render_text->GetStringSize().width();
   // Only calculate fixed string width once.
   if (!ellipsis_width_) {
-    render_text->SetText(base::ASCIIToUTF16(AutocompleteMatch::kEllipsis));
+    render_text->SetText(AutocompleteMatch::kEllipsis);
     ellipsis_width_ = render_text->GetStringSize().width();
   }
   // Indent text by prefix, but come back by width of ellipsis.

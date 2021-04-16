@@ -96,15 +96,15 @@ void LabelExample::CreateExampleView(View* container) {
 
   label = std::make_unique<ExamplePreferredSizeLabel>();
   label->SetText(
-      ASCIIToUTF16("A long label will elide toward its logical end "
-                   "if the text's width exceeds the label's available width."));
+      u"A long label will elide toward its logical end if the text's width "
+      u"exceeds the label's available width.");
   container->AddChildView(std::move(label));
 
   label = std::make_unique<ExamplePreferredSizeLabel>();
-  label->SetText(ASCIIToUTF16(
-      "A multi-line label will wrap onto subsequent "
-      "lines if the text's width exceeds the label's available width, which is "
-      "helpful for extemely long text used to demonstrate line wrapping."));
+  label->SetText(
+      u"A multi-line label will wrap onto subsequent lines if the text's width "
+      u"exceeds the label's available width, which is helpful for extemely "
+      u"long text used to demonstrate line wrapping.");
   label->SetMultiLine(true);
   container->AddChildView(std::move(label));
 
@@ -161,8 +161,8 @@ void LabelExample::AddCustomLabel(View* container) {
   layout->AddView(std::make_unique<Label>(u"Content: "));
   auto textfield = std::make_unique<Textfield>();
   textfield->SetText(
-      ASCIIToUTF16("Use the provided controls to configure the "
-                   "content and presentation of this custom label."));
+      u"Use the provided controls to configure the content and presentation of "
+      u"this custom label.");
   textfield->SetEditableSelectionRange(gfx::Range());
   textfield->set_controller(this);
   textfield_ = layout->AddView(std::move(textfield));

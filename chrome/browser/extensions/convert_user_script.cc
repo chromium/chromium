@@ -60,8 +60,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   base::FilePath install_temp_dir =
       file_util::GetInstallTempDir(extensions_dir);
   if (install_temp_dir.empty()) {
-    *error = base::ASCIIToUTF16(
-        "Could not get path to profile temporary directory.");
+    *error = u"Could not get path to profile temporary directory.";
     return nullptr;
   }
 

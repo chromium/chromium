@@ -376,13 +376,11 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   if (!result.value) {
-    ReportFailure(
-        SandboxedUnpackerFailureReason::
-            CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE,
-        l10n_util::GetStringFUTF16(
-            IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
-            ASCIIToUTF16(
-                "CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE")));
+    ReportFailure(SandboxedUnpackerFailureReason::
+                      CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE,
+                  l10n_util::GetStringFUTF16(
+                      IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+                      u"CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE"));
     return;
   }
   // Make a copy, since |result| may store data in shared memory, accessible by

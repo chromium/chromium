@@ -26,7 +26,7 @@ namespace storage_monitor {
 
 namespace {
 
-const char kDiskImageModelName[] = "Disk Image";
+const char16_t kDiskImageModelName[] = u"Disk Image";
 
 std::u16string GetUTF16FromDictionary(CFDictionaryRef dictionary,
                                       CFStringRef key) {
@@ -353,9 +353,8 @@ bool StorageMonitorMac::ShouldPostNotificationForDisk(
     const StorageInfo& info) const {
   // Only post notifications about disks that have no empty fields and
   // are removable. Also exclude disk images (DMGs).
-  return !info.device_id().empty() &&
-         !info.location().empty() &&
-         info.model_name() != base::ASCIIToUTF16(kDiskImageModelName) &&
+  return !info.device_id().empty() && !info.location().empty() &&
+         info.model_name() != kDiskImageModelName &&
          StorageInfo::IsMassStorageDevice(info.device_id());
 }
 

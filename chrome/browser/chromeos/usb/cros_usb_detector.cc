@@ -44,7 +44,7 @@ namespace chromeos {
 namespace {
 
 constexpr uint32_t kAllInterfacesMask = ~0U;
-const char kParallelsShortName[] = "Parallels";
+const char16_t kParallelsShortName[] = u"Parallels";
 
 // Not owned locally.
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
@@ -247,7 +247,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
   if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
-    vm_name = base::ASCIIToUTF16(kParallelsShortName);
+    vm_name = kParallelsShortName;
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));

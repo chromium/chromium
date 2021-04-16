@@ -736,7 +736,7 @@ struct AutocompleteMatch {
   std::vector<NavsuggestTile> navsuggest_tiles;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
-  static const char kEllipsis[];
+  static const char16_t kEllipsis[];
 
 #if DCHECK_IS_ON()
   // Does a data integrity check on this match.

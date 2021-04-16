@@ -27,7 +27,7 @@ namespace ui {
 namespace {
 
 // TODO(crbug.com/1065588): remove this symbol.
-const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
+const char16_t kChromeAppId[] = u"{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 // The current UI shows to the user only one completion type, even though
 // there could be multiple applications in a bundle, where each application
@@ -327,8 +327,7 @@ void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
                                     const std::u16string& version_string) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (base::EqualsCaseInsensitiveASCII(app_id,
-                                       base::ASCIIToUTF16(kChromeAppId))) {
+  if (base::EqualsCaseInsensitiveASCII(app_id, kChromeAppId)) {
     HBITMAP app_bitmap = reinterpret_cast<HBITMAP>(
         ::LoadImage(GetCurrentModuleHandle(), MAKEINTRESOURCE(IDB_CHROME),
                     IMAGE_BITMAP, 0, 0, LR_SHARED));

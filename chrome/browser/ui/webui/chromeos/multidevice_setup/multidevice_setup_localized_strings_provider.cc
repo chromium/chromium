@@ -36,7 +36,7 @@ namespace multidevice_setup {
 
 namespace {
 
-const char kFootnoteMarker[] = "*";
+const char16_t kFootnoteMarker[] = u"*";
 
 constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"accept", IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL},
@@ -93,8 +93,7 @@ GetLocalizedStringsWithPlaceholders() {
             "startSetupPageMessage",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
-                ui::GetChromeOSDeviceName(),
-                base::ASCIIToUTF16(kFootnoteMarker),
+                ui::GetChromeOSDeviceName(), kFootnoteMarker,
                 base::UTF8ToUTF16(
                     chromeos::multidevice_setup::
                         GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
@@ -104,7 +103,7 @@ GetLocalizedStringsWithPlaceholders() {
             "startSetupPageFootnote",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                base::ASCIIToUTF16(kFootnoteMarker)));
+                kFootnoteMarker));
 
         localized_strings.emplace_back(
             "startSetupPageFeatureListHeader",
@@ -160,7 +159,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   // localization calls separately.
   builder->AddF(
       "startSetupPageMessage", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
-      ui::GetChromeOSDeviceName(), base::ASCIIToUTF16(kFootnoteMarker),
+      ui::GetChromeOSDeviceName(), kFootnoteMarker,
       base::UTF8ToUTF16(chromeos::multidevice_setup::
                             GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
                                 .spec()));
@@ -171,7 +170,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
 
   builder->AddF("startSetupPageFootnote",
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                base::ASCIIToUTF16(kFootnoteMarker));
+                kFootnoteMarker);
 
   builder->AddF(
       "startSetupPageFeatureListAwm",

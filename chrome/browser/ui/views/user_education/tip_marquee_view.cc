@@ -35,13 +35,13 @@
 
 namespace {
 
-constexpr char kTipMarqueeViewSeparator[] = " - ";
+constexpr char16_t kTipMarqueeViewSeparator[] = u" - ";
 
 // TODO(crbug.com/1171654): move to localized strings when out of tech demo mode
-constexpr char kTipMarqueeViewGotIt[] = "Got it";
-constexpr char kTipMarqueeViewClickToHideTip[] = "Click to hide tip";
-constexpr char kTipMarqueeViewClickToShowTip[] = "Click to show tip";
-constexpr char kTipMarqueeViewClickToLearnMore[] = "Click to learn more";
+constexpr char16_t kTipMarqueeViewGotIt[] = u"Got it";
+constexpr char16_t kTipMarqueeViewClickToHideTip[] = u"Click to hide tip";
+constexpr char16_t kTipMarqueeViewClickToShowTip[] = u"Click to show tip";
+constexpr char16_t kTipMarqueeViewClickToLearnMore[] = u"Click to learn more";
 
 // ------------------------------------------------------------------
 // TODO(crbug.com/1171654): remove the entire section below before this code
@@ -60,14 +60,14 @@ constexpr char kTipMarqueeViewClickToLearnMore[] = "Click to learn more";
 constexpr char kTipMarqueeViewTestSwitch[] = "tip-marquee-view-test";
 constexpr char kTipMarqueeViewTestTypeSimple[] = "simple";
 constexpr char kTipMarqueeViewTestTypeLearnMore[] = "learn-more";
-constexpr char kTipMarqueeViewTestTitleText[] = "Lorem Ipsum";
-constexpr char kTipMarqueeViewTestText[] =
-    "Lorem ipsum dolor sit amet consectetur";
-constexpr char kTipMarqueeViewTestBodyText[] =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
-    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
-    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-    "commodo consequat.";
+constexpr char16_t kTipMarqueeViewTestTitleText[] = u"Lorem Ipsum";
+constexpr char16_t kTipMarqueeViewTestText[] =
+    u"Lorem ipsum dolor sit amet consectetur";
+constexpr char16_t kTipMarqueeViewTestBodyText[] =
+    u"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    u"tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    u"veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    u"commodo consequat.";
 
 class TestTipMarqueeViewLearnMoreBubble
     : public views::BubbleDialogDelegateView {
@@ -76,8 +76,7 @@ class TestTipMarqueeViewLearnMoreBubble
       : BubbleDialogDelegateView(marquee, views::BubbleBorder::TOP_LEFT),
         marquee_(marquee) {
     SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   base::ASCIIToUTF16(kTipMarqueeViewGotIt));
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, kTipMarqueeViewGotIt);
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_CLOSE));
     SetAcceptCallback(base::BindOnce(
@@ -105,14 +104,12 @@ class TestTipMarqueeViewLearnMoreBubble
 
     auto* const title_text =
         rhs_view->AddChildView(std::make_unique<views::Label>(
-            base::ASCIIToUTF16(kTipMarqueeViewTestTitleText),
-            views::style::CONTEXT_DIALOG_TITLE));
+            kTipMarqueeViewTestTitleText, views::style::CONTEXT_DIALOG_TITLE));
     title_text->SetProperty(views::kMarginsKey, gfx::Insets(6, 0, 10, 0));
 
-    auto* const body_text =
-        rhs_view->AddChildView(std::make_unique<views::Label>(
-            base::ASCIIToUTF16(kTipMarqueeViewTestBodyText),
-            views::style::CONTEXT_DIALOG_BODY_TEXT));
+    auto* const body_text = rhs_view->AddChildView(
+        std::make_unique<views::Label>(kTipMarqueeViewTestBodyText,
+                                       views::style::CONTEXT_DIALOG_BODY_TEXT));
     body_text->SetMultiLine(true);
     body_text->SetMaximumWidth(250);
     body_text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -137,10 +134,10 @@ void MaybeShowTestTipMarqueeView(TipMarqueeView* marquee) {
     const std::string test_type =
         command_line->GetSwitchValueASCII(kTipMarqueeViewTestSwitch);
     if (test_type == kTipMarqueeViewTestTypeSimple) {
-      marquee->SetTip(base::ASCIIToUTF16(kTipMarqueeViewTestText));
+      marquee->SetTip(kTipMarqueeViewTestText);
     } else if (test_type == kTipMarqueeViewTestTypeLearnMore) {
       marquee->SetTip(
-          base::ASCIIToUTF16(kTipMarqueeViewTestText),
+          kTipMarqueeViewTestText,
           base::BindRepeating(&ShowTestTipMarqueeViewLearnMoreBubble));
     } else {
       LOG(WARNING) << "Invalid switch value: --" << kTipMarqueeViewTestSwitch
@@ -165,8 +162,7 @@ class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
                                  views::BubbleBorder::TOP_LEFT),
         tip_marquee_view_(tip_marquee_view) {
     SetButtons(ui::DIALOG_BUTTON_OK);
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   base::ASCIIToUTF16(kTipMarqueeViewGotIt));
+    SetButtonLabel(ui::DIALOG_BUTTON_OK, kTipMarqueeViewGotIt);
     SetAcceptCallback(base::BindOnce(&TipMarqueeOverflowBubbleView::OnAccept,
                                      base::Unretained(this)));
     set_close_on_deactivate(true);
@@ -221,14 +217,14 @@ bool TipMarqueeView::SetTip(
     LearnMoreLinkClickedCallback learn_more_link_clicked_callback) {
   tip_text_ = tip_text;
   std::u16string full_tip = tip_text;
-  const std::u16string separator = base::ASCIIToUTF16(kTipMarqueeViewSeparator);
+  const std::u16string separator = kTipMarqueeViewSeparator;
   const size_t tip_text_length = tip_text.length();
   const bool has_learn_more_link = !learn_more_link_clicked_callback.is_null();
   full_tip.append(separator);
   if (has_learn_more_link)
     full_tip.append(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   else
-    full_tip.append(base::ASCIIToUTF16(kTipMarqueeViewGotIt));
+    full_tip.append(kTipMarqueeViewGotIt);
   tip_text_label_->SetText(full_tip);
   tip_text_label_->AddStyleRange(
       gfx::Range(tip_text_length + separator.length(), full_tip.length()),
@@ -309,13 +305,13 @@ std::u16string TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
 
   // TODO(pkasting): Localize
   if (tip_text_label_->GetVisible())
-    return base::ASCIIToUTF16(kTipMarqueeViewClickToHideTip);
+    return kTipMarqueeViewClickToHideTip;
   if (GetFitsInLayout())
-    return base::ASCIIToUTF16(kTipMarqueeViewClickToShowTip);
+    return kTipMarqueeViewClickToShowTip;
   std::u16string result = tip_text_;
   if (learn_more_link_clicked_callback_) {
-    result.append(base::ASCIIToUTF16(kTipMarqueeViewSeparator));
-    result.append(base::ASCIIToUTF16(kTipMarqueeViewClickToLearnMore));
+    result.append(kTipMarqueeViewSeparator);
+    result.append(kTipMarqueeViewClickToLearnMore);
   }
   return result;
 }

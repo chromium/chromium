@@ -178,13 +178,12 @@ bool CrostiniInstallerUI::RequestClosePage() {
 
 void CrostiniInstallerUI::ClickInstallForTesting() {
   web_ui()->GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16(
-          "const app = document.querySelector('crostini-installer-app');"
-          // If flag CrostiniUsername or CrostiniDiskResizing is turned on,
-          // there will be a "next" button and we should click it to go to the
-          // config page before clicking "install" button.
-          "app.$$('#next:not([hidden])')?.click();"
-          "app.$.install.click();"),
+      u"const app = document.querySelector('crostini-installer-app');"
+      // If flag CrostiniUsername or CrostiniDiskResizing is turned on, there
+      // will be a "next" button and we should click it to go to the config page
+      // before clicking "install" button.
+      u"app.$$('#next:not([hidden])')?.click();"
+      u"app.$.install.click();",
       base::NullCallback());
 }
 

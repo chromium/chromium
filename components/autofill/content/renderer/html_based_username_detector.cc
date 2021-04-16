@@ -30,7 +30,8 @@ namespace autofill {
 namespace {
 
 // List of separators that can appear in HTML attribute values.
-constexpr char kDelimiters[] = "$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
+constexpr char16_t kDelimiters[] =
+    u"$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
 
 // Minimum length of a word, in order not to be considered short word. Short
 // words will not be searched in attribute values (especially after delimiters
@@ -89,10 +90,9 @@ void AppendValueAndShortTokens(
     std::u16string* field_data_value,
     base::flat_set<std::u16string>* field_data_short_tokens) {
   const std::u16string lowercase_value = base::i18n::ToLower(raw_value);
-  const std::u16string delimiters = base::ASCIIToUTF16(kDelimiters);
   std::vector<base::StringPiece16> tokens =
-      base::SplitStringPiece(lowercase_value, delimiters, base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
+      base::SplitStringPiece(lowercase_value, kDelimiters,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // When computing the developer value, '$' safety guard is being added
   // between field name and id, so that forming of accidental words is

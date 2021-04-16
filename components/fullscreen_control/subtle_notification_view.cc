@@ -45,7 +45,7 @@ const int kKeyNamePaddingPx = 5;
 constexpr int kInstructionTextContext = views::style::CONTEXT_DIALOG_TITLE;
 
 // Delimiter indicating there should be a segment displayed as a keyboard key.
-const char kKeyNameDelimiter[] = "|";
+constexpr char16_t kKeyNameDelimiter[] = u"|";
 
 }  // namespace
 
@@ -97,9 +97,8 @@ void SubtleNotificationView::InstructionView::SetText(
   RemoveAllChildViews(true);
 
   // Parse |text|, looking for pipe-delimited segment.
-  std::vector<std::u16string> segments =
-      base::SplitString(text, base::ASCIIToUTF16(kKeyNameDelimiter),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> segments = base::SplitString(
+      text, kKeyNameDelimiter, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   // SplitString() returns empty strings for zero-length segments, so given an
   // even number of pipes, there should always be an odd number of segments.
   // The exception is if |text| is entirely empty, in which case the returned
@@ -204,8 +203,8 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
 void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlert;
   std::u16string accessible_name;
-  base::RemoveChars(instruction_view_->GetText(),
-                    base::ASCIIToUTF16(kKeyNameDelimiter), &accessible_name);
+  base::RemoveChars(instruction_view_->GetText(), kKeyNameDelimiter,
+                    &accessible_name);
   node_data->SetName(accessible_name);
 }
 

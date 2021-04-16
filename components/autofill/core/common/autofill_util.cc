@@ -30,7 +30,7 @@ using mojom::SubmissionSource;
 
 namespace {
 
-const char kSplitCharacters[] = " .,-_@";
+constexpr base::StringPiece16 kSplitCharacters = u" .,-_@";
 
 template <typename Char>
 struct Compare : base::CaseInsensitiveCompareASCII<Char> {
@@ -97,8 +97,6 @@ bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
 size_t GetTextSelectionStart(const std::u16string& suggestion,
                              const std::u16string& field_contents,
                              bool case_sensitive) {
-  const std::u16string kSplitChars = base::ASCIIToUTF16(kSplitCharacters);
-
   // Loop until we find either the |field_contents| is a prefix of |suggestion|
   // or character right before the match is one of the splitting characters.
   for (std::u16string::const_iterator it = suggestion.begin();
@@ -108,7 +106,7 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
        suggestion.end();
        ++it) {
     if (it == suggestion.begin() ||
-        kSplitChars.find(*(it - 1)) != std::string::npos) {
+        kSplitCharacters.find(it[-1]) != std::string::npos) {
       // Returns the character position right after the |field_contents| within
       // |suggestion| text as a caret position for text selection.
       return it - suggestion.begin() + field_contents.size();

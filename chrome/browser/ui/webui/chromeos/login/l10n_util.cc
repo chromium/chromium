@@ -47,6 +47,11 @@ const char kMostRelevantLanguagesDivider[] = "MOST_RELEVANT_LANGUAGES_DIVIDER";
 
 namespace {
 
+// The code below needs a UTF16 version of kMostRelevantLanguagesDivider.
+// Provide it here as a constant.
+constexpr char16_t kMostRelevantLanguagesDivider16[] =
+    u"MOST_RELEVANT_LANGUAGES_DIVIDER";
+
 std::unique_ptr<base::DictionaryValue> CreateInputMethodsEntry(
     const input_method::InputMethodDescriptor& method,
     const std::string selected) {
@@ -251,7 +256,7 @@ std::unique_ptr<base::ListValue> GetLanguageList(
   if (insert_divider && !out_display_names.empty()) {
     // Insert a divider if requested, but only if
     // `most_relevant_locales_display_names` is not empty.
-    divider16 = base::ASCIIToUTF16(kMostRelevantLanguagesDivider);
+    divider16 = kMostRelevantLanguagesDivider16;
     out_display_names.push_back(divider16);
   }
 

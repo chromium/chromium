@@ -68,17 +68,13 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
       {{cpu_idle_, u"Idle", u"Total amount of CPU time spent\nin idle mode.",
         formatter},
        {cpu_user_, u"User",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\n running user processes."),
-        formatter},
+        u"Total amount of CPU time spent\n running user processes.", formatter},
        {cpu_system_, u"System",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\nrunning system processes."),
+        u"Total amount of CPU time spent\nrunning system processes.",
         formatter},
        {cpu_other_, u"Other",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\nrunning other tasks.\nThis "
-            "includes IO wait, IRQ, guest OS, etc."),
+        u"Total amount of CPU time spent\nrunning other tasks.\nThis includes "
+        u"IO wait, IRQ, guest OS, etc.",
         formatter}});
   CreateLegend(legend);
 }

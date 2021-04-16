@@ -160,7 +160,7 @@ const char16_t AutocompleteMatch::kInvalidChars[] = {
     0};
 
 // static
-const char AutocompleteMatch::kEllipsis[] = "... ";
+const char16_t AutocompleteMatch::kEllipsis[] = u"... ";
 
 AutocompleteMatch::AutocompleteMatch()
     : transition(ui::PAGE_TRANSITION_GENERATED) {}
@@ -459,21 +459,18 @@ std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
   // TODO(tommycli): Replace these placeholder strings with final ones from UX.
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
-      return base::ASCIIToUTF16(
-          "This navigation match is the exact URL you typed.");
+      return u"This navigation match is the exact URL you typed.";
 
     case Type::HISTORY_URL:
     case Type::HISTORY_TITLE:
     case Type::HISTORY_BODY:
     case Type::HISTORY_KEYWORD:
-      return base::ASCIIToUTF16(
-          "This navigation match is a previously visited page from Chrome "
-          "History.");
+      return u"This navigation match is a previously visited page from Chrome "
+             u"History.";
 
     case Type::NAVSUGGEST:
-      return base::ASCIIToUTF16(
-          "This navigation match is suggested by the search engine based on "
-          "what you typed.");
+      return u"This navigation match is suggested by the search engine based "
+             u"on what you typed.";
 
     case Type::SEARCH_WHAT_YOU_TYPED:
       return u"This search query is exactly what you typed.";
@@ -481,39 +478,32 @@ std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
     case Type::SEARCH_HISTORY:
       // TODO(tommycli): We may need to distinguish between matches sourced
       // from search history saved in the cloud vs. locally.
-      return base::ASCIIToUTF16(
-          "This search query is suggested by the search engine based on what "
-          "you typed and past search queries.");
+      return u"This search query is suggested by the search engine based on "
+             u"what you typed and past search queries.";
 
     case Type::SEARCH_SUGGEST:
     case Type::SEARCH_SUGGEST_ENTITY:
     case Type::SEARCH_SUGGEST_TAIL:
-      return base::ASCIIToUTF16(
-          "This search query is suggested by the search engine based on what "
-          "you typed.");
+      return u"This search query is suggested by the search engine based on "
+             u"what you typed.";
 
     case Type::SEARCH_SUGGEST_PERSONALIZED:
-      return base::ASCIIToUTF16(
-          "This search query is suggested by the search engine based on what "
-          "you typed. It has also been personalized to you.");
+      return u"This search query is suggested by the search engine based on "
+             u"what you typed. It has also been personalized to you.";
 
     case Type::SEARCH_OTHER_ENGINE:
-      return base::ASCIIToUTF16(
-          "This search query is for a non-default search engine.");
+      return u"This search query is for a non-default search engine.";
 
     case Type::BOOKMARK_TITLE:
-      return base::ASCIIToUTF16(
-          "This navigation matches the title of a Bookmark.");
+      return u"This navigation matches the title of a Bookmark.";
 
     case Type::NAVSUGGEST_PERSONALIZED:
-      return base::ASCIIToUTF16(
-          "This navigation match is suggested by the search engine based on "
-          "what you typed. It has also been personalized to you.");
+      return u"This navigation match is suggested by the search engine based "
+             u"on what you typed. It has also been personalized to you.";
 
     case Type::CALCULATOR:
-      return base::ASCIIToUTF16(
-          "This calculation is the result of evaluating your input provided by "
-          "your default search engine.");
+      return u"This calculation is the result of evaluating your input "
+             u"provided by your default search engine.";
 
     case Type::CLIPBOARD_URL:
     case Type::CLIPBOARD_TEXT:
@@ -527,8 +517,7 @@ std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
       return u"This match is from your documents.";
 
     case Type::PEDAL:
-      return base::ASCIIToUTF16(
-          "This is a suggested Chrome action based on what you typed.");
+      return u"This is a suggested Chrome action based on what you typed.";
 
     case Type::EXTENSION_APP_DEPRECATED:
     case Type::SEARCH_SUGGEST_PROFILE:
@@ -1207,7 +1196,7 @@ void AutocompleteMatch::InlineTailPrefix(const std::u16string& common_prefix) {
       tail_suggest_common_prefix.empty()) {
     tail_suggest_common_prefix = common_prefix;
     // Insert an ellipsis before uncommon part.
-    const auto ellipsis = base::ASCIIToUTF16(kEllipsis);
+    const std::u16string ellipsis = kEllipsis;
     contents = ellipsis + contents;
     // If the first class is not already NONE, prepend a NONE class for the new
     // ellipsis.

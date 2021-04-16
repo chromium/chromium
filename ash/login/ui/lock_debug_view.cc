@@ -934,8 +934,7 @@ void LockDebugView::ToggleWarningBannerButtonPressed() {
   debug_data_dispatcher_->UpdateWarningMessage(
       is_warning_banner_shown_
           ? std::u16string()
-          : base::ASCIIToUTF16("A critical update is ready to install. Sign "
-                               "in to get started."));
+          : u"A critical update is ready to install. Sign in to get started.");
   is_warning_banner_shown_ = !is_warning_banner_shown_;
 }
 

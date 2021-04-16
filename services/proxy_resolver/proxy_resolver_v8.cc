@@ -491,9 +491,7 @@ class ProxyResolverV8::Context {
       //               converting them to ASCII punycode.
       //               crbug.com/47234
       std::u16string error_message =
-          base::ASCIIToUTF16(
-              "FindProxyForURL() returned a non-ASCII string "
-              "(crbug.com/47234): ") +
+          u"FindProxyForURL() returned a non-ASCII string (crbug.com/47234): " +
           ret_str;
       js_bindings()->OnError(-1, error_message);
       return net::ERR_PAC_SCRIPT_FAILED;
@@ -623,8 +621,7 @@ class ProxyResolverV8::Context {
 
     if (!(*function)->IsFunction()) {
       js_bindings()->OnError(
-          -1, base::ASCIIToUTF16(
-                  "FindProxyForURL is undefined or not a function."));
+          -1, u"FindProxyForURL is undefined or not a function.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 

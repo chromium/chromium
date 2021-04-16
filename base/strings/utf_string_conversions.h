@@ -74,6 +74,22 @@ std::u16string WideToUTF16(const wchar_t (&str)[N]) {
   return std::u16string();
 }
 
+// TODO(crbug.com/1189439): Also disallow passing string constants in tests.
+#if !defined(UNIT_TEST)
+template <size_t N>
+std::u16string ASCIIToUTF16(const char (&str)[N]) {
+  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  return std::u16string();
+}
+
+// Mutable character arrays are usually only populated during runtime. Continue
+// to allow this conversion.
+template <size_t N>
+std::u16string ASCIIToUTF16(char (&str)[N]) {
+  return ASCIIToUTF16(StringPiece(str));
+}
+#endif
+
 }  // namespace base
 
 #endif  // BASE_STRINGS_UTF_STRING_CONVERSIONS_H_

@@ -391,8 +391,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
           this, checkbox_container, u"Tint composited content",
-          base::ASCIIToUTF16(
-              "Equivalent to --tint-composited-content command-line option."),
+          u"Equivalent to --tint-composited-content command-line option.",
           GetVisDebugHandleClickCallback(
               &viz::DebugRendererSettings::tint_composited_content)),
       GetVisDebugUpdateStateCallback(
@@ -400,8 +399,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
           this, checkbox_container, u"Show overdraw feedback",
-          base::ASCIIToUTF16(
-              "Equivalent to --show-overdraw-feedback command-line option."),
+          u"Equivalent to --show-overdraw-feedback command-line option.",
           GetVisDebugHandleClickCallback(
               &viz::DebugRendererSettings::show_overdraw_feedback)),
       GetVisDebugUpdateStateCallback(
@@ -409,19 +407,16 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
           this, checkbox_container, u"Show aggregated damage",
-          base::ASCIIToUTF16(
-              "Equivalent to --show-aggregated-damage command-line option."),
+          u"Equivalent to --show-aggregated-damage command-line option.",
           GetVisDebugHandleClickCallback(
               &viz::DebugRendererSettings::show_aggregated_damage)),
       GetVisDebugUpdateStateCallback(
           &viz::DebugRendererSettings::show_aggregated_damage)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(
-          this, checkbox_container, u"Show paint rect.",
-          base::ASCIIToUTF16(
-              "Equivalent to --ui-show-paint-rects command-line option."),
-          GetCCDebugHandleClickCallback(
-              &cc::LayerTreeDebugState::show_paint_rects)),
+      add_checkbox(this, checkbox_container, u"Show paint rect.",
+                   u"Equivalent to --ui-show-paint-rects command-line option.",
+                   GetCCDebugHandleClickCallback(
+                       &cc::LayerTreeDebugState::show_paint_rects)),
       GetCCDebugUpdateStateCallback(
           &cc::LayerTreeDebugState::show_paint_rects)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(

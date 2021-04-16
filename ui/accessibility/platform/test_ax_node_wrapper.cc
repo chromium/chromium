@@ -798,13 +798,11 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   switch (status) {
     case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-      return base::ASCIIToUTF16(
-          "To get missing image descriptions, open the context menu.");
+      return u"To get missing image descriptions, open the context menu.";
     case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
       return u"Getting description...";
     case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-      return base::ASCIIToUTF16(
-          "Appears to contain adult content. No description available.");
+      return u"Appears to contain adult content. No description available.";
     case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
     case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
       return u"No description available.";

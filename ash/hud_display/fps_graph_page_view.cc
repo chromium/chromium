@@ -75,12 +75,11 @@ FPSGraphPageView::FPSGraphPageView(const base::TimeDelta refresh_interval)
       {{refresh_rate_, u"Refresh rate", u"Actual display refresh rate.",
         formatter_int},
        {frame_rate_1s_, u"1s FPS",
-        base::ASCIIToUTF16(
-            "Number of frames successfully presented per 1 second."),
+        u"Number of frames successfully presented per 1 second.",
         formatter_float},
        {frame_rate_500ms_, u".5s FPS",
-        base::ASCIIToUTF16("Number of frames successfully presented per 0.5 "
-                           "second scaled to a second."),
+        u"Number of frames successfully presented per 0.5 second scaled to a "
+        u"second.",
         formatter_float}});
   CreateLegend(legend);
   AddObserver(this);

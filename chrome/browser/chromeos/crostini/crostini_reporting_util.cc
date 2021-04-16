@@ -6,8 +6,9 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
@@ -62,12 +63,17 @@ base::Time GetThreeDayWindowStart(const base::Time& actual_time) {
 
 std::string GetTerminaVersion(
     const component_updater::ComponentUpdateService* update_service) {
+  // Define a UTF16 version of imageloader::kTerminaComponentName for the string
+  // comparison below. Assert that it is equal to the ASCII component name.
+  static constexpr char16_t kTerminaComponentName16[] = u"cros-termina";
+  DCHECK(base::ranges::equal(imageloader::kTerminaComponentName,
+                             kTerminaComponentName16));
+
   const std::vector<component_updater::ComponentInfo> component_list =
       update_service->GetComponents();
 
   for (const auto& component : component_list) {
-    if (component.name ==
-        base::ASCIIToUTF16(imageloader::kTerminaComponentName)) {
+    if (component.name == kTerminaComponentName16) {
       return component.version.GetString();
     }
   }

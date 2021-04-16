@@ -1111,12 +1111,10 @@ GURL ChromeContentRendererClient::GetNaClContentHandlerURL(
     const std::string& actual_mime_type,
     const content::WebPluginInfo& plugin) {
   // Look for the manifest URL among the MIME type's additonal parameters.
-  const char kNaClPluginManifestAttribute[] = "nacl";
-  std::u16string nacl_attr = ASCIIToUTF16(kNaClPluginManifestAttribute);
-  for (size_t i = 0; i < plugin.mime_types.size(); ++i) {
-    if (plugin.mime_types[i].mime_type == actual_mime_type) {
-      for (const auto& p : plugin.mime_types[i].additional_params) {
-        if (p.name == nacl_attr)
+  for (const auto& mime_type : plugin.mime_types) {
+    if (mime_type.mime_type == actual_mime_type) {
+      for (const auto& p : mime_type.additional_params) {
+        if (p.name == u"nacl")
           return GURL(p.value);
       }
       break;

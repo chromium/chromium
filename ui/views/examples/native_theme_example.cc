@@ -28,11 +28,10 @@ namespace examples {
 
 namespace {
 
-// Argument utility macro that expands |label| to both a string as the first
-// argument and the corresponding ui::NativeTheme::ColorId as the second
+// Argument utility macro that expands |label| to both a UTF16 string as the
+// first argument and the corresponding ui::NativeTheme::ColorId as the second
 // argument.
-#define COLOR_LABEL_ARGS(label) \
-  base::ASCIIToUTF16(#label), ui::NativeTheme::ColorId::label
+#define COLOR_LABEL_ARGS(label) u## #label, ui::NativeTheme::ColorId::label
 
 // Starts a new row and adds two columns to |layout|, the first displaying
 // |label_string| and the second displaying |color_id| with its color and
