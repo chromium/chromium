@@ -8,6 +8,8 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/shell.h"
+#include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "components/exo/mock_vsync_timing_observer.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/wm_helper.h"
@@ -38,6 +40,11 @@ class MockDragDropObserver : public WMHelper::DragDropObserver {
   void OnDragExited() override {}
   DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
     return drop_result_;
+  }
+  WMHelper::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    NOTIMPLEMENTED();
+    return base::NullCallback();
   }
 
  private:

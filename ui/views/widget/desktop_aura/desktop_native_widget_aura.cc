@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1257,6 +1258,13 @@ ui::mojom::DragOperation DesktopNativeWidgetAura::OnPerformDrop(
     Activate();
   return drop_helper_->OnDrop(event.data(), event.location(),
                               last_drop_operation_);
+}
+
+aura::client::DragDropDelegate::DropCallback
+DesktopNativeWidgetAura::GetDropCallback(const ui::DropTargetEvent& event) {
+  // TODO(crbug.com/1197505): Return drop callback.
+  NOTREACHED();
+  return base::NullCallback();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

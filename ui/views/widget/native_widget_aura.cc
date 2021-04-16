@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -1094,6 +1095,13 @@ ui::mojom::DragOperation NativeWidgetAura::OnPerformDrop(
   DCHECK(drop_helper_.get() != nullptr);
   return drop_helper_->OnDrop(event.data(), event.location(),
                               last_drop_operation_);
+}
+
+aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  // TODO(crbug.com/1197506): Return async drop callback function.
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

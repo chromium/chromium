@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/exo/cast_wm_helper.h"
 
+#include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/graphics/cast_screen.h"
@@ -116,6 +117,12 @@ ui::mojom::DragOperation CastWMHelper::OnPerformDrop(
     std::unique_ptr<ui::OSExchangeData> data) {
   NOTIMPLEMENTED();
   return ui::mojom::DragOperation::kMove;
+}
+
+WMHelper::DropCallback CastWMHelper::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 void CastWMHelper::AddVSyncParameterObserver(

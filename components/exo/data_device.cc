@@ -4,6 +4,7 @@
 
 #include "components/exo/data_device.h"
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
@@ -163,6 +164,13 @@ DragOperation DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
     return DragOperation::kNone;
 
   return DndActionToDragOperation(dnd_action);
+}
+
+WMHelper::DropCallback DataDevice::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  // TODO(crbug.com/1197501): Return async drop callback.
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 void DataDevice::OnClipboardDataChanged() {

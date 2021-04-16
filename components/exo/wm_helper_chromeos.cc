@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
@@ -151,6 +152,13 @@ ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
       operation = observer_op;
   }
   return operation;
+}
+
+WMHelper::DropCallback WMHelperChromeOS::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  // TODO(crbug.com/1197501): Return drop callback
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 void WMHelperChromeOS::AddVSyncParameterObserver(

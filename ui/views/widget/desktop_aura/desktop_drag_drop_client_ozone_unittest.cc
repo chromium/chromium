@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -199,6 +201,11 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
     received_data_ = std::move(data);
     last_event_flags_ = event.flags();
     return destination_operation_;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    NOTIMPLEMENTED();
+    return base::NullCallback();
   }
 
   int num_enters_;

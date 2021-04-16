@@ -4,6 +4,8 @@
 
 #include "components/exo/test/exo_test_base_views.h"
 
+#include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wm_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,6 +94,11 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
       const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data) override {
     return ui::mojom::DragOperation::kNone;
+  }
+  WMHelper::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    NOTIMPLEMENTED();
+    return base::NullCallback();
   }
 
   // Overridden from VSyncTimingManager::Delegate:

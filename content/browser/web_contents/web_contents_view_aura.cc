@@ -12,6 +12,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -1526,6 +1528,13 @@ ui::mojom::DragOperation WebContentsViewAura::OnPerformDrop(
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(data)));
   return current_drag_op_;
+}
+
+aura::client::DragDropDelegate::DropCallback
+WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
+  // TODO(crbug.com/1197522): Return drop callback.
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,

@@ -14,8 +14,10 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -291,6 +293,11 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
     EXPECT_EQ(window_, event.target());
     state_ = State::kPerformDropInvoked;
     return DragOperation::kMove;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    NOTIMPLEMENTED();
+    return base::NullCallback();
   }
 
  private:
