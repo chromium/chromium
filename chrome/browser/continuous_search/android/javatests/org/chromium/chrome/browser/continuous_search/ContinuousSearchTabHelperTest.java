@@ -121,12 +121,12 @@ public class ContinuousSearchTabHelperTest {
         SearchResultProducerFactory.overrideFactory((Tab tab, SearchResultListener listener) -> {
             return new FakeSearchResultProducer(tab, listener);
         });
-        mActivityTestRule.startMainActivityOnBlankPage();
         mServer = new EmbeddedTestServer();
         mServer.initializeNative(InstrumentationRegistry.getContext(),
-                EmbeddedTestServer.ServerHTTPSSetting.USE_HTTPS);
+                EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.addDefaultHandlers(TEST_SERVER_DIR);
-        mServer.start();
+        Assert.assertTrue(mServer.start());
+        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
