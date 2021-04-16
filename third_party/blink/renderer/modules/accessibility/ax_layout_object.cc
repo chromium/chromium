@@ -601,7 +601,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     // This means that other interesting objects inside the <label> will
     // cause the text to be unignored.
     AXObject* ancestor = ParentObject();
-    while (ancestor->AccessibilityIsIgnored()) {
+    while (ancestor && ancestor->AccessibilityIsIgnored()) {
       if (ancestor->RoleValue() == ax::mojom::blink::Role::kLabelText) {
         if (ignored_reasons)
           ignored_reasons->push_back(IgnoredReason(kAXPresentational));
