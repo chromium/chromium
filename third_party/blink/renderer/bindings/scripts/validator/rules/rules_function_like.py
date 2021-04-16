@@ -14,18 +14,15 @@ from validator.framework import RuleBase
 
 
 class NonOptionalArgumentAfterOptional(RuleBase):
-    def is_valid(self, function_like):
+    def validate(self, assert_, function_like):
         is_optional = False
         for argument in function_like.arguments:
             if is_optional and not argument.is_optional:
-                return False
+                assert_(not is_optional or argument.is_optional,
+                        ("Non-optional argument must not follow "
+                         "an optional argument"))
             if argument.is_optional:
                 is_optional = True
-        return True
-
-    @property
-    def error_message(self):
-        return "Non-optional argument must not follow an optional argument"
 
 
 def register_rules(rule_store):

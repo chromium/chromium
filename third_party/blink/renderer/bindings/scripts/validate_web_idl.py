@@ -6,6 +6,7 @@ Runs the validator of Web IDL files using web_idl.Database.
 """
 
 import optparse
+import sys
 
 import validator
 import validator.rules
@@ -29,6 +30,10 @@ def parse_options():
 def main():
     options, args = parse_options()
 
+    def report_error(rule, target, debug_info, error_message):
+        sys.stderr.write("{}\n{}\n".format(str(debug_info.location),
+                                           error_message))
+
     # Register rules
     rule_store = validator.RuleStore()
     validator.rules.register_all_rules(rule_store)
@@ -36,7 +41,11 @@ def main():
     # Validate
     database = web_idl.file_io.read_pickle_file(options.web_idl_database)
     validator_instance = validator.Validator(database)
-    validator_instance.execute(rule_store)
+    error_counts = validator_instance.execute(rule_store, report_error)
+
+    # Report errors
+    if error_counts > 0:
+        sys.exit("Error: Some IDL files violate the Web IDL rules")
 
 
 if __name__ == '__main__':

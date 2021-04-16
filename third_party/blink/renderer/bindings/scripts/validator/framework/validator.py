@@ -24,32 +24,44 @@ class Validator(object):
         self._web_idl_database = web_idl_database
         self._target_store = TargetStore(web_idl_database)
 
-    def execute(self, rule_store):
+    def execute(self, rule_store, report_error):
         """
         Validates `_web_idl_database` follows the rules stored in `rule_store`.
 
-        Usage:
-        You can register rules to RuleStore object, and call the API below.
+        Args:
+          rule_store:
+            A RuleStore which holds rules.
+          report_error:
+            A function to handle a detected error. It takes a Rule object,
+            a target object, a debug_info, and an error_message.
 
-            validator_instance.execute(rule_store)
+        Returns:
+          The number of validation errors.
         """
         assert isinstance(rule_store, RuleStore)
+
+        # These local variables are captured in assert_.
+        rule = None
+        target = None
+        target_type = None
+        target_object = None
+        error_counts = [0]
+
+        def assert_(condition, error_message):
+            if not condition:
+                report_error(
+                    rule=rule,
+                    target=target,
+                    debug_info=target_type.get_debug_info(target_object),
+                    error_message=error_message)
+                error_counts[0] += 1
 
         for target_type in rule_store.all_target_types:
             rules = rule_store.get_rules(target_type)
             target_objects = self._target_store.get(target_type)
-            self._validate_each_type(target_type, rules, target_objects)
+            for target_object in target_objects:
+                for rule in rules:
+                    assert isinstance(rule, RuleBase)
+                    rule.validate(assert_, target_object)
 
-    def _validate_each_type(self, target_type, rules, target_objects):
-        assert isinstance(target_type, TargetType)
-        for target_object in target_objects:
-            for rule in rules:
-                assert isinstance(rule, RuleBase)
-                if not rule.is_valid(target_object):
-                    debug_info = target_type.get_debug_info(target_object)
-                    self._report(debug_info, rule.error_message)
-
-    def _report(self, debug_info, error_message):
-        print("{}, line {}\n{}".format(debug_info.location.filepath,
-                                       debug_info.location.line_number,
-                                       error_message))
+        return error_counts[0]

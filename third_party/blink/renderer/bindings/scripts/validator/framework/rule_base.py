@@ -6,22 +6,17 @@
 class RuleBase(object):
     """
     A base class that represents a rule for validations.
-    Subclasses need to implement `is_valid` and `error_message`.
+    Subclasses need to implement `validate`.
     """
 
-    def is_valid(self, target):
+    def validate(self, assert_, target):
         """
-        Returns True if `target` satisfies this rule,
-        or False if `target` violates this rule.
+        Validates that `target` satisfies the rule.
 
-        `target` is an object included in web_idl.Database.
-        Example: web_idl.Interface, web_idl.FunctionLike, etc.
-        """
-        raise NotImplementedError()
-
-    @property
-    def error_message(self):
-        """
-        If is_valid() returns False, then developers get this `error_message`.
+        Args:
+          assert_:
+            A function which takes a condition and a string error message.
+          target:
+            An object included in web_idl.Database.
         """
         raise NotImplementedError()
