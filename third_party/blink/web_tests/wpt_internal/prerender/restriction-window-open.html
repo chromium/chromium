@@ -21,13 +21,13 @@ function runTest(test_file, expectation, description) {
 
 // Test that a page opens a window during prerendering.
 runTest(
-    'resources/window_open_during_prerendering.html',
+    'resources/window-open-during-prerendering.html',
     'failed to open',
     'window.open() should fail during prerendering');
 
 // Test that a page opens a window in the prerenderingchange event.
 runTest(
-    'resources/window_open_in_prerenderingchange.html',
+    'resources/window-open-in-prerenderingchange.html',
     'opened',
     'window.open() should succeed in the prerenderingchange event');
 

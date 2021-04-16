@@ -1,4 +1,4 @@
-const STORE_URL = '/wpt_internal/prerender/resources/key_value_store.py';
+const STORE_URL = '/wpt_internal/prerender/resources/key-value-store.py';
 
 // Starts prerendering for `url`.
 function startPrerendering(url) {

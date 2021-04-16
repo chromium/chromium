@@ -12,14 +12,14 @@ promise_test(async t => {
 
   // Open the test runner in a popup - it will prerender itself, record the
   // test results, and send them back to this harness.
-  const url = `resources/csp_prefetch-src_allow.sub.html?key=${key}`;
+  const url = `resources/csp-prefetch-src-disallow.html?key=${key}`;
   window.open(url, '_blank', 'noopener');
 
   // Wait until the test sends us the results.
   const result = await nextValueFromServer(key);
 
-  assert_equals(result, "true", "initial document.prerendering");
-}, 'Test if CSP prefetch-src permit prerendering correctly.');
+  assert_equals(result, "false", "initial document.prerendering");
+}, 'Test if CSP prefetch-src prevent prerendering correctly.');
 
 </script>
 </body>

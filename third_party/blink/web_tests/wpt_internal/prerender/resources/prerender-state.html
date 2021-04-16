@@ -12,7 +12,7 @@ const params = new URLSearchParams(location.search);
 // Take a key used for storing a test result in the server.
 const key = params.get('key');
 
-// The main test page (state_and_event.html in the parent directory) will load
+// The main test page (state-and-event.html in the parent directory) will load
 // this page only with the "key" parameter. This page will then prerender
 // itself with the "run-test" parameter. When "run-test" is in the URL we'll
 // actually start the test process and record the results to send back to the
