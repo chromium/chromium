@@ -21,7 +21,7 @@
       const device = await adapter.requestDevice();
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('gpupresent');
-      const swapChainFormat = await context.getSwapChainPreferredFormat(device);
+      const swapChainFormat = context.getSwapChainPreferredFormat(adapter);
 
       const swapChain = context.configureSwapChain({
         device,
@@ -29,36 +29,37 @@
       });
 
       const pipeline = device.createRenderPipeline({
-        vertexStage: {
+        vertex: {
           module: device.createShaderModule({
             code: `
-              const pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
+              let pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
                   vec2<f32>(0.0, 0.5),
                   vec2<f32>(-0.5, -0.5),
                   vec2<f32>(0.5, -0.5));
 
-              [[builtin(position)]] var<out> Position : vec4<f32>;
-              [[builtin(vertex_index)]] var<in> VertexIndex : u32;
-              [[stage(vertex)]] fn main() -> void {
-                Position = vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+              [[stage(vertex)]]
+              fn main([[builtin(vertex_index)]] VertexIndex : u32) -> [[builtin(position)]] vec4<f32> {
+                return vec4<f32>(pos[VertexIndex], 0.0, 1.0);
               }`
           }),
           entryPoint: 'main',
         },
-        fragmentStage: {
+        fragment: {
           module: device.createShaderModule({
             code: `
-              [[location(0)]] var<out> outColor : vec4<f32>;
-              [[stage(fragment)]] fn main() -> void {
-                outColor = vec4<f32>(0.0, 1.0, 0.0, 1.0);
+              [[stage(fragment)]]
+              fn main() -> [[location(0)]] vec4<f32> {
+                return vec4<f32>(0.0, 1.0, 0.0, 1.0);
               }`
           }),
           entryPoint: 'main',
+          targets: [{
+            format: swapChainFormat,
+          }],
         },
-        primitiveTopology: 'triangle-list',
-        colorStates: [{
-          format: swapChainFormat,
-        }],
+        primitive: {
+          topology: 'triangle-list',
+        },
       });
 
       const renderPassDescriptor = {
@@ -83,7 +84,7 @@
           }
           passEncoder.endPass();
 
-          device.defaultQueue.submit([commandEncoder.finish()]);
+          device.queue.submit([commandEncoder.finish()]);
         }
       });
     })();

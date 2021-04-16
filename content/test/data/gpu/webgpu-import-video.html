@@ -31,14 +31,14 @@
           vertexStage: {
             module: device.createShaderModule({
               code: `
-[[builtin(vertex_index)]] var<in> VertexIndex : u32;
-
-[[location(0)]] var<out> fragUV : vec2<f32>;
-[[builtin(position)]] var<out> Position : vec4<f32>;
+struct VertexOutput {
+  [[builtin(position)]] Position : vec4<f32>;
+  [[location(0)]] fragUV : vec2<f32>;
+};
 
 [[stage(vertex)]]
-fn main() -> void {
-  const pos : array<vec3<f32>, 6> = array<vec3<f32>, 6>(
+fn main([[builtin(vertex_index)]] VertexIndex : u32) -> VertexOutput {
+  let pos : array<vec3<f32>, 6> = array<vec3<f32>, 6>(
     vec3<f32>( 1.0,  1.0, 0.0),
     vec3<f32>( 1.0, -1.0, 0.0),
     vec3<f32>(-1.0, -1.0, 0.0),
@@ -46,7 +46,7 @@ fn main() -> void {
     vec3<f32>(-1.0, -1.0, 0.0),
     vec3<f32>(-1.0,  1.0, 0.0)
   );
-  const uv : array<vec2<f32>, 6> = array<vec2<f32>, 6>(
+  let uv : array<vec2<f32>, 6> = array<vec2<f32>, 6>(
     vec2<f32>(1.0, 0.0),
     vec2<f32>(1.0, 2.0),
     vec2<f32>(0.0, 2.0),
@@ -54,8 +54,11 @@ fn main() -> void {
     vec2<f32>(0.0, 2.0),
     vec2<f32>(0.0, 0.0)
   );
-  Position = vec4<f32>(pos[VertexIndex], 1.0);
-  fragUV = uv[VertexIndex];
+
+  var output : VertexOutput;
+  output.Position = vec4<f32>(pos[VertexIndex], 1.0);
+  output.fragUV = uv[VertexIndex];
+  return output;
 }
 `,
             }),
@@ -68,17 +71,16 @@ fn main() -> void {
 [[binding(1), group(0)]] var myTexture: texture_2d<f32>;
 [[binding(2), group(0)]] var myTexture2: texture_2d<f32>;
 
-[[location(0)]] var<in> fragUV : vec2<f32>;
-[[location(0)]] var<out> outColor : vec4<f32>;
-
 [[stage(fragment)]]
-fn main() -> void {
+fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
+  var result : vec4<f32>;
   if (fragUV.y <= 1.0) {
-    outColor = textureSample(myTexture, mySampler, fragUV);
+    result = textureSample(myTexture, mySampler, fragUV);
   } else {
     var uv : vec2<f32> = vec2<f32>(fragUV.x, fragUV.y - 1.0);
-    outColor = textureSample(myTexture2, mySampler, uv);
+    result = textureSample(myTexture2, mySampler, uv);
   }
+  return result;
 }
 `,
             }),

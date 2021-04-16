@@ -31,17 +31,19 @@ async function webGpuInit(canvasWidth, canvasHeight) {
 
   const wgslShaders = {
     vertex: `
-[[location(0)]] var<in> position : vec2<f32>;
-[[location(1)]] var<in> uv : vec2<f32>;
+struct VertexOutput {
+  [[builtin(position)]] Position : vec4<f32>;
+  [[location(0)]] fragUV : vec2<f32>;
+};
 
-[[location(0)]] var<out> fragUV : vec2<f32>;
-[[builtin(position)]] var<out> Position : vec4<f32>;
-
-[[stage(vertex)]]
-fn main() -> void {
-  Position = vec4<f32>(position, 0.0, 1.0);
-  fragUV = uv;
-  return;
+[[stage(vertex)]] fn main(
+  [[location(0)]] position : vec2<f32>,
+  [[location(1)]] uv : vec2<f32>
+) -> VertexOutput {
+  var output : VertexOutput;
+  output.Position = vec4<f32>(position, 0.0, 1.0);
+  output.fragUV = uv;
+  return output;
 }
 `,
 
@@ -49,33 +51,23 @@ fn main() -> void {
 [[binding(0), group(0)]] var mySampler: sampler;
 [[binding(1), group(0)]] var myTexture: texture_2d<f32>;
 
-[[location(0)]] var<in> fragUV : vec2<f32>;
-[[location(0)]] var<out> outColor : vec4<f32>;
-
 [[stage(fragment)]]
-fn main() -> void {
-  outColor = textureSample(myTexture, mySampler, fragUV);
-  return;
+fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
+  return textureSample(myTexture, mySampler, fragUV);
 }
 `,
     vertex_icons: `
-[[location(0)]] var<in> position : vec2<f32>;
-[[builtin(position)]] var<out> Position : vec4<f32>;
-
 [[stage(vertex)]]
-fn main() -> void {
-  Position = vec4<f32>(position, 0.0, 1.0);
-  return;
+fn main([[location(0)]] position : vec2<f32>)
+    -> [[builtin(position)]] vec4<f32> {
+  return vec4<f32>(position, 0.0, 1.0);
 }
 `,
 
     fragment_output_red: `
-[[location(0)]] var<out> outColor : vec4<f32>;
-
 [[stage(fragment)]]
-fn main() -> void {
-  outColor = vec4<f32>(1.0, 0.0, 0.0, 1.0);
-  return;
+fn main() -> [[location(0)]] vec4<f32> {
+  return vec4<f32>(1.0, 0.0, 0.0, 1.0);
 }
 `,
   };
