@@ -107,7 +107,7 @@ class HttpBridge : public HttpPostProviderInterface {
   // fetcher.
   void DestroyURLLoaderOnIOThread(
       std::unique_ptr<network::SimpleURLLoader> loader,
-      std::unique_ptr<base::OneShotTimer> loader_timer);
+      std::unique_ptr<base::DelayTimer> loader_timer);
 
   void UpdateNetworkTime();
 
@@ -165,7 +165,7 @@ class HttpBridge : public HttpPostProviderInterface {
 
     // Timer to ensure http requests aren't stalled. Reset every time upload or
     // download progress is made.
-    std::unique_ptr<base::OneShotTimer> http_request_timeout_timer;
+    std::unique_ptr<base::DelayTimer> http_request_timeout_timer;
   };
 
   // This lock synchronizes use of state involved in the flow to load a URL

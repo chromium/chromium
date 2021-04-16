@@ -182,11 +182,9 @@ void HttpBridge::MakeAsynchronousPost() {
   // Start the timer on the network thread (the same thread progress is made
   // on, and on which the url fetcher lives).
   DCHECK(!fetch_state_.http_request_timeout_timer);
-  fetch_state_.http_request_timeout_timer =
-      std::make_unique<base::OneShotTimer>();
-  fetch_state_.http_request_timeout_timer->Start(
-      FROM_HERE, kMaxHttpRequestTime,
-      base::BindOnce(&HttpBridge::OnURLLoadTimedOut, this));
+  fetch_state_.http_request_timeout_timer = std::make_unique<base::DelayTimer>(
+      FROM_HERE, kMaxHttpRequestTime, this, &HttpBridge::OnURLLoadTimedOut);
+  fetch_state_.http_request_timeout_timer->Reset();
 
   // Some tests inject |url_loader_factory_| created to operated on the
   // IO-capable thread currently running.
@@ -315,7 +313,7 @@ void HttpBridge::Abort() {
 
 void HttpBridge::DestroyURLLoaderOnIOThread(
     std::unique_ptr<network::SimpleURLLoader> loader,
-    std::unique_ptr<base::OneShotTimer> loader_timer) {
+    std::unique_ptr<base::DelayTimer> loader_timer) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Both |loader_timer| and |loader| go out of scope.
@@ -353,8 +351,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Stop the request timer now that the request completed.
-  if (fetch_state_.http_request_timeout_timer)
-    fetch_state_.http_request_timeout_timer.reset();
+  fetch_state_.http_request_timeout_timer = nullptr;
 
   // TODO(crbug.com/844968): Relax this if-check to become a DCHECK?
   if (fetch_state_.aborted)
@@ -422,7 +419,7 @@ void HttpBridge::OnURLLoadTimedOut() {
   url_loader_factory_ = nullptr;
 
   // Timer is smart enough to handle being deleted as part of the invoked task.
-  fetch_state_.http_request_timeout_timer.reset();
+  fetch_state_.http_request_timeout_timer = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
   // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
