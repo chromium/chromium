@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <string>
 
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -97,6 +98,7 @@ class TestRunner {
 
   // Sets the timeout value for the child to run the command and return.
   void SetTimeout(DWORD timeout_ms);
+  void SetTimeout(base::TimeDelta timeout);
 
   // Sets TestRunner to return without waiting for the process to exit.
   void SetAsynchronous(bool is_async) { is_async_ = is_async; }
@@ -135,10 +137,11 @@ class TestRunner {
 
   // The actual runner.
   int InternalRunTest(const wchar_t* command);
+  DWORD timeout_ms();
 
   BrokerServices* broker_;
   scoped_refptr<TargetPolicy> policy_;
-  DWORD timeout_;
+  base::TimeDelta timeout_;
   SboxTestsState state_;
   bool is_init_;
   bool is_async_;

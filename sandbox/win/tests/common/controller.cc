@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -20,8 +22,6 @@
 #include "sandbox/win/src/sandbox_factory.h"
 
 namespace {
-
-static const int kDefaultTimeout = 60000;
 
 bool IsProcessRunning(HANDLE process) {
   DWORD exit_code = 0;
@@ -105,7 +105,7 @@ TestRunner::TestRunner(JobLevel job_level,
       target_process_id_(0) {
   broker_ = nullptr;
   policy_.reset();
-  timeout_ = kDefaultTimeout;
+  timeout_ = TestTimeouts::test_launcher_timeout();
   state_ = AFTER_REVERT;
   is_async_= false;
   kill_on_destruction_ = true;
@@ -250,10 +250,10 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 
   if (::IsDebuggerPresent()) {
     // Don't kill the target process on a time-out while we are debugging.
-    timeout_ = INFINITE;
+    timeout_ = base::TimeDelta::Max();
   }
 
-  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_)) {
+  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_ms())) {
     ::TerminateProcess(target.hProcess, static_cast<UINT>(SBOX_TEST_TIMED_OUT));
     ::CloseHandle(target.hProcess);
     ::CloseHandle(target.hThread);
@@ -274,7 +274,26 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 }
 
 void TestRunner::SetTimeout(DWORD timeout_ms) {
-  timeout_ = timeout_ms;
+  SetTimeout(timeout_ms == INFINITE
+                 ? base::TimeDelta::Max()
+                 : base::TimeDelta::FromMilliseconds(timeout_ms));
+}
+
+void TestRunner::SetTimeout(base::TimeDelta timeout) {
+  // We do not take -ve timeouts.
+  DCHECK(timeout >= base::TimeDelta());
+  // We need millisecond DWORDS but also cannot take exactly INFINITE,
+  // for that should supply ::Max().
+  DCHECK(timeout.is_inf() ||
+         timeout < base::TimeDelta::FromMilliseconds(UINT_MAX));
+  timeout_ = timeout;
+}
+
+DWORD TestRunner::timeout_ms() {
+  if (timeout_.is_inf())
+    return INFINITE;
+  else
+    return static_cast<DWORD>(timeout_.InMilliseconds());
 }
 
 void TestRunner::SetTestState(SboxTestsState desired_state) {
