@@ -71,6 +71,8 @@ component("printing") {
     "backend/print_backend_consts.cc",
     "backend/print_backend_consts.h",
     "backend/print_backend_dummy.cc",
+    "backend/print_backend_utils.cc",
+    "backend/print_backend_utils.h",
     "backend/printing_restrictions.cc",
     "backend/printing_restrictions.h",
     "metafile.cc",
@@ -343,6 +345,7 @@ static_library("test_support") {
 test("printing_unittests") {
   sources = [
     "backend/mojom/print_backend_mojom_traits_unittest.cc",
+    "backend/print_backend_utils_unittest.cc",
     "backend/test_print_backend_unittest.cc",
     "metafile_skia_unittest.cc",
     "nup_parameters_unittest.cc",

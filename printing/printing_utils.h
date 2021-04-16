@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "printing/backend/print_backend.h"
 #include "printing/printing_export.h"
 
 namespace gfx {
@@ -46,9 +45,6 @@ PRINTING_EXPORT gfx::Size GetDefaultPaperSizeFromLocaleMicrons(
 PRINTING_EXPORT bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
                                              const gfx::Size& rhs,
                                              int epsilon);
-
-PRINTING_EXPORT PrinterSemanticCapsAndDefaults::Paper ParsePaper(
-    base::StringPiece value);
 
 }  // namespace printing
 
