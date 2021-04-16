@@ -587,7 +587,7 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
     identity_manager_->GetDeviceAccountsSynchronizer()
         ->ReloadAllAccountsFromSystemWithPrimaryAccount(
             identity_manager_->GetPrimaryAccountId(
-                signin::ConsentLevel::kSync));
+                signin::ConsentLevel::kSignin));
   }
 }
 
