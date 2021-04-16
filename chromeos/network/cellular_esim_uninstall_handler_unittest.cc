@@ -89,7 +89,6 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   void TearDown() override {
     cellular_inhibitor_.reset();
     cellular_esim_profile_handler_.reset();
-    cellular_esim_uninstall_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
     network_configuration_handler_.reset();
@@ -151,13 +150,13 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath,
         hermes::profile::State::kActive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational, /*service_only=*/true);
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestCarrierProfilePath2),
         dbus::ObjectPath(kDefaultEuiccPath), kTestCellularIccid2,
         kTestProfileName, kTestServiceProvider, "", kTestNetworkServicePath2,
         hermes::profile::State::kInactive,
-        hermes::profile::ProfileClass::kOperational, /*service_only=*/false);
+        hermes::profile::ProfileClass::kOperational, /*service_only=*/true);
     base::RunLoop().RunUntilIdle();
 
     ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
@@ -266,20 +265,6 @@ TEST_F(CellularESimUninstallHandlerTest, StubCellularNetwork) {
   UninstallESim(run_loop, kTestCarrierProfilePath, success);
   run_loop.Run();
   EXPECT_TRUE(success);
-}
-
-TEST_F(CellularESimUninstallHandlerTest, RemovesShillOnlyServices) {
-  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
-
-  // Remove profile without removing service.
-  EXPECT_TRUE(
-      HermesEuiccClient::Get()->GetTestInterface()->RemoveCarrierProfile(
-          dbus::ObjectPath(kDefaultEuiccPath),
-          dbus::ObjectPath(kTestCarrierProfilePath)));
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that stale service is also removed.
-  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
 }
 
 }  // namespace chromeos

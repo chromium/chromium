@@ -8,13 +8,10 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/network_state_handler.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {
@@ -24,6 +21,7 @@ class CellularInhibitor;
 class NetworkState;
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
+class NetworkStateHandler;
 
 // Handles Uninstallation of an eSIM profile and it's corresponding network.
 //
@@ -37,22 +35,14 @@ class NetworkConnectionHandler;
 // 6. Remove Shill configuration for Network
 // 7. Uninhibit Cellular Scans
 //
-// Uninstallation requests are queued and run in order.
-//
-// This class also checks for stale Shill eSIM services (Shill services that no
-// longer have corresponding eSIM profile in Hermes), and removes their
-// configurations from Shill. This allows handling cases where the configuration
-// was not removed properly during uninstallation or the eSIM profile was
-// removed externally (e.g. Removable EUICC card).
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
-    : public CellularESimProfileHandler::Observer,
-      public NetworkStateHandlerObserver {
+// This class queues Uninstallation requests and runs them in order.
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
  public:
   CellularESimUninstallHandler();
   CellularESimUninstallHandler(const CellularESimUninstallHandler&) = delete;
   CellularESimUninstallHandler& operator=(const CellularESimUninstallHandler&) =
       delete;
-  ~CellularESimUninstallHandler() override;
+  ~CellularESimUninstallHandler();
 
   void Init(CellularInhibitor* cellular_inhibitor,
             CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -71,13 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
                      const dbus::ObjectPath& esim_profile_path,
                      const dbus::ObjectPath& euicc_path,
                      UninstallRequestCallback callback);
-
-  // CellularESimProfileHandler::Observer:
-  void OnESimProfileListUpdated() override;
-
-  // NetworkStateHandlerObserver:
-  void NetworkListChanged() override;
-  void DevicePropertiesUpdated(const DeviceState* device_state) override;
 
  private:
   enum class UninstallState {
@@ -130,13 +113,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnNetworkHandlerError(const std::string& error_name,
                              std::unique_ptr<base::DictionaryValue> error_data);
   const NetworkState* GetNetworkStateForIccid(const std::string& iccid);
-  void CheckStaleESimServices();
-  NetworkStateHandler::NetworkStateList GetESimCellularNetworks();
-  bool HasQueuedRequest(const std::string& iccid) const;
 
   UninstallState state_ = UninstallState::kIdle;
   const NetworkState* curr_request_network_state_ = nullptr;
-  base::circular_deque<std::unique_ptr<UninstallRequest>> uninstall_requests_;
+  base::queue<std::unique_ptr<UninstallRequest>> uninstall_requests_;
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;

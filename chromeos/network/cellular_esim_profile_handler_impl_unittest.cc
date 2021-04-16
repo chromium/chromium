@@ -113,17 +113,13 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
                               hermes::profile::State state,
                               const std::string& activation_code,
                               hermes::profile::ProfileClass profile_class =
-                                  hermes::profile::ProfileClass::kOperational,
-                              bool blank_iccid = false) {
+                                  hermes::profile::ProfileClass::kOperational) {
     dbus::ObjectPath path(base::StringPrintf("%s%02d", kTestProfileBasePath,
                                              num_profiles_created_));
 
-    std::string iccid;
-    if (!blank_iccid) {
-      iccid = base::StringPrintf("%s%02d", "iccid_", num_profiles_created_);
-    }
     helper_.hermes_euicc_test()->AddCarrierProfile(
-        path, dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), iccid,
+        path, dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
+        base::StringPrintf("%s%02d", "iccid_", num_profiles_created_),
         base::StringPrintf("%s%02d", "name_", num_profiles_created_),
         base::StringPrintf("%s%02d", "service_provider_",
                            num_profiles_created_),
@@ -441,29 +437,6 @@ TEST_F(CellularESimProfileHandlerImplTest,
   EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
             euicc_paths_from_prefs.GetList()[0].GetString());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {
-  const char kTestIccid[] = "1245671234567";
-  AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
-  Init();
-  SetDevicePrefs();
-  dbus::ObjectPath profile_path = AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/std::string(),
-      hermes::profile::ProfileClass::kOperational,
-      /*blank_iccid=*/true);
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Verify that profile object is created after iccid property is set.
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(profile_path);
-  properties->iccid().ReplaceValue(kTestIccid);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
-  EXPECT_EQ(1u, esim_profiles.size());
-  EXPECT_EQ(kTestIccid, esim_profiles[0].iccid());
 }
 
 }  // namespace chromeos
