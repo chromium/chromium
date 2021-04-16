@@ -716,6 +716,19 @@ void DesksBarView::OnDeskSwitchAnimationFinished() {}
 
 void DesksBarView::OnContentsScrolled() {
   UpdateScrollButtonsVisibility();
+  UpdateGradientZone();
+}
+
+void DesksBarView::OnContentsScrollEnded() {
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const int current_position = visible_bounds.x();
+  const int adjusted_position =
+      GetAdjustedUncroppedScrollPosition(current_position);
+  if (current_position != adjusted_position) {
+    scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
+                                   adjusted_position);
+  }
+  UpdateGradientZone();
 }
 
 void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
@@ -789,6 +802,14 @@ void DesksBarView::ScrollToShowMiniViewIfNecessary(
   } else if (beyond_right) {
     scroll_view_->ScrollToPosition(scroll_bar, mini_view_bounds.x());
   }
+}
+
+bool DesksBarView::IsLeftGradientVisibleForTesting() const {
+  return !gradient_layer_delegate_->start_fade_zone_bounds().IsEmpty();
+}
+
+bool DesksBarView::IsRightGradientVisibleForTesting() const {
+  return !gradient_layer_delegate_->end_fade_zone_bounds().IsEmpty();
 }
 
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
@@ -865,11 +886,9 @@ void DesksBarView::UpdateDeskButtonsVisibility() {
 
 void DesksBarView::UpdateScrollButtonsVisibility() {
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
-  const bool left_visible = visible_bounds.x() > 0;
-  const bool right_visible =
-      visible_bounds.right() < scroll_view_contents_->bounds().width();
-  left_scroll_button_->SetVisible(left_visible);
-  right_scroll_button_->SetVisible(right_visible);
+  left_scroll_button_->SetVisible(visible_bounds.x() > 0);
+  right_scroll_button_->SetVisible(visible_bounds.right() <
+                                   scroll_view_contents_->bounds().width());
 }
 
 void DesksBarView::UpdateGradientZone() {
@@ -879,15 +898,24 @@ void DesksBarView::UpdateGradientZone() {
       right_scroll_button_->GetVisible();
   const bool is_left_visible_only =
       is_left_scroll_button_visible && !is_right_scroll_button_visible;
-  const bool is_right_visible_only =
-      !is_left_scroll_button_visible && is_right_scroll_button_visible;
 
-  // Only showing the gradient while scrolled to the start or end position of
-  // the scroll view.
-  const bool should_show_start_gradient =
-      is_rtl ? is_right_visible_only : is_left_visible_only;
-  const bool should_show_end_gradient =
-      is_rtl ? is_left_visible_only : is_right_visible_only;
+  bool should_show_start_gradient = false;
+  bool should_show_end_gradient = false;
+  // Show the both sides gradients during scroll if the corresponding scroll
+  // button is visible. Otherwise, show the start/end gradient only in last page
+  // and show the end/start gradient if there are contents beyond the right/left
+  // side of the visible bounds with LTR/RTL layout.
+  if (scroll_view_->is_scrolling()) {
+    should_show_start_gradient =
+        is_rtl ? is_right_scroll_button_visible : is_left_scroll_button_visible;
+    should_show_end_gradient =
+        is_rtl ? is_left_scroll_button_visible : is_right_scroll_button_visible;
+  } else {
+    should_show_start_gradient =
+        is_rtl ? is_right_scroll_button_visible : is_left_visible_only;
+    should_show_end_gradient =
+        is_rtl ? is_left_visible_only : is_right_scroll_button_visible;
+  }
 
   // The bounds of the start and end gradient will be the same regardless it is
   // LTR or RTL layout. While the |left_scroll_button_| will be changed from
@@ -903,6 +931,14 @@ void DesksBarView::UpdateGradientZone() {
     end_gradient_bounds = gfx::Rect(bounds.width() - kGradientZoneLength, 0,
                                     kGradientZoneLength, bounds.height());
   }
+
+  // Return early if the gradients do not change.
+  if (start_gradient_bounds ==
+          gradient_layer_delegate_->start_fade_zone_bounds() &&
+      end_gradient_bounds == gradient_layer_delegate_->end_fade_zone_bounds()) {
+    return;
+  }
+
   const GradientLayerDelegate::FadeZone start_gradient_zone = {
       start_gradient_bounds,
       /*fade_in=*/true,
@@ -914,6 +950,7 @@ void DesksBarView::UpdateGradientZone() {
   gradient_layer_delegate_->set_start_fade_zone(start_gradient_zone);
   gradient_layer_delegate_->set_end_fade_zone(end_gradient_zone);
   gradient_layer_delegate_->layer()->SetBounds(scroll_view_->layer()->bounds());
+  scroll_view_->SchedulePaint();
 }
 
 void DesksBarView::ScrollToPreviousPage() {
@@ -922,7 +959,8 @@ void DesksBarView::ScrollToPreviousPage() {
   InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
-      scroll_view_->GetVisibleRect().x() - scroll_view_->width());
+      GetAdjustedUncroppedScrollPosition(scroll_view_->GetVisibleRect().x() -
+                                         scroll_view_->width()));
 }
 
 void DesksBarView::ScrollToNextPage() {
@@ -931,7 +969,41 @@ void DesksBarView::ScrollToNextPage() {
   InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
-      scroll_view_->GetVisibleRect().x() + scroll_view_->width());
+      GetAdjustedUncroppedScrollPosition(scroll_view_->GetVisibleRect().x() +
+                                         scroll_view_->width()));
+}
+
+int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
+  // Let the ScrollView handle it if the given |position| is invalid or it can't
+  // be adjusted.
+  if (position <= 0 || position >= scroll_view_contents_->bounds().width() -
+                                       scroll_view_->width()) {
+    return position;
+  }
+
+  int adjusted_position = position;
+  int i = 0;
+  gfx::Rect mini_view_bounds;
+  const int mini_views_size = static_cast<int>(mini_views_.size());
+  for (; i < mini_views_size; i++) {
+    mini_view_bounds = mini_views_[i]->bounds();
+    // Return early if there is no desk preview cropped at the start position.
+    if (mini_view_bounds.x() >= position)
+      return position;
+
+    if (mini_view_bounds.x() < position && mini_view_bounds.right() > position)
+      break;
+  }
+
+  DCHECK(i < mini_views_size);
+  if ((position - mini_view_bounds.x()) < mini_view_bounds.width() / 2) {
+    adjusted_position = mini_view_bounds.x();
+  } else {
+    adjusted_position = mini_view_bounds.right();
+    if (i + 1 < mini_views_size)
+      adjusted_position = mini_views_[i + 1]->bounds().x();
+  }
+  return adjusted_position;
 }
 
 }  // namespace ash

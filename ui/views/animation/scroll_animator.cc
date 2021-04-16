@@ -63,6 +63,7 @@ void ScrollAnimator::Stop() {
 
 void ScrollAnimator::AnimationEnded(const gfx::Animation* animation) {
   Stop();
+  delegate_->OnFlingScrollEnded();
 }
 
 void ScrollAnimator::AnimationProgressed(const gfx::Animation* animation) {

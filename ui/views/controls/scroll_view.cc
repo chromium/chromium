@@ -865,6 +865,11 @@ int ScrollView::GetScrollIncrement(ScrollBar* source,
                        : contents_viewport_->height() / 5;
 }
 
+void ScrollView::OnScrollEnded() {
+  for (auto& observer : observers_)
+    observer.OnContentsScrollEnded();
+}
+
 bool ScrollView::DoesViewportOrScrollViewHaveLayer() const {
   return layer() || contents_viewport_->layer();
 }

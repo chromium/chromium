@@ -65,8 +65,25 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   class Observer {
    public:
-    // Called when |contents_| scrolled.
+    // Called when |contents_| scrolled. This can be triggered by each single
+    // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
+    // ui::VKEY_RIGHT, or only ui::ET_MOUSEWHEEL will only trigger this function
+    // but not OnContentsScrollEnded below, since they do not belong to any
+    // events sequence. This function will also be triggered by each
+    // ui::ET_GESTURE_SCROLL_UPDATE event in the gesture scroll sequence or
+    // each ui::ET_MOUSEWHEEL event that associated with the ScrollEvent in the
+    // scroll events sequence while the OnContentsScrollEnded below will only be
+    // triggered once at the end of the events sequence.
     virtual void OnContentsScrolled() {}
+
+    // Called at the end of a sequence of events that are generated to scroll
+    // the contents. The gesture scroll sequence {ui::ET_GESTURE_SCROLL_BEGIN,
+    // ui::ET_GESTURE_SCROLL_UPDATE, ..., ui::ET_GESTURE_SCROLL_UPDATE,
+    // ui::ET_GESTURE_SCROLL_END or ui::ET_SCROLL_FLING_START} or the scroll
+    // events sequence {ui::ET_SCROLL_FLING_CANCEL, ui::ET_SCROLL, ...,
+    // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
+    // on the events sequence end.
+    virtual void OnContentsScrollEnded() {}
   };
 
   ScrollView();
@@ -197,6 +214,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetScrollIncrement(ScrollBar* source,
                          bool is_page,
                          bool is_positive) override;
+  void OnScrollEnded() override;
+
+  bool is_scrolling() const {
+    return horiz_sb_->is_scrolling() || vert_sb_->is_scrolling();
+  }
 
  private:
   friend class test::ScrollViewTestApi;

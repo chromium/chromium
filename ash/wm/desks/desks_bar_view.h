@@ -153,6 +153,7 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // views::ScrollView::Observer:
   void OnContentsScrolled() override;
+  void OnContentsScrollEnded() override;
 
   // This is called on initialization, creating a new desk through the
   // NewDeskButton or ExpandedStateNewDeskButton, or expanding from zero state
@@ -178,6 +179,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   const DeskMiniView* GetDragDeskMiniViewForTesting() const {
     return drag_view_;
   }
+
+  bool IsLeftGradientVisibleForTesting() const;
+  bool IsRightGradientVisibleForTesting() const;
 
  private:
   friend class DesksBarScrollViewLayout;
@@ -222,6 +226,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // will be clipped and can not be seen.
   void ScrollToPreviousPage();
   void ScrollToNextPage();
+
+  // Gets the adjusted scroll position based on |position| to make sure no desk
+  // preview is cropped at the start position of the scrollable bar.
+  int GetAdjustedUncroppedScrollPosition(int position) const;
 
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.

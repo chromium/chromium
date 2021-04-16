@@ -148,13 +148,32 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-      event->type() == ui::ET_GESTURE_SCROLL_END) {
+  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
+    scroll_status_ = ScrollStatus::kScrollStarted;
     event->SetHandled();
     return;
   }
 
+  if (event->type() == ui::ET_GESTURE_SCROLL_END) {
+    scroll_status_ = ScrollStatus::kScrollEnded;
+    controller()->OnScrollEnded();
+    event->SetHandled();
+    return;
+  }
+
+  // Update the |scroll_status_| to |kScrollEnded| in case the gesture sequence
+  // ends incorrectly.
+  if (event->type() == ui::ET_GESTURE_END &&
+      scroll_status_ == ScrollStatus::kScrollInEnding &&
+      scroll_status_ == ScrollStatus::kScrollEnded) {
+    scroll_status_ = ScrollStatus::kScrollEnded;
+    controller()->OnScrollEnded();
+  }
+
   if (event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+    if (scroll_status_ == ScrollStatus::kScrollStarted)
+      scroll_status_ = ScrollStatus::kScrollInProgress;
+
     float scroll_amount_f;
     int scroll_amount;
     if (IsHorizontal()) {
@@ -172,6 +191,7 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   if (event->type() == ui::ET_SCROLL_FLING_START) {
+    scroll_status_ = ScrollStatus::kScrollInEnding;
     if (!scroll_animator_)
       scroll_animator_ = std::make_unique<ScrollAnimator>(this);
     scroll_animator_->Start(
@@ -187,6 +207,11 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
 bool ScrollBar::OnScroll(float dx, float dy) {
   return IsHorizontal() ? ScrollByContentsOffset(dx)
                         : ScrollByContentsOffset(dy);
+}
+
+void ScrollBar::OnFlingScrollEnded() {
+  scroll_status_ = ScrollStatus::kScrollEnded;
+  controller()->OnScrollEnded();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -332,7 +357,29 @@ int ScrollBar::GetScrollIncrement(bool is_page, bool is_positive) {
   return controller()->GetScrollIncrement(this, is_page, is_positive);
 }
 
-void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {}
+void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
+  switch (event.type()) {
+    case ui::ET_SCROLL_FLING_CANCEL:
+      scroll_status_ = ScrollStatus::kScrollStarted;
+      break;
+    case ui::ET_SCROLL:
+      if (scroll_status_ == ScrollStatus::kScrollStarted)
+        scroll_status_ = ScrollStatus::kScrollInProgress;
+      break;
+    case ui::ET_SCROLL_FLING_START:
+      scroll_status_ = ScrollStatus::kScrollEnded;
+      controller()->OnScrollEnded();
+      break;
+    case ui::ET_GESTURE_END:
+      if (scroll_status_ != ScrollStatus::kScrollEnded) {
+        scroll_status_ = ScrollStatus::kScrollEnded;
+        controller()->OnScrollEnded();
+      }
+      break;
+    default:
+      break;
+  }
+}
 
 ScrollBar::ScrollBar(bool is_horiz)
     : is_horiz_(is_horiz),

@@ -47,6 +47,10 @@ class VIEWS_EXPORT ScrollBarController {
   // position which is in the GetMinPosition() / GetMaxPosition range.
   virtual void ScrollToPosition(ScrollBar* source, int position) = 0;
 
+  // Called when the scroll that triggered by gesture or scroll events sequence
+  // ended.
+  virtual void OnScrollEnded() {}
+
   // Returns the amount to scroll. The amount to scroll may be requested in
   // two different amounts. If is_page is true the 'page scroll' amount is
   // requested. The page scroll amount typically corresponds to the
@@ -132,6 +136,7 @@ class VIEWS_EXPORT ScrollBar : public View,
 
   // ScrollDelegate:
   bool OnScroll(float dx, float dy) override;
+  void OnFlingScrollEnded() override;
 
   // ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -165,6 +170,10 @@ class VIEWS_EXPORT ScrollBar : public View,
   // is the width of the scrollbar, likewise it is the height for a horizontal
   // scrollbar.
   virtual int GetThickness() const = 0;
+
+  bool is_scrolling() const {
+    return scroll_status_ == ScrollStatus::kScrollInProgress;
+  }
 
  protected:
   // Create new scrollbar, either horizontal or vertical. These are protected
@@ -263,6 +272,22 @@ class VIEWS_EXPORT ScrollBar : public View,
   // TODO(tdresser): This should be removed when raw pixel scrolling for views
   // is enabled. See crbug.com/329354.
   gfx::Vector2dF roundoff_error_;
+
+  // The enumeration keeps track of the current status of the scroll. Used when
+  // the contents scrolled by the gesture or scroll events sequence.
+  enum class ScrollStatus {
+    kScrollNone,
+    kScrollStarted,
+    kScrollInProgress,
+
+    // The contents will keep scrolling for a while if the events sequence ends
+    // with ui::ET_SCROLL_FLING_START. Set the status to kScrollInEnding if it
+    // happens, and set it to kScrollEnded while the scroll really ended.
+    kScrollInEnding,
+    kScrollEnded,
+  };
+
+  ScrollStatus scroll_status_ = ScrollStatus::kScrollNone;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;

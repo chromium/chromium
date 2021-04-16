@@ -22,6 +22,9 @@ class VIEWS_EXPORT ScrollDelegate {
   // Returns true if the content was actually scrolled, false otherwise.
   virtual bool OnScroll(float dx, float dy) = 0;
 
+  // Called when the contents scrolled by the fling event ended.
+  virtual void OnFlingScrollEnded() {}
+
  protected:
   ~ScrollDelegate() = default;
 };
