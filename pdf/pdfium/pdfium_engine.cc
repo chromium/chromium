@@ -2319,8 +2319,14 @@ bool PDFiumEngine::HasPermission(DocumentPermission permission) const {
 }
 
 void PDFiumEngine::SelectAll() {
-  if (in_form_text_area_ || IsReadOnly())
+  if (IsReadOnly())
     return;
+
+  if (in_form_text_area_) {
+    if (PageIndexInBounds(last_focused_page_))
+      FORM_SelectAllText(form(), pages_[last_focused_page_]->GetPage());
+    return;
+  }
 
   SelectionChangeInvalidator selection_invalidator(this);
 

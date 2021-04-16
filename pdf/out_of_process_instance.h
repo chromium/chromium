@@ -84,6 +84,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool CanEditText();
   bool HasEditableText();
   void ReplaceSelection(const std::string& text);
+  void SelectAll();
   bool CanUndo();
   bool CanRedo();
   void Undo();

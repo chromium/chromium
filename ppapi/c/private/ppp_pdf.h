@@ -176,6 +176,9 @@ struct PPP_Pdf_1_1 {
   // caret position.
   void (*ReplaceSelection)(PP_Instance instance, const char* text);
 
+  // Perform a select all operation.
+  void (*SelectAll)(PP_Instance instance);
+
   // Return true if plugin can perform an undo operation.
   PP_Bool (*CanUndo)(PP_Instance instance);
 

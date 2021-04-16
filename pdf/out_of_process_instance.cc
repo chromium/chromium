@@ -212,6 +212,14 @@ void ReplaceSelection(PP_Instance instance, const char* text) {
   }
 }
 
+void SelectAll(PP_Instance instance) {
+  void* object = pp::Instance::GetPerInstanceObject(instance, kPPPPdfInterface);
+  if (object) {
+    auto* obj_instance = static_cast<OutOfProcessInstance*>(object);
+    obj_instance->SelectAll();
+  }
+}
+
 PP_Bool CanUndo(PP_Instance instance) {
   void* object = pp::Instance::GetPerInstanceObject(instance, kPPPPdfInterface);
   if (!object)
@@ -301,6 +309,7 @@ const PPP_Pdf ppp_private = {
     &CanEditText,
     &HasEditableText,
     &ReplaceSelection,
+    &SelectAll,
     &CanUndo,
     &CanRedo,
     &Undo,
@@ -692,6 +701,10 @@ bool OutOfProcessInstance::HasEditableText() {
 
 void OutOfProcessInstance::ReplaceSelection(const std::string& text) {
   engine()->ReplaceSelection(text);
+}
+
+void OutOfProcessInstance::SelectAll() {
+  engine()->SelectAll();
 }
 
 bool OutOfProcessInstance::CanUndo() {

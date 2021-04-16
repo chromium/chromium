@@ -117,7 +117,6 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
-#include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1432,25 +1431,7 @@ void PepperPluginInstanceImpl::SelectAll() {
   if (!LoadPdfInterface())
     return;
 
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-
-  // TODO(https://crbug.com/836074) |kPlatformModifier| should be
-  // |ui::EF_PLATFORM_ACCELERATOR| (|ui::EF_COMMAND_DOWN| on Mac).
-  static const ui::EventFlags kPlatformModifier = ui::EF_CONTROL_DOWN;
-  // Synthesize a ctrl + a key event to send to the plugin and let it sort out
-  // the event. See also https://crbug.com/739529.
-  ui::KeyEvent char_event(L'A', ui::VKEY_A, ui::DomCode::NONE,
-                          kPlatformModifier);
-
-  // Also synthesize a key up event to look more like a real key press.
-  // Otherwise the plugin will not do all the required work to keep the renderer
-  // in sync.
-  ui::KeyEvent keyup_event(ui::ET_KEY_RELEASED, ui::VKEY_A, kPlatformModifier);
-
-  ui::Cursor dummy_cursor_info;
-  HandleInputEvent(MakeWebKeyboardEvent(char_event), &dummy_cursor_info);
-  HandleInputEvent(MakeWebKeyboardEvent(keyup_event), &dummy_cursor_info);
+  plugin_pdf_interface_->SelectAll(pp_instance());
 }
 
 bool PepperPluginInstanceImpl::CanUndo() {

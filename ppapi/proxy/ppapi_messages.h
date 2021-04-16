@@ -798,6 +798,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_HasEditableText,
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_ReplaceSelection,
                     PP_Instance /* instance */,
                     std::string /* text */)
+IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_SelectAll, PP_Instance /* instance */)
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanUndo,
                            PP_Instance /* instance */,
                            PP_Bool /* result */)
