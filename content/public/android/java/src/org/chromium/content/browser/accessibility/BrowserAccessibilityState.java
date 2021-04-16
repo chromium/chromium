@@ -6,6 +6,7 @@ package org.chromium.content.browser.accessibility;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -16,11 +17,14 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +33,8 @@ import java.util.List;
  */
 @JNINamespace("content")
 public class BrowserAccessibilityState {
+    private static final String TAG = "Accessibility";
+
     private static boolean sInitialized;
 
     // A bitmask containing the union of all event types, feedback types, flags,
@@ -42,6 +48,13 @@ public class BrowserAccessibilityState {
     private static String[] sServiceIds;
 
     private static Handler sHandler;
+
+    // The number of milliseconds to wait before checking the set of running
+    // accessibility services again, when we think it changed. Uses an exponential
+    // back-off until it's greater than MAX_DELAY_MILLIS.
+    private static final int MIN_DELAY_MILLIS = 500;
+    private static final int MAX_DELAY_MILLIS = 60000;
+    private static int sNextDelayMillis = MIN_DELAY_MILLIS;
 
     private static class AnimatorDurationScaleObserver extends ContentObserver {
         public AnimatorDurationScaleObserver(Handler handler) {
@@ -72,10 +85,11 @@ public class BrowserAccessibilityState {
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            // When this is initially called, the set of accessibility
-            // services hasn't changed. Add a delay so that it propagates.
-            // TODO(dmazzoni): make something more robust here.
-            getHandler().postDelayed(() -> { updateAccessibilityServices(); }, 1000);
+            // Note that when Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES changes,
+            // the set of running accessibility services doesn't always reflect that
+            // immediately, but updateAccessibilityServices checks for this and keeps
+            // polling until they agree.
+            updateAccessibilityServices();
         }
     }
 
@@ -86,20 +100,64 @@ public class BrowserAccessibilityState {
         sFlagsMask = 0;
         sCapabilitiesMask = 0;
 
+        // Get the list of currently running accessibility services.
+        Context context = ContextUtils.getApplicationContext();
         AccessibilityManager accessibilityManager =
-                (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACCESSIBILITY_SERVICE);
+                (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> services =
                 accessibilityManager.getEnabledAccessibilityServiceList(
                         AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
         sServiceIds = new String[services.size()];
+        ArrayList<String> runningServiceNames = new ArrayList<String>();
         int i = 0;
         for (AccessibilityServiceInfo service : services) {
             sEventTypeMask |= service.eventTypes;
             sFeedbackTypeMask |= service.feedbackType;
             sFlagsMask |= service.flags;
             sCapabilitiesMask |= service.getCapabilities();
-            sServiceIds[i++] = service.getId();
+
+            String serviceId = service.getId();
+            sServiceIds[i++] = serviceId;
+
+            // Canonicalize the component name. This shouldn't ever fail, but if it ever
+            // does fail in the wild, we should add some fallback here.
+            ComponentName componentName = ComponentName.unflattenFromString(serviceId);
+            assert componentName != null;
+            runningServiceNames.add(componentName.flattenToShortString());
+        }
+
+        // Get the list of enabled accessibility services, from settings, in
+        // case it's different.
+        ArrayList<String> enabledServiceNames = new ArrayList<String>();
+        String serviceNamesString = Settings.Secure.getString(
+                context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        if (serviceNamesString != null && !serviceNamesString.isEmpty()) {
+            String[] serviceNames = serviceNamesString.split(":");
+            for (String name : serviceNames) {
+                // Canonicalize the component name and assert that it succeeds.
+                ComponentName componentName = ComponentName.unflattenFromString(name);
+                assert componentName != null;
+                enabledServiceNames.add(componentName.flattenToShortString());
+            }
+        }
+
+        // Compare the list of enabled package names to the list of running package names.
+        // When the system setting containing the list of running accessibility services
+        // changes, it isn't always reflected in getEnabledAccessibilityServiceList
+        // immediately. To ensure we always have an up-to-date value, check that the
+        // set of services match, and if they don't, schedule an update with an exponential
+        // back-off.
+        Collections.sort(runningServiceNames);
+        Collections.sort(enabledServiceNames);
+        if (runningServiceNames.equals(enabledServiceNames)) {
+            Log.v(TAG, "Enabled accessibility services list updated.");
+            sNextDelayMillis = MIN_DELAY_MILLIS;
+        } else {
+            Log.v(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
+            Log.v(TAG, "Running accessibility services: " + runningServiceNames.toString());
+            Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
+            getHandler().postDelayed(() -> { updateAccessibilityServices(); }, sNextDelayMillis);
+            if (sNextDelayMillis < MAX_DELAY_MILLIS) sNextDelayMillis *= 2;
         }
     }
 
@@ -172,6 +230,7 @@ public class BrowserAccessibilityState {
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES), false,
                 new AccessibilityServicesObserver(getHandler()));
+        if (!sInitialized) updateAccessibilityServices();
     }
 
     @NativeMethods
