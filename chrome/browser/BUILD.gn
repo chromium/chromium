@@ -237,6 +237,8 @@ static_library("browser") {
     "browsing_data/browsing_data_history_observer_service.h",
     "browsing_data/browsing_data_important_sites_util.cc",
     "browsing_data/browsing_data_important_sites_util.h",
+    "browsing_data/browsing_data_lifetime_policy_handler.cc",
+    "browsing_data/browsing_data_lifetime_policy_handler.h",
     "browsing_data/browsing_data_media_license_helper.cc",
     "browsing_data/browsing_data_media_license_helper.h",
     "browsing_data/browsing_data_quota_helper.cc",
