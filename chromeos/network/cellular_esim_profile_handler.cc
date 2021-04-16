@@ -24,6 +24,7 @@ void CellularESimProfileHandler::Init(
   HermesManagerClient::Get()->AddObserver(this);
   HermesEuiccClient::Get()->AddObserver(this);
   HermesProfileClient::Get()->AddObserver(this);
+  InitInternal();
 }
 
 void CellularESimProfileHandler::RefreshProfileList(
