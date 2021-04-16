@@ -210,6 +210,11 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Welcome to Chromium; new browser window opened
         </message>
       </if>
+      <if expr="is_macosx or is_linux">
+        <message name="IDS_FIRST_RUN_DIALOG_WINDOW_TITLE" desc="Window title of First Run dialog on Mac and Linux, displayed in title bar">
+          Welcome to Chromium
+        </message>
+      </if>
       <if expr="chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
           Chromium OS

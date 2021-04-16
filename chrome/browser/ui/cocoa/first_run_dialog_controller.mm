@@ -230,7 +230,7 @@ void CenterVertically(NSView* view) {
 }
 
 - (NSString*)windowTitle {
-  return NSStringWithProductName(IDS_FIRSTRUN_DLG_MAC_WINDOW_TITLE);
+  return l10n_util::GetNSString(IDS_FIRST_RUN_DIALOG_WINDOW_TITLE);
 }
 
 - (BOOL)isStatsReportingEnabled {
