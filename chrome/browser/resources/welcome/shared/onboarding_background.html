@@ -352,10 +352,23 @@
 
   #password-field-input {
     -webkit-mask: url(../images/background_svgs/password.svg);
+    -webkit-mask-position: top left;
+    -webkit-mask-size: 400px 400px;
+    animation: password-field-input 4s steps(1) infinite;
     background-color: var(--welcome-green);
-    left: 832px;
-    top: 239px;
-    transform: translate(-50%, -50%) rotate(-11deg);
+    left: 604px;
+    top: 78px;
+    transform: rotate(-11deg);
+    transform-origin: top left;
+  }
+
+  @keyframes password-field-input {
+    0% { width: 150px; }
+    15% { width: 182px; }
+    30% { width: 218px; }
+    45% { width: 249px; }
+    60% { width: 400px; }
+    100% { width: 400px; }
   }
 
   #bookmarks-background {
