@@ -34,6 +34,10 @@ class MockSigninUI : public SigninUI {
               ShowPasswordChangedDialog,
               (const AccountId&, bool),
               (override));
+  MOCK_METHOD(void,
+              ShowSigninError,
+              (SigninError, const std::string&, int),
+              (override));
 };
 
 }  // namespace chromeos

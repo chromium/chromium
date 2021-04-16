@@ -299,6 +299,10 @@ class WizardController {
   // `exit_reason` is the screen specific exit reason reported by the screen.
   void OnScreenExit(OobeScreenId screen, const std::string& exit_reason);
 
+  // Advances either to Gaia screen or Active Directory login screen, depending
+  // on the device state.
+  void AdvanceToSigninScreen();
+
   // Exit handlers:
   void OnWrongHWIDScreenExit();
   void OnHidDetectionScreenExit(HIDDetectionScreen::Result result);

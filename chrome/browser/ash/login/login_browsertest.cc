@@ -33,11 +33,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
@@ -96,6 +98,40 @@ class LoginOfflineTest : public LoginManagerTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 };
+
+class LoginOnlineCryptohomeError : public LoginManagerTest {
+ public:
+  LoginOnlineCryptohomeError() = default;
+
+ protected:
+  LoginManagerMixin::TestUserInfo reauth_user_{
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                     FakeGaiaMixin::kFakeUserGaiaId),
+      user_manager::USER_TYPE_REGULAR,
+      /* invalid token status to force online signin */
+      user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
+  LoginManagerMixin login_manager_{&mixin_host_, {reauth_user_}};
+  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+};
+
+IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
+  const auto& account_id = reauth_user_.account_id;
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
+      user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
+
+  LoginDisplayHost::default_host()
+      ->GetOobeUI()
+      ->GetView<GaiaScreenHandler>()
+      ->ShowSigninScreenForTest(FakeGaiaMixin::kFakeUserEmail,
+                                FakeGaiaMixin::kFakeUserPassword,
+                                FakeGaiaMixin::kEmptyUserServices);
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+}
 
 class LoginOfflineManagedTest : public LoginManagerTest {
  public:

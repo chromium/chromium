@@ -70,6 +70,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       const UserContext& user_context,
       EncryptionMigrationMode migration_mode,
       base::OnceCallback<void(const UserContext&)> on_skip_migration) final;
+  void ShowSigninError(SigninError error,
+                       const std::string& details,
+                       int login_attempts) final;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

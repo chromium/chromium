@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/ui/mock_signin_ui.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -272,9 +273,8 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
   void ExpectLoginFailure() {
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(1);
-    EXPECT_CALL(*mock_login_display_,
-                ShowError(IDS_LOGIN_ERROR_OWNER_KEY_LOST, 1,
-                          HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT))
+    EXPECT_CALL(*mock_signin_ui_,
+                ShowSigninError(SigninError::kOwnerKeyLost, std::string(), 1))
         .Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }
@@ -944,9 +944,10 @@ class ExistingUserControllerActiveDirectoryTest
 
   void ExpectLoginFailure() {
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(2);
-    EXPECT_CALL(*mock_login_display_,
-                ShowError(IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED, 1,
-                          HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT))
+    EXPECT_CALL(
+        *mock_signin_ui_,
+        ShowSigninError(SigninError::kGoogleAccountNotAllowed,
+                        "Google accounts are not allowed on this device", 1))
         .Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }

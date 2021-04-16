@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 // TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
 // when moved to chrome/browser/ash/.
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/login/auth/login_performer.h"
@@ -94,8 +95,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // user data.
   void ResyncUserData();
 
+  // Returns name of the currently connected network, for error message,
+  std::u16string GetConnectedNetworkName() const;
+
   // LoginDisplay::Delegate: implementation
-  std::u16string GetConnectedNetworkName() override;
   bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
@@ -183,10 +186,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Called when device settings change.
   void DeviceSettingsChanged();
 
-  // Show error message. `error_id` error message ID in resources.
-  // If `details` string is not empty, it specify additional error text
-  // provided by authenticator, it is not localized.
-  void ShowError(int error_id, const std::string& details);
+  // Show error message corresponding to `error`. If `details` string is not
+  // empty, it specify additional error text provided by authenticator, it is
+  // not localized.
+  void ShowError(SigninError error, const std::string& details);
 
   // Handles result of ownership check and starts enterprise or kiosk enrollment
   // if applicable.

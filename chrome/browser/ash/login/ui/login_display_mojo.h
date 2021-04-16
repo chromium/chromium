@@ -39,9 +39,6 @@ class LoginDisplayMojo : public LoginDisplay,
             bool show_new_user) override;
   void OnPreferencesChanged() override;
   void SetUIEnabled(bool is_enabled) override;
-  void ShowError(int error_msg_id,
-                 int login_attempts,
-                 HelpAppLauncher::HelpTopic help_topic_id) override;
   void ShowAllowlistCheckFailedError() override;
 
   // SigninScreenHandlerDelegate:

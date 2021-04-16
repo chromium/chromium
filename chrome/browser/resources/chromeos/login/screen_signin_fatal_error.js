@@ -34,6 +34,21 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    keyboardHint_: {
+      type: String,
+      value: undefined,
+    },
+
+    details_: {
+      type: String,
+      value: undefined,
+    },
+
+    helpLinkText_: {
+      type: String,
+      value: undefined,
+    },
   },
 
   ready() {
@@ -50,6 +65,9 @@ Polymer({
   onBeforeShow(data) {
     this.errorState_ = data && 'errorState' in data && data.errorState;
     this.params_ = data;
+    this.keyboardHint_ = this.params_.keyboardHint;
+    this.details_ = this.params_.details;
+    this.helpLinkText_ = this.params_.helpLinkText;
   },
 
   /**
@@ -84,6 +102,8 @@ Polymer({
         return this.i18n(
             'fatalErrorMessageInsecureURL',
             'url' in this.params_ && this.params_.url);
+      case OobeTypes.FatalErrorCode.CUSTOM:
+        return this.params_.errorText;
       case OobeTypes.FatalErrorCode.UNKNOWN:
         return '';
     }
@@ -91,6 +111,10 @@ Polymer({
 
   get defaultControl() {
     return this.$.actionButton;
+  },
+
+  onHelpLinkClicked_() {
+    this.userActed('learn-more');
   },
 
 });

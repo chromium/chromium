@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -15,8 +16,10 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -32,14 +35,18 @@
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chromeos {
@@ -108,6 +115,37 @@ void SetGaiaInputMethods(const AccountId& account_id) {
       gaia_ime_state->ChangeInputMethod(owner_im, false /* show_message */);
     }
   }
+}
+
+int ErrorToMessageId(SigninError error) {
+  switch (error) {
+    case SigninError::kCaptivePortalError:
+      NOTREACHED();
+      return 0;
+    case SigninError::kGoogleAccountNotAllowed:
+      return IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED;
+    case SigninError::kOwnerRequired:
+      return IDS_LOGIN_ERROR_OWNER_REQUIRED;
+    case SigninError::kTpmUpdateRequired:
+      return IDS_LOGIN_ERROR_TPM_UPDATE_REQUIRED;
+    case SigninError::kAuthenticationError:
+      return IDS_LOGIN_ERROR_AUTHENTICATING;
+    case SigninError::kOfflineFailedNetworkNotConnected:
+      return IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED;
+    case SigninError::kAuthenticatingNew:
+      return IDS_LOGIN_ERROR_AUTHENTICATING_NEW;
+    case SigninError::kAuthenticating:
+      return IDS_LOGIN_ERROR_AUTHENTICATING;
+    case SigninError::kOwnerKeyLost:
+      return IDS_LOGIN_ERROR_OWNER_KEY_LOST;
+  }
+}
+
+bool IsAuthError(SigninError error) {
+  return error != SigninError::kOwnerKeyLost &&
+         error != SigninError::kOwnerRequired &&
+         error != SigninError::kGoogleAccountNotAllowed &&
+         error != SigninError::kTpmUpdateRequired;
 }
 
 }  // namespace
@@ -337,9 +375,8 @@ bool LoginDisplayHostCommon::HandleAccelerator(
     return true;
   }
 
-  if (WizardController::default_controller() &&
-      WizardController::default_controller()->is_initialized()) {
-    if (WizardController::default_controller()->HandleAccelerator(action))
+  if (GetWizardController() && GetWizardController()->is_initialized()) {
+    if (GetWizardController()->HandleAccelerator(action))
       return true;
   }
   // TODO(crbug.com/1102393): Remove once all accelerators handling is migrated
@@ -364,8 +401,7 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
-  WizardController::default_controller()->SetAuthSessionForOnboarding(
-      user_context);
+  GetWizardController()->SetAuthSessionForOnboarding(user_context);
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(
@@ -375,14 +411,55 @@ void LoginDisplayHostCommon::StartEncryptionMigration(
   StartWizard(EncryptionMigrationScreenView::kScreenId);
 
   EncryptionMigrationScreen* migration_screen =
-      WizardController::default_controller()
-          ->GetScreen<EncryptionMigrationScreen>();
+      GetWizardController()->GetScreen<EncryptionMigrationScreen>();
 
   DCHECK(migration_screen);
   migration_screen->SetUserContext(user_context);
   migration_screen->SetMode(migration_mode);
   migration_screen->SetSkipMigrationCallback(std::move(on_skip_migration));
   migration_screen->SetupInitialView();
+}
+
+void LoginDisplayHostCommon::ShowSigninError(SigninError error,
+                                             const std::string& details,
+                                             int login_attempts) {
+  VLOG(1) << "Show error, error_id: " << static_cast<int>(error)
+          << ", attempts:" << login_attempts;
+
+  std::string error_text;
+  switch (error) {
+    case SigninError::kCaptivePortalError:
+      error_text = l10n_util::GetStringFUTF8(
+          IDS_LOGIN_ERROR_CAPTIVE_PORTAL,
+          GetExistingUserController()->GetConnectedNetworkName());
+      break;
+    default:
+      error_text = l10n_util::GetStringUTF8(ErrorToMessageId(error));
+      break;
+  }
+
+  std::string keyboard_hint;
+
+  // Only display hints about keyboard layout if the error is authentication-
+  // related.
+  if (IsAuthError(error)) {
+    input_method::InputMethodManager* ime_manager =
+        input_method::InputMethodManager::Get();
+    // Display a hint to switch keyboards if there are other active input
+    // methods.
+    if (ime_manager->GetActiveIMEState()->GetNumActiveInputMethods() > 1) {
+      keyboard_hint =
+          l10n_util::GetStringUTF8(IDS_LOGIN_ERROR_KEYBOARD_SWITCH_HINT);
+    }
+  }
+
+  std::string help_link_text;
+  if (login_attempts > 1)
+    help_link_text = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
+
+  GetWizardController()->GetScreen<SignInFatalErrorScreen>()->SetCustomError(
+      error_text, keyboard_hint, details, help_link_text);
+  GetWizardController()->AdvanceToScreen(SignInFatalErrorView::kScreenId);
 }
 
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {

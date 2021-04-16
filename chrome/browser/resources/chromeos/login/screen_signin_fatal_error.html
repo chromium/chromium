@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
@@ -24,6 +25,12 @@
       <p id="subtitle" slot="subtitle">
         [[errorSubtitle_]]
       </p>
+      <div slot="subtitle" hidden="[[!keyboardHint_]]">[[keyboardHint_]]</div>
+      <div slot="subtitle" hidden="[[!details_]]">[[details_]]</div>
+      <a slot="subtitle" on-click="onHelpLinkClicked_"
+          hidden="[[!helpLinkText_]]" class="oobe-local-link" is="action-link">
+        [[helpLinkText_]]
+      </a>
       <div slot="bottom-buttons">
         <oobe-text-button id="actionButton" inverse class="focus-on-show"
             text-key="[[computeButtonKey_(errorState_)]]" on-tap="onClick_">

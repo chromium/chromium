@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 
 namespace chromeos {
@@ -36,7 +38,14 @@ void BaseScreen::HandleUserAction(const std::string& action_id) {
   if (is_hidden_) {
     LOG(WARNING) << "User action came when screen is hidden: action_id="
                  << action_id;
-    return;
+    const bool debugger_enabled =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kShowOobeDevOverlay);
+
+    // When debugger is enabled actions might come while screen is considered
+    // hidden. In that case let the action pass through.
+    if (!debugger_enabled)
+      return;
   }
   OnUserAction(action_id);
 }

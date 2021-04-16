@@ -11,6 +11,18 @@
 
 namespace chromeos {
 
+enum class SigninError {
+  kCaptivePortalError,
+  kGoogleAccountNotAllowed,
+  kOwnerRequired,
+  kTpmUpdateRequired,
+  kAuthenticationError,
+  kOfflineFailedNetworkNotConnected,
+  kAuthenticatingNew,
+  kAuthenticating,
+  kOwnerKeyLost,
+};
+
 // This class represents an interface between code that performs sign-in
 // operations and code that handles sign-in UI. It is used to encapsulate UI
 // implementation details and declare the required set of parameters that need
@@ -40,6 +52,10 @@ class SigninUI {
   // already tried to enter old password but it turned out to be incorrect.
   virtual void ShowPasswordChangedDialog(const AccountId& account_id,
                                          bool password_incorrect) = 0;
+
+  virtual void ShowSigninError(SigninError error,
+                               const std::string& details,
+                               int login_attempts) = 0;
 };
 
 }  // namespace chromeos

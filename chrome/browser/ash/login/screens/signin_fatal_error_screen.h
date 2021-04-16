@@ -8,8 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
@@ -28,6 +30,7 @@ class SignInFatalErrorScreen : public BaseScreen {
     SCRAPED_PASSWORD_VERIFICATION_FAILURE = 1,
     INSECURE_CONTENT_BLOCKED = 2,
     MISSING_GAIA_INFO = 3,
+    CUSTOM = 4,
   };
 
   explicit SignInFatalErrorScreen(SignInFatalErrorView* view,
@@ -40,8 +43,12 @@ class SignInFatalErrorScreen : public BaseScreen {
   // associated View if this class is destroyed before that.
   void OnViewDestroyed(SignInFatalErrorView* view);
 
-  // Setting the error state.
+  // Setting the error methods.
   void SetErrorState(Error error, const base::Value* params);
+  void SetCustomError(const std::string& error_text,
+                      const std::string& keyboard_hint,
+                      const std::string& details,
+                      const std::string& help_link_text);
 
  private:
   // BaseScreen:
@@ -54,6 +61,9 @@ class SignInFatalErrorScreen : public BaseScreen {
 
   SignInFatalErrorView* view_ = nullptr;
   base::RepeatingClosure exit_callback_;
+
+  // Help application used for help dialogs.
+  scoped_refptr<HelpAppLauncher> help_app_;
 };
 
 }  // namespace chromeos

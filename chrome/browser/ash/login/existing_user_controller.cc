@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -579,7 +580,7 @@ void ExistingUserController::CompleteLogin(const UserContext& user_context) {
                      weak_factory_.GetWeakPtr(), user_context));
 }
 
-std::u16string ExistingUserController::GetConnectedNetworkName() {
+std::u16string ExistingUserController::GetConnectedNetworkName() const {
   return network_state_helper_->GetCurrentNetworkName();
 }
 
@@ -629,7 +630,7 @@ void ExistingUserController::PerformLogin(
   if (IsActiveDirectoryManaged() &&
       user_context.GetUserType() != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
     PerformLoginFinishedActions(false /* don't start auto login timer */);
-    ShowError(IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED,
+    ShowError(SigninError::kGoogleAccountNotAllowed,
               "Google accounts are not allowed on this device");
     return;
   }
@@ -855,7 +856,7 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
   const bool is_known_user = user_manager::UserManager::Get()->IsKnownUser(
       last_login_attempt_account_id_);
   if (failure.reason() == AuthFailure::OWNER_REQUIRED) {
-    ShowError(IDS_LOGIN_ERROR_OWNER_REQUIRED, error);
+    ShowError(SigninError::kOwnerRequired, error);
     // Using Untretained here is safe because SessionTerminationManager is
     // destroyed after the task runner, in
     // ChromeBrowserMainParts::PostDestroyThreads().
@@ -868,7 +869,7 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
   } else if (failure.reason() == AuthFailure::TPM_ERROR) {
     ShowTPMError();
   } else if (failure.reason() == AuthFailure::TPM_UPDATE_REQUIRED) {
-    ShowError(IDS_LOGIN_ERROR_TPM_UPDATE_REQUIRED, error);
+    ShowError(SigninError::kTpmUpdateRequired, error);
   } else if (last_login_attempt_account_id_ == user_manager::GuestAccountId()) {
     // Show no errors, just re-enable input.
     GetLoginDisplay()->ClearAndEnablePassword();
@@ -892,15 +893,15 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
     // cached locally or the local admin account.
     if (!network_state_helper_->IsConnected()) {
       if (is_known_user)
-        ShowError(IDS_LOGIN_ERROR_AUTHENTICATING, error);
+        ShowError(SigninError::kAuthenticationError, error);
       else
-        ShowError(IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED, error);
+        ShowError(SigninError::kOfflineFailedNetworkNotConnected, error);
     } else {
       // TODO(nkostylev): Cleanup rest of ClientLogin related code.
       if (!is_known_user)
-        ShowError(IDS_LOGIN_ERROR_AUTHENTICATING_NEW, error);
+        ShowError(SigninError::kAuthenticatingNew, error);
       else
-        ShowError(IDS_LOGIN_ERROR_AUTHENTICATING, error);
+        ShowError(SigninError::kAuthenticating, error);
     }
     GetLoginDisplay()->ClearAndEnablePassword();
     StartAutoLoginTimer();
@@ -1164,7 +1165,7 @@ void ExistingUserController::AllowlistCheckFailed(const std::string& email) {
 }
 
 void ExistingUserController::PolicyLoadFailed() {
-  ShowError(IDS_LOGIN_ERROR_OWNER_KEY_LOST, "");
+  ShowError(SigninError::kOwnerKeyLost, std::string());
 
   PerformLoginFinishedActions(false /* don't start auto login timer */);
   ClearActiveDirectoryState();
@@ -1505,11 +1506,11 @@ void ExistingUserController::StartAutoLoginTimer() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void ExistingUserController::ShowError(int error_id,
+void ExistingUserController::ShowError(SigninError error,
                                        const std::string& details) {
   VLOG(1) << details;
-  GetLoginDisplay()->ShowError(error_id, num_login_attempts_,
-                               HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+  GetLoginDisplayHost()->GetSigninUI()->ShowSigninError(error, details,
+                                                        num_login_attempts_);
 }
 
 void ExistingUserController::SendAccessibilityAlert(
@@ -1609,8 +1610,9 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
     // If the `cros_settings_` are permanently untrusted, show an error message
     // and refuse to log in.
-    GetLoginDisplay()->ShowError(IDS_LOGIN_ERROR_OWNER_KEY_LOST, 1,
-                                 HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+    GetLoginDisplayHost()->GetSigninUI()->ShowSigninError(
+        SigninError::kOwnerKeyLost, /*details=*/std::string(),
+        /*login_attempts=*/1);
 
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. Without trusted `cros_settings_`, no auto-login

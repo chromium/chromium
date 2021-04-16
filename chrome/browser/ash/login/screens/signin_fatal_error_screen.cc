@@ -10,7 +10,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 
 namespace {
+
 constexpr char kUserActionScreenDismissed[] = "screen-dismissed";
+constexpr char kUserActionLearnMore[] = "learn-more";
+
 }  // namespace
 
 namespace chromeos {
@@ -42,6 +45,26 @@ void SignInFatalErrorScreen::SetErrorState(Error error,
                              : base::nullopt;
 }
 
+void SignInFatalErrorScreen::SetCustomError(const std::string& error_text,
+                                            const std::string& keyboard_hint,
+                                            const std::string& details,
+                                            const std::string& help_link_text) {
+  error_state_ = Error::CUSTOM;
+  extra_error_info_ =
+      base::make_optional<base::Value>(base::Value::Type::DICTIONARY);
+  DCHECK(!error_text.empty());
+  extra_error_info_->SetStringKey("errorText", error_text);
+  if (!keyboard_hint.empty()) {
+    extra_error_info_->SetStringKey("keyboardHint", keyboard_hint);
+  }
+  if (!details.empty()) {
+    extra_error_info_->SetStringKey("details", details);
+  }
+  if (!help_link_text.empty()) {
+    extra_error_info_->SetStringKey("helpLinkText", help_link_text);
+  }
+}
+
 void SignInFatalErrorScreen::ShowImpl() {
   if (!view_)
     return;
@@ -54,6 +77,12 @@ void SignInFatalErrorScreen::HideImpl() {}
 void SignInFatalErrorScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionScreenDismissed) {
     exit_callback_.Run();
+  } else if (action_id == kUserActionLearnMore) {
+    if (!help_app_.get()) {
+      help_app_ = new HelpAppLauncher(
+          LoginDisplayHost::default_host()->GetNativeWindow());
+    }
+    help_app_->ShowHelpTopic(HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
   } else {
     BaseScreen::OnUserAction(action_id);
   }

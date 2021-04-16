@@ -745,7 +745,7 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
-  AdvanceToScreen(GaiaView::kScreenId);
+  AdvanceToSigninScreen();
 }
 
 void WizardController::ShowLoginScreen() {
@@ -931,14 +931,7 @@ void WizardController::OnUserCreationScreenExit(
   switch (result) {
     case UserCreationScreen::Result::SIGNIN:
     case UserCreationScreen::Result::SKIPPED:
-      if (g_browser_process->platform_part()
-              ->browser_policy_connector_chromeos()
-              ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
-        AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
-      } else {
-        GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
-        AdvanceToScreen(GaiaView::kScreenId);
-      }
+      AdvanceToSigninScreen();
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
@@ -1076,6 +1069,18 @@ void WizardController::OnScreenExit(OobeScreenId screen,
 
   RecordUMAHistogramForOOBEStepCompletionTime(
       screen, exit_reason, base::TimeTicks::Now() - screen_show_times_[screen]);
+}
+
+void WizardController::AdvanceToSigninScreen() {
+  if (g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
+    AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
+  } else {
+    // Reset Gaia.
+    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+    AdvanceToScreen(GaiaView::kScreenId);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -143,57 +143,6 @@ void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   }
 }
 
-void LoginDisplayMojo::ShowError(int error_msg_id,
-                                 int login_attempts,
-                                 HelpAppLauncher::HelpTopic help_topic_id) {
-  // TODO(jdufault): Investigate removing this method once views-based
-  // login is fully implemented. Tracking bug at http://crbug/851680.
-  VLOG(1) << "Show error, error_id: " << error_msg_id
-          << ", attempts:" << login_attempts
-          << ", help_topic_id: " << help_topic_id;
-  if (!webui_handler_)
-    return;
-
-  if (!host_->IsOobeUIDialogVisible())
-    return;
-
-  std::string error_text;
-  switch (error_msg_id) {
-    case IDS_LOGIN_ERROR_CAPTIVE_PORTAL:
-      error_text = l10n_util::GetStringFUTF8(
-          error_msg_id, delegate()->GetConnectedNetworkName());
-      break;
-    default:
-      error_text = l10n_util::GetStringUTF8(error_msg_id);
-      break;
-  }
-
-  // Only display hints about keyboard layout if the error is authentication-
-  // related.
-  if (error_msg_id != IDS_LOGIN_ERROR_ALLOWLIST &&
-      error_msg_id != IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST &&
-      error_msg_id != IDS_ENTERPRISE_AND_FAMILY_LINK_LOGIN_ERROR_ALLOWLIST &&
-      error_msg_id != IDS_LOGIN_ERROR_OWNER_KEY_LOST &&
-      error_msg_id != IDS_LOGIN_ERROR_OWNER_REQUIRED &&
-      error_msg_id != IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED &&
-      error_msg_id != IDS_LOGIN_ERROR_TPM_UPDATE_REQUIRED) {
-    input_method::InputMethodManager* ime_manager =
-        input_method::InputMethodManager::Get();
-    // Display a hint to switch keyboards if there are other active input
-    // methods.
-    if (ime_manager->GetActiveIMEState()->GetNumActiveInputMethods() > 1) {
-      error_text +=
-          "\n" + l10n_util::GetStringUTF8(IDS_LOGIN_ERROR_KEYBOARD_SWITCH_HINT);
-    }
-  }
-
-  std::string help_link;
-  if (login_attempts > 1)
-    help_link = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
-
-  webui_handler_->ShowError(error_text, help_link, help_topic_id);
-}
-
 void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
   host_->ShowAllowlistCheckFailedError();
 }

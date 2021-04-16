@@ -450,6 +450,17 @@ cr.define('cr.ui.login.debug', function() {
             errorState: 3,
           },
         },
+        {
+          id: 'CRYPTOHOME_ERROR',
+          data: {
+            errorState: 4,
+            errorText:
+                'Sorry, your password could not be verified. Please try again',
+            keyboardHint: 'Check your keyboard layout and try again',
+            details: 'Could not mount cryptohome.',
+            helpLinkText: 'Learn more',
+          },
+        },
       ]
     },
     {

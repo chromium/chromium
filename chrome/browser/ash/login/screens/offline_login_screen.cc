@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -146,9 +147,9 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: User not found! "
                   "account type="
                << AccountId::AccountTypeToString(account_id.GetAccountType());
-    LoginDisplayHost::default_host()->GetLoginDisplay()->ShowError(
-        IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED, 1,
-        HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+        SigninError::kOfflineFailedNetworkNotConnected,
+        /*details=*/std::string(), /*login_attempts=*/1);
     return;
   }
 
