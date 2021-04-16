@@ -442,13 +442,13 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       ca_filter(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest) {
   DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
 
-  // On Mac OS Sierra, solid color layers are not color color corrected to the
-  // output monitor color space, but IOSurface-backed layers are color
-  // corrected. Note that this is only the case when the CALayers are shared
-  // across processes. To make colors consistent across both solid color and
-  // IOSurface-backed layers, use a cache of solid-color IOSurfaces as
-  // contents. Black and transparent layers must use real colors to be eligible
-  // for low power detachment in fullscreen.
+  // On Mac OS Sierra, solid color layers are not color converted to the output
+  // monitor color space, but IOSurface-backed layers are color converted. Note
+  // that this is only the case when the CALayers are shared across processes.
+  // To make colors consistent across both solid color and IOSurface-backed
+  // layers, use a cache of solid-color IOSurfaces as contents. Black and
+  // transparent layers must use real colors to be eligible for low power
+  // detachment in fullscreen.
   // https://crbug.com/633805
   if (!io_surface && !tree->allow_solid_color_layers_ &&
       background_color != SK_ColorBLACK &&
