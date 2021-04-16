@@ -203,6 +203,7 @@ export let PerfEntry;
  *   level: !ErrorLevel,
  *   stack: string,
  *   time: number,
+ *   name: string,
  * }}
  */
 export let ErrorInfo;

@@ -149,7 +149,8 @@ export function reportError(type, level, error) {
   triggeredErrorSet.add(hash);
 
   if (appWindow !== null) {
-    appWindow.reportError({type, level, stack: formatErrorStack(error), time});
+    appWindow.reportError(
+        {type, level, stack: formatErrorStack(error), time, name: errorName});
     return;
   }
   metrics.sendErrorEvent(
