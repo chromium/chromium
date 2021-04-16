@@ -56,8 +56,10 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+// TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
+// failures has been fixed.
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=LogJsConsoleMessages", "allow-pre-commit-input"})
 public class WebXrVrInputTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
