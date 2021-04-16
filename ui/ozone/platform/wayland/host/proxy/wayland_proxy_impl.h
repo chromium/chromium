@@ -25,6 +25,8 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   // WaylandProxy overrides:
   void SetDelegate(WaylandProxy::Delegate* delegate) override;
   wl_display* GetDisplay() override;
+  wl_display* GetDisplayWrapper() override;
+  void RoundTripQueue() override;
   wl_surface* GetWlSurfaceForAcceleratedWidget(
       gfx::AcceleratedWidget widget) override;
   wl_buffer* CreateShmBasedWlBuffer(const gfx::Size& buffer_size) override;

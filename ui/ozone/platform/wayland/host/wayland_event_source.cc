@@ -66,9 +66,11 @@ WaylandEventSource::TouchPoint::TouchPoint(gfx::PointF location,
 // WaylandEventSource implementation
 
 WaylandEventSource::WaylandEventSource(wl_display* display,
+                                       wl_event_queue* event_queue,
                                        WaylandWindowManager* window_manager)
     : window_manager_(window_manager),
-      event_watcher_(std::make_unique<WaylandEventWatcher>(display)) {
+      event_watcher_(
+          std::make_unique<WaylandEventWatcher>(display, event_queue)) {
   DCHECK(window_manager_);
 
   // Observes remove changes to know when touch points can be removed.
@@ -81,12 +83,12 @@ void WaylandEventSource::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_watcher_->SetShutdownCb(std::move(shutdown_cb));
 }
 
-bool WaylandEventSource::StartProcessingEvents() {
-  return event_watcher_->StartProcessingEvents();
+void WaylandEventSource::StartProcessingEvents() {
+  event_watcher_->StartProcessingEvents();
 }
 
-bool WaylandEventSource::StopProcessingEvents() {
-  return event_watcher_->StopProcessingEvents();
+void WaylandEventSource::StopProcessingEvents() {
+  event_watcher_->StopProcessingEvents();
 }
 
 void WaylandEventSource::OnKeyboardFocusChanged(WaylandWindow* window,
@@ -316,6 +318,10 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 
 void WaylandEventSource::ResetPointerFlags() {
   pointer_flags_ = 0;
+}
+
+void WaylandEventSource::UseSingleThreadedPollingForTesting() {
+  event_watcher_->UseSingleThreadedPollingForTesting();
 }
 
 void WaylandEventSource::OnDispatcherListChanged() {
