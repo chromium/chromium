@@ -34,9 +34,18 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace chromecast {
+
+namespace {
+
+base::TimeTicks TimeTicksFromTimestamp(int64_t timestamp) {
+  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp);
+}
+
+}  // namespace
 
 WebContentController::WebviewWindowVisibilityObserver::
     WebviewWindowVisibilityObserver(aura::Window* window,
@@ -349,30 +358,45 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         ui::DomKey dom_key =
             ui::KeycodeConverter::KeyStringToDomKey(ev.key().key_string());
 
-        // Backspace, delete, and tab have to be treated specially as they are
-        // characters according to DomKey, but they are non-printable.
-        bool is_printable_character =
-            dom_key.IsCharacter() && dom_key != ui::DomKey::TAB &&
-            dom_key != ui::DomKey::BACKSPACE && dom_key != ui::DomKey::DEL;
-
+        bool send_keypress = false;
+        ui::DomCode dom_code = UsLayoutDomKeyToDomCode(dom_key);
         ui::KeyboardCode keyboard_code =
-            is_printable_character
-                ? static_cast<ui::KeyboardCode>(dom_key.ToCharacter())
-                : NonPrintableDomKeyToKeyboardCode(dom_key);
-        ui::KeyEvent evt(type, keyboard_code,
-                         UsLayoutKeyboardCodeToDomCode(keyboard_code),
-                         ev.flags() | ui::EF_IS_SYNTHESIZED, dom_key,
-                         base::TimeTicks() +
-                             base::TimeDelta::FromMicroseconds(ev.timestamp()),
-                         is_printable_character);
+            DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
 
-        // Marks the simulated key event is from a Virtual Keyboard.
-        ui::Event::Properties properties;
-        properties[ui::kPropertyFromVK] =
-            std::vector<uint8_t>(ui::kPropertyFromVKSize);
-        evt.SetProperties(properties);
+        if (dom_key.IsCharacter())
+          send_keypress = true;
 
-        handler->OnKeyEvent(&evt);
+        // Required to match desktop.
+        if (keyboard_code == ui::VKEY_BACK || (keyboard_code == ui::VKEY_TAB))
+          send_keypress = false;
+
+        if (dom_code == ui::DomCode::NONE) {
+          if (type != ui::ET_KEY_PRESSED)
+            return;
+          // Non-US layout keys should only generate a keypress event.
+          ui::KeyEvent key_press(type, keyboard_code, dom_code, ev.flags(),
+                                 dom_key,
+                                 TimeTicksFromTimestamp(ev.timestamp()), true);
+          handler->OnKeyEvent(&key_press);
+          return;
+        }
+
+        // Generate the keydown or keyup event.
+        ui::KeyEvent key_event(type, keyboard_code, dom_code, ev.flags(),
+                               dom_key, TimeTicksFromTimestamp(ev.timestamp()),
+                               false);
+        handler->OnKeyEvent(&key_event);
+
+        if (key_event.stopped_propagation())
+          return;
+
+        if (send_keypress && type == ui::ET_KEY_PRESSED) {
+          // Generate the keypress event.
+          ui::KeyEvent key_press(type, keyboard_code, dom_code, ev.flags(),
+                                 dom_key,
+                                 TimeTicksFromTimestamp(ev.timestamp()), true);
+          handler->OnKeyEvent(&key_press);
+        }
       } else {
         client_->OnError("key() not supplied for key event");
       }

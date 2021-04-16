@@ -112,6 +112,10 @@ DomCodeToUsLayoutNonLocatedKeyboardCode(DomCode dom_code);
 // or 0 (EF_NONE) if the key is not a modifier.
 EVENTS_BASE_EXPORT int ModifierDomKeyToEventFlag(DomKey key);
 
+// Returns the physical DOM code along with a corresponding non-located
+// Windows-based key_code.
+EVENTS_BASE_EXPORT DomCode UsLayoutDomKeyToDomCode(DomKey dom_key);
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_

@@ -294,4 +294,21 @@ int ModifierDomKeyToEventFlag(DomKey key) {
   //   DomKey::SYMBOL_LOCK
 }
 
+DomCode UsLayoutDomKeyToDomCode(DomKey dom_key) {
+  if (dom_key.IsCharacter()) {
+    char16_t c = dom_key.ToCharacter();
+    for (const auto& it : kPrintableCodeMap) {
+      if (it.character[0] == c || it.character[1] == c) {
+        return it.dom_code;
+      }
+    }
+  }
+
+  for (const auto& it : kNonPrintableCodeMap) {
+    if (it.dom_key == dom_key)
+      return it.dom_code;
+  }
+  return DomCode::NONE;
+}
+
 }  // namespace ui

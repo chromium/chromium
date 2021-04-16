@@ -37,9 +37,41 @@ using testing::Truly;
 
 namespace chromecast {
 namespace {
+
 constexpr base::TimeDelta kDefaultTimeout =
     base::TimeDelta::FromMilliseconds(5000);
-}
+
+const std::string kKeyInputDataURL = R"HTML(
+<!DOCTYPE html>
+<html>
+<input type="text" id="input" autofocus></input>
+<script type="text/javascript">
+var keyDownCode = 0;
+var keyPressCode = 0;
+var keyUpCode = 0;
+var events = "";
+
+document.addEventListener("keydown", function(event) {
+  keyDownCode = event.keyCode;
+  events += "keydown ";
+  if (keyDownCode == 9) {
+    event.preventDefault();
+  }
+});
+document.addEventListener("keypress", function(event) {
+  keyPressCode = event.keyCode;
+  events += "keypress ";
+});
+document.addEventListener("keyup", function(event) {
+  keyUpCode = event.keyCode;
+  events += "keyup";
+});
+document.title = "ready";
+</script>
+</html>
+)HTML";
+
+}  // namespace
 
 class MockClient : public WebviewController::Client {
  public:
@@ -116,14 +148,20 @@ class WebviewTest : public content::BrowserTestBase {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != "/test" && absolute_url.path() != "/test2")
+    if (absolute_url.path() != "/test" && absolute_url.path() != "/test2" &&
+        absolute_url.path() != "/key_input")
       return nullptr;
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
-    http_response->set_content("hello");
-    http_response->set_content_type("text/plain");
+    if (absolute_url.path() == "/key_input") {
+      http_response->set_content(kKeyInputDataURL);
+      http_response->set_content_type("text/html");
+    } else {
+      http_response->set_content("hello");
+      http_response->set_content_type("text/plain");
+    }
     return http_response;
   }
 
@@ -145,6 +183,40 @@ class WebviewTest : public content::BrowserTestBase {
   }
 
   void Quit() { run_loop_->QuitWhenIdle(); }
+
+  webview::WebviewRequest GenerateKeyInputRequest(
+      int event_type,
+      const std::string& key_string) {
+    webview::WebviewRequest request;
+    request.mutable_input()->set_event_type(event_type);
+    request.mutable_input()->set_timestamp(
+        base::TimeTicks::Now().since_origin().InMicroseconds());
+    request.mutable_input()->mutable_key()->set_key_string(key_string);
+    return request;
+  }
+
+  int ExecuteScriptAndExtractInt(content::WebContents* contents,
+                                 const std::string& script) {
+    int value = 0;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        contents, "domAutomationController.send(" + script + ")", &value));
+    return value;
+  }
+
+  std::string ExecuteScriptAndExtractString(content::WebContents* contents,
+                                            const std::string& script) {
+    std::string value = "";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        contents, "domAutomationController.send(" + script + ")", &value));
+    return value;
+  }
+
+  bool URLLoaded(content::WebContents* contents) {
+    std::u16string ready_title(base::ASCIIToUTF16("ready"));
+    content::TitleWatcher watcher(contents, ready_title);
+    const std::u16string title = watcher.WaitAndGetTitle();
+    return title == ready_title;
+  }
 
   std::unique_ptr<content::TestBrowserContext> context_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -323,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverrideOnFirstRequest) {
       .Times(2)
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
-        EXPECT_TRUE(ExecuteScriptAndExtractString(
+        EXPECT_TRUE(content::ExecuteScriptAndExtractString(
             webview.GetWebContents(),
             "window.domAutomationController.send(document.body.textContent);",
             &header_value));
@@ -341,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverrideOnFirstRequest) {
       })
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
-        EXPECT_TRUE(ExecuteScriptAndExtractString(
+        EXPECT_TRUE(content::ExecuteScriptAndExtractString(
             webview.GetWebContents(),
             "window.domAutomationController.send(document.body.textContent);",
             &header_value));
@@ -384,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
       .Times(2)
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
-        EXPECT_TRUE(ExecuteScriptAndExtractString(
+        EXPECT_TRUE(content::ExecuteScriptAndExtractString(
             webview.GetWebContents(),
             "window.domAutomationController.send(document.body.textContent);",
             &header_value));
@@ -403,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
       })
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
-        EXPECT_TRUE(ExecuteScriptAndExtractString(
+        EXPECT_TRUE(content::ExecuteScriptAndExtractString(
             webview.GetWebContents(),
             "window.domAutomationController.send(document.body.textContent);",
             &header_value));
@@ -476,6 +548,148 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, GetUserAgent) {
   request.mutable_get_user_agent();
   SubmitWebviewRequest(&webview, request);
 
+  RunMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewTest, KeyInput) {
+  // Webview creation sends messages to the client (eg: accessibility ID).
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+
+  CastWindowManagerAura window_manager(false);
+  window_manager.Setup();
+
+  WebviewController webview(context_.get(), &client_, true);
+  window_manager.AddWindow(webview.GetWebContents()->GetNativeView());
+  webview.GetWebContents()->GetNativeView()->Show();
+  webview.GetWebContents()->GetNativeView()->Focus();
+
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/key_input");
+
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_page_event() &&
+           response->page_event().current_page_state() ==
+               webview::AsyncPageEvent_State_LOADED;
+  };
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce([this,
+                 &webview](std::unique_ptr<webview::WebviewResponse> response) {
+        DCHECK(URLLoaded(webview.GetWebContents()));
+
+        content::RenderFrameSubmissionObserver frame_observer(
+            webview.GetWebContents());
+
+        webview::WebviewRequest input =
+            GenerateKeyInputRequest(ui::ET_KEY_PRESSED, "a");
+        webview.ProcessRequest(input);
+        input = GenerateKeyInputRequest(ui::ET_KEY_RELEASED, "a");
+        webview.ProcessRequest(input);
+
+        while (ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyDownCode") == 0 ||
+               ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyPressCode") == 0 ||
+               ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyUpCode") == 0)
+          frame_observer.WaitForAnyFrameSubmission();
+
+        EXPECT_EQ(
+            ExecuteScriptAndExtractString(webview.GetWebContents(), "events"),
+            "keydown keypress keyup");
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyDownCode"),
+            65);
+        EXPECT_EQ(ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                             "keyPressCode"),
+                  97);
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyUpCode"),
+            65);
+
+        input = GenerateKeyInputRequest(ui::ET_KEY_PRESSED, u8"\u00b6");
+        webview.ProcessRequest(input);
+        input = GenerateKeyInputRequest(ui::ET_KEY_RELEASED, u8"\u00b6");
+        webview.ProcessRequest(input);
+
+        while (ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyPressCode") == 97)
+          frame_observer.WaitForAnyFrameSubmission();
+
+        // Non-US layout keys should only generate a keypress event.
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyDownCode"),
+            65);
+        EXPECT_EQ(ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                             "keyPressCode"),
+                  182);
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyUpCode"),
+            65);
+
+        input = GenerateKeyInputRequest(ui::ET_KEY_PRESSED, "Backspace");
+        webview.ProcessRequest(input);
+        input = GenerateKeyInputRequest(ui::ET_KEY_RELEASED, "Backspace");
+        webview.ProcessRequest(input);
+
+        while (ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyDownCode") == 0 ||
+               ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyUpCode") == 0)
+          frame_observer.WaitForAnyFrameSubmission();
+
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyDownCode"),
+            8);
+        // Backspace does not generate a keypress event.
+        EXPECT_EQ(ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                             "keyPressCode"),
+                  182);
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyUpCode"),
+            8);
+
+        input = GenerateKeyInputRequest(ui::ET_KEY_PRESSED, "Tab");
+        webview.ProcessRequest(input);
+        input = GenerateKeyInputRequest(ui::ET_KEY_RELEASED, "Tab");
+        webview.ProcessRequest(input);
+
+        while (ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyDownCode") == 8 ||
+               ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                          "keyUpCode") == 8)
+          frame_observer.WaitForAnyFrameSubmission();
+
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyDownCode"),
+            9);
+        // Tab does not generate a keypress event.
+        EXPECT_EQ(ExecuteScriptAndExtractInt(webview.GetWebContents(),
+                                             "keyPressCode"),
+                  182);
+        EXPECT_EQ(
+            ExecuteScriptAndExtractInt(webview.GetWebContents(), "keyUpCode"),
+            9);
+        Quit();
+      })
+      .WillRepeatedly(
+          [](std::unique_ptr<webview::WebviewResponse> response) {});
+
+  // Need to enable JS in order to extract the key string from the loaded
+  // web page.
+  webview::WebviewRequest update_settings;
+  update_settings.mutable_update_settings()->set_javascript_enabled(true);
+  SubmitWebviewRequest(&webview, update_settings);
+
+  // Requests are executed serially. Resize first to make sure the Webview is
+  // properly sized by the time the page loads.
+  webview::WebviewRequest resize;
+  resize.mutable_resize()->set_width(800);
+  resize.mutable_resize()->set_height(600);
+  SubmitWebviewRequest(&webview, resize);
+
+  webview::WebviewRequest navigate;
+  navigate.mutable_navigate()->set_url(test_url.spec());
+  SubmitWebviewRequest(&webview, navigate);
   RunMessageLoop();
 }
 
