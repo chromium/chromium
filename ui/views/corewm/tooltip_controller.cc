@@ -149,6 +149,13 @@ void TooltipController::UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
   anchor_point_ = bounds.bottom_center();
   SetObservedWindow(target);
 
+  // Update the position of the active but not yet visible keyboard triggered
+  // tooltip, if any.
+  if (state_manager_->tooltip_parent_window()) {
+    state_manager_->UpdatePositionIfNeeded(anchor_point_,
+                                           TooltipTrigger::kKeyboard);
+  }
+
   // This function is always only called for keyboard-triggered tooltips.
   UpdateIfRequired(TooltipTrigger::kKeyboard);
 
@@ -191,8 +198,6 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       last_mouse_loc_ = event->location();
-      state_manager_->UpdatePositionIfWillShowTooltipTimerIsRunning(
-          last_mouse_loc_);
       aura::Window* target = nullptr;
       // Avoid a call to display::Screen::GetWindowAtScreenPoint() since it can
       // be very expensive on X11 in cases when the tooltip is hidden anyway.
@@ -200,6 +205,10 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
           !IsDragDropInProgress()) {
         target = GetTooltipTarget(*event, &last_mouse_loc_);
       }
+      // This needs to be called after the |last_mouse_loc_| is converted to the
+      // target's screen coordinates.
+      state_manager_->UpdatePositionIfNeeded(last_mouse_loc_,
+                                             TooltipTrigger::kCursor);
       SetObservedWindow(target);
 
       if (state_manager_->IsVisible() ||

@@ -75,11 +75,11 @@ class VIEWS_EXPORT TooltipStateManager {
   TooltipTrigger tooltip_trigger() const { return tooltip_trigger_; }
 
   // Update the |position_| if we're about to show the tooltip. This is to
-  // ensure that the tooltip's position is aligned with the latest cursor
-  // location, even when the cursor moves inside the same view after the show
-  // timer has started.
-  void UpdatePositionIfWillShowTooltipTimerIsRunning(
-      const gfx::Point& position);
+  // ensure that the tooltip's position is aligned with either the latest cursor
+  // location for a cursor triggered tooltip or the most recent position
+  // received for a keyboard triggered tooltip.
+  void UpdatePositionIfNeeded(const gfx::Point& position,
+                              TooltipTrigger trigger);
 
  private:
   friend class test::TooltipControllerTestHelper;

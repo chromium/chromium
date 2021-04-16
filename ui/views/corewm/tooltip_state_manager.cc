@@ -89,9 +89,15 @@ void TooltipStateManager::StopWillShowTooltipTimer() {
   will_show_tooltip_timer_.Stop();
 }
 
-void TooltipStateManager::UpdatePositionIfWillShowTooltipTimerIsRunning(
-    const gfx::Point& position) {
-  if (!will_show_tooltip_timer_.IsRunning())
+void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
+                                                 TooltipTrigger trigger) {
+  // The position should only be updated when the tooltip has been triggered but
+  // is not yet visible. Also, we only want to allow the update when it's set
+  // off by the same trigger that started the |will_show_tooltip_timer_| in
+  // the first place. Otherwise, for example, the position of a keyboard
+  // triggered tooltip could be updated by an unrelated mouse exited event. The
+  // tooltip would then show up at the wrong location.
+  if (!will_show_tooltip_timer_.IsRunning() || trigger != tooltip_trigger_)
     return;
 
   position_ = position;
