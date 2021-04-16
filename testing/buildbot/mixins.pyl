@@ -301,6 +301,21 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
+  'chromium-webrtc-rel-7': {
+    'perf_builder_name_alias': 'chromium-webrtc-rel-7',
+  },
+  'chromium-webrtc-rel-linux': {
+    'perf_builder_name_alias': 'chromium-webrtc-rel-linux',
+  },
+  'chromium-webrtc-rel-mac': {
+    'perf_builder_name_alias': 'chromium-webrtc-rel-mac',
+  },
+  'chromium-webrtc-rel-win10': {
+    'perf_builder_name_alias': 'chromium-webrtc-rel-win10',
+  },
+  'chromium-webrtc-rel-win8': {
+    'perf_builder_name_alias': 'chromium-webrtc-rel-win8',
+  },
   'dawn_end2end_gpu_test': {
     '$mixin_append': {
       'args': [

@@ -5791,6 +5791,13 @@
       'WebRTC Chromium Linux Tester': {
         'mixins': [
           'linux-xenial',
+          # Set an alias for builder name used in perf dashboard.
+          # Historically, webrtc perf tests had perf-id rather than builder
+          # name to present their data in perf dashboard. As perf-id was
+          # deprecated in perf dashboard, we add perf_builder_name_alias
+          # field to replace perf-id, keeping the metrics in perf dashboard
+          # consistent.
+          'chromium-webrtc-rel-linux',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
@@ -5803,6 +5810,9 @@
         ],
       },
       'WebRTC Chromium Mac Tester': {
+        'mixins': [
+          'chromium-webrtc-rel-mac',
+        ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
         },
@@ -5814,16 +5824,25 @@
         ],
       },
       'WebRTC Chromium Win10 Tester': {
+        'mixins': [
+          'chromium-webrtc-rel-win10',
+        ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
         },
       },
       'WebRTC Chromium Win7 Tester': {
+        'mixins': [
+          'chromium-webrtc-rel-7',
+        ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
         },
       },
       'WebRTC Chromium Win8 Tester': {
+        'mixins': [
+          'chromium-webrtc-rel-win8',
+        ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
         },
