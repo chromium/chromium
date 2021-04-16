@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "components/arc/arc_util.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -40,6 +41,32 @@ apps::mojom::WindowInfoPtr ConvertToArcBounds(
   window_info->bounds->height *= scale_factor;
   return window_info;
 }
+
+ArcWindowHandler::WindowSessionResolver::WindowSessionResolver(
+    ShellSurfaceMap* session_id_map)
+    : session_id_map_(session_id_map) {}
+
+void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
+    const Params& params,
+    ui::PropertyHandler& out_properties_container) {
+  if (params.window_session_id <= 0)
+    return;
+  auto it = session_id_map_->find(params.window_session_id);
+  if (it != session_id_map_->end()) {
+    if (it->second->HasOverlay())
+      it->second->RemoveOverlay();
+    SetShellClientControlledShellSurface(&out_properties_container,
+                                         it->second.release());
+    session_id_map_->erase(it);
+  }
+}
+
+ArcWindowHandler::ArcWindowHandler() {
+  exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
+      std::make_unique<WindowSessionResolver>(&session_id_to_shell_surface_));
+}
+
+ArcWindowHandler::~ArcWindowHandler() = default;
 
 void ArcWindowHandler::OnAppInstanceConnected() {
   // TODO(sstan): Send existed ghost window info to ARC once ghost window

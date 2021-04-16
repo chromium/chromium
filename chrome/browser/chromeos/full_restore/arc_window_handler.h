@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 
+#include "components/exo/client_controlled_shell_surface.h"
+#include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+
+namespace exo {
+class ClientControlledShellSurface;
+}
 
 namespace chromeos {
 namespace full_restore {
@@ -21,11 +27,33 @@ apps::mojom::WindowInfoPtr ConvertToArcBounds(
 
 // The ArcWindowHandler class provides control for ARC ghost window.
 class ArcWindowHandler {
+  // Map from window_session_id to exo::ClientControlledShellSurface.
+  using ShellSurfaceMap =
+      std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>;
+
+  // This class populates the exo::ShellSurfaceBase to PropertyHandler by
+  // the corresponding window session id.
+  class WindowSessionResolver : public exo::WMHelper::AppPropertyResolver {
+   public:
+    explicit WindowSessionResolver(ShellSurfaceMap* session_id_map);
+    WindowSessionResolver(const WindowSessionResolver&) = delete;
+    WindowSessionResolver& operator=(const WindowSessionResolver&) = delete;
+    ~WindowSessionResolver() override = default;
+
+    // exo::WMHelper::AppPropertyResolver:
+    void PopulateProperties(
+        const Params& params,
+        ui::PropertyHandler& out_properties_container) override;
+
+   private:
+    ShellSurfaceMap* session_id_map_;
+  };
+
  public:
-  ArcWindowHandler() = default;
+  ArcWindowHandler();
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
-  ~ArcWindowHandler() = default;
+  ~ArcWindowHandler();
 
   void OnAppInstanceConnected();
 
@@ -33,6 +61,9 @@ class ArcWindowHandler {
   // The ghost windows would not send window info to app instance if the
   // instance had not connected yet.
   bool app_instance_connected_ = false;
+
+  // Map window session id to ClientControlledShellSurface.
+  ShellSurfaceMap session_id_to_shell_surface_;
 };
 
 }  // namespace full_restore

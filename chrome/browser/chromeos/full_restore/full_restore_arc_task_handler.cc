@@ -8,6 +8,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_utils.h"
 
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+#include "chrome/browser/exo_parts.h"
+#endif
+
 namespace chromeos {
 namespace full_restore {
 
@@ -23,7 +27,12 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
     return;
 
   arc_prefs_observer_.Observe(prefs);
-  window_handler_ = std::make_unique<ArcWindowHandler>();
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  exo_parts_ = ExoParts::CreateIfNecessary();
+  if (exo_parts_)
+    window_handler_ = std::make_unique<ArcWindowHandler>();
+#endif
 }
 
 FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() = default;
@@ -42,7 +51,10 @@ void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
 }
 
 void FullRestoreArcTaskHandler::OnConnectionReady() {
-  window_handler_->OnAppInstanceConnected();
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  if (window_handler_)
+    window_handler_->OnAppInstanceConnected();
+#endif
 }
 
 }  // namespace full_restore
