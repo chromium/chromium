@@ -1609,7 +1609,6 @@ void NGLineBreaker::HandleAtomicInline(
   if (state_ == LineBreakState::kContinue && remaining_width < 0) {
     const unsigned item_index = item_index_;
     DCHECK_EQ(item_index, static_cast<unsigned>(&item - Items().begin()));
-    DCHECK(!line_info->HasOverflow());
     HandleOverflow(line_info);
     if (!line_info->HasOverflow() || item_index != item_index_)
       return;
