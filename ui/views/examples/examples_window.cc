@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/examples/examples_window.h"
+#include "base/memory/checked_ptr.h"
 
 #include <algorithm>
 #include <iostream>
@@ -212,12 +213,12 @@ class ExamplesWindowContents : public WidgetDelegateView {
   }
 
   static ExamplesWindowContents* instance_;
-  View* example_shown_ = nullptr;
-  Label* status_label_ = nullptr;
+  CheckedPtr<View> example_shown_ = nullptr;
+  CheckedPtr<Label> status_label_ = nullptr;
   base::OnceClosure on_close_;
-  Combobox* combobox_ = nullptr;
+  CheckedPtr<Combobox> combobox_ = nullptr;
   // Owned by |combobox_|.
-  ComboboxModelExampleList* combobox_model_ = nullptr;
+  CheckedPtr<ComboboxModelExampleList> combobox_model_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ExamplesWindowContents);
 };

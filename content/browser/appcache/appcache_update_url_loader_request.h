@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/appcache/appcache_update_job.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -127,7 +128,7 @@ class AppCacheUpdateJob::UpdateURLLoaderRequest
   // a pending read.
   void MaybeStartReading();
 
-  URLFetcher* fetcher_;
+  CheckedPtr<URLFetcher> fetcher_;
   // |partition_| is used to get the network URLLoader.
   base::WeakPtr<StoragePartitionImpl> partition_;
 

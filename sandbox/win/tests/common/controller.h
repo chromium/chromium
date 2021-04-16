@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -136,7 +137,7 @@ class TestRunner {
   // The actual runner.
   int InternalRunTest(const wchar_t* command);
 
-  BrokerServices* broker_;
+  CheckedPtr<BrokerServices> broker_;
   scoped_refptr<TargetPolicy> policy_;
   DWORD timeout_;
   SboxTestsState state_;

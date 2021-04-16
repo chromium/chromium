@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -76,7 +77,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
  private:
   std::vector<safe_browsing::ListIdentifier> lists_to_insert_;
   std::vector<safe_browsing::ListIdentifier> lists_;
-  safe_browsing::TestV4StoreFactory* store_factory_;
+  CheckedPtr<safe_browsing::TestV4StoreFactory> store_factory_;
 };
 
 TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper()

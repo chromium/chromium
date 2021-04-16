@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
@@ -147,7 +148,7 @@ class ThemeService::ThemeObserver
     }
   }
 
-  ThemeService* theme_service_;
+  CheckedPtr<ThemeService> theme_service_;
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>

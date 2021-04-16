@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
@@ -73,7 +74,7 @@ class GL_EXPORT GLImageD3D : public GLImage {
   const gfx::Size size_;
   const unsigned internal_format_;  // GLenum
   const unsigned data_type_;        // GLenum
-  void* egl_image_ = nullptr;       // EGLImageKHR
+  CheckedPtr<void> egl_image_ = nullptr;  // EGLImageKHR
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 

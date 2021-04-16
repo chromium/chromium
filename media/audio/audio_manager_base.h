@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -207,7 +208,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   AudioOutputDispatchers output_dispatchers_;
 
   // Proxy for creating AudioLog objects.
-  AudioLogFactory* const audio_log_factory_;
+  const CheckedPtr<AudioLogFactory> audio_log_factory_;
 
   // Debug recording manager.
   std::unique_ptr<AudioDebugRecordingManager> debug_recording_manager_;

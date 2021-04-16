@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -101,10 +102,10 @@ class CONTENT_EXPORT MediaSessionController
   const MediaPlayerId id_;
 
   // Outlives |this|.
-  WebContentsImpl* const web_contents_;
+  const CheckedPtr<WebContentsImpl> web_contents_;
 
   // Outlives |this|.
-  MediaSessionImpl* const media_session_;
+  const CheckedPtr<MediaSessionImpl> media_session_;
 
   base::Optional<media_session::MediaPosition> position_;
 

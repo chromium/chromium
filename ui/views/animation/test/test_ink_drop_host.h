@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 
 namespace views {
@@ -58,8 +59,8 @@ class TestInkDropHost : public InkDropHostView {
   mutable int num_ink_drop_ripples_created_ = 0;
   mutable int num_ink_drop_highlights_created_ = 0;
 
-  mutable const InkDropRipple* last_ink_drop_ripple_ = nullptr;
-  mutable const InkDropHighlight* last_ink_drop_highlight_ = nullptr;
+  mutable CheckedPtr<const InkDropRipple> last_ink_drop_ripple_ = nullptr;
+  mutable CheckedPtr<const InkDropHighlight> last_ink_drop_highlight_ = nullptr;
 
   // When true, the InkDropRipple/InkDropHighlight instances will have their
   // timers disabled after creation.

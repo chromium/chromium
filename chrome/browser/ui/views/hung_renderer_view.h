@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"
@@ -105,7 +106,7 @@ class HungPagesTableModel : public ui::TableModel,
     void WebContentsDestroyed() override;
 
    private:
-    HungPagesTableModel* model_;
+    CheckedPtr<HungPagesTableModel> model_;
   };
 
   // Invoked when a WebContents is destroyed. Cleans up |tab_observers_| and
@@ -118,10 +119,10 @@ class HungPagesTableModel : public ui::TableModel,
 
   std::vector<std::unique_ptr<WebContentsObserverImpl>> tab_observers_;
 
-  ui::TableModelObserver* observer_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<ui::TableModelObserver> observer_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
-  content::RenderWidgetHost* render_widget_host_ = nullptr;
+  CheckedPtr<content::RenderWidgetHost> render_widget_host_ = nullptr;
 
   // Callback that restarts the hang timeout (e.g. if the user wants to wait
   // some more until the renderer process responds).
@@ -221,13 +222,13 @@ class HungRendererDialogView : public views::DialogDelegateView,
   static void BypassActiveBrowserRequirementForTests();
 
   // The WebContents that this dialog was created for and is associated with.
-  content::WebContents* const web_contents_;
+  const CheckedPtr<content::WebContents> web_contents_;
 
   // The label describing the list.
-  views::Label* info_label_ = nullptr;
+  CheckedPtr<views::Label> info_label_ = nullptr;
 
   // Controls within the dialog box.
-  views::TableView* hung_pages_table_ = nullptr;
+  CheckedPtr<views::TableView> hung_pages_table_ = nullptr;
 
   // The model that provides the contents of the table that shows a list of
   // pages affected by the hang.

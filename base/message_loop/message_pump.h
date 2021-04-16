@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -100,7 +101,7 @@ class BASE_EXPORT MessagePump {
         outer_->OnBeginNativeWork();
       }
 
-      Delegate* outer_;
+      CheckedPtr<Delegate> outer_;
     };
 
     // Called before a unit of native work is executed. This allows reports

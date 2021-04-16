@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -40,7 +41,7 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  MockSaveAddressProfilePromptView* prompt_view_;
+  CheckedPtr<MockSaveAddressProfilePromptView> prompt_view_;
   AutofillProfile profile_ = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;

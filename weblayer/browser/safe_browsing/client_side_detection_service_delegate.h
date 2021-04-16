@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "weblayer/browser/browser_context_impl.h"
 
@@ -25,7 +26,7 @@ class ClientSideDetectionServiceDelegate
   safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
-  BrowserContextImpl* browser_context_;
+  CheckedPtr<BrowserContextImpl> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionServiceDelegate);
 };

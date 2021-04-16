@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -232,7 +233,7 @@ class ContentBrowserClientRegistration {
   }
 
  private:
-  ContentBrowserClient* const old_client_;
+  const CheckedPtr<ContentBrowserClient> old_client_;
 };
 
 }  // namespace

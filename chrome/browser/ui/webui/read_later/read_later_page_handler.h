@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -79,12 +80,12 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   mojo::Remote<read_later::mojom::Page> page_;
   // ReadLaterPageHandler is owned by |read_later_ui_| and so we expect
   // |read_later_ui_| to remain valid for the lifetime of |this|.
-  ReadLaterUI* const read_later_ui_;
-  content::WebContents* web_contents_;
+  const CheckedPtr<ReadLaterUI> read_later_ui_;
+  CheckedPtr<content::WebContents> web_contents_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
-  ReadingListModel* reading_list_model_ = nullptr;
+  CheckedPtr<ReadingListModel> reading_list_model_ = nullptr;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_scoped_observation_{this};
 };

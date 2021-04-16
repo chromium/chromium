@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 
@@ -93,8 +94,8 @@ class WindowController {
   void NotifyWindowBoundsChanged();
 
  private:
-  ui::BaseWindow* window_;
-  Profile* profile_;
+  CheckedPtr<ui::BaseWindow> window_;
+  CheckedPtr<Profile> profile_;
 };
 
 }  // namespace extensions

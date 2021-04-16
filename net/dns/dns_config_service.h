@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -101,7 +102,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     // Back pointer. `this` is expected to be owned by `service_`, making this
     // raw pointer safe.
-    DnsConfigService* const service_;
+    const CheckedPtr<DnsConfigService> service_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
@@ -144,7 +145,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     // Raw pointer to owning DnsConfigService. This must never be accessed
     // inside DoWork(), since service may be destroyed while SerialWorker is
     // running on worker thread.
-    DnsConfigService* const service_;
+    const CheckedPtr<DnsConfigService> service_;
     // Written in DoWork, read in OnWorkFinished, no locking necessary.
     base::Optional<DnsHosts> hosts_;
 

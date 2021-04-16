@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -205,8 +206,8 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     bool visible() const;
 
    private:
-    View* view_ = nullptr;
-    const BoxLayout* layout_ = nullptr;
+    CheckedPtr<View> view_ = nullptr;
+    CheckedPtr<const BoxLayout> layout_ = nullptr;
     gfx::Insets margins_;
 
     DISALLOW_COPY_AND_ASSIGN(ViewWrapper);
@@ -349,7 +350,7 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
   bool collapse_margins_spacing_;
 
   // The view that this BoxLayout is managing the layout for.
-  views::View* host_ = nullptr;
+  CheckedPtr<views::View> host_ = nullptr;
 };
 
 }  // namespace views

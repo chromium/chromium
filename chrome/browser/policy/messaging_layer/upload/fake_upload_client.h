@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
 namespace reporting {
@@ -34,7 +35,7 @@ class FakeUploadClient : public UploadClient {
 
   void OnUploadComplete(base::Optional<base::Value> response);
 
-  policy::CloudPolicyClient* const cloud_policy_client_;
+  const CheckedPtr<policy::CloudPolicyClient> cloud_policy_client_;
   ReportSuccessfulUploadCallback report_upload_success_cb_;
   EncryptionKeyAttachedCallback encryption_key_attached_cb_;
 };

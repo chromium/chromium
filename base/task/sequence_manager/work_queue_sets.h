@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/common/intrusive_heap.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -151,7 +152,7 @@ class BASE_EXPORT WorkQueueSets {
   mutable uint64_t last_rand_;
 #endif
 
-  Observer* const observer_;
+  const CheckedPtr<Observer> observer_;
 };
 
 }  // namespace internal

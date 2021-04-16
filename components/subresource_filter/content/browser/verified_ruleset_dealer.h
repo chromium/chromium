@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -110,7 +111,7 @@ class VerifiedRulesetDealer::Handle {
 
  private:
   // Note: Raw pointer, |dealer_| already holds a reference to |task_runner_|.
-  base::SequencedTaskRunner* task_runner_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer, base::OnTaskRunnerDeleter> dealer_;
   base::SequenceChecker sequence_checker_;
 
@@ -172,7 +173,7 @@ class VerifiedRuleset::Handle {
   friend class AsyncDocumentSubresourceFilter;
 
   // Note: Raw pointer, |ruleset_| already holds a reference to |task_runner_|.
-  base::SequencedTaskRunner* task_runner_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRuleset, base::OnTaskRunnerDeleter> ruleset_;
   base::SequenceChecker sequence_checker_;
 

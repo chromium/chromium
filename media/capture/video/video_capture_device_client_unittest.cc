@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -75,7 +76,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
-  NiceMock<MockVideoFrameReceiver>* receiver_;
+  CheckedPtr<NiceMock<MockVideoFrameReceiver>> receiver_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;

@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1068,7 +1069,7 @@ class CheckExtensionInstalledObserver
 
  private:
   bool seen_;
-  extensions::ExtensionRegistry* registry_;
+  CheckedPtr<extensions::ExtensionRegistry> registry_;
 };
 
 }  // namespace

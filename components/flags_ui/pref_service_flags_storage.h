@@ -6,6 +6,7 @@
 #define COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_storage.h"
@@ -41,7 +42,7 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefServiceFlagsStorage);
 };

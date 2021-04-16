@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
@@ -40,7 +41,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
 
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
-  DeviceTrustService* device_trust_service_;
+  CheckedPtr<DeviceTrustService> device_trust_service_;
   // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;
 

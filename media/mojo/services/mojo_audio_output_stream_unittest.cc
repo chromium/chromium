@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
@@ -163,7 +164,7 @@ class MojoAudioOutputStreamTest : public Test {
   void ExpectDelegateCreation() {
     delegate_ = new StrictMock<MockDelegate>();
     mock_delegate_factory_.PrepareDelegateForCreation(
-        base::WrapUnique(delegate_));
+        base::WrapUnique(delegate_.get()));
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(&local_, foreign_socket_.get()));
     mem_ = base::UnsafeSharedMemoryRegion::Create(kShmemSize);
@@ -176,7 +177,7 @@ class MojoAudioOutputStreamTest : public Test {
   base::CancelableSyncSocket local_;
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
   base::UnsafeSharedMemoryRegion mem_;
-  StrictMock<MockDelegate>* delegate_ = nullptr;
+  CheckedPtr<StrictMock<MockDelegate>> delegate_ = nullptr;
   AudioOutputDelegate::EventHandler* delegate_event_handler_ = nullptr;
   StrictMock<MockDelegateFactory> mock_delegate_factory_;
   StrictMock<MockDeleter> deleter_;

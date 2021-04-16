@@ -26,6 +26,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
@@ -123,7 +124,8 @@ class NET_EXPORT URLRequestContextBuilder {
 #if defined(OS_ANDROID)
     // If this is set, will override the default ApplicationStatusListener. This
     // is useful if the cache will not be in the main process.
-    base::android::ApplicationStatusListener* app_status_listener = nullptr;
+    CheckedPtr<base::android::ApplicationStatusListener> app_status_listener =
+        nullptr;
 #endif
   };
 
@@ -340,7 +342,7 @@ class NET_EXPORT URLRequestContextBuilder {
  private:
   std::string name_;
   bool enable_brotli_ = false;
-  NetworkQualityEstimator* network_quality_estimator_ = nullptr;
+  CheckedPtr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   std::string accept_language_;
   std::string user_agent_;
@@ -359,11 +361,11 @@ class NET_EXPORT URLRequestContextBuilder {
   CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
   base::FilePath transport_security_persister_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
-  NetLog* net_log_ = nullptr;
+  CheckedPtr<NetLog> net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
   std::string host_mapping_rules_;
-  HostResolverManager* host_resolver_manager_ = nullptr;
-  HostResolver::Factory* host_resolver_factory_ = nullptr;
+  CheckedPtr<HostResolverManager> host_resolver_manager_ = nullptr;
+  CheckedPtr<HostResolver::Factory> host_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyConfigService> proxy_config_service_;
   bool pac_quick_check_enabled_ = true;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
@@ -386,7 +388,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
+  CheckedPtr<ClientSocketFactory> client_socket_factory_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilder);
 };

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -192,7 +193,7 @@ class UIThreadDestructionObserver
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   base::OnceClosure callback_;
-  bool* did_shutdown_;
+  CheckedPtr<bool> did_shutdown_;
 };
 
 TEST_F(BrowserThreadTest, PostTask) {

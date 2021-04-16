@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -114,7 +115,7 @@ class OmniboxResultSelectionIndicator : public views::View {
   SkColor color_;
 
   // Pointer to the parent view.
-  OmniboxResultView* const result_view_;
+  const CheckedPtr<OmniboxResultView> result_view_;
 
   // The focus bar is a straight vertical line with half-rounded endcaps. Since
   // this geometry is nontrivial to represent using primitives, it's instead

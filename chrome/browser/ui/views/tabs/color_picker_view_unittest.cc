@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -86,7 +87,7 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
   ::testing::NiceMock<
       base::MockCallback<ColorPickerView::ColorSelectedCallback>>
       color_selected_callback_;
-  ColorPickerView* color_picker_;
+  CheckedPtr<ColorPickerView> color_picker_;
 
  private:
   std::unique_ptr<views::Widget> widget_;

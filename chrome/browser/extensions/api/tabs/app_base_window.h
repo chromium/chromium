@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/base_window.h"
 
 namespace extensions {
@@ -50,7 +51,7 @@ class AppBaseWindow : public ui::BaseWindow {
 
   NativeAppWindow* GetBaseWindow() const;
 
-  AppWindow* app_window_;
+  CheckedPtr<AppWindow> app_window_;
 
   DISALLOW_COPY_AND_ASSIGN(AppBaseWindow);
 };

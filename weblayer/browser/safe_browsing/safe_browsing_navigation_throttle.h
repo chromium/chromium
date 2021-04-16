@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_THROTTLE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -23,7 +24,7 @@ class SafeBrowsingNavigationThrottle : public content::NavigationThrottle {
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override;
 
  private:
-  SafeBrowsingUIManager* ui_manager_;
+  CheckedPtr<SafeBrowsingUIManager> ui_manager_;
 };
 
 }  // namespace weblayer

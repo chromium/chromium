@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -114,7 +115,7 @@ class FormDataParserUrlEncoded : public FormDataParser {
   const RE2::Arg* args_[args_size_];
 
   // Caching the pointer to g_patterns.Get().
-  const Patterns* patterns_;
+  CheckedPtr<const Patterns> patterns_;
 
   DISALLOW_COPY_AND_ASSIGN(FormDataParserUrlEncoded);
 };
@@ -293,7 +294,7 @@ class FormDataParserMultipart : public FormDataParser {
   re2::StringPiece source_;
 
   // Caching the pointer to g_patterns.Get().
-  const Patterns* patterns_;
+  CheckedPtr<const Patterns> patterns_;
 
   DISALLOW_COPY_AND_ASSIGN(FormDataParserMultipart);
 };
