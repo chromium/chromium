@@ -45,4 +45,7 @@
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=0;*',
 
   'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";format="depth32float";*',
+
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="color";srcFactor="zero";*',
+  'wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="zero";*',
 ]

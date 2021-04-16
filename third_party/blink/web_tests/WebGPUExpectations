@@ -28,6 +28,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:re
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc7-rgba-unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:* [ Failure Crash ]
+crbug.com/dawn/759 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Failure ]
 
 # Fails or crashes on numerous combinations of backends, hardware, and validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Skip ]
@@ -220,6 +221,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,bound_check:dimension="3d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:format="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,default_value_and_smallest_size,uncompressed_format:format="stencil8";* [ Failure ]
@@ -236,6 +238,9 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="3d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:format="depth16unorm";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:dimension_type_and_format_compatibility:dimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:dimension_type_and_format_compatibility:format="depth16unorm";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:dimension_type_and_format_compatibility:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";format="depth16unorm";* [ Failure ]
@@ -318,3 +323,13 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
+
+# crashes because of an invalid enum
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="src-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="one-minus-src-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="dst-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";srcFactor="one-minus-dst-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="src-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="one-minus-src-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="dst-color";* [ Skip ]
+crbug.com/dawn/761 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,blending:GPUBlendComponent:component="alpha";dstFactor="one-minus-dst-color";* [ Skip ]
