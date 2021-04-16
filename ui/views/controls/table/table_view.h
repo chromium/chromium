@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
@@ -380,10 +381,28 @@ class VIEWS_EXPORT TableView : public views::View,
       const int row_index,
       const int visible_column_index) const;
 
+  // Schedule a future call UpdateAccessibilityFocus if not already pending.
+  void ScheduleUpdateAccessibilityFocusIfNeeded();
+
+  // A PassKey so that no other code can call UpdateAccessibilityFocus
+  // directly, only ScheduleUpdateAccessibilityFocusIfNeeded.
+  class UpdateAccessibilityFocusPassKey {
+   public:
+    ~UpdateAccessibilityFocusPassKey() = default;
+
+   private:
+    friend void TableView::ScheduleUpdateAccessibilityFocusIfNeeded();
+
+    // Avoid =default to disallow creation by uniform initialization.
+    UpdateAccessibilityFocusPassKey() {}  // NOLINT
+  };
+
   // Updates the internal accessibility state and fires the required
   // accessibility events to indicate to assistive software which row is active
-  // and which cell is focused, if any.
-  void UpdateAccessibilityFocus();
+  // and which cell is focused, if any. Don't call this directly; call
+  // ScheduleUpdateAccessibilityFocusIfNeeded to ensure that only one call
+  // is made and that it happens after all changes have been made.
+  void UpdateAccessibilityFocus(UpdateAccessibilityFocusPassKey pass_key);
 
   // Returns the virtual accessibility view corresponding to the specified row.
   // |row| should be a view index, not a model index.
@@ -480,13 +499,12 @@ class VIEWS_EXPORT TableView : public views::View,
   // True if in SetVisibleColumnWidth().
   bool in_set_visible_column_width_ = false;
 
-  // Keeps track whether a focus change has occurred so that the accessibility
-  // focus would be updated after all the virtual accessibility children. Some
-  // screen readers don't process the accessibility focus event right away and
-  // by the time they do the focused virtual accessibility child is no longer
-  // there. We need to fire the accessibility focus event after the virtual
-  // accessibility children have been updated.
-  bool needs_update_accessibility_focus_ = false;
+  // Keeps track whether a call to UpdateAccessibilityFocus is already
+  // pending or not.
+  bool update_accessibility_focus_pending_ = false;
+
+  // Weak pointer factory, enables using PostTask safely.
+  base::WeakPtrFactory<TableView> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TableView);
 };

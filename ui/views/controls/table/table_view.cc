@@ -160,7 +160,7 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
   DISALLOW_COPY_AND_ASSIGN(HighlightPathGenerator);
 };
 
-TableView::TableView() {
+TableView::TableView() : weak_factory_(this) {
   constexpr int kTextContext = style::CONTEXT_TABLE_ROW;
   constexpr int kTextStyle = style::STYLE_PRIMARY;
   font_list_ = style::GetFont(kTextContext, kTextStyle);
@@ -824,19 +824,17 @@ gfx::Point TableView::GetKeyboardContextMenuLocation() {
 void TableView::OnFocus() {
   SchedulePaintForSelection();
   focus_ring_->SchedulePaint();
-  needs_update_accessibility_focus_ = true;
+  ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
 void TableView::OnBlur() {
   SchedulePaintForSelection();
   focus_ring_->SchedulePaint();
-  needs_update_accessibility_focus_ = true;
+  ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
 void TableView::OnPaint(gfx::Canvas* canvas) {
   OnPaintImpl(canvas);
-  if (needs_update_accessibility_focus_)
-    UpdateAccessibilityFocus();
 }
 
 void TableView::OnPaintImpl(gfx::Canvas* canvas) {
@@ -1177,7 +1175,7 @@ void TableView::SetActiveVisibleColumnIndex(int index) {
   }
 
   focus_ring_->SchedulePaint();
-  needs_update_accessibility_focus_ = true;
+  ScheduleUpdateAccessibilityFocusIfNeeded();
   OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
 }
 
@@ -1218,7 +1216,7 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
   }
 
   focus_ring_->SchedulePaint();
-  needs_update_accessibility_focus_ = true;
+  ScheduleUpdateAccessibilityFocusIfNeeded();
   NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   if (observer_)
     observer_->OnSelectionChanged();
@@ -1631,8 +1629,22 @@ gfx::Rect TableView::CalculateTableCellAccessibilityBounds(
   return cell_bounds;
 }
 
-void TableView::UpdateAccessibilityFocus() {
-  needs_update_accessibility_focus_ = false;
+void TableView::ScheduleUpdateAccessibilityFocusIfNeeded() {
+  if (update_accessibility_focus_pending_)
+    return;
+
+  update_accessibility_focus_pending_ = true;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&TableView::UpdateAccessibilityFocus,
+                                weak_factory_.GetWeakPtr(),
+                                UpdateAccessibilityFocusPassKey()));
+}
+
+void TableView::UpdateAccessibilityFocus(
+    UpdateAccessibilityFocusPassKey pass_key) {
+  DCHECK(update_accessibility_focus_pending_);
+  update_accessibility_focus_pending_ = false;
+
   if (!HasFocus())
     return;
 
