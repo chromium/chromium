@@ -86,9 +86,9 @@ public final class PasswordChangeFixtureTestUtils {
      * Validates full password change run UI flow. Accepts generated password.
      */
     public static void validateFullRun() {
-        // Opening site settings.
+        // Opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Opening site settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                withText("Opening site's settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Filling out old password.
         waitUntilViewMatchesCondition(

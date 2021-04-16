@@ -207,12 +207,12 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         // Run script.
         runScriptForUser(mParameters.getUsername());
 
-        // Opening site settings.
+        // Opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Opening site settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                withText("Opening site's settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
-        // Should fail during login. Wait for error opening site settings.
-        waitUntilViewMatchesCondition(withText("Sorry, could not open site settings"),
+        // Should fail during login. Wait for error opening site's settings.
+        waitUntilViewMatchesCondition(withText("Sorry, could not open site's settings"),
                 isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Assert initial credential has not changed.
@@ -237,9 +237,9 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         // Run script.
         runScriptForUser(mParameters.getUsername());
 
-        // Opening site settings.
+        // Opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Opening site settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                withText("Opening site's settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Filling out old password.
         waitUntilViewMatchesCondition(
