@@ -20,7 +20,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -182,9 +181,6 @@ std::vector<std::string> ArcCrashCollectorBridge::CreateCrashReporterArgs() {
   };
   if (fingerprint_)
     args.push_back("--arc_fingerprint=" + fingerprint_.value());
-
-  if (arc::IsArcVmEnabled())
-    args.emplace_back("--arc_is_arcvm");
 
   return args;
 }
