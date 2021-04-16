@@ -737,22 +737,22 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Removed) {
       network_configuration_observer.get());
   CreateTestConfiguration(service_path, shill::kTypeWifi);
 
-  EXPECT_FALSE(
-      network_configuration_observer->HasRemovedConfiguration(service_path));
+  EXPECT_FALSE(network_configuration_observer->HasRemovedConfiguration(
+      create_service_path_));
   EXPECT_FALSE(
       network_configuration_observer->HasCalledBeforeRemoveConfiguration(
-          service_path));
+          create_service_path_));
 
   network_configuration_handler_->RemoveConfiguration(
-      service_path, /*remove_confirmer=*/base::nullopt, base::DoNothing(),
-      base::BindOnce(&ErrorCallback));
+      create_service_path_, /*remove_confirmer=*/base::nullopt,
+      base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(
-      network_configuration_observer->HasRemovedConfiguration(service_path));
+  EXPECT_TRUE(network_configuration_observer->HasRemovedConfiguration(
+      create_service_path_));
   EXPECT_TRUE(
       network_configuration_observer->HasCalledBeforeRemoveConfiguration(
-          service_path));
+          create_service_path_));
 
   network_configuration_handler_->RemoveObserver(
       network_configuration_observer.get());

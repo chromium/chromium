@@ -320,6 +320,7 @@ void FakeShillServiceClient::GetLoadableProfileEntries(
   profile_client->GetProfilePathsContainingService(service_path.value(),
                                                    &profiles);
 
+  DCHECK(profiles.size()) << "No profiles contain given service";
   // Provide a dictionary with  {profile_path: service_path} entries for
   // profile_paths that contain the service.
   base::Value result_properties(base::Value::Type::DICTIONARY);

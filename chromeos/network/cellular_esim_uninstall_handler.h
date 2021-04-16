@@ -78,16 +78,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
                                   const UninstallState& step);
 
   // Represents ESim uninstallation request parameters. Requests are queued and
-  // processed one at a time.
+  // processed one at a time. |esim_profile_path| and |euicc_path| are nullopt
+  // for stale eSIM service removal requests. These requests skip directly to
+  // Shill configuration removal.
   struct UninstallRequest {
     UninstallRequest(const std::string& iccid,
-                     const dbus::ObjectPath& esim_profile_path,
-                     const dbus::ObjectPath& euicc_path,
+                     const base::Optional<dbus::ObjectPath>& esim_profile_path,
+                     const base::Optional<dbus::ObjectPath>& euicc_path,
                      UninstallRequestCallback callback);
     ~UninstallRequest();
     std::string iccid;
-    dbus::ObjectPath esim_profile_path;
-    dbus::ObjectPath euicc_path;
+    base::Optional<dbus::ObjectPath> esim_profile_path;
+    base::Optional<dbus::ObjectPath> euicc_path;
     UninstallRequestCallback callback;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr;
   };
