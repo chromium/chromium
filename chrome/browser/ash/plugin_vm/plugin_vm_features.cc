@@ -84,7 +84,8 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
     return PolicyConfigured::kErrorNotAllowedByUserPolicy;
   }
 
-  if (GetPluginVmUserIdForProfile(profile).empty()) {
+  if (GetPluginVmLicenseKey().empty() &&
+      GetPluginVmUserIdForProfile(profile).empty()) {
     VLOG(1) << "Plugin VM require a license be set up in policy.";
     return PolicyConfigured::kErrorLicenseNotSetUp;
   }

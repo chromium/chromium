@@ -239,6 +239,7 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceUnaffiliatedCrostiniAllowed[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kPluginVmAllowed[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kPluginVmLicenseKey[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kBorealisAllowedForDevice[];
@@ -366,6 +367,7 @@ using ::chromeos::kHeartbeatFrequency;
 using ::chromeos::kLoginAuthenticationBehavior;
 using ::chromeos::kLoginVideoCaptureAllowedUrls;
 using ::chromeos::kPluginVmAllowed;
+using ::chromeos::kPluginVmLicenseKey;
 using ::chromeos::kPolicyMissingMitigationMode;
 using ::chromeos::kRebootOnShutdown;
 using ::chromeos::kReleaseChannel;
