@@ -238,6 +238,9 @@ public final class EventConstants {
     /** Mic toolbar IPH event */
     public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
 
+    /** WebFeed events. */
+    public static final String WEB_FEED_FOLLOW_INTRO_CLICKED = "web_feed_follow_intro_clicked";
+
     /**
      * Do not instantiate.
      */

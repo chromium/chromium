@@ -49,7 +49,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
         FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE,
-        FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE})
+        FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
+        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
@@ -244,4 +245,9 @@ public @interface FeatureConstants {
      * An IPH feature to inform users about the screenshot sharing feature.
      */
     String IPH_SHARE_SCREENSHOT_FEATURE = "IPH_ShareScreenshot";
+
+    /**
+     * An IPH feature to inform users about the WebFeed follow feature.
+     */
+    String IPH_WEB_FEED_FOLLOW_FEATURE = "IPH_WebFeedFollow";
 }

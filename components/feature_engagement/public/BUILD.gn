@@ -25,6 +25,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
   ]

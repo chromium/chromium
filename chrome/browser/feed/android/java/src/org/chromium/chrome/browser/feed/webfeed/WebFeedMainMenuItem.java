@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -93,7 +94,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
 
     private void initializeText(WebFeedMetadata webFeedMetadata) {
         TextView itemText = findViewById(R.id.menu_item_text);
-        if (webFeedMetadata != null && webFeedMetadata.title != null) {
+        if (webFeedMetadata != null && TextUtils.isEmpty(webFeedMetadata.title)) {
             mTitle = webFeedMetadata.title;
         } else {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);

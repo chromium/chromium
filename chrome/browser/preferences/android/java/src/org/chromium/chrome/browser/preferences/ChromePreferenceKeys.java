@@ -901,6 +901,19 @@ public final class ChromePreferenceKeys {
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
 
+    /**
+     * Key used to save the time in milliseconds since epoch that the WebFeed intro was last shown.
+     */
+    public static final String WEB_FEED_INTRO_LAST_SHOWN_TIME_MS =
+            "Chrome.WebFeed.IntroLastShownTimeMs";
+
+    /**
+     * Key used to save the time in milliseconds since epoch that the WebFeed intro for the WebFeed
+     * ID was last shown.
+     */
+    public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX =
+            new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*");
+
     /** Cached Suggestions and Suggestion Headers. */
     public static final String KEY_ZERO_SUGGEST_LIST_SIZE = "zero_suggest_list_size";
     public static final KeyPrefix KEY_ZERO_SUGGEST_URL_PREFIX = new KeyPrefix("zero_suggest_url*");
@@ -1019,7 +1032,9 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
-                VIDEO_TUTORIALS_SHARE_URL_SET
+                VIDEO_TUTORIALS_SHARE_URL_SET,
+                WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
+                WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern()
         );
         // clang-format on
     }

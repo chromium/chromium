@@ -137,6 +137,7 @@ DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSummaryFeature,
 DEFINE_VARIATION_PARAM(kIPHExploreSitesTileFeature, "IPH_ExploreSitesTile");
 DEFINE_VARIATION_PARAM(kIPHFeedHeaderMenuFeature, "IPH_FeedHeaderMenu");
 DEFINE_VARIATION_PARAM(kIPHShareScreenshotFeature, "IPH_ShareScreenshot");
+DEFINE_VARIATION_PARAM(kIPHWebFeedFollowFeature, "IPH_WebFeedFollow");
 #endif  // defined(OS_ANDROID)
 #if defined(OS_IOS)
 DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");
@@ -234,6 +235,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
         VARIATION_ENTRY(kIPHShareScreenshotFeature),
+        VARIATION_ENTRY(kIPHWebFeedFollowFeature),
 #elif defined(OS_IOS)
         VARIATION_ENTRY(kIPHBottomToolbarTipFeature),
         VARIATION_ENTRY(kIPHLongPressToolbarTipFeature),

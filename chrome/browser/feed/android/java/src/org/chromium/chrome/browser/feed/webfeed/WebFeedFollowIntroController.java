@@ -5,28 +5,73 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import android.app.Activity;
+import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controls when and how the Web Feed follow intro is shown.
  */
 public class WebFeedFollowIntroController {
+    static final long INTRO_WAIT_TIME_MS = TimeUnit.SECONDS.toMillis(5);
+    // Visit history requirements.
+    static final int DEFAULT_DAILY_VISIT_MIN = 0;
+    static final int DEFAULT_NUM_VISIT_MIN = 0;
+    static final String PARAM_DAILY_VISIT_MIN = "intro-daily-visit-min";
+    static final String PARAM_NUM_VISIT_MIN = "intro-num-visit-min";
+    // Time between appearances.
+    private static final int DEFAULT_APPEARANCE_THRESHOLD_MINUTES = 15;
+    private static final String PARAM_APPEARANCE_THRESHOLD_MINUTES =
+            "intro-appearance-threshold-minutes";
+    // Time between appearances for the same WebFeedId.
+    private static final long WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS = TimeUnit.DAYS.toMillis(1);
+
+    /** Clock to use so we can mock time in tests. */
+    public interface Clock {
+        long currentTimeMillis();
+    }
+    private Clock mClock = System::currentTimeMillis;
+
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
+    private final EmptyTabObserver mEmptyTabObserver;
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            SharedPreferencesManager.getInstance();
+    private final Tracker mFeatureEngagementTracker;
     private final WebFeedSnackbarController mWebFeedSnackbarController;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
 
+    private final long mAppearanceThresholdMs;
+
     private boolean mAcceleratorPressed;
+    private boolean mIntroShown;
+    private boolean mIsRecommended;
+    private boolean mMeetsVisitRequirement;
+    private long mPageLoadTime;
+    private byte[] mWebFeedId;
+    private GURL mUrl;
+    private String mTitle;
 
     /**
      * Constructs an instance of {@link WebFeedFollowIntroController}.
@@ -41,50 +86,96 @@ public class WebFeedFollowIntroController {
             View menuButtonAnchorView, SnackbarManager snackbarManager,
             WebFeedBridge webFeedBridge) {
         mActivity = activity;
+        mFeatureEngagementTracker =
+                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mWebFeedSnackbarController =
                 new WebFeedSnackbarController(activity, snackbarManager, webFeedBridge);
         mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
 
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
+        mAppearanceThresholdMs = TimeUnit.MINUTES.toMillis(
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
+                        PARAM_APPEARANCE_THRESHOLD_MINUTES, DEFAULT_APPEARANCE_THRESHOLD_MINUTES));
+
+        int numVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
+        int dailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
+        mEmptyTabObserver = new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                // TODO(sophey): Add proper heuristics for showing the accelerator.
-                mAcceleratorPressed = false;
+                mPageLoadTime = mClock.currentTimeMillis();
+                if (tab.isIncognito()) {
+                    mIsRecommended = false;
+                    return;
+                }
+                webFeedBridge.getVisitCountsToHost(url,
+                        result
+                        -> mMeetsVisitRequirement = result.visits >= numVisitMin
+                                && result.dailyVisits >= dailyVisitMin);
                 webFeedBridge.getWebFeedMetadataForPage(url, result -> {
-                    // Shouldn't be recommended if there's no metadata.
-                    if (result != null) {
-                        maybeShowFollowIntro(url, result.title);
+                    // Shouldn't be recommended if there's no metadata or if the ID doesn't exist.
+                    if (result == null || result.id == null || result.id.length == 0) {
+                        mIsRecommended = false;
+                        return;
                     }
+                    mWebFeedId = result.id;
+                    mIsRecommended = result.isRecommended
+                            && result.subscriptionStatus
+                                    == WebFeedSubscriptionStatus.NOT_SUBSCRIBED;
+                    mTitle = result.title;
+                    mUrl = url;
                 });
             }
 
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
+                mIntroShown = false;
+                mIsRecommended = false;
+                mAcceleratorPressed = false;
+                mMeetsVisitRequirement = false;
                 mWebFeedFollowIntroView.dismissBubble();
             }
-        }, /*swapCallback=*/null);
+
+            @Override
+            public void onContentViewScrollOffsetChanged(int verticalScrollDelta) {
+                if (verticalScrollDelta > 0) {
+                    maybeShowFollowIntro();
+                }
+            }
+        };
+        mCurrentTabObserver =
+                new CurrentTabObserver(tabSupplier, mEmptyTabObserver, /*swapCallback=*/null);
     }
 
     public void destroy() {
         mCurrentTabObserver.destroy();
     }
 
-    private void maybeShowFollowIntro(GURL url, String title) {
+    private void maybeShowFollowIntro() {
         if (!shouldShowFollowIntro()) {
             return;
         }
         // TODO(crbug/1152592): Add IPH variation.
-        showFollowAccelerator(url, title);
+        showFollowAccelerator();
     }
 
-    private void showFollowAccelerator(GURL url, String title) {
+    private void showFollowAccelerator() {
+        mIntroShown = true;
+        long currentTimeMillis = mClock.currentTimeMillis();
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS, currentTimeMillis);
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
+                        Base64.encodeToString(mWebFeedId, Base64.DEFAULT)),
+                currentTimeMillis);
+
         GestureDetector gestureDetector = new GestureDetector(
                 mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onSingleTapUp(MotionEvent motionEvent) {
                         if (!mAcceleratorPressed) {
                             mAcceleratorPressed = true;
-                            performFollowWithAccelerator(url, title);
+                            performFollowWithAccelerator();
                         }
                         return true;
                     }
@@ -94,14 +185,16 @@ public class WebFeedFollowIntroController {
             gestureDetector.onTouchEvent(motionEvent);
             return true;
         };
-        mWebFeedFollowIntroView.showAccelerator(onTouchListener);
+        mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
     }
 
-    private void performFollowWithAccelerator(GURL url, String title) {
+    private void performFollowWithAccelerator() {
+        mFeatureEngagementTracker.notifyEvent(EventConstants.WEB_FEED_FOLLOW_INTRO_CLICKED);
+
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
-        bridge.followFromUrl(
-                url, results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
+        bridge.followFromId(mWebFeedId,
+                results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override
                     public void onShowLoadingUIComplete() {}
 
@@ -113,12 +206,45 @@ public class WebFeedFollowIntroController {
                         }
                         byte[] followId = results.metadata != null ? results.metadata.id : null;
                         mWebFeedSnackbarController.showSnackbarForFollow(
-                                results, followId, url, title);
+                                results, followId, mUrl, mTitle);
                     }
                 }));
     }
 
     private boolean shouldShowFollowIntro() {
-        return true;
+        if (!mIsRecommended) return false;
+
+        long currentTimeMillis = mClock.currentTimeMillis();
+        long lastShownTime = mSharedPreferencesManager.readLong(
+                ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS);
+        long lastShownForWebFeedIdMs = mSharedPreferencesManager.readLong(
+                getWebFeedIntroWebFeedIdShownTimeMsKey(mWebFeedId));
+        return !mIntroShown && mMeetsVisitRequirement
+                && ((currentTimeMillis - mPageLoadTime) > INTRO_WAIT_TIME_MS)
+                && ((currentTimeMillis - lastShownTime) > mAppearanceThresholdMs)
+                && ((currentTimeMillis - lastShownForWebFeedIdMs)
+                        > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)
+                && mFeatureEngagementTracker.shouldTriggerHelpUI(
+                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+    }
+
+    private static String getWebFeedIntroWebFeedIdShownTimeMsKey(byte[] webFeedId) {
+        return ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.createKey(
+                Base64.encodeToString(webFeedId, Base64.DEFAULT));
+    }
+
+    @VisibleForTesting
+    boolean getIntroShownForTesting() {
+        return mIntroShown;
+    }
+
+    @VisibleForTesting
+    EmptyTabObserver getEmptyTabObserverForTesting() {
+        return mEmptyTabObserver;
+    }
+
+    @VisibleForTesting
+    void setClockForTesting(Clock clock) {
+        mClock = clock;
     }
 }

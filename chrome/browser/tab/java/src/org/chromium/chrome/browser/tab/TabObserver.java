@@ -331,4 +331,11 @@ public interface TabObserver {
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
+
+    /**
+     * Called when the Tab is scrolling.
+     * @param verticalScrollDelta The delta between the vertical offsets when the scroll started and
+     *         currently. It is negative when scrolling down and positive when scrolling up.
+     */
+    void onContentViewScrollOffsetChanged(int verticalScrollDelta);
 }

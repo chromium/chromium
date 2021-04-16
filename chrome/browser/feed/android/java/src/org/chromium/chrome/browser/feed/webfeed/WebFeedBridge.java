@@ -76,7 +76,7 @@ public class WebFeedBridge {
             this.visitUrl = visitUrl;
             this.subscriptionStatus = subscriptionStatus;
             this.isActive = isActive;
-            this.isRecommended = false;
+            this.isRecommended = isRecommended;
         }
 
         // TODO(crbug/1152592): remove mock implementation.
