@@ -97,15 +97,21 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   // ServiceWorkerVersion keeps the registration alive while the service
   // worker is starting up, and it must be starting up here.
   DCHECK(registration);
+
+  // We need to filter on mode, since module imports use kServiceWorker as
+  // destination, but only top level module scripts are same-origin.
   const bool is_main_script =
       (resource_destination_ ==
-       network::mojom::RequestDestination::kServiceWorker);
+           network::mojom::RequestDestination::kServiceWorker &&
+       resource_request.mode == network::mojom::RequestMode::kSameOrigin);
   if (is_main_script) {
     // Request SSLInfo. It will be persisted in service worker storage and
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
     // by this service worker.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
 
+    // TODO(crbug.com/1199892): Investigate if we still need to set the header
+    // here.
     resource_request.headers.SetHeader("Service-Worker", "script");
   }
 
