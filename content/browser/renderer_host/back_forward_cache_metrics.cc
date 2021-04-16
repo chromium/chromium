@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -126,6 +127,9 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     RecordMetricsForHistoryNavigationCommit(navigation,
                                             back_forward_cache_allowed);
     RecordHistoryNavigationUkm(navigation);
+    if (!navigation->IsServedFromBackForwardCache()) {
+      devtools_instrumentation::BackForwardCacheNotUsed(navigation);
+    }
   }
 
   page_store_result_ =

@@ -1,0 +1,10 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    loaderId : <string>
+}
+{
+    frameId : <string>
+    loaderId : <string>
+}
+

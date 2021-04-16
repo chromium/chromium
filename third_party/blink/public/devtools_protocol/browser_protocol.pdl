@@ -7459,6 +7459,17 @@ domain Page
       string name
       Network.MonotonicTime timestamp
 
+  # Fired for failed bfcache history navigations if BackForwardCache feature is enabled. Do
+  # not assume any ordering with the Page.frameNavigated event. This event is fired only for
+  # main-frame history navigation where the document changes (non-same-document navigations),
+  # when bfcache navigation fails.
+  experimental event backForwardCacheNotUsed
+    parameters
+      # The loader id for the associated navgation.
+      Network.LoaderId loaderId
+      # The frame id of the associated frame.
+      FrameId frameId
+
   event loadEventFired
     parameters
       Network.MonotonicTime timestamp
