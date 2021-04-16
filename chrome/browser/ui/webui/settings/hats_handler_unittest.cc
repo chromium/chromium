@@ -62,9 +62,16 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(HatsHandlerTest, HandleTryShowHatsSurvey) {
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  std::map<std::string, bool> expected_product_specific_data = {
+      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
+
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
                                        kHatsSurveyTriggerSettingsPrivacy,
-                                       web_contents(), 20000, testing::_));
+                                       web_contents(), 20000, expected_product_specific_data));
   base::ListValue args;
   handler()->HandleTryShowHatsSurvey(&args);
   task_environment()->RunUntilIdle();
@@ -96,11 +103,11 @@ TEST_F(HatsHandlerTest, HandleTryShowPrivacySandboxHatsSurvey) {
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  std::map<std::string, bool> expected_psd = {
+  std::map<std::string, bool> expected_product_specific_data = {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
                                        kHatsSurveyTriggerPrivacySandbox,
-                                       web_contents(), 20000, expected_psd));
+                                       web_contents(), 20000, expected_product_specific_data));
   base::ListValue args;
   handler()->HandleTryShowPrivacySandboxHatsSurvey(&args);
   task_environment()->RunUntilIdle();

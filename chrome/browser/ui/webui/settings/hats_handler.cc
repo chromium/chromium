@@ -17,6 +17,37 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+// Requests that the HaTS service for |profile|, if available, attempt to
+// launch the survey associated with |trigger| on |web_contents|. Where the
+// survey for |trigger| is configured to accept product specific data related to
+// the user's 3P cookie & privacy sandbox setting.
+void LaunchHatsSurveyWithProductSpecificData(Profile* profile,
+                                             content::WebContents* web_contents,
+                                             const std::string& trigger) {
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      profile, /* create_if_necessary = */ true);
+
+  // The HaTS service may not be available for the profile, for example if it
+  // is a guest profile.
+  if (!hats_service)
+    return;
+
+  const bool third_party_cookies_blocked =
+      static_cast<content_settings::CookieControlsMode>(
+          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+      content_settings::CookieControlsMode::kBlockThirdParty;
+  const bool privacy_sandbox_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger, web_contents, 20000,
+      {{"3P cookies blocked", third_party_cookies_blocked},
+       {"Privacy Sandbox enabled", privacy_sandbox_enabled}});
+}
+
+}  // namespace
+
 namespace settings {
 
 HatsHandler::HatsHandler() = default;
@@ -45,35 +76,16 @@ void HatsHandler::HandleTryShowHatsSurvey(const base::ListValue* args) {
     return;
   }
 
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()), /* create_if_necessary = */ true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSettingsPrivacy, web_ui()->GetWebContents(), 20000);
-  }
+  LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
+                                          web_ui()->GetWebContents(),
+                                          kHatsSurveyTriggerSettingsPrivacy);
 }
 
 void HatsHandler::HandleTryShowPrivacySandboxHatsSurvey(
     const base::ListValue* args) {
-  auto* profile = Profile::FromWebUI(web_ui());
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      profile, /* create_if_necessary = */ true);
-
-  // The HaTS service may not be available for the profile, for example if it
-  // is a guest profile.
-  if (!hats_service)
-    return;
-
-  bool third_party_cookies_blocked =
-      static_cast<content_settings::CookieControlsMode>(
-          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
-      content_settings::CookieControlsMode::kBlockThirdParty;
-  bool privacy_sandbox_enabled =
-      profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled);
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerPrivacySandbox, web_ui()->GetWebContents(), 20000,
-      {{"3P cookies blocked", third_party_cookies_blocked},
-       {"Privacy Sandbox enabled", privacy_sandbox_enabled}});
+  LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
+                                          web_ui()->GetWebContents(),
+                                          kHatsSurveyTriggerPrivacySandbox);
 }
 
 }  // namespace settings

@@ -121,7 +121,10 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerSettings);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
-      kHatsSurveyTriggerSettingsPrivacy);
+      kHatsSurveyTriggerSettingsPrivacy,
+      /*presupplied_trigger_id=*/base::nullopt,
+      std::vector<std::string>{"3P cookies blocked",
+                               "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
