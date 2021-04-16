@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
+import androidx.core.content.ContextCompat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -18,7 +20,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
@@ -161,42 +162,51 @@ public class SelectFileDialogTest {
                 "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
     }
 
-    @Test
-    public void testFilePathSelected() throws IOException {
-        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
-        PathUtils.setPrivateDataDirectorySuffix("test");
-        String dataDir = new File(PathUtils.getDataDirectory()).getCanonicalPath();
+    private void testFilePath(
+            String path, SelectFileDialog selectFileDialog, boolean expectedPass) {
+        Uri[] uris = new Uri[1];
+        uris[0] = Uri.fromFile(new File(path));
 
         SelectFileDialog.FilePathSelectedTask task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), dataDir, null);
-        assertFalse(task.doInBackground());
+                ContextUtils.getApplicationContext(), path, null);
+        SelectFileDialog.GetDisplayNameTask task2 =
+                selectFileDialog.new GetDisplayNameTask(ContextUtils.getApplicationContext(),
+                        /* isMultiple = */ false, uris);
+        assertEquals(expectedPass, task.doInBackground());
+        assertEquals(expectedPass, null != task2.doInBackground());
+    }
 
-        task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), dataDir + "/tmp/xyz.jpg", null);
-        assertFalse(task.doInBackground());
+    @Test
+    public void testFilePathTasks() throws IOException {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
 
-        task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), dataDir + "/../xyz.jpg", null);
-        assertTrue(task.doInBackground());
+        // Obtain the data directory for RoboElectric. It should look something like:
+        //   /tmp/robolectric-Method_[testName][number]/org.chromium.test.ui-dataDir
+        // ... where [testName] is the name of this test function and [number] is a unique id.
+        String dataDir =
+                ContextCompat.getDataDir(ContextUtils.getApplicationContext()).getCanonicalPath();
 
-        task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), dataDir + "/tmp/../xyz.jpg", null);
-        assertFalse(task.doInBackground());
-
-        task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), "/data/local/tmp.jpg", null);
-        assertTrue(task.doInBackground());
+        // Passing in the data directory itself should fail.
+        testFilePath(dataDir, selectFileDialog, /* expectedPass= */ false);
+        // Passing in a subdirectory of the data directory should also fail.
+        testFilePath(dataDir + "/tmp/xyz.jpg", selectFileDialog, /* expectedPass= */ false);
+        // The parent directory of the data directory should, however, succeed.
+        testFilePath(dataDir + "/../xyz.jpg", selectFileDialog, /* expectedPass= */ true);
+        // Another way of specifying the data directory (should fail).
+        testFilePath(dataDir + "/tmp/../xyz.jpg", selectFileDialog, /* expectedPass= */ false);
+        // The directory outside the data directory should succeed.
+        testFilePath("/data/local/tmp.jpg", selectFileDialog, /* expectedPass= */ true);
 
         Path path = new File(dataDir).toPath();
         String parent = path.getParent().toString();
         String lastComponent = path.getName(path.getNameCount() - 1).toString();
-        task = selectFileDialog.new FilePathSelectedTask(ContextUtils.getApplicationContext(),
-                parent + "/./" + lastComponent + "/xyz.jpg", null);
-        assertFalse(task.doInBackground());
 
-        task = selectFileDialog.new FilePathSelectedTask(ContextUtils.getApplicationContext(),
-                dataDir + "/../" + lastComponent + "/xyz.jpg", null);
-        assertFalse(task.doInBackground());
+        // Make sure that base/./dataDir is treated the same as base/dataDir (and fail the request).
+        testFilePath(parent + "/./" + lastComponent + "/xyz.jpg", selectFileDialog,
+                /* expectedPass= */ false);
+        // Make sure that dataDir/../dataDir is treated the same as dataDir (and fail the request).
+        testFilePath(dataDir + "/../" + lastComponent + "/xyz.jpg", selectFileDialog,
+                /* expectedPass= */ false);
     }
 
     @Test
