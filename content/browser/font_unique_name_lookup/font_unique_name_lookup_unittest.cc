@@ -161,6 +161,17 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
       "NotoSansMonoCJKjp-Regular", "NotoSansMonoCJKkr-Regular",
       "NotoSansMonoCJKsc-Regular", "NotoSansMonoCJKtc-Regular",
   };
+  // In Android 11 the font file contains addition HK variants as part of the
+  // TrueType collection.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_R) {
+    ttc_postscript_names = std::vector<std::string>(
+        {"NotoSansCJKjp-Regular", "NotoSansCJKkr-Regular",
+         "NotoSansCJKsc-Regular", "NotoSansCJKtc-Regular",
+         "NotoSansCJKhk-Regular", "NotoSansMonoCJKjp-Regular",
+         "NotoSansMonoCJKkr-Regular", "NotoSansMonoCJKsc-Regular",
+         "NotoSansMonoCJKtc-Regular", "NotoSansMonoCJKhk-Regular"});
+  }
   for (size_t i = 0; i < ttc_postscript_names.size(); ++i) {
     auto match_result = matcher.MatchName(ttc_postscript_names[i]);
     ASSERT_TRUE(match_result);

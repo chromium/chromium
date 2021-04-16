@@ -1313,12 +1313,6 @@
           'shards': 2,
         },
       },
-      # TODO(crbug.com/1189344): Remove the filter once the issue is fixed.
-      'android-11-x86-fyi-rel': {
-        'args': [
-          '--gtest_filter=-FontUniqueNameLookupTest.TestMatchPostScriptNameTtc',
-        ],
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 12,
