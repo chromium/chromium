@@ -229,12 +229,19 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
 
   std::unique_ptr<ReferrerChainEntry> CreateReferrerChainEntry(
       const std::string& url,
-      const std::string& main_frame_url) {
+      const std::string& main_frame_url,
+      const std::string& referrer_url,
+      const std::string& referrer_main_frame_url) {
     std::unique_ptr<ReferrerChainEntry> referrer_chain_entry =
         std::make_unique<ReferrerChainEntry>();
     referrer_chain_entry->set_url(url);
     if (!main_frame_url.empty()) {
       referrer_chain_entry->set_main_frame_url(main_frame_url);
+    }
+    referrer_chain_entry->set_referrer_url(referrer_url);
+    if (!referrer_main_frame_url.empty()) {
+      referrer_chain_entry->set_referrer_main_frame_url(
+          referrer_main_frame_url);
     }
     return referrer_chain_entry;
   }
@@ -760,9 +767,15 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"").get());
+      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
+          .get());
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"").get());
+      CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
+          .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
                   url, /*user_gesture_count_limit=*/2, _))
@@ -797,7 +810,10 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"").get());
+      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
+          .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .Times(0);
@@ -829,9 +845,14 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl).get());
+      CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
+                               kTestSubframeReferrerUrl, kTestReferrerUrl)
+          .get());
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestReferrerUrl, kTestReferrerUrl).get());
+      CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
+          .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
                   url, /*user_gesture_count_limit=*/2, _))
@@ -849,9 +870,23 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // subframe.
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
             EXPECT_FALSE(request->referrer_chain().Get(0).has_main_frame_url());
+            EXPECT_TRUE(
+                request->referrer_chain().Get(0).is_subframe_url_removed());
+            EXPECT_EQ(kTestReferrerUrl,
+                      request->referrer_chain().Get(0).referrer_url());
+            EXPECT_FALSE(
+                request->referrer_chain().Get(0).has_referrer_main_frame_url());
+            EXPECT_TRUE(request->referrer_chain()
+                            .Get(0)
+                            .is_subframe_referrer_url_removed());
             // The second entry is not sanitized because it is triggered in a
             // mainframe.
             EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
+            EXPECT_FALSE(
+                request->referrer_chain().Get(1).is_subframe_url_removed());
+            EXPECT_FALSE(request->referrer_chain()
+                             .Get(1)
+                             .is_subframe_referrer_url_removed());
           }),
       response_callback.Get());
 
@@ -873,9 +908,13 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl).get());
+      CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
+                               kTestSubframeReferrerUrl, kTestReferrerUrl)
+          .get());
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl)
+      CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -893,10 +932,19 @@ TEST_F(RealTimeUrlLookupServiceTest,
         // Check referrer chain is not sanitized.
         EXPECT_EQ(kTestSubframeUrl, request->referrer_chain().Get(0).url());
         EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).main_frame_url());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(0).is_subframe_url_removed());
+        EXPECT_EQ(kTestSubframeReferrerUrl,
+                  request->referrer_chain().Get(0).referrer_url());
+        EXPECT_EQ(kTestReferrerUrl,
+                  request->referrer_chain().Get(0).referrer_main_frame_url());
+        EXPECT_FALSE(request->referrer_chain()
+                         .Get(0)
+                         .is_subframe_referrer_url_removed());
         EXPECT_EQ(kTestSubframeReferrerUrl,
                   request->referrer_chain().Get(1).url());
-        EXPECT_EQ(kTestReferrerUrl,
-                  request->referrer_chain().Get(1).main_frame_url());
+        EXPECT_FALSE(
+            request->referrer_chain().Get(1).is_subframe_url_removed());
       }),
       response_callback.Get());
 
@@ -920,7 +968,10 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
   returned_referrer_chain.Add()->Swap(
-      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"").get());
+      CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
+                               /*referrer_url=*/"",
+                               /*referrer_main_frame_url=*/"")
+          .get());
   // The user gesture count limit should be set to 1.
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,9 @@ chrome.safeBrowsingPrivate.ServerRedirect;
  *   navigationTimeMs: (number|undefined),
  *   serverRedirectChain: (!Array<!chrome.safeBrowsingPrivate.ServerRedirect>|undefined),
  *   navigationInitiation: (!chrome.safeBrowsingPrivate.NavigationInitiation|undefined),
- *   maybeLaunchedByExternalApp: (boolean|undefined)
+ *   maybeLaunchedByExternalApp: (boolean|undefined),
+ *   isSubframeUrlRemoved: (boolean|undefined),
+ *   isSubframeReferrerUrlRemoved: (boolean|undefined)
  * }}
  */
 chrome.safeBrowsingPrivate.ReferrerChainEntry;
