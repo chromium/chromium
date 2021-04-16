@@ -160,7 +160,10 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The |block_estimate| is wrt. the candidate's writing mode.
     base::Optional<LayoutUnit> block_estimate;
     NGLogicalOutOfFlowDimensions node_dimensions;
-    bool absolute_needs_child_block_size = false;
+
+    bool inline_size_depends_on_min_max_sizes = false;
+    bool block_size_depends_on_layout = false;
+
     // If true, a cached layout result was found. See the comment for
     // |initial_layout_result| for more details.
     bool has_cached_layout_result = false;
