@@ -62,6 +62,22 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>getContextInfo</code> to return context information.
   callback GetContextInfoCallback = void(ContextInfo contextInfo);
 
+  // The status passed to the callback of <code>getCertificate</code> to
+  // indicate if the required policy is set.
+  enum CertificateStatus { OK, POLICY_UNSET };
+
+  // The certificate, if one meets the requirements, returned by the
+  // $(ref:getCertificate) API. <code>encodedCertificate</code> will be
+  // the DER encoding (binary encoding following X.690 Distinguished Encoding
+  // Rules) of the X.509 certificate.
+  dictionary Certificate {
+    CertificateStatus status;
+    ArrayBuffer? encodedCertificate;
+  };
+
+  // Invoked by <code>getCertificate</code> to return the selected certificate.
+  callback CertificateCallback = void(Certificate certificate);
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -97,6 +113,10 @@ namespace enterprise.reportingPrivate {
     // Gets the context information (including management status of the browser,
     // state of key security policies, browser version).
     static void getContextInfo(GetContextInfoCallback callback);
+
+    // Returns the certificate that would be selected by the filters in the
+    // AutoSelectCertificateForUrls policy for <code>url</code>.
+    static void getCertificate(DOMString url, CertificateCallback callback);
   };
 
 };

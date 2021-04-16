@@ -329,4 +329,17 @@ void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
       base::Value::FromUniquePtrValue(ToContextInfo(context_info).ToValue())));
 }
 
+// getCertificate
+
+EnterpriseReportingPrivateGetCertificateFunction::
+    EnterpriseReportingPrivateGetCertificateFunction() = default;
+EnterpriseReportingPrivateGetCertificateFunction::
+    ~EnterpriseReportingPrivateGetCertificateFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateGetCertificateFunction::Run() {
+  NOTREACHED();
+  return RespondLater();
+}
+
 }  // namespace extensions

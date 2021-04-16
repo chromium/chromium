@@ -166,6 +166,25 @@ class EnterpriseReportingPrivateGetContextInfoFunction
   std::unique_ptr<enterprise_signals::ContextInfoFetcher> context_info_fetcher_;
 };
 
+class EnterpriseReportingPrivateGetCertificateFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getCertificate",
+                             ENTERPRISEREPORTINGPRIVATE_GETCERTIFICATE)
+
+  EnterpriseReportingPrivateGetCertificateFunction();
+  EnterpriseReportingPrivateGetCertificateFunction(
+      const EnterpriseReportingPrivateGetCertificateFunction&) = delete;
+  EnterpriseReportingPrivateGetCertificateFunction& operator=(
+      const EnterpriseReportingPrivateGetCertificateFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateGetCertificateFunction() override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_ENTERPRISE_REPORTING_PRIVATE_API_H_
