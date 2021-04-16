@@ -30,7 +30,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensController;
@@ -86,6 +85,15 @@ class LocationBarMediator
     private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
 
+    /** Enabled/disabled state of 'save offline' button. */
+    public interface SaveOfflineButtonState {
+        /**
+         * @param tab Tab displaying the page that will be saved.
+         * @return {@code true} if the UI button is enabled.
+         */
+        boolean isEnabled(Tab tab);
+    }
+
     private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
             new Property<LocationBarMediator, Float>(Float.class, "") {
                 @Override
@@ -138,6 +146,7 @@ class LocationBarMediator
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private final SaveOfflineButtonState mSaveOfflineButtonState;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -165,7 +174,8 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
-            @NonNull Runnable launchAssistanceSettingsAction) {
+            @NonNull Runnable launchAssistanceSettingsAction,
+            @NonNull SaveOfflineButtonState saveOfflineButtonState) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -186,6 +196,7 @@ class LocationBarMediator
         mSearchEngineLogoUtils = searchEngineLogoUtils;
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
+        mSaveOfflineButtonState = saveOfflineButtonState;
     }
 
     /**
@@ -995,7 +1006,7 @@ class LocationBarMediator
 
     private boolean isSaveOfflineButtonEnabled() {
         if (mLocationBarDataProvider == null) return false;
-        return DownloadUtils.isAllowedToDownloadPage(mLocationBarDataProvider.getTab());
+        return mSaveOfflineButtonState.isEnabled(mLocationBarDataProvider.getTab());
     }
 
     private boolean shouldShowPageActionButtons() {

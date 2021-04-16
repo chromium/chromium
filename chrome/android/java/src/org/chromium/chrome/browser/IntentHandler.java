@@ -1571,6 +1571,19 @@ public class IntentHandler {
     }
 
     /**
+     * Bring the browser to foreground and switch to the tab.
+     * @param tab Tab to switch to.
+     */
+    public static void bringTabToFront(Tab tab) {
+        Intent newIntent =
+                createTrustedBringTabToFrontIntent(tab.getId(), BringToFrontSource.SEARCH_ACTIVITY);
+        if (newIntent != null) {
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
+        }
+    }
+
+    /**
      * Records whether the intent comes from a non-Chrome first party and contains a Chrome internal
      * scheme. This is so we can determine whether we can cut the feature.
      */

@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService.EligibilityFailureReason;
@@ -109,7 +108,7 @@ public class AssistantVoiceSearchServiceUnitTest {
 
         doReturn(mPackageManager).when(mContext).getPackageManager();
         doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
-        doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
+        doReturn(true).when(mExternalAuthUtils).isGoogleSigned(GSAState.PACKAGE_NAME);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mGsaState).isGsaInstalled();
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
@@ -178,7 +177,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch_AGSANotSigned() {
-        doReturn(false).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
+        doReturn(false).when(mExternalAuthUtils).isGoogleSigned(GSAState.PACKAGE_NAME);
 
         List<Integer> reasons = new ArrayList<>();
         boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(

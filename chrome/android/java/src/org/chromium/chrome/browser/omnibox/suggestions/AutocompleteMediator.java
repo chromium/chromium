@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -21,14 +20,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -38,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
@@ -94,6 +90,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
 
     private LocationBarDataProvider mDataProvider;
 
+    @NonNull
+    private final Callback<Tab> mBringTabToFrontCallback;
+    @NonNull
+    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
@@ -160,7 +160,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull LocationBarDataProvider locationBarDataProvider) {
+            @NonNull LocationBarDataProvider locationBarDataProvider,
+            @NonNull Callback<Tab> bringTabToFrontCallback,
+            @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
+            @NonNull BookmarkState bookmarkState) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -172,10 +175,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mAutocomplete.setOnSuggestionsReceivedListener(this);
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
+        mBringTabToFrontCallback = bringTabToFrontCallback;
+        mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mAutocompleteResult = new AutocompleteResult(null, null);
-        mDropdownViewInfoListBuilder =
-                new DropdownItemViewInfoListBuilder(mAutocomplete, activityTabSupplier);
+        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
+                mAutocomplete, activityTabSupplier, bookmarkState);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
     }
@@ -481,8 +486,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @Override
     public void onSwitchToTab(AutocompleteMatch suggestion, int position) {
         Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
-        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
-        if (tab == null || tabWindowManager == null) {
+        if (tab == null || !mTabWindowManagerSupplier.hasValue()) {
             onSuggestionClicked(suggestion, position, suggestion.getUrl());
             return;
         }
@@ -492,19 +496,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         // animation since Android will show the animation for switching apps.
         if (tab.getWindowAndroid().getActivityState() != ActivityState.STOPPED
                 && tab.getWindowAndroid().getActivityState() != ActivityState.DESTROYED) {
-            TabModel tabModel = tabWindowManager.getTabModelForTab(tab);
+            TabModel tabModel = mTabWindowManagerSupplier.get().getTabModelForTab(tab);
             assert tabModel != null;
 
             int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
             tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         } else {
-            // Browser is in background, bring to to foreground and switch to the tab.
-            Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(
-                    tab.getId(), IntentHandler.BringToFrontSource.SEARCH_ACTIVITY);
-            if (newIntent != null) {
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
-            }
+            mBringTabToFrontCallback.onResult(tab);
         }
         recordMetrics(position, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
     }

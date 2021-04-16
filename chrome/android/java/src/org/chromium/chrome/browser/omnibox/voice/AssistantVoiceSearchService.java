@@ -23,7 +23,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -285,7 +284,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED);
         }
-        if (!mExternalAuthUtils.isGoogleSigned(IntentHandler.PACKAGE_GSA)) {
+        if (!mExternalAuthUtils.isGoogleSigned(GSAState.PACKAGE_NAME)) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED);
         }
@@ -318,7 +317,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     /** @return The Intent for Assistant voice search. */
     public Intent getAssistantVoiceSearchIntent() {
         Intent intent = new Intent(Intent.ACTION_SEARCH);
-        intent.setPackage(IntentHandler.PACKAGE_GSA);
+        intent.setPackage(GSAState.PACKAGE_NAME);
         return intent;
     }
 

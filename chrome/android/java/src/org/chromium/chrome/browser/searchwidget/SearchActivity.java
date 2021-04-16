@@ -26,6 +26,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -185,7 +186,10 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
                 SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
-                /*pageInfoAction=*/(tab, permission) -> {});
+                /*pageInfoAction=*/(tab, permission) -> {},
+                /*spareRendererCreator=*/(profile) -> {}, IntentHandler::bringTabToFront,
+                /*saveOfflineButtonState=*/(tab) -> false, TabWindowManagerSingleton::getInstance,
+                /*bookmarkState=*/(url) -> false);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

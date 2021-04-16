@@ -210,8 +210,8 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mAutocompleteController, mListModel,
-                mHandler, mLifecycleDispatcher,
-                () -> mModalDialogManager, null, null, mLocationBarDataProvider);
+                mHandler, mLifecycleDispatcher, () -> mModalDialogManager, null, null,
+                mLocationBarDataProvider, tab -> {}, null, url -> false);
         mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(

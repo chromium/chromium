@@ -10,12 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
@@ -46,6 +46,7 @@ public class AutocompleteController {
     // was the most ideal.
     private static final int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
 
+    private final Callback<Profile> mSpareRendererCreator;
     private long mNativeAutocompleteControllerAndroid;
     private long mCurrentNativeAutocompleteResult;
     private OnSuggestionsReceivedListener mListener;
@@ -62,6 +63,10 @@ public class AutocompleteController {
     public interface OnSuggestionsReceivedListener {
         void onSuggestionsReceived(
                 AutocompleteResult autocompleteResult, String inlineAutocompleteText);
+    }
+
+    public AutocompleteController(@NonNull Callback<Profile> spareRendererCreator) {
+        mSpareRendererCreator = spareRendererCreator;
     }
 
     /**
@@ -206,7 +211,7 @@ public class AutocompleteController {
                     // clang-format off
                     () -> {
                         ThreadUtils.assertOnUiThread();
-                        WarmupManager.getInstance().createSpareRenderProcessHost(profile);
+                        mSpareRendererCreator.onResult(profile);
                     },
                     // clang-format on
                     ChromeFeatureList.getFieldTrialParamByFeatureAsInt(

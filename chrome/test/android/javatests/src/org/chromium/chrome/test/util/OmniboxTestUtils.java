@@ -53,6 +53,7 @@ public class OmniboxTestUtils {
          * @param listener
          */
         public TestAutocompleteController(OnSuggestionsReceivedListener listener) {
+            super(profile -> {});
             mAutocompleteResults = new HashMap<>();
             mEmptyResult = new AutocompleteResult(null, null);
             setOnSuggestionsReceivedListener(listener);
@@ -111,7 +112,7 @@ public class OmniboxTestUtils {
      */
     public static class StubAutocompleteController extends AutocompleteController {
         public StubAutocompleteController() {
-            super();
+            super(profile -> {});
             setOnSuggestionsReceivedListener(new OnSuggestionsReceivedListener() {
                 @Override
                 public void onSuggestionsReceived(

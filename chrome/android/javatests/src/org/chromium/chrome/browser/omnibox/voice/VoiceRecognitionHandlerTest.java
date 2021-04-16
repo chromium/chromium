@@ -414,7 +414,8 @@ public class VoiceRecognitionHandlerTest {
                 OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
                 UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
-                    mLifecycleDispatcher, () -> mModalDialogManager, null, null, mDataProvider);
+                    mLifecycleDispatcher, () -> mModalDialogManager, null, null, mDataProvider,
+                    (profile) -> {}, (tab) -> {}, null, (url) -> false);
         }
 
         @Override

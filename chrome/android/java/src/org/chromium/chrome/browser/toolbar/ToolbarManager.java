@@ -38,7 +38,10 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.TabLoadStatus;
+import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -52,6 +55,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -505,7 +509,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate,
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
                     () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity),
-                    toolbarPageInfo::show);
+                    toolbarPageInfo::show,
+                    WarmupManager.getInstance()::createSpareRenderProcessHost,
+                    IntentHandler::bringTabToFront, DownloadUtils::isAllowedToDownloadPage,
+                    TabWindowManagerSingleton::getInstance,
+                    (url) -> mBookmarkBridgeSupplier.hasValue()
+                            && mBookmarkBridgeSupplier.get().isBookmarked(url));
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }
