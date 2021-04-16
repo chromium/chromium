@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,7 +43,7 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   bool found_value_ = false;
-  CheckedPtr<content::RenderFrameHost> wanted_rfh_;
+  content::RenderFrameHost* wanted_rfh_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };

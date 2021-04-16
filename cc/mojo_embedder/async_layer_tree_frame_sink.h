@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -62,7 +61,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     ~InitParams();
 
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner;
-    CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager = nullptr;
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr;
     std::unique_ptr<viz::SyntheticBeginFrameSource>
         synthetic_begin_frame_source;
     UnboundMessagePipes pipes;

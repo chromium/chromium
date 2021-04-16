@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/target_property.h"
@@ -102,11 +101,11 @@ class UiTest : public testing::Test {
   void ClickElement(UiElement* element);
 
   std::unique_ptr<Ui> ui_instance_;
-  CheckedPtr<UiInterface> ui_ = nullptr;
+  UiInterface* ui_ = nullptr;
   std::unique_ptr<MockUiBrowserInterface> browser_;
-  CheckedPtr<MockContentInputDelegate> content_input_delegate_ = nullptr;
-  CheckedPtr<Model> model_ = nullptr;
-  CheckedPtr<UiScene> scene_ = nullptr;
+  MockContentInputDelegate* content_input_delegate_ = nullptr;
+  Model* model_ = nullptr;
+  UiScene* scene_ = nullptr;
 
  private:
   bool RunFor(base::TimeDelta delta);

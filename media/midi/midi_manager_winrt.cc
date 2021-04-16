@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "media/midi/midi_manager_winrt.h"
-#include "base/memory/checked_ptr.h"
 
 #pragma warning(disable : 4467)
 
@@ -439,11 +438,11 @@ class MidiManagerWinrt::MidiPortManager {
  protected:
   // Points to the MidiService instance, which is expected to outlive the
   // MidiPortManager instance.
-  CheckedPtr<MidiService> midi_service_;
+  MidiService* midi_service_;
 
   // Points to the MidiManagerWinrt instance, which is safe to be accessed
   // from tasks that are invoked by TaskService.
-  CheckedPtr<MidiManagerWinrt> midi_manager_;
+  MidiManagerWinrt* midi_manager_;
 
  private:
   // DeviceWatcher callbacks:

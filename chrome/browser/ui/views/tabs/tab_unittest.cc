@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -365,7 +364,7 @@ class AlertIndicatorTest : public ChromeViewsTestBase {
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kUnbounded));
-    parent->AddChildView(tab_strip_.get());
+    parent->AddChildView(tab_strip_);
 
     widget_ = CreateTestWidget();
     widget_->SetContentsView(std::move(parent));
@@ -393,8 +392,8 @@ class AlertIndicatorTest : public ChromeViewsTestBase {
   }
 
   // Owned by TabStrip.
-  CheckedPtr<FakeBaseTabStripController> controller_ = nullptr;
-  CheckedPtr<TabStrip> tab_strip_ = nullptr;
+  FakeBaseTabStripController* controller_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

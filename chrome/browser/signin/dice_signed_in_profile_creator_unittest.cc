@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -159,12 +158,12 @@ class DiceSignedInProfileCreatorTest
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
-  CheckedPtr<UnittestProfileManager> profile_manager_ = nullptr;
+  UnittestProfileManager* profile_manager_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<Profile> signed_in_profile_ = nullptr;
-  CheckedPtr<Profile> added_profile_ = nullptr;
+  Profile* signed_in_profile_ = nullptr;
+  Profile* added_profile_ = nullptr;
   base::OnceClosure profile_added_closure_;
   bool creator_callback_called_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;

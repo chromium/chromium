@@ -50,7 +50,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -132,7 +131,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   const bool enable_uma_;
 
-  CheckedPtr<CaptureCallback> callback_;
+  CaptureCallback* callback_;
 
   // A pointer to the IPC layer that takes care of sending requests over to
   // the stream implementation.  Only valid when state_ != IPC_CLOSED.

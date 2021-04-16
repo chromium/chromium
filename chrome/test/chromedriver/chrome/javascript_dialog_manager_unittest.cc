@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/recorder_devtools_client.h"
@@ -114,7 +113,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
  private:
-  CheckedPtr<DevToolsEventListener> listener_;
+  DevToolsEventListener* listener_;
   int closing_count_;
 };
 

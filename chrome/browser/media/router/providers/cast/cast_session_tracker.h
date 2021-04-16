@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -94,8 +93,8 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
   // |SetInstanceForTest()|.
   static CastSessionTracker* instance_for_test_;
 
-  const CheckedPtr<MediaSinkServiceBase> media_sink_service_;
-  const CheckedPtr<cast_channel::CastMessageHandler> message_handler_;
+  MediaSinkServiceBase* const media_sink_service_;
+  cast_channel::CastMessageHandler* const message_handler_;
 
   SessionMap sessions_by_sink_id_;
 

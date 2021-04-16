@@ -7,7 +7,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -111,7 +110,7 @@ class TestEffectiveConnectionTypeObserver
 
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  CheckedPtr<network::NetworkQualityTracker> tracker_;
+  network::NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEffectiveConnectionTypeObserver);
@@ -167,7 +166,7 @@ class TestRTTAndThroughputEstimatesObserver
       run_loop_->Quit();
   }
 
-  CheckedPtr<network::NetworkQualityTracker> tracker_;
+  network::NetworkQualityTracker* tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   base::TimeDelta http_rtt_;

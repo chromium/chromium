@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -213,7 +212,7 @@ class ExtensionInstallPrompt {
     bool is_requesting_host_permissions_;
 
     // The extension being installed.
-    CheckedPtr<const extensions::Extension> extension_;
+    const extensions::Extension* extension_;
 
     std::string delegated_username_;
 

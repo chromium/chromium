@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -101,12 +100,12 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   void CreateRendererNow() override;
 
   // The delegate for this BackgroundContents.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Delegate for choosing an ExtensionHostQueue.
   std::unique_ptr<extensions::ExtensionHostDelegate> extension_host_delegate_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   // The initial URL to load.
@@ -118,7 +117,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 // This is the data sent out as the details with BACKGROUND_CONTENTS_OPENED.
 struct BackgroundContentsOpenedDetails {
   // The BackgroundContents object that has just been opened.
-  CheckedPtr<BackgroundContents> contents;
+  BackgroundContents* contents;
 
   // The name of the parent frame for these contents.
   const std::string& frame_name;

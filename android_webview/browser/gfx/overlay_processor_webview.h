@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_OVERLAY_PROCESSOR_WEBVIEW_H_
 
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -67,10 +66,10 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
   // Command buffer id for SyncTokens on RenderThread sequence.
   const gpu::CommandBufferId command_buffer_id_;
 
-  CheckedPtr<gpu::GpuTaskSchedulerHelper> render_thread_sequence_;
+  gpu::GpuTaskSchedulerHelper* render_thread_sequence_;
   std::unique_ptr<gpu::SingleTaskSequence> gpu_thread_sequence_;
 
-  CheckedPtr<viz::DisplayResourceProvider> resource_provider_ = nullptr;
+  viz::DisplayResourceProvider* resource_provider_ = nullptr;
 
   scoped_refptr<Manager> manager_;
 

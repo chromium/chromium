@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -58,10 +57,10 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
  private:
   friend class DesktopMediaPickerViewsTestApi;
 
-  CheckedPtr<DesktopMediaListController> controller_;
+  DesktopMediaListController* controller_;
   std::unique_ptr<TabListModel> model_;
   std::unique_ptr<TabListViewObserver> view_observer_;
-  CheckedPtr<views::TableView> child_ = nullptr;
+  views::TableView* child_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_

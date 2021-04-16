@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
@@ -46,8 +45,8 @@ class LevelDBSnapshot {
   const leveldb::Snapshot* snapshot() const { return snapshot_; }
 
  private:
-  CheckedPtr<leveldb::DB> db_;
-  CheckedPtr<const leveldb::Snapshot> snapshot_;
+  leveldb::DB* db_;
+  const leveldb::Snapshot* snapshot_;
 
   DISALLOW_COPY_AND_ASSIGN(LevelDBSnapshot);
 };
@@ -157,7 +156,7 @@ class TransactionalLevelDBDatabase
     DetachIteratorOnDestruct(DetachIteratorOnDestruct&& that);
     ~DetachIteratorOnDestruct();
 
-    CheckedPtr<TransactionalLevelDBIterator> it = nullptr;
+    TransactionalLevelDBIterator* it = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(DetachIteratorOnDestruct);
   };

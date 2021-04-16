@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -80,11 +79,11 @@ class BookmarkEditor {
     const Type type;
 
     // If type == EXISTING_NODE this gives the existing node.
-    CheckedPtr<const bookmarks::BookmarkNode> existing_node = nullptr;
+    const bookmarks::BookmarkNode* existing_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the initial parent
     // node to place the new node in.
-    CheckedPtr<const bookmarks::BookmarkNode> parent_node = nullptr;
+    const bookmarks::BookmarkNode* parent_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
     // the new node at.

@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -57,7 +56,7 @@ class MockExternalProvider : public ExternalProviderInterface {
   FileDataMap file_extension_map_;
   UrlDataMap url_extension_map_;
   mojom::ManifestLocation location_;
-  CheckedPtr<VisitorInterface> visitor_;
+  VisitorInterface* visitor_;
 
   // visit_count_ tracks the number of calls to VisitRegisteredExtension().
   // Mutable because it must be incremented on each call to

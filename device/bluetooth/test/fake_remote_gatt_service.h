@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom-forward.h"
@@ -60,7 +59,7 @@ class FakeRemoteGattService : public device::BluetoothRemoteGattService {
   const std::string service_id_;
   const device::BluetoothUUID service_uuid_;
   const bool is_primary_;
-  CheckedPtr<device::BluetoothDevice> device_;
+  device::BluetoothDevice* device_;
 
   size_t last_characteristic_id_ = 0;
 };

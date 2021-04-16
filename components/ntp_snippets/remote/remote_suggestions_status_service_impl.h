@@ -6,7 +6,6 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_STATUS_SERVICE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -55,7 +54,7 @@ class RemoteSuggestionsStatusServiceImpl
   // disabled on the next startup of browser, provided that the list is still
   // hidden then.
   bool list_visible_during_session_;
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

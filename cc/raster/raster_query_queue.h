@@ -6,7 +6,6 @@
 #define CC_RASTER_RASTER_QUERY_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -55,7 +54,7 @@ class CC_EXPORT RasterQueryQueue {
   virtual bool CheckRasterFinishedQueries();
 
  private:
-  const CheckedPtr<viz::RasterContextProvider> worker_context_provider_;
+  viz::RasterContextProvider* const worker_context_provider_;
   const bool oop_rasterization_enabled_;
 
   // Note that this lock should never be acquired while holding the raster

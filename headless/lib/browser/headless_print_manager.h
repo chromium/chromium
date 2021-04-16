@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
@@ -110,7 +109,7 @@ class HeadlessPrintManager
   void Reset();
   void ReleaseJob(PrintResult result);
 
-  CheckedPtr<content::RenderFrameHost> printing_rfh_ = nullptr;
+  content::RenderFrameHost* printing_rfh_ = nullptr;
   GetPDFCallback callback_;
   printing::mojom::PrintPagesParamsPtr print_params_;
   std::string page_ranges_text_;

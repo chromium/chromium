@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
@@ -264,14 +263,14 @@ class DataReductionProxySettings {
 
   std::unique_ptr<DataReductionProxyService> data_reduction_proxy_service_;
 
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   PrefChangeRegistrar registrar_;
 
   SyntheticFieldTrialRegistrationCallback register_synthetic_field_trial_;
 
   // Should not be null.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Observers to notify when the proxy request headers change or |this| is
   // initialized.

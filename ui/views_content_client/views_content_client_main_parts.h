@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 
@@ -67,7 +66,7 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
-  CheckedPtr<ViewsContentClient> views_content_client_;
+  ViewsContentClient* views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

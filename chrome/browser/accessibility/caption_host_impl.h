@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -61,7 +60,7 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   // not exist.
   CaptionController* GetCaptionController();
 
-  CheckedPtr<content::RenderFrameHost> frame_host_;
+  content::RenderFrameHost* frame_host_;
 };
 
 }  // namespace captions

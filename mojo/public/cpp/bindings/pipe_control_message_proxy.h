@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
@@ -39,7 +38,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageProxy {
 
  private:
   // Not owned.
-  CheckedPtr<MessageReceiver> receiver_;
+  MessageReceiver* receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(PipeControlMessageProxy);
 };

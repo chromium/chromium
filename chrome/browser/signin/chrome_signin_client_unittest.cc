@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -90,7 +89,7 @@ class ChromeSigninClientTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
-  CheckedPtr<SigninClient> signin_client_;
+  SigninClient* signin_client_;
 };
 
 TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsImmediatelyWithNetwork) {

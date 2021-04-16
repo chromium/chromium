@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -160,7 +159,7 @@ class RasterTaskImpl : public TileTask {
   // The following members are needed for processing completion of this task on
   // origin thread. These are not thread-safe and should be accessed only in
   // origin thread. Ensure their access by checking CalledOnValidThread().
-  CheckedPtr<TileManager> tile_manager_;
+  TileManager* tile_manager_;
   Tile::Id tile_id_;
   ResourcePool::InUsePoolResource resource_;
 
@@ -173,7 +172,7 @@ class RasterTaskImpl : public TileTask {
   TileResolution tile_resolution_;
   int layer_id_;
   uint64_t source_prepare_tiles_id_;
-  CheckedPtr<void> tile_tracing_id_;
+  void* tile_tracing_id_;
   uint64_t new_content_id_;
   int source_frame_number_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
@@ -331,7 +330,7 @@ class TaskSetFinishedTaskImpl : public TileTask {
   }
 
  private:
-  CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  base::SequencedTaskRunner* task_runner_;
   const base::RepeatingClosure on_task_set_finished_callback_;
 };
 
@@ -364,8 +363,8 @@ class DidFinishRunningAllTilesTask : public TileTask {
   ~DidFinishRunningAllTilesTask() override = default;
 
  private:
-  CheckedPtr<base::SequencedTaskRunner> task_runner_;
-  CheckedPtr<RasterQueryQueue> pending_raster_queries_;
+  base::SequencedTaskRunner* task_runner_;
+  RasterQueryQueue* pending_raster_queries_;
   CompletionCb completion_cb_;
 };
 

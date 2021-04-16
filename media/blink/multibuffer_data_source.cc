@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
@@ -83,7 +82,7 @@ class MultibufferDataSource::ReadOperation {
  private:
   const int64_t position_;
   const int size_;
-  CheckedPtr<uint8_t> data_;
+  uint8_t* data_;
   DataSource::ReadCB callback_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(ReadOperation);

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 
@@ -69,14 +68,14 @@ class TestEventTarget : public EventTarget,
  private:
   void set_parent(TestEventTarget* parent) { parent_ = parent; }
 
-  CheckedPtr<TestEventTarget> parent_;
+  TestEventTarget* parent_;
   std::vector<std::unique_ptr<TestEventTarget>> children_;
   std::unique_ptr<EventTargeter> targeter_;
   bool mark_events_as_handled_;
 
   std::set<ui::EventType> received_;
 
-  CheckedPtr<HandlerSequenceRecorder> recorder_;
+  HandlerSequenceRecorder* recorder_;
   std::string target_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventTarget);

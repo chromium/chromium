@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_VK_IMAGE_GL_REPRESENTATION_H_
 #define GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_VK_IMAGE_GL_REPRESENTATION_H_
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/command_buffer/service/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -38,7 +37,7 @@ class ExternalVkImageGLRepresentationShared {
     return backing_impl()->context_provider();
   }
 
-  const CheckedPtr<ExternalVkImageBacking> backing_;
+  ExternalVkImageBacking* const backing_;
   const GLuint texture_service_id_;
   GLenum current_access_mode_ = 0;
   std::vector<ExternalSemaphore> begin_access_semaphores_;
@@ -62,7 +61,7 @@ class ExternalVkImageGLRepresentation
   void EndAccess() override;
 
  private:
-  const CheckedPtr<gles2::Texture> texture_;
+  gles2::Texture* const texture_;
   ExternalVkImageGLRepresentationShared representation_shared_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalVkImageGLRepresentation);

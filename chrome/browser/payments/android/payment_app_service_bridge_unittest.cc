@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
@@ -86,7 +85,7 @@ class PaymentAppServiceBridgeUnitTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile browser_context_;
   content::TestWebContentsFactory test_web_contents_factory_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   GURL top_origin_;
   GURL frame_origin_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;

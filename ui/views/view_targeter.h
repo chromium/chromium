@@ -6,7 +6,6 @@
 #define UI_VIEWS_VIEW_TARGETER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_targeter.h"
 #include "ui/views/views_export.h"
 
@@ -57,7 +56,7 @@ class VIEWS_EXPORT ViewTargeter : public ui::EventTargeter {
 
   // ViewTargeter does not own the |delegate_|, but |delegate_| must
   // outlive the targeter.
-  CheckedPtr<ViewTargeterDelegate> delegate_;
+  ViewTargeterDelegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewTargeter);
 };

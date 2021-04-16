@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver_factory.h"
@@ -78,7 +77,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
  private:
   std::string app_locale_;
   AutofillManager::AutofillDownloadManagerState enable_download_manager_;
-  CheckedPtr<AutofillProvider> provider_;
+  AutofillProvider* provider_;
 };
 
 }  // namespace autofill

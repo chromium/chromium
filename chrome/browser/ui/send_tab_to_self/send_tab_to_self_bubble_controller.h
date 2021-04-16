@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Profile;
@@ -82,9 +81,9 @@ class SendTabToSelfBubbleController
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, DevicePressed);
 
   // The web_contents associated with this controller.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  CheckedPtr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
+  SendTabToSelfBubbleView* send_tab_to_self_bubble_view_ = nullptr;
   // True if a confirmation message should be shown in the omnibox.
   bool show_message_ = false;
 

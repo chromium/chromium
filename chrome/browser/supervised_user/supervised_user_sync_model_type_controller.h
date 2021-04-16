@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -31,7 +30,7 @@ class SupervisedUserSyncModelTypeController
   PreconditionState GetPreconditionState() const override;
 
  private:
-  const CheckedPtr<const Profile> profile_;
+  const Profile* const profile_;
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserSyncModelTypeController);
 };

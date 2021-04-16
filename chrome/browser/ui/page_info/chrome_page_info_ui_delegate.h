@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_
 #define CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_UI_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_ui_delegate.h"
 
@@ -26,7 +25,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   bool ShouldShowAsk(ContentSettingsType type) override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   GURL site_url_;
 };
 

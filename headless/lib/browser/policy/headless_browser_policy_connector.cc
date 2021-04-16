@@ -82,7 +82,7 @@ ConfigurationPolicyProvider*
 HeadlessBrowserPolicyConnector::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_.get();
+  return provider ? provider : platform_provider_;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_id.h"
@@ -158,7 +157,7 @@ class CC_EXPORT CheckerImageTracker {
     ScopedDecodeHolder& operator=(const ScopedDecodeHolder&) = delete;
 
    private:
-    CheckedPtr<ImageController> controller_;
+    ImageController* controller_;
     ImageController::ImageDecodeRequestId request_id_;
   };
 

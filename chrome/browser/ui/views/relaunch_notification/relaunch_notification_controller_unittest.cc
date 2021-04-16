@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -102,7 +101,7 @@ class FakeRelaunchNotificationController
     delegate_->OnRelaunchDeadlineExpired();
   }
 
-  CheckedPtr<ControllerDelegate> delegate_;
+  ControllerDelegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeRelaunchNotificationController);
 };

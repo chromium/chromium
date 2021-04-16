@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -41,8 +40,8 @@ class WebSocket final {
       const std::string& message,
       const net::NetworkTrafficAnnotationTag traffic_annotation);
 
-  const CheckedPtr<HttpServer> server_;
-  const CheckedPtr<HttpConnection> connection_;
+  HttpServer* const server_;
+  HttpConnection* const connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;
 

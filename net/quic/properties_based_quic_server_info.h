@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_isolation_key.h"
 #include "net/quic/quic_server_info.h"
@@ -38,7 +37,7 @@ class QUIC_EXPORT_PRIVATE PropertiesBasedQuicServerInfo
 
  private:
   const NetworkIsolationKey network_isolation_key_;
-  const CheckedPtr<HttpServerProperties> http_server_properties_;
+  HttpServerProperties* const http_server_properties_;
 
   DISALLOW_COPY_AND_ASSIGN(PropertiesBasedQuicServerInfo);
 };

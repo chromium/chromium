@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -123,7 +122,7 @@ class CastRemotingConnector::RemotingBridge final
 
   // Weak pointer. Will be set to nullptr if the CastRemotingConnector is
   // destroyed before this RemotingBridge.
-  CheckedPtr<CastRemotingConnector> connector_;
+  CastRemotingConnector* connector_;
 
   DISALLOW_COPY_AND_ASSIGN(RemotingBridge);
 };

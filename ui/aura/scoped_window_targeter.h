@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -32,7 +31,7 @@ class AURA_EXPORT ScopedWindowTargeter : public WindowObserver {
   // WindowObserver:
   void OnWindowDestroyed(Window* window) override;
 
-  CheckedPtr<Window> window_;
+  Window* window_;
   std::unique_ptr<WindowTargeter> old_targeter_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedWindowTargeter);

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -118,7 +117,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   gfx::ImageSkia ThemeImage(const gfx::ImageSkia& source);
 
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   gfx::ImageSkia favicon_;
   TabNetworkState network_state_ = TabNetworkState::kNone;

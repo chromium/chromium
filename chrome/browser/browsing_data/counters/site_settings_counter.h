@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_SETTINGS_COUNTER_H_
 #define CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_SETTINGS_COUNTER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
@@ -32,9 +31,9 @@ class SiteSettingsCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
 
   scoped_refptr<HostContentSettingsMap> map_;
-  CheckedPtr<content::HostZoomMap> zoom_map_;
-  CheckedPtr<ProtocolHandlerRegistry> handler_registry_;
-  CheckedPtr<PrefService> pref_service_;
+  content::HostZoomMap* zoom_map_;
+  ProtocolHandlerRegistry* handler_registry_;
+  PrefService* pref_service_;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_SETTINGS_COUNTER_H_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "extensions/common/extension_api.h"
 
 #include <stddef.h>
@@ -84,7 +83,7 @@ TEST(ExtensionAPITest, Creation) {
   ExtensionAPI empty_instance;
 
   struct {
-    CheckedPtr<ExtensionAPI> api;
+    ExtensionAPI* api;
     bool expect_populated;
   } test_data[] = {
     { shared_instance, true },
@@ -315,7 +314,7 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
     std::string api_full_name;
     bool expect_is_available;
     Feature::Context context;
-    CheckedPtr<const Extension> extension;
+    const Extension* extension;
     GURL url;
   } test_data[] = {
       {"test1", false, Feature::WEB_PAGE_CONTEXT, nullptr, GURL()},
@@ -794,7 +793,7 @@ TEST(ExtensionAPITest, DefaultConfigurationFeatures) {
           api->GetFeatureDependency("api:browserAction.setTitle"));
 
   struct {
-    CheckedPtr<const SimpleFeature> feature;
+    const SimpleFeature* feature;
     // TODO(aa): More stuff to test over time.
   } test_data[] = {{browser_action}, {browser_action_set_title}};
 

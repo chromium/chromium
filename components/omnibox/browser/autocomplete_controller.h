@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -293,21 +292,21 @@ class AutocompleteController : public AutocompleteProviderListener,
   // A list of all providers.
   Providers providers_;
 
-  CheckedPtr<DocumentProvider> document_provider_;
+  DocumentProvider* document_provider_;
 
-  CheckedPtr<HistoryURLProvider> history_url_provider_;
+  HistoryURLProvider* history_url_provider_;
 
-  CheckedPtr<KeywordProvider> keyword_provider_;
+  KeywordProvider* keyword_provider_;
 
-  CheckedPtr<SearchProvider> search_provider_;
+  SearchProvider* search_provider_;
 
-  CheckedPtr<ZeroSuggestProvider> zero_suggest_provider_;
+  ZeroSuggestProvider* zero_suggest_provider_;
 
-  CheckedPtr<OnDeviceHeadProvider> on_device_head_provider_;
+  OnDeviceHeadProvider* on_device_head_provider_;
 
-  CheckedPtr<ClipboardProvider> clipboard_provider_;
+  ClipboardProvider* clipboard_provider_;
 
-  CheckedPtr<VoiceSuggestProvider> voice_suggest_provider_;
+  VoiceSuggestProvider* voice_suggest_provider_;
 
   // Input passed to Start.
   AutocompleteInput input_;
@@ -353,7 +352,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // controller creation and after |ResetSession| is called.
   bool search_service_worker_signal_sent_;
 
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_

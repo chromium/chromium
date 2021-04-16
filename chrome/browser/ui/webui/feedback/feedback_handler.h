@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -34,7 +33,7 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void HandleShowMetrics(const base::ListValue* args);
   void HandleShowSystemInfo(const base::ListValue* args);
 
-  CheckedPtr<const FeedbackDialog> dialog_;
+  const FeedbackDialog* dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_

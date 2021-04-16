@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -44,7 +43,7 @@ class DownloadUpdatedObserver : public download::DownloadItem::Observer {
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   EventFilter filter_;
   bool waiting_;
   bool event_seen_;
@@ -260,7 +259,7 @@ class DownloadTestFlushObserver : public DownloadManager::Observer,
   // action.  If requested, also observes all downloads while iterating.
   void CheckDownloadsInProgress(bool observe_downloads);
 
-  CheckedPtr<DownloadManager> download_manager_;
+  DownloadManager* download_manager_;
   DownloadSet downloads_observed_;
   bool waiting_for_zero_inprogress_;
   base::RunLoop run_loop_;
@@ -329,8 +328,8 @@ class SavePackageFinishedObserver : public download::DownloadItem::Observer,
   void ManagerGoingDown(DownloadManager* manager) override;
 
  private:
-  CheckedPtr<DownloadManager> download_manager_;
-  CheckedPtr<download::DownloadItem> download_;
+  DownloadManager* download_manager_;
+  download::DownloadItem* download_;
   base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SavePackageFinishedObserver);

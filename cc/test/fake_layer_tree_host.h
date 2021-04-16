@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_client.h"
@@ -111,8 +110,8 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
                     CompositorMode mode);
 
  protected:
-  CheckedPtr<FakeLayerTreeHostClient> client_ = nullptr;
-  CheckedPtr<FakeLayerTreeHostImpl> host_impl_ = nullptr;
+  FakeLayerTreeHostClient* client_ = nullptr;
+  FakeLayerTreeHostImpl* host_impl_ = nullptr;
 
   bool needs_commit_ = false;
 

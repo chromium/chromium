@@ -11,7 +11,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/optional.h"
@@ -121,7 +120,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   size_t input_buffer_size_;
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
-  CheckedPtr<GpuVideoAcceleratorFactories> gpu_factories_;
+  GpuVideoAcceleratorFactories* gpu_factories_;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // If |h264_converter_| is null, we output in annexb format. Otherwise, we

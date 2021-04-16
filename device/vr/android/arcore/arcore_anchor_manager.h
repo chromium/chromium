@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
@@ -70,7 +69,7 @@ class ArCoreAnchorManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCoreAnchorManager
   // is also owned by ArCoreImpl.
-  CheckedPtr<ArSession> arcore_session_;
+  ArSession* arcore_session_;
 
   // Allows reuse of the pose object; ARCore will populate it with new data on
   // each call to the ARCore SDK.

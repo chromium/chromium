@@ -7,7 +7,6 @@
 
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -31,8 +30,8 @@ struct FunctorData {
   FunctorData& operator=(const FunctorData&) = delete;
 
   int functor = 0;
-  CheckedPtr<void> data = nullptr;
-  CheckedPtr<AwDrawFnFunctorCallbacks> functor_callbacks = nullptr;
+  void* data = nullptr;
+  AwDrawFnFunctorCallbacks* functor_callbacks = nullptr;
   bool released_by_functor = false;
   bool released_by_manager = false;
   scoped_refptr<gfx::SurfaceControl::Surface> overlay_surface;

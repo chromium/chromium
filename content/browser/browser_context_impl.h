@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -86,7 +85,7 @@ class BrowserContext::Impl {
   // TODO(https://crbug.com/1179776): Remove the `self_` field.  In the future
   // BrowserContext::Impl should become BrowserContextImpl that inherits from
   // BrowserContext, making the `self_` member obsolete.
-  CheckedPtr<BrowserContext> self_;
+  BrowserContext* self_;
 
   const std::string unique_id_ = base::UnguessableToken::Create().ToString();
   bool will_be_destroyed_soon_ = false;

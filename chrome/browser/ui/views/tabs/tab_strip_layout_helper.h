@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -181,7 +180,7 @@ class TabStripLayoutHelper {
   bool SlotIsCollapsedTab(int i) const;
 
   // The owning tabstrip's controller.
-  const CheckedPtr<const TabStripController> controller_;
+  const TabStripController* const controller_;
 
   // Callback to get the necessary View objects from the owning tabstrip.
   GetTabsCallback get_tabs_callback_;

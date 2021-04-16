@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingDeviceSource;
@@ -29,7 +28,7 @@ class SharedClipboardMessageHandler : public SharingMessageHandler {
   virtual void ShowNotification(const std::string& device_name) = 0;
 
  private:
-  CheckedPtr<SharingDeviceSource> device_source_ = nullptr;
+  SharingDeviceSource* device_source_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandler);
 };

@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_BASE_SCROLL_BAR_THUMB_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -71,7 +70,7 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
 
  private:
   // The ScrollBar that owns us.
-  CheckedPtr<ScrollBar> scroll_bar_;
+  ScrollBar* scroll_bar_;
 
   int drag_start_position_;
 

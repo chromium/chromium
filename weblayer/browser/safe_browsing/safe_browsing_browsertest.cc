@@ -4,7 +4,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/safe_browsing/content/base_blocking_page.h"
@@ -107,7 +106,7 @@ class SafeBrowsingErrorNavigationObserver : public NavigationObserver {
 
  private:
   const GURL url_;
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   base::RunLoop run_loop_;
 };
 

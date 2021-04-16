@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -89,8 +88,8 @@ struct FormParsingTestCase {
   int number_of_all_possible_passwords = -1;
   int number_of_all_possible_usernames = -1;
   // null means no checking
-  CheckedPtr<const ValueElementVector> all_possible_passwords = nullptr;
-  CheckedPtr<const ValueElementVector> all_possible_usernames = nullptr;
+  const ValueElementVector* all_possible_passwords = nullptr;
+  const ValueElementVector* all_possible_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
   base::Optional<FormDataParser::ReadonlyPasswordFields> readonly_status;

@@ -8,7 +8,6 @@
 #include <array>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -81,7 +80,7 @@ class MemoryPressureVoteAggregator {
   MemoryPressureLevel current_pressure_level_ =
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // Array with one bucket for each potential MemoryPressureLevel. The overall
   // MemoryPressureLevel is calculated as the highest index of a non-zero

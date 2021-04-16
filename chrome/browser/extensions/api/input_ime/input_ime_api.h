@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -100,7 +99,7 @@ class ImeObserver : public InputMethodEngineBase::Observer {
       IMEEngineHandlerInterface::InputContext input_context);
 
   std::string extension_id_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
  private:
   extensions::api::input_ime::AutoCapitalizeType
@@ -210,7 +209,7 @@ class InputImeAPI : public BrowserContextKeyedAPI,
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

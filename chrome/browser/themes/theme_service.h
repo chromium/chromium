@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -61,7 +60,7 @@ class ThemeService : public KeyedService,
 
    private:
     base::OnceClosure installer_;
-    const CheckedPtr<ThemeService> theme_service_;
+    ThemeService* const theme_service_;
 
     DISALLOW_COPY_AND_ASSIGN(ThemeReinstaller);
   };
@@ -230,7 +229,7 @@ class ThemeService : public KeyedService,
 
     const ThemeHelper& theme_helper_;
     bool incognito_;
-    CheckedPtr<const BrowserThemeProviderDelegate> delegate_;
+    const BrowserThemeProviderDelegate* delegate_;
 
     DISALLOW_COPY_AND_ASSIGN(BrowserThemeProvider);
   };

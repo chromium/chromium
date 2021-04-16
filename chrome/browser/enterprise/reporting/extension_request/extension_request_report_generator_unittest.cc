@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -114,7 +113,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ExtensionRequestReportGenerator generator_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 TEST_F(ExtensionRequestReportGeneratorTest, AddRequests) {

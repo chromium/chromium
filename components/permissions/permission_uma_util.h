@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/permissions/permission_request.h"
@@ -294,7 +293,7 @@ class PermissionUmaUtil {
     ~ScopedRevocationReporter();
 
    private:
-    CheckedPtr<content::BrowserContext> browser_context_;
+    content::BrowserContext* browser_context_;
     const GURL primary_url_;
     const GURL secondary_url_;
     ContentSettingsType content_type_;

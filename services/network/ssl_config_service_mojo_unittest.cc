@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
@@ -87,7 +86,7 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   int observed_changes() const { return observed_changes_; }
 
  private:
-  const CheckedPtr<net::SSLConfigService> ssl_config_service_;
+  net::SSLConfigService* const ssl_config_service_;
   int observed_changes_ = 0;
   int changes_to_wait_for_ = 0;
   net::SSLContextConfig ssl_context_config_during_change_;

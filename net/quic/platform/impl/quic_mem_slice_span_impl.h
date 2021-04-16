@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_MEM_SLICE_SPAN_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_MEM_SLICE_SPAN_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
@@ -54,8 +53,8 @@ class QUIC_EXPORT_PRIVATE QuicMemSliceSpanImpl {
   bool empty() const { return num_buffers_ == 0; }
 
  private:
-  CheckedPtr<const scoped_refptr<net::IOBuffer>> buffers_;
-  CheckedPtr<const size_t> lengths_;
+  const scoped_refptr<net::IOBuffer>* buffers_;
+  const size_t* lengths_;
   // Not const so that the move operator can work properly.
   size_t num_buffers_;
 };

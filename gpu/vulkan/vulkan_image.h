@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -176,7 +175,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
                                                 VkImageCreateFlags flags);
 #endif
 
-  CheckedPtr<VulkanDeviceQueue> device_queue_ = nullptr;
+  VulkanDeviceQueue* device_queue_ = nullptr;
   gfx::Size size_;
   VkFormat format_ = VK_FORMAT_UNDEFINED;
   VkImageCreateFlags flags_ = 0;

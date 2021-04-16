@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -390,7 +389,7 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
   }
 
   guest_view::TestGuestViewManagerFactory factory_;
-  CheckedPtr<guest_view::TestGuestViewManager> test_guest_view_manager_;
+  guest_view::TestGuestViewManager* test_guest_view_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSitePerProcessPDFTest);
 };
@@ -483,7 +482,7 @@ class MailtoExternalProtocolHandlerDelegate
  private:
   bool has_triggered_external_protocol_ = false;
   GURL external_protocol_url_;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

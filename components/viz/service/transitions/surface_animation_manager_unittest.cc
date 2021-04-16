@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -182,7 +181,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
 
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
-  CheckedPtr<SurfaceManager> surface_manager_;
+  SurfaceManager* surface_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
 };
