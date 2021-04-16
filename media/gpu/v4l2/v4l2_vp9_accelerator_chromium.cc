@@ -175,6 +175,9 @@ V4L2ChromiumVP9Accelerator::V4L2ChromiumVP9Accelerator(
     : surface_handler_(surface_handler), device_(device) {
   DCHECK(surface_handler_);
   DCHECK(device_);
+
+  device_needs_frame_context_ =
+      device_->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0));
 }
 
 V4L2ChromiumVP9Accelerator::~V4L2ChromiumVP9Accelerator() = default;
@@ -341,7 +344,7 @@ bool V4L2ChromiumVP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
 }
 
 bool V4L2ChromiumVP9Accelerator::IsFrameContextRequired() const {
-  return true;
+  return device_needs_frame_context_;
 }
 
 }  // namespace media
