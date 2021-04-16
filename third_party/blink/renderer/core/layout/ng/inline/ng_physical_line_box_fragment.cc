@@ -28,9 +28,8 @@ ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
 
 const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
     NGLineBoxFragmentBuilder* builder) {
-  size_t byte_size = builder->children_.size() * sizeof(NGLink);
-  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(
-      AdditionalBytes(byte_size), PassKey(), builder);
+  DCHECK_EQ(builder->children_.size(), 0u);
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
 }
 
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
@@ -38,7 +37,6 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
     NGLineBoxFragmentBuilder* builder)
     : NGPhysicalFragment(builder,
                          builder->GetWritingMode(),
-                         children_,
                          kFragmentLineBox,
                          builder->line_box_type_),
       metrics_(builder->metrics_) {
@@ -87,18 +85,6 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
     TextHeightType height_type) const {
   const WritingMode container_writing_mode = container_style.GetWritingMode();
   PhysicalRect overflow;
-  for (const auto& child : PostLayoutChildren()) {
-    PhysicalRect child_scroll_overflow =
-        child->ScrollableOverflowForPropagation(container, height_type);
-    child_scroll_overflow.offset += child.Offset();
-
-    if (UNLIKELY(has_hanging_ && !child->IsFloatingOrOutOfFlowPositioned())) {
-      AdjustScrollableOverflowForHanging(LocalRect(), container_writing_mode,
-                                         &child_scroll_overflow);
-    }
-    overflow.Unite(child_scroll_overflow);
-  }
-
   // Make sure we include the inline-size of the line-box in the overflow.
   AddInlineSizeToOverflow(LocalRect(), container_writing_mode, &overflow);
 
@@ -134,7 +120,6 @@ bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
 }
 
 void NGPhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
-  // |children_| is traced in |NGPhysicalFragment|.
   NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 

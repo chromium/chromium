@@ -81,15 +81,13 @@ class CORE_EXPORT NGPhysicalFragment
 
   NGPhysicalFragment(NGContainerFragmentBuilder* builder,
                      WritingMode block_or_line_writing_mode,
-                     NGLink* buffer,
                      NGFragmentType type,
                      unsigned sub_type,
                      unsigned has_fragment_items = 0,
                      unsigned has_rare_data = 0);
 
   NGPhysicalFragment(const NGPhysicalFragment& other,
-                     bool recalculate_layout_overflow,
-                     NGLink* buffer);
+                     bool recalculate_layout_overflow);
 
   ~NGPhysicalFragment();
 
@@ -553,22 +551,9 @@ class CORE_EXPORT NGPhysicalFragment
 
   const NGBreakToken* BreakToken() const { return break_token_; }
 
-  // Returns the children of |this|.
-  //
-  // Note, children in this collection maybe old generations. Items in this
-  // collection are safe, but their children (grandchildren of |this|) maybe
-  // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
-  base::span<const NGLink> Children() const {
-    DCHECK(children_valid_);
-    return base::make_span(buffer_, const_num_children_);
-  }
+  base::span<const NGLink> Children() const;
 
-  // Similar to |Children()| but all children are the latest generation of
-  // post-layout, and therefore all descendants are safe.
-  PostLayoutChildLinkList PostLayoutChildren() const {
-    DCHECK(children_valid_);
-    return PostLayoutChildLinkList(const_num_children_, buffer_);
-  }
+  PostLayoutChildLinkList PostLayoutChildren() const;
 
   // Returns true if we have any floating descendants which need to be
   // traversed during the float paint phase.
@@ -603,30 +588,6 @@ class CORE_EXPORT NGPhysicalFragment
       return base::span<NGPhysicalOutOfFlowPositionedNode>();
     return {oof_positioned_descendants_->data(),
             oof_positioned_descendants_->size()};
-  }
-
-  // This exposes a mutable part of the fragment for |NGOutOfFlowLayoutPart|.
-  class MutableChildrenForOutOfFlow final {
-    STACK_ALLOCATED();
-
-   protected:
-    friend class NGOutOfFlowLayoutPart;
-    base::span<NGLink> Children() const {
-      return base::make_span(buffer_, num_children_);
-    }
-
-   private:
-    friend class NGPhysicalFragment;
-    MutableChildrenForOutOfFlow(const NGLink* buffer, wtf_size_t num_children)
-        : buffer_(const_cast<NGLink*>(buffer)), num_children_(num_children) {}
-
-    NGLink* buffer_;
-    wtf_size_t num_children_;
-  };
-
-  MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
-    DCHECK(children_valid_);
-    return MutableChildrenForOutOfFlow(buffer_, const_num_children_);
   }
 
  protected:
@@ -717,15 +678,9 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
 
-  const wtf_size_t const_num_children_;
   Member<const NGBreakToken> break_token_;
   const Member<HeapVector<NGPhysicalOutOfFlowPositionedNode>>
       oof_positioned_descendants_;
-
-  // Because flexible arrays need to be the last member in a class, the actual
-  // storage is in the subclass and we just keep a pointer to it here. Holding a
-  // raw ptr to |NGLink| here is safe with the same reason.
-  const NGLink* buffer_;
 
  private:
   friend struct NGPhysicalFragmentTraits;

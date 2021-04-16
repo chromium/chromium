@@ -32,10 +32,8 @@ struct SameSizeAsNGPhysicalFragment : GarbageCollected<NGPhysicalFragment> {
   Member<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
-  wtf_size_t num_children;
   Member<void*> break_token;
   Member<Vector<NGPhysicalOutOfFlowPositionedNode>> oof_positioned_descendants_;
-  void* pointer;
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -295,7 +293,6 @@ void NGPhysicalFragmentTraits::Destruct(const NGPhysicalFragment* fragment) {
 
 NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
                                        WritingMode block_or_line_writing_mode,
-                                       NGLink* buffer,
                                        NGFragmentType type,
                                        unsigned sub_type,
                                        unsigned has_fragment_items,
@@ -317,14 +314,12 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       is_painted_atomically_(false),
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_baseline_(false),
-      const_num_children_(builder->children_.size()),
       break_token_(std::move(builder->break_token_)),
       oof_positioned_descendants_(
           builder->oof_positioned_descendants_.IsEmpty()
               ? nullptr
               : MakeGarbageCollected<
-                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>()),
-      buffer_(buffer) {
+                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>()) {
   CHECK(builder->layout_object_);
   has_floating_descendants_for_paint_ =
       builder->has_floating_descendants_for_paint_;
@@ -346,27 +341,12 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
           descendant.inline_container);
     }
   }
-
-  // Because flexible arrays need to be the last member in a class, we need to
-  // have the buffer passed as a constructor argument and have the actual
-  // storage be part of the subclass.
-  const WritingModeConverter converter(
-      {block_or_line_writing_mode, builder->Direction()}, size);
-  wtf_size_t i = 0;
-  for (auto& child : builder->children_) {
-    buffer[i].offset =
-        converter.ToPhysical(child.offset, child.fragment->Size());
-    // Fragments in |builder| are not used after |this| was constructed.
-    buffer[i].fragment = std::move(child.fragment);
-    ++i;
-  }
 }
 
 // Even though the other constructors don't initialize many of these fields
 // (instead set by their super-classes), the copy constructor does.
 NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
-                                       bool recalculate_layout_overflow,
-                                       NGLink* buffer)
+                                       bool recalculate_layout_overflow)
     : has_floating_descendants_for_paint_(
           other.has_floating_descendants_for_paint_),
       has_adjoining_object_descendants_(
@@ -408,40 +388,16 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_baseline_(other.has_baseline_),
       has_last_baseline_(other.has_last_baseline_),
-      const_num_children_(other.const_num_children_),
       break_token_(other.break_token_),
       oof_positioned_descendants_(
           other.oof_positioned_descendants_
               ? MakeGarbageCollected<
                     HeapVector<NGPhysicalOutOfFlowPositionedNode>>(
                     *other.oof_positioned_descendants_)
-              : nullptr),
-      buffer_(buffer) {
+              : nullptr) {
   CHECK(layout_object_);
   DCHECK(other.children_valid_);
   DCHECK(children_valid_);
-  // To ensure the fragment tree is consistent, use the post-layout fragment.
-  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
-    buffer[i].offset = other.buffer_[i].offset;
-    const NGPhysicalFragment* post_layout = other.buffer_[i]->PostLayout();
-    // While making the fragment tree consistent, we need to also clone any
-    // fragmentainer fragments, as they don't nessecerily have their result
-    // stored on the layout-object tree.
-    if (post_layout->IsFragmentainerBox()) {
-      const auto& box_fragment = To<NGPhysicalBoxFragment>(*post_layout);
-
-      base::Optional<PhysicalRect> layout_overflow;
-      if (recalculate_layout_overflow) {
-        layout_overflow =
-            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
-                box_fragment);
-      }
-
-      post_layout = NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-          box_fragment, layout_overflow);
-    }
-    buffer[i].fragment = post_layout;
-  }
 }
 
 // Keep the implementation of the destructor here, to avoid dependencies on
@@ -733,14 +689,25 @@ void NGPhysicalFragment::Trace(Visitor* visitor) const {
 
 void NGPhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(layout_object_);
-
-  // Accessing |const_num_children_| inside Trace() here is safe since it is
-  // const. Note we don't check children_valid_ since that is not threadsafe.
-  // Tracing the child links themselves is safe from a background thread.
-  for (const auto& child : base::make_span(buffer_, const_num_children_))
-    visitor->Trace(child);
   visitor->Trace(break_token_);
   visitor->Trace(oof_positioned_descendants_);
+}
+
+// TODO(dlibby): remove `Children` and `PostLayoutChildren` and move the
+// casting and/or branching to the callers.
+base::span<const NGLink> NGPhysicalFragment::Children() const {
+  if (Type() == kFragmentBox)
+    return static_cast<const NGPhysicalBoxFragment*>(this)->Children();
+  return base::make_span(static_cast<NGLink*>(nullptr), 0);
+}
+
+NGPhysicalFragment::PostLayoutChildLinkList
+NGPhysicalFragment::PostLayoutChildren() const {
+  if (Type() == kFragmentBox) {
+    return static_cast<const NGPhysicalBoxFragment*>(this)
+        ->PostLayoutChildren();
+  }
+  return PostLayoutChildLinkList(0, nullptr);
 }
 
 void NGPhysicalFragment::SetChildrenInvalid() const {

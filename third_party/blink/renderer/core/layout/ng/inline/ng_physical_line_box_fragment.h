@@ -81,7 +81,6 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
 
  private:
   FontHeight metrics_;
-  NGLink children_[];
 };
 
 template <>

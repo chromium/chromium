@@ -69,6 +69,47 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   const NGPhysicalBoxFragment* PostLayout() const;
 
+  // Returns the children of |this|.
+  //
+  // Note, children in this collection maybe old generations. Items in this
+  // collection are safe, but their children (grandchildren of |this|) maybe
+  // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
+  base::span<const NGLink> Children() const {
+    DCHECK(children_valid_);
+    return base::make_span(children_, const_num_children_);
+  }
+
+  // Similar to |Children()| but all children are the latest generation of
+  // post-layout, and therefore all descendants are safe.
+  NGPhysicalFragment::PostLayoutChildLinkList PostLayoutChildren() const {
+    DCHECK(children_valid_);
+    return PostLayoutChildLinkList(const_num_children_, children_);
+  }
+
+  // This exposes a mutable part of the fragment for |NGOutOfFlowLayoutPart|.
+  class MutableChildrenForOutOfFlow final {
+    STACK_ALLOCATED();
+
+   protected:
+    friend class NGOutOfFlowLayoutPart;
+    base::span<NGLink> Children() const {
+      return base::make_span(buffer_, num_children_);
+    }
+
+   private:
+    friend class NGPhysicalBoxFragment;
+    MutableChildrenForOutOfFlow(const NGLink* buffer, wtf_size_t num_children)
+        : buffer_(const_cast<NGLink*>(buffer)), num_children_(num_children) {}
+
+    NGLink* buffer_;
+    wtf_size_t num_children_;
+  };
+
+  MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
+    DCHECK(children_valid_);
+    return MutableChildrenForOutOfFlow(children_, const_num_children_);
+  }
+
   // Returns |NGFragmentItems| if this fragment has one.
   bool HasItems() const { return const_has_fragment_items_; }
   const NGFragmentItems* Items() const {
@@ -476,6 +517,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void CheckIntegrity() const;
 #endif
 
+  const wtf_size_t const_num_children_;
   LayoutUnit baseline_;
   LayoutUnit last_baseline_;
   NGInkOverflow ink_overflow_;

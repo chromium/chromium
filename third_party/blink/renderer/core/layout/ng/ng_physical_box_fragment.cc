@@ -29,6 +29,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
+  wtf_size_t const_num_children;
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   NGInkOverflow ink_overflow;
@@ -245,13 +246,25 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     WritingMode block_or_line_writing_mode)
     : NGPhysicalFragment(builder,
                          block_or_line_writing_mode,
-                         children_,
                          kFragmentBox,
                          builder->BoxType(),
                          has_fragment_items,
-                         has_rare_data) {
+                         has_rare_data),
+      const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
+
+  PhysicalSize size = Size();
+  const WritingModeConverter converter(
+      {block_or_line_writing_mode, builder->Direction()}, size);
+  wtf_size_t i = 0;
+  for (auto& child : builder->children_) {
+    children_[i].offset =
+        converter.ToPhysical(child.offset, child.fragment->Size());
+    // Fragments in |builder| are not used after |this| was constructed.
+    children_[i].fragment = std::move(child.fragment);
+    ++i;
+  }
 
   if (const_has_fragment_items_) {
     NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder();
@@ -333,10 +346,34 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     bool has_layout_overflow,
     const PhysicalRect& layout_overflow,
     bool recalculate_layout_overflow)
-    : NGPhysicalFragment(other, recalculate_layout_overflow, children_),
+    : NGPhysicalFragment(other, recalculate_layout_overflow),
+      const_num_children_(other.const_num_children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
+  // To ensure the fragment tree is consistent, use the post-layout fragment.
+  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
+    children_[i].offset = other.children_[i].offset;
+    const NGPhysicalFragment* post_layout = other.children_[i]->PostLayout();
+    // While making the fragment tree consistent, we need to also clone any
+    // fragmentainer fragments, as they don't necessarily have their result
+    // stored on the layout-object tree.
+    if (post_layout->IsFragmentainerBox()) {
+      const auto& box_fragment = To<NGPhysicalBoxFragment>(*post_layout);
+
+      base::Optional<PhysicalRect> recalculated_layout_overflow;
+      if (recalculate_layout_overflow) {
+        recalculated_layout_overflow =
+            NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
+                box_fragment);
+      }
+
+      post_layout = NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
+          box_fragment, recalculated_layout_overflow);
+    }
+    children_[i].fragment = post_layout;
+  }
+
   ink_overflow_type_ = other.ink_overflow_type_;
   if (const_has_fragment_items_) {
     NGFragmentItems* items =
@@ -1554,6 +1591,11 @@ void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
     visitor->Trace(*ComputeItemsAddress());
   if (const_has_rare_data_)
     visitor->Trace(*ComputeRareDataAddress());
+  // Accessing |const_num_children_| inside Trace() here is safe since it is
+  // const. Note we don't check children_valid_ since that is not threadsafe.
+  // Tracing the child links themselves is safe from a background thread.
+  for (const auto& child : base::make_span(children_, const_num_children_))
+    visitor->Trace(child);
   NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
