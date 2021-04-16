@@ -337,17 +337,16 @@ void JumpList::OnIncognitoAvailabilityChanged() {
 void JumpList::InitializeTimerForUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (timer_.IsRunning()) {
-    timer_.Reset();
-  } else {
-    // base::Unretained is safe since |this| is guaranteed to outlive timer_.
-    timer_.Start(FROM_HERE,
-                 profile_->GetUserData(chrome::kJumpListIconDirname)
-                     ? kShortDelayForUpdate
-                     : kLongDelayForUpdate,
-                 base::BindOnce(&JumpList::ProcessNotifications,
-                                base::Unretained(this)));
-  }
+  // The existence of the user data indicates that the jumplist has been used in
+  // this session.
+  const bool jumplist_has_been_used =
+      profile_->GetUserData(chrome::kJumpListIconDirname);
+
+  // This will restart the timer if it is already running.
+  timer_.Start(
+      FROM_HERE,
+      jumplist_has_been_used ? kShortDelayForUpdate : kLongDelayForUpdate, this,
+      &JumpList::ProcessNotifications);
 }
 
 void JumpList::ProcessNotifications() {
