@@ -84,7 +84,7 @@ void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(
     return;
   const std::string country_code = base::CountryCodeForCurrentTimezone();
   // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsJavascriptAllowed()) {
+  if (IsSafeToCallJavascript()) {
     CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
   } else {
     LOG(ERROR) << "Silently dropping MaybeLoadPlayStoreToS request.";
