@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
+
+#include "third_party/blink/renderer/platform/heap/handle.h"
+
+namespace blink {
+
+class LayoutBlockFlow;
+class NGInlineItem;
+class NGInlineNode;
+
+// This class builds a list of <addressable character offset,
+// its attribute values> for the specified SVG <text>.
+//
+// This is almost an implementation of '3. Resolve character positioning'
+// in the algorithm [1]. However this runs during PrepareLayout() rather
+// than during the SVG text layout algorithm because we'd like to use the
+// result of this class in NGInlineNode::CollectInlines().
+//
+// [1] https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
+class NGSVGTextLayoutAttributesBuilder final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit NGSVGTextLayoutAttributesBuilder(NGInlineNode ifc);
+
+  void Build(const String& ifc_text_content,
+             const HeapVector<NGInlineItem>& items);
+
+ private:
+  LayoutBlockFlow* block_flow_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
@@ -963,6 +964,27 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
   DCHECK(data->items.IsEmpty());
   LayoutBlockFlow* block = GetLayoutBlockFlow();
   block->WillCollectInlines();
+
+  if (block->IsNGSVGText()) {
+    // SVG <text> doesn't support reusing the previous result now.
+    previous_data = nullptr;
+
+    // Build NGInlineItems and NGOffsetMapping first.  They are used only by
+    // NGSVGTextLayoutAttributesBuilder, and are discarded because they might
+    // be different from final ones.
+    HeapVector<NGInlineItem> items;
+    items.ReserveCapacity(EstimateInlineItemsCount(*block));
+    NGInlineItemsBuilderForOffsetMapping items_builder(block, &items);
+    items_builder.GetOffsetMappingBuilder().ReserveCapacity(
+        EstimateOffsetMappingItemsCount(*block));
+    CollectInlinesInternal(&items_builder, nullptr);
+
+    NGSVGTextLayoutAttributesBuilder svg_attr_builder(*this);
+    svg_attr_builder.Build(items_builder.ToString(), items);
+
+    // TODO(tkent): Store the result of Build() somewhere.
+    // TODO(tkent): Pass "text chunk" information to NGInlineItemsBuilder.
+  }
 
   data->items.ReserveCapacity(EstimateInlineItemsCount(*block));
   NGInlineItemsBuilder builder(block, &data->items);
