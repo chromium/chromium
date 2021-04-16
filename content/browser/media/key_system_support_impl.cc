@@ -12,12 +12,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
-#include "content/public/browser/cdm_registry.h"
+#include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -33,12 +32,6 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
                                 media::GetKeySystemNameForUMA(key_system) +
                                 ".LibraryCdmAvailable",
                             available);
-}
-
-bool MatchKeySystem(const CdmInfo& cdm_info, const std::string& key_system) {
-  return cdm_info.key_system == key_system ||
-         (cdm_info.supports_sub_key_systems &&
-          media::IsSubKeySystemOf(key_system, cdm_info.key_system));
 }
 
 template <typename T>
@@ -93,8 +86,8 @@ bool GetSoftwareSecureCapabilities(
   DCHECK(video_codecs->empty());
   DCHECK(encryption_schemes->empty());
 
-  auto cdm_info = KeySystemSupportImpl::GetCdmInfo(
-      key_system, /*use_hw_secure_codecs=*/false);
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
     SendCdmAvailableUMA(key_system, false);
     return false;
@@ -144,8 +137,8 @@ bool GetHardwareSecureCapabilities(
     return false;
   }
 
-  auto cdm_info = KeySystemSupportImpl::GetCdmInfo(
-      key_system, /*use_hw_secure_codecs=*/true);
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kHardwareSecure);
   if (!cdm_info)
     return false;
 
@@ -164,22 +157,6 @@ void KeySystemSupportImpl::Create(
   // The created object is bound to (and owned by) |request|.
   mojo::MakeSelfOwnedReceiver(std::make_unique<KeySystemSupportImpl>(),
                               std::move(receiver));
-}
-
-// static
-std::unique_ptr<CdmInfo> KeySystemSupportImpl::GetCdmInfo(
-    const std::string& key_system,
-    bool use_hw_secure_codecs) {
-  DVLOG(2) << __func__ << ": key_system = " << key_system;
-  for (const auto& cdm : CdmRegistry::GetInstance()->GetAllRegisteredCdms()) {
-    auto robustness = use_hw_secure_codecs
-                          ? CdmInfo::Robustness::kHardwareSecure
-                          : CdmInfo::Robustness::kSoftwareSecure;
-    if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system))
-      return std::make_unique<CdmInfo>(cdm);
-  }
-
-  return nullptr;
 }
 
 KeySystemSupportImpl::KeySystemSupportImpl() = default;

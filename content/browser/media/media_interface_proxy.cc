@@ -42,8 +42,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
+#include "content/browser/media/cdm_registry_impl.h"
 #include "content/browser/media/cdm_storage_impl.h"
-#include "content/browser/media/key_system_support_impl.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -623,8 +623,8 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // CdmService only supports software secure codecs.
-  std::unique_ptr<CdmInfo> cdm_info = KeySystemSupportImpl::GetCdmInfo(
-      key_system, /*use_hw_secure_codecs=*/false);
+  auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+      key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
     NOTREACHED() << "No valid CdmInfo for " << key_system;
     return nullptr;

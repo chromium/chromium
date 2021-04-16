@@ -6,10 +6,20 @@
 
 #include <stddef.h>
 
-#include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
+#include "media/base/key_system_names.h"
 
 namespace content {
+
+namespace {
+
+bool MatchKeySystem(const CdmInfo& cdm_info, const std::string& key_system) {
+  return cdm_info.key_system == key_system ||
+         (cdm_info.supports_sub_key_systems &&
+          media::IsSubKeySystemOf(key_system, cdm_info.key_system));
+}
+
+}  // namespace
 
 // static
 CdmRegistry* CdmRegistry::GetInstance() {
@@ -27,11 +37,15 @@ CdmRegistryImpl::CdmRegistryImpl() {}
 CdmRegistryImpl::~CdmRegistryImpl() {}
 
 void CdmRegistryImpl::Init() {
+  base::AutoLock auto_lock(lock_);
+
   // Let embedders register CDMs.
   GetContentClient()->AddContentDecryptionModules(&cdms_, nullptr);
 }
 
 void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
+  base::AutoLock auto_lock(lock_);
+
   // Always register new CDMs at the end of the list, so that the behavior is
   // consistent across the browser process's lifetime. For example, we'll always
   // use the same registered CDM for a given key system. This also means that
@@ -41,11 +55,25 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
 }
 
 const std::vector<CdmInfo>& CdmRegistryImpl::GetAllRegisteredCdms() {
+  base::AutoLock auto_lock(lock_);
   return cdms_;
 }
 
+std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
+    const std::string& key_system,
+    CdmInfo::Robustness robustness) {
+  base::AutoLock auto_lock(lock_);
+  for (const auto& cdm : cdms_) {
+    if (cdm.robustness == robustness && MatchKeySystem(cdm, key_system))
+      return std::make_unique<CdmInfo>(cdm);
+  }
+
+  return nullptr;
+}
+
 void CdmRegistryImpl::ResetForTesting() {
+  base::AutoLock auto_lock(lock_);
   cdms_.clear();
 }
 
-}  // namespace media
+}  // namespace content

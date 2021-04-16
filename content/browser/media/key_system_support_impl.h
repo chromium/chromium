@@ -26,12 +26,6 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   static void Create(
       mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
 
-  // Returns CdmInfo registered for `key_system` and `use_hw_secure_codecs`.
-  // Returns null if no CdmInfo is registered, or if the CdmInfo registered is
-  // invalid.
-  static std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
-                                             bool use_hw_secure_codecs);
-
   // media::mojom::KeySystemSupport implementation.
   void IsKeySystemSupported(const std::string& key_system,
                             IsKeySystemSupportedCallback callback) final;

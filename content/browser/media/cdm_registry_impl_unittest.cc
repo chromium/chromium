@@ -178,4 +178,31 @@ TEST_F(CdmRegistryImplTest, SupportedEncryptionSchemes) {
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
 }
 
+TEST_F(CdmRegistryImplTest, GetCdmInfo_Success) {
+  Register(GetTestCdmInfo());
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
+  ASSERT_TRUE(cdm_info);
+
+  const CdmInfo& cdm = *cdm_info;
+  EXPECT_EQ(kTestCdmName, cdm.name);
+  EXPECT_EQ(kVersion1, cdm.version.GetString());
+  EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
+  EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
+  EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
+  EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
+                       CdmSessionType::kPersistentLicense);
+  EXPECT_EQ(kTestKeySystem, cdm.key_system);
+  EXPECT_TRUE(cdm.supports_sub_key_systems);
+  EXPECT_EQ(cdm.robustness, CdmInfo::Robustness::kSoftwareSecure);
+}
+
+TEST_F(CdmRegistryImplTest, GetCdmInfo_Fail) {
+  Register(GetTestCdmInfo());
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  ASSERT_FALSE(cdm_info);
+}
+
 }  // namespace content

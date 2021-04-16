@@ -9,12 +9,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cdm_registry.h"
+#include "content/public/common/cdm_info.h"
 
 namespace content {
-
-struct CdmInfo;
 
 class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
  public:
@@ -26,6 +27,11 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   void RegisterCdm(const CdmInfo& info) override;
   const std::vector<CdmInfo>& GetAllRegisteredCdms() override;
 
+  // Returns CdmInfo registered for `key_system` and `robustness`. Returns null
+  // if no CdmInfo is registered, or if the CdmInfo registered is invalid.
+  std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
+                                      CdmInfo::Robustness robustness);
+
  private:
   friend class CdmRegistryImplTest;
   friend class KeySystemSupportTest;
@@ -36,7 +42,8 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // Resets `this` to a clean state for testing.
   void ResetForTesting();
 
-  std::vector<CdmInfo> cdms_;
+  base::Lock lock_;
+  std::vector<CdmInfo> cdms_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(CdmRegistryImpl);
 };
