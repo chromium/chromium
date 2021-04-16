@@ -29,7 +29,7 @@
 using testing::Invoke;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -55,7 +55,7 @@ class TestUpstartClient final : public FakeUpstartClient {
 };
 
 class MockMojoWilcoDtcSupportdService
-    : public wilco_dtc_supportd::mojom::WilcoDtcSupportdService {
+    : public chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService {
  public:
   MOCK_METHOD2(SendUiMessageToWilcoDtc,
                void(mojo::ScopedHandle, SendUiMessageToWilcoDtcCallback));
@@ -264,4 +264,4 @@ TEST_F(WilcoDtcSupportdManagerTest, RunningUpstartJob) {
 
 }  // namespace
 
-}  // namespace chromeos
+}  // namespace ash

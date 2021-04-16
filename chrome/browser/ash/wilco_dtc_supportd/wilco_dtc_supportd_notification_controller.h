@@ -13,7 +13,7 @@
 
 class ProfileManager;
 
-namespace chromeos {
+namespace ash {
 
 // Controller class to manage wilco notification.
 class WilcoDtcSupportdNotificationController {
@@ -59,6 +59,6 @@ class WilcoDtcSupportdNotificationController {
   ProfileManager* profile_manager_;  // non-owned
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NOTIFICATION_CONTROLLER_H_

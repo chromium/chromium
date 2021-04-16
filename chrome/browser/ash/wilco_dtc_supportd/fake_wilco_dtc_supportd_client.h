@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
-namespace chromeos {
+namespace ash {
 
 class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
  public:
@@ -57,6 +57,6 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
   DISALLOW_COPY_AND_ASSIGN(FakeWilcoDtcSupportdClient);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_

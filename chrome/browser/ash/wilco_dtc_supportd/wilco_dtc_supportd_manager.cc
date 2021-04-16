@@ -21,7 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -115,7 +115,7 @@ void WilcoDtcSupportdManager::SetConfigurationData(
   }
   wilco_dtc_supportd_bridge_->SetConfigurationData(configuration_data_.get());
 
-  wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceProxy* const
+  chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceProxy* const
       wilco_dtc_supportd_mojo_proxy =
           wilco_dtc_supportd_bridge_->wilco_dtc_supportd_service_mojo_proxy();
   if (!wilco_dtc_supportd_mojo_proxy) {
@@ -192,4 +192,4 @@ void WilcoDtcSupportdManager::OnStopWilcoDtc(bool success) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -14,7 +14,7 @@
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 class WilcoDtcSupportdClient : public DBusClient {
  public:
@@ -48,6 +48,12 @@ class WilcoDtcSupportdClient : public DBusClient {
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdClient);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::WilcoDtcSupportdClient;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_CLIENT_H_

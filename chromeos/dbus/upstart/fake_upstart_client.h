@@ -60,4 +60,9 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::FakeUpstartClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_

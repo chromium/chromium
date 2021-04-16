@@ -33,4 +33,9 @@ class DBusClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::DBusClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_DBUS_CLIENT_H_

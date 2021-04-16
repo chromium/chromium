@@ -22,7 +22,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class WilcoDtcSupportdNetworkContext {
  public:
@@ -96,6 +96,6 @@ class WilcoDtcSupportdNetworkContextImpl
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNetworkContextImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_

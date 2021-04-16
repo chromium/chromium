@@ -35,7 +35,7 @@ using testing::SaveArg;
 using testing::StrictMock;
 using testing::WithArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -74,7 +74,7 @@ using SendUiMessageToWilcoDtcImplCallback =
     base::RepeatingCallback<void(const std::string& response_json_message)>;
 
 class MockMojoWilcoDtcSupportdService
-    : public wilco_dtc_supportd::mojom::WilcoDtcSupportdService {
+    : public chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService {
  public:
   void SendUiMessageToWilcoDtc(
       mojo::ScopedHandle json_message,
@@ -454,4 +454,4 @@ TEST_F(WilcoDtcSupportdMessagingOpenedByExtensionSingleHostTest,
   RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

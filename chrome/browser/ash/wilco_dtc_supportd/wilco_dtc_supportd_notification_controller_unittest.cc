@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -157,4 +157,4 @@ INSTANTIATE_TEST_SUITE_P(WilcoDtcSupportdNotificationControllerTest,
                          WilcoDtcSupportdNotificationControllerTest,
                          testing::ValuesIn(kTestParams));
 
-}  // namespace chromeos
+}  // namespace ash

@@ -11,9 +11,9 @@ namespace policy {
 
 namespace {
 
-chromeos::WilcoDtcSupportdManager* GetWilcoDtcSupportdManager() {
-  chromeos::WilcoDtcSupportdManager* const wilco_dtc_supportd_manager =
-      chromeos::WilcoDtcSupportdManager::Get();
+ash::WilcoDtcSupportdManager* GetWilcoDtcSupportdManager() {
+  ash::WilcoDtcSupportdManager* const wilco_dtc_supportd_manager =
+      ash::WilcoDtcSupportdManager::Get();
   DCHECK(wilco_dtc_supportd_manager);
   return wilco_dtc_supportd_manager;
 }

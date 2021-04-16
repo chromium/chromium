@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 base::StringPiece MojoUtils::GetStringPieceFromMojoHandle(
@@ -72,4 +72,4 @@ mojo::ScopedHandle MojoUtils::CreateReadOnlySharedMemoryMojoHandle(
   return mojo::WrapPlatformFile(platform_region.PassPlatformHandle().fd);
 }
 
-}  // namespace chromeos
+}  // namespace ash

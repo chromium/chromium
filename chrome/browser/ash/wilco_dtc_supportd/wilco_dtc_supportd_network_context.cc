@@ -13,7 +13,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/network_service.h"
 
-namespace chromeos {
+namespace ash {
 
 WilcoDtcSupportdNetworkContextImpl::WilcoDtcSupportdNetworkContextImpl()
     : proxy_config_monitor_(g_browser_process->local_state()) {
@@ -142,4 +142,4 @@ void WilcoDtcSupportdNetworkContextImpl::Clone(
   cert_receivers_.Add(this, std::move(observer));
 }
 
-}  // namespace chromeos
+}  // namespace ash

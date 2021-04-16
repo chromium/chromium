@@ -17,7 +17,7 @@ class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 class TestingWilcoDtcSupportdNetworkContext
     : public WilcoDtcSupportdNetworkContext {
@@ -36,6 +36,6 @@ class TestingWilcoDtcSupportdNetworkContext
   DISALLOW_COPY_AND_ASSIGN(TestingWilcoDtcSupportdNetworkContext);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_

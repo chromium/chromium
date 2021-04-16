@@ -27,6 +27,9 @@
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
@@ -84,7 +87,6 @@ class PowerMetricsReporter;
 class RendererFreezer;
 class SessionTerminationManager;
 class SystemTokenCertDBInitializer;
-class WilcoDtcSupportdManager;
 
 namespace default_app_order {
 class ExternalLoader;

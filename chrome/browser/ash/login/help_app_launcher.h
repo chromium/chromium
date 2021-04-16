@@ -75,4 +75,10 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //ch/br/ash/login is moved to
+// ash
+namespace ash {
+using ::chromeos::HelpAppLauncher;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_

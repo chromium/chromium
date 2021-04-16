@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class WilcoDtcSupportdBridge;
 
@@ -91,6 +91,12 @@ class WilcoDtcSupportdManager final
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdManager);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::WilcoDtcSupportdManager;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_MANAGER_H_

@@ -6,7 +6,7 @@
 
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 TestingWilcoDtcSupportdNetworkContext::TestingWilcoDtcSupportdNetworkContext() =
     default;
@@ -24,4 +24,4 @@ TestingWilcoDtcSupportdNetworkContext::test_url_loader_factory() {
   return &test_url_loader_factory_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

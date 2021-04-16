@@ -16,7 +16,7 @@ namespace extensions {
 class NativeMessageHost;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 
 extern const char* const kWilcoDtcSupportdHostOrigins[];
 
@@ -47,6 +47,6 @@ void DeliverWilcoDtcSupportdUiMessageToExtensions(
     base::OnceCallback<void(const std::string& response)>
         send_response_callback);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_MESSAGING_H_

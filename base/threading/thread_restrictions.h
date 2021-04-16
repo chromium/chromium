@@ -114,6 +114,9 @@ class CookieManager;
 class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }
+namespace ash {
+class MojoUtils;
+}
 namespace audio {
 class OutputDevice;
 }
@@ -136,7 +139,6 @@ class TileTaskManagerImpl;
 }
 namespace chromeos {
 class BlockingMethodCaller;
-class MojoUtils;
 namespace system {
 class StatisticsProviderImpl;
 }
@@ -396,8 +398,8 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class AdjustOOMScoreHelper;
   friend class StackSamplingProfiler;
   friend class android_webview::ScopedAllowInitGLBindings;
+  friend class ash::MojoUtils;  // http://crbug.com/1055467
   friend class blink::DiskDataAllocator;
-  friend class chromeos::MojoUtils;  // http://crbug.com/1055467
   friend class content::BrowserProcessSubThread;
   friend class content::NetworkServiceInstancePrivate;
   friend class content::PepperPrintSettingsManagerImpl;

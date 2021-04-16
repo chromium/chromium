@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeWilcoDtcSupportdClient::FakeWilcoDtcSupportdClient() = default;
 
@@ -77,4 +77,4 @@ void FakeWilcoDtcSupportdClient::SetBootstrapMojoConnectionResult(
     std::move(callback).Run(*bootstrap_mojo_connection_result_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

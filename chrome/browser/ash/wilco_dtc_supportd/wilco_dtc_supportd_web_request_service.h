@@ -22,7 +22,7 @@ class SimpleURLLoader;
 
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 // Max number of supported pending web requests.
 extern const int kWilcoDtcSupportdWebRequestQueueMaxSize;
@@ -40,7 +40,7 @@ class WilcoDtcSupportdNetworkContext;
 class WilcoDtcSupportdWebRequestService final {
  public:
   using PerformWebRequestCallback = base::OnceCallback<void(
-      wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus,
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus,
       int,
       mojo::ScopedHandle)>;
 
@@ -53,7 +53,7 @@ class WilcoDtcSupportdWebRequestService final {
   // of the service, will be canceled and the |callback| will be executed in
   // the destructor and fail with kNetworkError.
   void PerformRequest(
-      wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
           http_method,
       GURL url,
       std::vector<base::StringPiece> headers,
@@ -97,6 +97,6 @@ class WilcoDtcSupportdWebRequestService final {
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdWebRequestService);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_WEB_REQUEST_SERVICE_H_

@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
 
-namespace chromeos {
+namespace ash {
 
 class WilcoDtcSupportdNetworkContext;
 
@@ -29,7 +29,7 @@ class WilcoDtcSupportdNetworkContext;
 // the wilco_dtc_supportd D-Bus service gets started and of repeating the
 // bootstrapping after the daemon gets restarted.
 class WilcoDtcSupportdBridge final
-    : public wilco_dtc_supportd::mojom::WilcoDtcSupportdClient {
+    : public chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient {
  public:
   // Delegate class, allowing to stub out unwanted operations in unit tests.
   class Delegate {
@@ -42,7 +42,8 @@ class WilcoDtcSupportdBridge final
     // that points to the remote implementation of the interface,
     // |remote_endpoint_fd| - file descriptor of the remote endpoint to be sent.
     virtual void CreateWilcoDtcSupportdServiceFactoryMojoInvitation(
-        mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
+        mojo::Remote<chromeos::wilco_dtc_supportd::mojom::
+                         WilcoDtcSupportdServiceFactory>*
             wilco_dtc_supportd_service_factory_mojo_remote,
         base::ScopedFD* remote_endpoint_fd) = 0;
   };
@@ -74,7 +75,7 @@ class WilcoDtcSupportdBridge final
   // wilco_dtc_supportd daemon. Returns null when bootstrapping of Mojo
   // connection hasn't started yet. Note that, however, non-null is already
   // returned before the bootstrapping fully completes.
-  wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceProxy*
+  chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceProxy*
   wilco_dtc_supportd_service_mojo_proxy() {
     return wilco_dtc_supportd_service_mojo_remote_
                ? wilco_dtc_supportd_service_mojo_remote_.get()
@@ -100,9 +101,9 @@ class WilcoDtcSupportdBridge final
   // Called when Mojo signals a connection error.
   void OnMojoConnectionError();
 
-  // wilco_dtc_supportd::mojom::WilcoDtcSupportdClient overrides.
+  // chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient overrides.
   void PerformWebRequest(
-      wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
           http_method,
       mojo::ScopedHandle url,
       std::vector<mojo::ScopedHandle> headers,
@@ -112,28 +113,30 @@ class WilcoDtcSupportdBridge final
       mojo::ScopedHandle json_message,
       SendWilcoDtcMessageToUiCallback callback) override;
   void GetConfigurationData(GetConfigurationDataCallback callback) override;
-  void HandleEvent(
-      wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent event) override;
+  void HandleEvent(chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent
+                       event) override;
   void GetCrosHealthdDiagnosticsService(
-      cros_healthd::mojom::CrosHealthdDiagnosticsServiceRequest service)
-      override;
+      chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsServiceRequest
+          service) override;
   void GetCrosHealthdProbeService(
-      cros_healthd::mojom::CrosHealthdProbeServiceRequest service) override;
+      chromeos::cros_healthd::mojom::CrosHealthdProbeServiceRequest service)
+      override;
 
   std::unique_ptr<Delegate> delegate_;
 
   // Mojo receiver that binds |this| as an implementation of the
   // WilcoDtcSupportdClient Mojo interface.
-  mojo::Receiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
+  mojo::Receiver<chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
       mojo_self_receiver_{this};
 
   // Current consecutive connection attempt number.
   int connection_attempt_ = 0;
 
   // Remotes to the Mojo services exposed by the wilco_dtc_supportd daemon.
-  mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
+  mojo::Remote<
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
       wilco_dtc_supportd_service_factory_mojo_remote_;
-  mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+  mojo::Remote<chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
       wilco_dtc_supportd_service_mojo_remote_;
 
   // The service to perform wilco_dtc_supportd's web requests.
@@ -160,6 +163,6 @@ class WilcoDtcSupportdBridge final
   DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdBridge);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_BRIDGE_H_

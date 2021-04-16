@@ -26,7 +26,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Maximum size of the |request_queue_|.
 const int kWilcoDtcSupportdWebRequestQueueMaxSize = 10;
@@ -38,19 +38,23 @@ namespace {
 
 // Converts mojo HTTP method into string.
 std::string GetHttpMethod(
-    wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
+    chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
         http_method) {
   switch (http_method) {
-    case wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod::kGet:
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kGet:
       return "GET";
-    case wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod::kHead:
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kHead:
       return "HEAD";
-    case wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod::kPost:
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kPost:
       return "POST";
-    case wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod::kPut:
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kPut:
       return "PUT";
-    case wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod::
-        kPatch:
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kPatch:
       return "PATCH";
   }
   return "";
@@ -72,8 +76,8 @@ WilcoDtcSupportdWebRequestService::WilcoDtcSupportdWebRequestService(
 WilcoDtcSupportdWebRequestService::~WilcoDtcSupportdWebRequestService() {
   if (active_request_) {
     std::move(active_request_->callback)
-        .Run(wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-                 kNetworkError,
+        .Run(chromeos::wilco_dtc_supportd::mojom::
+                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
              0 /* http_status */, mojo::ScopedHandle() /* response_body */);
     active_request_.reset();
   }
@@ -81,15 +85,16 @@ WilcoDtcSupportdWebRequestService::~WilcoDtcSupportdWebRequestService() {
     auto request = std::move(request_queue_.front());
     request_queue_.pop();
     std::move(request->callback)
-        .Run(wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-                 kNetworkError,
+        .Run(chromeos::wilco_dtc_supportd::mojom::
+                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
              0 /* http_status */, mojo::ScopedHandle() /* response_body */);
   }
   DCHECK(!active_request_);
 }
 
 void WilcoDtcSupportdWebRequestService::PerformRequest(
-    wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod http_method,
+    chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
+        http_method,
     GURL url,
     std::vector<base::StringPiece> headers,
     std::string request_body,
@@ -99,7 +104,7 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
   if (http_method_str.empty()) {
     LOG(ERROR) << "WilcoDtcSupportd web request http method is unknown: "
                << http_method;
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /* response_body */);
@@ -111,7 +116,7 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
     LOG(ERROR)
         << "Too many incomplete requests in the wilco_dtc_supportd web request"
         << " queue.";
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /* response_body */);
@@ -121,7 +126,7 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
   // Fail with kNetworkError if the |url| is invalid.
   if (!url.is_valid()) {
     LOG(ERROR) << "WilcoDtcSupportd web request URL is invalid.";
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /* response_body */);
@@ -131,7 +136,7 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
   // Fail with kNetworkError for non-HTTPs URL.
   if (!url.SchemeIs(url::kHttpsScheme)) {
     LOG(ERROR) << "WilcoDtcSupportd web request URL must have a HTTPS scheme.";
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /* response_body */);
@@ -140,14 +145,14 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
 
   // request_body must be empty for GET and HEAD HTTP methods.
   if (!request_body.empty() &&
-      (http_method == wilco_dtc_supportd::mojom::
+      (http_method == chromeos::wilco_dtc_supportd::mojom::
                           WilcoDtcSupportdWebRequestHttpMethod::kGet ||
-       http_method == wilco_dtc_supportd::mojom::
+       http_method == chromeos::wilco_dtc_supportd::mojom::
                           WilcoDtcSupportdWebRequestHttpMethod::kHead)) {
     LOG(ERROR)
         << "Incorrect wilco_dtc_supportd web request format: require an empty "
         << "request body for GET and HEAD HTTP methods.";
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /*response_body */);
@@ -157,7 +162,7 @@ void WilcoDtcSupportdWebRequestService::PerformRequest(
   // Do not allow local requests.
   if (!allow_local_requests_ && net::IsLocalhost(url)) {
     LOG(ERROR) << "Local requests are not allowed.";
-    std::move(callback).Run(wilco_dtc_supportd::mojom::
+    std::move(callback).Run(chromeos::wilco_dtc_supportd::mojom::
                                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
                             0 /* http_status */,
                             mojo::ScopedHandle() /*response_body */);
@@ -252,8 +257,8 @@ void WilcoDtcSupportdWebRequestService::OnRequestComplete(
     VLOG(0) << "Web request failed with error: " << net_error << " "
             << net::ErrorToString(net_error);
     std::move(active_request_->callback)
-        .Run(wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-                 kNetworkError,
+        .Run(chromeos::wilco_dtc_supportd::mojom::
+                 WilcoDtcSupportdWebRequestStatus::kNetworkError,
              0 /* http_status */, mojo::ScopedHandle() /* response_body */);
     active_request_.reset();
     MaybeStartNextRequest();
@@ -277,8 +282,8 @@ void WilcoDtcSupportdWebRequestService::OnRequestComplete(
   // Got an HTTP error.
   if (!IsHttpOkCode(response_code)) {
     std::move(active_request_->callback)
-        .Run(wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-                 kHttpError,
+        .Run(chromeos::wilco_dtc_supportd::mojom::
+                 WilcoDtcSupportdWebRequestStatus::kHttpError,
              response_code, std::move(response_body_handle));
     active_request_.reset();
     MaybeStartNextRequest();
@@ -287,10 +292,11 @@ void WilcoDtcSupportdWebRequestService::OnRequestComplete(
 
   // The web request is completed successfully.
   std::move(active_request_->callback)
-      .Run(wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::kOk,
+      .Run(chromeos::wilco_dtc_supportd::mojom::
+               WilcoDtcSupportdWebRequestStatus::kOk,
            response_code, std::move(response_body_handle));
   active_request_.reset();
   MaybeStartNextRequest();
 }
 
-}  // namespace chromeos
+}  // namespace ash

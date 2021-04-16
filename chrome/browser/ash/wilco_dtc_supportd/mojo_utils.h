@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/system/handle.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class is created to enable its functions (i.e.
 // GetStringPieceFromMojoHandle) to use base::ScopedAllowBlocking's private
@@ -57,6 +57,12 @@ class MojoUtils final {
       const std::string& content);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::MojoUtils;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_MOJO_UTILS_H_

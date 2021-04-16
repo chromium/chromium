@@ -129,13 +129,14 @@ class DeviceWilcoDtcConfigurationExternalPolicyHandlerTest
 IN_PROC_BROWSER_TEST_P(DeviceWilcoDtcConfigurationExternalPolicyHandlerTest,
                        FetchExternalData) {
   EXPECT_EQ(IsWilcoDtcFeatureEnabled(),
-            chromeos::WilcoDtcSupportdManager::Get() != nullptr);
+            ash::WilcoDtcSupportdManager::Get() != nullptr);
   SetDeviceWilcoDtcConfigurationExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), "policy/wilco_dtc_configuration.json"));
   FetchExternalData();
   if (IsWilcoDtcFeatureEnabled()) {
-    EXPECT_EQ(external_data(), chromeos::WilcoDtcSupportdManager::Get()
-                                   ->GetConfigurationDataForTesting());
+    EXPECT_EQ(
+        external_data(),
+        ash::WilcoDtcSupportdManager::Get()->GetConfigurationDataForTesting());
   }
 }
 

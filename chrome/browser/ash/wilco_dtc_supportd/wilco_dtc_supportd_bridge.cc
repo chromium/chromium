@@ -30,11 +30,11 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/cros_system_api/dbus/wilco_dtc_supportd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
-using wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent;
+using chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent;
 
 // Interval used between successive connection attempts to the
 // wilco_dtc_supportd. This is a safety measure for avoiding busy loops when the
@@ -58,7 +58,8 @@ class WilcoDtcSupportdBridgeDelegateImpl final
 
   // Delegate overrides:
   void CreateWilcoDtcSupportdServiceFactoryMojoInvitation(
-      mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
+      mojo::Remote<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
           wilco_dtc_supportd_service_factory_mojo_remote,
       base::ScopedFD* remote_endpoint_fd) override;
 
@@ -74,7 +75,8 @@ WilcoDtcSupportdBridgeDelegateImpl::~WilcoDtcSupportdBridgeDelegateImpl() =
 
 void WilcoDtcSupportdBridgeDelegateImpl::
     CreateWilcoDtcSupportdServiceFactoryMojoInvitation(
-        mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
+        mojo::Remote<chromeos::wilco_dtc_supportd::mojom::
+                         WilcoDtcSupportdServiceFactory>*
             wilco_dtc_supportd_service_factory_mojo_remote,
         base::ScopedFD* remote_endpoint_fd) {
   mojo::OutgoingInvitation invitation;
@@ -86,7 +88,7 @@ void WilcoDtcSupportdBridgeDelegateImpl::
                                  channel.TakeLocalEndpoint());
   wilco_dtc_supportd_service_factory_mojo_remote->Bind(
       mojo::PendingRemote<
-          wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>(
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>(
           std::move(server_pipe), 0 /* version */));
   *remote_endpoint_fd =
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD();
@@ -160,7 +162,9 @@ void WilcoDtcSupportdBridge::WaitForDBusService() {
   // ScheduleWaitingForDBusService().
   dbus_waiting_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  chromeos::WilcoDtcSupportdClient::Get()->WaitForServiceToBeAvailable(
+  // Prefix namespace ash to explicitly specify the one in the namespace,
+  // rather than the parent class.
+  ash::WilcoDtcSupportdClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&WilcoDtcSupportdBridge::OnWaitedForDBusService,
                      dbus_waiting_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -208,7 +212,8 @@ void WilcoDtcSupportdBridge::BootstrapMojoConnection() {
   // wilco_dtc_supportd daemon by sending an interface pointer to the self
   // instance.
   mojo_self_receiver_.reset();
-  mojo::PendingRemote<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
+  mojo::PendingRemote<
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
       self_proxy;
   mojo_self_receiver_.Bind(self_proxy.InitWithNewPipeAndPassReceiver());
   wilco_dtc_supportd_service_factory_mojo_remote_->GetService(
@@ -218,8 +223,9 @@ void WilcoDtcSupportdBridge::BootstrapMojoConnection() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Send the file descriptor with the Mojo message pipe's remote endpoint to
-  // the wilco_dtc_supportd daemon via the D-Bus.
-  chromeos::WilcoDtcSupportdClient::Get()->BootstrapMojoConnection(
+  // the wilco_dtc_supportd daemon via the D-Bus. Also, prefix namespace ash to
+  // explicitly specify the one in the namespace, rather than the parent class.
+  ash::WilcoDtcSupportdClient::Get()->BootstrapMojoConnection(
       std::move(remote_endpoint_fd),
       base::BindOnce(&WilcoDtcSupportdBridge::OnBootstrappedMojoConnection,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -251,7 +257,8 @@ void WilcoDtcSupportdBridge::OnMojoConnectionError() {
 }
 
 void WilcoDtcSupportdBridge::PerformWebRequest(
-    wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod http_method,
+    chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestHttpMethod
+        http_method,
     mojo::ScopedHandle url,
     std::vector<mojo::ScopedHandle> headers,
     mojo::ScopedHandle request_body,
@@ -265,8 +272,8 @@ void WilcoDtcSupportdBridge::PerformWebRequest(
     if (!shared_memory.IsValid()) {
       LOG(ERROR) << "Failed to read data from mojo handle";
       std::move(callback).Run(
-          wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-              kNetworkError,
+          chromeos::wilco_dtc_supportd::mojom::
+              WilcoDtcSupportdWebRequestStatus::kNetworkError,
           0 /* http_status */, mojo::ScopedHandle() /* response_body */);
       return;
     }
@@ -286,8 +293,8 @@ void WilcoDtcSupportdBridge::PerformWebRequest(
     if (!shared_memories.back().IsValid()) {
       LOG(ERROR) << "Failed to read data from mojo handle";
       std::move(callback).Run(
-          wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-              kNetworkError,
+          chromeos::wilco_dtc_supportd::mojom::
+              WilcoDtcSupportdWebRequestStatus::kNetworkError,
           0 /* http_status */, mojo::ScopedHandle() /* response_body */);
       return;
     }
@@ -302,8 +309,8 @@ void WilcoDtcSupportdBridge::PerformWebRequest(
     if (!shared_memory.IsValid()) {
       LOG(ERROR) << "Failed to read data from mojo handle";
       std::move(callback).Run(
-          wilco_dtc_supportd::mojom::WilcoDtcSupportdWebRequestStatus::
-              kNetworkError,
+          chromeos::wilco_dtc_supportd::mojom::
+              WilcoDtcSupportdWebRequestStatus::kNetworkError,
           0 /* http_status */, mojo::ScopedHandle() /* response_body */);
       return;
     }
@@ -380,15 +387,16 @@ void WilcoDtcSupportdBridge::HandleEvent(WilcoDtcSupportdEvent event) {
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdDiagnosticsService(
-    cros_healthd::mojom::CrosHealthdDiagnosticsServiceRequest service) {
-  cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
-      std::move(service));
+    chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsServiceRequest
+        service) {
+  chromeos::cros_healthd::ServiceConnection::GetInstance()
+      ->GetDiagnosticsService(std::move(service));
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdProbeService(
-    cros_healthd::mojom::CrosHealthdProbeServiceRequest service) {
-  cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
+    chromeos::cros_healthd::mojom::CrosHealthdProbeServiceRequest service) {
+  chromeos::cros_healthd::ServiceConnection::GetInstance()->GetProbeService(
       std::move(service));
 }
 
-}  // namespace chromeos
+}  // namespace ash

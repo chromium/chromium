@@ -21,7 +21,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -195,4 +195,4 @@ void WilcoDtcSupportdNotificationController::DisplayNotification(
                 nullptr /* metadata */);
 }
 
-}  // namespace chromeos
+}  // namespace ash

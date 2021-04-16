@@ -23,7 +23,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -31,16 +31,18 @@ namespace {
 // that allows to stub out the GetService Mojo method and tie it with the
 // testing implementation instead.
 class TestingMojoWilcoDtcSupportdServiceFactory final
-    : public wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory {
+    : public chromeos::wilco_dtc_supportd::mojom::
+          WilcoDtcSupportdServiceFactory {
  public:
   // |get_service_handler_callback| is the callback that will be run when
   // GetService() is called.
   explicit TestingMojoWilcoDtcSupportdServiceFactory(
       base::RepeatingCallback<void(
           mojo::PendingReceiver<
-              wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+              chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
               mojo_wilco_dtc_supportd_service_receiver,
-          mojo::PendingRemote<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
+          mojo::PendingRemote<
+              chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
               mojo_wilco_dtc_supportd_client)> get_service_handler_callback)
       : get_service_handler_callback_(std::move(get_service_handler_callback)) {
   }
@@ -50,7 +52,7 @@ class TestingMojoWilcoDtcSupportdServiceFactory final
   // WilcoDtcSupportdServiceFactory interface that are made by the
   // WilcoDtcSupportdBridge.
   void Bind(mojo::PendingReceiver<
-            wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
+            chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
                 mojo_wilco_dtc_supportd_service_factory_receiver) {
     // First close the Mojo receiver in case it was previously completed, to
     // allow calling this method multiple times.
@@ -62,10 +64,10 @@ class TestingMojoWilcoDtcSupportdServiceFactory final
   // WilcoDtcSupportdServiceFactory overrides:
 
   void GetService(
-      mojo::PendingReceiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
-          service,
-      mojo::PendingRemote<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
-          client,
+      mojo::PendingReceiver<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService> service,
+      mojo::PendingRemote<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient> client,
       GetServiceCallback callback) override {
     DCHECK(service);
     DCHECK(client);
@@ -82,13 +84,16 @@ class TestingMojoWilcoDtcSupportdServiceFactory final
  private:
   // Mojo receiver that binds |this| as an implementation of the
   // WilcoDtcSupportdClient Mojo interface.
-  mojo::Receiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
+  mojo::Receiver<
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>
       self_receiver_{this};
   // The callback to be run when GetService() is called.
   base::RepeatingCallback<void(
-      mojo::PendingReceiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+      mojo::PendingReceiver<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
           mojo_wilco_dtc_supportd_service_receiver,
-      mojo::PendingRemote<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
+      mojo::PendingRemote<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
           mojo_wilco_dtc_supportd_client)>
       get_service_handler_callback_;
 
@@ -110,7 +115,8 @@ class TestingWilcoDtcSupportdBridgeWrapperDelegate final
   // WilcoDtcSupportdBridge::Delegate overrides:
 
   void CreateWilcoDtcSupportdServiceFactoryMojoInvitation(
-      mojo::Remote<wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
+      mojo::Remote<
+          chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
           wilco_dtc_supportd_service_factory_mojo_remote,
       base::ScopedFD* remote_endpoint_fd) override {
     // Bind the Mojo pointer passed to the bridge with the
@@ -144,7 +150,7 @@ FakeWilcoDtcSupportdClient* GetFakeDbusWilcoDtcSupportdClient() {
 // static
 std::unique_ptr<TestingWilcoDtcSupportdBridgeWrapper>
 TestingWilcoDtcSupportdBridgeWrapper::Create(
-    wilco_dtc_supportd::mojom::WilcoDtcSupportdService*
+    chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService*
         mojo_wilco_dtc_supportd_service,
     std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context,
     std::unique_ptr<WilcoDtcSupportdBridge>* bridge) {
@@ -162,12 +168,13 @@ void TestingWilcoDtcSupportdBridgeWrapper::EstablishFakeMojoConnection() {
   // Set up the callback that will handle the GetService Mojo method called
   // during the bootstrap.
   base::RunLoop run_loop;
-  mojo::PendingReceiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+  mojo::PendingReceiver<
+      chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
       intercepted_mojo_wilco_dtc_supportd_service_receiver;
   mojo_get_service_handler_ = base::BindLambdaForTesting(
       [&run_loop, &intercepted_mojo_wilco_dtc_supportd_service_receiver](
           mojo::PendingReceiver<
-              wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+              chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
               mojo_wilco_dtc_supportd_service_receiver) {
         intercepted_mojo_wilco_dtc_supportd_service_receiver =
             std::move(mojo_wilco_dtc_supportd_service_receiver);
@@ -194,9 +201,11 @@ void TestingWilcoDtcSupportdBridgeWrapper::EstablishFakeMojoConnection() {
 }
 
 void TestingWilcoDtcSupportdBridgeWrapper::HandleMojoGetService(
-    mojo::PendingReceiver<wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
+    mojo::PendingReceiver<
+        chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
         mojo_wilco_dtc_supportd_service_receiver,
-    mojo::PendingRemote<wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
+    mojo::PendingRemote<
+        chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdClient>
         mojo_wilco_dtc_supportd_client) {
   std::move(mojo_get_service_handler_)
       .Run(std::move(mojo_wilco_dtc_supportd_service_receiver));
@@ -205,7 +214,7 @@ void TestingWilcoDtcSupportdBridgeWrapper::HandleMojoGetService(
 }
 
 TestingWilcoDtcSupportdBridgeWrapper::TestingWilcoDtcSupportdBridgeWrapper(
-    wilco_dtc_supportd::mojom::WilcoDtcSupportdService*
+    chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService*
         mojo_wilco_dtc_supportd_service,
     std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context,
     std::unique_ptr<WilcoDtcSupportdBridge>* bridge)
@@ -225,4 +234,4 @@ TestingWilcoDtcSupportdBridgeWrapper::TestingWilcoDtcSupportdBridgeWrapper(
           profile_manager->profile_manager()));
 }
 
-}  // namespace chromeos
+}  // namespace ash
