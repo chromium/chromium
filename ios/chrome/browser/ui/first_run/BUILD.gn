@@ -83,6 +83,8 @@ source_set("first_run") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fancy_ui",

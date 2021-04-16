@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class ChromeIdentity;
 @protocol SigninScreenConsumer;
 
 // Mediator that handles the sign-in operation.
@@ -14,6 +15,9 @@
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
+
+// The identity currently selected.
+@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 
 @end
 

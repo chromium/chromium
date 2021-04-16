@@ -13,7 +13,7 @@
 @protocol SigninScreenViewControllerDelegate <NSObject>
 
 // Called when the user taps to see the account picker.
-- (void)showAccountPicker;
+- (void)showAccountPickerFromPoint:(CGPoint)point;
 
 @end
 
