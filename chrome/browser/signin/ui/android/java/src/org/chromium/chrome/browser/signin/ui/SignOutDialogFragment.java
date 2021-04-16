@@ -86,6 +86,8 @@ public class SignOutDialogFragment
                 .create();
     }
 
+    // TODO(crbug.com/1199759): Unsupress warning.
+    @SuppressWarnings("UseGetLayoutInflater")
     private Dialog createDialog() {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog);
