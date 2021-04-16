@@ -961,9 +961,6 @@ extern const char kOmniboxCompactSuggestionsDescription[];
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 
-extern const char kOmniboxDisplayTitleForCurrentUrlName[];
-extern const char kOmniboxDisplayTitleForCurrentUrlDescription[];
-
 extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
 

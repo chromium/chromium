@@ -1635,13 +1635,6 @@ const char kOmniboxDisableCGIParamMatchingName[] =
 const char kOmniboxDisableCGIParamMatchingDescription[] =
     "Disables using matches in CGI parameter names while scoring suggestions.";
 
-const char kOmniboxDisplayTitleForCurrentUrlName[] =
-    "Include title for the current URL in the omnibox";
-const char kOmniboxDisplayTitleForCurrentUrlDescription[] =
-    "In the event that the omnibox provides suggestions on-focus, the URL of "
-    "the current page is provided as the first suggestion without a title. "
-    "Enabling this flag causes the title to be displayed.";
-
 const char kOmniboxDefaultTypedNavigationsToHttpsName[] =
     "Omnibox - Use HTTPS as the default protocol for navigations";
 const char kOmniboxDefaultTypedNavigationsToHttpsDescription[] =

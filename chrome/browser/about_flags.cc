@@ -4390,11 +4390,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAppMenuMobileSiteOption)},
 #endif  // OS_ANDROID
 
-    {"omnibox-display-title-for-current-url",
-     flag_descriptions::kOmniboxDisplayTitleForCurrentUrlName,
-     flag_descriptions::kOmniboxDisplayTitleForCurrentUrlDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kDisplayTitleForCurrentUrl)},
-
     {"force-color-profile", flag_descriptions::kForceColorProfileName,
      flag_descriptions::kForceColorProfileDescription, kOsAll,
      MULTI_VALUE_TYPE(kForceColorProfileChoices)},
