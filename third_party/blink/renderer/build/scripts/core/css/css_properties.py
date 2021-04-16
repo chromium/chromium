@@ -41,6 +41,8 @@ def validate_property(prop):
         'Only longhands can be valid_for_marker [%s]' % name
     assert not prop['valid_for_highlight'] or prop['is_longhand'], \
         'Only longhands can be valid_for_highlight [%s]' % name
+    assert not prop['is_internal'] or prop['computable'] is None, \
+        'Internal properties are always non-computable [%s]' % name
 
 
 def validate_alias(alias):
@@ -354,6 +356,36 @@ class CSSProperties(object):
     @property
     def aliases(self):
         return self._aliases
+
+    @property
+    def computable(self):
+        is_prefixed = lambda p: p['name'].original.startswith('-')
+        is_not_prefixed = lambda p: not is_prefixed(p)
+
+        prefixed = filter(is_prefixed, self._properties_including_aliases)
+        unprefixed = filter(is_not_prefixed,
+                            self._properties_including_aliases)
+
+        def is_computable(p):
+            if p['is_internal']:
+                return False
+            if p['computable'] is not None:
+                return p['computable']
+            if p['alias_for']:
+                return False
+            if not p['is_property']:
+                return False
+            if not p['is_longhand']:
+                return False
+            return True
+
+        prefixed = filter(is_computable, prefixed)
+        unprefixed = filter(is_computable, unprefixed)
+
+        original_name = lambda x: x['name'].original
+
+        return sorted(unprefixed, key=original_name) + \
+            sorted(prefixed, key=original_name)
 
     @property
     def shorthands(self):

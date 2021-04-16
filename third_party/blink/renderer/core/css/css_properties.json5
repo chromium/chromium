@@ -155,6 +155,28 @@
       valid_type: "bool",
     },
 
+    // - computable
+    //
+    // Whether or not a property appears on CSSStyleDeclaration.
+    //
+    // By default a property is computable if it's all of the following:
+    //
+    // - Not an alias
+    // - A property (as opposed to a descriptor)
+    // - A longhand
+    //
+    // Otherwise the property is (by default) _not_ computable.
+    //
+    // If an explicit true/false value is provided, this overrides the default,
+    // and the property unconditionally becomes computable/not-computable
+    // according to the value specified.
+    //
+    // Internal properties (-internal-*) are never computable, and using this
+    // flag on internal properties is an error.
+    computable: {
+      valid_type: "bool",
+    },
+
     // - runtime_flag
     // The name of the flag on RuntimeEnabledFeatures
     // (e.g. "CSSOverscrollBehavior") that conditionally enables the
@@ -389,7 +411,7 @@
     //
     //  * -webkit-writing-mode (surrogate of writing-mode)
     //  * inline-size (surrogate for width, or height)
-    //  * All css-logical propeties in general
+    //  * All css-logical properties in general
     //
     // Note that for properties that use logical_property_group,
     // 'surrogate_for' should not be set, as the mapping is determined at
@@ -941,6 +963,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      computable: false,
     },
     {
       name: "font-variation-settings",
@@ -957,6 +980,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      computable: false,
     },
     {
       name: "-webkit-font-smoothing",
@@ -979,6 +1003,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_highlight: true,
+      computable: false,
     },
     {
       name: "-webkit-locale",
@@ -1012,6 +1037,7 @@
       getter: "GetTextOrientation",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
+      computable: false,
     },
     {
       name: "-webkit-text-orientation",
@@ -1082,6 +1108,7 @@
       runtime_flag: "CSSAccentColor",
       default_value: "StyleAutoColor::AutoColor()",
       style_builder_custom_functions: ["initial", "inherit", "value"],
+      computable: false,
     },
     {
       name: "align-content",
@@ -1135,7 +1162,8 @@
       type_name: "StyleAspectRatio",
       converter: "ConvertAspectRatio",
       include_paths: ["third_party/blink/renderer/core/style/style_aspect_ratio.h"],
-      runtime_flag: "CSSAspectRatioProperty"
+      runtime_flag: "CSSAspectRatioProperty",
+      computable: false,
     },
     {
       name: "backdrop-filter",
@@ -1279,6 +1307,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
+      computable: false,
     },
     {
       name: "background-position-y",
@@ -1292,6 +1321,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       is_background: true,
+      computable: false,
     },
     {
       name: "background-repeat-x",
@@ -1302,6 +1332,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      computable: false,
     },
     {
       name: "background-repeat-y",
@@ -1312,6 +1343,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      computable: false,
     },
     {
       name: "background-size",
@@ -1931,6 +1963,7 @@
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",
       valid_for_highlight: true,
+      computable: false,
     },
     {
       name: "column-fill",
@@ -1940,7 +1973,8 @@
       keywords: ["balance", "auto"],
       default_value: "balance",
       getter: "GetColumnFill",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "contain",
@@ -1954,6 +1988,7 @@
       converter: "ConvertFlags<Containment>",
       keywords: ["none", "strict", "content", "size", "layout", "style", "paint", "inline-size", "block-size"],
       typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "contain-intrinsic-size",
@@ -1966,6 +2001,7 @@
       type_name: "LengthSize",
       converter: "ConvertIntrinsicSize",
       include_paths: ["third_party/blink/renderer/platform/geometry/length_size.h"],
+      computable: false,
     },
     {
       name: "content",
@@ -1991,6 +2027,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "counter-reset",
@@ -2001,6 +2038,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "counter-set",
@@ -2011,6 +2049,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "cursor",
@@ -2722,6 +2761,7 @@
       default_value: "nullptr",
       name_for_methods: "MaskerResource",
       converter: "ConvertElementReference",
+      computable: false,
     },
     {
       name: "mask-type",
@@ -2952,7 +2992,8 @@
       default_value: "normal",
       keywords: ["normal", "none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "OriginTrialsSampleAPI"
+      runtime_flag: "OriginTrialsSampleAPI",
+      computable: false,
     },
     {
       name: "orphans",
@@ -3130,6 +3171,7 @@
         name: "overscroll-behavior",
         resolver: "horizontal",
       },
+      computable: false,
     },
     {
       name: "overscroll-behavior-y",
@@ -3143,6 +3185,7 @@
         name: "overscroll-behavior",
         resolver: "vertical",
       },
+      computable: false,
     },
     {
       name: "padding-bottom",
@@ -3222,7 +3265,8 @@
       field_template: "external",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "NamedPages"
+      runtime_flag: "NamedPages",
+      computable: false,
     },
     {
       name: "page-orientation",
@@ -3233,7 +3277,8 @@
       field_size: 2,
       default_value: "PageOrientation::kUpright",
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
-      runtime_flag: "NamedPages"
+      runtime_flag: "NamedPages",
+      computable: false,
     },
     {
       name: "paint-order",
@@ -3311,7 +3356,8 @@
       type_name: "QuotesData",
       converter: "ConvertQuotes",
       keywords: ["auto", "none"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "content-visibility",
@@ -3320,7 +3366,8 @@
       keywords: ["visible", "auto", "hidden", "hidden-matchable"],
       default_value: "visible",
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSContentVisibility"
+      runtime_flag: "CSSContentVisibility",
+      computable: false,
     },
     {
       name: "resize",
@@ -3462,6 +3509,7 @@
         name: "scroll-margin",
         resolver: "bottom",
       },
+      computable: false,
     },
     {
       name: "scroll-margin-inline-end",
@@ -3494,6 +3542,7 @@
         name: "scroll-margin",
         resolver: "left",
       },
+      computable: false,
     },
     {
       name: "scroll-margin-right",
@@ -3508,6 +3557,7 @@
         name: "scroll-margin",
         resolver: "right",
       },
+      computable: false,
     },
     {
       name: "scroll-margin-top",
@@ -3522,6 +3572,7 @@
         name: "scroll-margin",
         resolver: "top",
       },
+      computable: false,
     },
     {
       name: "scroll-padding-block-end",
@@ -3562,6 +3613,7 @@
         name: "scroll-padding",
         resolver: "bottom",
       },
+      computable: false,
     },
     {
       name: "scroll-padding-inline-end",
@@ -3602,6 +3654,7 @@
         name: "scroll-padding",
         resolver: "left",
       },
+      computable: false,
     },
     {
       name: "scroll-padding-right",
@@ -3616,6 +3669,7 @@
         name: "scroll-padding",
         resolver: "right",
       },
+      computable: false,
     },
     {
       name: "scroll-padding-top",
@@ -3630,6 +3684,7 @@
         name: "scroll-padding",
         resolver: "top",
       },
+      computable: false,
     },
     {
       name: "scroll-snap-align",
@@ -3642,7 +3697,8 @@
       type_name: "cc::ScrollSnapAlign",
       converter: "ConvertSnapAlign",
       keywords: ["none", "start", "end", "center"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "scroll-snap-stop",
@@ -3650,7 +3706,8 @@
       field_template: "keyword",
       keywords: ["normal", "always"],
       default_value: "normal",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "scroll-snap-type",
@@ -3663,7 +3720,8 @@
       type_name: "cc::ScrollSnapType",
       converter: "ConvertSnapType",
       keywords: ["none", "x", "y", "block", "inline", "both", "mandatory", "proximity"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "shape-image-threshold",
@@ -3716,6 +3774,7 @@
       name: "size",
       property_methods: ["ParseSingleValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
+      computable: false,
     },
     {
       name: "speak",
@@ -3941,6 +4000,7 @@
       default_value: "none",
       name_for_methods: "TextCombine",
       valid_for_marker: true,
+      computable: false,
     },
     {
       name: "text-decoration-color",
@@ -4021,6 +4081,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_highlight: true,
+      computable: false,
     },
     {
       name: "text-indent",
@@ -4120,6 +4181,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      computable: false,
     },
     {
       name: "text-underline-position",
@@ -4187,7 +4249,8 @@
       field_template: "keyword",
       keywords: ["fill-box", "view-box"],
       default_value: "view-box",
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      computable: false,
     },
     {
       name: "transform-origin",
@@ -4690,6 +4753,7 @@
       style_builder_template_args: {
         fill_type: "PositionX",
       },
+      computable: false,
     },
     {
       name: "-webkit-mask-position-y",
@@ -4699,6 +4763,7 @@
       style_builder_template_args: {
         fill_type: "PositionY",
       },
+      computable: false,
     },
     {
       name: "-webkit-mask-repeat-x",
@@ -4706,6 +4771,7 @@
       style_builder_template_args: {
         fill_type: "RepeatX",
       },
+      computable: false,
     },
     {
       name: "-webkit-mask-repeat-y",
@@ -4713,6 +4779,7 @@
       style_builder_template_args: {
         fill_type: "RepeatY",
       },
+      computable: false,
     },
     {
       name: "-webkit-mask-size",
@@ -4728,12 +4795,14 @@
       property_methods: ["ParseSingleValue"],
       interpolable: true,
       converter: "ConvertLength",
+      computable: false,
     },
     {
       name: "-webkit-perspective-origin-y",
       property_methods: ["ParseSingleValue"],
       interpolable: true,
       converter: "ConvertLength",
+      computable: false,
     },
     {
       name: "-webkit-print-color-adjust",
@@ -4766,6 +4835,7 @@
       default_value: "before",
       type_name: "RubyPosition",
       converter: "ConvertRubyPosition",
+      computable: false,
     },
     {
       name: "ruby-position",
@@ -4878,18 +4948,21 @@
       property_methods: ["ParseSingleValue"],
       interpolable: true,
       converter: "ConvertLength",
+      computable: false,
     },
     {
       name: "-webkit-transform-origin-y",
       property_methods: ["ParseSingleValue"],
       interpolable: true,
       converter: "ConvertLength",
+      computable: false,
     },
     {
       name: "-webkit-transform-origin-z",
       property_methods: ["ParseSingleValue"],
       interpolable: true,
       converter: "ConvertComputedLength<float>",
+      computable: false,
     },
     {
       name: "-webkit-user-drag",
@@ -5451,6 +5524,7 @@
       name: "all",
       affected_by_all: false,
       style_builder_template: "empty",
+      computable: false,
     },
     // TODO(hjkim3323@gmail.com): Remove -internal-font-size-delta.
     // fontSizeDelta execCommand does not need separate CSS property.
@@ -5666,11 +5740,13 @@
       name: "background-position",
       longhands: ["background-position-x", "background-position-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "background-repeat",
       longhands: ["background-repeat-x", "background-repeat-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "border",
@@ -5895,6 +5971,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,
+      computable: true,
     },
     {
       name: "grid",
@@ -6100,6 +6177,7 @@
       name: "text-decoration",
       longhands: ["text-decoration-line", "text-decoration-thickness", "text-decoration-style", "text-decoration-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "transition",
@@ -6169,16 +6247,19 @@
         "-webkit-mask-box-image-repeat"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "-webkit-mask-position",
       longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "-webkit-mask-repeat",
       longhands: ["-webkit-mask-repeat-x", "-webkit-mask-repeat-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      computable: true,
     },
     {
       name: "-webkit-text-emphasis",
