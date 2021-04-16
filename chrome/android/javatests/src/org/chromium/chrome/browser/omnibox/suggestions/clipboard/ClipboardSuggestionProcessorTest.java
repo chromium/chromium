@@ -31,11 +31,14 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -93,6 +96,8 @@ public class ClipboardSuggestionProcessorTest {
         mContentTextView.setId(R.id.line_2);
         mRootView.addView(mTitleTextView);
         mRootView.addView(mContentTextView);
+        CachedFeatureFlags.setForTesting(
+                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, false);
     }
 
     /** Create clipboard suggestion for test. */
@@ -119,7 +124,7 @@ public class ClipboardSuggestionProcessorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void clipboardSugestion_identifyUrlSuggestion() {
+    public void clipboardSuggestion_identifyUrlSuggestion() {
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
         Assert.assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
@@ -235,5 +240,86 @@ public class ClipboardSuggestionProcessorTest {
 
         Assert.assertEquals(size, ((BitmapDrawable) icon.drawable).getBitmap().getWidth());
         Assert.assertEquals(size, ((BitmapDrawable) icon.drawable).getBitmap().getHeight());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void clipboardSuggestion_revealButton() {
+        CachedFeatureFlags.setForTesting(
+                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL());
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void clipboardSuggestion_noContentByDefault() {
+        CachedFeatureFlags.setForTesting(
+                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
+        SuggestionSpannable textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL());
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void clipboardSuggestion_revealAndConcealButton() {
+        CachedFeatureFlags.setForTesting(
+                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
+        SuggestionSpannable textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        // Click reveal button
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertNotEquals(0, textLine2.length());
+
+        // Click conceal button
+        mProcessor.concealButtonClickHandler(mSuggestion, mModel);
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        // Click reveal button
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertNotEquals(0, textLine2.length());
+
+        // Click conceal button
+        mProcessor.concealButtonClickHandler(mSuggestion, mModel);
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+
+        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL());
+        textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        Assert.assertEquals(0, textLine2.length());
+        // Image suggestions never have content in the text line 2.
     }
 }

@@ -3382,6 +3382,12 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_REFINE" desc="Content description for the omnibox refine button followed with the text or URL that will be shown in the Omnibox if the user clicks the refine button, eg. User input 'The' may offer a suggestion 'The meaning of life' or 'thewirecutter.com'.">
         Refine: <ph name="REFINE_TEXT">%1$s<ex>The meaning of life</ex></ph>
       </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_CONCEAL_CLIPBOARD_CONTENTS" desc="Content description for the omnibox clipboard conceal button.">
+        Conceal Clipboard Contents
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_REVEAL_CLIPBOARD_CONTENTS" desc="Content description for the omnibox clipboard reveal button.">
+        Reveal Clipboard Contents
+      </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_SWITCH_TO_TAB" desc="Content description for the omnibox switch to tab button.">
         Switch To Tab
       </message>

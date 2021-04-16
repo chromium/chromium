@@ -82,9 +82,9 @@ public class AutocompleteMatch {
     private final int mType;
     private final @NonNull Set<Integer> mSubtypes;
     private final boolean mIsSearchType;
-    private final String mDisplayText;
+    private String mDisplayText;
     private final List<MatchClassification> mDisplayTextClassifications;
-    private String mDescription;
+    private final String mDescription;
     private final List<MatchClassification> mDescriptionClassifications;
     private final SuggestionAnswer mAnswer;
     private final String mFillIntoEdit;
@@ -193,17 +193,16 @@ public class AutocompleteMatch {
     /**
      * Update the suggestion with content retrieved from clilpboard.
      *
-     * @param description The description text for the suggestion (ie. clipboard text).
+     * @param contents The main text content for the suggestion.
      * @param url The URL associated with the suggestion.
      * @param postContentType Type of post content data.
      * @param postData Post content data.
      * @param clipboardImageData Clipboard image data content (if any).
      */
     @CalledByNative
-    private void updateClipboardContent(String description, GURL url,
-            @Nullable String postContentType, @Nullable byte[] postData,
-            @Nullable byte[] clipboardImageData) {
-        mDescription = description;
+    private void updateClipboardContent(String contents, GURL url, @Nullable String postContentType,
+            @Nullable byte[] postData, @Nullable byte[] clipboardImageData) {
+        mDisplayText = contents;
         mUrl = url;
         mPostContentType = postContentType;
         mPostData = postData;

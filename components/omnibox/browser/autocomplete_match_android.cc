@@ -166,7 +166,7 @@ void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
   }
 
   Java_AutocompleteMatch_updateClipboardContent(
-      env, java_match_, ConvertUTF16ToJavaString(env, description),
+      env, java_match_, ConvertUTF16ToJavaString(env, contents),
       url::GURLAndroid::FromNativeGURL(env, destination_url),
       j_post_content_type, j_post_content,
       ToJavaByteArray(env, clipboard_image_data));
