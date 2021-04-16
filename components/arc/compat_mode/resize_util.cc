@@ -25,13 +25,13 @@ using ResizeCallback = base::OnceCallback<void(views::Widget*)>;
 void ResizeToPhone(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
-  widget->SetSize(kPortraitPhoneDp);
+  widget->CenterWindow(kPortraitPhoneDp);
 }
 
 void ResizeToTablet(views::Widget* widget) {
   if (widget->IsMaximized())
     widget->Restore();
-  widget->SetSize(kLandscapeTabletDp);
+  widget->CenterWindow(kLandscapeTabletDp);
 }
 
 void ResizeToDesktop(views::Widget* widget) {
