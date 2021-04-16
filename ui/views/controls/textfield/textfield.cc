@@ -301,8 +301,10 @@ void Textfield::SetReadOnly(bool read_only) {
   read_only_ = read_only;
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
-  SetColor(GetTextColor());
-  UpdateBackgroundColor();
+  if (GetWidget()) {
+    SetColor(GetTextColor());
+    UpdateBackgroundColor();
+  }
   OnPropertyChanged(&read_only_, kPropertyEffectsPaint);
 }
 
@@ -399,7 +401,8 @@ SkColor Textfield::GetTextColor() const {
 
 void Textfield::SetTextColor(SkColor color) {
   text_color_ = color;
-  SetColor(color);
+  if (GetWidget())
+    SetColor(color);
 }
 
 SkColor Textfield::GetBackgroundColor() const {
@@ -411,7 +414,8 @@ SkColor Textfield::GetBackgroundColor() const {
 
 void Textfield::SetBackgroundColor(SkColor color) {
   background_color_ = color;
-  UpdateBackgroundColor();
+  if (GetWidget())
+    UpdateBackgroundColor();
 }
 
 SkColor Textfield::GetSelectionTextColor() const {

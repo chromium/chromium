@@ -132,7 +132,8 @@ void Label::SetTextContext(int text_context) {
   full_text_->SetFontList(style::GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
-  UpdateColorsFromTheme();
+  if (GetWidget())
+    UpdateColorsFromTheme();
   OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }
 
@@ -148,7 +149,8 @@ void Label::SetTextStyle(int style) {
   full_text_->SetFontList(style::GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
-  UpdateColorsFromTheme();
+  if (GetWidget())
+    UpdateColorsFromTheme();
   OnPropertyChanged(&text_style_, kPropertyEffectsPreferredSizeChanged);
 }
 
