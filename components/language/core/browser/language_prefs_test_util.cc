@@ -31,12 +31,13 @@ void LanguagePrefTester::ExpectPref(
 void LanguagePrefTester::ExpectAcceptLanguagePrefs(
     const std::string& expected_prefs,
     const std::string& expected_prefs_chromeos) const {
-  ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
-             expected_prefs_chromeos);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ExpectPref(language::prefs::kPreferredLanguages, expected_prefs,
              expected_prefs_chromeos);
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
+             expected_prefs_chromeos);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Similar to function above: this one expects both ChromeOS and other

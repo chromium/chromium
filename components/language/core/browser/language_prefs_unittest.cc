@@ -285,4 +285,26 @@ TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
 #endif
 }
+
+TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
+  language::test::LanguagePrefTester content_languages_tester =
+      language::test::LanguagePrefTester(prefs_.get());
+
+  language_prefs_->SetUserSelectedLanguagesList({"en", "es", "fr"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,es,fr");
+
+  ResetLanguagePrefs(prefs_.get());
+  content_languages_tester.ExpectSelectedLanguagePrefs("");
+  // Accept languages pref is reset to the default value, not cleared.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  content_languages_tester.ExpectAcceptLanguagePrefs(
+      prefs_->GetDefaultPrefValue(language::prefs::kPreferredLanguages)
+          ->GetString());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  content_languages_tester.ExpectAcceptLanguagePrefs(
+      prefs_->GetDefaultPrefValue(language::prefs::kAcceptLanguages)
+          ->GetString());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 }  // namespace language
