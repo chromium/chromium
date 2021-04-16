@@ -84,9 +84,9 @@ TEST(PluginFinderTest, ReinitializePlugins) {
   // Increment the version number by one.
   const base::Value* version_value = plugin_list->FindKey("x-version");
   ASSERT_TRUE(version_value);
-  int version = 0;
-  ASSERT_TRUE(version_value->GetAsInteger(&version));
-  plugin_list->SetKey("x-version", base::Value(version + 1));
+  ASSERT_TRUE(version_value->is_int());
+  plugin_list->SetKey("x-version",
+                      base::Value(version_value->GetIfInt().value_or(0) + 1));
 
   plugin_finder->ReinitializePlugins(plugin_list.get());
 }
