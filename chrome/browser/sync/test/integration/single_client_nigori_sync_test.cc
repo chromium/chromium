@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -1088,16 +1089,18 @@ class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    security_domains_server_ =
-        std::make_unique<syncer::FakeSecurityDomainsServer>(
-            embedded_test_server()->base_url());
     command_line->AppendSwitchASCII(
         switches::kTrustedVaultServiceURL,
-        security_domains_server_->server_url().spec());
+        syncer::FakeSecurityDomainsServer::GetServerURL(
+            embedded_test_server()->base_url())
+            .spec());
     SyncTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
+    security_domains_server_ =
+        std::make_unique<syncer::FakeSecurityDomainsServer>(
+            embedded_test_server()->base_url());
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&syncer::FakeSecurityDomainsServer::HandleRequest,
                             base::Unretained(security_domains_server_.get())));
@@ -1136,16 +1139,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
           /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
           GetSecurityDomainsServer())
           .Wait());
-  EXPECT_FALSE(GetSecurityDomainsServer()->received_invalid_request());
+  EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
 // If device was successfully registered with constant key, it should silently
 // follow key rotation and transit to trusted vault passphrase without going
 // through key retrieval flow.
-// TODO(crbug.com/1193177): fix threading issues with FakeSecurityDomainsServer
-// and re-enable the test.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
-                       DISABLED_ShouldFollowInitialKeyRotation) {
+                       ShouldFollowInitialKeyRotation) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       FakeSecurityDomainsServerMemberStatusChecker(
@@ -1173,6 +1174,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
       password_form, trusted_vault_key_params.password,
       trusted_vault_key_params.derivation_params, GetFakeServer());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
 }  // namespace

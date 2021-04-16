@@ -10,7 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/observer_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/observer_list_threadsafe.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -30,6 +33,8 @@ class FakeSecurityDomainsServer {
     virtual void OnRequestHandled() = 0;
   };
 
+  static GURL GetServerURL(GURL base_url);
+
   explicit FakeSecurityDomainsServer(GURL base_url);
   FakeSecurityDomainsServer(const FakeSecurityDomainsServer& other) = delete;
   FakeSecurityDomainsServer& operator=(const FakeSecurityDomainsServer& other) =
@@ -41,6 +46,8 @@ class FakeSecurityDomainsServer {
 
   // Handles request if it belongs to security domains server (identified by
   // request url). Returns nullptr otherwise.
+  // Unlike other methods of this class, which should be called on main thread,
+  // this method is called on EmbeddedTestServer IO thread.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& http_request);
 
@@ -52,9 +59,8 @@ class FakeSecurityDomainsServer {
   int GetMemberCount() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
 
-  GURL server_url() const { return server_url_; }
   // Returns true if there was a request that violates supported protocol.
-  bool received_invalid_request() const { return received_invalid_request_; }
+  bool ReceivedInvalidRequest() const;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse>
@@ -65,25 +71,38 @@ class FakeSecurityDomainsServer {
   HandleGetSecurityDomainMemberRequest(
       const net::test_server::HttpRequest& http_request);
 
-  bool received_invalid_request_ = false;
+  class State {
+   public:
+    State();
+    State(const State& other) = delete;
+    State& operator=(const State& other) = delete;
+    ~State();
+
+    bool received_invalid_request = false;
+
+    // Maps members public key to shared keys that belong to this member.
+    std::map<std::string, std::vector<sync_pb::SharedMemberKey>>
+        public_key_to_shared_keys;
+    // Maps members public key to rotation proofs of members shared keys.
+    std::map<std::string, std::vector<sync_pb::RotationProof>>
+        public_key_to_rotation_proofs;
+
+    // Zero epoch is used when there are no members in the security domain, once
+    // first member is joined it is initialized to non-zero value. Members still
+    // can join with constant key without populating epoch while
+    // |constant_key_allowed_| set to true.
+    int current_epoch = 0;
+    bool constant_key_allowed = true;
+  };
+
+  // This class is used on main thread and on EmbeddedTestServer IO thread, data
+  // access is protected by |lock_|.
+  mutable base::Lock lock_;
+
   const GURL server_url_;
+  State state_ GUARDED_BY(lock_);
 
-  // Maps members public key to shared keys that belong to this member.
-  std::map<std::string, std::vector<sync_pb::SharedMemberKey>>
-      public_key_to_shared_keys_;
-
-  // Maps members public key to rotation proofs of members shared keys.
-  std::map<std::string, std::vector<sync_pb::RotationProof>>
-      public_key_to_rotation_proofs_;
-
-  // Zero epoch is used when there are no members in the security domain, once
-  // first member is joined it is initialized to non-zero value. Members still
-  // can join with constant key without populating epoch while
-  // |constant_key_allowed_| set to true.
-  int current_epoch_ = 0;
-  bool constant_key_allowed_ = true;
-
-  base::ObserverList<Observer> observers_;
+  const scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
 };
 
 }  // namespace syncer
