@@ -7,11 +7,6 @@
 namespace blink {
 
 void NoAllocDirectCallHost::PostDeferrableAction(DeferrableAction&& action) {
-  // This should never be called after NoAllocFallbackForAllocation
-#if DCHECK_IS_ON()
-  DCHECK(can_post_deferrable_actions_);
-#endif
-
   if (IsInFastMode()) {
     deferred_actions_.push_back(std::move(action));
     callback_options_->fallback = true;
@@ -19,23 +14,6 @@ void NoAllocDirectCallHost::PostDeferrableAction(DeferrableAction&& action) {
     // In slow mode, action is executed immediately.
     std::move(action).Run();
   }
-}
-
-bool NoAllocDirectCallHost::NoAllocFallbackForAllocation() {
-  if (IsInFastMode()) {
-    // Discarding deferred actions means that FlushDeferredActions will return
-    // false, which will result in the fallback bindings code path not taking
-    // the early exit and re-calling the API implementation with allocations
-    // allowed.
-    deferred_actions_.clear();
-    callback_options_->fallback = true;
-#if DCHECK_IS_ON()
-    can_post_deferrable_actions_ = false;
-#endif
-    return true;
-  }
-  // Already in the fallback code path.
-  return false;
 }
 
 void NoAllocDirectCallHost::FlushDeferredActions() {

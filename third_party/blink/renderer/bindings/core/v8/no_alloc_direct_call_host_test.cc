@@ -66,37 +66,6 @@ TEST_F(NoAllocDirectCallHostTest, FlushDeferredActions) {
   ASSERT_FALSE(host.HasDeferredActions());
 }
 
-TEST_F(NoAllocDirectCallHostTest, NoAllocFallbackForAllocationFalse) {
-  NoAllocDirectCallHost host;
-  ASSERT_FALSE(host.NoAllocFallbackForAllocation());
-  ASSERT_FALSE(IsFallbackRequested());
-}
-
-TEST_F(NoAllocDirectCallHostTest, NoAllocFallbackForAllocationTrue) {
-  NoAllocDirectCallHost host;
-  {
-    NoAllocDirectCallScope scope(&host, callback_options());
-    ASSERT_TRUE(host.NoAllocFallbackForAllocation());
-  }
-  ASSERT_TRUE(IsFallbackRequested());
-}
-
-TEST_F(NoAllocDirectCallHostTest,
-       NoAllocFallbackForAllocationDiscardsDeferredActions) {
-  NoAllocDirectCallHost host;
-  bool change_me = false;
-  {
-    NoAllocDirectCallScope scope(&host, callback_options());
-    host.PostDeferrableAction(
-        WTF::Bind([](bool* change_me) { *change_me = true; },
-                  WTF::Unretained(&change_me)));
-    ASSERT_TRUE(host.NoAllocFallbackForAllocation());
-  }
-  ASSERT_TRUE(IsFallbackRequested());
-  ASSERT_FALSE(host.HasDeferredActions());
-  ASSERT_FALSE(change_me);
-}
-
 TEST_F(NoAllocDirectCallHostTest, ThrowDOMException) {
   V8TestingScope test_scope;
   NoAllocDirectCallHost host;

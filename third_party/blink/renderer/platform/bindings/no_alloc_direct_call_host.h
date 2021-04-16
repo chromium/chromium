@@ -19,10 +19,10 @@
 //   can be accelerated.
 // * Make sure the interface implementation class that the methods belong to
 //   inherits NoAllocHost.
-// * In the method implementation, call PostDeferrableAction() or
-//   NoAllocFallbackForAllocation() around all code paths that need to escape
-//   the constraints that forbid the allocation of objects on the V8 heap. See
-//   inlined documentation below for instruction on how to use these methods.
+// * In the method implementation, call PostDeferrableAction() on all code paths
+//   that need to escape the constraints that forbid the allocation of objects
+//   on the V8 heap. See inlined documentation below for instruction on how to
+//   use these methods.
 //
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_NO_ALLOC_DIRECT_CALL_HOST_H_
@@ -53,40 +53,12 @@ class PLATFORM_EXPORT NoAllocDirectCallHost {
   // The purpose of deferrable actions is to provide an escape hatch in
   // situations where an API call that can normally run without performing any
   // allocations, needs to allocate on the V8 managed heap due to a rare
-  // circumstance, e.g. a programming error.
+  // circumstance, e.g. a JavaScript programming error.
   //
   // It is allowed to call PostDeferrableAction action from code that was
   // invoked outside of the scope of a [NoAllocDirectCall] entry point. This is
   // convenient for code paths that are shared between fast and non-fast APIs.
   void PostDeferrableAction(DeferrableAction&& action);
-
-  // Call this when a code branch is taken that requires making an allocation
-  // on the V8-managed heap.
-  //
-  // API function implementations that use NoAllocFallbackForAllocation() must
-  // be idempotent, up to the point where NoAllocFallbackForAllocation() is
-  // called.
-  //
-  // If currently running in fast (no alloc) mode:
-  //   * All queued deferable actions are discarded without being run.
-  //   * A signal is sent to v8 to request that the current API function be
-  //     recalled in slow (allocs allowed) mode.
-  //   * Returns true
-  // If currently in slow (allocs allowed) mode
-  //   * Returns false
-  //
-  // Usage:
-  //   if (NoAllocFallbackForAllocation()) { return; }
-  //   <allocate a v8 object>
-  //
-  // To avoid executing large portions of the API method twice (everything that
-  // comes before the call to NoAllocFallbackForAllocation), avoid using this
-  // approach whenever it is reasonable to use PostDeferrableAction() instead.
-  //
-  // An example of when using this approach may be appropriate is for lazy
-  // initializations. I.e. when a V8 managed object needs to be allocated the
-  // first time the API is called.
-  WARN_UNUSED_RESULT bool NoAllocFallbackForAllocation();
 
   bool IsInFastMode() const { return callback_options_; }
 
@@ -105,9 +77,6 @@ class PLATFORM_EXPORT NoAllocDirectCallHost {
  private:
   WTF::Vector<DeferrableAction> deferred_actions_;
   v8::FastApiCallbackOptions* callback_options_ = nullptr;
-#if DCHECK_IS_ON()
-  bool can_post_deferrable_actions_ = true;
-#endif
 };
 
 class NoAllocDirectCallScope {
@@ -131,9 +100,6 @@ inline void NoAllocDirectCallHost::EnterNoAllocDirectCallScope(
 inline void NoAllocDirectCallHost::ExitNoAllocDirectCallScope() {
   DCHECK(callback_options_);
   callback_options_ = nullptr;
-#if DCHECK_IS_ON()
-  can_post_deferrable_actions_ = true;
-#endif
 }
 
 inline bool NoAllocDirectCallHost::HasDeferredActions() {
