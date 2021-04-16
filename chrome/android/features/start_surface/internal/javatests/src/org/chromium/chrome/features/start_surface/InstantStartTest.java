@@ -1344,6 +1344,7 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS +
                     "/start_surface_variation/single"})
+    @DisabledTest(message = "See https://crbug.com/1199745")
     public void testToolbarPhoneHomeButtonVisibility() {
         // clang-format on
         startMainActivityFromLauncher();
