@@ -45,7 +45,7 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_INSTRUCTION_TRY_AGAIN);
 
   int description_id, aria_label_id;
-  bool is_aria_label_containing_device_name = false;
+  bool aria_label_includes_device = false;
   switch (quick_unlock::GetFingerprintLocation()) {
     case quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON:
       description_id =
@@ -76,30 +76,31 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_RIGHT_SIDE_ARIA_LABEL;
-      is_aria_label_containing_device_name = true;
+      aria_label_includes_device = true;
       break;
     case quick_unlock::FingerprintLocation::LEFT_SIDE:
       description_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
-      is_aria_label_containing_device_name = true;
+      aria_label_includes_device = true;
       break;
     case quick_unlock::FingerprintLocation::UNKNOWN:
       description_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
       aria_label_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
-      is_aria_label_containing_device_name = true;
+      aria_label_includes_device = true;
       break;
   }
   builder->AddF("setupFingerprintScreenDescription", description_id,
                 ui::GetChromeOSDeviceName());
-  if (is_aria_label_containing_device_name)
+  if (aria_label_includes_device) {
     builder->AddF("setupFingerprintScreenAriaLabel", aria_label_id,
                   ui::GetChromeOSDeviceName());
-  else
+  } else {
     builder->Add("setupFingerprintScreenAriaLabel", aria_label_id);
+  }
 }
 
 void FingerprintSetupScreenHandler::RegisterMessages() {

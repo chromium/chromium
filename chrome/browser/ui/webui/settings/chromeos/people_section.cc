@@ -522,7 +522,7 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
   }
 
   int instruction_id, aria_label_id;
-  bool is_aria_label_containing_device_name = false;
+  bool aria_label_includes_device = false;
   using FingerprintLocation = chromeos::quick_unlock::FingerprintLocation;
   switch (chromeos::quick_unlock::GetFingerprintLocation()) {
     case FingerprintLocation::TABLET_POWER_BUTTON:
@@ -554,14 +554,14 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_RIGHT_SIDE_ARIA_LABEL;
-      is_aria_label_containing_device_name = true;
+      aria_label_includes_device = true;
       break;
     case quick_unlock::FingerprintLocation::LEFT_SIDE:
       instruction_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
       aria_label_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
-      is_aria_label_containing_device_name = true;
+      aria_label_includes_device = true;
       break;
     case FingerprintLocation::UNKNOWN:
       instruction_id =
@@ -572,13 +572,14 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
   }
   html_source->AddLocalizedString(
       "configureFingerprintInstructionLocateScannerStep", instruction_id);
-  if (is_aria_label_containing_device_name)
+  if (aria_label_includes_device) {
     html_source->AddString(
         "configureFingerprintScannerStepAriaLabel",
         l10n_util::GetStringFUTF16(aria_label_id, ui::GetChromeOSDeviceName()));
-  else
+  } else {
     html_source->AddLocalizedString("configureFingerprintScannerStepAriaLabel",
                                     aria_label_id);
+  }
 }
 
 void AddSetupFingerprintDialogStrings(content::WebUIDataSource* html_source) {
