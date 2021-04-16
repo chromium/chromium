@@ -18,6 +18,10 @@
 
 namespace {
 
+// Maximum length of the string to match to avoid causing an icu::RegexMatcher
+// stack overflow. (crbug.com/1198219)
+constexpr int kMaxStringLength = 5000;
+
 // A thread-local class that serves as a cache of compiled regex patterns.
 //
 // The regexp state can be accessed from multiple threads in single process
@@ -67,6 +71,9 @@ bool MatchesPattern(const base::StringPiece16& input,
                     const base::StringPiece16& pattern,
                     std::u16string* match,
                     int32_t group_to_be_captured) {
+  if (input.size() > kMaxStringLength)
+    return false;
+
   static base::NoDestructor<AutofillRegexes> g_autofill_regexes;
   static base::NoDestructor<base::Lock> g_lock;
   base::AutoLock lock(*g_lock);
