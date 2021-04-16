@@ -190,7 +190,10 @@ if (enable_pdf) {
   source_set("assert_enums") {
     visibility = [ ":*" ]
 
-    sources = [ "pdfium/pdfium_assert_matching_enums.cc" ]
+    sources = [
+      "pdfium/pdfium_assert_matching_enums.cc",
+      "ppapi_migration/ppapi_assert_matching_enums.cc",
+    ]
 
     configs += [ ":pdf_common_config" ]
 
