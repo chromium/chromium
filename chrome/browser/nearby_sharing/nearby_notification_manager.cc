@@ -286,8 +286,10 @@ NearbyNotificationManager::ReceivedContentType GetReceivedContentType(
 
 class ProgressNotificationDelegate : public NearbyNotificationDelegate {
  public:
-  explicit ProgressNotificationDelegate(NearbyNotificationManager* manager)
-      : manager_(manager) {}
+  explicit ProgressNotificationDelegate(NearbyNotificationManager* manager,
+                                        bool awaiting_remote_acceptance)
+      : manager_(manager),
+        awaiting_remote_acceptance_(awaiting_remote_acceptance) {}
   ~ProgressNotificationDelegate() override = default;
 
   // NearbyNotificationDelegate:
@@ -298,23 +300,36 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
       return;
     // Clicking on the only (cancel) button cancels the transfer.
     DCHECK_EQ(0, *action_index);
-    manager_->CancelTransfer();
+
+    // In the receiving case, the progress notification is showed after the
+    // transfer is accepted, but before the |TransferMetadata::Status| is
+    // actually |kInProgress|. In this case, it is more appropriate to reject
+    // the transfer, but as far as the user is concerned, it looks like a
+    // cancellation.
+    if (awaiting_remote_acceptance_)
+      manager_->RejectTransfer();
+    else
+      manager_->CancelTransfer();
   }
 
   void OnClose(const std::string& notification_id) override {
-    manager_->CancelTransfer();
+    if (awaiting_remote_acceptance_)
+      manager_->RejectTransfer();
+    else
+      manager_->CancelTransfer();
   }
 
  private:
   NearbyNotificationManager* manager_;
+  bool awaiting_remote_acceptance_ = false;
 };
 
 class ConnectionRequestNotificationDelegate
     : public NearbyNotificationDelegate {
  public:
-  ConnectionRequestNotificationDelegate(NearbyNotificationManager* manager,
-                                        bool has_accept_button)
-      : manager_(manager), has_accept_button_(has_accept_button) {}
+  explicit ConnectionRequestNotificationDelegate(
+      NearbyNotificationManager* manager)
+      : manager_(manager) {}
   ~ConnectionRequestNotificationDelegate() override = default;
 
   // NearbyNotificationDelegate:
@@ -323,12 +338,6 @@ class ConnectionRequestNotificationDelegate
     // Clicking on the notification is a noop.
     if (!action_index)
       return;
-
-    if (!has_accept_button_) {
-      DCHECK_EQ(0, *action_index);
-      manager_->RejectTransfer();
-      return;
-    }
 
     switch (*action_index) {
       case 0:
@@ -349,7 +358,6 @@ class ConnectionRequestNotificationDelegate
 
  private:
   NearbyNotificationManager* manager_;
-  bool has_accept_button_;
 };
 
 class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
@@ -565,6 +573,24 @@ void UpdateOnboardingDismissedTime(PrefService* pref_service) {
                         base::Time::Now());
 }
 
+bool ShouldClearNotification(
+    base::Optional<TransferMetadata::Status> last_status,
+    TransferMetadata::Status new_status) {
+  if (!last_status)
+    return true;
+
+  // While receiving and waiting for the sender to accept, we are showing a
+  // progress notification with indeterminate progress. We need not close the
+  // progress notification when we move to showing determinate progress.
+  if (*last_status == TransferMetadata::Status::kAwaitingRemoteAcceptance &&
+      new_status == TransferMetadata::Status::kInProgress)
+    return false;
+
+  // In all other cases, if the status has changed, the previous notification
+  // should be cleared.
+  return *last_status != new_status;
+}
+
 }  // namespace
 
 // static
@@ -603,8 +629,8 @@ void NearbyNotificationManager::OnTransferUpdate(
     share_target_ = share_target;
   DCHECK_EQ(share_target_->id, share_target.id);
 
-  if (!last_transfer_status_ ||
-      *last_transfer_status_ != transfer_metadata.status()) {
+  if (ShouldClearNotification(last_transfer_status_,
+                              transfer_metadata.status())) {
     // Close any previous notifications, to allow subsequent high-priority
     // notifications to pop up.
     CloseTransfer();
@@ -628,8 +654,14 @@ void NearbyNotificationManager::OnTransferUpdate(
       // check above that called CloseTransfer(). No notification is currently
       // shown for these statuses, so break.
       break;
-    case TransferMetadata::Status::kAwaitingLocalConfirmation:
     case TransferMetadata::Status::kAwaitingRemoteAcceptance:
+      // Only incoming transfers are handled via notifications.
+      if (share_target.is_incoming)
+        // Show a progress notification with indeterminate progress while
+        // waiting for the sender to accept.
+        ShowProgress(share_target, transfer_metadata);
+      break;
+    case TransferMetadata::Status::kAwaitingLocalConfirmation:
       // Only incoming transfers are handled via notifications.
       if (share_target.is_incoming)
         ShowConnectionRequest(share_target, transfer_metadata);
@@ -711,7 +743,9 @@ void NearbyNotificationManager::ShowProgress(
   notification.set_buttons(notification_actions);
 
   delegate_map_[notification.id()] =
-      std::make_unique<ProgressNotificationDelegate>(this);
+      std::make_unique<ProgressNotificationDelegate>(
+          this, /*awaiting_remote_acceptance=*/transfer_metadata.status() ==
+                    TransferMetadata::Status::kAwaitingRemoteAcceptance);
 
   notification_display_service_->Display(
       NotificationHandler::Type::NEARBY_SHARE, notification,
@@ -733,22 +767,15 @@ void NearbyNotificationManager::ShowConnectionRequest(
   notification.set_never_timeout(true);
   notification.set_priority(message_center::NotificationPriority::MAX_PRIORITY);
 
-  bool show_accept_button =
-      transfer_metadata.status() ==
-      TransferMetadata::Status::kAwaitingLocalConfirmation;
-
   std::vector<message_center::ButtonInfo> notification_actions;
-  if (show_accept_button) {
-    notification_actions.emplace_back(
-        l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
-  }
+  notification_actions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
   notification_actions.emplace_back(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION));
   notification.set_buttons(notification_actions);
 
   delegate_map_[notification.id()] =
-      std::make_unique<ConnectionRequestNotificationDelegate>(
-          this, show_accept_button);
+      std::make_unique<ConnectionRequestNotificationDelegate>(this);
 
   notification_display_service_->Display(
       NotificationHandler::Type::NEARBY_SHARE, notification,
