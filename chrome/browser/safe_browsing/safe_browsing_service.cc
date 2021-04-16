@@ -465,6 +465,11 @@ network::mojom::NetworkContextParamsPtr
 SafeBrowsingService::CreateNetworkContextParams() {
   auto params = SystemNetworkContextManager::GetInstance()
                     ->CreateDefaultNetworkContextParams();
+  // |proxy_config_monitor_| should be deleted after shutdown, so don't
+  // re-create it.
+  if (shutdown_) {
+    return params;
+  }
   if (!proxy_config_monitor_) {
     proxy_config_monitor_ =
         std::make_unique<ProxyConfigMonitor>(g_browser_process->local_state());
