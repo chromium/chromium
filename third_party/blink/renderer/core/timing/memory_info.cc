@@ -186,4 +186,22 @@ void MemoryInfo::SetTickClockForTestingForCurrentThread(
   cache.ResetLastUpdateTimeForTesting();
 }
 
+// The values below are recorded/replayed when accessed by JS so that
+// they will be consistent when replaying.
+
+uint64_t MemoryInfo::totalJSHeapSize() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::totalJSHeapSize",
+                                         info_.total_js_heap_size);
+}
+
+uint64_t MemoryInfo::usedJSHeapSize() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::usedJSHeapSize",
+                                         info_.used_js_heap_size);
+}
+
+uint64_t MemoryInfo::jsHeapSizeLimit() const {
+  return recordreplay::RecordReplayValue("MemoryInfo::jsHeapSizeLimit",
+                                         info_.js_heap_size_limit);
+}
+
 }  // namespace blink

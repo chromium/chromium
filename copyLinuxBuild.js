@@ -10,14 +10,12 @@ if (!srcDir || !dstDir) {
   process.exit(1);
 }
 
-spawnSync("pkill", ["-f", "chrome"]);
-
 for (const file of fs.readdirSync(srcDir)) {
   if (["chrome", "icudtl.dat", "v8_context_snapshot.bin"].includes(file) ||
       file.endsWith(".pak") ||
       file.endsWith(".pak.info") ||
       file.endsWith(".so")) {
-    spawnSync("cp", [`${srcDir}/${file}`, dstDir]);
+    spawnSync("cp", [`${srcDir}/${file}`, dstDir], { stdio: "inherit" });
   }
 }
-spawnSync("cp", ["-R", `${srcDir}/locales`, dstDir]);
+spawnSync("cp", ["-R", `${srcDir}/locales`, dstDir], { stdio: "inherit" });

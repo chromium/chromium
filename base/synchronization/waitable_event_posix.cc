@@ -249,6 +249,13 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 static bool  // StrictWeakOrdering
 cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
              const std::pair<WaitableEvent*, unsigned> &b) {
+  // When recording/replaying, sort by the pointer ID to get a consistent order.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    int ida = recordreplay::PointerId(a.first);
+    int idb = recordreplay::PointerId(b.first);
+    CHECK(ida && idb);
+    return ida < idb;
+  }
   return a.first < b.first;
 }
 
