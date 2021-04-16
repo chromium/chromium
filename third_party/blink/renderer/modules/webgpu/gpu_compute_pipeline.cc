@@ -16,7 +16,8 @@ namespace blink {
 WGPUComputePipelineDescriptor AsDawnType(
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
-    OwnedProgrammableStageDescriptor* computeStageDescriptor) {
+    OwnedProgrammableStageDescriptor* computeStageDescriptor,
+    GPUDevice* device) {
   DCHECK(webgpu_desc);
   DCHECK(label);
   DCHECK(computeStageDescriptor);
@@ -31,7 +32,14 @@ WGPUComputePipelineDescriptor AsDawnType(
     dawn_desc.label = label->c_str();
   }
 
-  *computeStageDescriptor = AsDawnType(webgpu_desc->computeStage());
+  if (webgpu_desc->hasCompute()) {
+    *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
+  } else if (webgpu_desc->hasComputeStage()) {
+    device->AddConsoleWarning(
+        "computeStage is deprecated. Use compute instead.");
+    *computeStageDescriptor = AsDawnType(webgpu_desc->computeStage());
+  }
+
   dawn_desc.computeStage = std::get<0>(*computeStageDescriptor);
 
   return dawn_desc;
@@ -47,7 +55,7 @@ GPUComputePipeline* GPUComputePipeline::Create(
   std::string label;
   OwnedProgrammableStageDescriptor computeStageDescriptor;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(webgpu_desc, &label, &computeStageDescriptor);
+      AsDawnType(webgpu_desc, &label, &computeStageDescriptor, device);
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(

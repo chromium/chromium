@@ -285,7 +285,14 @@ GPURenderPipeline* GPUDevice::createRenderPipeline(
 }
 
 GPUComputePipeline* GPUDevice::createComputePipeline(
-    const GPUComputePipelineDescriptor* descriptor) {
+    const GPUComputePipelineDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  // Check for required members. Can't do this in the IDL because then the
+  // deprecated members would be required.
+  if (!descriptor->hasCompute() && !descriptor->hasComputeStage()) {
+    exception_state.ThrowTypeError("required member compute is undefined.");
+    return nullptr;
+  }
   return GPUComputePipeline::Create(this, descriptor);
 }
 
@@ -330,10 +337,19 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  // Check for required members. Can't do this in the IDL because then the
+  // deprecated members would be required.
+  if (!descriptor->hasCompute() && !descriptor->hasComputeStage()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError,
+        "required member compute is undefined."));
+    return promise;
+  }
+
   std::string label;
   OwnedProgrammableStageDescriptor computeStageDescriptor;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(descriptor, &label, &computeStageDescriptor);
+      AsDawnType(descriptor, &label, &computeStageDescriptor, this);
 
   auto* callback =
       BindDawnCallback(&GPUDevice::OnCreateComputePipelineAsyncCallback,

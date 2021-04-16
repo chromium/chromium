@@ -30,7 +30,7 @@
 
     [RaisesException] GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
-    GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
+    [RaisesException] GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
 
     [CallWith=ScriptState] Promise<GPURenderPipeline?> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);

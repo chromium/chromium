@@ -16,7 +16,8 @@ class GPUComputePipelineDescriptor;
 WGPUComputePipelineDescriptor AsDawnType(
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
-    OwnedProgrammableStageDescriptor* computeStageDescriptor);
+    OwnedProgrammableStageDescriptor* computeStageDescriptor,
+    GPUDevice* device);
 
 class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
   DEFINE_WRAPPERTYPEINFO();

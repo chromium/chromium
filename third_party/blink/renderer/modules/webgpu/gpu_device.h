@@ -97,7 +97,8 @@ class GPUDevice final : public EventTargetWithInlineData,
       ScriptState* script_state,
       const GPURenderPipelineDescriptor* descriptor);
   GPUComputePipeline* createComputePipeline(
-      const GPUComputePipelineDescriptor* descriptor);
+      const GPUComputePipelineDescriptor* descriptor,
+      ExceptionState& exception_state);
   ScriptPromise createRenderPipelineAsync(
       ScriptState* script_state,
       const GPURenderPipelineDescriptor* descriptor);
