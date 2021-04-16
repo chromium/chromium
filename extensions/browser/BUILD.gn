@@ -481,7 +481,6 @@ source_set("browser_tests") {
     "api/sockets_udp/sockets_udp_apitest.cc",
     "api/system_cpu/system_cpu_apitest.cc",
     "api/system_display/system_display_apitest.cc",
-    "api/system_memory/system_memory_apitest.cc",
     "api/system_network/system_network_apitest.cc",
     "api/system_storage/storage_api_test_util.cc",
     "api/system_storage/storage_api_test_util.h",

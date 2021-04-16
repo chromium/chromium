@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // system.memory api test
-// extensions_browsertests --gtest_filter=SystemMemoryApiTest.*
+// browser_tests --gtest_filter="SystemMemoryApiTest.*"
 
 chrome.test.runTests([
   function testGet() {
@@ -15,4 +15,3 @@ chrome.test.runTests([
     }
   }
 ]);
-
