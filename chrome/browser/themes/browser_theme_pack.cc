@@ -1317,9 +1317,8 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
         break;
       }
       case TP::NTP_LOGO_ALTERNATE: {
-        int val = 0;
-        if (iter.value().GetAsInteger(&val))
-          temp_properties[TP::NTP_LOGO_ALTERNATE] = val;
+        if (iter.value().is_int())
+          temp_properties[TP::NTP_LOGO_ALTERNATE] = iter.value().GetInt();
         break;
       }
     }
