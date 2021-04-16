@@ -447,10 +447,10 @@ void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
   } else if (const auto* image = DynamicTo<LayoutImage>(object)) {
     const ComputedStyle* style = image->Style();
     if (style->Visibility() != EVisibility::kVisible ||
+        style->ContentVisibility() != EContentVisibility::kVisible ||
         CheckParentHasOverflowXHidden(&object))
       return;
-    PhysicalRect rect = image->ReplacedContentRect();
-    total_text_width = (rect.offset.left + rect.size.width).ToInt();
+    total_text_width = image->FrameRect().MaxX().ToInt();
   } else {
     return;
   }

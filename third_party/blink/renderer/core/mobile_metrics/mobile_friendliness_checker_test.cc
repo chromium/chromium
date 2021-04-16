@@ -411,6 +411,17 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWide) {
   EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 317);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, ImageAbsolutePosition) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <img style="width:100px; height:100px; position:absolute; left:2000px">
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 338);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, ImageTooWideDisplayNone) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
