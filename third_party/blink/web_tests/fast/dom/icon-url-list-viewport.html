@@ -17,6 +17,8 @@ function addFavIcon(iconURL, media) {
 
 var t = async_test('Favicons are updated when the window is resized.');
 window.onload = t.step_func(function () {
+  testRunner.useUnfortunateSynchronousResizeMode();
+
   addFavIcon(
     "http://test.com/mediafavicon1.ico",
     `(max-width: ${window.outerWidth + 1}px)`
