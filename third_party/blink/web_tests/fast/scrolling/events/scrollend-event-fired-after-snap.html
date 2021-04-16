@@ -40,11 +40,10 @@ if (window.internals)
 
 var scroller = document.getElementById("scroller");
 var space = document.getElementById("space");
-const MAX_FRAME_COUNT = 700;
-const MAX_UNCHANGED_FRAME = 20;
 
-function scrollLeft() {
-  return scroller.scrollLeft;
+function scrollPos() {
+  // Combine the x and y scroll offsets since snap type is 'both'.
+  return (scroller.scrollLeft << 16) + scroller.scrollTop;
 }
 
 var scroll_arrived_after_scroll_end = false;
@@ -59,9 +58,11 @@ scroller.addEventListener("scrollend", () => {
 function runTests() {
   promise_test (async () => {
     await waitForCompositorCommit();
+    const scrollPromise = waitForScrollEvent(scroller);
     await smoothScroll(100, 200, 200, GestureSourceType.TOUCH_INPUT, 'down');
     // Wait for the scroll snap animation to finish.
-    await waitForAnimationEnd(scrollLeft, MAX_FRAME_COUNT, MAX_UNCHANGED_FRAME);
+    await scrollPromise;
+    await waitForAnimationEndTimeBased(scrollPos);
     await waitUntil(() => { return scroll_end_arrived; });
     // Verify that scroll snap animation has finished before firing scrollend event.
     assert_false(scroll_arrived_after_scroll_end);
@@ -71,12 +72,18 @@ function runTests() {
     // Reset scroll state.
     scroller.scrollTo(0, 0);
     await waitForCompositorCommit();
+    // Wait 2 additional rAFs before resetting the flags to avoid resetting
+    // before the scrollend associated with the scrollTo call.
+    await raf();
+    await raf();
     scroll_end_arrived = false;
     scroll_arrived_after_scroll_end = false;
 
+    const scrollPromise = waitForScrollEvent(scroller);
     await swipe(100, 200, 200, 'up');
     // Wait for the scroll snap animation to finish.
-    await waitForAnimationEnd(scrollLeft, MAX_FRAME_COUNT, MAX_UNCHANGED_FRAME);
+    await scrollPromise;
+    await waitForAnimationEndTimeBased(scrollPos);
     await waitUntil(() => { return scroll_end_arrived; });
     // Verify that scroll snap animation has finished before firing scrollend event.
     assert_false(scroll_arrived_after_scroll_end);
