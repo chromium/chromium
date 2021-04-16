@@ -11,7 +11,6 @@
     tr td { text-align: right; }
     tr td:nth-child(1) { text-align: left; }
     tr td:nth-child(2) { text-align: left; }
-    th a { text-decoration: none; }
     tbody tr:hover { background-color: #dddddd; }
     th { position: sticky; top: 0; background-color: #ffffff }
     th:nth-child(n+2) { cursor: pointer; }
@@ -21,11 +20,11 @@
   </head>
   <body>
 
-<h1>Chrome #include Analysis (go/chrome-includes)</h1>
+<h1>Chrome #include Analysis (go/chrome-includes) Beta</h1>
 
 <p>Build target: <span id="buildTarget">x</span> (Linux). Revision: <span id="buildRevision">x</span>. Analyzed on: <span id="analysisDate">x</span>.</p>
 
-<p>Number of translation units: <span id="numRoots">x</span>. Total translation unit size: <span id="totBuildSize">x</span> bytes.</p>
+<p>Number of translation units: <span id="numRoots">x</span>. Total build size (sum of expanded translation unit sizes): <span id="totBuildSize">x</span> bytes.</p>
 
 <p>Number of files: <span id="numFiles">x</span>. Total file size: <span id="totFileSize">x</span> bytes.</p>
 
@@ -44,11 +43,12 @@
     <tr>
       <th>#</th>
       <th id="filename" onclick="changeState('sort', 'filename')">Filename</th>
-      <th id="isize" colspan="2" onclick="changeState('sort', 'isize')">Individual Size (B)</th>
-      <th id="tsize" colspan="2" onclick="changeState('sort', 'tsize')">Expanded Size (B)</th>
-      <th id="asize" colspan="2" onclick="changeState('sort', 'asize')">Added Size (B)</th>
-      <th id="prevalence" colspan="2" onclick="changeState('sort', 'prevalence')">Occurrences</th>
-      <th id="icount" onclick="changeState('sort', 'icount')">Include Count</th>
+      <th id="isize" colspan="2" onclick="changeState('sort', 'isize')" title="The size of the individual file. Also shown as percentage of the total file size.">Individual Size (B) &#9432;</th>
+      <th id="tsize" colspan="2" onclick="changeState('sort', 'tsize')" title="The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total build size.">Expanded Size (B) &#9432;</th>
+      <th id="asize" colspan="2" onclick="changeState('sort', 'asize')" title="The size added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total build size.">Added Size (B) &#9432;</th>
+      <th id="prevalence" colspan="2" onclick="changeState('sort', 'prevalence')" title="Number of translation units that this file is part of. Also shown as percentage of the number of translation units.">Occurrences &#9432;</th>
+      <th id="includedby" onclick="changeState('sort', 'includedby')" title="In how many files this file is included directly. Click the number to see the files.">Directly Included In &#9432;</th>
+      <th id="includes" onclick="changeState('sort', 'includes')" title="How many files this file includes directly. Click the number to see the files.">Direct Includes &#9432;</th>
     </tr>
   </thead>
   <tbody>
@@ -56,16 +56,6 @@
 </table>
 
 <hr>
-
-<h3>Legend</h3>
-<p>
-Translation Unit: The data processed during a compiler invocation.<br>
-Individual Size: The size of the file, and as a percentage of the total file size.<br>
-Expanded Size: The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total translation unit size.<br>
-Added Size: How much size is added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total translation unit size.<br>
-Occurrences: How many translation units this file is part of. Also shown as a percentage of the total number of translation units.<br>
-Include Count: How many times this file is included directly.<br>
-</p>
 
 <p>File size does not correlate perfectly with compile time, but can serve as a rough guide to what files are slow to compile.</p>
 
@@ -107,13 +97,14 @@ document.getElementById('totFileSize').textContent = fmt(totFileSize);
 function buildRow(i, rank) {
   return `
 <tr>
-<td><a href="javascript:changeState('filter', '^' + regexEscape('${data.files[i]}' + '$'))">${rank + 1}</a></td>
+<td><a href="javascript:changeState('filter', '^' + regexEscape('${data.files[i]}' + '$'))" title="Filter on this file.">${rank + 1}</a></td>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:${data.files[i]}">${data.files[i]}</a></td>
 <td>${fmt(data.sizes[i])}</td> <td>${(100 * data.sizes[i] / totFileSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.prevalence[i])}</td> <td>${(100 * data.prevalence[i] / numRoots).toFixed(2)}&nbsp;%</td>
 <td><a href="javascript:changeState('filter', 'includes:${data.files[i]}')">${fmt(data.included_by[i].length)}</a></td>
+<td><a href="javascript:changeState('filter', 'includedby:${data.files[i]}')">${fmt(data.includes[i].length)}</a></td>
 </tr>
   `;
 }
@@ -149,6 +140,16 @@ function buildTable() {
       filter = filter.replace(includesOp, '');
     }
 
+    // Handle includedby: operator.
+    const includedByOp = new RegExp(' *includedby:([^ ]*) *');
+    while (match = filter.match(includedByOp)) {
+      const filename = match[1];
+      const fileNum = data.files.findIndex(n => n === filename);
+      fileNums = intersect(fileNums, data.includes[fileNum]);
+      filter = filter.replace(includedByOp, '');
+    }
+
+
     const re = new RegExp(filter);
     fileNums = fileNums.filter(i => data.files[i].match(re));
 
@@ -161,7 +162,8 @@ function buildTable() {
     isize: (i, j) => data.sizes[j] - data.sizes[i],
     tsize: (i, j) => data.tsizes[j] - data.tsizes[i],
     prevalence: (i, j) => data.prevalence[j] - data.prevalence[i],
-    icount: (i, j) => data.included_by[j].length - data.included_by[i].length,
+    includedby: (i, j) => data.included_by[j].length - data.included_by[i].length,
+    includes: (i, j) => data.includes[j].length - data.includes[i].length,
     asize: (i, j) => data.asizes[j] - data.asizes[i],
   };
 
