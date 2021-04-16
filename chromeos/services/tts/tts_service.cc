@@ -23,7 +23,6 @@ constexpr int kDefaultBufferSize = 512;
 
 TtsService::TtsService(mojo::PendingReceiver<mojom::TtsService> receiver)
     : service_receiver_(this, std::move(receiver)),
-      tts_stream_factory_(this),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   if (setpriority(PRIO_PROCESS, 0, -10 /* real time audio */) != 0) {
     PLOG(ERROR) << "Unable to request real time priority; performance will be "
@@ -36,8 +35,7 @@ TtsService::~TtsService() = default;
 void TtsService::BindTtsStreamFactory(
     mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> factory) {
-  pending_tts_stream_factory_receivers_.push(std::move(receiver));
-  ProcessPendingTtsStreamFactories();
+  tts_stream_factory_receivers_.Add(this, std::move(receiver));
 
   // TODO(accessibility): make it possible to change this dynamically. Also,
   // decouple TtsStreamFactory from AudioStreamFactory above into different
@@ -56,9 +54,6 @@ void TtsService::CreateGoogleTtsStream(CreateGoogleTtsStreamCallback callback) {
   google_tts_stream_ =
       std::make_unique<GoogleTtsStream>(this, std::move(receiver));
   std::move(callback).Run(std::move(remote));
-
-  tts_stream_factory_.reset();
-  ProcessPendingTtsStreamFactories();
 }
 
 void TtsService::CreatePlaybackTtsStream(
@@ -69,9 +64,6 @@ void TtsService::CreatePlaybackTtsStream(
       std::make_unique<PlaybackTtsStream>(this, std::move(receiver));
   std::move(callback).Run(std::move(remote), kDefaultSampleRate,
                           kDefaultBufferSize);
-
-  tts_stream_factory_.reset();
-  ProcessPendingTtsStreamFactories();
 }
 
 void TtsService::Play(
@@ -164,16 +156,6 @@ void TtsService::StopLocked(bool clear_buffers) {
     buffers_ = std::queue<AudioBuffer>();
     timepoints_ = std::queue<Timepoint>();
   }
-}
-
-void TtsService::ProcessPendingTtsStreamFactories() {
-  if (tts_stream_factory_.is_bound() ||
-      pending_tts_stream_factory_receivers_.empty())
-    return;
-
-  auto factory = std::move(pending_tts_stream_factory_receivers_.front());
-  pending_tts_stream_factory_receivers_.pop();
-  tts_stream_factory_.Bind(std::move(factory));
 }
 
 void TtsService::ProcessRenderedBuffers() {

@@ -107,8 +107,6 @@ class TtsServiceTest : public testing::Test {
         tts_stream_factory->BindNewPipeAndPassReceiver(),
         audio_stream_factory_.BindNewPipeAndPassRemote());
     remote_service_.FlushForTesting();
-    EXPECT_TRUE(service_.tts_stream_factory_for_testing()->is_bound());
-    EXPECT_TRUE(tts_stream_factory->is_connected());
   }
 
   void InitPlaybackTtsStream(
@@ -136,13 +134,9 @@ class TtsServiceTest : public testing::Test {
 };
 
 TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
-  EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
-
   // Create the first tts stream factory and request a playback stream.
   mojo::Remote<mojom::TtsStreamFactory> tts_stream_factory1;
   InitTtsStreamFactory(&tts_stream_factory1);
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
 
   // Hang on to the pending remote obtained in the callback. Otherwise, it
   // disconnects and the tts service tries to exit.
@@ -158,17 +152,16 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
   // be bound.
   EXPECT_TRUE(service_.receiver_for_testing()->is_bound());
 
-  // The receiver resets the connection once the playback stream is created.
-  EXPECT_FALSE(tts_stream_factory1.is_connected());
-  EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
+  auto* tts_stream_factory_receivers =
+      service_.tts_stream_factory_receivers_for_testing();
+
+  // The receiver keeps the connection alive.
+  tts_stream_factory_receivers->FlushForTesting();
+  EXPECT_TRUE(tts_stream_factory1.is_connected());
 
   // Create the second tts stream factory and request a playback stream.
   mojo::Remote<mojom::TtsStreamFactory> tts_stream_factory2;
   InitTtsStreamFactory(&tts_stream_factory2);
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
   tts_stream_factory2->CreatePlaybackTtsStream(
       base::BindOnce([](PendingRemote<mojom::PlaybackTtsStream> stream,
                         int32_t sample_rate, int32_t buffer_size) {
@@ -177,14 +170,13 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
       }));
   tts_stream_factory2.FlushForTesting();
 
-  // Neither remote is connected.
-  EXPECT_FALSE(tts_stream_factory1.is_connected());
-  EXPECT_FALSE(tts_stream_factory2.is_connected());
-
-  // And, the receiver again resets.
-  EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
+  // Simulate disconnecting the remotes here (e.g. extension closes).
+  tts_stream_factory1.reset();
+  tts_stream_factory_receivers->FlushForTesting();
+  EXPECT_EQ(1U, tts_stream_factory_receivers->size());
+  tts_stream_factory2.reset();
+  tts_stream_factory_receivers->FlushForTesting();
+  EXPECT_TRUE(tts_stream_factory_receivers->empty());
 
   // Finally, the tts service receiver should have been reset, indicating the
   // process would have been exited in production.
@@ -192,19 +184,13 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactories) {
 }
 
 TEST_F(TtsServiceTest, BindMultipleStreamFactoriesCreateInterleaved) {
-  EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
-
   // Create two tts stream factories; then interleave their requests to create
   // playback streams.
   mojo::Remote<mojom::TtsStreamFactory> tts_stream_factory1;
   InitTtsStreamFactory(&tts_stream_factory1);
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
   EXPECT_TRUE(tts_stream_factory1.is_connected());
   mojo::Remote<mojom::TtsStreamFactory> tts_stream_factory2;
   InitTtsStreamFactory(&tts_stream_factory2);
-  EXPECT_EQ(1U,
-            service_.pending_tts_stream_factory_receivers_for_testing().size());
 
   // Note that "connectedness" simply means the remote has not been reset by the
   // receiver and is bound to a PendingReceiver or Receiver. So, the second
@@ -219,31 +205,25 @@ TEST_F(TtsServiceTest, BindMultipleStreamFactoriesCreateInterleaved) {
                         int32_t sample_rate, int32_t buffer_size) {}));
   tts_stream_factory1.FlushForTesting();
 
-  // The second tts stream factory is now bound. There's no easy way to check
-  // this explicitly for the receiver.
-  EXPECT_TRUE(service_.tts_stream_factory_for_testing()->is_bound());
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
-
-  // The first tts stream factory gets reset on the receiver end.
-  EXPECT_FALSE(tts_stream_factory1.is_connected());
+  // The receiver keeps the connection alive.
+  EXPECT_TRUE(tts_stream_factory1.is_connected());
   EXPECT_TRUE(tts_stream_factory2.is_connected());
 
   // Simulate the second tts stream factory creating a playback stream.
+  auto* tts_stream_factory_receivers =
+      service_.tts_stream_factory_receivers_for_testing();
   tts_stream_factory2->CreatePlaybackTtsStream(
       base::BindOnce([](PendingRemote<mojom::PlaybackTtsStream> stream,
                         int32_t sample_rate, int32_t buffer_size) {}));
   tts_stream_factory2.FlushForTesting();
 
-  // No other tts stream factory requests pending.
-  EXPECT_FALSE(service_.tts_stream_factory_for_testing()->is_bound());
-  EXPECT_TRUE(
-      service_.pending_tts_stream_factory_receivers_for_testing().empty());
-
-  // Both tts stream factories are done  with the second tts stream factory
-  // reset by the receiver.
-  EXPECT_FALSE(tts_stream_factory1.is_connected());
-  EXPECT_FALSE(tts_stream_factory2.is_connected());
+  // Simulate disconnecting the remotes here (e.g. extension closes).
+  tts_stream_factory1.reset();
+  tts_stream_factory_receivers->FlushForTesting();
+  EXPECT_EQ(1U, tts_stream_factory_receivers->size());
+  tts_stream_factory2.reset();
+  tts_stream_factory_receivers->FlushForTesting();
+  EXPECT_TRUE(tts_stream_factory_receivers->empty());
 }
 
 TEST_F(TtsServiceTest, BasicAudioBuffering) {
