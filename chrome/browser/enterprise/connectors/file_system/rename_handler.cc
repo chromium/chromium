@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
@@ -97,13 +98,13 @@ FileSystemRenameHandler::FileSystemRenameHandler(
     : download::DownloadItemRenameHandler(download_item),
       target_path_(download_item->GetTargetFilePath()),
       settings_(std::move(settings)),
-      controller_(download_item) {}
+      uploader_(download_item) {}
 
 FileSystemRenameHandler::~FileSystemRenameHandler() = default;
 
 void FileSystemRenameHandler::Start(Callback callback) {
   download_callback_ = std::move(callback);
-  controller_.Init(
+  uploader_.Init(
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&FileSystemRenameHandler::NotifyResultToDownloadThread,
@@ -112,10 +113,9 @@ void FileSystemRenameHandler::Start(Callback callback) {
   StartInternal();
 }
 
-void FileSystemRenameHandler::TryControllerTask(
-    content::BrowserContext* context,
-    const std::string& access_token) {
-  controller_.TryTask(GetURLLoaderFactory(context), access_token);
+void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
+                                              const std::string& access_token) {
+  uploader_.TryTask(GetURLLoaderFactory(context), access_token);
 }
 
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
@@ -138,9 +138,8 @@ void FileSystemRenameHandler::FetchAccessToken(
                         settings_.scopes);
 }
 
-FileSystemDownloadController*
-FileSystemRenameHandler::GetControllerForTesting() {
-  return &controller_;
+BoxUploader* FileSystemRenameHandler::GetUploaderForTesting() {
+  return &uploader_;
 }
 
 void FileSystemRenameHandler::OpenDownload() {}
@@ -170,7 +169,7 @@ void FileSystemRenameHandler::StartInternal() {
                                       &access_token, &refresh_token);
 
   if (ok && !access_token.empty()) {  // Case 2.
-    TryControllerTask(context, access_token);
+    TryUploaderTask(context, access_token);
   } else if (ok && !refresh_token.empty()) {  // Case 3.
     // Start AccessTokenFetcher to obtain access token with refresh token.
     FetchAccessToken(context, refresh_token);
@@ -184,14 +183,14 @@ void FileSystemRenameHandler::StartInternal() {
 // The OAuth2 "Dance":
 //      AToken  || RToken || Action
 // (1)  N       || N      || PromptUserSignInForAuthorization()
-// (2)  Y       ||        || TryControllerTask()
+// (2)  Y       ||        || TryUploaderTask()
 // (3)  N       || Y      || FetchAccessToken
 //
 // (1) PromptUserSignInForAuthorization()
 //    (a) Success: SaveTokens -> (2).
 //    (b) Failure with GoogleServiceAuthError::State::REQUEST_CANCELED: [Abort].
 //    (c) Other failures: Retry (1).
-// (2) TryControllerTask()
+// (2) TryUploaderTask()
 //    (a) No authentication error: NotifyResultToDownloadThread() [Done].
 //    (b) Authentication error: ClearAToken -> (3).
 // (3) FetchAccessToken

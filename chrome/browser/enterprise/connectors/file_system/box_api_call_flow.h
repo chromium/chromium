@@ -31,7 +31,7 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
 
-  // Used by BoxApiCallFlow inherited classes and FileSystemDownloadController
+  // Used by BoxApiCallFlow inherited classes and BoxUploader
   // to determine whether to use WholeFileUpload or ChunkedFileUpload
   static const size_t kChunkFileUploadMinSize;
   static const size_t kWholeFileUploadMaxSize;
@@ -59,7 +59,7 @@ class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
-  // Callback from the controller to report success, http_code, folder_id.
+  // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
   base::WeakPtrFactory<BoxFindUpstreamFolderApiCallFlow> weak_factory_{this};
 };
@@ -88,7 +88,7 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
-  // Callback from the controller to report success, http_code, folder_id.
+  // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
   base::WeakPtrFactory<BoxCreateUpstreamFolderApiCallFlow> weak_factory_{this};
 };
@@ -190,7 +190,7 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
   const std::string multipart_boundary_;
   std::string file_content_;
 
-  // Callback from the controller to report success.
+  // Callback from the uploader to report success.
   TaskCallback callback_;
   base::WeakPtrFactory<BoxWholeFileUploadApiCallFlow> weak_factory_{this};
 };

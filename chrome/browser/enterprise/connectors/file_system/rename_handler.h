@@ -10,10 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/file_system/download_controller.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
 namespace content {
@@ -42,14 +43,14 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
  protected:
   // These methods are declared protected to override in tests so that calls to
   // other components can be isolated.
-  virtual void TryControllerTask(content::BrowserContext* context,
-                                 const std::string& access_token);
+  virtual void TryUploaderTask(content::BrowserContext* context,
+                               const std::string& access_token);
   virtual void PromptUserSignInForAuthorization(content::WebContents* contents);
   virtual void FetchAccessToken(content::BrowserContext* context,
                                 const std::string& refresh_token);
 
   // These methods are declared protected so that they can be used in tests.
-  FileSystemDownloadController* GetControllerForTesting();
+  BoxUploader* GetUploaderForTesting();
   // Callback for PromptUserSignInForAuthorization().
   void OnAuthorization(const GoogleServiceAuthError& status,
                        const std::string& access_token,
@@ -82,9 +83,9 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   // Called when failure status is returned via callbacks and is
   // GoogleServiceAuthError::State::REQUEST_CANCELED.
   void OnSignInCancellation();
-  // Callback for controller_ upon API requests returning authentication error.
+  // Callback for uploader_ upon API requests returning authentication error.
   void OnApiAuthenticationError();
-  // Callback for controller_ as well as upon failure.
+  // Callback for uploader_ as well as upon failure.
   void NotifyResultToDownloadThread(bool success);
 
   PrefService* GetPrefs();
@@ -98,8 +99,8 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   Callback download_callback_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
-  // Main controller that manages the entire API call flow of file upload.
-  FileSystemDownloadController controller_;
+  // Main uploader that manages the entire API call flow of file upload.
+  BoxUploader uploader_;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
 };
 

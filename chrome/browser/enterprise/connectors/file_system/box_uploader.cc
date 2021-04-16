@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/file_system/download_controller.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 
@@ -11,15 +11,14 @@
 #include "net/http/http_status_code.h"
 
 namespace enterprise_connectors {
-FileSystemDownloadController::FileSystemDownloadController(
-    download::DownloadItem* download_item)
+BoxUploader::BoxUploader(download::DownloadItem* download_item)
     : local_file_path_(download_item->GetFullPath()),
       target_file_name_(download_item->GetTargetFilePath().BaseName()),
       file_size_(download_item->GetTotalBytes()) {}
 
-FileSystemDownloadController::~FileSystemDownloadController() = default;
+BoxUploader::~BoxUploader() = default;
 
-void FileSystemDownloadController::Init(
+void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authentication_retry_callback,
     base::OnceCallback<void(bool)> download_callback,
     PrefService* prefs) {
@@ -29,13 +28,13 @@ void FileSystemDownloadController::Init(
   prefs_ = prefs;
   folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
   if (!folder_id_.empty()) {
-    current_api_call_ = CreatePreflightCheckApiCall();
+    current_api_call_ = MakePreflightCheckApiCall();
     return;
   }
-  current_api_call_ = CreateFindUpstreamFolderApiCall();
+  current_api_call_ = MakeFindUpstreamFolderApiCall();
 }
 
-void FileSystemDownloadController::TryTask(
+void BoxUploader::TryTask(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) {
   url_loader_factory_ = std::move(url_loader_factory);
@@ -43,7 +42,7 @@ void FileSystemDownloadController::TryTask(
   TryCurrentApiCall();
 }
 
-void FileSystemDownloadController::TryCurrentApiCall() {
+void BoxUploader::TryCurrentApiCall() {
   DCHECK(authentication_retry_callback_);
   DCHECK(download_callback_);
   if (!current_api_call_) {
@@ -57,20 +56,19 @@ void FileSystemDownloadController::TryCurrentApiCall() {
   }
 }
 
-const std::string& FileSystemDownloadController::GetFolderIdForTesting() const {
+const std::string& BoxUploader::GetFolderIdForTesting() const {
   return folder_id_;
 }
 
-void FileSystemDownloadController::NotifyAuthenFailureForTesting() {
+void BoxUploader::NotifyAuthenFailureForTesting() {
   authentication_retry_callback_.Run();
 }
 
-void FileSystemDownloadController::NotifyResultForTesting(bool success) {
+void BoxUploader::NotifyResultForTesting(bool success) {
   std::move(download_callback_).Run(success);
 }
 
-bool FileSystemDownloadController::EnsureSuccessResponse(bool success,
-                                                         int response_code) {
+bool BoxUploader::EnsureSuccessResponse(bool success, int response_code) {
   if (!success) {
     if (response_code == net::HTTP_UNAUTHORIZED) {
       // Authentication failure, so we need to redo authenticaction.
@@ -84,12 +82,11 @@ bool FileSystemDownloadController::EnsureSuccessResponse(bool success,
   return true;
 }
 
-void FileSystemDownloadController::OnPreflightCheckResponse(bool success,
-                                                            int response_code) {
+void BoxUploader::OnPreflightCheckResponse(bool success, int response_code) {
   if (success) {
     // Create an upload session with the same folder_id and name and continue
     CHECK_EQ(response_code, net::HTTP_OK);
-    current_api_call_ = CreateUploadApiCall();
+    current_api_call_ = MakeFileUploadApiCall();
     TryCurrentApiCall();
     return;
   }
@@ -100,7 +97,7 @@ void FileSystemDownloadController::OnPreflightCheckResponse(bool success,
       break;
     case net::HTTP_UNAUTHORIZED:
       // Authentication failure, we need to reauth and redo the preflight check.
-      current_api_call_ = CreatePreflightCheckApiCall();
+      current_api_call_ = MakePreflightCheckApiCall();
       authentication_retry_callback_.Run();
       break;
     case net::HTTP_NOT_FOUND:
@@ -108,7 +105,7 @@ void FileSystemDownloadController::OnPreflightCheckResponse(bool success,
       // from the top
       prefs_->SetString(kFileSystemUploadFolderIdPref, std::string());
       folder_id_ = std::string();
-      current_api_call_ = CreateFindUpstreamFolderApiCall();
+      current_api_call_ = MakeFindUpstreamFolderApiCall();
       TryCurrentApiCall();
       break;
     default:
@@ -117,42 +114,31 @@ void FileSystemDownloadController::OnPreflightCheckResponse(bool success,
   }
 }
 
-void FileSystemDownloadController::OnFindUpstreamFolderResponse(
-    bool success,
-    int response_code,
-    const std::string& folder_id) {
+void BoxUploader::OnFindUpstreamFolderResponse(bool success,
+                                               int response_code,
+                                               const std::string& folder_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ =
-        std::make_unique<BoxFindUpstreamFolderApiCallFlow>(base::BindOnce(
-            &FileSystemDownloadController::OnFindUpstreamFolderResponse,
-            weak_factory_.GetWeakPtr()));
+    current_api_call_ = MakeFindUpstreamFolderApiCall();
     return;
   }
 
   if (folder_id.empty()) {
     // Advance to create a new default download folder.
-    current_api_call_ =
-        std::make_unique<BoxCreateUpstreamFolderApiCallFlow>(base::BindOnce(
-            &FileSystemDownloadController::OnCreateUpstreamFolderResponse,
-            weak_factory_.GetWeakPtr()));
+    current_api_call_ = MakeCreateUpstreamFolderApiCall();
   } else {
     folder_id_ = folder_id;
     prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
     // Advance to start an upload session.
-    current_api_call_ = CreatePreflightCheckApiCall();
+    current_api_call_ = MakePreflightCheckApiCall();
   }
   TryCurrentApiCall();
 }
 
-void FileSystemDownloadController::OnCreateUpstreamFolderResponse(
-    bool success,
-    int response_code,
-    const std::string& folder_id) {
+void BoxUploader::OnCreateUpstreamFolderResponse(bool success,
+                                                 int response_code,
+                                                 const std::string& folder_id) {
   if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ =
-        std::make_unique<BoxCreateUpstreamFolderApiCallFlow>(base::BindOnce(
-            &FileSystemDownloadController::OnCreateUpstreamFolderResponse,
-            weak_factory_.GetWeakPtr()));
+    current_api_call_ = MakeCreateUpstreamFolderApiCall();
     return;
   }
 
@@ -160,44 +146,46 @@ void FileSystemDownloadController::OnCreateUpstreamFolderResponse(
   folder_id_ = folder_id;
   prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
   // Advance to start an upload session.
-  current_api_call_ = CreatePreflightCheckApiCall();
+  current_api_call_ = MakePreflightCheckApiCall();
   TryCurrentApiCall();
 }
 
-std::unique_ptr<OAuth2ApiCallFlow>
-FileSystemDownloadController::CreatePreflightCheckApiCall() {
+std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakePreflightCheckApiCall() {
   return std::make_unique<BoxPreflightCheckApiCallFlow>(
-      base::BindOnce(&FileSystemDownloadController::OnPreflightCheckResponse,
+      base::BindOnce(&BoxUploader::OnPreflightCheckResponse,
                      weak_factory_.GetWeakPtr()),
       target_file_name_, folder_id_);
 }
 
-std::unique_ptr<OAuth2ApiCallFlow>
-FileSystemDownloadController::CreateUploadApiCall() {
+std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakeFileUploadApiCall() {
   if (file_size_ > BoxApiCallFlow::kChunkFileUploadMinSize) {
     return nullptr;
-    // TODO(https://crbug.com/1157636) Start an upload session to the chunked
+    // TODO(https://crbug.com/1192671) Start an upload session to the chunked
     // file upload endpoint instead.
   } else {
     return std::make_unique<BoxWholeFileUploadApiCallFlow>(
-        base::BindOnce(&FileSystemDownloadController::OnWholeFileUploadResponse,
+        base::BindOnce(&BoxUploader::OnWholeFileUploadResponse,
                        weak_factory_.GetWeakPtr()),
         folder_id_, target_file_name_, local_file_path_);
   }
 }
 
 std::unique_ptr<OAuth2ApiCallFlow>
-FileSystemDownloadController::CreateFindUpstreamFolderApiCall() {
+BoxUploader::MakeFindUpstreamFolderApiCall() {
   return std::make_unique<BoxFindUpstreamFolderApiCallFlow>(base::BindOnce(
-      &FileSystemDownloadController::OnFindUpstreamFolderResponse,
-      weak_factory_.GetWeakPtr()));
+      &BoxUploader::OnFindUpstreamFolderResponse, weak_factory_.GetWeakPtr()));
 }
 
-void FileSystemDownloadController::OnWholeFileUploadResponse(
-    bool success,
-    int response_code) {
+std::unique_ptr<OAuth2ApiCallFlow>
+BoxUploader::MakeCreateUpstreamFolderApiCall() {
+  return std::make_unique<BoxCreateUpstreamFolderApiCallFlow>(
+      base::BindOnce(&BoxUploader::OnCreateUpstreamFolderResponse,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BoxUploader::OnWholeFileUploadResponse(bool success, int response_code) {
   if (!EnsureSuccessResponse(success, response_code)) {
-    current_api_call_ = CreatePreflightCheckApiCall();
+    current_api_call_ = MakePreflightCheckApiCall();
     return;
   }
 

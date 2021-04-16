@@ -1,9 +1,9 @@
+
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_DOWNLOAD_CONTROLLER_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_DOWNLOAD_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 
 #include "base/files/file_path.h"
 #include "base/values.h"
@@ -14,17 +14,17 @@
 namespace enterprise_connectors {
 
 // Task Manager for downloaded items used by FileSystemRenamdHandler that
-// connects between the Chrome client and the File System Service Provider in
-// the cloud. Once given a download item and authentication, internally it
-// manages the entire API call flow required to find upstream destination,
-// upload the file, and delete the local temporary file.
-class FileSystemDownloadController {
+// connects between the Chrome client and Box. Once given a download item and
+// authentication, internally it manages the entire API call flow required to
+// find upstream destination, upload the file, and delete the local temporary
+// file.
+class BoxUploader {
  public:
   // Constructor with download::DownloadItem* to access download_item fields but
   // does not store the pointer internally and the ownership of download_item
   // remains with the caller.
-  explicit FileSystemDownloadController(download::DownloadItem* download_item);
-  virtual ~FileSystemDownloadController();
+  explicit BoxUploader(download::DownloadItem* download_item);
+  virtual ~BoxUploader();
 
   // Initialize with callbacks from FileSystemRenameHandler, set
   // current_api_call_ to be the first step of the whole API call workflow. Must
@@ -32,7 +32,6 @@ class FileSystemDownloadController {
   void Init(base::RepeatingCallback<void(void)> authen_retry_callback,
             base::OnceCallback<void(bool)> download_callback,
             PrefService* prefs);
-
   // Kick off the workflow from the step stored in current_api_call_. Will
   // re-attempt the last step from where it left off if it called callback with
   // an API call failure earlier.
@@ -40,6 +39,7 @@ class FileSystemDownloadController {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token);
 
+  // Helper methods for unit tests.
   const std::string& GetFolderIdForTesting() const;
   void NotifyAuthenFailureForTesting();
   void NotifyResultForTesting(bool success);
@@ -47,45 +47,51 @@ class FileSystemDownloadController {
  private:
   void TryCurrentApiCall();
   bool EnsureSuccessResponse(bool success, int response_code);
+
+  // Box API call steps:
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFindUpstreamFolderApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakeCreateUpstreamFolderApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakePreflightCheckApiCall();
+  // To be overridden to test API calls flow and file delete separately.
+  virtual std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall();
+
+  // Callbacks from Box*ApiCallFlows:
   void OnFindUpstreamFolderResponse(bool success,
                                     int response_code,
                                     const std::string& folder_id);
   void OnCreateUpstreamFolderResponse(bool success,
                                       int response_code,
                                       const std::string& folder_id);
-  std::unique_ptr<OAuth2ApiCallFlow> CreatePreflightCheckApiCall();
-  std::unique_ptr<OAuth2ApiCallFlow> CreateUploadApiCall();
-  std::unique_ptr<OAuth2ApiCallFlow> CreateFindUpstreamFolderApiCall();
-
-  // Callbacks from BoxFlowApis
   void OnPreflightCheckResponse(bool success, int response_code);
   void OnWholeFileUploadResponse(bool success, int response_code);
 
+  // The followings memebers are not neccessarily specific to Box:
+  const base::FilePath local_file_path_;
+  const base::FilePath target_file_name_;
   // Callback when API call gives Authenetication Error.
   base::RepeatingCallback<void(void)> authentication_retry_callback_;
   // Callback when the entire flow is completed to notify the download thread.
   base::OnceCallback<void(bool)> download_callback_;
-
+  // Used for OAuth2ApiCallFlow::Start():
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string access_token_;
-
   // Ptr that stores the current OAuth2ApiCallFlow step. It is updated to point
   // to another mini OAuth2ApiCallFlow class whenever the workflow needs to
   // advance to the next step; may also gets re-instantiated when there's an API
   // call failure such that, when the external caller calls TryTask() again, the
   // current step is re-attempted.
   std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
-  // Folder id used to specify the destination folder to the Service Provider in
-  // the cloud.
+  // Folder id used to specify the destination folder for the Service Provider.
   std::string folder_id_;
-  const base::FilePath local_file_path_;
-  const base::FilePath target_file_name_;
-  const size_t file_size_;
+  // PrefService used to store folder_id.
   PrefService* prefs_;
 
-  base::WeakPtrFactory<FileSystemDownloadController> weak_factory_{this};
+  // Used to determine whether to go through whole or chunked file upload.
+  size_t file_size_;
+
+  base::WeakPtrFactory<BoxUploader> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_DOWNLOAD_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_

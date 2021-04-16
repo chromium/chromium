@@ -154,21 +154,21 @@ class FileSystemRenameHandlerForTest : public FileSystemRenameHandler {
   }
 
   MOCK_METHOD(void,
-              TryControllerTask,
+              TryUploaderTask,
               (content::BrowserContext * context,
                const std::string& access_token),
               (override));
 
   void ReturnFlowSuccees() {
-    GetControllerForTesting()->NotifyResultForTesting(true);
+    GetUploaderForTesting()->NotifyResultForTesting(true);
   }
 
   void ReturnFlowFailure() {
-    GetControllerForTesting()->NotifyResultForTesting(false);
+    GetUploaderForTesting()->NotifyResultForTesting(false);
   }
 
   void ReturnFlowOAuth2Error() {
-    GetControllerForTesting()->NotifyAuthenFailureForTesting();
+    GetUploaderForTesting()->NotifyAuthenFailureForTesting();
   }
 };
 
@@ -283,14 +283,14 @@ class FileSystemRenameHandlerTest : public testing::Test {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Case 1a->2a: Both tokens will be set; callback returned with success.
-TEST_F(FileSystemRenameHandlerTest, SignInSuccessThenControllerSucess) {
+TEST_F(FileSystemRenameHandlerTest, SignInSuccessThenUploaderSucess) {
   ::testing::InSequence seq;
   // 1a: PromptUserSignInForAuthorization() succeeds.
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnSignInSuccess));
-  // ->2a: TryControllerTask() should be called after and succeed.
-  EXPECT_CALL(*handler(), TryControllerTask(_, _))
+  // ->2a: TryUploaderTask() should be called after and succeed.
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
   // These OAuth2 branches should not be called.
@@ -316,7 +316,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInCancellationSoAbort) {
                  &FileSystemRenameHandlerForTest::ReturnSignInCancellation));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
-  EXPECT_CALL(*handler(), TryControllerTask(_, _)).Times(0);
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -329,7 +329,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInCancellationSoAbort) {
 }
 
 // Case 1c->1a: Retry sign in, but terminate there without going through the
-// controller since 1a->2 is already covered in another test case.
+// uploader since 1a->2 is already covered in another test case.
 TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
   ::testing::InSequence seq;
   // 1c->1a: PromptUserSignInForAuthorization() fails with other reasons than
@@ -351,7 +351,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
           }));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
-  EXPECT_CALL(*handler(), TryControllerTask(_, _)).Times(0);
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -369,7 +369,7 @@ TEST_F(FileSystemRenameHandlerTest, SignInFailureSoRetry) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Case 3a->2a: Fetch access token with refresh token succeeds, so should
-// TryControllerTask();
+// TryUploaderTask();
 TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenSuccess) {
   ::testing::InSequence seq;
   // 3a: Set a refresh token before starting, so should fetch access token.
@@ -378,7 +378,7 @@ TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenSuccess) {
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFetchSuccess));
   // ->2a.
-  EXPECT_CALL(*handler(), TryControllerTask(_, _))
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
   // These OAuth2 branches should not be called.
@@ -409,7 +409,7 @@ TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenFailureSoPromptForSignIn) {
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
   // These OAuth2 branches should not be called.
-  EXPECT_CALL(*handler(), TryControllerTask(_, _)).Times(0);
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _)).Times(0);
 
   int download_callback;
   download::DownloadInterruptReason download_interrupt_reason;
@@ -425,14 +425,14 @@ TEST_F(FileSystemRenameHandlerTest, FetchAccessTokenFailureSoPromptForSignIn) {
 // Test cases for (2): Start with both tokens.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Case 2a(failure): TryControllerTask() with existing access token and fails,
+// Case 2a(failure): TryUploaderTask() with existing access token and fails,
 // but both tokens stay.
-TEST_F(FileSystemRenameHandlerTest, ControllerFailure) {
+TEST_F(FileSystemRenameHandlerTest, UploaderFailure) {
   ::testing::InSequence seq;
-  // 2: Set an access token before starting, so should TryControllerTask().
+  // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2a:
-  EXPECT_CALL(*handler(), TryControllerTask(_, _))
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowFailure));
   // These OAuth2 branches should not be called.
@@ -446,18 +446,18 @@ TEST_F(FileSystemRenameHandlerTest, ControllerFailure) {
   ASSERT_EQ(download_callback, 1);
   ASSERT_EQ(download_interrupt_reason,
             download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
-  // Verify that controller failure did not affect stored credentials.
+  // Verify that uploader failure did not affect stored credentials.
   VerifyBothTokensSetByFetcher();
 }
 
-// Case 2a(success): TryControllerTask() with existing access token and
+// Case 2a(success): TryUploaderTask() with existing access token and
 // succeeds.
-TEST_F(FileSystemRenameHandlerTest, StartWithAccessTokenThenControllerSuccess) {
+TEST_F(FileSystemRenameHandlerTest, StartWithAccessTokenThenUploaderSuccess) {
   ::testing::InSequence seq;
-  // 2: Set an access token before starting, so should TryControllerTask().
+  // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2a:
-  EXPECT_CALL(*handler(), TryControllerTask(_, _))
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowSuccees));
   // These OAuth2 branches should not be called.
@@ -474,15 +474,15 @@ TEST_F(FileSystemRenameHandlerTest, StartWithAccessTokenThenControllerSuccess) {
   VerifyBothTokensSetByFetcher();
 }
 
-// Case 2b->3: TryControllerTask() with existing access token but fails with
+// Case 2b->3: TryUploaderTask() with existing access token but fails with
 // authentication error so FetchAccessToken().
 TEST_F(FileSystemRenameHandlerTest,
-       StartWithAccessTokenButControllerAuthenticationError) {
+       StartWithAccessTokenButUploaderAuthenticationError) {
   ::testing::InSequence seq;
-  // 2: Set an access token before starting, so should TryControllerTask().
+  // 2: Set an access token before starting, so should TryUploaderTask().
   SetFileSystemOAuth2Tokens(prefs(), "box", ATokenByFetcher, RTokenForFetcher);
   // 2b:
-  EXPECT_CALL(*handler(), TryControllerTask(_, _))
+  EXPECT_CALL(*handler(), TryUploaderTask(_, _))
       .WillOnce(Invoke(handler(),
                        &FileSystemRenameHandlerForTest::ReturnFlowOAuth2Error));
   // 3: Authentication error should lead to clearing access token stored, and
