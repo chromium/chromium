@@ -73,10 +73,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeEntriesStatusWithLink,
   ItemTypeActivityIndicator,
 };
-// Name of the asset to use when history is empty.
-// TODO(crbug.com/1101842): When changing this const with the new asset, delete
-// the old asset.
-NSString* const kEmptyStateImage = @"legacy_empty_history";
 // Section identifier for the header (sync information) section.
 const NSInteger kEntriesStatusSectionIdentifier = kSectionIdentifierEnumZero;
 // Maximum number of entries to retrieve in a single query to history service.
@@ -1093,18 +1089,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Configure the navigationItem contents for the current state.
 - (void)updateNavigationBar {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    if ([self isEmptyState]) {
-      self.navigationItem.searchController = nil;
-      self.navigationItem.largeTitleDisplayMode =
-          UINavigationItemLargeTitleDisplayModeNever;
-    } else {
-      self.navigationItem.searchController = self.searchController;
-      self.navigationItem.largeTitleDisplayMode =
-          UINavigationItemLargeTitleDisplayModeAutomatic;
-    }
+  if ([self isEmptyState]) {
+    self.navigationItem.searchController = nil;
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
   } else {
     self.navigationItem.searchController = self.searchController;
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeAutomatic;
   }
 }
 
@@ -1245,8 +1237,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Returns the toolbar buttons for the current state.
 - (NSArray<UIBarButtonItem*>*)toolbarButtons {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      [self isEmptyState]) {
+  if ([self isEmptyState]) {
     return @[
       [self createSpacerButton], self.clearBrowsingDataButton,
       [self createSpacerButton]
@@ -1262,20 +1253,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Adds a view as background of the TableView.
 - (void)addEmptyTableViewBackground {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    [self addEmptyTableViewWithImage:[UIImage imageNamed:@"history_empty"]
-                               title:l10n_util::GetNSString(
-                                         IDS_IOS_HISTORY_EMPTY_TITLE)
-                            subtitle:l10n_util::GetNSString(
-                                         IDS_IOS_HISTORY_EMPTY_MESSAGE)];
-    [self updateNavigationBar];
-  } else {
-    UIImage* emptyImage = [[UIImage imageNamed:kEmptyStateImage]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self addEmptyTableViewWithMessage:l10n_util::GetNSString(
-                                           IDS_HISTORY_NO_RESULTS)
-                                 image:emptyImage];
-  }
+  [self addEmptyTableViewWithImage:[UIImage imageNamed:@"history_empty"]
+                             title:l10n_util::GetNSString(
+                                       IDS_IOS_HISTORY_EMPTY_TITLE)
+                          subtitle:l10n_util::GetNSString(
+                                       IDS_IOS_HISTORY_EMPTY_MESSAGE)];
+  [self updateNavigationBar];
 }
 
 // Clears the background of the TableView.

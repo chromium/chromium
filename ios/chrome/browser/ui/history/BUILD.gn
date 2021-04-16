@@ -83,7 +83,6 @@ source_set("history_ui") {
     ":constants",
     "public",
     "resources:history_empty",
-    "resources:legacy_empty_history",
     "//base",
     "//base:i18n",
     "//components/browsing_data/core",
