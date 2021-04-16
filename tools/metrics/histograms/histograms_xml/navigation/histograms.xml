@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="FrameTypes">
+  <variant name="MainFrame"/>
+  <variant name="Subframe"/>
+</variants>
+
 <variants name="NavigationThrottleEvents">
   <variant name="WillFailRequest"/>
   <variant name="WillProcessResponse"/>
@@ -1030,6 +1035,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Warning: this histogram was expired after M85 and brought back 2021-04-13;
     data may be missing.
   </summary>
+</histogram>
+
+<histogram name="Navigation.RendererDidNavigateTime.{FrameType}" units="ms"
+    expires_after="2021-10-15">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time it takes to call
+    NavigationControllerImpl::RendererDidNavigate. Recorded for each navigation
+    that is not a same document navigation.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
 <histogram name="Navigation.RequestBeginMainFrameNotExpectedCrash"
