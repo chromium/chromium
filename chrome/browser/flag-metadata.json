@@ -1333,7 +1333,7 @@
   {
     "name": "enable-assistant-dsp",
     "owners": [ "croissant-eng" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 95
   },
   {
     "name": "enable-assistant-launcher-integration",
