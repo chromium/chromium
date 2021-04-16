@@ -251,6 +251,7 @@ source_set("web_internal") {
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
     "//ios/web/common",
