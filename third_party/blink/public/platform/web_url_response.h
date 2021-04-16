@@ -245,19 +245,20 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT bool WasFetchedViaSPDY() const;
   BLINK_PLATFORM_EXPORT void SetWasFetchedViaSPDY(bool);
 
-  // Flag whether this request was loaded via a ServiceWorker. See
-  // network::ResourceResponseInfo::was_fetched_via_service_worker for details.
+  // Flag whether this request was loaded via a ServiceWorker.
+  // See network.mojom.URLResponseHead.was_fetched_via_service_worker.
   BLINK_PLATFORM_EXPORT bool WasFetchedViaServiceWorker() const;
   BLINK_PLATFORM_EXPORT void SetWasFetchedViaServiceWorker(bool);
 
-  // Set when this request was loaded via a ServiceWorker. See
-  // network::ResourceResponseInfo::service_worker_response_source for details.
+  // Set when this request was loaded via a ServiceWorker.
+  // See network.mojom.URLResponseHead.service_worker_response_source.
   BLINK_PLATFORM_EXPORT network::mojom::FetchResponseSource
   GetServiceWorkerResponseSource() const;
   BLINK_PLATFORM_EXPORT void SetServiceWorkerResponseSource(
       network::mojom::FetchResponseSource);
 
-  // See network::ResourceResponseInfo::was_fallback_required_by_service_worker.
+  // Obsolete after OOB-CORS.
+  // TODO(falken): Remove this.
   BLINK_PLATFORM_EXPORT void SetWasFallbackRequiredByServiceWorker(bool);
 
   // https://fetch.spec.whatwg.org/#concept-response-type
@@ -271,8 +272,8 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT int64_t GetPadding() const;
 
   // The URL list of the Response object the ServiceWorker passed to
-  // respondWith(). See
-  // network::ResourceResponseInfo::url_list_via_service_worker for details.
+  // respondWith().
+  // See network.mojom.URLResponseHead.url_list_via_service_worker.
   BLINK_PLATFORM_EXPORT void SetUrlListViaServiceWorker(
       const WebVector<WebURL>&);
   // Returns true if the URL list is not empty.
@@ -290,7 +291,7 @@ class WebURLResponse {
       const WebVector<WebString>&);
 
   // Whether service worker navigation preload occurred.
-  // See network::ResourceResponseInfo::did_navigation_preload for details.
+  // See network.mojom.URLResponseHead.did_navigation_preload.
   BLINK_PLATFORM_EXPORT void SetDidServiceWorkerNavigationPreload(bool);
 
   // Remote IP endpoint of the socket which fetched this resource.

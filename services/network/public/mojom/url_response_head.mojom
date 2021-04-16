@@ -99,10 +99,7 @@ struct URLResponseHead {
 
   // True if a service worker responded to the request. If the service worker
   // received a fetch event and did not call respondWith(), or was bypassed due
-  // to absence of a fetch event handler, this function typically returns false
-  // but returns true if "fallback to renderer" was required (however in this
-  // case the response is not an actual resource and the request will be
-  // reissued by the renderer).
+  // to absence of a fetch event handler, this is false.
   bool was_fetched_via_service_worker = false;
 
   // Source of a serviceworker response - CacheStorage, HttpCache, Network or
