@@ -108,6 +108,14 @@ public class PriceTrackingUtilities {
     }
 
     /**
+     * @return Whether the price drop notification is eligible to work.
+     */
+    public static boolean isPriceDropNotificationEligible() {
+        return isPriceTrackingEligible()
+                && TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.getValue();
+    }
+
+    /**
      * Forbid showing the PriceAlertsMessageCard any more.
      */
     public static void disablePriceAlertsMessageCard() {
@@ -120,7 +128,7 @@ public class PriceTrackingUtilities {
      *         PriceDropNotificationManager#canPostNotification()}.
      */
     public static boolean isPriceAlertsMessageCardEnabled() {
-        return isPriceTrackingEligible()
+        return isPriceDropNotificationEligible()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         PRICE_ALERTS_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled())
                 && (!(new PriceDropNotificationManager()).canPostNotification());

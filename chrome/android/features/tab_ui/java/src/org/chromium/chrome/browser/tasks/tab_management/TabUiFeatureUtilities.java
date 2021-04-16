@@ -56,6 +56,11 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, PRICE_TRACKING_PARAM, false);
 
+    private static final String PRICE_NOTIFICATION_PARAM = "enable_price_notification";
+    public static final BooleanCachedFieldTrialParameter ENABLE_PRICE_NOTIFICATION =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, PRICE_NOTIFICATION_PARAM, false);
+
     private static final String SEARCH_CHIP_ADAPTIVE_PARAM =
             "enable_search_term_chip_adaptive_icon";
     public static final BooleanCachedFieldTrialParameter ENABLE_SEARCH_CHIP_ADAPTIVE =
@@ -205,7 +210,7 @@ public class TabUiFeatureUtilities {
         // TODO(crbug.com/1152925): Now PriceTracking feature is broken if StartSurface is enabled,
         // we need to remove !StartSurfaceConfiguration.isStartSurfaceEnabled() when the bug is
         // fixed.
-        return ENABLE_PRICE_TRACKING.getValue()
+        return (ENABLE_PRICE_TRACKING.getValue() || ENABLE_PRICE_NOTIFICATION.getValue())
                 && !StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
 }

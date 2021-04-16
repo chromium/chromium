@@ -1759,6 +1759,9 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_SearchChip[] = {
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_PriceAlerts[] = {
     {"enable_price_tracking", "true"}};
 
+const FeatureEntry::FeatureParam kTabGridLayoutAndroid_PriceNotifications[] = {
+    {"enable_price_notification", "true"}};
+
 const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
     {"New Tab Variation", kTabGridLayoutAndroid_NewTabVariation,
      base::size(kTabGridLayoutAndroid_NewTabVariation), nullptr},
@@ -1770,6 +1773,8 @@ const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
      base::size(kTabGridLayoutAndroid_SearchChip), nullptr},
     {"Price alerts", kTabGridLayoutAndroid_PriceAlerts,
      base::size(kTabGridLayoutAndroid_PriceAlerts), nullptr},
+    {"Price notifications", kTabGridLayoutAndroid_PriceNotifications,
+     base::size(kTabGridLayoutAndroid_PriceNotifications), nullptr},
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {

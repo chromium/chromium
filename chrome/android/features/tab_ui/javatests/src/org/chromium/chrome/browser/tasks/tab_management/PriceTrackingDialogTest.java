@@ -29,6 +29,7 @@ import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.espresso.NoMatchingRootException;
@@ -69,12 +70,13 @@ import java.io.IOException;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+        "force-fieldtrials=Study/Group"})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceTrackingDialogTest {
     // clang-format on
+    private static final String BASE_PARAMS =
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
 
@@ -109,12 +111,13 @@ public class PriceTrackingDialogTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testShowAndHidePriceTrackingDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, false);
 
         // Press back should dismiss the dialog.
         pressBack();
@@ -123,7 +126,7 @@ public class PriceTrackingDialogTest {
         // Open the price tracking dialog.
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, false);
 
         // Click outside of the dialog area to close the Price tracking dialog.
         View dialogView = mModalDialogManager.getCurrentDialogForTest().get(
@@ -139,12 +142,13 @@ public class PriceTrackingDialogTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testTrackPricesSwitch() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, false);
 
         onView(withId(R.id.track_prices_switch)).check(matches(isChecked()));
         assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
@@ -158,13 +162,15 @@ public class PriceTrackingDialogTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
     public void testPriceAlertsButton() {
         Intents.init();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, true);
+        onView(withId(R.id.price_alerts_row_menu_id)).check(matches(isDisplayed()));
         onView(withId(R.id.price_alerts_arrow)).perform(click());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -178,12 +184,13 @@ public class PriceTrackingDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
     public void testRenderPriceTrackingDialog_Portrait() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, true);
 
         View priceTrackingDialogView = mModalDialogManager.getCurrentDialogForTest().get(
                 ModalDialogProperties.CUSTOM_VIEW);
@@ -193,20 +200,22 @@ public class PriceTrackingDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
     public void testRenderPriceTrackingDialog_Landscape() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         ActivityUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
-        verifyDialogShowing(cta);
+        verifyDialogShowing(cta, true);
 
         View priceTrackingDialogView = mModalDialogManager.getCurrentDialogForTest().get(
                 ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(priceTrackingDialogView, "price_tracking_dialog_landscape");
     }
 
-    private void verifyDialogShowing(ChromeTabbedActivity cta) {
+    private void verifyDialogShowing(
+            ChromeTabbedActivity cta, boolean isPriceAlertsRowMenuVisible) {
         // Verify price tracking dialog view.
         onView(withId(R.id.price_tracking_dialog))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
@@ -231,6 +240,16 @@ public class PriceTrackingDialogTest {
                             cta.getString(R.string.price_drop_alerts_description);
                     assertEquals(priceAlertsDescription,
                             ((TextView) v.findViewById(R.id.price_alerts_description)).getText());
+
+                    if (isPriceAlertsRowMenuVisible) {
+                        assertEquals(View.VISIBLE,
+                                ((ViewGroup) v.findViewById(R.id.price_alerts_row_menu_id))
+                                        .getVisibility());
+                    } else {
+                        assertEquals(View.GONE,
+                                ((ViewGroup) v.findViewById(R.id.price_alerts_row_menu_id))
+                                        .getVisibility());
+                    }
                 });
     }
 

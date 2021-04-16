@@ -72,12 +72,13 @@ import java.io.IOException;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+        "force-fieldtrials=Study/Group"})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceAlertsMessageCardTest {
     // clang-format on
+    private static final String BASE_PARAMS =
+            "force-fieldtrial-params=Study.Group:enable_price_notification/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private MockNotificationManagerProxy mMockNotificationManager;
@@ -118,8 +119,10 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardShowing() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
@@ -131,8 +134,10 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardNotShowing_AlreadyCanPostNotification() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
         mMockNotificationManager.setNotificationsEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mPriceDropNotificationManager.createNotificationChannel();
@@ -147,8 +152,10 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testMessageCardNotShowing_MessageDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         PriceTrackingUtilities.disablePriceAlertsMessageCard();
@@ -160,6 +167,21 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"})
+    public void testMessageCardNotShowing_ParameterDisabled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertFalse(PriceTrackingUtilities.isPriceDropNotificationEligible());
+        mMockNotificationManager.setNotificationsEnabled(false);
+        assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+
+        enterTabSwitcher(cta);
+        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testReviewMessage_AppNotificationsEnabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -182,6 +204,7 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testReviewMessage_AppNotificationsDisabled() {
         Intents.init();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -205,6 +228,7 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testDismissMessage() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
@@ -221,6 +245,7 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testSwipeMessage() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
@@ -242,6 +267,7 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testRemoveMessageWhenClosingLastTab() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
@@ -265,6 +291,7 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testDisableMessageAfterShowingTenTimes() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
@@ -285,6 +312,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testRenderMessageCard_Portrait_AppNotificationsEnabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -301,6 +329,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testRenderMessageCard_Portrait_AppNotificationsDisabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);
@@ -316,6 +345,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testRenderMessageCard_Landscape_AppNotificationsEnabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -333,6 +363,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testRenderMessageCard_Landscape_AppNotificationsDisabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);

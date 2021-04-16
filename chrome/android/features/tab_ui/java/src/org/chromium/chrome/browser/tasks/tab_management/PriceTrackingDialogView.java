@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 
@@ -20,6 +22,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 public class PriceTrackingDialogView extends LinearLayout {
     private SwitchCompat mTrackPricesSwitch;
     private ChromeImageButton mPriceAlertsArrow;
+    private ViewGroup mPriceAlertsRowMenu;
 
     public PriceTrackingDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,6 +33,7 @@ public class PriceTrackingDialogView extends LinearLayout {
         super.onFinishInflate();
         mTrackPricesSwitch = (SwitchCompat) findViewById(R.id.track_prices_switch);
         mPriceAlertsArrow = (ChromeImageButton) findViewById(R.id.price_alerts_arrow);
+        mPriceAlertsRowMenu = (ViewGroup) findViewById(R.id.price_alerts_row_menu_id);
     }
 
     /**
@@ -53,5 +57,14 @@ public class PriceTrackingDialogView extends LinearLayout {
      */
     void setupPriceAlertsArrowOnClickListener(OnClickListener onClickListener) {
         mPriceAlertsArrow.setOnClickListener(onClickListener);
+    }
+
+    /**
+     * Set visibility of the price alerts row menu.
+     */
+    void setupPriceAlertsRowMenuVisibility() {
+        mPriceAlertsRowMenu.setVisibility(PriceTrackingUtilities.isPriceDropNotificationEligible()
+                        ? View.VISIBLE
+                        : View.GONE);
     }
 }
