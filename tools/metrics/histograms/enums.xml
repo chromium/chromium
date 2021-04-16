@@ -132,6 +132,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="41" label="FLAG_REQUEST_FILTER_KEY_EVENTS"/>
   <int value="42" label="FLAG_REQUEST_TOUCH_EXPLORATION_MODE"/>
   <int value="43" label="FLAG_RETRIEVE_INTERACTIVE_WINDOWS"/>
+  <int value="44" label="SERVICE_TYPE_UNKNOWN"/>
+  <int value="45" label="SERVICE_TYPE_PASSWORD_MANAGER"/>
+  <int value="46" label="SERVICE_TYPE_ASSISTIVE_TECH"/>
 </enum>
 
 <enum name="AccessibilityATKAPIEnum">
