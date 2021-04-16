@@ -51,7 +51,7 @@ interface CanvasRenderingContext2D {
     readonly attribute HTMLCanvasElement canvas;
 
     // state
-    [NoAllocDirectCall] void save(); // push state on state stack
+    void save(); // push state on state stack
     [NoAllocDirectCall] void restore(); // pop state stack and restore state
     // Clear the canvas and reset the path
     [RuntimeEnabled=NewCanvas2DAPI] void reset();

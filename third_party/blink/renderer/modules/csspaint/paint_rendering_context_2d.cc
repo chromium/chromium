@@ -20,7 +20,7 @@ PaintRenderingContext2D::PaintRenderingContext2D(
   InitializePaintRecorder();
 
   clip_antialiasing_ = kAntiAliased;
-  ModifiableState().SetShouldAntialias(true);
+  GetState().SetShouldAntialias(true);
 
   GetPaintCanvas()->clear(context_settings->alpha() ? SK_ColorTRANSPARENT
                                                     : SK_ColorBLACK);

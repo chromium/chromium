@@ -66,54 +66,34 @@ BaseRenderingContext2D::BaseRenderingContext2D()
 
 BaseRenderingContext2D::~BaseRenderingContext2D() = default;
 
-CanvasRenderingContext2DState& BaseRenderingContext2D::ModifiableState() {
-  RealizeSaves();
-  return *state_stack_.back();
-}
-
-void BaseRenderingContext2D::RealizeSaves() {
-  ValidateStateStack();
-  if (GetState().HasUnrealizedSaves()) {
-    DCHECK_GE(state_stack_.size(), 1u);
-    // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
-    // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
-    // ensure canvas is synced prior to adjusting state_stack_.
-    cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-
-    // Reduce the current state's unrealized count by one now,
-    // to reflect the fact we are saving one state.
-    state_stack_.back()->Restore();
-    state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-        GetState(), CanvasRenderingContext2DState::kDontCopyClipList));
-    // Set the new state's unrealized count to 0, because it has no outstanding
-    // saves.
-    // We need to do this explicitly because the copy constructor and operator=
-    // used by the Vector operations copy the unrealized count from the previous
-    // state (in turn necessary to support correct resizing and unwinding of the
-    // stack).
-    state_stack_.back()->ResetUnrealizedSaveCount();
-    if (canvas)
-      canvas->save();
-    ValidateStateStack();
-  }
-}
-
 void BaseRenderingContext2D::save() {
   if (isContextLost())
     return;
-  state_stack_.back()->Save();
+
+  ValidateStateStack();
+
+  DCHECK_GE(state_stack_.size(), 1u);
+
+  // GetOrCreatePaintCanvas() can call RestoreMatrixClipStack which syncs
+  // canvas to state_stack_. Get the canvas before adjusting state_stack_ to
+  // ensure canvas is synced prior to adjusting state_stack_.
+  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+
+  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
+      GetState(), CanvasRenderingContext2DState::kDontCopyClipList));
+
+  if (canvas)
+    canvas->save();
+
   ValidateStateStack();
 }
 
 void BaseRenderingContext2D::restore() {
   if (isContextLost())
     return;
+
   ValidateStateStack();
-  if (GetState().HasUnrealizedSaves()) {
-    // We never realized the save, so just record that it was unnecessary.
-    state_stack_.back()->Restore();
-    return;
-  }
+
   DCHECK_GE(state_stack_.size(), 1u);
   if (state_stack_.size() <= 1)
     return;
@@ -247,7 +227,7 @@ void BaseRenderingContext2D::setStrokeStyle(
     if (!ParseColorOrCurrentColor(parsed_color, color_string))
       return;
     if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
-      ModifiableState().SetUnparsedStrokeColor(color_string);
+      GetState().SetUnparsedStrokeColor(color_string);
       return;
     }
     canvas_style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
@@ -265,9 +245,9 @@ void BaseRenderingContext2D::setStrokeStyle(
 
   DCHECK(canvas_style);
 
-  ModifiableState().SetStrokeStyle(canvas_style);
-  ModifiableState().SetUnparsedStrokeColor(color_string);
-  ModifiableState().ClearResolvedFilter();
+  GetState().SetStrokeStyle(canvas_style);
+  GetState().SetUnparsedStrokeColor(color_string);
+  GetState().ClearResolvedFilter();
 }
 
 void BaseRenderingContext2D::fillStyle(
@@ -292,7 +272,7 @@ void BaseRenderingContext2D::setFillStyle(
     if (!ParseColorOrCurrentColor(parsed_color, color_string))
       return;
     if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
-      ModifiableState().SetUnparsedFillColor(color_string);
+      GetState().SetUnparsedFillColor(color_string);
       return;
     }
     canvas_style = MakeGarbageCollected<CanvasStyle>(parsed_color.Rgb());
@@ -309,9 +289,9 @@ void BaseRenderingContext2D::setFillStyle(
   }
 
   DCHECK(canvas_style);
-  ModifiableState().SetFillStyle(canvas_style);
-  ModifiableState().SetUnparsedFillColor(color_string);
-  ModifiableState().ClearResolvedFilter();
+  GetState().SetFillStyle(canvas_style);
+  GetState().SetUnparsedFillColor(color_string);
+  GetState().ClearResolvedFilter();
 }
 
 double BaseRenderingContext2D::lineWidth() const {
@@ -323,7 +303,7 @@ void BaseRenderingContext2D::setLineWidth(double width) {
     return;
   if (GetState().LineWidth() == width)
     return;
-  ModifiableState().SetLineWidth(clampTo<float>(width));
+  GetState().SetLineWidth(clampTo<float>(width));
 }
 
 String BaseRenderingContext2D::lineCap() const {
@@ -336,7 +316,7 @@ void BaseRenderingContext2D::setLineCap(const String& s) {
     return;
   if (GetState().GetLineCap() == cap)
     return;
-  ModifiableState().SetLineCap(cap);
+  GetState().SetLineCap(cap);
 }
 
 String BaseRenderingContext2D::lineJoin() const {
@@ -349,7 +329,7 @@ void BaseRenderingContext2D::setLineJoin(const String& s) {
     return;
   if (GetState().GetLineJoin() == join)
     return;
-  ModifiableState().SetLineJoin(join);
+  GetState().SetLineJoin(join);
 }
 
 double BaseRenderingContext2D::miterLimit() const {
@@ -361,7 +341,7 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
     return;
   if (GetState().MiterLimit() == limit)
     return;
-  ModifiableState().SetMiterLimit(clampTo<float>(limit));
+  GetState().SetMiterLimit(clampTo<float>(limit));
 }
 
 double BaseRenderingContext2D::shadowOffsetX() const {
@@ -373,7 +353,7 @@ void BaseRenderingContext2D::setShadowOffsetX(double x) {
     return;
   if (GetState().ShadowOffset().Width() == x)
     return;
-  ModifiableState().SetShadowOffsetX(clampTo<float>(x));
+  GetState().SetShadowOffsetX(clampTo<float>(x));
 }
 
 double BaseRenderingContext2D::shadowOffsetY() const {
@@ -385,7 +365,7 @@ void BaseRenderingContext2D::setShadowOffsetY(double y) {
     return;
   if (GetState().ShadowOffset().Height() == y)
     return;
-  ModifiableState().SetShadowOffsetY(clampTo<float>(y));
+  GetState().SetShadowOffsetY(clampTo<float>(y));
 }
 
 double BaseRenderingContext2D::shadowBlur() const {
@@ -397,7 +377,7 @@ void BaseRenderingContext2D::setShadowBlur(double blur) {
     return;
   if (GetState().ShadowBlur() == blur)
     return;
-  ModifiableState().SetShadowBlur(clampTo<float>(blur));
+  GetState().SetShadowBlur(clampTo<float>(blur));
 }
 
 String BaseRenderingContext2D::shadowColor() const {
@@ -410,7 +390,7 @@ void BaseRenderingContext2D::setShadowColor(const String& color_string) {
     return;
   if (GetState().ShadowColor() == color)
     return;
-  ModifiableState().SetShadowColor(color.Rgb());
+  GetState().SetShadowColor(color.Rgb());
 }
 
 const Vector<double>& BaseRenderingContext2D::getLineDash() const {
@@ -425,7 +405,7 @@ static bool LineDashSequenceIsValid(const Vector<double>& dash) {
 void BaseRenderingContext2D::setLineDash(const Vector<double>& dash) {
   if (!LineDashSequenceIsValid(dash))
     return;
-  ModifiableState().SetLineDash(dash);
+  GetState().SetLineDash(dash);
 }
 
 double BaseRenderingContext2D::lineDashOffset() const {
@@ -435,7 +415,7 @@ double BaseRenderingContext2D::lineDashOffset() const {
 void BaseRenderingContext2D::setLineDashOffset(double offset) {
   if (!std::isfinite(offset) || GetState().LineDashOffset() == offset)
     return;
-  ModifiableState().SetLineDashOffset(clampTo<float>(offset));
+  GetState().SetLineDashOffset(clampTo<float>(offset));
 }
 
 double BaseRenderingContext2D::globalAlpha() const {
@@ -447,7 +427,7 @@ void BaseRenderingContext2D::setGlobalAlpha(double alpha) {
     return;
   if (GetState().GlobalAlpha() == alpha)
     return;
-  ModifiableState().SetGlobalAlpha(alpha);
+  GetState().SetGlobalAlpha(alpha);
 }
 
 String BaseRenderingContext2D::globalCompositeOperation() const {
@@ -465,7 +445,7 @@ void BaseRenderingContext2D::setGlobalCompositeOperation(
   SkBlendMode sk_blend_mode = WebCoreCompositeToSkiaComposite(op, blend_mode);
   if (GetState().GlobalComposite() == sk_blend_mode)
     return;
-  ModifiableState().SetGlobalComposite(sk_blend_mode);
+  GetState().SetGlobalComposite(sk_blend_mode);
 }
 
 void BaseRenderingContext2D::filter(StringOrCanvasFilter& filter) const {
@@ -493,12 +473,12 @@ void BaseRenderingContext2D::setFilter(
     if (!css_value || css_value->IsCSSWideKeyword())
       return;
 
-    ModifiableState().SetUnparsedCSSFilter(filter_string);
-    ModifiableState().SetCSSFilter(css_value);
+    GetState().SetUnparsedCSSFilter(filter_string);
+    GetState().SetCSSFilter(css_value);
     SnapshotStateForFilter();
   } else if (input.IsCanvasFilter() &&
              RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    ModifiableState().SetCanvasFilter(input.GetAsCanvasFilter());
+    GetState().SetCanvasFilter(input.GetAsCanvasFilter());
     SnapshotStateForFilter();
   }
 }
@@ -520,7 +500,7 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -544,7 +524,7 @@ void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -556,9 +536,6 @@ void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
 }
 
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
-  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
-    return;
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -571,7 +548,7 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
   c->rotate(clampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
@@ -580,9 +557,6 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
 
 // All angles are in radians
 void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
-  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
-    return;
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -600,7 +574,7 @@ void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -612,9 +586,6 @@ void BaseRenderingContext2D::rotateAxis(double axisX,
                                         double axisY,
                                         double axisZ,
                                         double angle_in_radians) {
-  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
-    return;
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -633,7 +604,7 @@ void BaseRenderingContext2D::rotateAxis(double axisX,
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -662,7 +633,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -693,7 +664,7 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
     return;
 
   // We need to call SetTransform() to set the IsTransformInvertible flag.
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -702,9 +673,6 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
 }
 
 void BaseRenderingContext2D::perspective(double length) {
-  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
-    return;
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -724,7 +692,7 @@ void BaseRenderingContext2D::perspective(double length) {
     return;
 
   // We need to call SetTransform() to set the IsTransformInvertible flag.
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -788,7 +756,7 @@ void BaseRenderingContext2D::transform(double m11,
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -826,7 +794,7 @@ void BaseRenderingContext2D::transform(double m11,
   if (GetState().GetTransform() == new_transform)
     return;
 
-  ModifiableState().SetTransform(new_transform);
+  GetState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -835,9 +803,6 @@ void BaseRenderingContext2D::transform(double m11,
 }
 
 void BaseRenderingContext2D::resetTransform() {
-  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
-    return;
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -850,7 +815,7 @@ void BaseRenderingContext2D::resetTransform() {
     return;
 
   // resetTransform() resolves the non-invertible CTM state.
-  ModifiableState().ResetTransform();
+  GetState().ResetTransform();
   // Set the SkCanvas' matrix to identity.
   c->setMatrix(SkM44());
 
@@ -1127,7 +1092,7 @@ void BaseRenderingContext2D::ClipInternal(const Path& path,
 
   SkPath sk_path = path.GetSkPath();
   sk_path.setFillType(ParseWinding(winding_rule_string));
-  ModifiableState().ClipPath(sk_path, clip_antialiasing_);
+  GetState().ClipPath(sk_path, clip_antialiasing_);
   c->clipPath(sk_path, SkClipOp::kIntersect,
               clip_antialiasing_ == kAntiAliased);
 }
@@ -2239,7 +2204,7 @@ void BaseRenderingContext2D::setImageSmoothingEnabled(bool enabled) {
   if (enabled == GetState().ImageSmoothingEnabled())
     return;
 
-  ModifiableState().SetImageSmoothingEnabled(enabled);
+  GetState().SetImageSmoothingEnabled(enabled);
 }
 
 String BaseRenderingContext2D::imageSmoothingQuality() const {
@@ -2250,7 +2215,7 @@ void BaseRenderingContext2D::setImageSmoothingQuality(const String& quality) {
   if (quality == GetState().ImageSmoothingQuality())
     return;
 
-  ModifiableState().SetImageSmoothingQuality(quality);
+  GetState().SetImageSmoothingQuality(quality);
 }
 
 void BaseRenderingContext2D::CheckOverdraw(
@@ -2346,7 +2311,7 @@ void BaseRenderingContext2D::setTextAlign(const String& s) {
     return;
   if (GetState().GetTextAlign() == align)
     return;
-  ModifiableState().SetTextAlign(align);
+  GetState().SetTextAlign(align);
 }
 
 String BaseRenderingContext2D::textBaseline() const {
@@ -2361,7 +2326,7 @@ void BaseRenderingContext2D::setTextBaseline(const String& s) {
     return;
   if (GetState().GetTextBaseline() == baseline)
     return;
-  ModifiableState().SetTextBaseline(baseline);
+  GetState().SetTextBaseline(baseline);
 }
 
 String BaseRenderingContext2D::fontKerning() const {

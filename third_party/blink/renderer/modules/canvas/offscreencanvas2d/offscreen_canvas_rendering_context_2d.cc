@@ -296,7 +296,7 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
 }
 
 void OffscreenCanvasRenderingContext2D::SnapshotStateForFilter() {
-  ModifiableState().SetFontForFilter(AccessFont());
+  GetState().SetFontForFilter(AccessFont());
 }
 
 void OffscreenCanvasRenderingContext2D::ValidateStateStackWithCanvas(
@@ -395,7 +395,7 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
 
   FontDescription* cached_font = font_cache.GetFont(new_font);
   if (cached_font) {
-    ModifiableState().SetFont(*cached_font, Host()->GetFontSelector());
+    GetState().SetFont(*cached_font, Host()->GetFontSelector());
   } else {
     auto* style =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
@@ -417,9 +417,9 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
         FontStyleResolver::ComputeFont(*style, Host()->GetFontSelector());
 
     font_cache.AddFont(new_font, desc);
-    ModifiableState().SetFont(desc, Host()->GetFontSelector());
+    GetState().SetFont(desc, Host()->GetFontSelector());
   }
-  ModifiableState().SetUnparsedFont(new_font);
+  GetState().SetUnparsedFont(new_font);
   if (bernoulli_distribution_(random_generator_)) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
     base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
@@ -455,8 +455,8 @@ void OffscreenCanvasRenderingContext2D::setTextLetterSpacing(
     setFont(font());
 
   float letter_spacing_float = clampTo<float>(letter_spacing);
-  ModifiableState().SetTextLetterSpacing(letter_spacing_float,
-                                         Host()->GetFontSelector());
+  GetState().SetTextLetterSpacing(letter_spacing_float,
+                                  Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setTextWordSpacing(
@@ -468,8 +468,7 @@ void OffscreenCanvasRenderingContext2D::setTextWordSpacing(
     setFont(font());
 
   float word_spacing_float = clampTo<float>(word_spacing);
-  ModifiableState().SetTextWordSpacing(word_spacing_float,
-                                       Host()->GetFontSelector());
+  GetState().SetTextWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setTextRendering(
@@ -494,8 +493,7 @@ void OffscreenCanvasRenderingContext2D::setTextRendering(
   if (GetState().GetTextRendering() == text_rendering_mode)
     return;
 
-  ModifiableState().SetTextRendering(text_rendering_mode,
-                                     Host()->GetFontSelector());
+  GetState().SetTextRendering(text_rendering_mode, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setDirection(
@@ -511,7 +509,7 @@ void OffscreenCanvasRenderingContext2D::setDirection(
     return;
 
   if (GetState().GetDirection() != direction)
-    ModifiableState().SetDirection(direction);
+    GetState().SetDirection(direction);
 }
 
 void OffscreenCanvasRenderingContext2D::setFontKerning(
@@ -532,7 +530,7 @@ void OffscreenCanvasRenderingContext2D::setFontKerning(
   if (GetState().GetFontKerning() == kerning)
     return;
 
-  ModifiableState().SetFontKerning(kerning, Host()->GetFontSelector());
+  GetState().SetFontKerning(kerning, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setFontStretch(
@@ -566,7 +564,7 @@ void OffscreenCanvasRenderingContext2D::setFontStretch(
   if (GetState().GetFontStretch() == stretch_vale)
     return;
 
-  ModifiableState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
+  GetState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
@@ -595,7 +593,7 @@ void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
   if (GetState().GetFontVariantCaps() == variant_caps)
     return;
 
-  ModifiableState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
+  GetState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::fillText(const String& text,

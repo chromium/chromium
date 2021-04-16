@@ -53,11 +53,6 @@ class CanvasRenderingContext2DState final
   // FontSelectorClient implementation
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
 
-  inline bool HasUnrealizedSaves() const { return unrealized_save_count_; }
-  void Save() { ++unrealized_save_count_; }
-  void Restore() { --unrealized_save_count_; }
-  void ResetUnrealizedSaveCount() { unrealized_save_count_ = 0; }
-
   void SetLineDash(const Vector<double>&);
   const Vector<double>& LineDash() const { return line_dash_; }
 
@@ -237,8 +232,6 @@ class CanvasRenderingContext2DState final
   sk_sp<SkDrawLooper>& ShadowAndForegroundDrawLooper() const;
   sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
-
-  unsigned unrealized_save_count_;
 
   String unparsed_stroke_color_;
   String unparsed_fill_color_;

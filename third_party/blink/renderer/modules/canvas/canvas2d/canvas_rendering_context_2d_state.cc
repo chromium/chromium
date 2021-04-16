@@ -38,8 +38,7 @@ static const char defaultFilter[] = "none";
 namespace blink {
 
 CanvasRenderingContext2DState::CanvasRenderingContext2DState()
-    : unrealized_save_count_(0),
-      stroke_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
+    : stroke_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
       fill_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
       shadow_blur_(0.0),
       shadow_color_(Color::kTransparent),
@@ -72,8 +71,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
 CanvasRenderingContext2DState::CanvasRenderingContext2DState(
     const CanvasRenderingContext2DState& other,
     ClipListCopyMode mode)
-    : unrealized_save_count_(other.unrealized_save_count_),
-      unparsed_stroke_color_(other.unparsed_stroke_color_),
+    : unparsed_stroke_color_(other.unparsed_stroke_color_),
       unparsed_fill_color_(other.unparsed_fill_color_),
       stroke_style_(other.stroke_style_),
       fill_style_(other.fill_style_),

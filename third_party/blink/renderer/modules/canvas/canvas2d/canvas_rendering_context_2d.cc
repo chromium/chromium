@@ -349,7 +349,7 @@ bool CanvasRenderingContext2D::ShouldAntialias() const {
 }
 
 void CanvasRenderingContext2D::SetShouldAntialias(bool do_aa) {
-  ModifiableState().SetShouldAntialias(do_aa);
+  GetState().SetShouldAntialias(do_aa);
 }
 
 void CanvasRenderingContext2D::scrollPathIntoView() {
@@ -455,7 +455,7 @@ void CanvasRenderingContext2D::SnapshotStateForFilter() {
   if (!canvas()->GetDocument().GetFrame())
     return;
 
-  ModifiableState().SetFontForFilter(AccessFont());
+  GetState().SetFontForFilter(AccessFont());
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
@@ -544,7 +544,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
     if (i != fonts_resolved_using_current_style_.end()) {
       auto add_result = font_lru_list_.PrependOrMoveToFirst(new_font);
       DCHECK(!add_result.is_new_entry);
-      ModifiableState().SetFont(i->value, Host()->GetFontSelector());
+      GetState().SetFont(i->value, Host()->GetFontSelector());
     } else {
       MutableCSSPropertyValueSet* parsed_style =
           canvas_font_cache->ParseFont(new_font);
@@ -577,7 +577,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
       DCHECK(add_result.is_new_entry);
       PruneLocalFontCache(canvas_font_cache->HardMaxFonts());  // hard limit
       should_prune_local_font_cache_ = true;  // apply soft limit
-      ModifiableState().SetFont(final_description, Host()->GetFontSelector());
+      GetState().SetFont(final_description, Host()->GetFontSelector());
     }
   } else {
     Font resolved_font;
@@ -590,13 +590,13 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
     FontDescription final_description(resolved_font.GetFontDescription());
     final_description.SetComputedSize(final_description.SpecifiedSize());
     final_description.SetAdjustedSize(final_description.SpecifiedSize());
-    ModifiableState().SetFont(final_description, Host()->GetFontSelector());
+    GetState().SetFont(final_description, Host()->GetFontSelector());
   }
 
   // The parse succeeded.
   String new_font_safe_copy(new_font);  // Create a string copy since newFont
                                         // can be deleted inside realizeSaves.
-  ModifiableState().SetUnparsedFont(new_font_safe_copy);
+  GetState().SetUnparsedFont(new_font_safe_copy);
   if (bernoulli_distribution_(random_generator_)) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
     base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
@@ -796,7 +796,7 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
   if (GetState().GetDirection() == direction)
     return;
 
-  ModifiableState().SetDirection(direction);
+  GetState().SetDirection(direction);
 }
 
 void CanvasRenderingContext2D::setTextLetterSpacing(
@@ -808,8 +808,8 @@ void CanvasRenderingContext2D::setTextLetterSpacing(
     setFont(font());
 
   float letter_spacing_float = clampTo<float>(letter_spacing);
-  ModifiableState().SetTextLetterSpacing(letter_spacing_float,
-                                         Host()->GetFontSelector());
+  GetState().SetTextLetterSpacing(letter_spacing_float,
+                                  Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
@@ -820,8 +820,7 @@ void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
     setFont(font());
 
   float word_spacing_float = clampTo<float>(word_spacing);
-  ModifiableState().SetTextWordSpacing(word_spacing_float,
-                                       Host()->GetFontSelector());
+  GetState().SetTextWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setTextRendering(
@@ -846,8 +845,7 @@ void CanvasRenderingContext2D::setTextRendering(
   if (GetState().GetTextRendering() == text_rendering_mode)
     return;
 
-  ModifiableState().SetTextRendering(text_rendering_mode,
-                                     Host()->GetFontSelector());
+  GetState().SetTextRendering(text_rendering_mode, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setFontKerning(
@@ -868,7 +866,7 @@ void CanvasRenderingContext2D::setFontKerning(
   if (GetState().GetFontKerning() == kerning)
     return;
 
-  ModifiableState().SetFontKerning(kerning, Host()->GetFontSelector());
+  GetState().SetFontKerning(kerning, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setFontStretch(const String& font_stretch) {
@@ -901,7 +899,7 @@ void CanvasRenderingContext2D::setFontStretch(const String& font_stretch) {
   if (GetState().GetFontStretch() == stretch_vale)
     return;
 
-  ModifiableState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
+  GetState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setFontVariantCaps(
@@ -930,7 +928,7 @@ void CanvasRenderingContext2D::setFontVariantCaps(
   if (GetState().GetFontVariantCaps() == variant_caps)
     return;
 
-  ModifiableState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
+  GetState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::fillText(const String& text,
