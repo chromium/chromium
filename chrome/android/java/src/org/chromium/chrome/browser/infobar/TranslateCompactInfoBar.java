@@ -20,16 +20,14 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.translate.TranslateFeatureList;
@@ -38,6 +36,7 @@ import org.chromium.components.translate.TranslateMenuHelper;
 import org.chromium.components.translate.TranslateOption;
 import org.chromium.components.translate.TranslateOptions;
 import org.chromium.components.translate.TranslateTabLayout;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -94,7 +93,7 @@ public class TranslateCompactInfoBar
     private ImageButton mMenuButton;
     private InfoBarCompactLayout mParent;
 
-    private final SnackbarManageable mSnackbarManageable;
+    private final WindowAndroid mWindowAndroid;
     private TranslateSnackbarController mSnackbarController;
 
     private boolean mMenuExpanded;
@@ -152,18 +151,18 @@ public class TranslateCompactInfoBar
             String[] allLanguages, String[] allLanguagesCodes, int[] allLanguagesHashCodes,
             String[] contentLanguagesCodes, int tabTextColor) {
         recordInfobarAction(InfobarEvent.INFOBAR_IMPRESSION);
-        SnackbarManageable snackbarManageable = (ChromeActivity) TabUtils.getActivity(tab);
 
-        return new TranslateCompactInfoBar(snackbarManageable, initialStep, sourceLanguageCode,
+        return new TranslateCompactInfoBar(tab.getWindowAndroid(), initialStep, sourceLanguageCode,
                 targetLanguageCode, alwaysTranslate, triggeredFromMenu, allLanguages,
                 allLanguagesCodes, allLanguagesHashCodes, contentLanguagesCodes, tabTextColor);
     }
 
-    TranslateCompactInfoBar(SnackbarManageable snackbarManageable, int initialStep,
-            String sourceLanguageCode, String targetLanguageCode, boolean alwaysTranslate,
-            boolean triggeredFromMenu, String[] allLanguages, String[] allLanguagesCodes,
-            int[] allLanguagesHashCodes, String[] contentLanguagesCodes, int tabTextColor) {
+    TranslateCompactInfoBar(WindowAndroid windowAndroid, int initialStep, String sourceLanguageCode,
+            String targetLanguageCode, boolean alwaysTranslate, boolean triggeredFromMenu,
+            String[] allLanguages, String[] allLanguagesCodes, int[] allLanguagesHashCodes,
+            String[] contentLanguagesCodes, int tabTextColor) {
         super(R.drawable.infobar_translate_compact, 0, null, null);
+        mWindowAndroid = windowAndroid;
 
         if (TranslateFeatureList.isEnabled(
                     TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)) {
@@ -172,7 +171,6 @@ public class TranslateCompactInfoBar
         } else {
             mPrefChangeRegistrar = null;
         }
-        mSnackbarManageable = snackbarManageable;
         mInitialStep = initialStep;
         mDefaultTextColor = tabTextColor;
         mOptions = TranslateOptions.create(sourceLanguageCode, targetLanguageCode, allLanguages,
@@ -619,7 +617,7 @@ public class TranslateCompactInfoBar
     }
 
     private SnackbarManager getSnackbarManager() {
-        return mSnackbarManageable != null ? mSnackbarManageable.getSnackbarManager() : null;
+        return SnackbarManagerProvider.from(mWindowAndroid);
     }
 
     private void handleTranslateOptionPostSnackbar(int actionId) {

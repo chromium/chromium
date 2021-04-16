@@ -525,7 +525,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
             BottomContainer bottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
 
-            // TODO(1099750): Move this to the RootUiCoordinator.
+            // TODO(crbug.com/1199776): Move this to the RootUiCoordinator.
             mSnackbarManager = new SnackbarManager(this, bottomContainer, getWindowAndroid());
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
 
