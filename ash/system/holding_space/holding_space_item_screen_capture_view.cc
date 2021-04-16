@@ -95,6 +95,10 @@ void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
 void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
 
+  // Image.
+  UpdateImage();
+
+  // Pin.
   pin()->SetBackground(holding_space_util::CreateCircleBackground(
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80)));
@@ -102,6 +106,7 @@ void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   if (!play_icon_)
     return;
 
+  // Play icon.
   play_icon_->SetBackground(holding_space_util::CreateCircleBackground(
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80)));
@@ -112,8 +117,9 @@ void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
 }
 
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
-  image_->SetImage(
-      item()->image().GetImageSkia(kHoldingSpaceScreenCaptureSize));
+  image_->SetImage(item()->image().GetImageSkia(
+      kHoldingSpaceScreenCaptureSize,
+      /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));
   SchedulePaint();
 }
 

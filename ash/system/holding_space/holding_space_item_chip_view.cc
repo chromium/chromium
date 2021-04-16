@@ -18,7 +18,6 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -84,12 +83,6 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
           kHoldingSpaceChipIconSize / 2,
           RoundedImageView::Alignment::kLeading));
   image_->SetID(kHoldingSpaceItemImageId);
-
-  // Shrink circular background by a single pixel to prevent painting outside of
-  // the image which may otherwise occur due to pixel rounding. Failure to do so
-  // could result in white paint artifacts.
-  image_->SetBackground(holding_space_util::CreateCircleBackground(
-      SK_ColorWHITE, gfx::InsetsF(0.5f)));
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
@@ -173,6 +166,7 @@ void HoldingSpaceItemChipView::OnSelectionUiChanged() {
 
 void HoldingSpaceItemChipView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
+  UpdateImage();
   UpdateLabel();
 }
 
@@ -202,7 +196,8 @@ void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
 
 void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(item()->image().GetImageSkia(
-      gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize)));
+      gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
+      /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));
   SchedulePaint();
 }
 
