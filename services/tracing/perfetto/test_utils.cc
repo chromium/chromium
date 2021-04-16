@@ -33,11 +33,6 @@ perfetto::TraceConfig GetDefaultTraceConfig(
   return trace_config;
 }
 
-RebindableTaskRunner* GetClientLibTaskRunner() {
-  static base::NoDestructor<RebindableTaskRunner> task_runner;
-  return task_runner.get();
-}
-
 }  // namespace
 
 // static
@@ -430,30 +425,13 @@ void MockProducer::WritePacketBigly(base::OnceClosure on_write_complete) {
                          std::move(on_write_complete));
 }
 
-RebindableTaskRunner::RebindableTaskRunner() = default;
-RebindableTaskRunner::~RebindableTaskRunner() = default;
-
-bool RebindableTaskRunner::PostDelayedTask(const base::Location& from_here,
-                                           base::OnceClosure task,
-                                           base::TimeDelta delay) {
-  return task_runner_->PostDelayedTask(from_here, std::move(task), delay);
-}
-
-bool RebindableTaskRunner::PostNonNestableDelayedTask(
-    const base::Location& from_here,
-    base::OnceClosure task,
-    base::TimeDelta delay) {
-  return task_runner_->PostNonNestableDelayedTask(from_here, std::move(task),
-                                                  delay);
-}
-
-bool RebindableTaskRunner::RunsTasksInCurrentSequence() const {
-  return task_runner_->RunsTasksInCurrentSequence();
-}
-
 TracingUnitTest::TracingUnitTest()
     : task_environment_(std::make_unique<base::test::TaskEnvironment>(
-          base::test::TaskEnvironment::MainThreadType::IO)) {}
+          base::test::TaskEnvironment::MainThreadType::IO)),
+      tracing_environment_(std::make_unique<base::test::TracingEnvironment>(
+          *task_environment_,
+          base::ThreadTaskRunnerHandle::Get(),
+          PerfettoTracedProcess::Get()->perfetto_platform_for_testing())) {}
 
 TracingUnitTest::~TracingUnitTest() {
   CHECK(setup_called_ && teardown_called_);
@@ -461,16 +439,6 @@ TracingUnitTest::~TracingUnitTest() {
 
 void TracingUnitTest::SetUp() {
   setup_called_ = true;
-
-  // Since Perfetto's platform backend can only be initialized once in a
-  // process, we give it a task runner that can outlive the per-test task
-  // environment.
-  auto* client_lib_task_runner = GetClientLibTaskRunner();
-  auto* perfetto_platform =
-      PerfettoTracedProcess::Get()->perfetto_platform_for_testing();
-  if (!perfetto_platform->did_start_task_runner())
-    perfetto_platform->StartTaskRunner(client_lib_task_runner);
-  client_lib_task_runner->set_task_runner(base::ThreadTaskRunnerHandle::Get());
 
   // Also tell PerfettoTracedProcess to use the current task environment.
   PerfettoTracedProcess::ResetTaskRunnerForTesting(
@@ -483,6 +451,7 @@ void TracingUnitTest::SetUp() {
 
 void TracingUnitTest::TearDown() {
   teardown_called_ = true;
+  tracing_environment_.reset();
 
   // Wait for any posted destruction tasks to execute.
   RunUntilIdle();

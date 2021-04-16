@@ -319,6 +319,8 @@ static_library("test_support") {
       "../trace_event/trace_config_memory_test_util.h",
       "trace_event_analyzer.cc",
       "trace_event_analyzer.h",
+      "trace_test_utils.cc",
+      "trace_test_utils.h",
     ]
     if (!is_nacl_nonsfi) {
       sources += [

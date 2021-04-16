@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 

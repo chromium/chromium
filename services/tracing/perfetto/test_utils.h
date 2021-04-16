@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "base/test/trace_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
@@ -224,31 +225,6 @@ class MockProducer {
   std::unique_ptr<MockProducerHost> producer_host_;
 };
 
-// A proxy task runner which can be dynamically pointed to route tasks into a
-// different task runner.
-class RebindableTaskRunner : public base::SequencedTaskRunner {
- public:
-  RebindableTaskRunner();
-
-  void set_task_runner(scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    task_runner_ = task_runner;
-  }
-
-  // base::SequecedTaskRunner implementation.
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override;
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override;
-  bool RunsTasksInCurrentSequence() const override;
-
- private:
-  ~RebindableTaskRunner() override;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-};
-
 // Base class for various tracing unit tests, ensuring cleanup of
 // PerfettoTracedProcess. Tracing tasks are run on the test thread.
 class TracingUnitTest : public testing::Test {
@@ -264,6 +240,7 @@ class TracingUnitTest : public testing::Test {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
   bool setup_called_ = false;
   bool teardown_called_ = false;
 };
