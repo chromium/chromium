@@ -41,18 +41,11 @@ preprocess_if_expr("preprocess_src") {
     "action_link.js",
     "assert.js",
     "color_utils.js",
-    "cr/event_target.js",
-    "cr.js",
     "cr.m.js",
-    "cr/ui.js",
     "custom_element.js",
-    "event_tracker.js",
     "i18n_template_no_process.js",
-    "icon.js",
     "load_time_data.js",
-    "parse_html_subset.js",
     "plural_string_proxy.js",
-    "promise_resolver.js",
     "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
@@ -67,9 +60,16 @@ preprocess_if_expr("preprocess_src") {
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
     in_files += [
+      "cr/event_target.js",
+      "cr/ui.js",
+      "cr.js",
+      "event_tracker.js",
       "i18n_behavior.js",
+      "icon.js",
       "list_property_update_behavior.js",
+      "parse_html_subset.js",
       "polymer_config.js",
+      "promise_resolver.js",
       "web_ui_listener_behavior.js",
     ]
   }

@@ -58,6 +58,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/array_data_model_test.m.js");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
   LoadTestUrl("cr_test.html");
 }
@@ -69,6 +70,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
   LoadTestUrl("js/cr/event_target_test.html");
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetModuleTest) {
   LoadTestUrl("?module=js/cr/event_target_test.m.js");
@@ -129,11 +131,11 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
   LoadTestUrl("mock_timer_test.html");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
   LoadTestUrl("parse_html_subset_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
   LoadTestUrl("js/cr/ui/position_util_test.html");
 }
@@ -187,6 +189,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
   LoadTestUrl("util_test.html");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, IconTest) {
   LoadTestUrl("js/icon_test.html");
 }
@@ -195,7 +198,6 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PromiseResolverTest) {
   LoadTestUrl("promise_resolver_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nBehaviorTest) {
   LoadTestUrl("i18n_behavior_test.html");
 }
