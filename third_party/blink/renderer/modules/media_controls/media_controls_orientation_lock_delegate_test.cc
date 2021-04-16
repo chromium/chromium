@@ -191,13 +191,8 @@ class MediaControlsOrientationLockDelegateTest
   void SetUp() override {
     chrome_client_ =
         MakeGarbageCollected<MockChromeClientForOrientationLockDelegate>();
-
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = chrome_client_.Get();
-
     SetupPageWithClients(
-        &clients,
+        chrome_client_,
         MakeGarbageCollected<StubLocalFrameClientForOrientationLockDelegate>());
     previous_orientation_event_value_ =
         RuntimeEnabledFeatures::OrientationEventEnabled();

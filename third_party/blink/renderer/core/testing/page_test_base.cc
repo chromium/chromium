@@ -116,7 +116,7 @@ void PageTestBase::SetUp(IntSize size) {
 }
 
 void PageTestBase::SetupPageWithClients(
-    Page::PageClients* clients,
+    ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
     FrameSettingOverrideFunction setting_overrider) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
@@ -127,7 +127,7 @@ void PageTestBase::SetupPageWithClients(
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(800, 600), clients, local_frame_client, std::move(setter),
+      IntSize(800, 600), chrome_client, local_frame_client, std::move(setter),
       GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.

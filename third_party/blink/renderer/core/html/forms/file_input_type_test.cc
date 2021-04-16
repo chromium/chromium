@@ -134,12 +134,9 @@ TEST(FileInputTypeTest, setFilesFromPaths) {
 }
 
 TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   auto* chrome_client = MakeGarbageCollected<WebKitDirectoryChromeClient>();
-  page_clients.chrome_client = chrome_client;
   auto page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(), &page_clients);
+      std::make_unique<DummyPageHolder>(IntSize(), chrome_client);
   Document& doc = page_holder->GetDocument();
 
   doc.body()->setInnerHTML("<input type=file webkitdirectory>");

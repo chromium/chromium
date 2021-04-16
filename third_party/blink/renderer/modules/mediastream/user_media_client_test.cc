@@ -499,11 +499,9 @@ class UserMediaClientTest : public ::testing::Test {
     // Create our test object.
     auto* msd_observer = new blink::WebMediaStreamDeviceObserver(nullptr);
 
-    ChromeClient* client = MakeGarbageCollected<UserMediaChromeClient>();
-    Page::PageClients page_clients;
-    page_clients.chrome_client = client;
+    ChromeClient* chrome_client = MakeGarbageCollected<UserMediaChromeClient>();
     dummy_page_holder_ =
-        std::make_unique<DummyPageHolder>(IntSize(1, 1), &page_clients);
+        std::make_unique<DummyPageHolder>(IntSize(1, 1), chrome_client);
 
     user_media_processor_ = MakeGarbageCollected<UserMediaProcessorUnderTest>(
         &(dummy_page_holder_->GetFrame()), base::WrapUnique(msd_observer),

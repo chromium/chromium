@@ -1115,14 +1115,12 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   DCHECK(!overlay_chrome_client_);
   overlay_chrome_client_ = MakeGarbageCollected<InspectorOverlayChromeClient>(
       GetFrame()->GetPage()->GetChromeClient(), *this);
-  page_clients.chrome_client = overlay_chrome_client_.Get();
   overlay_page_ = Page::CreateNonOrdinary(
-      page_clients, *GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
+      *overlay_chrome_client_,
+      *GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
   overlay_host_ = MakeGarbageCollected<InspectorOverlayHost>(this);
 
   Settings& settings = GetFrame()->GetPage()->GetSettings();

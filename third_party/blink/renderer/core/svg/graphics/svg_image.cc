@@ -786,10 +786,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   CHECK_EQ(load_state_, kDataChangedNotStarted);
   load_state_ = kInDataChanged;
 
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   chrome_client_ = MakeGarbageCollected<SVGImageChromeClient>(this);
-  page_clients.chrome_client = chrome_client_.Get();
 
   // FIXME: If this SVG ends up loading itself, we might leak the world.
   // The Cache code does not know about ImageResources holding Frames and
@@ -800,7 +797,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   Page* page;
   {
     TRACE_EVENT0("blink", "SVGImage::dataChanged::createPage");
-    page = Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
+    page = Page::CreateNonOrdinary(*chrome_client_, *agent_group_scheduler_);
     page->GetSettings().SetScriptEnabled(false);
     page->GetSettings().SetPluginsEnabled(false);
 

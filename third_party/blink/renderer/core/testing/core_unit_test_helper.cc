@@ -91,11 +91,9 @@ HitTestResult::NodeSet RenderingTest::RectBasedHitTest(
 }
 
 void RenderingTest::SetUp() {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   GetChromeClient().SetUp();
-  page_clients.chrome_client = &GetChromeClient();
-  SetupPageWithClients(&page_clients, local_frame_client_, SettingOverrider());
+  SetupPageWithClients(&GetChromeClient(), local_frame_client_,
+                       SettingOverrider());
   EXPECT_TRUE(
       GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
 

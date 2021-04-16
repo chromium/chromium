@@ -774,9 +774,8 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
 
 static Document* CreateStagingDocumentForMarkupSanitization(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
-  Page* page = Page::CreateNonOrdinary(page_clients, agent_group_scheduler);
+  Page* page = Page::CreateNonOrdinary(GetStaticEmptyChromeClientInstance(),
+                                       agent_group_scheduler);
 
   page->GetSettings().SetScriptEnabled(false);
   page->GetSettings().SetPluginsEnabled(false);

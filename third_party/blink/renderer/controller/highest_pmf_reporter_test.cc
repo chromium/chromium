@@ -119,9 +119,8 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
   MockMemoryUsageMonitor() = delete;
 
   Page* CreateDummyPage() {
-    Page::PageClients page_clients;
-    FillWithEmptyClients(page_clients);
-    return Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
+    return Page::CreateNonOrdinary(GetStaticEmptyChromeClientInstance(),
+                                   *agent_group_scheduler_);
   }
 
   MemoryUsage mock_memory_usage_;

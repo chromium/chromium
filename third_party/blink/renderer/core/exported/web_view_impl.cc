@@ -560,11 +560,9 @@ WebViewImpl::WebViewImpl(
       session_storage_namespace_id_(session_storage_namespace_id) {
   if (!web_view_client_)
     DCHECK(!does_composite_);
-  Page::PageClients page_clients;
-  page_clients.chrome_client = chrome_client_.Get();
-  page_ =
-      Page::CreateOrdinary(page_clients, opener ? opener->GetPage() : nullptr,
-                           agent_group_scheduler);
+  page_ = Page::CreateOrdinary(*chrome_client_,
+                               opener ? opener->GetPage() : nullptr,
+                               agent_group_scheduler);
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 

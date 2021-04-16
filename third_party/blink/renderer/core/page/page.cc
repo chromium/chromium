@@ -153,17 +153,19 @@ float DeviceScaleFactorDeprecated(LocalFrame* frame) {
 }
 
 Page* Page::CreateNonOrdinary(
-    PageClients& page_clients,
+    ChromeClient& chrome_client,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  return MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+  return MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
+                                    agent_group_scheduler,
                                     /*is_ordinary=*/false);
 }
 
 Page* Page::CreateOrdinary(
-    PageClients& page_clients,
+    ChromeClient& chrome_client,
     Page* opener,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  Page* page = MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+  Page* page = MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
+                                          agent_group_scheduler,
                                           /*is_ordinary=*/true);
 
   if (opener) {
@@ -182,7 +184,8 @@ Page* Page::CreateOrdinary(
   return page;
 }
 
-Page::Page(PageClients& page_clients,
+Page::Page(base::PassKey<Page>,
+           ChromeClient& chrome_client,
            scheduler::WebAgentGroupScheduler& agent_group_scheduler,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
@@ -190,7 +193,7 @@ Page::Page(PageClients& page_clients,
       agent_group_scheduler_(agent_group_scheduler),
       animator_(MakeGarbageCollected<PageAnimator>(*this)),
       autoscroll_controller_(MakeGarbageCollected<AutoscrollController>(*this)),
-      chrome_client_(page_clients.chrome_client),
+      chrome_client_(&chrome_client),
       drag_caret_(MakeGarbageCollected<DragCaret>()),
       drag_controller_(MakeGarbageCollected<DragController>(this)),
       focus_controller_(MakeGarbageCollected<FocusController>(this)),
@@ -1100,8 +1103,6 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
     SettingsChanged(ChangeType::kVisionDeficiency);
   }
 }
-
-Page::PageClients::PageClients() : chrome_client(nullptr) {}
 
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 

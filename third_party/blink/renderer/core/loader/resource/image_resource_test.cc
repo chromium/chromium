@@ -916,13 +916,9 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
-  EmptyChromeClient* chrome_client = MakeGarbageCollected<EmptyChromeClient>();
-  Page::PageClients clients;
-  FillWithEmptyClients(clients);
-  clients.chrome_client = chrome_client;
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(
-          IntSize(800, 600), &clients,
+          IntSize(800, 600), /*chrome_client=*/nullptr,
           MakeGarbageCollected<EmptyLocalFrameClient>());
 
   KURL test_url(kTestURL);

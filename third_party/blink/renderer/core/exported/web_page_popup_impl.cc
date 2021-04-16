@@ -328,15 +328,12 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   popup_client_ = popup_client;
   SetWebView(opener_web_view);
 
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   chrome_client_ = MakeGarbageCollected<PagePopupChromeClient>(this);
-  page_clients.chrome_client = chrome_client_.Get();
-
   Settings& main_settings = opener_web_view_->GetPage()->GetSettings();
-  page_ = Page::CreateNonOrdinary(page_clients, opener_web_view_->GetPage()
-                                                    ->GetPageScheduler()
-                                                    ->GetAgentGroupScheduler());
+  page_ =
+      Page::CreateNonOrdinary(*chrome_client_, opener_web_view_->GetPage()
+                                                   ->GetPageScheduler()
+                                                   ->GetAgentGroupScheduler());
   page_->GetSettings().SetAcceleratedCompositingEnabled(true);
   page_->GetSettings().SetScriptEnabled(true);
   page_->GetSettings().SetAllowScriptsToCloseWindows(true);

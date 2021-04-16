@@ -71,7 +71,7 @@ class DummyPageHolder {
  public:
   DummyPageHolder(
       const IntSize& initial_view_size = IntSize(),
-      Page::PageClients* = nullptr,
+      ChromeClient* = nullptr,
       LocalFrameClient* = nullptr,
       base::OnceCallback<void(Settings&)> setting_overrider =
           base::NullCallback(),

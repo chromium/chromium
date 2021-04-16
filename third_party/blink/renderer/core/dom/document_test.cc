@@ -1380,10 +1380,7 @@ class DocumentBatterySavingsTest : public PageTestBase,
 
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<BatterySavingsChromeClient>();
-    Page::PageClients page_clients;
-    FillWithEmptyClients(page_clients);
-    page_clients.chrome_client = chrome_client_;
-    SetupPageWithClients(&page_clients);
+    SetupPageWithClients(chrome_client_);
   }
 
   Persistent<BatterySavingsChromeClient> chrome_client_;

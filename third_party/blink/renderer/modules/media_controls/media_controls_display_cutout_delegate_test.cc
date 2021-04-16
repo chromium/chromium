@@ -51,11 +51,7 @@ class MediaControlsDisplayCutoutDelegateTest
         ScopedMediaControlsExpandGestureForTest(true) {}
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<DisplayCutoutMockChromeClient>();
-
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = chrome_client_.Get();
-    SetupPageWithClients(&clients,
+    SetupPageWithClients(chrome_client_,
                          MakeGarbageCollected<EmptyLocalFrameClient>());
     GetDocument().write("<body><video id=video></body>");
   }

@@ -70,19 +70,16 @@ class DummyLocalFrameClient : public EmptyLocalFrameClient {
 
 DummyPageHolder::DummyPageHolder(
     const IntSize& initial_view_size,
-    Page::PageClients* page_clients_argument,
+    ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
     base::OnceCallback<void(Settings&)> setting_overrider,
     const base::TickClock* clock)
     : enable_mock_scrollbars_(true),
       agent_group_scheduler_(
           Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()) {
-  Page::PageClients page_clients;
-  if (!page_clients_argument)
-    FillWithEmptyClients(page_clients);
-  else
-    page_clients.chrome_client = page_clients_argument->chrome_client;
-  page_ = Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
+  if (!chrome_client)
+    chrome_client = &GetStaticEmptyChromeClientInstance();
+  page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_);
   Settings& settings = page_->GetSettings();
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);

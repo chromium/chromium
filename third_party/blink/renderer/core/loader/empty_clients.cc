@@ -46,10 +46,10 @@
 
 namespace blink {
 
-void FillWithEmptyClients(Page::PageClients& page_clients) {
-  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, dummy_chrome_client,
+ChromeClient& GetStaticEmptyChromeClientInstance() {
+  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, chrome_client,
                       (MakeGarbageCollected<EmptyChromeClient>()));
-  page_clients.chrome_client = dummy_chrome_client;
+  return *chrome_client;
 }
 
 class EmptyPopupMenu : public PopupMenu {

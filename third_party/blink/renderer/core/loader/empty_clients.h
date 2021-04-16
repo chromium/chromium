@@ -407,7 +407,7 @@ class EmptySpellCheckPanelHostClient : public WebSpellCheckPanelHostClient {
   DISALLOW_COPY_AND_ASSIGN(EmptySpellCheckPanelHostClient);
 };
 
-CORE_EXPORT void FillWithEmptyClients(Page::PageClients&);
+CORE_EXPORT ChromeClient& GetStaticEmptyChromeClientInstance();
 
 }  // namespace blink
 

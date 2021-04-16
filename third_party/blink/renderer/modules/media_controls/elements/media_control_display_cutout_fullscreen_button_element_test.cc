@@ -54,11 +54,7 @@ class MediaControlDisplayCutoutFullscreenButtonElementTest
       : ScopedDisplayCutoutAPIForTest(true) {}
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<MockDisplayCutoutChromeClient>();
-
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = chrome_client_.Get();
-    SetupPageWithClients(&clients,
+    SetupPageWithClients(chrome_client_,
                          MakeGarbageCollected<EmptyLocalFrameClient>());
     video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     GetDocument().body()->AppendChild(video_);

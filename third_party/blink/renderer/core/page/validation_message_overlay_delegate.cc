@@ -148,14 +148,12 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   // TODO(tkent): Can we share code with WebPagePopupImpl and
   // InspectorOverlayAgent?
   IntSize view_size = overlay.Size();
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   chrome_client_ = MakeGarbageCollected<ValidationMessageChromeClient>(
       main_page_->GetChromeClient(), anchor_->GetDocument().View());
-  page_clients.chrome_client = chrome_client_;
   Settings& main_settings = main_page_->GetSettings();
   page_ = Page::CreateNonOrdinary(
-      page_clients, main_page_->GetPageScheduler()->GetAgentGroupScheduler());
+      *chrome_client_,
+      main_page_->GetPageScheduler()->GetAgentGroupScheduler());
   page_->GetSettings().SetMinimumFontSize(main_settings.GetMinimumFontSize());
   page_->GetSettings().SetMinimumLogicalFontSize(
       main_settings.GetMinimumLogicalFontSize());

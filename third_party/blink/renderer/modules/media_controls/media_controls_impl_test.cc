@@ -166,10 +166,7 @@ class MediaControlsImplTest : public PageTestBase,
   }
 
   void InitializePage() {
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = MakeGarbageCollected<FakeChromeClient>();
-    SetupPageWithClients(&clients,
+    SetupPageWithClients(MakeGarbageCollected<FakeChromeClient>(),
                          MakeGarbageCollected<StubLocalFrameClientForImpl>());
 
     GetDocument().write("<video controls>");
