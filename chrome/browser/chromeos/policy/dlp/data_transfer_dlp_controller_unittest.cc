@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
@@ -53,6 +54,10 @@ class MockDlpRulesManager : public DlpRulesManager {
                      Level(const GURL& source,
                            const std::vector<Component>& destinations,
                            Restriction restriction));
+
+  MOCK_CONST_METHOD0(IsReportingEnabled, bool());
+
+  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
 };
 
 class MockDlpController : public DataTransferDlpController {

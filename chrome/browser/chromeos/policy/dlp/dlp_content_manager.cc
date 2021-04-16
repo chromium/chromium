@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
@@ -40,8 +41,10 @@ static DlpContentManager* g_dlp_content_manager = nullptr;
 
 // static
 DlpContentManager* DlpContentManager::Get() {
-  if (!g_dlp_content_manager)
+  if (!g_dlp_content_manager) {
     g_dlp_content_manager = new DlpContentManager();
+    g_dlp_content_manager->Init();
+  }
   return g_dlp_content_manager;
 }
 
@@ -84,7 +87,7 @@ bool DlpContentManager::IsVideoCaptureRestricted(
 
 bool DlpContentManager::IsPrintingRestricted(
     content::WebContents* web_contents) const {
-  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedder
+  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedded
   // WebContents.
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
@@ -93,9 +96,14 @@ bool DlpContentManager::IsPrintingRestricted(
 
   const bool restricted = GetConfidentialRestrictions(web_contents)
                               .HasRestriction(DlpContentRestriction::kPrint);
-  if (restricted)
-    SYSLOG(INFO) << "DLP blocked printing";
   DlpBooleanHistogram(dlp::kPrintingBlockedUMA, restricted);
+  if (restricted) {
+    SYSLOG(INFO) << "DLP blocked printing";
+
+    reporting_manager_->ReportPrintingEvent(web_contents,
+                                            DlpRulesManager::Level::kBlock);
+  }
+
   return restricted;
 }
 
@@ -242,6 +250,14 @@ bool DlpContentManager::ScreenCaptureInfo::operator!=(
 }
 
 DlpContentManager::DlpContentManager() = default;
+
+void DlpContentManager::Init() {
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (rules_manager)
+    reporting_manager_ =
+        DlpRulesManagerFactory::GetForPrimaryProfile()->GetReportingManager();
+}
 
 DlpContentManager::~DlpContentManager() = default;
 
@@ -478,6 +494,11 @@ void DlpContentManager::CheckRunningScreenCaptures() {
       MaybeUpdateScreenCaptureNotification();
     }
   }
+}
+
+void DlpContentManager::SetReportingManagerForTesting(
+    DlpReportingManager* reporting_manager) {
+  reporting_manager_ = reporting_manager;
 }
 
 // static

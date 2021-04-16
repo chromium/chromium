@@ -17,11 +17,14 @@ class WebContents;
 
 namespace policy {
 
+class DlpReportingManager;
+
 // This class is an interface to DlpContentManager and is used in tests to
 // access some of it's private methods.
 class DlpContentManagerTestHelper {
  public:
   DlpContentManagerTestHelper();
+  ~DlpContentManagerTestHelper();
 
   void ChangeConfidentiality(content::WebContents* web_contents,
                              DlpContentRestrictionSet restrictions);
@@ -34,8 +37,12 @@ class DlpContentManagerTestHelper {
 
   DlpContentRestrictionSet GetRestrictionSetForURL(const GURL& url) const;
 
+  DlpContentManager* GetContentManager() const;
+  DlpReportingManager* GetReportingManager() const;
+
  private:
   DlpContentManager* manager_;
+  DlpReportingManager* reporting_manager_;
 };
 
 }  // namespace policy

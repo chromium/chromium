@@ -32,6 +32,8 @@ class WebContents;
 
 namespace policy {
 
+class DlpReportingManager;
+
 // System-wide class that tracks the set of currently known confidential
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
@@ -98,6 +100,9 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
       DlpContentManager* dlp_content_manager);
   static void ResetDlpContentManagerForTesting();
 
+ protected:
+  void SetReportingManagerForTesting(DlpReportingManager* manager);
+
  private:
   friend class DlpContentManagerTestHelper;
   friend class DlpContentTabHelper;
@@ -132,6 +137,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   DlpContentManager(const DlpContentManager&) = delete;
   DlpContentManager& operator=(const DlpContentManager&) = delete;
 
+  // Initializing to be called separately to make testing possible
+  virtual void Init();
   // Called from DlpContentTabHelper:
   // Being called when confidentiality state changes for |web_contents|, e.g.
   // because of navigation.
@@ -197,6 +204,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;
+
+  DlpReportingManager* reporting_manager_;
 };
 
 // Helper class to call SetDlpContentManagerForTesting and

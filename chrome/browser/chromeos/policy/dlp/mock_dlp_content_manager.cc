@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 
 namespace policy {
 
 MockDlpContentManager::MockDlpContentManager() = default;
 
 MockDlpContentManager::~MockDlpContentManager() = default;
+
+void MockDlpContentManager::Init() {
+  SetReportingManagerForTesting(new DlpReportingManager());
+}
 
 }  // namespace policy

@@ -159,6 +159,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        ScreenCaptureVideoWithDlp) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  policy::DlpContentManagerTestHelper helper;
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   std::string constraints("{video:true}");
   RunTestedFunction(test_config_.tested_function, tab, constraints,
@@ -178,8 +179,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   const policy::DlpContentRestrictionSet kScreenShareRestricted(
       policy::DlpContentRestriction::kScreenShare);
 
-  policy::DlpContentManagerTestHelper helper_;
-  helper_.ChangeConfidentiality(tab, kScreenShareRestricted);
+  helper.ChangeConfidentiality(tab, kScreenShareRestricted);
   content::WaitForLoadStop(tab);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   EXPECT_EQ(result, "muted");
 
   const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
-  helper_.ChangeConfidentiality(tab, kEmptyRestrictionSet);
+  helper.ChangeConfidentiality(tab, kEmptyRestrictionSet);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetMainFrame(), "waitVideoUnmuted();", &result));

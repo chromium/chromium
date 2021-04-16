@@ -3,12 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 
 namespace policy {
 
 DlpContentManagerTestHelper::DlpContentManagerTestHelper() {
-  manager_ = DlpContentManager::Get();
+  manager_ = new DlpContentManager();
   DCHECK(manager_);
+  reporting_manager_ = new DlpReportingManager();
+  DCHECK(reporting_manager_);
+  manager_->SetReportingManagerForTesting(reporting_manager_);
+  DlpContentManager::SetDlpContentManagerForTesting(manager_);
+}
+
+DlpContentManagerTestHelper::~DlpContentManagerTestHelper() {
+  delete reporting_manager_;
 }
 
 void DlpContentManagerTestHelper::ChangeConfidentiality(
@@ -39,6 +48,14 @@ DlpContentRestrictionSet DlpContentManagerTestHelper::GetRestrictionSetForURL(
     const GURL& url) const {
   DCHECK(manager_);
   return manager_->GetRestrictionSetForURL(url);
+}
+
+DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
+  return manager_;
+}
+
+DlpReportingManager* DlpContentManagerTestHelper::GetReportingManager() const {
+  return manager_->reporting_manager_;
 }
 
 }  // namespace policy

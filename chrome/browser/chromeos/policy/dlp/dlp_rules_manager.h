@@ -11,6 +11,8 @@ class GURL;
 
 namespace policy {
 
+class DlpReportingManager;
+
 // DlpRulesManager parses the rules set by DataLeakPreventionRulesList policy
 // and serves as an available service which can be queried anytime about the
 // restrictions set by the policy.
@@ -82,6 +84,15 @@ class DlpRulesManager : public KeyedService {
   virtual Level IsRestrictedComponent(const GURL& source,
                                       const Component& destination,
                                       Restriction restriction) const = 0;
+
+  // Returns true if the general dlp reporting policy is enabled otherwise
+  // false.
+  virtual bool IsReportingEnabled() const = 0;
+
+  // Returns the reporting manager that is used to report DLPPolicyEvents to the
+  // serverside. Should always return a nullptr if reporting is disabled (see
+  // IsReportingEnabled).
+  virtual DlpReportingManager* GetReportingManager() const = 0;
 };
 
 }  // namespace policy

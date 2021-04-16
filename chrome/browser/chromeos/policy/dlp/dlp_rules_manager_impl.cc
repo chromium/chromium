@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -217,6 +218,17 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
       base::BindRepeating(&DlpRulesManagerImpl::OnPolicyUpdate,
                           base::Unretained(this)));
   OnPolicyUpdate();
+
+  if (IsReportingEnabled())
+    reporting_manager_ = std::make_unique<DlpReportingManager>();
+}
+
+bool DlpRulesManagerImpl::IsReportingEnabled() const {
+  return true;
+}
+
+DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
+  return reporting_manager_.get();
 }
 
 void DlpRulesManagerImpl::OnPolicyUpdate() {

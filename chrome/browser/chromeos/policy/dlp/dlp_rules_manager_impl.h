@@ -19,6 +19,8 @@ class PrefRegistrySimple;
 
 namespace policy {
 
+class DlpReportingManager;
+
 class DlpRulesManagerImpl : public DlpRulesManager {
  public:
   using RuleId = int;
@@ -38,6 +40,8 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   Level IsRestrictedComponent(const GURL& source,
                               const Component& destination,
                               Restriction restriction) const override;
+  bool IsReportingEnabled() const override;
+  DlpReportingManager* GetReportingManager() const override;
 
  protected:
   friend class DlpRulesManagerFactory;
@@ -82,6 +86,8 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // Map from the URL matching conditions IDs of the destinations to their
   // configured rules IDs.
   std::map<UrlConditionId, RuleId> dst_url_rules_mapping_;
+
+  std::unique_ptr<DlpReportingManager> reporting_manager_;
 };
 
 }  // namespace policy

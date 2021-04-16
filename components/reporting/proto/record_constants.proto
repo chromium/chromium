@@ -45,6 +45,9 @@ enum Destination {
   // |EXTENSIONS_WORKFLOW| handler is for sending extension requests events,
   // sent for Chrome Browser Cloud Management (CBCM).
   EXTENSIONS_WORKFLOW = 10;
+
+  // |DLP_EVENTS| events send from data leakage protection for Chrome OS
+  DLP_EVENTS = 11;
 }
 
 // |Priority| is used to determine when items from the queue should be rate

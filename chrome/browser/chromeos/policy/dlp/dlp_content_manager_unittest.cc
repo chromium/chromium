@@ -4,17 +4,27 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
+#include <memory>
+
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/reporting/client/mock_report_queue.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::Mock;
 
 namespace policy {
 
@@ -37,148 +47,172 @@ class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
 
 class DlpContentManagerTest : public testing::Test {
  protected:
-  DlpContentManagerTest() { manager_ = DlpContentManager::Get(); }
-
-  void SetUp() override {
-    testing::Test::SetUp();
-
-    profile_ = std::make_unique<TestingProfile>();
-  }
+  DlpContentManagerTest() : profile_(std::make_unique<TestingProfile>()) {}
+  DlpContentManagerTest(const DlpContentManagerTest&) = delete;
+  DlpContentManagerTest& operator=(const DlpContentManagerTest&) = delete;
+  ~DlpContentManagerTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                              nullptr);
   }
 
+  void SetReportQueueForReportingManager() {
+    auto report_queue = std::make_unique<reporting::MockReportQueue>();
+    EXPECT_CALL(*report_queue.get(), AddRecord)
+        .WillRepeatedly(
+            [this](base::StringPiece record, reporting::Priority priority,
+                   reporting::ReportQueue::EnqueueCallback callback) {
+              DlpPolicyEvent event;
+              event.ParseFromString(record.as_string());
+              // Don't use this code in a multithreaded env as it can course
+              // concurrency issues with the events in the vector.
+              events_.push_back(event);
+            });
+    helper_.GetReportingManager()->GetReportQueueSetter().Run(
+        std::move(report_queue));
+  }
+
+  DlpContentManager* GetManager() { return helper_.GetContentManager(); }
+
   DlpContentManagerTestHelper helper_;
-  // This points to the DlpContentManager object which is created in the
-  // constructor of |helper_|.
-  DlpContentManager* manager_ = nullptr;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
 
+  std::vector<DlpPolicyEvent> events_;
+
  private:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  std::unique_ptr<TestingProfile> profile_;
+  const std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(DlpContentManagerTest, NoConfidentialDataShown) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 }
 
 TEST_F(DlpContentManagerTest, ConfidentialDataShown) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   helper_.ChangeConfidentiality(web_contents.get(), kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   helper_.DestroyWebContents(web_contents.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 }
 
 TEST_F(DlpContentManagerTest, ConfidentialDataVisibilityChanged) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   helper_.ChangeConfidentiality(web_contents.get(), kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   web_contents->WasHidden();
   helper_.ChangeVisibility(web_contents.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   web_contents->WasShown();
   helper_.ChangeVisibility(web_contents.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   helper_.DestroyWebContents(web_contents.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 }
 
 TEST_F(DlpContentManagerTest,
        TwoWebContentsVisibilityAndConfidentialityChanged) {
   std::unique_ptr<content::WebContents> web_contents1 = CreateWebContents();
   std::unique_ptr<content::WebContents> web_contents2 = CreateWebContents();
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   // WebContents 1 becomes confidential.
   helper_.ChangeConfidentiality(web_contents1.get(), kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   web_contents2->WasHidden();
   helper_.ChangeVisibility(web_contents2.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   // WebContents 1 becomes non-confidential.
   helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   // WebContents 2 becomes confidential.
   helper_.ChangeConfidentiality(web_contents2.get(), kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 
   web_contents2->WasShown();
   helper_.ChangeVisibility(web_contents2.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kNonEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(),
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
             kNonEmptyRestrictionSet);
 
   helper_.DestroyWebContents(web_contents1.get());
   helper_.DestroyWebContents(web_contents2.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents1.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents2.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kEmptyRestrictionSet);
-  EXPECT_EQ(manager_->GetOnScreenPresentRestrictions(), kEmptyRestrictionSet);
+  EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
+            kEmptyRestrictionSet);
 }
 
 TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
@@ -225,27 +259,32 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
 
 TEST_F(DlpContentManagerTest, PrintingRestricted) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_FALSE(manager_->IsPrintingRestricted(web_contents.get()));
+
+  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
 
+  SetReportQueueForReportingManager();
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kPrintingRestricted);
-  EXPECT_TRUE(manager_->IsPrintingRestricted(web_contents.get()));
+  EXPECT_TRUE(GetManager()->IsPrintingRestricted(web_contents.get()));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
+  EXPECT_THAT(
+      events_[0],
+      IsDlpPolicyEvent(CreatePrintingRestrictedDlpEvent(web_contents.get())));
 
   helper_.DestroyWebContents(web_contents.get());
-  EXPECT_EQ(manager_->GetConfidentialRestrictions(web_contents.get()),
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_FALSE(manager_->IsPrintingRestricted(web_contents.get()));
+  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
