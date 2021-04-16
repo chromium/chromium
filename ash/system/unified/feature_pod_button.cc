@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -172,6 +173,8 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   GetViewAccessibility().OverrideIsLeaf(true);
 
   label_->SetLineHeight(kUnifiedFeaturePodLabelLineHeight);
+  label_->SetMultiLine(true);
+  label_->SetMaxLines(kUnifiedFeaturePodLabelMaxLines);
   ConfigureFeaturePodLabel(label_, kUnifiedFeaturePodLabelLineHeight,
                            kUnifiedFeaturePodLabelFontSize);
   ConfigureFeaturePodLabel(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
@@ -284,7 +287,8 @@ const std::u16string& FeaturePodLabelButton::GetLabelText() const {
 
 void FeaturePodLabelButton::SetSubLabel(const std::u16string& sub_label) {
   sub_label_->SetText(sub_label);
-  sub_label_->SetVisible(true);
+  sub_label_->SetVisible(!sub_label.empty());
+  label_->SetMultiLine(sub_label.empty());
   InvalidateLayout();
 }
 

@@ -184,6 +184,7 @@ constexpr int kUnifiedFeaturePodHorizontalMiddlePadding = 0;
 constexpr int kUnifiedFeaturePodCollapsedVerticalPadding = 12;
 constexpr int kUnifiedFeaturePodCollapsedHorizontalPadding = 24;
 constexpr int kUnifiedFeaturePodLabelLineHeight = 16;
+constexpr int kUnifiedFeaturePodLabelMaxLines = 2;
 constexpr int kUnifiedFeaturePodSubLabelLineHeight = 15;
 constexpr int kUnifiedFeaturePodLabelFontSize = 13;
 constexpr int kUnifiedFeaturePodSubLabelFontSize = 12;
