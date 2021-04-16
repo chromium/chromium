@@ -242,7 +242,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // MediaInterfaceProxy to use it.
 
   cdms->push_back(content::CdmInfo(
-      kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability)));
+      kWidevineKeySystem, Robustness::kHardwareSecure, std::move(capability)));
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 
