@@ -345,69 +345,83 @@ def gpu_win_builder(*, name, **kwargs):
 gpu_win_builder(
     name = "gpu-fyi-try-win10-amd-rel-64",
     pool = "luci.chromium.gpu.win10.amd.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-intel-exp-64",
     pool = "luci.chromium.gpu.win10.intel.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-intel-rel-64",
     pool = "luci.chromium.gpu.win10.intel.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-dbg-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-dx12vk-dbg-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-dx12vk-rel-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-exp-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-sk-dawn-rel-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-rel-32",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-rel-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win7-amd-rel-32",
     pool = "luci.chromium.gpu.win7.amd.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win7-nvidia-rel-32",
     pool = "luci.chromium.gpu.win7.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-fyi-try-win7-nvidia-rel-64",
     pool = "luci.chromium.gpu.win7.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )
 
 gpu_win_builder(
     name = "gpu-try-win10-nvidia-rel",
     pool = "luci.chromium.gpu.win10.nvidia.try",
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )

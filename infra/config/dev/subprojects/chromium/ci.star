@@ -91,6 +91,7 @@ ci_builder(
 ci_builder(
     name = "win-rel-swarming",
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )
 
 ## builders using swarming staging instance
@@ -108,4 +109,5 @@ ci_builder_staging(
 ci_builder_staging(
     name = "win-rel-swarming-staging",
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )

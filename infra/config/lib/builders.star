@@ -430,6 +430,8 @@ def builder(
         If True or False are explicitly set, the 'enable_ats' field will be set
         in the '$build/goma' property.  By default, args.COMPUTE is set and
         'enable_ats' fields is set only if ats need to be enabled by default.
+        The 'enable_ats' on Windows will control cross compiling in server
+        side. cross compile if `enable_ats` is not True.
       * goma_jobs - a member of the `goma.jobs` enum indicating the number of jobs
         to be used by the builder. Sets the 'jobs' field of the '$build/goma'
         property will be set according to the enum member. By default, the 'jobs'
@@ -569,9 +571,9 @@ def builder(
 
     goma_enable_ats = defaults.get_value("goma_enable_ats", goma_enable_ats)
 
-    # TODO(crbug.com/1040754): Remove this flag.
+    # Enable ATS on linux by default.
     if goma_enable_ats == args.COMPUTE:
-        if os and os.category in (os_category.LINUX, os_category.WINDOWS):
+        if os and os.category == os_category.LINUX:
             goma_enable_ats = True
         else:
             goma_enable_ats = None

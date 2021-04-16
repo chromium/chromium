@@ -79,4 +79,5 @@ try_.builder(
 try_.builder(
     name = "gen-win-try",
     os = os.WINDOWS_10,
+    goma_enable_ats = True,  # TODO(b/183895446): remove this
 )

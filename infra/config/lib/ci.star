@@ -15,7 +15,7 @@ to set the default value. Can also be accessed through `ci.defaults`.
 
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./builders.star", "builders")
+load("./builders.star", "builders", "os_category")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -101,6 +101,14 @@ def ci_builder(
     # Migrate executable to bbagent incrementally.
     experiments.setdefault("luci.buildbucket.use_bbagent", 50)
 
+    goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
+    if goma_enable_ats == args.COMPUTE:
+        os = defaults.get_value_from_kwargs("os", kwargs)
+
+        # in CI, enable ATS on windows.
+        if os and os.category == os_category.WINDOWS:
+            goma_enable_ats = True
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
@@ -111,6 +119,7 @@ def ci_builder(
         notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
+        goma_enable_ats = goma_enable_ats,
         **kwargs
     )
 
