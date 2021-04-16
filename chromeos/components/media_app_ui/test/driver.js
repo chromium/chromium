@@ -2,19 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TEST_ONLY} from './launch.js';
+
+const {
+  guestMessagePipe,
+  launchConsumer,
+  processOtherFilesInDirectory,
+  currentFiles,
+  sendFilesToGuest,
+  setCurrentDirectory,
+  incrementLaunchNumber,
+  setCurrentDirectoryHandle,
+} = TEST_ONLY;
+
+// See message_pipe.js.
+function assertCast(condition) {
+  if (!condition) {
+    throw new Error('Failed assertion');
+  }
+  return condition;
+}
+
 /**
  * Promise that signals the guest is ready to receive test messages (in addition
  * to messages handled by receiver.js).
  * @type {!Promise<undefined>}
  */
 const testMessageHandlersReady = new Promise(resolve => {
-  window.addEventListener('DOMContentLoaded', () => {
-    guestMessagePipe.registerHandler('test-handlers-ready', resolve);
-  });
+  guestMessagePipe.registerHandler('test-handlers-ready', resolve);
 });
 
 /** Host-side of web-driver like controller for sandboxed guest frames. */
-class GuestDriver {
+export class GuestDriver {
   /**
    * Sends a query to the guest that repeatedly runs a query selector until
    * it returns an element.
@@ -40,7 +59,7 @@ class GuestDriver {
  * Runs the given `testCase` in the guest context.
  * @param {string} testCase
  */
-async function runTestInGuest(testCase) {
+export async function runTestInGuest(testCase) {
   /** @type {!TestMessageRunTestCase} */
   const message = {testCase};
   await testMessageHandlersReady;
@@ -52,14 +71,14 @@ async function runTestInGuest(testCase) {
  * currently open file is always at index 0.
  * @return {!Promise<string>}
  */
-async function getFileErrors() {
+export async function getFileErrors() {
   const message = {getFileErrors: true};
   const response = /** @type {!TestMessageResponseData} */ (
       await guestMessagePipe.sendMessage('test', message));
   return response.testQueryResult;
 }
 
-class FakeWritableFileSink {
+export class FakeWritableFileSink {
   constructor(/** !Blob= */ data = new Blob()) {
     this.data = data;
 
@@ -103,7 +122,7 @@ class FakeWritableFileSink {
 }
 
 /** @implements FileSystemHandle  */
-class FakeFileSystemHandle {
+export class FakeFileSystemHandle {
   /**
    * @param {string=} name
    */
@@ -122,7 +141,7 @@ class FakeFileSystemHandle {
 }
 
 /** @implements FileSystemFileHandle  */
-class FakeFileSystemFileHandle extends FakeFileSystemHandle {
+export class FakeFileSystemFileHandle extends FakeFileSystemHandle {
   /**
    * @param {string=} name
    * @param {string=} type
@@ -173,7 +192,7 @@ class FakeFileSystemFileHandle extends FakeFileSystemHandle {
 }
 
 /** @implements FileSystemDirectoryHandle  */
-class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
+export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
   /**
    * @param {string=} name
    */
@@ -278,14 +297,14 @@ class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
  *   arrayBuffer: (function(): (!Promise<!ArrayBuffer>)|undefined)
  * }}
  */
-let FileDesc;
+export let FileDesc;
 
 /**
  * Creates a mock directory with the provided files in it.
  * @param {!Array<!FileDesc>=} files
  * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
-async function createMockTestDirectory(files = [{}]) {
+export async function createMockTestDirectory(files = [{}]) {
   const directory = new FakeFileSystemDirectoryHandle();
   for (const /** !FileDesc */ file of files) {
     const fileBlob = file.arrayBuffer !== undefined ?
@@ -302,7 +321,7 @@ async function createMockTestDirectory(files = [{}]) {
  * @param {!Array<!FileSystemHandle>} files
  * @return {!LaunchParams}
  */
-function handlesToLaunchParams(files) {
+export function handlesToLaunchParams(files) {
   return /** @type{!LaunchParams} */ ({files});
 }
 
@@ -315,7 +334,8 @@ function handlesToLaunchParams(files) {
  *     holds additional files selected in the files app at launch time.
  * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
-async function launchWithHandles(directoryContents, multiSelectionFiles = []) {
+export async function launchWithHandles(
+    directoryContents, multiSelectionFiles = []) {
   /** @type {?FakeFileSystemFileHandle} */
   let focusFile = multiSelectionFiles[0];
   if (!focusFile) {
@@ -336,7 +356,7 @@ async function launchWithHandles(directoryContents, multiSelectionFiles = []) {
  * @param {!File} file
  * @return {!FakeFileSystemFileHandle}
  */
-function fileToFileHandle(file) {
+export function fileToFileHandle(file) {
   return new FakeFileSystemFileHandle(
       file.name, file.type, file.lastModified, file);
 }
@@ -347,7 +367,7 @@ function fileToFileHandle(file) {
  * @param {!Array<number>=} selectedIndexes
  * @return {!Promise<!FakeFileSystemDirectoryHandle>}
  */
-async function launchWithFiles(files, selectedIndexes = []) {
+export async function launchWithFiles(files, selectedIndexes = []) {
   const fileHandles = files.map(fileToFileHandle);
   const selection =
       selectedIndexes.map((/** @type {number} */ i) => fileHandles[i]);
@@ -360,7 +380,7 @@ async function launchWithFiles(files, selectedIndexes = []) {
  * @param {string} msg
  * @return {!Error}
  */
-function createNamedError(name, msg) {
+export function createNamedError(name, msg) {
   const error = new Error(msg);
   error.name = name;
   return error;
@@ -370,11 +390,11 @@ function createNamedError(name, msg) {
  * @param {!FileSystemDirectoryHandle} directory
  * @param {!File} file
  */
-async function loadFilesWithoutSendingToGuest(directory, file) {
+export async function loadFilesWithoutSendingToGuest(directory, file) {
   const handle = await directory.getFileHandle(file.name);
-  globalLaunchNumber++;
+  const launchNumber = incrementLaunchNumber();
   setCurrentDirectory(directory, {file, handle});
-  await processOtherFilesInDirectory(directory, file, globalLaunchNumber);
+  await processOtherFilesInDirectory(directory, file, launchNumber);
 }
 
 /**
@@ -383,7 +403,7 @@ async function loadFilesWithoutSendingToGuest(directory, file) {
  * @param {!Array<!File>} expectedFiles
  * @param {string=} testCase
  */
-function assertFilesToBe(expectedFiles, testCase = undefined) {
+export function assertFilesToBe(expectedFiles, testCase = undefined) {
   assertFilenamesToBe(expectedFiles.map(f => f.name).join(), testCase);
 }
 
@@ -393,7 +413,7 @@ function assertFilesToBe(expectedFiles, testCase = undefined) {
  * @param {string} expectedFilenames
  * @param {string=} testCase
  */
-function assertFilenamesToBe(expectedFilenames, testCase = undefined) {
+export function assertFilenamesToBe(expectedFilenames, testCase = undefined) {
   // Use filenames as an approximation of file uniqueness.
   const currentFilenames = currentFiles.map(d => d.handle.name).join();
   chai.assert.equal(
@@ -408,7 +428,7 @@ function assertFilenamesToBe(expectedFilenames, testCase = undefined) {
  * @param {string} regex an escaped regex compatible string
  * @param {string=} opt_message logged if the assertion fails
  */
-function assertMatch(string, regex, opt_message = undefined) {
+export function assertMatch(string, regex, opt_message = undefined) {
   chai.assert.match(string, new RegExp(regex), opt_message);
 }
 
@@ -416,7 +436,7 @@ function assertMatch(string, regex, opt_message = undefined) {
  * Returns the files loaded in the most recent call to `loadFiles()`.
  * @return {!Promise<?Array<!FileSnapshot>>}
  */
-async function getLoadedFiles() {
+export async function getLoadedFiles() {
   const response = /** @type {!LastLoadedFilesResponse} */ (
       await guestMessagePipe.sendMessage('get-last-loaded-files'));
   if (response.fileList) {
@@ -430,21 +450,21 @@ async function getLoadedFiles() {
  * a launch. Currently this restores part of the app state to what it would be
  * on a launch from the icon (i.e. no launch files).
  */
-function simulateLosingAccessToDirectory() {
-  currentDirectoryHandle = null;
+export function simulateLosingAccessToDirectory() {
+  setCurrentDirectoryHandle(null);
 }
 
 /**
  * @param {!FakeFileSystemDirectoryHandle} directory
  * @return {{handle: !FakeFileSystemFileHandle, file: !File}}
  */
-function launchWithFocusFile(directory) {
+export function launchWithFocusFile(directory) {
   const focusFile = {
     /** @type {!FakeFileSystemFileHandle} */
     handle: directory.files[0],
     file: directory.files[0].getFileSync()
   };
-  globalLaunchNumber++;
+  incrementLaunchNumber();
   setCurrentDirectory(directory, focusFile);
   return focusFile;
 }
@@ -453,7 +473,7 @@ function launchWithFocusFile(directory) {
  * @param {!FakeFileSystemDirectoryHandle} directory
  * @param {number} totalFiles
  */
-async function assertSingleFileLaunch(directory, totalFiles) {
+export async function assertSingleFileLaunch(directory, totalFiles) {
   chai.assert.equal(1, currentFiles.length);
 
   await sendFilesToGuest();
@@ -472,7 +492,8 @@ async function assertSingleFileLaunch(directory, totalFiles) {
  * @param {!Array<string>} fileNames
  * @param {string=} testCase
  */
-async function assertFilesLoaded(directory, fileNames, testCase = undefined) {
+export async function assertFilesLoaded(
+    directory, fileNames, testCase = undefined) {
   chai.assert.equal(fileNames.length, directory.files.length);
   chai.assert.equal(fileNames.length, currentFiles.length);
 

@@ -10,9 +10,7 @@
     <includes>
       <!-- Privileged app host contents. -->
       <include name="IDR_MEDIA_APP_INDEX_HTML" file="index.html" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_MOJO_API_BOOTSTRAP_JS" file="js/mojo_api_bootstrap.js" compress="brotli" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_MEDIA_APP_MOJOM_JS" file="${root_gen_dir}/chromeos/components/media_app_ui/media_app_ui.mojom-lite.js" use_base_dir="false" compress="brotli" type="BINDATA" />
-      <include name="IDR_MEDIA_APP_INDEX_SCRIPTS_JS" file="js/media_app_index_scripts.js" flattenhtml="true" compress="brotli" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_LAUNCH_JS" file="${root_gen_dir}/chromeos/components/media_app_ui/resources/js/launch.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
 
       <!-- TODO(b/141588875): Switch these to IDR_MEDIA_APP_APP_ICON_*_PNG in the internal media_app_bundle_resources.grd file (and add more icon resolutions) when the final icon is ready. -->
       <include name="IDR_MEDIA_APP_GALLERY_ICON_16_PNG" file="../../../../ui/file_manager/gallery/images/icon16.png" type="BINDATA" />

@@ -2,14 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview Test suite for chrome://media-app.
- */
-GEN('#include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"');
+import {assertFilenamesToBe, assertFilesLoaded, assertFilesToBe, assertMatch, assertSingleFileLaunch, createMockTestDirectory, FakeFileSystemFileHandle, fileToFileHandle, getFileErrors, getLoadedFiles, GuestDriver, launchWithFiles, launchWithFocusFile, launchWithHandles, loadFilesWithoutSendingToGuest, runTestInGuest, simulateLosingAccessToDirectory} from './driver.js';
+import {TEST_ONLY} from './launch.js';
 
-GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "third_party/blink/public/common/features.h"');
+const {
+  Message,
+  SortOrder,
+  advance,
+  currentFiles,
+  fileHandleForToken,
+  globalLaunchNumber,
+  guestMessagePipe,
+  launchWithDirectory,
+  loadOtherRelatedFiles,
+  pickWritableFile,
+  tokenGenerator,
+  tokenMap,
+  error_reporter,
+  mediaAppPageHandler,
+  setSortOrder,
+  setEntryIndex,
+  getEntryIndex,
+  getGlobalLaunchNumber,
+} = TEST_ONLY;
+const {captureConsoleErrors, reportCrashError} = error_reporter.TEST_ONLY;
 
 const HOST_ORIGIN = 'chrome://media-app';
 const GUEST_ORIGIN = 'chrome-untrusted://media-app';
@@ -23,7 +39,7 @@ const GUEST_ORIGIN = 'chrome-untrusted://media-app';
 const GENERIC_ERROR_MESSAGE_REGEX = '^".*[A-Za-z].*"$';
 
 /** @type {!GuestDriver} */
-let driver;
+const driver = new GuestDriver();
 
 /**
  * Runs a CSS selector until it detects the "error" UX being loaded.
@@ -43,55 +59,6 @@ function waitForErrorUX() {
 function waitForImageAndGetWidth(altText) {
   return driver.waitForElementInGuest(`img[alt="${altText}"]`, 'naturalWidth');
 }
-
-// js2gtest fixtures require var here (https://crbug.com/1033337).
-// eslint-disable-next-line no-var
-var MediaAppUIBrowserTest = class extends testing.Test {
-  /** @override */
-  get browsePreload() {
-    return HOST_ORIGIN;
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      ...super.extraLibraries,
-      '//ui/webui/resources/js/assert.js',
-      '//chromeos/components/media_app_ui/test/driver.js',
-    ];
-  }
-
-  /** @override */
-  get isAsync() {
-    return true;
-  }
-
-  /** @override */
-  get featureList() {
-    // The FileHandling flag should be automatically set by origin trials, but
-    // this testing environment does not seem to recognize origin trials. To
-    // work around it they must be explicitly set with flags to prevent tests
-    // crashing on Media App load due to window.launchQueue being undefined.
-    // See http://crbug.com/1071320.
-    return {enabled: ['blink::features::kFileHandlingAPI']};
-  }
-
-  /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
-
-  /** @override */
-  get typedefCppFixture() {
-    return 'MediaAppUiBrowserTest';
-  }
-
-  /** @override */
-  setUp() {
-    super.setUp();
-    driver = new GuestDriver();
-  }
-};
 
 // Give the test image an unusual size so we can distinguish it form other <img>
 // elements that may appear in the guest.
@@ -151,6 +118,15 @@ function makeFileNotFound(handle) {
   };
 }
 
+/** @struct */
+const MediaAppUIBrowserTest = {
+  /** @type function(string): !Promise<undefined> */
+  runTestInGuest,
+};
+
+// Expose an old-style export for js2gtest.
+window['MediaAppUIBrowserTest_for_js2gtest'] = MediaAppUIBrowserTest;
+
 // Tests that chrome://media-app is allowed to frame
 // chrome-untrusted://media-app. The URL is set in the html. If that URL can't
 // load, test this fails like JS ERROR: "Refused to frame '...' because it
@@ -158,26 +134,23 @@ function makeFileNotFound(handle) {
 // chrome-untrusted://media-app/". This test also fails if the guest renderer is
 // terminated, e.g., due to webui performing bad IPC such as network requests
 // (failure detected in content/public/test/no_renderer_crashes_assertion.cc).
-TEST_F('MediaAppUIBrowserTest', 'GuestCanLoad', async () => {
+MediaAppUIBrowserTest.GuestCanLoad = async () => {
   const guest = queryIFrame();
   const app = await driver.waitForElementInGuest('backlight-app', 'tagName');
 
   assertEquals(document.location.origin, HOST_ORIGIN);
   assertEquals(guest.src, GUEST_ORIGIN + '/app.html');
   assertEquals(app, '"BACKLIGHT-APP"');
-
-  testDone();
-});
+};
 
 // Tests that we have localized information in the HTML like title and lang.
-TEST_F('MediaAppUIBrowserTest', 'HasTitleAndLang', () => {
+MediaAppUIBrowserTest.HasTitleAndLang = async () => {
   assertEquals(document.documentElement.lang, 'en');
   assertEquals(document.title, 'Gallery');
-  testDone();
-});
+};
 
 // Tests that regular launch for an image succeeds.
-TEST_F('MediaAppUIBrowserTest', 'LaunchFile', async () => {
+MediaAppUIBrowserTest.LaunchFile = async () => {
   await launchWithFiles([await createTestImageFile()]);
   const result =
       await driver.waitForElementInGuest('img[src^="blob:"]', 'naturalWidth');
@@ -191,8 +164,7 @@ TEST_F('MediaAppUIBrowserTest', 'LaunchFile', async () => {
   assertEquals(file.name, 'test_file.png');
   assertEquals(file.hasDelete, true);
   assertEquals(file.hasRename, true);
-  testDone();
-});
+};
 
 // Tests that console.error()s in the trusted context are sent to the crash
 // reporter. This is also useful to ensure when multiple arguments are provided
@@ -200,7 +172,7 @@ TEST_F('MediaAppUIBrowserTest', 'LaunchFile', async () => {
 // the first arguments.
 // Note: unhandledrejection & onerror tests throw JS Errors regardless and are
 // tested in media_app_integration_browsertest.cc.
-TEST_F('MediaAppUIBrowserTest', 'ReportsErrorsFromTrustedContext', async () => {
+MediaAppUIBrowserTest.ReportsErrorsFromTrustedContext = async () => {
   const originalConsoleError = console.error;
   const reportedErrors = [];
 
@@ -250,15 +222,14 @@ TEST_F('MediaAppUIBrowserTest', 'ReportsErrorsFromTrustedContext', async () => {
   // practice to reset it since we stub it out for this test.
 
   console.error = originalConsoleError;
-  testDone();
-});
+};
 
 // Tests that we can launch the MediaApp with the selected (first) file,
 // interact with it by invoking IPC (deletion) that doesn't re-launch the
 // MediaApp i.e. doesn't call `launchWithDirectory`, then the rest of the files
 // in the current directory are loaded in.
-TEST_F('MediaAppUIBrowserTest', 'NonLaunchableIpcAfterFastLoad', async () => {
-  sortOrder = SortOrder.A_FIRST;
+MediaAppUIBrowserTest.NonLaunchableIpcAfterFastLoad = async () => {
+  setSortOrder(SortOrder.A_FIRST);
   const files =
       await createMultipleImageFiles(['file1', 'file2', 'file3', 'file4']);
   const directory = await createMockTestDirectory(files);
@@ -288,14 +259,12 @@ TEST_F('MediaAppUIBrowserTest', 'NonLaunchableIpcAfterFastLoad', async () => {
   await assertFilesLoaded(
       directory, ['file2.png', 'file3.png', 'file4.png'],
       'fast files: check files after deletion');
-
-  testDone();
-});
+};
 
 // Tests that we can launch the MediaApp with the selected (first) file,
 // and re-launch it before all files from the first launch are loaded in.
-TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
-  sortOrder = SortOrder.A_FIRST;
+MediaAppUIBrowserTest.ReLaunchableAfterFastLoad = async () => {
+  setSortOrder(SortOrder.A_FIRST);
   const files =
       await createMultipleImageFiles(['file1', 'file2', 'file3', 'file4']);
   const directory = await createMockTestDirectory(files);
@@ -305,7 +274,7 @@ TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
   const focusFile = launchWithFocusFile(directory);
 
   // `globalLaunchNumber` starts at -1, ensure first launch increments it.
-  assertEquals(0, globalLaunchNumber);
+  assertEquals(0, getGlobalLaunchNumber());
 
   await assertSingleFileLaunch(directory, files.length);
 
@@ -315,7 +284,7 @@ TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
   await launchWithDirectory(directory, directory.files[1]);
 
   // Ensure second launch incremented the `globalLaunchNumber`.
-  assertEquals(1, globalLaunchNumber);
+  assertEquals(1, getGlobalLaunchNumber());
 
   // Second launch loads other files into `currentFiles`.
   await assertFilesLoaded(
@@ -345,14 +314,12 @@ TEST_F('MediaAppUIBrowserTest', 'ReLaunchableAfterFastLoad', async () => {
   assertEquals(loadedFilesSecondLaunch[0].name, lastLoadedFiles[0].name);
   // Focus file in the `FileSystemDirectoryHandle` is at index 1.
   assertEquals(directory.files[1].name, lastLoadedFiles[0].name);
-
-  testDone();
-});
+};
 
 // Tests that a regular
 //  launch for multiple images succeeds, and the files get
 // distinct token mappings.
-TEST_F('MediaAppUIBrowserTest', 'MultipleFilesHaveTokens', async () => {
+MediaAppUIBrowserTest.MultipleFilesHaveTokens = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
     await createTestImageFile(1, 1, 'file2.png')
@@ -364,24 +331,20 @@ TEST_F('MediaAppUIBrowserTest', 'MultipleFilesHaveTokens', async () => {
   assertNotEquals(currentFiles[0].token, currentFiles[1].token);
   assertEquals(fileHandleForToken(currentFiles[0].token), directory.files[0]);
   assertEquals(fileHandleForToken(currentFiles[1].token), directory.files[1]);
-
-  testDone();
-});
+};
 
 // Tests that a launch with multiple files selected in the files app loads only
 // the files selected.
-TEST_F('MediaAppUIBrowserTest', 'MultipleSelectionLaunch', async () => {
+MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
   const directoryContents = await createMultipleImageFiles([0, 1, 2, 3]);
   const selectedIndexes = [1, 3];
   const directory = await launchWithFiles(directoryContents, selectedIndexes);
 
   assertFilenamesToBe('1.png,3.png');
-
-  testDone();
-});
+};
 
 // Tests that we show error UX when trying to launch an unopenable file.
-TEST_F('MediaAppUIBrowserTest', 'LaunchUnopenableFile', async () => {
+MediaAppUIBrowserTest.LaunchUnopenableFile = async () => {
   const mockFileHandle =
       new FakeFileSystemFileHandle('not_allowed.png', 'image/png');
   mockFileHandle.getFileSync = () => {
@@ -394,13 +357,12 @@ TEST_F('MediaAppUIBrowserTest', 'LaunchUnopenableFile', async () => {
   assertMatch(result, GENERIC_ERROR_MESSAGE_REGEX);
   assertEquals(currentFiles.length, 0);
   assertEquals(await getFileErrors(), 'NotAllowedError');
-  testDone();
-});
+};
 
 // Tests that a file that becomes inaccessible after the initial app launch is
 // ignored on navigation, and shows an error when navigated to itself.
-TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
-  sortOrder = SortOrder.A_FIRST;
+MediaAppUIBrowserTest.NavigateWithUnopenableSibling = async () => {
+  setSortOrder(SortOrder.A_FIRST);
   const handles = [
     fileToFileHandle(await createTestImageFile(111 /* width */, 10, '1.png')),
     fileToFileHandle(await createTestImageFile(222 /* width */, 10, '2.png')),
@@ -450,13 +412,11 @@ TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
   assertEquals(result, '111');
   assertEquals(currentFiles.length, 3);
   assertEquals(await getFileErrors(), ',,NotAllowedError');
-
-  testDone();
-});
+};
 
 // Tests a hypothetical scenario where a file may be deleted and replaced with
 // an openable directory with the same name while the app is running.
-TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
+MediaAppUIBrowserTest.FileThatBecomesDirectory = async () => {
   await sendTestMessage({suppressCrashReports: true});
   const handles = [
     fileToFileHandle(await createTestImageFile(111 /* width */, 10, '1.png')),
@@ -478,21 +438,18 @@ TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
   assertMatch(result, GENERIC_ERROR_MESSAGE_REGEX);
   assertEquals(currentFiles.length, 2);
   assertEquals(await getFileErrors(), ',NotAFile');
-
-  testDone();
-});
+};
 
 // Tests that chrome://media-app can successfully send a request to open the
 // feedback dialog and receive a response.
-TEST_F('MediaAppUIBrowserTest', 'CanOpenFeedbackDialog', async () => {
+MediaAppUIBrowserTest.CanOpenFeedbackDialog = async () => {
   const result = await mediaAppPageHandler.openFeedbackDialog();
 
   assertEquals(result.errorMessage, null);
-  testDone();
-});
+};
 
 // Tests that video elements in the guest can be full-screened.
-TEST_F('MediaAppUIBrowserTest', 'CanFullscreenVideo', async () => {
+MediaAppUIBrowserTest.CanFullscreenVideo = async () => {
   // Remove `overflow: hidden` to work around a spurious DCHECK in Blink
   // layout. See crbug.com/1052791. Oddly, even though the video is in the guest
   // iframe document (which also has these styles on its body), it is necessary
@@ -512,13 +469,11 @@ TEST_F('MediaAppUIBrowserTest', 'CanFullscreenVideo', async () => {
   // A TypeError of 'fullscreen error' results if fullscreen fails.
   assertEquals(result, 'hooray');
   assertEquals(tagName, '"VIDEO"');
-
-  testDone();
-});
+};
 
 // Tests that associated subtitles get not just a handle but a valid open File
 // upon initial file load.
-TEST_F('MediaAppUIBrowserTest', 'LoadVideoWithSubtitles', async () => {
+MediaAppUIBrowserTest.LoadVideoWithSubtitles = async () => {
   // Mock the send message call to prevent actual loading. We just want to see
   // what would be sent.
   let secondMessageSent;
@@ -562,14 +517,12 @@ TEST_F('MediaAppUIBrowserTest', 'LoadVideoWithSubtitles', async () => {
   assertEquals(data.files.length, 1);
   assertEquals(data.files[0].name, 'extra_video.webm');
   assertEquals(data.files[0].file, null);
-
-  testDone();
-});
+};
 
 // Tests the IPC behind the implementation of ReceivedFile.overwriteOriginal()
 // in the untrusted context. Ensures it correctly updates the file handle owned
 // by the privileged context.
-TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalIPC', async () => {
+MediaAppUIBrowserTest.OverwriteOriginalIPC = async () => {
   const directory = await launchWithFiles([await createTestImageFile()]);
   const handle = directory.files[0];
 
@@ -588,12 +541,11 @@ TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalIPC', async () => {
   assertEquals(handle.lastWritable.writes.length, 1);
   assertDeepEquals(
       handle.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
-  testDone();
-});
+};
 
 // Tests that OverwriteOriginal shows a file picker (and writes to that file) if
 // the write attempt to the original file fails.
-TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalPickerFallback', async () => {
+MediaAppUIBrowserTest.OverwriteOriginalPickerFallback = async () => {
   const directory = await launchWithFiles([await createTestImageFile()]);
 
   directory.files[0].nextCreateWritableError =
@@ -615,12 +567,11 @@ TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalPickerFallback', async () => {
   assertEquals(pickedFile.lastWritable.writes.length, 1);
   assertDeepEquals(
       pickedFile.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
-  testDone();
-});
+};
 
 // Tests that invalid characters in file extensions are stripped before being
 // passed to showSaveFilePicker.
-TEST_F('MediaAppUIBrowserTest', 'FilePickerValidateExtension', async () => {
+MediaAppUIBrowserTest.FilePickerValidateExtension = async () => {
   function pick(suggestedName, mimeType = 'image/jpeg') {
     return new Promise(resolve => {
       window.showSaveFilePicker = options => {
@@ -646,11 +597,10 @@ TEST_F('MediaAppUIBrowserTest', 'FilePickerValidateExtension', async () => {
   // Ideally, double-barrelled extensions like this would be handled better. But
   // the only way to do that is with a hardcoded list of exceptions.
   assertDeepEquals(await pick('foo.tar.gz'), [[['.gz']]]);
-  testDone();
-});
+};
 
 // Tests `MessagePipe.sendMessage()` properly propagates errors.
-TEST_F('MediaAppUIBrowserTest', 'CrossContextErrors', async () => {
+MediaAppUIBrowserTest.CrossContextErrors = async () => {
   // Prevent the trusted context throwing errors resulting JS errors.
   guestMessagePipe.logClientError = error => console.log(JSON.stringify(error));
   guestMessagePipe.rethrowErrors = false;
@@ -680,12 +630,11 @@ TEST_F('MediaAppUIBrowserTest', 'CrossContextErrors', async () => {
 
   assertEquals(caughtError.name, 'NotAllowedError');
   assertEquals(caughtError.message, `test: overwrite-file: ${error.message}`);
-  testDone();
-});
+};
 
 // Tests the IPC behind the implementation of ReceivedFile.deleteOriginalFile()
 // in the untrusted context.
-TEST_F('MediaAppUIBrowserTest', 'DeleteOriginalIPC', async () => {
+MediaAppUIBrowserTest.DeleteOriginalIPC = async () => {
   let directory = await launchWithFiles(
       [await createTestImageFile(1, 1, 'first_file_name.png')]);
   const testHandle = directory.files[0];
@@ -736,13 +685,12 @@ TEST_F('MediaAppUIBrowserTest', 'DeleteOriginalIPC', async () => {
       'deleteOriginalFile failed Error: Error: delete-file: Delete failed. ' +
           'File without launch directory.',
       testResponse.testQueryResult);
-  testDone();
-});
+};
 
 // Tests when a file is deleted, the app tries to open the next available file
 // and reloads with those files.
-TEST_F('MediaAppUIBrowserTest', 'DeletionOpensNextFile', async () => {
-  sortOrder = SortOrder.A_FIRST;
+MediaAppUIBrowserTest.DeletionOpensNextFile = async () => {
+  setSortOrder(SortOrder.A_FIRST);
   const testFiles = [
     await createTestImageFile(1, 1, 'test_file_1.png'),
     await createTestImageFile(1, 1, 'test_file_2.png'),
@@ -777,7 +725,7 @@ TEST_F('MediaAppUIBrowserTest', 'DeletionOpensNextFile', async () => {
   assertEquals('test_file_3.png', lastLoadedFiles[1].name);
 
   // Navigate to the last file (originally the third file) and delete it
-  const token = currentFiles[entryIndex].token;
+  const token = currentFiles[getEntryIndex()].token;
   await sendTestMessage({navigate: {direction: 'next', token}});
   testResponse = await sendTestMessage(messageDelete);
 
@@ -800,13 +748,11 @@ TEST_F('MediaAppUIBrowserTest', 'DeletionOpensNextFile', async () => {
   // The app should be in zero state with no media loaded.
   lastLoadedFiles = await getLoadedFiles();
   assertEquals(0, lastLoadedFiles.length);
-
-  testDone();
-});
+};
 
 // Tests that the app gracefully handles a delete request on a file that's
 // been deleted or moved.
-TEST_F('MediaAppUIBrowserTest', 'DeleteMissingFile', async () => {
+MediaAppUIBrowserTest.DeleteMissingFile = async () => {
   const directory = await launchWithFiles(
       [await createTestImageFile(1, 1, 'first_file_name.png')]);
   makeFileNotFound(directory.files[0]);
@@ -816,13 +762,11 @@ TEST_F('MediaAppUIBrowserTest', 'DeleteMissingFile', async () => {
 
   assertEquals(
       'deleteOriginalFile resolved file moved', testResponse.testQueryResult);
-
-  testDone();
-});
+};
 
 // Tests that the app gracefully handles a rename request on a file that's
 // been deleted or moved.
-TEST_F('MediaAppUIBrowserTest', 'RenameMissingFile', async () => {
+MediaAppUIBrowserTest.RenameMissingFile = async () => {
   const directory =
       await launchWithFiles([await createTestImageFile(1, 1, 'file_name.png')]);
   makeFileNotFound(directory.files[0]);
@@ -833,61 +777,58 @@ TEST_F('MediaAppUIBrowserTest', 'RenameMissingFile', async () => {
   assertEquals(
       'renameOriginalFile resolved FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY',
       testResponse.testQueryResult);
-
-  testDone();
-});
+};
 
 // Tests the IPC behind the loadNext and loadPrev functions on the received file
 // list in the untrusted context.
-TEST_F('MediaAppUIBrowserTest', 'NavigateIPC', async () => {
+MediaAppUIBrowserTest.NavigateIPC = async () => {
   await launchWithFiles(
       [await createTestImageFile(), await createTestImageFile()]);
   const fileOneToken = currentFiles[0].token;
   const fileTwoToken = currentFiles[1].token;
-  assertEquals(entryIndex, 0);
+  assertEquals(getEntryIndex(), 0);
 
   let result = await sendTestMessage(
       {navigate: {direction: 'next', token: fileOneToken}});
   assertEquals(result.testQueryResult, 'loadNext called');
-  assertEquals(entryIndex, 1);
+  assertEquals(getEntryIndex(), 1);
 
   result = await sendTestMessage(
       {navigate: {direction: 'prev', token: fileTwoToken}});
   assertEquals(result.testQueryResult, 'loadPrev called');
-  assertEquals(entryIndex, 0);
+  assertEquals(getEntryIndex(), 0);
 
   result = await sendTestMessage(
       {navigate: {direction: 'prev', token: fileOneToken}});
   assertEquals(result.testQueryResult, 'loadPrev called');
-  assertEquals(entryIndex, 1);
-  testDone();
-});
+  assertEquals(getEntryIndex(), 1);
+};
 
 // Tests the loadNext and loadPrev functions on the received file list correctly
 // navigate when they are working with a out of date file list.
 // Regression test for b/163662946
-TEST_F('MediaAppUIBrowserTest', 'NavigateOutOfSync', async () => {
+MediaAppUIBrowserTest.NavigateOutOfSync = async () => {
   await launchWithFiles(
       [await createTestImageFile(), await createTestImageFile()]);
   const fileOneToken = currentFiles[0].token;
   const fileTwoToken = currentFiles[1].token;
 
-  // Simulate some operation updating entryIndex without reloading the media
-  // app.
-  entryIndex = 1;
+  // Simulate some operation updating getEntryIndex() without reloading the
+  // media app.
+  setEntryIndex(1);
 
   let result = await sendTestMessage(
       {navigate: {direction: 'next', token: fileOneToken}});
   assertEquals(result.testQueryResult, 'loadNext called');
   // The media app is focused on file 0 so the next file is file 1.
-  assertEquals(entryIndex, 1);
+  assertEquals(getEntryIndex(), 1);
 
-  entryIndex = 0;
+  setEntryIndex(0);
 
   result = await sendTestMessage(
       {navigate: {direction: 'prev', token: fileTwoToken}});
   assertEquals(result.testQueryResult, 'loadPrev called');
-  assertEquals(entryIndex, 0);
+  assertEquals(getEntryIndex(), 0);
 
   // The received file list and entry index currently agree that the 0th file is
   // open. Tell loadNext that the 1st file is current to ensure that navigate
@@ -895,15 +836,14 @@ TEST_F('MediaAppUIBrowserTest', 'NavigateOutOfSync', async () => {
   result = await sendTestMessage(
       {navigate: {direction: 'next', token: fileTwoToken}});
   assertEquals(result.testQueryResult, 'loadNext called');
-  assertEquals(entryIndex, 0);
-  testDone();
-});
+  assertEquals(getEntryIndex(), 0);
+};
 
 // Tests the IPC behind the implementation of ReceivedFile.renameOriginalFile()
 // in the untrusted context. This test is integration-y making sure we rename
 // the focus file and that gets inserted in the right place in `currentFiles`
 // preserving navigation order.
-TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
+MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
     await createTestImageFile(1, 1, 'file2.png')
@@ -916,9 +856,9 @@ TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
   await advance(1);
 
   // Test normal rename flow.
-  const file2Handle = directory.files[entryIndex];
+  const file2Handle = directory.files[getEntryIndex()];
   const file2File = file2Handle.getFileSync();
-  const file2Token = currentFiles[entryIndex].token;
+  const file2Token = currentFiles[getEntryIndex()].token;
   let messageRename = {renameLastFile: 'new_file_name.png'};
   let testResponse;
 
@@ -930,33 +870,33 @@ TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
   assertEquals(file2Handle, directory.lastDeleted);
   // The new file has the right name in the trusted context.
   assertEquals(directory.files.length, 2);
-  assertEquals(directory.files[entryIndex].name, 'new_file_name.png');
-  assertEquals(currentFiles[entryIndex].handle.name, 'new_file_name.png');
-  assertEquals(currentFiles[entryIndex].file.name, 'new_file_name.png');
+  assertEquals(directory.files[getEntryIndex()].name, 'new_file_name.png');
+  assertEquals(currentFiles[getEntryIndex()].handle.name, 'new_file_name.png');
+  assertEquals(currentFiles[getEntryIndex()].file.name, 'new_file_name.png');
   // The new file has the right name in the untrusted context.
   testResponse = await sendTestMessage({getLastFileName: true});
   assertEquals(testResponse.testQueryResult, 'new_file_name.png');
   // The new file uses the same token as the old file.
-  assertEquals(currentFiles[entryIndex].token, file2Token);
+  assertEquals(currentFiles[getEntryIndex()].token, file2Token);
   // Check the new file written has the correct data.
-  const renamedHandle = directory.files[entryIndex];
+  const renamedHandle = directory.files[getEntryIndex()];
   const renamedFile = await renamedHandle.getFile();
   assertEquals(renamedFile.size, file2File.size);
   assertEquals(await renamedFile.text(), await file2File.text());
   // Check the internal representation (token map & currentFiles) is updated.
   assertEquals(tokenMap.get(file2Token), renamedHandle);
-  assertEquals(currentFiles[entryIndex].handle, renamedHandle);
+  assertEquals(currentFiles[getEntryIndex()].handle, renamedHandle);
 
   // Check navigation order is preserved.
-  assertEquals(entryIndex, 1);
-  assertEquals(currentFiles[entryIndex].handle.name, 'new_file_name.png');
+  assertEquals(getEntryIndex(), 1);
+  assertEquals(currentFiles[getEntryIndex()].handle.name, 'new_file_name.png');
   assertEquals(currentFiles[0].handle.name, 'file1.png');
 
   // Advancing wraps around back to the first file.
   await advance(1);
 
-  assertEquals(entryIndex, 0);
-  assertEquals(currentFiles[entryIndex].handle.name, 'file1.png');
+  assertEquals(getEntryIndex(), 0);
+  assertEquals(currentFiles[getEntryIndex()].handle.name, 'file1.png');
   assertEquals(currentFiles[1].handle.name, 'new_file_name.png');
 
   // Test renaming when a file with the new name already exists, tries to rename
@@ -968,13 +908,13 @@ TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
       testResponse.testQueryResult, 'renameOriginalFile resolved file exists');
   // No change to the existing file.
   assertEquals(directory.files.length, 2);
-  assertEquals(directory.files[entryIndex].name, 'file1.png');
+  assertEquals(directory.files[getEntryIndex()].name, 'file1.png');
   assertEquals(directory.files[1].name, 'new_file_name.png');
 
   // Test renaming when something is out of sync with `currentFiles` and has an
   // expired token.
   const expiredToken = tokenGenerator.next().value;
-  currentFiles[entryIndex].token = expiredToken;
+  currentFiles[getEntryIndex()].token = expiredToken;
 
   messageRename = {renameLastFile: 'another_name.png'};
 
@@ -984,7 +924,7 @@ TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
   assertEquals(
       testResponse.testQueryResult,
       'renameOriginalFile resolved FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY');
-  assertEquals(currentFiles[entryIndex].handle.name, 'file1.png');
+  assertEquals(currentFiles[getEntryIndex()].handle.name, 'file1.png');
   assertEquals(currentFiles.length, 2);
   assertEquals(directory.files.length, 2);
 
@@ -1002,12 +942,10 @@ TEST_F('MediaAppUIBrowserTest', 'RenameOriginalIPC', async () => {
       testResponse.testQueryResult,
       'renameOriginalFile failed Error: Error: rename-file: Rename failed. ' +
           'File without launch directory.');
-
-  testDone();
-});
+};
 
 // Tests the IPC behind the requestSaveFile delegate function.
-TEST_F('MediaAppUIBrowserTest', 'RequestSaveFileIPC', async () => {
+MediaAppUIBrowserTest.RequestSaveFileIPC = async () => {
   // Mock out choose file system entries since it can only be interacted with
   // via trusted user gestures.
   const newFileHandle = new FakeFileSystemFileHandle();
@@ -1028,11 +966,10 @@ TEST_F('MediaAppUIBrowserTest', 'RequestSaveFileIPC', async () => {
   assertEquals(options.types.length, 1);
   assertEquals(options.types[0].description, '.png');
   assertDeepEquals(options.types[0].accept['image/png'], ['.png']);
-  testDone();
-});
+};
 
 // Tests the IPC behind the saveAs function on received files.
-TEST_F('MediaAppUIBrowserTest', 'SaveAsIPC', async () => {
+MediaAppUIBrowserTest.SaveAsIPC = async () => {
   // Mock out choose file system entries since it can only be interacted with
   // via trusted user gestures.
   const newFileHandle = new FakeFileSystemFileHandle('new_file.jpg');
@@ -1042,7 +979,7 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsIPC', async () => {
       [await createTestImageFile(10, 10, 'original_file.jpg')]);
 
   const originalFileToken = currentFiles[0].token;
-  assertEquals(entryIndex, 0);
+  assertEquals(getEntryIndex(), 0);
 
   const receivedFilesBefore = await getLoadedFiles();
   const result = await sendTestMessage({saveAs: 'foo'});
@@ -1056,7 +993,7 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsIPC', async () => {
   assertEquals(await writeResult.text(), 'foo');
   // Make sure we have created a new file descriptor, and that
   // the original file is still available.
-  assertEquals(entryIndex, 1);
+  assertEquals(getEntryIndex(), 1);
   assertEquals(currentFiles[0].handle, directory.files[0]);
   assertEquals(currentFiles[0].handle.name, 'original_file.jpg');
   assertNotEquals(currentFiles[0].token, originalFileToken);
@@ -1073,12 +1010,10 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsIPC', async () => {
   assertEquals(receivedFilesBefore[0].hasDelete, true);
   assertEquals(receivedFilesAfter[0].hasRename, false);
   assertEquals(receivedFilesAfter[0].hasDelete, false);
-
-  testDone();
-});
+};
 
 // Tests the error handling behind the saveAs function on received files.
-TEST_F('MediaAppUIBrowserTest', 'SaveAsErrorHandling', async () => {
+MediaAppUIBrowserTest.SaveAsErrorHandling = async () => {
   // Prevent the trusted context from throwing errors which cause the test to
   // fail.
   guestMessagePipe.logClientError = error => console.log(JSON.stringify(error));
@@ -1098,17 +1033,16 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsErrorHandling', async () => {
       result.testQueryResult,
       'saveAs failed Error: FakeError: save-as: Fake exception');
   assertEquals(result.testQueryResultData['filename'], 'original_file.jpg');
-  assertEquals(entryIndex, 0);
+  assertEquals(getEntryIndex(), 0);
   assertEquals(currentFiles.length, 1);
   assertEquals(currentFiles[0].handle, directory.files[0]);
   assertEquals(currentFiles[0].handle.name, 'original_file.jpg');
   assertEquals(currentFiles[0].token, originalFileToken);
   assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
-  testDone();
-});
+};
 
 // Tests the IPC behind the openFile function on receivedFileList.
-TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
+MediaAppUIBrowserTest.OpenFileIPC = async () => {
   const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
   window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
   await launchWithFiles(
@@ -1117,17 +1051,16 @@ TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
   await sendTestMessage({openFile: true});
 
   const lastToken = [...tokenMap.keys()].slice(-1)[0];
-  assertEquals(entryIndex, 1);
+  assertEquals(getEntryIndex(), 1);
   assertEquals(currentFiles.length, 2);
   assertEquals(currentFiles[1].handle, pickedFileHandle);
   assertEquals(currentFiles[1].handle.name, 'picked_file.jpg');
   assertEquals(currentFiles[1].token, lastToken);
   assertEquals(tokenMap.get(currentFiles[1].token), currentFiles[1].handle);
-  testDone();
-});
+};
 
-TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
-  sortOrder = SortOrder.A_FIRST;
+MediaAppUIBrowserTest.RelatedFiles = async () => {
+  setSortOrder(SortOrder.A_FIRST);
   // These files all have a last modified time of 0 so the order they end up in
   // is their lexicographical order i.e. `jaypeg.jpg, jiff.gif, matroska.mkv,
   // world.webm`. When a file is loaded it becomes the "focus file" and files
@@ -1170,12 +1103,10 @@ TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
 
   await loadFilesWithoutSendingToGuest(directory, ext);
   assertFilesToBe([ext], 'ext');
+};
 
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'SortedFilesByTime', async () => {
-  sortOrder = SortOrder.NEWEST_FIRST;
+MediaAppUIBrowserTest.SortedFilesByTime = async () => {
+  setSortOrder(SortOrder.NEWEST_FIRST);
   // We want the more recent (i.e. higher timestamp) files first. In the case of
   // equal timestamp, it should sort lexicographically by filename.
   const filesInModifiedOrder = await Promise.all([
@@ -1194,13 +1125,11 @@ TEST_F('MediaAppUIBrowserTest', 'SortedFilesByTime', async () => {
   await launchWithFiles(files);
 
   assertFilesToBe(filesInModifiedOrder);
+};
 
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'SortedFilesByName', async () => {
+MediaAppUIBrowserTest.SortedFilesByName = async () => {
   // Z_FIRST should be the default.
-  assertEquals(sortOrder, SortOrder.Z_FIRST);
+  assertEquals(TEST_ONLY.sortOrder, SortOrder.Z_FIRST);
   // Establish some sample files that match the naming style from the Camera app
   // in m86, except one file with lowercase prefix is included, to verify that
   // the collation ignores case (to match the Files app). Note we want
@@ -1220,14 +1149,12 @@ TEST_F('MediaAppUIBrowserTest', 'SortedFilesByName', async () => {
   await launchWithFiles(files);
 
   assertFilesToBe(filesInReverseLexicographicOrder);
-
-  testDone();
-});
+};
 
 // Tests that getFile is not called on all files in a directory on launch with
 // default sort order. This is to avoid a series of slow file system api calls
 // due to b/172529567.
-TEST_F('MediaAppUIBrowserTest', 'GetFileNotCalledOnAllFiles', async () => {
+MediaAppUIBrowserTest.GetFileNotCalledOnAllFiles = async () => {
   const handles = [
     fileToFileHandle(await createTestImageFile(1, 1, '1.png')),
     fileToFileHandle(await createTestImageFile(1, 1, '2.png')),
@@ -1249,44 +1176,12 @@ TEST_F('MediaAppUIBrowserTest', 'GetFileNotCalledOnAllFiles', async () => {
   assertEquals(getFileCalls.length, 2);
   assertEquals(getFileCalls[0], '1.png');
   assertEquals(getFileCalls[1], '1.png');
-
-  testDone();
-});
+};
 
 // Tests that the guest gets focus automatically on start up.
-TEST_F('MediaAppUIBrowserTest', 'GuestHasFocus', async () => {
+MediaAppUIBrowserTest.GuestHasFocus = async () => {
   const guest = queryIFrame();
 
   // By the time this tests runs the iframe should already have been loaded.
   assertEquals(document.activeElement, guest);
-
-  testDone();
-});
-
-// Test cases injected into the guest context.
-// See implementations in media_app_guest_ui_browsertest.js.
-
-TEST_F('MediaAppUIBrowserTest', 'GuestCanSpawnWorkers', async () => {
-  await runTestInGuest('GuestCanSpawnWorkers');
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'GuestHasLang', async () => {
-  await runTestInGuest('GuestHasLang');
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'GuestLoadsLoadTimeData', async () => {
-  await runTestInGuest('GuestLoadsLoadTimeData');
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'GuestCanLoadWithCspRestrictions', async () => {
-  await runTestInGuest('GuestCanLoadWithCspRestrictions');
-  testDone();
-});
-
-TEST_F('MediaAppUIBrowserTest', 'GuestStartsWithDefaultFileList', async () => {
-  await runTestInGuest('GuestStartsWithDefaultFileList');
-  testDone();
-});
+};

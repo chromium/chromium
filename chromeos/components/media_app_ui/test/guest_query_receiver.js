@@ -183,18 +183,22 @@ function GUEST_TEST(testName, testCase) {
  */
 async function signalTestHandlersReady() {
   const EXPECTED_ERROR =
-      `No handler registered for message type 'test-handlers-ready'`;
-  while (true) {
+      /No handler registered for message type 'test-handlers-ready'/;
+  let attempts = 10;
+  while (--attempts >= 0) {
     try {
+      // Try to limit log output from message pipe errors.
+      await new Promise(resolve => setTimeout(resolve, 100));
       await parentMessagePipe.sendMessage('test-handlers-ready', {});
       return;
     } catch (/** @type {!GenericErrorResponse} */ e) {
-      if (e.message !== EXPECTED_ERROR) {
+      if (!EXPECTED_ERROR.test(e.message)) {
         console.error('Unexpected error in signalTestHandlersReady', e);
         return;
       }
     }
   }
+  console.error('signalTestHandlersReady failed to signal.');
 }
 
 /** Installs the MessagePipe handlers for receiving test queries. */

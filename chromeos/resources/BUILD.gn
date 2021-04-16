@@ -202,7 +202,10 @@ grit("media_app_resources") {
 
   use_brotli = true
 
-  deps = [ "//chromeos/components/media_app_ui:mojo_bindings_js" ]
+  deps = [
+    "//chromeos/components/media_app_ui:mojo_bindings_js",
+    "//chromeos/components/media_app_ui/resources/js:launch_rollup",
+  ]
 }
 
 # Resources automatically served by the chrome://media-app bundle, obtained via DEPS.

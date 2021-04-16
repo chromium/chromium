@@ -103,3 +103,8 @@ captureConsoleErrors(console.error, reportCrashError);
 
 window.addEventListener('error', reportCrashError);
 window.addEventListener('unhandledrejection', reportCrashError);
+
+export const TEST_ONLY = {
+  reportCrashError,
+  captureConsoleErrors
+};

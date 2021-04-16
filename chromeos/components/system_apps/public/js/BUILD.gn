@@ -5,8 +5,16 @@
 import("//chrome/test/base/js2gtest.gni")
 import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_library("message_pipe") {
+}
+
+js_library("message_pipe.m") {
+  sources = [
+    "$root_gen_dir/chromeos/components/system_apps/public/js/message_pipe.m.js",
+  ]
+  extra_deps = [ ":modulize" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -58,4 +66,8 @@ js_library("message_pipe_browsertest_js") {
     "//third_party/chaijs/externs/chai-3.5.js",
   ]
   deps = [ ":message_pipe" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "message_pipe.js" ]
 }

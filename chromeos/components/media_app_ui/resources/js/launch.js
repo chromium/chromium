@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as error_reporter from './error_reporter.js';
+import {assertCast, MessagePipe} from './message_pipe.m.js';
+import {DeleteFileMessage, DeleteResult, FileContext, LoadFilesMessage, Message, NavigateMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
+
 /**
  * Sort order for files in the navigation ring.
  * @enum
@@ -1191,3 +1196,45 @@ const guest = assertCast(
 guest.addEventListener('load', () => {
   guest.focus();
 });
+
+export const TEST_ONLY = {
+  Message,
+  SortOrder,
+  advance,
+  currentDirectoryHandle,
+  currentFiles,
+  fileHandleForToken,
+  globalLaunchNumber,
+  guestMessagePipe,
+  launchConsumer,
+  launchWithDirectory,
+  loadOtherRelatedFiles,
+  pickWritableFile,
+  processOtherFilesInDirectory,
+  sendFilesToGuest,
+  setCurrentDirectory,
+  sortOrder,
+  tokenGenerator,
+  tokenMap,
+  mediaAppPageHandler,
+  error_reporter,
+  getGlobalLaunchNumber: () => globalLaunchNumber,
+  incrementLaunchNumber: () => ++globalLaunchNumber,
+  setCurrentDirectoryHandle: d => {
+    currentDirectoryHandle = d;
+  },
+  setSortOrder: s => {
+    sortOrder = s;
+  },
+  getEntryIndex: () => entryIndex,
+  setEntryIndex: i => {
+    entryIndex = i;
+  },
+};
+
+// Small, auxiliary file that adds hooks to support test cases relying on the
+// "real" app context (e.g. for stack traces).
+import './app_context_test_support.js';
+
+// Expose `advance()` for MediaAppIntegrationTest.FileOpenCanTraverseDirectory.
+window['advance'] = advance;

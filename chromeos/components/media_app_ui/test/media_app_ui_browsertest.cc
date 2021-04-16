@@ -4,7 +4,12 @@
 
 #include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/path_service.h"
+#include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 
@@ -30,6 +35,26 @@ constexpr base::FilePath::CharType kGuestQueryHandler[] = FILE_PATH_LITERAL(
 constexpr base::FilePath::CharType kGuestTestCases[] = FILE_PATH_LITERAL(
     "chromeos/components/media_app_ui/test/media_app_guest_ui_browsertest.js");
 
+// Path to test files loaded via the TestFileRequestFilter.
+constexpr base::FilePath::CharType kTestFileLocation[] =
+    FILE_PATH_LITERAL("chromeos/components/media_app_ui/test");
+
+void HandleTestFileRequestCallback(
+    const std::string& path,
+    content::WebUIDataSource::GotDataCallback callback) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath source_root;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root);
+  const base::FilePath test_file_path =
+      source_root.AppendASCII(kTestFileLocation).AppendASCII(path);
+
+  std::string contents;
+  CHECK(base::ReadFileToString(test_file_path, &contents)) << test_file_path;
+
+  std::move(callback).Run(base::RefCountedString::TakeString(&contents));
+}
+
 }  // namespace
 
 MediaAppUiBrowserTest::MediaAppUiBrowserTest()
@@ -38,7 +63,10 @@ MediaAppUiBrowserTest::MediaAppUiBrowserTest()
           chromeos::kChromeUIMediaAppGuestURL,
           {base::FilePath(kTestLibraryPath), base::FilePath(kCr),
            base::FilePath(kWebUiTestUtil), base::FilePath(kGuestQueryHandler),
-           base::FilePath(kGuestTestCases)}) {}
+           base::FilePath(kGuestTestCases)}) {
+  chromeos::SetMediaAppUITestRequestHandlerForTesting(
+      base::BindRepeating(&HandleTestFileRequestCallback));
+}
 
 MediaAppUiBrowserTest::~MediaAppUiBrowserTest() = default;
 

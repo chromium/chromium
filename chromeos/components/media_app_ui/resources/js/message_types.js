@@ -11,7 +11,7 @@
  * Enum for message types.
  * @enum {string}
  */
-const Message = {
+/* #export */ const Message = {
   DELETE_FILE: 'delete-file',
   IFRAME_READY: 'iframe-ready',
   LOAD_EXTRA_FILES: 'load-extra-files',
@@ -29,7 +29,7 @@ const Message = {
  * Enum for results of deleting a file.
  * @enum {number}
  */
-const DeleteResult = {
+/* #export */ const DeleteResult = {
   SUCCESS: 0,
   FILE_MOVED: 1,
 };
@@ -40,14 +40,14 @@ const DeleteResult = {
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number}}
  */
-let DeleteFileMessage;
+/* #export */ let DeleteFileMessage;
 
 /**
  * Response message sent by the privileged context indicating if a requested
  * delete was successful.
  * @typedef {{deleteResult: DeleteResult!}}
  */
-let DeleteFileResponse;
+/* #export */ let DeleteFileResponse;
 
 /**
  * Representation of a file passed in on the LoadFilesMessage.
@@ -60,7 +60,7 @@ let DeleteFileResponse;
  *    canRename: boolean
  * }}
  */
-let FileContext;
+/* #export */ let FileContext;
 
 /**
  * Message sent by the privileged context to the unprivileged context indicating
@@ -70,7 +70,7 @@ let FileContext;
  *    files: !Array<!FileContext>
  * }}
  */
-let LoadFilesMessage;
+/* #export */ let LoadFilesMessage;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -78,7 +78,7 @@ let LoadFilesMessage;
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number, blob: !Blob}}
  */
-let OverwriteFileMessage;
+/* #export */ let OverwriteFileMessage;
 
 /**
  * Response message to a successful overwrite (no error thrown). If fields are
@@ -87,7 +87,7 @@ let OverwriteFileMessage;
  * `errorName` is the error on the write attempt that triggered the picker.
  * @typedef {{renamedTo: (string|undefined), errorName: (string|undefined)}}
  */
-let OverwriteViaFilePickerResponse;
+/* #export */ let OverwriteViaFilePickerResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -99,13 +99,13 @@ let OverwriteViaFilePickerResponse;
  * this is used to decide what `direction` is in reference to.
  * @typedef {{direction: number, currentFileToken: (number|undefined)}}
  */
-let NavigateMessage;
+/* #export */ let NavigateMessage;
 
 /**
  * Enum for results of renaming a file.
  * @enum {number}
  */
-const RenameResult = {
+/* #export */ const RenameResult = {
   FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY: -1,
   SUCCESS: 0,
   FILE_EXISTS: 1,
@@ -117,10 +117,10 @@ const RenameResult = {
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number, newFilename: string}}
  */
-let RenameFileMessage;
+/* #export */ let RenameFileMessage;
 
 /** @typedef {{renameResult: RenameResult!}}  */
-let RenameFileResponse;
+/* #export */ let RenameFileResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -132,7 +132,7 @@ let RenameFileResponse;
  * filename input be pre-filled with `suggestedName`.
  * @typedef {{suggestedName: string, mimeType: string}}
  */
-let RequestSaveFileMessage;
+/* #export */ let RequestSaveFileMessage;
 
 /**
  * Response message sent by the privileged context with a unique identifier for
@@ -140,7 +140,7 @@ let RequestSaveFileMessage;
  * file message.
  * @typedef {{pickedFileContext: !FileContext}}
  */
-let RequestSaveFileResponse;
+/* #export */ let RequestSaveFileResponse;
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -152,11 +152,11 @@ let RequestSaveFileResponse;
  * just the currently writable file.
  * @typedef {{blob: !Blob, oldFileToken: ?number, pickedFileToken: number}}
  */
-let SaveAsMessage;
+/* #export */ let SaveAsMessage;
 
 /**
  * Response message sent by the privileged context with the name of the new
  * current file.
  * @typedef {{newFilename: string}}
  */
-let SaveAsResponse;
+/* #export */ let SaveAsResponse;

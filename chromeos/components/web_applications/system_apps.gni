@@ -28,7 +28,6 @@ system_app_closure_flags_strict =
       "conformance_configs " +
           rebase_path("closure_conformance_checks.txt", root_build_dir),
       "jscomp_error=conformanceViolations",
-      "jscomp_error=reportUnknownTypes",
     ]
 
 ignore_load_time_data_errors_closure_flags = [
