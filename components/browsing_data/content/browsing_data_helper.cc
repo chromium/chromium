@@ -153,6 +153,10 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::HID_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, delete_begin,
+      delete_end, HostContentSettingsMap::PatternSourcePredicate());
 #endif
 }
 

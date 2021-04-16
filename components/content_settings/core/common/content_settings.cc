@@ -94,6 +94,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, 73},
     {ContentSettingsType::DISPLAY_CAPTURE, 74},
     {ContentSettingsType::FILE_HANDLING, 75},
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, 76},
 };
 
 }  // namespace

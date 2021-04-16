@@ -158,7 +158,7 @@ enum class ContentSettingsType : int32_t {
 
   // Content settings which stores whether to allow sites to ask for permission
   // to save changes to an original file selected by the user through the
-  // File System API.
+  // File System Access API.
   FILE_SYSTEM_WRITE_GUARD,
 
   // Content settings for installed web apps that browsing history may be
@@ -194,7 +194,7 @@ enum class ContentSettingsType : int32_t {
   AR,
 
   // Content setting which stores whether to allow site to open and read files
-  // and directories selected through the File System API.
+  // and directories selected through the File System Access API.
   FILE_SYSTEM_READ_GUARD,
 
   // Access to first party storage in a third-party context. Exceptions are
@@ -242,6 +242,11 @@ enum class ContentSettingsType : int32_t {
   // no effect on the File System API, <input type="file">, or the ability to
   // access files through drag & drop or clipboard paste operations.
   FILE_HANDLING,
+
+  // Website setting to store permissions metadata granted to paths on the local
+  // file system via the File System Access API. |FILE_SYSTEM_WRITE_GUARD| is
+  // the corresponding "guard" setting.
+  FILE_SYSTEM_ACCESS_CHOOSER_DATA,
 
   NUM_TYPES,
 };

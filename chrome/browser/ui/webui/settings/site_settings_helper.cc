@@ -113,6 +113,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::WINDOW_PLACEMENT, "window-placement"},
     {ContentSettingsType::FONT_ACCESS, "font-access"},
     {ContentSettingsType::FILE_HANDLING, "file-handling"},
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+     "file-system-access-handles-data"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required. Note some exceptions do have UI in

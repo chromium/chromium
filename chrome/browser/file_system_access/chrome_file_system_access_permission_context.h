@@ -8,9 +8,14 @@
 #include <map>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/permissions/chooser_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -22,28 +27,37 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace features {
+// Enables persistent permissions for the File System Access API.
+extern const base::Feature kFileSystemAccessPersistentPermissions;
+}  // namespace features
+
 // Chrome implementation of FileSystemAccessPermissionContext. This class
 // implements a permission model where permissions are shared across an entire
-// origin. When the last tab for an origin is closed all permissions for that
-// origin are revoked.
+// origin.
+//
+// There are two orthogonal permission models at work in this class:
+// 1. Active permissions are scoped to the lifetime of the handles that
+//    reference the grants. When the last tab for an origin is closed, all
+//    active permissions for that origin are revoked.
+// 2. Persistent permissions allow for auto-granting permissions which the user
+//    had given access to prior, within a given time window. These are stored
+//    using ChooserContextBase.
 //
 // All methods must be called on the UI thread.
-//
-// This class does not inherit from ChooserContextBase because the model this
-// API uses doesn't really match what ChooserContextBase has to provide. The
-// limited lifetime of File System Access permission grants (scoped to the
-// lifetime of the handles that reference the grants), and the possible
-// interactions between grants for directories and grants for children of those
-// directories as well as possible interactions between read and write grants
-// make it harder to squeeze this into a shape that fits with
-// ChooserContextBase.
 class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
-      public KeyedService {
+      public permissions::ChooserContextBase {
  public:
   explicit ChromeFileSystemAccessPermissionContext(
-      content::BrowserContext* context);
+      content::BrowserContext* context,
+      const base::Clock* clock = base::DefaultClock::GetInstance());
   ~ChromeFileSystemAccessPermissionContext() override;
+
+  // permissions::ChooserContextBase
+  std::string GetKeyForObject(const base::Value& object) override;
+  bool IsValidObject(const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
   // content::FileSystemAccessPermissionContext:
   scoped_refptr<content::FileSystemAccessPermissionGrant>
@@ -86,9 +100,14 @@ class ChromeFileSystemAccessPermissionContext
     max_ids_per_origin_ = max_ids;
   }
 
+  enum class GrantType { kRead, kWrite };
+
+  enum class PersistedPermissionOptions {
+    kDoNotUpdatePersistedPermission,
+    kUpdatePersistedPermission,
+  };
+
   // Returns a snapshot of the currently granted permissions.
-  // TODO(https://crbug.com/984769): Eliminate process_id and frame_id from this
-  // method when grants stop being scoped to a frame.
   struct Grants {
     Grants();
     ~Grants();
@@ -103,8 +122,10 @@ class ChromeFileSystemAccessPermissionContext
   Grants GetPermissionGrants(const url::Origin& origin);
 
   // Revokes write access and directory read access for the given origin.
-  void RevokeGrants(const url::Origin& origin);
+  void RevokeGrants(const url::Origin& origin,
+                    PersistedPermissionOptions persisted_status);
 
+  // Returns whether active permissions exist for the origin of the given type.
   bool OriginHasReadAccess(const url::Origin& origin);
   bool OriginHasWriteAccess(const url::Origin& origin);
 
@@ -115,6 +136,11 @@ class ChromeFileSystemAccessPermissionContext
   content::BrowserContext* profile() const { return profile_; }
 
   void TriggerTimersForTesting();
+
+  bool HasPersistedPermissionForTesting(const url::Origin& origin,
+                                        const base::FilePath& path,
+                                        HandleType handle_type,
+                                        GrantType grant_type);
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
@@ -149,9 +175,19 @@ class ChromeFileSystemAccessPermissionContext
   // windows.
   void DoUsageIconUpdate();
 
-  // Checks if any tabs are open for |origin|, and if not revokes all
+  // Checks if any tabs are open for |origin|, and if not revokes all active
   // permissions for that origin.
   void MaybeCleanupPermissions(const url::Origin& origin);
+
+  base::Optional<base::Value> GetPersistedPermission(
+      const url::Origin& origin,
+      const base::FilePath& path);
+  bool HasPersistedPermission(const url::Origin& origin,
+                              const base::FilePath& path,
+                              HandleType handle_type,
+                              GrantType grant_type);
+  bool PersistentPermissionIsExpired(const url::Origin& origin,
+                                     const base::Time& last_used);
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
@@ -167,6 +203,8 @@ class ChromeFileSystemAccessPermissionContext
 
   // Number of custom IDs an origin can specify.
   size_t max_ids_per_origin_ = 32u;
+
+  const base::Clock* const clock_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{
       this};

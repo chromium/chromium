@@ -167,6 +167,7 @@ void FileSystemAccessHandleBase::DidRequestPermission(
     case Outcome::kUserDismissed:
     case Outcome::kRequestAborted:
     case Outcome::kGrantedByContentSetting:
+    case Outcome::kGrantedByPersistentPermission:
       std::move(callback).Run(
           file_system_access_error::Ok(),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
