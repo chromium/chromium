@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
@@ -187,7 +188,9 @@ class CrostiniInstallerTest : public testing::Test {
  protected:
   MountPathWaiter mount_path_waiter_;
   MockCallbacks mock_callbacks_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
 
   // Owned by DiskMountManager
@@ -318,18 +321,20 @@ TEST_F(CrostiniInstallerTest, CancelAfterStart) {
   // we will just skip it.
   crostini_installer_->set_require_cleanup_for_testing(false);
 
-  // This will stop just before mount disk finishes because we don't fake the
-  // mount event.
-  task_environment_.RunUntilIdle();
+  // Hang the installer flow waiting for Tremplin to start, so we get a chance
+  // to cancel it.
+  waiting_fake_concierge_client_->set_send_tremplin_started_signal_delay(
+      base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   check.Call("calling Cancel()");
   Cancel();
-  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   histogram_tester_.ExpectUniqueSample(
       "Crostini.SetupResult",
       static_cast<base::HistogramBase::Sample>(
-          CrostiniInstaller::SetupResult::kUserCancelledMountContainer),
+          CrostiniInstaller::SetupResult::kUserCancelledStartTerminaVm),
       1);
   EXPECT_TRUE(crostini_installer_->CanInstall())
       << "Installer should recover to installable state";
