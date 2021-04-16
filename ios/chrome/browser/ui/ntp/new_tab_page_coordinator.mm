@@ -255,6 +255,8 @@
     self.ntpViewController.headerController =
         self.contentSuggestionsCoordinator.headerController;
     self.ntpMediator.primaryViewController = self.ntpViewController;
+    self.ntpMediator.headerCollectionInteractionHandler =
+        self.headerSynchronizer;
   }
 
   base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
