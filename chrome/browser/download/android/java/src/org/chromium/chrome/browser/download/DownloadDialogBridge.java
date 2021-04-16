@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -50,6 +53,7 @@ public class DownloadDialogBridge
     private Context mContext;
     private ModalDialogManager mModalDialogManager;
     private long mTotalBytes;
+    private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_NONE;
     private @DownloadLocationDialogType int mLocationDialogType;
     private String mSuggestedPath;
     private PrefService mPrefService;
@@ -95,8 +99,8 @@ public class DownloadDialogBridge
 
     @CalledByNative
     private void showDialog(WindowAndroid windowAndroid, long totalBytes,
-            @DownloadLocationDialogType int dialogType, String suggestedPath,
-            boolean supportsLaterDialog) {
+            @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
+            String suggestedPath, boolean supportsLaterDialog, boolean showDateTimePicker) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel();
@@ -119,19 +123,22 @@ public class DownloadDialogBridge
                         DownloadLocationSuggestionEvent.LOCATION_SUGGESTION_SHOWN);
             }
 
-            showDialog(activity, modalDialogManager, getPrefService(), totalBytes,
+            showDialog(activity, modalDialogManager, getPrefService(), totalBytes, connectionType,
                     suggestedDialogType, suggestedPath, supportsLaterDialog);
         });
     }
 
+    @VisibleForTesting
     void showDialog(Context context, ModalDialogManager modalDialogManager, PrefService prefService,
-            long totalBytes, @DownloadLocationDialogType int dialogType, String suggestedPath,
+            long totalBytes, @ConnectionType int connectionType,
+            @DownloadLocationDialogType int dialogType, String suggestedPath,
             boolean supportsLaterDialog) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mPrefService = prefService;
 
         mTotalBytes = totalBytes;
+        mConnectionType = connectionType;
         mLocationDialogType = dialogType;
         mSuggestedPath = suggestedPath;
 

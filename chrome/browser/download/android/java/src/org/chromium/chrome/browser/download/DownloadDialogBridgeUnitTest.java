@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.net.ConnectionType;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -50,6 +51,7 @@ public class DownloadDialogBridgeUnitTest {
     private static final long INVALID_START_TIME = -1;
     private static final long START_TIME = 1000;
     private static final long TOTAL_BYTES = 100;
+    private static final @ConnectionType int CONNECTION_TYPE = ConnectionType.CONNECTION_3G;
     private static final @DownloadLocationDialogType int LOCATION_DIALOG_TYPE =
             DownloadLocationDialogType.DEFAULT;
     private static final @DownloadLocationDialogType int LOCATION_DIALOG_ERROR_TYPE =
@@ -104,7 +106,7 @@ public class DownloadDialogBridgeUnitTest {
 
     private void showDialog() {
         mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
-                LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
+                CONNECTION_TYPE, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
     }
 
     private void locationDialogWillReturn(String newPath) {
@@ -148,7 +150,8 @@ public class DownloadDialogBridgeUnitTest {
                         eq(SUGGESTED_PATH));
 
         mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
-                LOCATION_DIALOG_TYPE, SUGGESTED_PATH, false /*isOnMeteredNetwork*/);
+                CONNECTION_TYPE, LOCATION_DIALOG_TYPE, SUGGESTED_PATH,
+                false /*isOnMeteredNetwork*/);
         verify(mLocationDialog)
                 .showDialog(any(), any(), eq(TOTAL_BYTES), eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH));
@@ -245,7 +248,7 @@ public class DownloadDialogBridgeUnitTest {
 
         // Location dialog has error message, and it will show.
         mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
-                LOCATION_DIALOG_ERROR_TYPE, SUGGESTED_PATH, true);
+                CONNECTION_TYPE, LOCATION_DIALOG_ERROR_TYPE, SUGGESTED_PATH, true);
         verify(mDownloadLaterDialog).showDialog(any(), any(), any(), any());
         verify(mLocationDialog)
                 .showDialog(any(), any(), eq(TOTAL_BYTES), eq(LOCATION_DIALOG_ERROR_TYPE),
@@ -262,7 +265,7 @@ public class DownloadDialogBridgeUnitTest {
 
         // Click the "Edit" text to open location dialog.
         mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
-                LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
+                CONNECTION_TYPE, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
         mBridge.onEditLocationClicked();
 
         // The flow will open download later dialog, then open location dialog, then open download

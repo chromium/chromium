@@ -49,7 +49,8 @@ public class DownloadInfoBarControllerTest {
     private static final String MESSAGE_TWO_DOWNLOAD_FAILED = "2 downloads failed.";
     private static final String MESSAGE_DOWNLOAD_PENDING = "1 download pending.";
     private static final String MESSAGE_TWO_DOWNLOAD_PENDING = "2 downloads pending.";
-    private static final String MESSAGE_DOWNLOAD_SCHEDULED_WIFI = "Download will start on Wi-Fi.";
+    private static final String MESSAGE_DOWNLOAD_SCHEDULED_WIFI =
+            "You’ll see a notification when this download starts on Wi-Fi.";
     private static final String MESSAGE_TWO_DOWNLOAD_SCHEDULED = "2 downloads scheduled.";
 
     private static final String TEST_FILE_NAME = "TestFile";
