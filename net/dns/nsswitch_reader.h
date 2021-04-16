@@ -18,19 +18,23 @@ namespace net {
 // database entry.
 class NET_EXPORT_PRIVATE NsswitchReader {
  public:
+  // These values are emitted in metrics. Entries should not be renumbered and
+  // numeric values should never be reused. (See NsswitchService in
+  // tools/metrics/histograms/enums.xml.)
   enum class Service {
-    kUnknown,
-    kFiles,
-    kDns,
-    kMdns,
-    kMdns4,
-    kMdns6,
-    kMdnsMinimal,
-    kMdns4Minimal,
-    kMdns6Minimal,
-    kMyHostname,
-    kResolve,
-    kNis,
+    kUnknown = 0,
+    kFiles = 1,
+    kDns = 2,
+    kMdns = 3,
+    kMdns4 = 4,
+    kMdns6 = 5,
+    kMdnsMinimal = 6,
+    kMdns4Minimal = 7,
+    kMdns6Minimal = 8,
+    kMyHostname = 9,
+    kResolve = 10,
+    kNis = 11,
+    kMaxValue = kNis
   };
 
   enum class Status {

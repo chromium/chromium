@@ -25,6 +25,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -202,20 +203,31 @@ bool AreActionsCompatible(
   return true;
 }
 
+// These values are emitted in metrics. Entries should not be renumbered and
+// numeric values should never be reused. (See NsswitchIncompatibleReason in
+// tools/metrics/histograms/enums.xml.)
 enum class IncompatibleNsswitchReason {
   kFilesMissing = 0,
-  kMultipleFiles,
-  kBadFilesActions,
-  kDnsMissing,
-  kBadDnsActions,
-  kBadMdnsMinimalActions,
-  kBadOtherServiceActions,
-  kUnknownService,
-  kIncompatibleService
+  kMultipleFiles = 1,
+  kBadFilesActions = 2,
+  kDnsMissing = 3,
+  kBadDnsActions = 4,
+  kBadMdnsMinimalActions = 5,
+  kBadOtherServiceActions = 6,
+  kUnknownService = 7,
+  kIncompatibleService = 8,
+  kMaxValue = kIncompatibleService
 };
 
-void RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason reason) {
-  // TODO(crbug.com/117655): Record metrics.
+void RecordIncompatibleNsswitchReason(
+    IncompatibleNsswitchReason reason,
+    base::Optional<NsswitchReader::Service> service_token) {
+  UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
+                            reason);
+  if (service_token) {
+    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
+                              service_token.value());
+  }
 }
 
 bool IsNsswitchConfigCompatible(
@@ -226,13 +238,14 @@ bool IsNsswitchConfigCompatible(
     switch (specification.service) {
       case NsswitchReader::Service::kUnknown:
         RecordIncompatibleNsswitchReason(
-            IncompatibleNsswitchReason::kUnknownService);
+            IncompatibleNsswitchReason::kUnknownService, specification.service);
         return false;
 
       case NsswitchReader::Service::kFiles:
         if (files_found) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kMultipleFiles);
+              IncompatibleNsswitchReason::kMultipleFiles,
+              specification.service);
           return false;
         }
         files_found = true;
@@ -248,7 +261,8 @@ bool IsNsswitchConfigCompatible(
                                    {NsswitchReader::Status::kTryAgain,
                                     NsswitchReader::Action::kContinue}})) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kBadFilesActions);
+              IncompatibleNsswitchReason::kBadFilesActions,
+              specification.service);
           return false;
         }
         break;
@@ -256,7 +270,8 @@ bool IsNsswitchConfigCompatible(
       case NsswitchReader::Service::kDns:
         if (!files_found) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kFilesMissing);
+              IncompatibleNsswitchReason::kFilesMissing,
+              /*service_token=*/base::nullopt);
           return false;
         }
         // Chrome will always stop if DNS finds a result or will otherwise
@@ -267,7 +282,8 @@ bool IsNsswitchConfigCompatible(
                                   {{NsswitchReader::Status::kSuccess,
                                     NsswitchReader::Action::kReturn}})) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kBadDnsActions);
+              IncompatibleNsswitchReason::kBadDnsActions,
+              specification.service);
           return false;
         }
 
@@ -280,7 +296,8 @@ bool IsNsswitchConfigCompatible(
       case NsswitchReader::Service::kMdns6:
       case NsswitchReader::Service::kResolve:
         RecordIncompatibleNsswitchReason(
-            IncompatibleNsswitchReason::kIncompatibleService);
+            IncompatibleNsswitchReason::kIncompatibleService,
+            specification.service);
         return false;
 
       case NsswitchReader::Service::kMdnsMinimal:
@@ -294,7 +311,8 @@ bool IsNsswitchConfigCompatible(
                                   {{NsswitchReader::Status::kUnavailable,
                                     NsswitchReader::Action::kContinue}})) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kBadMdnsMinimalActions);
+              IncompatibleNsswitchReason::kBadMdnsMinimalActions,
+              specification.service);
           return false;
         }
         break;
@@ -312,14 +330,16 @@ bool IsNsswitchConfigCompatible(
                                    {NsswitchReader::Status::kTryAgain,
                                     NsswitchReader::Action::kContinue}})) {
           RecordIncompatibleNsswitchReason(
-              IncompatibleNsswitchReason::kBadOtherServiceActions);
+              IncompatibleNsswitchReason::kBadOtherServiceActions,
+              specification.service);
           return false;
         }
         break;
     }
   }
 
-  RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason::kDnsMissing);
+  RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason::kDnsMissing,
+                                   /*service_token=*/base::nullopt);
   return false;
 }
 
@@ -341,7 +361,7 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
     if (!resolv_watcher_.Watch(
             base::FilePath(kFilePathResolv),
             base::FilePathWatcher::Type::kNonRecursive,
-            base::BindRepeating(&Watcher::OnConfigFilePathWatcherChange,
+            base::BindRepeating(&Watcher::OnResolvFilePathWatcherChange,
                                 base::Unretained(this)))) {
       LOG(ERROR) << "DNS config (resolv.conf) watch failed to start.";
       success = false;
@@ -350,7 +370,7 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
     if (!nsswitch_watcher_.Watch(
             base::FilePath(kFilePathNsswitch),
             base::FilePathWatcher::Type::kNonRecursive,
-            base::BindRepeating(&Watcher::OnConfigFilePathWatcherChange,
+            base::BindRepeating(&Watcher::OnNsswitchFilePathWatcherChange,
                                 base::Unretained(this)))) {
       LOG(ERROR) << "DNS nsswitch.conf watch failed to start.";
       success = false;
@@ -368,7 +388,13 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
   }
 
  private:
-  void OnConfigFilePathWatcherChange(const base::FilePath& path, bool error) {
+  void OnResolvFilePathWatcherChange(const base::FilePath& path, bool error) {
+    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.FileChange", true);
+    OnConfigChanged(!error);
+  }
+
+  void OnNsswitchFilePathWatcherChange(const base::FilePath& path, bool error) {
+    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.FileChange", true);
     OnConfigChanged(!error);
   }
 
@@ -412,8 +438,14 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       resolv_reader_->CloseResState(res.get());
     }
 
+    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",
+                          dns_config_.has_value());
     if (!dns_config_.has_value())
       return;
+    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Valid",
+                          dns_config_->IsValid());
+    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Compatible",
+                          !dns_config_->unhandled_options);
 
     // Override `fallback_period` value to match default setting on Windows.
     dns_config_->fallback_period = kDnsDefaultFallbackPeriod;
@@ -421,8 +453,12 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
     if (dns_config_ && !dns_config_->unhandled_options) {
       std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
           nsswitch_reader_->ReadAndParseHosts();
+      UMA_HISTOGRAM_COUNTS_100("Net.DNS.DnsConfig.Nsswitch.NumServices",
+                               nsswitch_hosts.size());
       dns_config_->unhandled_options =
           !IsNsswitchConfigCompatible(nsswitch_hosts);
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Compatible",
+                            !dns_config_->unhandled_options);
     }
   }
 
