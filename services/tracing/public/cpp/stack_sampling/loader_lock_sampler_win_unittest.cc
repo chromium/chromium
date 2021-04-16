@@ -35,19 +35,19 @@ class TestNamedWaitableEvent : public base::TestWaitableEvent {
 }  // namespace
 
 TEST(LoaderLockSamplerTest, LockNotHeld) {
-  InitializeLoaderLockSampling();
-  EXPECT_FALSE(IsLoaderLockHeld());
+  ProbingLoaderLockSampler sampler;
+  EXPECT_FALSE(sampler.IsLoaderLockHeld());
 }
 
 TEST(LoaderLockSamplerTest, LockHeldByOtherThread) {
-  InitializeLoaderLockSampling();
+  ProbingLoaderLockSampler sampler;
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::ThreadPoolCOMEnvironment::NONE};
 
   // Creating TaskEnvironment initializes the thread pool, which takes the
   // loader lock while creating background threads. Wait until it's released.
-  while (IsLoaderLockHeld()) {
+  while (sampler.IsLoaderLockHeld()) {
     base::TestWaitableEvent delay_event;
     delay_event.TimedWait(TestTimeouts::tiny_timeout());
   }
@@ -82,7 +82,7 @@ TEST(LoaderLockSamplerTest, LockHeldByOtherThread) {
   ASSERT_TRUE(
       wait_for_loader_lock_event.TimedWait(TestTimeouts::action_timeout()));
 
-  EXPECT_TRUE(IsLoaderLockHeld());
+  EXPECT_TRUE(sampler.IsLoaderLockHeld());
 
   // Tell the DLL to drop the loader lock and exit from DllMain.
   drop_loader_lock_event.Signal();
@@ -94,7 +94,7 @@ TEST(LoaderLockSamplerTest, LockHeldByOtherThread) {
   base::TestWaitableEvent delay_event;
   delay_event.TimedWait(TestTimeouts::tiny_timeout());
 
-  EXPECT_FALSE(IsLoaderLockHeld());
+  EXPECT_FALSE(sampler.IsLoaderLockHeld());
 }
 
 }  // namespace tracing

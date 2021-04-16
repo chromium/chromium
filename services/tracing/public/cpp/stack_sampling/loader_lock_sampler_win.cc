@@ -40,27 +40,36 @@ using UnlockLoaderLockFunc = NTSTATUS(NTAPI*)(ULONG flags, ULONG_PTR cookie);
 LockLoaderLockFunc g_lock_loader_lock = nullptr;
 UnlockLoaderLockFunc g_unlock_loader_lock = nullptr;
 
-}  // namespace
-
-void InitializeLoaderLockSampling() {
-  static const bool initialized = []() {
-    // The handle to ntdll is intentionally leaked to ensure that the function
-    // pointers below remain valid for the lifetime of the process. (Note: ntdll
-    // is always loaded in the process in practice, so this will be the case
-    // regardless.)
-    base::NativeLibrary ntdll = base::LoadSystemLibrary(L"ntdll.dll");
-    DPCHECK(ntdll);
-    g_lock_loader_lock = reinterpret_cast<LockLoaderLockFunc>(
-        base::GetFunctionPointerFromNativeLibrary(ntdll, "LdrLockLoaderLock"));
-    g_unlock_loader_lock = reinterpret_cast<UnlockLoaderLockFunc>(
-        base::GetFunctionPointerFromNativeLibrary(ntdll,
-                                                  "LdrUnlockLoaderLock"));
-    return true;
-  }();
-  ANALYZER_ALLOW_UNUSED(initialized);
+// Ensures the mechanism that samples the loader lock is initialized.  This may
+// take the loader lock itself so it must be called before sampling starts.
+bool InitializeLoaderLockSampling() {
+  // The handle to ntdll is intentionally leaked to ensure that the function
+  // pointers below remain valid for the lifetime of the process. (Note: ntdll
+  // is always loaded in the process in practice, so this will be the case
+  // regardless.)
+  base::NativeLibrary ntdll = base::LoadSystemLibrary(L"ntdll.dll");
+  DPCHECK(ntdll);
+  g_lock_loader_lock = reinterpret_cast<LockLoaderLockFunc>(
+      base::GetFunctionPointerFromNativeLibrary(ntdll, "LdrLockLoaderLock"));
+  g_unlock_loader_lock = reinterpret_cast<UnlockLoaderLockFunc>(
+      base::GetFunctionPointerFromNativeLibrary(ntdll, "LdrUnlockLoaderLock"));
+  return true;
 }
 
-bool IsLoaderLockHeld() {
+}  // namespace
+
+ProbingLoaderLockSampler::ProbingLoaderLockSampler() {
+  static bool is_initialized = InitializeLoaderLockSampling();
+  DCHECK(is_initialized);
+  // IsLoaderLockHeld should always be called from the same thread but it
+  // doesn't need to be this thread.
+  DETACH_FROM_THREAD(thread_checker_);
+}
+
+ProbingLoaderLockSampler::~ProbingLoaderLockSampler() = default;
+
+bool ProbingLoaderLockSampler::IsLoaderLockHeld() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(g_lock_loader_lock);
   DCHECK(g_unlock_loader_lock);
 

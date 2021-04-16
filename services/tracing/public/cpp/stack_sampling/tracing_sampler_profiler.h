@@ -43,6 +43,10 @@ namespace tracing {
 
 class PerfettoProducer;
 
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+class LoaderLockSampler;
+#endif
+
 // This class is a bridge between the base stack sampling profiler and chrome
 // tracing. It's listening to TraceLog enabled/disabled events and it's starting
 // a stack profiler on the current thread if needed. The sampling profiler is
@@ -133,21 +137,13 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   };
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  // This class can be implemented to check whether the loader lock is held
-  // whenever stack frames are sampled. Exposed for testing.
-  class LoaderLockSampler {
-   public:
-    virtual ~LoaderLockSampler() = default;
-
-    virtual bool IsLoaderLockHeld() const = 0;
-  };
-
   // The name of a trace event that will be recorded when the loader lock is
   // held.
   static const char kLoaderLockHeldEventName[];
 
   // Registers a mock LoaderLockSampler to be called during tests. |sampler| is
-  // owned by the caller. It must be reset to |nullptr| at the end of the test.
+  // owned by the caller. It must be reset to |nullptr| at the end of the test,
+  // which will cause the default ProbingLoaderLockSampler will be used.
   static void SetLoaderLockSamplerForTesting(LoaderLockSampler* sampler);
 
   void EnableLoaderLockSampling() { should_sample_loader_lock_ = true; }

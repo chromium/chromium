@@ -227,7 +227,12 @@ GetSequenceLocalStorageProfilerSlot() {
 }
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-TracingSamplerProfiler::LoaderLockSampler* g_test_loader_lock_sampler = nullptr;
+LoaderLockSampler* g_loader_lock_sampler = nullptr;
+
+ProbingLoaderLockSampler* DefaultLoaderLockSampler() {
+  static base::NoDestructor<ProbingLoaderLockSampler> default_sampler;
+  return default_sampler.get();
+}
 #endif
 
 // Stores information about the StackFrame, to emit to the trace.
@@ -604,10 +609,8 @@ void TracingSamplerProfiler::TracingProfileBuilder::SampleLoaderLock() {
   if (!should_sample_loader_lock_)
     return;
 
-  bool loader_lock_now_held =
-      g_test_loader_lock_sampler
-          ? g_test_loader_lock_sampler->IsLoaderLockHeld()
-          : IsLoaderLockHeld();
+  DCHECK(g_loader_lock_sampler);
+  bool loader_lock_now_held = g_loader_lock_sampler->IsLoaderLockHeld();
 
   // TODO(crbug.com/1065077): It would be cleaner to save the loader lock state
   // alongside buffered_samples_ and then add it to the ProcessDescriptor
@@ -655,7 +658,11 @@ TracingSamplerProfiler::CreateOnMainThread() {
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
   // The loader lock is process-wide so should only be sampled on a single
   // thread. The main thread is convenient.
-  InitializeLoaderLockSampling();
+
+  // The loader lock sampler may already have been set if
+  // SetLoaderLockSamplerForTesting was called.
+  if (!g_loader_lock_sampler)
+    g_loader_lock_sampler = DefaultLoaderLockSampler();
   profiler->EnableLoaderLockSampling();
 #endif
   // If running in single process mode, there may be multiple "main thread"
@@ -718,7 +725,7 @@ void TracingSamplerProfiler::StopTracingForTesting() {
 // static
 void TracingSamplerProfiler::SetLoaderLockSamplerForTesting(
     LoaderLockSampler* sampler) {
-  g_test_loader_lock_sampler = sampler;
+  g_loader_lock_sampler = sampler ? sampler : DefaultLoaderLockSampler();
 }
 #endif
 
