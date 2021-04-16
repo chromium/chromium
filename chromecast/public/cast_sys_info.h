@@ -67,6 +67,10 @@ class CastSysInfo {
   virtual std::string GetWifiInterface() = 0;
   // Returns the name of the software AP interface.
   virtual std::string GetApInterface() = 0;
+
+  // Returns the setup SSID suffix to use, if configured, an empty string
+  // otherwise.
+  virtual std::string GetProductSsidSuffix() = 0;
 };
 
 }  // namespace chromecast

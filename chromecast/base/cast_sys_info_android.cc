@@ -130,4 +130,8 @@ std::string CastSysInfoAndroid::GetApInterface() {
   return "";
 }
 
+std::string CastSysInfoAndroid::GetProductSsidSuffix() {
+  return GetAndroidProperty("ro.odm.cast.ssid_suffix", "");
+}
+
 }  // namespace chromecast

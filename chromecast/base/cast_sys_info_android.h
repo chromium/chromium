@@ -38,6 +38,7 @@ class CastSysInfoAndroid : public CastSysInfo {
   std::vector<std::string> GetFactoryLocaleList() override;
   std::string GetWifiInterface() override;
   std::string GetApInterface() override;
+  std::string GetProductSsidSuffix() override;
 
  private:
   const base::android::BuildInfo* const build_info_;

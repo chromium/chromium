@@ -127,6 +127,10 @@ std::string CastSysInfoDummy::GetApInterface() {
   return ap_interface_;
 }
 
+std::string CastSysInfoDummy::GetProductSsidSuffix() {
+  return ssid_suffix_;
+}
+
 void CastSysInfoDummy::SetBuildTypeForTesting(
     CastSysInfo::BuildType build_type) {
   build_type_ = build_type;
@@ -189,6 +193,11 @@ void CastSysInfoDummy::SetWifiInterfaceForTesting(
 void CastSysInfoDummy::SetApInterfaceForTesting(
     const std::string& ap_interface) {
   ap_interface_ = ap_interface;
+}
+
+void CastSysInfoDummy::SetProductSsidSuffixForTesting(
+    const std::string& ssid_suffix) {
+  ssid_suffix_ = ssid_suffix;
 }
 
 }  // namespace chromecast
