@@ -140,11 +140,36 @@ export class PTZPanel extends View {
      */
     this.zoomOut_ = dom.get('#zoom-out', HTMLButtonElement);
 
+    /**
+     * @type {?function(boolean): undefined}
+     * @private
+     */
+    this.mirrorObserver_ = null;
+
     state.addObserver(state.State.STREAMING, (streaming) => {
       if (!streaming && state.get(this.name)) {
         nav.close(this.name);
       }
     });
+  }
+
+  /**
+   * @private
+   */
+  removeMirrorObserver_() {
+    if (this.mirrorObserver_ !== null) {
+      state.removeObserver(state.State.MIRROR, this.mirrorObserver_);
+    }
+  }
+
+  /**
+   * @param {function(boolean): undefined} observer
+   * @private
+   */
+  setMirrorObserver_(observer) {
+    this.removeMirrorObserver_();
+    this.mirrorObserver_ = observer;
+    state.addObserver(state.State.MIRROR, observer);
   }
 
   /**
@@ -155,13 +180,22 @@ export class PTZPanel extends View {
    * @param {!MediaSettingsRange} range Available value range.
    */
   bind_(attr, incBtn, decBtn, range) {
+    let needMirror = false;
     const {min, max, step} = range;
     const getCurrent = () => this.track_.getSettings()[attr];
     const checkDisabled = () => {
       const current = getCurrent();
-      decBtn.disabled = current - step < min;
-      incBtn.disabled = current + step > max;
+      (needMirror ? incBtn : decBtn).disabled = current - step < min;
+      (needMirror ? decBtn : incBtn).disabled = current + step > max;
     };
+
+    if (attr === 'pan') {
+      needMirror = state.get(state.State.MIRROR);
+      this.setMirrorObserver_((mirrored) => {
+        needMirror = mirrored;
+        checkDisabled();
+      });
+    }
     checkDisabled();
 
     const queue = new AsyncJobQueue();
@@ -184,10 +218,8 @@ export class PTZPanel extends View {
             return;
           }
           const current = getCurrent();
-          const mirrorFactor =
-              attr === 'pan' && state.get(state.State.MIRROR) ? -1 : 1;
-          const next =
-              Math.max(min, Math.min(max, current + delta * mirrorFactor));
+          const next = Math.max(
+              min, Math.min(max, current + delta * (needMirror ? -1 : 1)));
           if (current === next) {
             return;
           }
@@ -246,5 +278,13 @@ export class PTZPanel extends View {
     if (zoom !== undefined) {
       this.bind_('zoom', this.zoomIn_, this.zoomOut_, zoom);
     }
+  }
+
+  /**
+   * @override
+   */
+  leaving() {
+    this.removeMirrorObserver_();
+    return true;
   }
 }
