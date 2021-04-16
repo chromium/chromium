@@ -445,6 +445,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
         Your password was exposed in a data breach. Chrome recommends changing the password now.
       </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
+        Shows prompts to sign in to Chrome.
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT" desc="Feature title in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
+        Allow Chrome Sign-in
+      </message>
     </messages>
   </release>
 </grit>
