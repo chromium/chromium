@@ -59,3 +59,4 @@
 # END TAG HEADER
 
 crbug.com/1009137 [ android android-nexus-5 ] Maps_maps [ RetryOnFailure ]
+crbug.com/1149580 [ fuchsia ] Maps_maps [ Failure ]
