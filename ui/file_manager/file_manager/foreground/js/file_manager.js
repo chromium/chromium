@@ -1351,10 +1351,14 @@
       case chrome.fileManagerPrivate.CrostiniEventType
           .DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
         if (this.ui_.dragInProcess) {
-          FileTasks.showPluginVmMoveDialog(
+          const moveMessage =
+              str('UNABLE_TO_DROP_IN_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE');
+          const copyMessage =
+              str('UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE');
+          FileTasks.showPluginVmNotSharedDialog(
               this.selectionHandler.selection.entries, this.volumeManager_,
-              assert(this.ui_), 'Windows', this.fileTransferController_,
-              assert(this.directoryModel_));
+              assert(this.ui_), moveMessage, copyMessage,
+              this.fileTransferController_, assert(this.directoryModel_));
         }
         break;
     }
