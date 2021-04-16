@@ -75,6 +75,23 @@ ScopedJavaLocalRef<jobjectArray> NavigationImpl::GetRedirectChain(JNIEnv* env) {
   return base::android::ToJavaArrayOfStrings(env, jni_redirects);
 }
 
+ScopedJavaLocalRef<jobjectArray> NavigationImpl::GetResponseHeaders(
+    JNIEnv* env) {
+  std::vector<std::string> jni_headers;
+  auto* headers = GetResponseHeaders();
+  if (headers) {
+    size_t iterator = 0;
+    std::string name;
+    std::string value;
+    while (headers->EnumerateHeaderLines(&iterator, &name, &value)) {
+      jni_headers.push_back(name);
+      jni_headers.push_back(value);
+    }
+  }
+
+  return base::android::ToJavaArrayOfStrings(env, jni_headers);
+}
+
 jboolean NavigationImpl::SetRequestHeader(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name,
@@ -178,6 +195,10 @@ NavigationState NavigationImpl::GetState() {
 int NavigationImpl::GetHttpStatusCode() {
   auto* response_headers = navigation_handle_->GetResponseHeaders();
   return response_headers ? response_headers->response_code() : 0;
+}
+
+const net::HttpResponseHeaders* NavigationImpl::GetResponseHeaders() {
+  return navigation_handle_->GetResponseHeaders();
 }
 
 bool NavigationImpl::IsSameDocument() {

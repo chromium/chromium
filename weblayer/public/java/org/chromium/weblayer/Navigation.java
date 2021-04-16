@@ -15,7 +15,9 @@ import org.chromium.weblayer_private.interfaces.IClientNavigation;
 import org.chromium.weblayer_private.interfaces.INavigation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Information about a navigation. Each time there is a new navigation, a new
@@ -82,6 +84,30 @@ public class Navigation extends IClientNavigation.Stub {
         ThreadCheck.ensureOnUiThread();
         try {
             return mNavigationImpl.getHttpStatusCode();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /*
+     * Returns the HTTP response headers. Returns an empty map if the navigation hasn't completed
+     * yet or if a response wasn't received.
+     *
+     * @since 92
+     */
+    public Map<String, String> getResponseHeaders() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 92) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            Map<String, String> headers = new HashMap<String, String>();
+            List<String> array = mNavigationImpl.getResponseHeaders();
+            for (int i = 0; i < array.size(); i += 2) {
+                headers.put(array.get(i), array.get(i + 1));
+            }
+
+            return headers;
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
