@@ -32,6 +32,7 @@ source_set("ntp_snippets") {
     "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/web",

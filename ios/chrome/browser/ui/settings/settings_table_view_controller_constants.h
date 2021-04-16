@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeViewSource,
   SettingsItemTypeTableCellCatalog,
   SettingsItemTypeArticlesForYou,
+  SettingsItemTypeManagedArticlesForYou,
   SettingsItemTypeSafetyCheck,
   SettingsItemTypeDefaultBrowser,
   SettingsItemTypeSigninDisabled,

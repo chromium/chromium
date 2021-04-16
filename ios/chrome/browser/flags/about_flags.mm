@@ -781,6 +781,10 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     // still marked as experimental (future_on), they must be explicitly
     // allowed, otherwise they will be ignored in Beta and Stable. Add them to
     // the |allowed_experimental_policies| array.
+    [allowed_experimental_policies addObjectsFromArray:@[
+      base::SysUTF8ToNSString(policy::key::kNTPContentSuggestionsEnabled),
+    ]];
+
     [testing_policies addEntriesFromDictionary:@{
       base::SysUTF8ToNSString(policy::key::kAutofillAddressEnabled) : @NO,
 
@@ -801,6 +805,8 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
           @"TestEngine",
 
       base::SysUTF8ToNSString(policy::key::kEditBookmarksEnabled) : @NO,
+
+      base::SysUTF8ToNSString(policy::key::kNTPContentSuggestionsEnabled) : @NO,
 
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled) : @NO,
 

@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -177,7 +178,9 @@
           ->GetPrefs();
 
   self.contentSuggestionsEnabled =
-      prefs->GetBoolean(prefs::kArticlesForYouEnabled);
+      prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
+       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled));
   self.contentSuggestionsExpanded = [[PrefBackedBoolean alloc]
       initWithPrefService:prefs
                  prefName:feed::prefs::kArticlesListVisible];

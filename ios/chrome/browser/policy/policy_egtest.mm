@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
@@ -112,10 +113,12 @@ id<GREYMatcher> ToolsMenuTranslateButton() {
 void VerifyManagedSettingItem(NSString* accessibilityID,
                               NSString* containerViewAccessibilityID) {
   // Check if the managed item is shown in the corresponding table view.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(accessibilityID)]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(accessibilityID),
+                                          grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:grey_accessibilityID(containerViewAccessibilityID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
 
   // Click the info button.
   [ChromeEarlGreyUI tapSettingsMenuButton:grey_accessibilityID(
@@ -375,6 +378,32 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   VerifyManagedSettingItem(@"blockPopupsContentView_managed",
                            @"block_popups_settings_view_controller");
+}
+
+// Tests that the feed is disappearing when the policy is set to false while it
+// is visible.
+- (void)testDisableContentSuggestions {
+  NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kContentSuggestionsCollectionIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  SetPolicy(false, policy::key::kNTPContentSuggestionsEnabled);
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  // Open settings menu and check that it is disabled.
+  [ChromeEarlGreyUI openSettingsMenu];
+  VerifyManagedSettingItem(kSettingsArticleSuggestionsCellId,
+                           kSettingsTableViewId);
 }
 
 - (void)testTranslateEnabledSettingsUI {

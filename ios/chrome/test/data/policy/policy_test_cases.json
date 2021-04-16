@@ -346,6 +346,16 @@
     ]
   },
 
+  "NTPContentSuggestionsEnabled": {
+    "os": [ "ios" ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "NTPContentSuggestionsEnabled": false },
+        "prefs": { "ios.ntp.content_suggestions_enabled": {} }
+      }
+    ]
+  },
+
   "PasswordManagerEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,

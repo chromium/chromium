@@ -221,10 +221,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   PrefBackedBoolean* _articlesEnabled;
   // Preference value for the "Allow Chrome Sign-in" feature.
   PrefBackedBoolean* _allowChromeSigninPreference;
+  // PrefBackedBoolean for ArticlesForYou switch enabling.
+  PrefBackedBoolean* _contentSuggestionPolicyEnabled;
   // The item related to the switch for the show suggestions setting.
   SettingsSwitchItem* _showMemoryDebugToolsItem;
-  // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _articlesForYouItem;
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
 
@@ -273,6 +273,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   BOOL _settingsHasBeenDismissed;
 }
 
+// The item related to the switch for the show suggestions setting.
+@property(nonatomic, strong, readonly) SettingsSwitchItem* articlesForYouItem;
+// The item related to the enterprise managed show suggestions setting.
+@property(nonatomic, strong, readonly)
+    TableViewInfoButtonItem* managedArticlesForYouItem;
+
 @property(nonatomic, readonly, weak)
     id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
         dispatcher;
@@ -288,6 +294,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 @implementation SettingsTableViewController
 @synthesize dispatcher = _dispatcher;
+@synthesize managedArticlesForYouItem = _managedArticlesForYouItem;
+@synthesize articlesForYouItem = _articlesForYouItem;
 
 #pragma mark Initialization
 
@@ -346,6 +354,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                    prefName:prefs::kArticlesForYouEnabled];
     [_articlesEnabled setObserver:self];
 
+    _contentSuggestionPolicyEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:prefService
+                   prefName:prefs::kNTPContentSuggestionsEnabled];
+    [_contentSuggestionPolicyEnabled setObserver:self];
+
     _voiceLocaleCode.Init(prefs::kVoiceSearchLocale, prefService);
 
     _prefChangeRegistrar.Init(prefService);
@@ -388,6 +401,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_showMemoryDebugToolsEnabled setObserver:nil];
   [_articlesEnabled setObserver:nil];
   [_allowChromeSigninPreference setObserver:nil];
+  [_contentSuggestionPolicyEnabled setObserver:nil];
 }
 
 #pragma mark View lifecycle
@@ -464,9 +478,15 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  _articlesForYouItem = [self articlesForYouSwitchItem];
-  [model addItem:_articlesForYouItem
-      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  if (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
+      [_contentSuggestionPolicyEnabled value]) {
+    [model addItem:self.articlesForYouItem
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+  } else {
+    [model addItem:self.managedArticlesForYouItem
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  }
   [model addItem:[self languageSettingsDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self contentSettingsDetailItem]
@@ -939,22 +959,47 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return showMemoryDebugSwitchItem;
 }
 
-- (SettingsSwitchItem*)articlesForYouSwitchItem {
-  NSString* settingTitle =
-      IsDiscoverFeedEnabled()
-          ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-          : l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE);
+- (SettingsSwitchItem*)articlesForYouItem {
+  if (!_articlesForYouItem) {
+    NSString* settingTitle =
+        IsDiscoverFeedEnabled()
+            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
+            : l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE);
 
-  SettingsSwitchItem* articlesForYouSwitchItem =
-      [self switchItemWithType:SettingsItemTypeArticlesForYou
-                            title:settingTitle
-                    iconImageName:kSettingsArticleSuggestionsImageName
-                  withDefaultsKey:nil
-          accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
-  articlesForYouSwitchItem.on = [_articlesEnabled value];
-
-  return articlesForYouSwitchItem;
+    _articlesForYouItem =
+        [self switchItemWithType:SettingsItemTypeArticlesForYou
+                              title:settingTitle
+                      iconImageName:kSettingsArticleSuggestionsImageName
+                    withDefaultsKey:nil
+            accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
+    _articlesForYouItem.on = [_articlesEnabled value];
+  }
+  return _articlesForYouItem;
 }
+
+- (TableViewInfoButtonItem*)managedArticlesForYouItem {
+  if (!_managedArticlesForYouItem) {
+    NSString* settingTitle =
+        IsDiscoverFeedEnabled()
+            ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
+            : l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE);
+
+    _managedArticlesForYouItem = [[TableViewInfoButtonItem alloc]
+        initWithType:SettingsItemTypeManagedArticlesForYou];
+    _managedArticlesForYouItem.image =
+        [UIImage imageNamed:kSettingsArticleSuggestionsImageName];
+    _managedArticlesForYouItem.text = settingTitle;
+    _managedArticlesForYouItem.statusText =
+        l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    _managedArticlesForYouItem.accessibilityIdentifier =
+        kSettingsArticleSuggestionsCellId;
+    _managedArticlesForYouItem.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  }
+
+  return _managedArticlesForYouItem;
+}
+
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 - (SettingsSwitchItem*)viewSourceSwitchItem {
@@ -1093,6 +1138,15 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                       action:@selector(didTapSigninDisabledInfoButton:)
             forControlEvents:UIControlEventTouchUpInside];
       }
+      break;
+    }
+    case SettingsItemTypeManagedArticlesForYou: {
+      TableViewInfoButtonCell* managedCell =
+          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapManagedUIInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
       break;
     }
     default:
@@ -1802,11 +1856,42 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     _showMemoryDebugToolsItem.on = [_showMemoryDebugToolsEnabled value];
     // Update the Cell.
     [self reconfigureCellsForItems:@[ _showMemoryDebugToolsItem ]];
-  } else if (observableBoolean == _articlesEnabled) {
-    _articlesForYouItem.on = [_articlesEnabled value];
-    [self reconfigureCellsForItems:@[ _articlesForYouItem ]];
   } else if (observableBoolean == _allowChromeSigninPreference) {
     [self reloadSigninSection];
+  } else if (observableBoolean == _articlesEnabled) {
+    self.articlesForYouItem.on = [_articlesEnabled value];
+    [self reconfigureCellsForItems:@[ self.articlesForYouItem ]];
+  } else if (observableBoolean == _contentSuggestionPolicyEnabled) {
+    if (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI))
+      return;
+
+    NSIndexPath* itemIndexPath;
+    NSInteger itemTypeToRemove;
+    TableViewItem* itemToAdd;
+    if ([_contentSuggestionPolicyEnabled value]) {
+      if (![self.tableViewModel hasItem:self.managedArticlesForYouItem]) {
+        return;
+      }
+      itemIndexPath =
+          [self.tableViewModel indexPathForItem:self.managedArticlesForYouItem];
+      itemTypeToRemove = SettingsItemTypeManagedArticlesForYou;
+      itemToAdd = self.articlesForYouItem;
+    } else {
+      if (![self.tableViewModel hasItem:self.articlesForYouItem]) {
+        return;
+      }
+      itemIndexPath =
+          [self.tableViewModel indexPathForItem:self.articlesForYouItem];
+      itemTypeToRemove = SettingsItemTypeArticlesForYou;
+      itemToAdd = self.managedArticlesForYouItem;
+    }
+    [self.tableViewModel removeItemWithType:itemTypeToRemove
+                  fromSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    [self.tableViewModel insertItem:itemToAdd
+            inSectionWithIdentifier:SettingsSectionIdentifierAdvanced
+                            atIndex:itemIndexPath.row];
+    [self.tableView reloadRowsAtIndexPaths:@[ itemIndexPath ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
   } else {
     NOTREACHED();
   }

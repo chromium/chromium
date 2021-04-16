@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -95,8 +96,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Whether the contents section should be hidden completely.
 // Don't use PrefBackedBoolean or PrefMember as this value needs to be checked
 // when the Preference is updated.
+@property(nonatomic, assign, readonly) BOOL contentSuggestionsEnabled;
+
+// Don't use PrefBackedBoolean or PrefMember as those values needs to be checked
+// when the Preference is updated.
+// Whether the suggestions have been disabled in Chrome Settings.
 @property(nonatomic, assign)
-    const PrefService::Preference* contentSuggestionsEnabled;
+    const PrefService::Preference* articleForYouEnabled;
+// Whether the suggestions have been disabled by a policy.
+@property(nonatomic, assign)
+    const PrefService::Preference* contentSuggestionsPolicyEnabled;
+
 // Most visited items from the MostVisitedSites service currently displayed.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedItem*>* mostVisitedItems;
@@ -178,8 +188,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   self = [super init];
   if (self) {
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
-    _contentSuggestionsEnabled =
+    _articleForYouEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
+    _contentSuggestionsPolicyEnabled =
+        prefService->FindPreference(prefs::kNTPContentSuggestionsEnabled);
+
     if (!IsDiscoverFeedEnabled()) {
       _suggestionBridge = std::make_unique<ContentSuggestionsServiceBridge>(
           self, contentService);
@@ -220,6 +233,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
 
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
@@ -252,9 +267,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
   _consumer = consumer;
-  [self.consumer
-      setContentSuggestionsEnabled:self.contentSuggestionsEnabled->GetValue()
-                                       ->GetBool()];
+  [self.consumer setContentSuggestionsEnabled:self.contentSuggestionsEnabled];
 }
 
 - (void)blockMostVisitedURL:(GURL)URL {
@@ -378,8 +391,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   // TODO(crbug.com/1105624): Observe the kArticlesForYouEnabled Pref in order
   // to hide the DiscoverFeed section if the finch flag is enabled.
-  if (IsDiscoverFeedEnabled() &&
-      self.contentSuggestionsEnabled->GetValue()->GetBool()) {
+  if (IsDiscoverFeedEnabled() && self.contentSuggestionsEnabled) {
     [sectionsInfo addObject:self.discoverSectionInfo];
   }
 
@@ -581,9 +593,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [self.dataSink section:sectionInfo isLoading:NO];
     }
   }
-  [self.consumer
-      setContentSuggestionsEnabled:self.contentSuggestionsEnabled->GetValue()
-                                       ->GetBool()];
+  [self.consumer setContentSuggestionsEnabled:self.contentSuggestionsEnabled];
 }
 
 - (void)contentSuggestionsService:
@@ -827,7 +837,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       self.contentService->GetCategoryStatus(category);
   if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
       status == ntp_snippets::CategoryStatus::CATEGORY_EXPLICITLY_DISABLED)
-    return self.contentSuggestionsEnabled->GetValue()->GetBool();
+    return self.contentSuggestionsEnabled;
   else
     return IsCategoryStatusInitOrAvailable(
         self.contentService->GetCategoryStatus(category));
@@ -841,7 +851,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       self.contentService->GetCategoryStatus(category);
   if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES) &&
       status == ntp_snippets::CategoryStatus::CATEGORY_EXPLICITLY_DISABLED) {
-    return self.contentSuggestionsEnabled->GetValue()->GetBool();
+    return self.contentSuggestionsEnabled;
   } else {
     return IsCategoryStatusAvailable(
         self.contentService->GetCategoryStatus(category));
@@ -909,10 +919,18 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       });
 }
 
+- (BOOL)contentSuggestionsEnabled {
+  return self.articleForYouEnabled->GetValue()->GetBool() &&
+         (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
+          self.contentSuggestionsPolicyEnabled->GetValue()->GetBool());
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kArticlesForYouEnabled && !IsRefactoredNTP()) {
+  if ((preferenceName == prefs::kArticlesForYouEnabled ||
+       preferenceName == prefs::kNTPContentSuggestionsEnabled) &&
+      !IsRefactoredNTP()) {
     [self reloadAllData];
   }
 }

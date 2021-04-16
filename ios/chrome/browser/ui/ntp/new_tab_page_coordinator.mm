@@ -152,6 +152,8 @@
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
     _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
         DefaultSearchManager::kDefaultSearchProviderDataPrefName,
         _prefChangeRegistrar.get());
     if (IsRefactoredNTP()) {
@@ -185,7 +187,8 @@
   DCHECK(!self.contentSuggestionsCoordinator);
 
   self.discoverFeedEnabled =
-      self.prefService->GetBoolean(prefs::kArticlesForYouEnabled);
+      self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
 
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
@@ -546,7 +549,9 @@
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kArticlesForYouEnabled && IsRefactoredNTP()) {
+  if (IsRefactoredNTP() &&
+      (preferenceName == prefs::kArticlesForYouEnabled ||
+       preferenceName == prefs::kNTPContentSuggestionsEnabled)) {
     [self updateDiscoverFeedVisibility];
   }
   if ([self isNTPRefactoredAndFeedVisible] &&

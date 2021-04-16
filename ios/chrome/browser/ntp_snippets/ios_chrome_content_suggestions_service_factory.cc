@@ -72,4 +72,7 @@ void IOSChromeContentSuggestionsServiceFactory::RegisterBrowserStatePrefs(
   registry->RegisterBooleanPref(
       prefs::kArticlesForYouEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kNTPContentSuggestionsEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

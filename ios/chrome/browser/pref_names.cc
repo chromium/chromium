@@ -101,6 +101,11 @@ const char kIosSettingsSigninPromoDisplayedCount[] =
 const char kLastSessionExitedCleanly[] =
     "ios.user_experience_metrics.last_session_exited_cleanly";
 
+// Preference that holds a boolean indicating whether the suggestions on the NTP
+// are enabled.
+const char kNTPContentSuggestionsEnabled[] =
+    "ios.ntp.content_suggestions_enabled";
+
 // Preference that hold a boolean indicating whether metrics reporting should
 // be limited to wifi (when enabled).
 const char kMetricsReportingWifiOnly[] =

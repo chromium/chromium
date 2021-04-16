@@ -15856,6 +15856,7 @@
           'caption': 'Do not show content suggestions on the New Tab page',
         },
       ],
+      'future_on': [ 'ios' ],
       'example_value': True,
       'default': True,
       'id': 338,

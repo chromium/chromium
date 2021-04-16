@@ -22,9 +22,9 @@ namespace ntp_snippets {
 RemoteSuggestionsStatusServiceImpl::RemoteSuggestionsStatusServiceImpl(
     bool is_signed_in,
     PrefService* pref_service,
-    const std::string& additional_toggle_pref)
+    const std::vector<std::string>& additional_toggle_prefs)
     : status_(RemoteSuggestionsStatus::EXPLICITLY_DISABLED),
-      additional_toggle_pref_(additional_toggle_pref),
+      additional_toggle_prefs_(additional_toggle_prefs),
       is_signed_in_(is_signed_in),
       list_visible_during_session_(true),
       pref_service_(pref_service) {
@@ -62,9 +62,9 @@ void RemoteSuggestionsStatusServiceImpl::Init(
           &RemoteSuggestionsStatusServiceImpl::OnListVisibilityChanged,
           base::Unretained(this)));
 
-  if (!additional_toggle_pref_.empty()) {
+  for (const std::string& additional_toggle_pref : additional_toggle_prefs_) {
     pref_change_registrar_.Add(
-        additional_toggle_pref_,
+        additional_toggle_pref,
         base::BindRepeating(
             &RemoteSuggestionsStatusServiceImpl::OnSnippetsEnabledChanged,
             base::Unretained(this)));
@@ -113,9 +113,9 @@ bool RemoteSuggestionsStatusServiceImpl::IsExplicitlyDisabled() const {
     return true;
   }
 
-  // |additional_toggle_pref_| will always be empty on Android.
-  if (!additional_toggle_pref_.empty()) {
-    if (!pref_service_->GetBoolean(additional_toggle_pref_)) {
+  // |additional_toggle_prefs_| will always be empty on Android.
+  for (const std::string& additional_toggle_pref : additional_toggle_prefs_) {
+    if (!pref_service_->GetBoolean(additional_toggle_pref)) {
       DVLOG(1) << "[GetStatusFromDeps] Disabled via additional pref";
       return true;
     }
