@@ -193,13 +193,13 @@ class CORE_EXPORT NGGridBlockTrackCollection
 class CORE_EXPORT NGGridSet {
  public:
   explicit NGGridSet(wtf_size_t track_count);
-  // |is_content_box_size_indefinite| is used to normalize percentage track
+  // |is_available_size_indefinite| is used to normalize percentage track
   // sizing functions; from https://drafts.csswg.org/css-grid-2/#track-sizes:
   //   "If the size of the grid container depends on the size of its tracks,
   //   then the <percentage> must be treated as 'auto'".
   NGGridSet(wtf_size_t track_count,
             const GridTrackSize& track_size,
-            bool is_content_box_size_indefinite);
+            bool is_available_size_indefinite);
 
   wtf_size_t TrackCount() const { return track_count_; }
   const GridTrackSize& TrackSize() const { return track_size_; }
@@ -306,11 +306,11 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   typedef SetIteratorBase<true> ConstSetIterator;
 
   NGGridLayoutAlgorithmTrackCollection() = default;
-  // |is_content_box_size_indefinite| is used to normalize percentage track
+  // |is_available_size_indefinite| is used to normalize percentage track
   // sizing functions (see the constructor for |NGGridSet|).
   NGGridLayoutAlgorithmTrackCollection(
       const NGGridBlockTrackCollection& block_track_collection,
-      bool is_content_box_size_indefinite);
+      bool is_available_size_indefinite);
 
   wtf_size_t EndLineOfImplicitGrid() const;
   bool IsGridLineWithinImplicitGrid(wtf_size_t grid_line) const;
@@ -343,6 +343,9 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     return non_collapsed_track_count_;
   }
   GridTrackSizingDirection Direction() const { return direction_; }
+  // If any of the tracks will change based on the available-size.
+  bool DependsOnAvailableSize() const { return depends_on_available_size_; }
+  bool HasFlexTracks() const { return has_flex_tracks_; }
   bool IsForColumns() const { return direction_ == kForColumns; }
   const Vector<Range>& Ranges() const { return ranges_; }
 
@@ -357,10 +360,12 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   void AppendTrackRange(
       const NGGridBlockTrackCollection::Range& block_track_range,
       const NGGridTrackList& specified_track_list,
-      bool is_content_box_size_indefinite);
+      bool is_available_size_indefinite);
 
   wtf_size_t non_collapsed_track_count_;
   GridTrackSizingDirection direction_;
+  bool depends_on_available_size_ : 1;
+  bool has_flex_tracks_ : 1;
 
   Vector<Range> ranges_;
   // A vector of every set element that compose the entire collection's ranges;

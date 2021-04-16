@@ -208,6 +208,11 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   struct SetGeometry {
     Vector<SetOffsetData> sets;
     LayoutUnit gutter_size;
+
+    LayoutUnit FinalGutterSize() const {
+      DCHECK_GT(sets.size(), 0u);
+      return (sets.size() == 1) ? LayoutUnit() : gutter_size;
+    }
   };
 
   // Typically we pass around both the column, and row geometry together.
@@ -343,8 +348,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 
   // Gets the row or column gap of the grid.
-  LayoutUnit GridGap(GridTrackSizingDirection track_direction,
-                     LayoutUnit available_size = kIndefiniteSize) const;
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
 
   LayoutUnit DetermineFreeSpace(
       SizingConstraint sizing_constraint,

@@ -101,6 +101,13 @@ class GridTrackSize {
            max_track_breadth_.IsContentSized();
   }
   bool IsFitContent() const { return type_ == kFitContentTrackSizing; }
+  bool HasPercentage() const {
+    if (IsFitContent())
+      return FitContentTrackBreadth().HasPercentage();
+
+    return MinTrackBreadth().HasPercentage() ||
+           MaxTrackBreadth().HasPercentage();
+  }
 
   bool operator==(const GridTrackSize& other) const {
     return type_ == other.type_ &&

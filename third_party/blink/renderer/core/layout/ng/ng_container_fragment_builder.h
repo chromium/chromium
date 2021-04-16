@@ -240,8 +240,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     block_end_annotation_space_ = space;
   }
 
-  void SetHasDescendantThatDependsOnPercentageBlockSize() {
-    has_descendant_that_depends_on_percentage_block_size_ = true;
+  void SetHasDescendantThatDependsOnPercentageBlockSize(bool b = true) {
+    has_descendant_that_depends_on_percentage_block_size_ = b;
   }
 
   const NGConstraintSpace* ConstraintSpace() const { return space_; }

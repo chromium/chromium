@@ -433,7 +433,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count)
 
 NGGridSet::NGGridSet(wtf_size_t track_count,
                      const GridTrackSize& track_size,
-                     bool is_content_box_size_indefinite)
+                     bool is_available_size_indefinite)
     : track_count_(track_count),
       track_size_(track_size),
       growth_limit_(kIndefiniteSize),
@@ -444,7 +444,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
 
     // Argument for 'fit-content' is a <percentage> that couldn't be resolved to
     // a definite <length>, normalize to 'minmax(auto, max-content)'.
-    if (is_content_box_size_indefinite &&
+    if (is_available_size_indefinite &&
         track_size_.FitContentTrackBreadth().length().IsPercent()) {
       track_size_ = GridTrackSize(Length::Auto(), Length::MaxContent());
     }
@@ -452,7 +452,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
     // Normalize |track_size_| into a |kMinMaxTrackSizing| type; follow the
     // definitions from https://drafts.csswg.org/css-grid-2/#algo-terms.
     bool is_unresolvable_percentage_min_function =
-        is_content_box_size_indefinite &&
+        is_available_size_indefinite &&
         track_size_.MinTrackBreadth().HasPercentage();
 
     GridLength normalized_min_track_sizing_function =
@@ -462,7 +462,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
             : track_size_.MinTrackBreadth();
 
     bool is_unresolvable_percentage_max_function =
-        is_content_box_size_indefinite &&
+        is_available_size_indefinite &&
         track_size_.MaxTrackBreadth().HasPercentage();
 
     GridLength normalized_max_track_sizing_function =
@@ -533,9 +533,11 @@ bool NGGridLayoutAlgorithmTrackCollection::Range::IsCollapsed() const {
 
 NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     const NGGridBlockTrackCollection& block_track_collection,
-    bool is_content_box_size_indefinite)
+    bool is_available_size_indefinite)
     : non_collapsed_track_count_(0),
-      direction_(block_track_collection.Direction()) {
+      direction_(block_track_collection.Direction()),
+      depends_on_available_size_(false),
+      has_flex_tracks_(false) {
   for (auto range_iterator = block_track_collection.RangeIterator();
        !range_iterator.IsAtEnd(); range_iterator.MoveToNextRange()) {
     const NGGridBlockTrackCollection::Range& block_track_range =
@@ -544,14 +546,14 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
                      block_track_range.IsImplicit()
                          ? block_track_collection.ImplicitTracks()
                          : block_track_collection.ExplicitTracks(),
-                     is_content_box_size_indefinite);
+                     is_available_size_indefinite);
   }
 }
 
 void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     const NGGridBlockTrackCollection::Range& block_track_range,
     const NGGridTrackList& specified_track_list,
-    bool is_content_box_size_indefinite) {
+    bool is_available_size_indefinite) {
   Range new_range(block_track_range, /* starting_set_index */ sets_.size());
 
   if (block_track_range.repeater_index == kInvalidRangeIndex) {
@@ -605,7 +607,13 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
           specified_track_list.RepeatTrackSize(block_track_range.repeater_index,
                                                set_repeater_offset);
       sets_.emplace_back(set_track_count, set_track_size,
-                         is_content_box_size_indefinite);
+                         is_available_size_indefinite);
+
+      // Record if any of the tracks depend on the available-size. We need to
+      // record any percentage tracks *before* normalization as they will
+      // change once the available-size becomes definite.
+      depends_on_available_size_ |= set_track_size.HasPercentage() ||
+                                    set_track_size.HasFlexMaxTrackBreadth();
     }
   }
 
@@ -614,16 +622,17 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   bool is_range_spanning_intrinsic_track = false;
 
   for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
-    const NGGridSet& set = sets_[new_range.starting_set_index + i];
+    const GridTrackSize& set_track_size =
+        sets_[new_range.starting_set_index + i].TrackSize();
 
     // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
     // sizing function shouldn't happen as it would be normalized to 'auto'.
-    DCHECK(!set.TrackSize().HasFlexMinTrackBreadth());
-    is_range_spanning_flexible_track |=
-        set.TrackSize().HasFlexMaxTrackBreadth();
+    DCHECK(!set_track_size.HasFlexMinTrackBreadth());
+    has_flex_tracks_ |= set_track_size.HasFlexMaxTrackBreadth();
+    is_range_spanning_flexible_track |= set_track_size.HasFlexMaxTrackBreadth();
     is_range_spanning_intrinsic_track |=
-        set.TrackSize().HasIntrinsicMinTrackBreadth() ||
-        set.TrackSize().HasIntrinsicMaxTrackBreadth();
+        set_track_size.HasIntrinsicMinTrackBreadth() ||
+        set_track_size.HasIntrinsicMaxTrackBreadth();
   }
 
   if (is_range_spanning_flexible_track)

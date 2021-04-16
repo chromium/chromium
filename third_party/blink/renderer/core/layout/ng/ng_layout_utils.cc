@@ -299,6 +299,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       return NGLayoutCacheStatus::kNeedsLayout;
   }
 
+  // TODO(ikilpatrick): Grid needs special logic here, as the behaviour is
+  // slightly different to other layout types.
   if (layout_result.HasDescendantThatDependsOnPercentageBlockSize()) {
     // %-block-size children of flex-items sometimes don't resolve their
     // percentages against a fixed block-size.
