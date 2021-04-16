@@ -968,6 +968,7 @@ ci.android_fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.android_fyi_builder(
@@ -983,6 +984,7 @@ ci.android_fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.android_fyi_builder(
@@ -3509,7 +3511,7 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
-    reclient_jobs = 500,
+    reclient_jobs = 250,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
@@ -3541,6 +3543,7 @@ ci.fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
+    schedule = "triggered",
 )
 
 ci.fyi_builder(
@@ -3597,9 +3600,6 @@ ci.fyi_builder(
         category = "linux tsan",
         short_name = "rre",
     ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
     reclient_jobs = 100,
@@ -3607,6 +3607,7 @@ ci.fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.fyi_builder(
@@ -3615,9 +3616,6 @@ ci.fyi_builder(
         category = "linux tsan",
         short_name = "rre",
     ),
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 1,
-    ),
     goma_backend = None,
     reclient_instance = "rbe-chromium-trusted",
     reclient_jobs = 250,
@@ -3625,6 +3623,7 @@ ci.fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
+    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.fyi_builder(
