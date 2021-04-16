@@ -458,8 +458,13 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
     // Null `main_script_load_params` means the main script failed to be loaded.
     // Use DeduceStartWorkerFailureReason() because it returns an error code
     // based on the main script's net error.
+    std::string message =
+        version->script_cache_map()->main_script_status_message();
+    if (message.empty())
+      message = ServiceWorkerConsts::kServiceWorkerFetchScriptError;
     Complete(version->DeduceStartWorkerFailureReason(
-        blink::ServiceWorkerStatusCode::kErrorFailed));
+                 blink::ServiceWorkerStatusCode::kErrorFailed),
+             message);
     return;
   }
   DCHECK(version->cross_origin_embedder_policy().has_value());
