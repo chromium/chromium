@@ -413,12 +413,13 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void FrameNameChanged(RenderFrameHost* render_frame_host,
                                 const std::string& name) {}
 
-  // Called when the sticky user activation bit has been set on the frame.
-  // This will not be called for new RenderFrameHosts whose underlying
-  // FrameTreeNode was already activated. This should not be used to determine a
-  // RenderFrameHost's user activation state.
-  virtual void FrameReceivedFirstUserActivation(
-      RenderFrameHost* render_frame_host) {}
+  // Called when a frame receives user activation. This may be called multiple
+  // times for the same frame. This should not be used to determine a
+  // RenderFrameHost's user activation state. Does not include frames activated
+  // by the same-origin visibility heuristic, see `UserActivationState` for
+  // details.
+  virtual void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) {
+  }
 
   // Invoked when the display state of the frame changes.
   virtual void FrameDisplayStateChanged(RenderFrameHost* render_frame_host,

@@ -533,10 +533,10 @@ void PageLoadTracker::OnLoadedResource(
   }
 }
 
-void PageLoadTracker::FrameReceivedFirstUserActivation(
+void PageLoadTracker::FrameReceivedUserActivation(
     content::RenderFrameHost* rfh) {
   for (const auto& observer : observers_) {
-    observer->FrameReceivedFirstUserActivation(rfh);
+    observer->FrameReceivedUserActivation(rfh);
   }
 }
 

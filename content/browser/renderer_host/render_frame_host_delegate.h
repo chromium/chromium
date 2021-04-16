@@ -202,10 +202,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidChangeName(RenderFrameHostImpl* render_frame_host,
                              const std::string& name) {}
 
-  // The sticky user activation bit has been set on the frame. This will not be
-  // called for new RenderFrameHosts whose underlying FrameTreeNode was already
-  // activated.
-  virtual void DidReceiveFirstUserActivation(
+  // Called when a frame receives user activation. This may be called multiple
+  // times for the same frame. Does not include frames activated by the
+  // same-origin visibility heuristic, see `UserActivationState` for details.
+  virtual void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) {}
 
   // The display style of the frame has changed.

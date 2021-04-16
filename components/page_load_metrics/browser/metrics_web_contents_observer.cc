@@ -371,10 +371,10 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
   }
 }
 
-void MetricsWebContentsObserver::FrameReceivedFirstUserActivation(
+void MetricsWebContentsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   if (committed_load_)
-    committed_load_->FrameReceivedFirstUserActivation(render_frame_host);
+    committed_load_->FrameReceivedUserActivation(render_frame_host);
 }
 
 void MetricsWebContentsObserver::FrameDisplayStateChanged(

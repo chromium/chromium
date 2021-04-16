@@ -128,7 +128,7 @@ class MetricsWebContentsObserver
       content::RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
-  void FrameReceivedFirstUserActivation(
+  void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_display_none) override;

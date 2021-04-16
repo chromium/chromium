@@ -603,7 +603,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       JavaScriptDialogCallback response_callback) override;
   void DidChangeName(RenderFrameHostImpl* render_frame_host,
                      const std::string& name) override;
-  void DidReceiveFirstUserActivation(
+  void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) override;
   void DidChangeDisplayState(RenderFrameHostImpl* render_frame_host,
                              bool is_display_none) override;

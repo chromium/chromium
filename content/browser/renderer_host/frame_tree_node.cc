@@ -643,8 +643,7 @@ bool FrameTreeNode::NotifyUserActivation(
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
-    if (!rfh->frame_tree_node()->user_activation_state_.HasBeenActive())
-      rfh->DidReceiveFirstUserActivation();
+    rfh->DidReceiveUserActivation();
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
   }
 

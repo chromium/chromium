@@ -1230,12 +1230,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool is_overriding_user_agent() { return is_overriding_user_agent_; }
 
-  // Notifies the render frame that |frame_tree_node_| has had the sticky
-  // user activation bit set for the first time.
-  // This is called both for the actual frame that saw user activation and any
-  // ancestor frames that might also be activated as part of UserActivationV2
-  // requirements.
-  void DidReceiveFirstUserActivation();
+  // Notifies the render frame that |frame_tree_node_| has received user
+  // activation. May be invoked multiple times. This is called both for the
+  // actual frame that saw user activation and any ancestor frames that might
+  // also be activated as part of UserActivationV2 requirements. Does not
+  // include frames activated by the same-origin visibility heuristic, see
+  // `UserActivationState` for details.
+  void DidReceiveUserActivation();
 
   // Apply any isolation policies, such as site isolation triggered by COOP
   // headers, that might be triggered when a particular frame has just seen a

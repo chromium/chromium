@@ -517,7 +517,7 @@ class PageLoadMetricsObserver {
   virtual void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info) {}
 
-  virtual void FrameReceivedFirstUserActivation(
+  virtual void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) {}
 
   // Called when the display property changes on the frame.

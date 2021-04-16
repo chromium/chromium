@@ -1668,7 +1668,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
   OnCpuTimingUpdate(ad_frame, base::TimeDelta::FromMilliseconds(1000));
 
   // Set the page activation and advance time by twelve more seconds.
-  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedUserActivation(ad_frame);
   AdvancePageDuration(base::TimeDelta::FromSeconds(12));
 
   // Perform some updates on ad and main frames. Usage 13%/16%.
@@ -1760,7 +1760,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
 
   // Set the frame as activated after 2.5 seconds
   AdvancePageDuration(base::TimeDelta::FromMilliseconds(2500));
-  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedUserActivation(ad_frame);
 
   // Do some more work on the main frame.
   OnCpuTimingUpdate(main_frame, base::TimeDelta::FromMilliseconds(500));
@@ -2471,7 +2471,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Give the frame a user activation before the threshold would be hit.
-  tester()->SimulateFrameReceivedFirstUserActivation(ad_frame);
+  tester()->SimulateFrameReceivedUserActivation(ad_frame);
 
   // Add enough data to trigger the intervention.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,

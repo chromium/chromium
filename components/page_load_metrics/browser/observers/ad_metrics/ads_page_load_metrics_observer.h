@@ -117,7 +117,7 @@ class AdsPageLoadMetricsObserver
   void OnResourceDataUseObserved(
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;
-  void FrameReceivedFirstUserActivation(content::RenderFrameHost* rfh) override;
+  void FrameReceivedUserActivation(content::RenderFrameHost* rfh) override;
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_display_none) override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,

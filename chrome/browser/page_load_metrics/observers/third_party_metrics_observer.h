@@ -38,7 +38,7 @@ class ThirdPartyMetricsObserver
   // page_load_metrics::PageLoadMetricsObserver:
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void FrameReceivedFirstUserActivation(
+  void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

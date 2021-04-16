@@ -513,7 +513,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   ProcessOngoingNavigationResource(frame_host);
 }
 
-void AdsPageLoadMetricsObserver::FrameReceivedFirstUserActivation(
+void AdsPageLoadMetricsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   FrameTreeData* ancestor_data =
       FindFrameData(render_frame_host->GetFrameTreeNodeId());
