@@ -47,10 +47,9 @@ class ActivityLogConverterStrategyTest : public testing::Test {
 
   testing::AssertionResult VerifyInteger(v8::Local<v8::Value> v8_value,
                                          int expected) {
-    int out;
     std::unique_ptr<base::Value> value(
         converter_->FromV8Value(v8_value, context()));
-    if (value->is_int() && value->GetAsInteger(&out) && out == expected)
+    if (value->is_int() && value->GetInt() == expected)
       return testing::AssertionSuccess();
     return testing::AssertionFailure();
   }
