@@ -7,8 +7,15 @@
  * profile avatar icons that allows keyboard navigation with all arrow keys.
  */
 
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+import {hasKeyModifiers} from '../../js/util.m.js';
+
 Polymer({
   is: 'cr-profile-avatar-selector-grid',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     ignoreModifiedKeyEvents: {
@@ -95,4 +102,3 @@ Polymer({
     assert(this.parentNode.activeElement === nextItem);
   }
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

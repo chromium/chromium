@@ -14,10 +14,22 @@
  *            isGaiaAvatar: (boolean),
  *            selected: (boolean)}}
  */
-/* #export */ let AvatarIcon;
+export let AvatarIcon;
+
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '../cr_button/cr_button.m.js';
+import '../shared_vars_css.m.js';
+import '../shared_style_css.m.js';
+import {getImage} from '../../js/icon.m.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './cr_profile_avatar_selector_grid.js';
 
 Polymer({
   is: 'cr-profile-avatar-selector',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**
@@ -127,7 +139,7 @@ Polymer({
    * @private
    */
   getIconImageSet_(iconUrl) {
-    return cr.icon.getImage(iconUrl);
+    return getImage(iconUrl);
   },
 
   /**
@@ -141,4 +153,3 @@ Polymer({
         /** @type {!{model: {item: !AvatarIcon}}} */ (e).model.item;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

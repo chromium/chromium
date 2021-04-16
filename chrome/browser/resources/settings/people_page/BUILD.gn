@@ -67,7 +67,7 @@ if (!is_chromeos_ash) {
 
   js_library("manage_profile_browser_proxy") {
     deps = [
-      "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector.m",
+      "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector",
       "//ui/webui/resources/js:cr.m",
     ]
   }

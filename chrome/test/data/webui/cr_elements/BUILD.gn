@@ -239,7 +239,7 @@ js_library("cr_profile_avatar_selector_tests") {
     "..:chai_assert",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector.m",
+    "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector",
     "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
