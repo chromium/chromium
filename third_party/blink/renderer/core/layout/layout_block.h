@@ -378,8 +378,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutUnit AvailableLogicalHeightForPercentageComputation() const;
   bool HasDefiniteLogicalHeight() const;
 
-  void RebuildFragmentTreeSpine();
-
  protected:
   RecalcLayoutOverflowResult RecalcPositionedDescendantsLayoutOverflow();
   bool RecalcSelfLayoutOverflow();

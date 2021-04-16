@@ -2310,21 +2310,6 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
   return result;
 }
 
-void LayoutBlock::RebuildFragmentTreeSpine() {
-  DCHECK(PhysicalFragmentCount() && NGBlockNode::CanUseNewLayout(*this));
-  // If this box has an associated layout-result, rebuild the spine of the
-  // fragment-tree to ensure consistency.
-  LayoutBlock* cb = this;
-  while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
-    // Create and set a new identical results.
-    for (auto& layout_result : cb->layout_results_) {
-      layout_result =
-          NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
-    }
-    cb = cb->ContainingBlock();
-  }
-}
-
 void LayoutBlock::RecalcChildVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(!IsTable() || IsLayoutNGObject());
