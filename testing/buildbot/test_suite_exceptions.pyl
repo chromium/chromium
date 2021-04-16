@@ -2456,12 +2456,16 @@
           'shards': 4,
         },
       },
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
+      # https://crbug.com/1199909,
+      'linux-lacros-rel': {
         'args': [
-          '--gtest_filter=-SingleClientSessionsSyncTestWithFaviconTestServer.ShouldDeleteOnDemandIconsOnSessionsDisabled',
-        ],
-      },
+          '--gtest_filter=-SingleClientNigoriWithWebApiTest.ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown:\
+SingleClientNigoriWithWebApiTest.ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn:\
+SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared:\
+SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts:\
+SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs',
+        ]
+      }
     },
   },
   'system_webview_shell_layout_test_apk': {

@@ -4332,6 +4332,7 @@
       },
       'lacros_chrome_browsertests': {},
       'lacros_chrome_unittests': {},
+      'sync_integration_tests': {},
       'ui_base_unittests': {},
       'unit_tests': {},
     },

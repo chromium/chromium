@@ -4814,6 +4814,21 @@
         "test_id_prefix": "ninja://chrome/test:lacros_chrome_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-SingleClientNigoriWithWebApiTest.ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown:SingleClientNigoriWithWebApiTest.ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn:SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared:SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts:SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "sync_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
+      },
+      {
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5740,9 +5755,6 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
-        "args": [
-          "--gtest_filter=-SingleClientSessionsSyncTestWithFaviconTestServer.ShouldDeleteOnDemandIconsOnSessionsDisabled"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
