@@ -122,11 +122,6 @@ class CORE_EXPORT UseCounterImpl final {
   void MuteForInspector();
   void UnmuteForInspector();
 
-  void ReportAndTraceMeasurementByFeatureId(WebFeature, const LocalFrame&);
-  void ReportAndTraceMeasurementByCSSSampleId(int,
-                                              const LocalFrame*,
-                                              bool /*is_animated*/);
-
   void ClearMeasurementForTesting(WebFeature);
 
   void Trace(Visitor*) const;
@@ -143,6 +138,13 @@ class CORE_EXPORT UseCounterImpl final {
 
   void Count(const UseCounterFeature&, const LocalFrame*);
   bool IsCounted(const UseCounterFeature&) const;
+
+  // Reports feature observed event to
+  // components/page_load_metrics/renderer/page_timing_metrics_sender.
+  // Returns whether a report is successfully sent.
+  bool ReportMeasurement(const UseCounterFeature&, const LocalFrame*);
+  // Triggers "blink.feature_usage" event.
+  void TraceMeasurement(const UseCounterFeature&);
 
   // If non-zero, ignore all 'count' calls completely.
   unsigned mute_count_;
