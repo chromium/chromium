@@ -104,15 +104,27 @@ class ManualFillingControllerImpl
   // Adjusts visibility based on focused field type and available suggestions.
   void UpdateVisibility();
 
+  // Registers this filling controller as observer on all given sources if they
+  // are allowed for this tab. This means `OnSourceAvailabilityChanged()`
+  // triggers as soon as the observed source changes.
+  void RegisterObserverForAllowedSources(
+      const base::flat_set<FillingSource>& sources);
+
   void OnSourceAvailabilityChanged(
       FillingSource source,
       AccessoryController* source_controller,
       AccessoryController::IsFillingSourceAvailable is_source_available);
 
-  // Returns the controller that is responsible for a tab of given |type|.
-  AccessoryController* GetControllerForTab(autofill::AccessoryTabType type);
+  // Returns the controller that is responsible for a tab of given `type`.
+  AccessoryController* GetControllerForTabType(
+      autofill::AccessoryTabType type) const;
 
-  // Returns the controller that is responsible for a given |action|.
+  // Returns the controller that is responsible to handle requests for a given
+  // `filling_source`.
+  AccessoryController* GetControllerForFillingSource(
+      const FillingSource& filling_source) const;
+
+  // Returns the controller that is responsible for a given `action`.
   AccessoryController* GetControllerForAction(
       autofill::AccessoryAction action) const;
 

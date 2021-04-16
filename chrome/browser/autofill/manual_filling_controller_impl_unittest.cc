@@ -90,6 +90,10 @@ class ManualFillingControllerTest : public testing::Test {
 
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
+    ON_CALL(mock_cc_controller_, RegisterFillingSourceObserver(_))
+        .WillByDefault(SaveArg<0>(&cc_source_observer_));
+    ON_CALL(mock_address_controller_, RegisterFillingSourceObserver(_))
+        .WillByDefault(SaveArg<0>(&address_source_observer_));
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
@@ -124,6 +128,15 @@ class ManualFillingControllerTest : public testing::Test {
     pwd_source_observer_.Run(&mock_pwd_controller_, source_available);
   }
 
+  void NotifyCreditCardSourceObserver(
+      IsFillingSourceAvailable source_available) {
+    cc_source_observer_.Run(&mock_cc_controller_, source_available);
+  }
+
+  void NotifyAddressSourceObserver(IsFillingSourceAvailable source_available) {
+    address_source_observer_.Run(&mock_address_controller_, source_available);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -138,6 +151,8 @@ class ManualFillingControllerTest : public testing::Test {
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
 
   AccessoryController::FillingSourceObserver pwd_source_observer_;
+  AccessoryController::FillingSourceObserver cc_source_observer_;
+  AccessoryController::FillingSourceObserver address_source_observer_;
 };
 
 // Fixture for tests that the old but widely used legacy behavior of the manual
@@ -326,7 +341,7 @@ TEST_F(ManualFillingControllerTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
   // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
-  // call to GetSheetData happens.
+  // call to `GetSheetData()` happens.
   EXPECT_CALL(mock_pwd_controller_, GetSheetData)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(filled_passwords_sheet()));
@@ -337,6 +352,45 @@ TEST_F(ManualFillingControllerTest,
 
   EXPECT_CALL(*view(), Hide());
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAndHidesAccessoryForAddressesTriggeredByObserver) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  const AccessorySheetData kTestAddressSheet =
+      populate_sheet(AccessoryTabType::ADDRESSES);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_address_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestAddressSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AtLeast(1));
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+  NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
+
+  EXPECT_CALL(*view(), Hide());
+  NotifyAddressSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAndHidesAccessoryForCreditCardsTriggeredByObserver) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  const AccessorySheetData kTestCreditCardSheet =
+      populate_sheet(AccessoryTabType::CREDIT_CARDS);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestCreditCardSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
+      .Times(AtLeast(1));
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+
+  EXPECT_CALL(*view(), Hide());
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
 }
 
 TEST_F(ManualFillingControllerLegacyTest,
