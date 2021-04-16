@@ -55,7 +55,7 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
 
  private:
   // PageActionIconContainer:
-  void AddPageActionIcon(views::View* icon) override;
+  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
 

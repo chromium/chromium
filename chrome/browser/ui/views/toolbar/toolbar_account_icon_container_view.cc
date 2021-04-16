@@ -113,10 +113,11 @@ void ToolbarAccountIconContainerView::OnThemeChanged() {
   UpdateAllIcons();
 }
 
-void ToolbarAccountIconContainerView::AddPageActionIcon(views::View* icon) {
+void ToolbarAccountIconContainerView::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
   // Add the page action icons to the end of the container, just before the
   // avatar icon.
-  AddChildViewAt(icon, GetIndexOf(avatar_));
+  AddChildViewAt(std::move(icon), GetIndexOf(avatar_));
 }
 
 BEGIN_METADATA(ToolbarAccountIconContainerView, ToolbarIconContainerView)

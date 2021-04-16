@@ -195,9 +195,11 @@ void WebAppToolbarButtonContainer::DisableAnimationForTesting() {
   g_animation_disabled_for_testing = true;
 }
 
-void WebAppToolbarButtonContainer::AddPageActionIcon(views::View* icon) {
-  AddChildViewAt(icon, page_action_insertion_point_++);
-  views::SetHitTestComponent(icon, static_cast<int>(HTCLIENT));
+void WebAppToolbarButtonContainer::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
+  auto* icon_ptr =
+      AddChildViewAt(std::move(icon), page_action_insertion_point_++);
+  views::SetHitTestComponent(icon_ptr, static_cast<int>(HTCLIENT));
 }
 
 int WebAppToolbarButtonContainer::GetPageActionIconSize() const {

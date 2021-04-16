@@ -23,6 +23,8 @@ class FontList;
 
 struct PageActionIconParams {
   PageActionIconParams();
+  PageActionIconParams(const PageActionIconParams&) = delete;
+  PageActionIconParams& operator=(const PageActionIconParams&) = delete;
   ~PageActionIconParams();
 
   std::vector<PageActionIconType> types_enabled;
@@ -41,9 +43,6 @@ struct PageActionIconParams {
   // type could be an abstract class that simply exposes an ObserveButton()
   // method.
   ToolbarIconContainerView* button_observer = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconParams);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_PARAMS_H_

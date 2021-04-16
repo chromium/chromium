@@ -26,8 +26,9 @@ void PageActionIconContainerView::ChildPreferredSizeChanged(
   PreferredSizeChanged();
 }
 
-void PageActionIconContainerView::AddPageActionIcon(views::View* icon) {
-  AddChildView(icon);
+void PageActionIconContainerView::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
+  AddChildView(std::move(icon));
 }
 
 BEGIN_METADATA(PageActionIconContainerView, views::View)

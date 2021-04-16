@@ -84,7 +84,7 @@ class WebAppToolbarButtonContainer : public views::View,
       base::TimeDelta::FromMilliseconds(750);
 
   // PageActionIconContainer:
-  void AddPageActionIcon(views::View* icon) override;
+  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
 
   // PageActionIconView::Delegate:
   int GetPageActionIconSize() const override;
