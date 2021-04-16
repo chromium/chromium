@@ -12,6 +12,7 @@
 namespace views {
 
 class AXEventObserver;
+class AXVirtualView;
 class View;
 
 // AXEventManager allows observation of accessibility events for all views.
@@ -30,6 +31,8 @@ class VIEWS_EXPORT AXEventManager {
 
   // Notifies observers of an accessibility event. |view| must not be null.
   void NotifyViewEvent(views::View* view, ax::mojom::Event event_type);
+  void NotifyVirtualViewEvent(views::AXVirtualView* virtual_view,
+                              ax::mojom::Event event_type);
 
  private:
   base::ObserverList<AXEventObserver> observers_;

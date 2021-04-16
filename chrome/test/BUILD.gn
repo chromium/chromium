@@ -2268,7 +2268,6 @@ if (!is_android) {
 
     if (use_aura) {
       sources += [
-        "../browser/ui/aura/accessibility/automation_manager_aura_browsertest.cc",
         "../browser/ui/test/test_app_window_icon_observer.cc",
         "../browser/ui/test/test_app_window_icon_observer.h",
       ]
@@ -6748,7 +6747,10 @@ if (!is_android) {
     }
 
     if (use_aura) {
-      sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
+      sources += [
+        "../browser/ui/aura/accessibility/automation_manager_aura_browsertest.cc",
+        "../browser/ui/views/drag_and_drop_interactive_uitest.cc",
+      ]
       deps += [
         "//ui/aura:aura_interactive_ui_tests",
         "//ui/base/dragdrop:types",

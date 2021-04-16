@@ -20,6 +20,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/view.h"
@@ -202,7 +203,12 @@ void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     if (events_callback)
       events_callback.Run(this, event_type);
   }
+
+  // This is used on platforms that have a native accessibility API.
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
+
+  // This is used on platforms that don't have a native accessibility API.
+  AXEventManager::Get()->NotifyVirtualViewEvent(this, event_type);
 }
 
 ui::AXNodeData& AXVirtualView::GetCustomData() {
