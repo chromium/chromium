@@ -104,14 +104,13 @@ class CORE_EXPORT UseCounterImpl final {
 
   // Repeated calls are ignored.
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
-  // Repeated calls are ignored.
   void Count(WebFeature, const LocalFrame*);
 
-  bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
   // Return whether the feature has been seen since the last page load
   // (except when muted).  Does include features seen in documents which have
   // reporting disabled.
   bool IsCounted(WebFeature) const;
+  bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
 
   // Retains a reference to the observer to notify of UseCounterImpl changes.
   void AddObserver(Observer*);
@@ -141,6 +140,9 @@ class CORE_EXPORT UseCounterImpl final {
   void NotifyFeatureCounted(WebFeature);
 
   void CountFeature(WebFeature) const;
+
+  void Count(const UseCounterFeature&, const LocalFrame*);
+  bool IsCounted(const UseCounterFeature&) const;
 
   // If non-zero, ignore all 'count' calls completely.
   unsigned mute_count_;

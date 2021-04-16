@@ -165,6 +165,13 @@ bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
        static_cast<uint32_t>(GetCSSSampleId(unresolved_property))});
 }
 
+bool UseCounterImpl::IsCounted(const UseCounterFeature& feature) const {
+  if (mute_count_)
+    return false;
+
+  return feature_tracker_.Test(feature);
+}
+
 void UseCounterImpl::AddObserver(Observer* observer) {
   DCHECK(!observers_.Contains(observer));
   observers_.insert(observer);
@@ -187,28 +194,7 @@ void UseCounterImpl::ReportAndTraceMeasurementByCSSSampleId(
   }
 }
 
-void UseCounterImpl::Count(CSSPropertyID property,
-                           CSSPropertyType type,
-                           const LocalFrame* source_frame) {
-  DCHECK(IsCSSPropertyIDWithName(property) ||
-         property == CSSPropertyID::kVariable);
-
-  if (mute_count_)
-    return;
-
-  uint32_t sample_id = static_cast<uint32_t>(GetCSSSampleId(property));
-  if (feature_tracker_.TestAndSet({ToFeatureType(type), sample_id})) {
-    return;
-  }
-
-  if (commit_state_ >= kCommited) {
-    ReportAndTraceMeasurementByCSSSampleId(
-        sample_id, source_frame,
-        /* is_animated */ type == CSSPropertyType::kAnimation);
-  }
-}
-
-void UseCounterImpl::Count(WebFeature web_feature,
+void UseCounterImpl::Count(const UseCounterFeature& feature,
                            const LocalFrame* source_frame) {
   if (!source_frame)
     return;
@@ -216,19 +202,48 @@ void UseCounterImpl::Count(WebFeature web_feature,
   if (mute_count_)
     return;
 
+  if (feature_tracker_.TestAndSet(feature)) {
+    return;
+  }
+
+  if (commit_state_ >= kCommited) {
+    switch (feature.type) {
+      case mojom::blink::UseCounterFeatureType::kWebFeature:
+        ReportAndTraceMeasurementByFeatureId(
+            static_cast<WebFeature>(feature.value), *source_frame);
+        break;
+      case mojom::blink::UseCounterFeatureType::kCssProperty:
+        ReportAndTraceMeasurementByCSSSampleId(feature.value, source_frame,
+                                               /* is_animated */ false);
+        break;
+      case mojom::blink::UseCounterFeatureType::kAnimatedCssProperty:
+        ReportAndTraceMeasurementByCSSSampleId(feature.value, source_frame,
+                                               /* is_animated */ true);
+        break;
+    }
+  }
+}
+
+void UseCounterImpl::Count(CSSPropertyID property,
+                           CSSPropertyType type,
+                           const LocalFrame* source_frame) {
+  DCHECK(IsCSSPropertyIDWithName(property) ||
+         property == CSSPropertyID::kVariable);
+
+  Count({ToFeatureType(type), static_cast<uint32_t>(GetCSSSampleId(property))},
+        source_frame);
+}
+
+void UseCounterImpl::Count(WebFeature web_feature,
+                           const LocalFrame* source_frame) {
   // PageDestruction is reserved as a scaling factor.
   DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
   DCHECK_NE(WebFeature::kPageVisits, web_feature);
   DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
 
-  if (feature_tracker_.TestAndSet(
-          {mojom::blink::UseCounterFeatureType::kWebFeature,
-           static_cast<uint32_t>(web_feature)})) {
-    return;
-  }
-
-  if (commit_state_ >= kCommited)
-    ReportAndTraceMeasurementByFeatureId(web_feature, *source_frame);
+  Count({mojom::blink::UseCounterFeatureType::kWebFeature,
+         static_cast<uint32_t>(web_feature)},
+        source_frame);
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
