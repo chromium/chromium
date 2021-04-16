@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -64,7 +65,7 @@ public class LocaleManagerTest {
 
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
+                () -> AppHooks.get().getLocaleManager().showSearchEnginePromoIfNeeded(
                                 searchActivity, new Callback<Boolean>() {
                                     @Override
                                     public void onResult(Boolean result) {

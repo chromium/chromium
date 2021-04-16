@@ -32,7 +32,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.WebContents;
@@ -50,7 +49,7 @@ import java.util.Random;
 @Config(manifest = Config.NONE)
 public class ChromeActionModeHandlerUnitTest {
     @Mock
-    private TabImpl mTab;
+    private Tab mTab;
     @Mock
     private ActionModeCallbackHelper mActionModeCallbackHelper;
     @Mock

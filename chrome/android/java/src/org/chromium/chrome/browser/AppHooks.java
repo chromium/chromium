@@ -186,8 +186,16 @@ public abstract class AppHooks {
     /**
      * @return An instance of {@link LocaleManager} that handles customized locale related logic.
      */
-    public LocaleManager createLocaleManager() {
+    protected LocaleManager createLocaleManager() {
         return new LocaleManager();
+    }
+
+    /**
+     * Return LocaleManager. Create a new one if not available.
+     **/
+    public LocaleManager getLocaleManager() {
+        if (LocaleManager.getInstance() == null) LocaleManager.setInstance(createLocaleManager());
+        return LocaleManager.getInstance();
     }
 
     /**

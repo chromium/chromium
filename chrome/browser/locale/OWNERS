@@ -1,0 +1,5 @@
+# This restriction is in place due to the complicated compliance regulations
+# around this code.
+set noparent
+
+file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIANCE_OWNERS

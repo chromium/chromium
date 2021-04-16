@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -167,7 +166,7 @@ public class ChromeActionModeHandler {
                 Callback<Boolean> callback = result -> {
                     if (result != null && result) search(selectedText);
                 };
-                LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
+                AppHooks.get().getLocaleManager().showSearchEnginePromoIfNeeded(
                         TabUtils.getActivity(mTab), callback);
                 mHelper.finishActionMode();
             } else if (mShareDelegateSupplier.get().isSharingHubV15Enabled()

@@ -20,20 +20,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -43,10 +40,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Manager for some locale specific logics.
+ * TODO(https://crbug.com/1198923) Turn this into a per-activity object.
  */
 public class LocaleManager {
     public static final String SPECIAL_LOCALE_ID = "US";
@@ -89,6 +86,8 @@ public class LocaleManager {
     // SnackbarManager is owned by ChromeActivity and is not null as long as the activity is alive.
     private WeakReference<SnackbarManager> mSnackbarManager = new WeakReference<>(null);
     private LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
+    @Nullable
+    private SettingsLauncher mSettingsLauncher;
 
     private SnackbarController mSnackbarController = new SnackbarController() {
         @Override
@@ -96,9 +95,9 @@ public class LocaleManager {
 
         @Override
         public void onAction(Object actionData) {
+            assert mSettingsLauncher != null;
             Context context = ContextUtils.getApplicationContext();
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
+            mSettingsLauncher.launchSettingsActivity(context, SearchEngineSettings.class);
         }
     };
 
@@ -108,9 +107,6 @@ public class LocaleManager {
     @CalledByNative
     public static LocaleManager getInstance() {
         assert ThreadUtils.runningOnUiThread();
-        if (sInstance == null) {
-            sInstance = AppHooks.get().createLocaleManager();
-        }
         return sInstance;
     }
 
@@ -176,7 +172,7 @@ public class LocaleManager {
      * Overrides the default search engine to a different search engine we designate. This is a
      * no-op if the user has manually changed DSP settings.
      */
-    public void overrideDefaultSearchEngine() {
+    void overrideDefaultSearchEngine() {
         if (!isSearchEngineAutoSwitchEnabled() || !isSpecialLocaleEnabled()) return;
         getLocaleTemplateUrlLoader().overrideDefaultSearchProvider();
         showSnackbar(ContextUtils.getApplicationContext().getString(R.string.using_sogou));
@@ -186,7 +182,7 @@ public class LocaleManager {
      * Reverts the temporary change made in {@link #overrideDefaultSearchEngine()}. This is a no-op
      * if the user has manually changed DSP settings.
      */
-    public void revertDefaultSearchEngineOverride() {
+    private void revertDefaultSearchEngineOverride() {
         if (!isSearchEngineAutoSwitchEnabled() || isSpecialLocaleEnabled()) return;
         getLocaleTemplateUrlLoader().setGoogleAsDefaultSearch();
         showSnackbar(ContextUtils.getApplicationContext().getString(R.string.using_google));
@@ -228,11 +224,8 @@ public class LocaleManager {
     public void showSearchEnginePromoIfNeeded(
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert LibraryLoader.getInstance().isInitialized();
-        TemplateUrlServiceFactory.get().runWhenLoaded(new Runnable() {
-            @Override
-            public void run() {
-                handleSearchEnginePromoWithTemplateUrlsLoaded(activity, onSearchEngineFinalized);
-            }
+        TemplateUrlServiceFactory.get().runWhenLoaded(() -> {
+            handleSearchEnginePromoWithTemplateUrlsLoaded(activity, onSearchEngineFinalized);
         });
     }
 
@@ -240,21 +233,18 @@ public class LocaleManager {
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert TemplateUrlServiceFactory.get().isLoaded();
 
-        final Callback<Boolean> finalizeInternalCallback = new Callback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                if (result != null && result) {
-                    mSearchEnginePromoCheckedThisSession = true;
-                } else {
-                    @SearchEnginePromoType
-                    int promoType = getSearchEnginePromoShowType();
-                    if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                            || promoType == SearchEnginePromoType.SHOW_NEW) {
-                        onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
-                    }
+        final Callback<Boolean> finalizeInternalCallback = (result) -> {
+            if (result != null && result) {
+                mSearchEnginePromoCheckedThisSession = true;
+            } else {
+                @SearchEnginePromoType
+                int promoType = getSearchEnginePromoShowType();
+                if (promoType == SearchEnginePromoType.SHOW_EXISTING
+                        || promoType == SearchEnginePromoType.SHOW_NEW) {
+                    onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
                 }
-                if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
             }
+            if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
         };
         if (TemplateUrlServiceFactory.get().isDefaultSearchManaged()
                 || ApiCompatibilityUtils.isDemoUser()) {
@@ -264,29 +254,22 @@ public class LocaleManager {
 
         @SearchEnginePromoType
         final int shouldShow = getSearchEnginePromoShowType();
-        Callable<PromoDialog> dialogCreator;
+        Supplier<PromoDialog> dialogSupplier;
+
         switch (shouldShow) {
             case SearchEnginePromoType.DONT_SHOW:
                 finalizeInternalCallback.onResult(true);
                 return;
             case SearchEnginePromoType.SHOW_SOGOU:
-                dialogCreator = new Callable<PromoDialog>() {
-                    @Override
-                    public PromoDialog call() throws Exception {
-                        return new SogouPromoDialog(
-                                activity, LocaleManager.this, finalizeInternalCallback);
-                    }
-                };
+                dialogSupplier = ()
+                        -> new SogouPromoDialog(activity, LocaleManager.this,
+                                finalizeInternalCallback, mSettingsLauncher);
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
             case SearchEnginePromoType.SHOW_NEW:
-                dialogCreator = new Callable<PromoDialog>() {
-                    @Override
-                    public PromoDialog call() throws Exception {
-                        return new DefaultSearchEnginePromoDialog(
+                dialogSupplier = ()
+                        -> new DefaultSearchEnginePromoDialog(
                                 activity, shouldShow, finalizeInternalCallback);
-                    }
-                };
                 break;
             default:
                 assert false;
@@ -300,43 +283,8 @@ public class LocaleManager {
             finalizeInternalCallback.onResult(false);
             return;
         }
-
-        if (VrModuleProvider.getIntentDelegate().isLaunchingIntoVr(activity, activity.getIntent())
-                || VrModuleProvider.getDelegate().isInVr()) {
-            showPromoDialogForVr(dialogCreator, activity);
-        } else {
-            showPromoDialog(dialogCreator);
-        }
+        dialogSupplier.get().show();
         mSearchEnginePromoShownThisSession = true;
-    }
-
-    private void showPromoDialogForVr(Callable<PromoDialog> dialogCreator, Activity activity) {
-        VrModuleProvider.getDelegate().requestToExitVrForSearchEnginePromoDialog(
-                new OnExitVrRequestListener() {
-                    @Override
-                    public void onSucceeded() {
-                        showPromoDialog(dialogCreator);
-                    }
-
-                    @Override
-                    public void onDenied() {
-                        // We need to make sure that the dialog shows up even if user denied to
-                        // leave VR.
-                        VrModuleProvider.getDelegate().forceExitVrImmediately();
-                        showPromoDialog(dialogCreator);
-                    }
-                },
-                activity);
-    }
-
-    private void showPromoDialog(Callable<PromoDialog> dialogCreator) {
-        try {
-            dialogCreator.call().show();
-        } catch (Exception e) {
-            // Exception is caught purely because Callable states it can be thrown.  This is never
-            // expected to be hit.
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -357,9 +305,18 @@ public class LocaleManager {
 
     /**
      * Sets the {@link SnackbarManager} used by this instance.
+     * @param manager SnackbarManager instance.
      */
     public void setSnackbarManager(SnackbarManager manager) {
         mSnackbarManager = new WeakReference<SnackbarManager>(manager);
+    }
+
+    /**
+     * Sets the settings launcher for search engines.
+     * @param settingsLauncher Launcher to start search engine settings on the snackbar UI.
+     */
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     private void showSnackbar(CharSequence title) {
@@ -441,9 +398,8 @@ public class LocaleManager {
                 "Not applicable unless existing or new promos are required");
     }
 
-    /** Set a LocaleManager to be used for testing. */
-    @VisibleForTesting
-    public static void setInstanceForTest(LocaleManager instance) {
+    /** Set a LocaleManager instance. This is called only by AppHooks. */
+    public static void setInstance(LocaleManager instance) {
         sInstance = instance;
     }
 
@@ -510,4 +466,10 @@ public class LocaleManager {
      */
     @CalledByNative
     public void recordUserTypeMetrics() {}
+
+    /** Set a LocaleManager to be used for testing. */
+    @VisibleForTesting
+    public static void setInstanceForTest(LocaleManager instance) {
+        sInstance = instance;
+    }
 }

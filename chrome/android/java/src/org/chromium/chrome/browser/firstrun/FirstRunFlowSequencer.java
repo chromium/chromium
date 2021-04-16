@@ -20,6 +20,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.childaccounts.ChildAccountService;
@@ -130,7 +131,7 @@ public abstract class FirstRunFlowSequencer  {
     @VisibleForTesting
     protected boolean shouldShowSearchEnginePage() {
         @LocaleManager.SearchEnginePromoType
-        int searchPromoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
+        int searchPromoType = AppHooks.get().getLocaleManager().getSearchEnginePromoShowType();
         return searchPromoType == LocaleManager.SearchEnginePromoType.SHOW_NEW
                 || searchPromoType == LocaleManager.SearchEnginePromoType.SHOW_EXISTING;
     }
