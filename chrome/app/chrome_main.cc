@@ -90,7 +90,9 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
   CastPointer(sym, &function);
 }
 
-static const char* gBuildId = "linux-chromium-experimental";
+namespace recordreplay {
+  extern char gBuildId[];
+}
 
 #endif // OS_LINUX
 
@@ -158,7 +160,7 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
                          gRecordReplayRecordCommandLineArguments);
 
   if (gRecordReplayAttach) {
-    gRecordReplayAttach(dispatchAddress, gBuildId);
+    gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
     gRecordReplayRecordCommandLineArguments(pargc, (char***)pargv);
   }
 

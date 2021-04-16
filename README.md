@@ -42,7 +42,7 @@ use_allocator = "none"
 Build:
 
 ```
-autoninja -C out/Release chrome
+node build
 ```
 
 # Merging from upstream

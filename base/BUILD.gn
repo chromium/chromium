@@ -578,6 +578,7 @@ component("base") {
     "ranges/functional.h",
     "ranges/ranges.h",
     "record_replay.cc",
+    "record_replay_build_id.cc",
     "record_replay.h",
     "run_loop.cc",
     "run_loop.h",
