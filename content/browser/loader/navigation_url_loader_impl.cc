@@ -950,6 +950,7 @@ void NavigationURLLoaderImpl::OnComplete(
   // URLLoaderClient has already been transferred to the renderer process and
   // OnComplete is not expected to be called here.
   if (status.error_code == net::OK) {
+    DEBUG_ALIAS_FOR_GURL(navigate_url, url_);
     base::debug::DumpWithoutCrashing();
     return;
   }
