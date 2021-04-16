@@ -31,7 +31,7 @@ Example: base::kDCheckIsFatalFeature
 
 These are implemented via creating a [base::Feature][base-feature] anywhere.
 These can be enabled via server-side experimentation or via the command-line
-using --enable-feature.  Which features are in use is tracked by UMA metrics,
+using "--enable-features".  Which features are in use is tracked by UMA metrics,
 and is visible in chrome://version as the "Variations" field. Do note that in
 release builds, only a series of hashes show up in chrome://version rather than
 the string names of the variations, but these hashes can be turned back into
