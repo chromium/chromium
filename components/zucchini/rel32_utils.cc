@@ -16,7 +16,7 @@ namespace zucchini {
 Rel32ReaderX86::Rel32ReaderX86(ConstBufferView image,
                                offset_t lo,
                                offset_t hi,
-                               const std::vector<offset_t>* locations,
+                               const std::deque<offset_t>* locations,
                                const AddressTranslator& translator)
     : image_(image),
       target_rva_to_offset_(translator),

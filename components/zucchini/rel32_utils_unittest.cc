@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -88,7 +89,7 @@ TEST(Rel32UtilsTest, Rel32ReaderX86) {
   };
   ConstBufferView buffer(bytes.data(), bytes.size());
   // Specify rel32 locations directly, instead of parsing.
-  std::vector<offset_t> rel32_locations = {0x0008U, 0x0010U, 0x0018U, 0x001CU};
+  std::deque<offset_t> rel32_locations = {0x0008U, 0x0010U, 0x0018U, 0x001CU};
 
   // Generate everything.
   auto reader1 = std::make_unique<Rel32ReaderX86>(buffer, 0x0000U, 0x0020U,
@@ -163,8 +164,8 @@ TEST(Rel32UtilsTest, Rel32ReaderArm_Arm32) {
   };
   ConstBufferView region(&bytes[0], bytes.size());
   // Specify rel32 locations directly, instead of parsing.
-  std::vector<offset_t> rel32_locations_A24 = {0x0008U, 0x0010U, 0x0018U,
-                                               0x001CU};
+  std::deque<offset_t> rel32_locations_A24 = {0x0008U, 0x0010U, 0x0018U,
+                                              0x001CU};
 
   // Generate everything.
   auto reader1 =
@@ -427,21 +428,21 @@ TEST(Rel32UtilsTest, Rel32ReaderArm_AArch64) {
   MutableBufferView region(&bytes[0], bytes.size());
 
   // Generate Immd26. We specify rel32 locations directly.
-  std::vector<offset_t> rel32_locations_Immd26 = {0x0008U};
+  std::deque<offset_t> rel32_locations_Immd26 = {0x0008U};
   auto reader1 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd26>>(
       translator, region, rel32_locations_Immd26, 0x0000U, 0x0020U);
   CheckReader({{0x0008U, 0x0010U}}, std::move(reader1));
 
   // Generate Immd19.
-  std::vector<offset_t> rel32_locations_Immd19 = {0x0010U, 0x0018U};
+  std::deque<offset_t> rel32_locations_Immd19 = {0x0010U, 0x0018U};
   auto reader2 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd19>>(
       translator, region, rel32_locations_Immd19, 0x0000U, 0x0020U);
   CheckReader({{0x0010U, 0x0014U}, {0x0018U, 0x0010U}}, std::move(reader2));
 
   // Generate Immd14.
-  std::vector<offset_t> rel32_locations_Immd14 = {0x001CU};
+  std::deque<offset_t> rel32_locations_Immd14 = {0x001CU};
   auto reader3 = std::make_unique<
       Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd14>>(
       translator, region, rel32_locations_Immd14, 0x0000U, 0x0020U);

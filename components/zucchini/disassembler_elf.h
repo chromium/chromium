@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <memory>
 #include <string>
 #include <vector>
@@ -178,7 +179,8 @@ class DisassemblerElfIntel : public DisassemblerElf<Traits> {
 
  private:
   // Sorted file offsets of rel32 locations.
-  std::vector<offset_t> rel32_locations_;
+  // Using std::deque to reduce peak memory footprint.
+  std::deque<offset_t> rel32_locations_;
 
   DISALLOW_COPY_AND_ASSIGN(DisassemblerElfIntel);
 };

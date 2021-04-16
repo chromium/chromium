@@ -6,8 +6,8 @@
 #define COMPONENTS_ZUCCHINI_REL32_UTILS_H_
 
 #include <algorithm>
+#include <deque>
 #include <memory>
-#include <vector>
 
 #include "base/logging.h"
 #include "base/macros.h"
@@ -32,7 +32,7 @@ class Rel32ReaderX86 : public ReferenceReader {
   Rel32ReaderX86(ConstBufferView image,
                  offset_t lo,
                  offset_t hi,
-                 const std::vector<offset_t>* locations,
+                 const std::deque<offset_t>* locations,
                  const AddressTranslator& translator);
   ~Rel32ReaderX86() override;
 
@@ -44,8 +44,8 @@ class Rel32ReaderX86 : public ReferenceReader {
   AddressTranslator::RvaToOffsetCache target_rva_to_offset_;
   AddressTranslator::OffsetToRvaCache location_offset_to_rva_;
   const offset_t hi_;
-  const std::vector<offset_t>::const_iterator last_;
-  std::vector<offset_t>::const_iterator current_;
+  const std::deque<offset_t>::const_iterator last_;
+  std::deque<offset_t>::const_iterator current_;
 
   DISALLOW_COPY_AND_ASSIGN(Rel32ReaderX86);
 };
@@ -79,7 +79,7 @@ class Rel32ReaderArm : public ReferenceReader {
 
   Rel32ReaderArm(const AddressTranslator& translator,
                  ConstBufferView view,
-                 const std::vector<offset_t>& rel32_locations,
+                 const std::deque<offset_t>& rel32_locations,
                  offset_t lo,
                  offset_t hi)
       : view_(view),
@@ -110,8 +110,8 @@ class Rel32ReaderArm : public ReferenceReader {
   ConstBufferView view_;
   AddressTranslator::OffsetToRvaCache offset_to_rva_;
   AddressTranslator::RvaToOffsetCache rva_to_offset_;
-  std::vector<offset_t>::const_iterator cur_it_;
-  std::vector<offset_t>::const_iterator rel32_end_;
+  std::deque<offset_t>::const_iterator cur_it_;
+  std::deque<offset_t>::const_iterator rel32_end_;
   offset_t hi_;
 
   DISALLOW_COPY_AND_ASSIGN(Rel32ReaderArm);
