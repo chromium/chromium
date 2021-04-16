@@ -201,7 +201,12 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   if (object.IsText())
     return CompositingReason::kNone;
 
+  // Disable compositing of SVG if there is clip-path or mask to avoid hairline
+  // along the edges. TODO(crbug.com/1171601): Fix the root cause.
   const ComputedStyle& style = object.StyleRef();
+  if (style.HasClipPath() || style.HasMask())
+    return CompositingReason::kNone;
+
   auto reasons = CompositingReasonsForAnimation(object);
   reasons |= CompositingReasonsForWillChange(style);
   // Exclude will-change for other properties some of which don't apply to SVG
