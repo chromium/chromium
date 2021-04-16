@@ -420,14 +420,16 @@ public class FeedStream implements Stream {
      * @param isPlaceholderShown Whether the placeholder is shown initially.
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
+     * @param isInterestFeed Whether this stream is for interest feed (true) or web feed (false).
      */
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
-            WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {
+            WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
+            boolean isInterestFeed) {
         this.mActivity = activity;
 
-        mNativeFeedStream = FeedStreamJni.get().init(this);
+        mNativeFeedStream = FeedStreamJni.get().init(this, isInterestFeed);
 
         mBottomSheetController = bottomSheetController;
         mNavigationDelegate = nativePageNavigationDelegate;
@@ -1032,7 +1034,7 @@ public class FeedStream implements Stream {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long init(FeedStream caller);
+        long init(FeedStream caller, boolean isForYou);
         boolean isActivityLoggingEnabled(long nativeFeedStream, FeedStream caller);
         int[] getExperimentIds();
         String getSessionId(long nativeFeedStream, FeedStream caller);

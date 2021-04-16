@@ -21,7 +21,8 @@ namespace android {
 // Created once for each NTP/start surface.
 class FeedStream : public ::feed::FeedStreamSurface {
  public:
-  explicit FeedStream(const base::android::JavaRef<jobject>& j_this);
+  explicit FeedStream(const base::android::JavaRef<jobject>& j_this,
+                      jboolean is_for_you_stream);
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
 

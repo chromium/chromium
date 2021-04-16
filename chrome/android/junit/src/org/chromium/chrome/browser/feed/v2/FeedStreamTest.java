@@ -143,7 +143,7 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
-                mShareDelegateSupplier);
+                mShareDelegateSupplier, /* isInterestFeed= */ true);
         mDependencyProvider =
                 new FeedSurfaceScopeDependencyProvider(mActivity, mActivity, false, mFeedStream);
         mRecyclerView = new RecyclerView(mActivity);

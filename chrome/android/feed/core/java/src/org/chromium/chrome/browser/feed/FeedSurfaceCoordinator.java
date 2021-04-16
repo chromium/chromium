@@ -111,6 +111,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
     private @Nullable ViewResizer mStreamViewResizer;
+    // This is the "default"/interest feed stream, not necessarily the current stream.
+    // TODO(chili): Remove the necessity of this.
     private @Nullable FeedStream mStream;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
@@ -456,9 +458,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
-        mStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
-                mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
-                mShareSupplier);
+        mStream = createFeedStream(true);
         mRecyclerView = setUpView();
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
 
@@ -494,6 +494,18 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
         // the scroll container for policy is removed.
         mRecyclerView.requestFocus();
+    }
+
+    /**
+     * Creates a flavor {@Link FeedStream} without any other side-effects.
+     *
+     * @param isInterestFeed True for interest feed, false for web feed.
+     * @return The FeedStream created.
+     */
+    FeedStream createFeedStream(boolean isInterestFeed) {
+        return new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
+                mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
+                mShareSupplier, isInterestFeed);
     }
 
     private void setHeaders(List<View> headerViews) {

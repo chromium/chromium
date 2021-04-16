@@ -408,12 +408,8 @@ public class FeedSurfaceMediator
             // Build menu after section enabled key is set.
             mFeedMenuModel = buildMenuItems();
 
-            PropertyModel interestFeedHeader = SectionHeaderProperties.createSectionHeader(
-                    getInterestFeedHeaderText(suggestionsVisible));
-            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                    .add(interestFeedHeader);
-            // Add to tab map.
-            mTabToStreamMap.put(0, mCoordinator.getStream());
+            addHeaderAndStream(
+                    getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
 
             mCoordinator.initializeIph();
             mSigninManager.getIdentityManager().addObserver(this);
@@ -425,16 +421,9 @@ public class FeedSurfaceMediator
                     SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
 
             if (FeedFeatures.isWebFeedUIEnabled()) {
-                PropertyModel webFeedHeader = SectionHeaderProperties.createSectionHeader(
-                        mContext.getResources().getString(R.string.ntp_following));
-                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                        .add(webFeedHeader);
-                // TODO(chili): Create new stream for webfeed. Also come up with better ID than
-                // index.
+                addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
+                        mCoordinator.createFeedStream(/* isInterestFeed = */ false));
             }
-            // Binds the stream.
-            mSectionHeaderModel.get(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY)
-                    .onSectionHeaderSelected(0);
         } else {
             // Show feed if there is no header that would allow user to hide feed.
             // This is currently only relevant for the two panes start surface.
@@ -459,6 +448,14 @@ public class FeedSurfaceMediator
         mMemoryPressureCallback =
                 pressure -> mCoordinator.getRecyclerView().getRecycledViewPool().clear();
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
+    }
+
+    private void addHeaderAndStream(String headerText, Stream stream) {
+        PropertyModel headerModel = SectionHeaderProperties.createSectionHeader(headerText);
+        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(headerModel);
+        int tabId =
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).size() - 1;
+        mTabToStreamMap.put(tabId, stream);
     }
 
     /**
