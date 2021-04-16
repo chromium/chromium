@@ -5,10 +5,13 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -23,6 +26,9 @@ constexpr char kExtensionId1[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 constexpr char kExtensionId2[] = "hpiknbiabeeppbpihjehijgoemciehgk";
 constexpr char kExtensionId3[] = "bjafgdebaacbbbecmhlhpofkepfkgcpa";
 constexpr char kInstalledCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+
+using ManagementPrefUpdater = ExtensionManagementPrefUpdater<
+    sync_preferences::TestingPrefServiceSyncable>;
 
 }  // namespace
 
@@ -41,6 +47,16 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
       safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
                                           safe_browsing::ENHANCED_PROTECTION);
     }
+  }
+
+  void CreateEmptyExtensionService() {
+    ExtensionServiceTestBase::ExtensionServiceInitParams params =
+        CreateDefaultInitParams();
+    params.pref_file = base::FilePath();
+    InitializeExtensionService(params);
+    extension_prefs_ = ExtensionPrefs::Get(profile());
+    safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                        safe_browsing::ENHANCED_PROTECTION);
   }
 
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
@@ -603,8 +619,9 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
             allowlist()->GetExtensionAllowlistAcknowledgeState(kInstalledCrx));
 }
 
-TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyInstalledExtension) {
-  CreateExtensionService(/*enhanced_protection_enabled=*/true);
+TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyForceInstall) {
+  CreateEmptyExtensionService();
+  service()->Init();
 
   // Add a policy installed extension.
   scoped_refptr<const Extension> extension =
@@ -612,9 +629,13 @@ TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyInstalledExtension) {
           .SetPath(data_dir().AppendASCII("good.crx"))
           .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
           .Build();
-
-  service()->Init();
   service()->AddExtension(extension.get());
+
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    pref.SetIndividualExtensionAutoInstalled(
+        extension->id(), "http://example.com/update_url", true);
+  }
 
   EXPECT_TRUE(IsEnabled(extension->id()));
 
@@ -656,6 +677,75 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_TRUE(IsEnabled(kExtensionId1));
+}
+
+// TODO(jeffcyr): Test with auto-disablement enabled when the enforcement is
+// skipped for policy recommended and policy allowed extensions.
+TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
+       NoEnforcementOnPolicyRecommendedInstall) {
+  CreateEmptyExtensionService();
+  service()->Init();
+
+  // Add a policy installed extension.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("policy_installed")
+          .SetPath(data_dir().AppendASCII("good.crx"))
+          .SetLocation(mojom::ManifestLocation::kExternalPrefDownload)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    pref.SetIndividualExtensionAutoInstalled(
+        extension->id(), "http://example.com/update_url", false);
+  }
+
+  EXPECT_TRUE(IsEnabled(extension->id()));
+
+  // On next update check, the extension is now marked as not allowlisted.
+  PerformActionBasedOnOmahaAttributes(extension->id(),
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            allowlist()->GetExtensionAllowlistState(extension->id()));
+  // A policy installed extension is not disabled by allowlist enforcement.
+  EXPECT_TRUE(IsEnabled(extension->id()));
+  // No warnings are shown for policy installed extensions.
+  EXPECT_FALSE(allowlist()->ShouldDisplayWarning(extension->id()));
+}
+
+TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
+       NoEnforcementOnPolicyAllowedInstall) {
+  CreateEmptyExtensionService();
+  service()->Init();
+
+  // Add a policy allowed extension.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("policy_allowed")
+          .SetPath(data_dir().AppendASCII("good.crx"))
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    pref.SetIndividualExtensionInstallationAllowed(extension->id(), true);
+  }
+
+  EXPECT_TRUE(IsEnabled(extension->id()));
+
+  // On next update check, the extension is now marked as not allowlisted.
+  PerformActionBasedOnOmahaAttributes(extension->id(),
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            allowlist()->GetExtensionAllowlistState(extension->id()));
+  // An extension allowed by policy is not disabled by allowlist enforcement.
+  EXPECT_TRUE(IsEnabled(extension->id()));
+  // No warnings are shown for policy allowed extensions.
+  EXPECT_FALSE(allowlist()->ShouldDisplayWarning(extension->id()));
 }
 
 // TODO(crbug.com/1194051): Add more ExtensionAllowlist::Observer coverage
