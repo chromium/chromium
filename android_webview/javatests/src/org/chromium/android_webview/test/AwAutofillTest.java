@@ -2666,6 +2666,105 @@ public class AwAutofillTest {
         assertTrue(autofillHintsServiceTestHelper.isQueryFailed());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFieldAddedBeforeSuggestionSelected() throws Throwable {
+        // This test verifies that form filling works even in the case that the form has been
+        // modified (field was added) in the DOM between the decision to fill and executing the
+        // fill.
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<label>User Name:</label>"
+                + "<input type='text' id='text1' name='name'/>"
+                + "<label>Password:</label>"
+                + "<input type='password' id='pwdid' name='pwd'/>"
+                + "</form></body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+
+        // Append a field.
+        executeJavaScriptAndWaitForResult("document.getElementById('pwdid').insertAdjacentHTML("
+                + "'afterend', '<input type=\"password\" id=\"pwdid2\"/>');");
+
+        // Autofill the original form.
+        SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
+        values.append(
+                viewStructure.getChild(0).getId(), AutofillValue.forText("example@example.com"));
+        values.append(viewStructure.getChild(1).getId(), AutofillValue.forText("password"));
+        cnt = getCallbackCount();
+        clearChangedValues();
+        invokeAutofill(values);
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED});
+
+        String value0 =
+                executeJavaScriptAndWaitForResult("document.getElementById('text1').value;");
+        assertEquals("\"example@example.com\"", value0);
+        String value1 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid').value;");
+        assertEquals("\"password\"", value1);
+        String value2 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid2').value;");
+        assertEquals("\"\"", value2);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFirstFieldRemovedBeforeSuggestionSelected() throws Throwable {
+        // This test verifies that form filling works even if an element of the form that was
+        // supposed to be filled has been deleted between the time of decision to fill the form and
+        // executing the fill.
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<label>User Name:</label>"
+                + "<input type='text' id='text1' name='name'/>"
+                + "<label>Password:</label>"
+                + "<input type='password' id='pwdid' name='pwd'/>"
+                + "</form></body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        // Focus on the second element, since the first one is about to be removed. Removing the
+        // element on which the fill was triggered would cancel the filling operation.
+        executeJavaScriptAndWaitForResult("document.getElementById('pwdid').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+
+        // Remove the first field.
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').remove()");
+
+        // Autofill the original form.
+        SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
+        values.append(
+                viewStructure.getChild(0).getId(), AutofillValue.forText("example@example.com"));
+        values.append(viewStructure.getChild(1).getId(), AutofillValue.forText("password"));
+        cnt = getCallbackCount();
+        clearChangedValues();
+        invokeAutofill(values);
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED});
+
+        String value1 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid').value;");
+        assertEquals("\"password\"", value1);
+    }
+
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {
         AwActivityTestRule.pollInstrumentationThread(() -> {
             try {

@@ -985,40 +985,62 @@ void GetOptionStringsFromElement(const WebSelectElement& select_element,
   }
 }
 
+// Use insertion sort to sort the almost sorted |elements|.
+void SortByFieldRendererIds(std::vector<WebFormControlElement>& elements) {
+  for (auto it = elements.begin(); it != elements.end(); it++) {
+    // insertion_point will point to the first element that is greater than
+    // to_be_inserted.
+    const auto& to_be_inserted = *it;
+    const auto insertion_point = base::ranges::upper_bound(
+        elements.begin(), it, to_be_inserted.UniqueRendererFormControlId(),
+        base::ranges::less{},
+        &WebFormControlElement::UniqueRendererFormControlId);
+
+    // Shift all elements from [insertion_point, it) right and move |it| to the
+    // front.
+    std::rotate(insertion_point, it, it + 1);
+  }
+}
+
+std::vector<WebFormControlElement>::iterator SearchInSortedVector(
+    const FormFieldData& field,
+    std::vector<WebFormControlElement>& sorted_elements) {
+  auto get_field_renderer_id = [](const WebFormControlElement& e) {
+    return FieldRendererId(e.UniqueRendererFormControlId());
+  };
+  // Find the first element whose unique renderer ID is greater or equal to
+  // |fields|.
+  auto it = base::ranges::lower_bound(
+      sorted_elements.begin(), sorted_elements.end(), field.unique_renderer_id,
+      base::ranges::less{}, get_field_renderer_id);
+  if (it == sorted_elements.end() ||
+      FieldRendererId(it->UniqueRendererFormControlId()) !=
+          field.unique_renderer_id) {
+    return sorted_elements.end();
+  }
+  return it;
+}
+
 // The callback type used by |ForEachMatchingFormField()|.
 typedef void (*Callback)(const FormFieldData&,
                          bool, /* is_initiating_element */
                          blink::WebFormControlElement*);
 
+// Note that the order of elements in |control_elements| may be changed by this
+// function. Also the returned WebFormControlElements won't appear in DOM
+// traversal order.
 std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
-    std::vector<WebFormControlElement>* control_elements,
+    std::vector<WebFormControlElement>& control_elements,
     const WebElement& initiating_element,
     const FormData& data,
     FieldFilterMask filters,
     bool force_override,
     bool is_preview,
     const Callback& callback) {
-  DCHECK(control_elements);
-
-  std::vector<WebFormControlElement> matching_fields;
-  matching_fields.reserve(control_elements->size());
-
   const bool num_elements_matches_num_fields =
-      control_elements->size() == data.fields.size();
+      control_elements.size() == data.fields.size();
   UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
                         num_elements_matches_num_fields);
-  if (!num_elements_matches_num_fields) {
-    // http://crbug.com/841784
-    // This pathological case was only thought to be reachable iff the fields
-    // are added/removed from the form while the user is interacting with the
-    // autofill popup.
-    //
-    // Is is also reachable for formless non-checkout forms when checkout
-    // restrictions are applied.
-    //
-    // TODO(crbug/847221): Add a UKM to capture these events.
-    return matching_fields;
-  }
 
   // The intended behaviour is:
   // * Autofill the currently focused element.
@@ -1027,51 +1049,57 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
   // * Send the focus event for the initially focused element.
   WebFormControlElement* initially_focused_element = nullptr;
 
-  // This container stores the indexes of non-focused elements to be autofilled.
-  std::vector<size_t> autofillable_elements_index;
+  // This container stores the pairs of autofillable WebFormControlElement* and
+  // the corresponding indexes of |data.fields| that are used to fill this
+  // element.
+  std::vector<std::pair<WebFormControlElement*, size_t>>
+      autofillable_elements_index_pairs;
 
-  // It's possible that the site has injected fields into the form after the
-  // page has loaded, so we can't assert that the size of the cached control
-  // elements is equal to the size of the fields in |form|.  Fortunately, the
-  // one case in the wild where this happens, paypal.com signup form, the fields
-  // are appended to the end of the form and are not visible.
-  for (size_t i = 0; i < control_elements->size(); ++i) {
-    WebFormControlElement* element = &(*control_elements)[i];
-    element->SetAutofillSection(WebString::FromUTF8(data.fields[i].section));
+  std::vector<WebFormControlElement> matching_fields;
+  matching_fields.reserve(control_elements.size());
 
-    bool is_initiating_element = (*element == initiating_element);
+  // Prepare for binary search.
+  SortByFieldRendererIds(control_elements);
+
+  for (size_t i = 0; i < data.fields.size(); ++i) {
+    if (matching_fields.size() == control_elements.size())
+      break;  // All possible matches are already found.
+
+    auto it = SearchInSortedVector(data.fields[i], control_elements);
+    if (it == control_elements.end())
+      continue;
+
+    WebFormControlElement& element = *it;
+
+    element.SetAutofillSection(WebString::FromUTF8(data.fields[i].section));
 
     // Only autofill empty fields (or those with the field's default value
     // attribute) and the field that initiated the filling, i.e. the field the
     // user is currently editing and interacting with.
-    const WebInputElement* input_element = ToWebInputElement(element);
+    const WebInputElement* input_element = ToWebInputElement(&element);
     static base::NoDestructor<WebString> kValue("value");
     static base::NoDestructor<WebString> kPlaceholder("placeholder");
 
-    if (FieldRendererId(element->UniqueRendererFormControlId()) !=
-        data.fields[i].unique_renderer_id) {
-      continue;
-    }
-
-    if (((filters & FILTER_DISABLED_ELEMENTS) && !element->IsEnabled()) ||
-        ((filters & FILTER_READONLY_ELEMENTS) && element->IsReadOnly()) ||
+    if (((filters & FILTER_DISABLED_ELEMENTS) && !element.IsEnabled()) ||
+        ((filters & FILTER_READONLY_ELEMENTS) && element.IsReadOnly()) ||
         // See description for FILTER_NON_FOCUSABLE_ELEMENTS.
-        ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) && !element->IsFocusable() &&
-         !IsSelectElement(*element))) {
+        ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) && !element.IsFocusable() &&
+         !IsSelectElement(element))) {
       continue;
     }
 
     // Autofill the initiating element.
+    bool is_initiating_element = (element == initiating_element);
     if (is_initiating_element) {
-      if (!is_preview && element->Focused())
-        initially_focused_element = element;
+      if (!is_preview && element.Focused())
+        initially_focused_element = &element;
 
-      matching_fields.push_back(*element);
-      callback(data.fields[i], is_initiating_element, element);
+      matching_fields.push_back(element);
+      callback(data.fields[i], is_initiating_element, &element);
       continue;
     }
 
-    if (element->GetAutofillState() == WebAutofillState::kAutofilled)
+    if (element.GetAutofillState() == WebAutofillState::kAutofilled)
       continue;
 
     if (!force_override &&
@@ -1084,32 +1112,32 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
         // field is not skipped. Nevertheless the below condition does not hold
         // for sites set the |kValue| attribute to the user-input value.
         (IsAutofillableInputElement(input_element) ||
-         IsTextAreaElement(*element)) &&
-        element->UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(element->Value().Utf16()) &&
-        (!element->HasAttribute(*kValue) ||
-         element->GetAttribute(*kValue) != element->Value()) &&
-        (!element->HasAttribute(*kPlaceholder) ||
-         base::i18n::ToLower(element->GetAttribute(*kPlaceholder).Utf16()) !=
-             base::i18n::ToLower(element->Value().Utf16()))) {
+         IsTextAreaElement(element)) &&
+        element.UserHasEditedTheField() &&
+        !SanitizedFieldIsEmpty(element.Value().Utf16()) &&
+        (!element.HasAttribute(*kValue) ||
+         element.GetAttribute(*kValue) != element.Value()) &&
+        (!element.HasAttribute(*kPlaceholder) ||
+         base::i18n::ToLower(element.GetAttribute(*kPlaceholder).Utf16()) !=
+             base::i18n::ToLower(element.Value().Utf16()))) {
       continue;
     }
 
     // Check if we should autofill/preview/clear a select element or leave it.
-    if (!force_override && IsSelectElement(*element) &&
-        element->UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(element->Value().Utf16())) {
+    if (!force_override && IsSelectElement(element) &&
+        element.UserHasEditedTheField() &&
+        !SanitizedFieldIsEmpty(element.Value().Utf16())) {
       continue;
     }
 
     // Storing the indexes of non-initiating elements to be autofilled after
     // triggering the blur event for the initiating element.
-    autofillable_elements_index.push_back(i);
+    autofillable_elements_index_pairs.emplace_back(&element, i);
   }
 
   // If there is no other field to be autofilled, sending the blur event and
   // then the focus event for the initiating element does not make sense.
-  if (autofillable_elements_index.empty())
+  if (autofillable_elements_index_pairs.empty())
     return matching_fields;
 
   // A blur event is emitted for the focused element if it is the initiating
@@ -1118,9 +1146,11 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     initially_focused_element->DispatchBlurEvent();
 
   // Autofill the non-initiating elements.
-  for (const auto& index : autofillable_elements_index) {
-    matching_fields.push_back((*control_elements)[index]);
-    callback(data.fields[index], false, &(*control_elements)[index]);
+  for (const auto& pair : autofillable_elements_index_pairs) {
+    WebFormControlElement* filled_element = pair.first;
+    size_t index_in_data_fields = pair.second;
+    matching_fields.push_back(*filled_element);
+    callback(data.fields[index_in_data_fields], false, filled_element);
   }
 
   // A focus event is emitted for the initiating element after autofilling is
@@ -1143,7 +1173,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormField(
     const Callback& callback) {
   std::vector<WebFormControlElement> control_elements =
       ExtractAutofillableElementsInForm(form_element);
-  return ForEachMatchingFormFieldCommon(&control_elements, initiating_element,
+  return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
                                         data, filters, force_override,
                                         is_preview, callback);
 }
@@ -1167,7 +1197,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
   if (!IsElementInControlElementSet(initiating_element, control_elements))
     return {};
 
-  return ForEachMatchingFormFieldCommon(&control_elements, initiating_element,
+  return ForEachMatchingFormFieldCommon(control_elements, initiating_element,
                                         data, filters, force_override,
                                         is_preview, callback);
 }
