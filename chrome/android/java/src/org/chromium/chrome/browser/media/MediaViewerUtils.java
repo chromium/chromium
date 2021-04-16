@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 
 import java.util.Locale;
 
@@ -69,6 +70,9 @@ public class MediaViewerUtils {
         builder.setToolbarColor(Color.BLACK);
         builder.setCloseButtonIcon(closeIcon);
         builder.setShowTitle(true);
+        builder.setColorScheme(GlobalNightModeStateProviderHolder.getInstance().isInNightMode()
+                        ? CustomTabsIntent.COLOR_SCHEME_DARK
+                        : CustomTabsIntent.COLOR_SCHEME_LIGHT);
 
         if (allowExternalAppHandlers && !willExposeFileUri(contentUri)) {
             // Create a PendingIntent that can be used to view the file externally.
