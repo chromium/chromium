@@ -85,6 +85,10 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return syncer::ModelTypeSet();
   }
 
+  // syncer::DeviceInfoSyncClient:
+  // Returns false since we only care about Chrome OS devices
+  bool IsUmaEnabledOnCrOSDevice() const override { return false; }
+
  private:
   PrefService* const prefs_;
   syncer::SyncInvalidationsService* const sync_invalidations_service_;

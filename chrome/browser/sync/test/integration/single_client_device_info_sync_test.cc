@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -27,12 +28,21 @@
 
 namespace {
 
+using testing::Contains;
 using testing::ElementsAre;
 using testing::IsSupersetOf;
 using testing::UnorderedElementsAre;
 
 MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
   return arg.specifics().device_info().cache_guid() == expected_cache_guid;
+}
+
+MATCHER(HasFullHardwareClass, "") {
+  return !arg.specifics().device_info().full_hardware_class().empty();
+}
+
+MATCHER(IsFullHardwareClassEmpty, "") {
+  return arg.specifics().device_info().full_hardware_class().empty();
 }
 
 std::string CacheGuidForSuffix(int suffix) {
@@ -95,6 +105,47 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(SingleClientDeviceInfoSyncTest);
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       UmaEnabledSetFullHardwareClass) {
+  bool uma_enabled = true;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &uma_enabled);
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+              Contains(HasFullHardwareClass()));
+
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       UmaDisabledFullHardwareClassEmpty) {
+  bool uma_enabled = false;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &uma_enabled);
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+              Contains(IsFullHardwareClassEmpty()));
+
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+#else
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       UmaEnabledFullHardwareClassOnNonChromeOS) {
+  bool uma_enabled = true;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &uma_enabled);
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+              Contains(IsFullHardwareClassEmpty()));
+
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
   ASSERT_TRUE(SetupSync());

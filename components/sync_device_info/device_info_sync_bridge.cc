@@ -185,7 +185,11 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   specifics->set_signin_scoped_device_id(info.signin_scoped_device_id());
   specifics->set_manufacturer(info.manufacturer_name());
   specifics->set_model(info.model_name());
-  specifics->set_full_hardware_class(info.full_hardware_class());
+
+  const std::string full_hardware_class = info.full_hardware_class();
+  if (!full_hardware_class.empty()) {
+    specifics->set_full_hardware_class(full_hardware_class);
+  }
 
   // The local device should have not been updated yet. Set the last updated
   // timestamp to now.

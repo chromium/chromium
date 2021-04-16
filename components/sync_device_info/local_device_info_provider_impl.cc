@@ -82,10 +82,11 @@ LocalDeviceInfoProviderImpl::RegisterOnInitializedCallback(
   return closure_list_.Add(callback);
 }
 
-// Always return UMA disabled, (crrev/c/2816348) wires the UMA status.
+// Returns whether a ChromeOS device has UMA enabled.
+// Returns false when called on non-CrOS devices.
 bool LocalDeviceInfoProviderImpl::IsUmaEnabledOnCrOSDevice() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
+  return sync_client_->IsUmaEnabledOnCrOSDevice();
 }
 
 void LocalDeviceInfoProviderImpl::Initialize(
