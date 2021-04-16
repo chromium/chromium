@@ -10,5 +10,8 @@ proto_library("proto") {
     "web_app.proto",
     "web_app_share_target.proto",
   ]
-  link_deps = [ "//components/sync/protocol" ]
+  link_deps = [
+    "//chrome/browser/web_applications/system_web_apps:proto",
+    "//components/sync/protocol",
+  ]
 }

@@ -6,6 +6,7 @@ syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
+import "chrome/browser/web_applications/system_web_apps/system_web_app_data.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -54,30 +55,6 @@ message ChromeOSDataProto {
   required bool show_in_management = 3;
   required bool is_disabled = 4;
   optional bool oem_installed = 5;
-}
-
-// Properties for System Web Apps.
-message SystemWebAppDataProto {
-  enum SystemAppType {
-    FILE_MANAGER = 1;
-    TELEMETRY = 2;
-    SAMPLE = 3;
-    SETTINGS = 4;
-    CAMERA = 5;
-    TERMINAL = 6;
-    MEDIA = 7;
-    HELP = 8;
-    PRINT_MANAGEMENT = 9;
-    SCANNING = 10;
-    DIAGNOSTICS = 11;
-    CONNECTIVITY_DIAGNOSTICS = 12;
-    ECHE = 13;
-    CROSH = 14;
-    PERSONALIZATION = 15;
-    SHORTCUT_CUSTOMIZATION = 16;
-  };
-
-  optional SystemAppType system_app_type = 1;
 }
 
 // Properties for System Web Apps.

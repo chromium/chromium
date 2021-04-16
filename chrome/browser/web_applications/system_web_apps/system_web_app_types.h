@@ -50,9 +50,9 @@ enum class SystemAppType {
   //    |internal_name|. This is for reporting per-app install results.
   //
   // 2. Add a corresponding proto enum entry (with the same numerical value) to
-  //    SystemWebAppDataProto in web_app.proto. This is for identifying system
-  //    apps during Chrome start-up (i.e. when SystemWebAppManager hasn't
-  //    finished synchronizing all apps).
+  //    SystemWebAppDataProto in system_web_app_data.proto. This is for
+  //    identifying system apps during Chrome start-up (i.e. when
+  //    SystemWebAppManager hasn't finished synchronizing all apps).
   //
   // 3. Add a comment above the enum entry in this file. It should include a
   //    description (what it does in one sentence), at least one email contact,
