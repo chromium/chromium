@@ -102,11 +102,9 @@ bool CanShowSigninModule(const policy::PolicyMap& policies) {
   if (!browser_signin_value)
     return true;
 
-  int int_browser_signin_value;
-  bool success = browser_signin_value->GetAsInteger(&int_browser_signin_value);
-  DCHECK(success);
-
-  return static_cast<policy::BrowserSigninMode>(int_browser_signin_value) !=
+  DCHECK(browser_signin_value->is_int());
+  return static_cast<policy::BrowserSigninMode>(
+             browser_signin_value->GetInt()) !=
          policy::BrowserSigninMode::kDisabled;
 }
 
