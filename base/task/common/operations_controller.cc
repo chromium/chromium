@@ -78,6 +78,7 @@ void OperationsController::ShutdownAndWaitForZeroOperations() {
   }
 }
 
+// static
 OperationsController::State OperationsController::ExtractState(uint32_t value) {
   if (value & kShuttingDownBitMask) {
     return State::kShuttingDown;
