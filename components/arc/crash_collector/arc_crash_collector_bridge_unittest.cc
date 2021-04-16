@@ -52,7 +52,7 @@ TEST_F(ArcCrashCollectorBridgeTest, DumpCrash) {
   ASSERT_NE(nullptr, bridge());
   bridge()->SetBuildProperties("device", "board", "cpu_abi",
                                base::Optional<std::string>());
-  bridge()->DumpCrash("type", mojo::ScopedHandle());
+  bridge()->DumpCrash("type", mojo::ScopedHandle(), base::nullopt);
 }
 
 // Tests that DumpNativeCrash doesn't crash.

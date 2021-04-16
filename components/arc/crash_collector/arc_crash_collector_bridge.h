@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/mojom/base/time.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -40,7 +41,9 @@ class ArcCrashCollectorBridge
   ~ArcCrashCollectorBridge() override;
 
   // mojom::CrashCollectorHost overrides.
-  void DumpCrash(const std::string& type, mojo::ScopedHandle pipe) override;
+  void DumpCrash(const std::string& type,
+                 mojo::ScopedHandle pipe,
+                 base::Optional<base::TimeDelta> uptime) override;
   void DumpNativeCrash(const std::string& exec_name,
                        int32_t pid,
                        int64_t timestamp,
