@@ -6,6 +6,7 @@
 # TEST SETUP
 # ==============================================================================
 
+import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build_overrides/build.gni")
 
@@ -29,7 +30,7 @@ if (is_android) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//build/config/fuchsia/package.gni")
   import("//third_party/fuchsia-sdk/sdk/build/cmc.gni")
-} else if (is_chromeos_ash) {
+} else if (is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) {
   import("//build/config/chromeos/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
   import("//build/util/generate_wrapper.gni")
@@ -479,10 +480,11 @@ template("test") {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
-  } else if (is_chromeos_ash && cros_board != "") {
+  } else if ((is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) &&
+             cros_board != "") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
-    # Building for a cros board (ie: not linux-chromeos).
+    # Building for a cros board (ie: not linux-chromeos or linux-lacros).
 
     _gen_runner_target = "${target_name}__runner"
     _runtime_deps_file =
@@ -532,7 +534,7 @@ template("test") {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
-  } else if (chromeos_is_browser_only) {
+  } else if (is_chromeos_lacros && !is_chromeos_device) {
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
     _executable = target_name
     _gen_runner_target = "${target_name}__runner"
