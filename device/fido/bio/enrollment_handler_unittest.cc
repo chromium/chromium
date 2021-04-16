@@ -82,7 +82,7 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
   size_t sample_failures_;
   bool sampling_;
   base::test::TaskEnvironment task_environment_;
-  test::TestCallbackReceiver<> ready_callback_;
+  test::ValueCallbackReceiver<BioEnrollmentHandler::SensorInfo> ready_callback_;
   test::ValueCallbackReceiver<BioEnrollmentStatus> error_callback_;
   test::VirtualFidoDeviceFactory virtual_device_factory_;
 };

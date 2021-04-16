@@ -89,9 +89,12 @@
           <div id="chooseName">
             <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
             <cr-input type="text" id="enrollmentName"
+                max-length="[[enrollmentNameMaxUtf8Length_]]"
                 value="{{recentEnrollmentName_}}"
                 label="$i18n{securityKeysBioEnrollmentNameLabel}"
                 on-input="onEnrollmentNameInput_"
+                error-message="[[enrollmentNameError_]]"
+                invalid="[[!isNullOrEmpty_(enrollmentNameError_)]]"
                 spellcheck="false">
             </cr-input>
           </div>

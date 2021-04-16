@@ -16,7 +16,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
-#include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/credential_management_handler.h"
 #include "device/fido/pin.h"
@@ -583,6 +582,11 @@ void SecurityKeysBioEnrollmentHandler::RegisterMessages() {
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleProvidePIN,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "securityKeyBioEnrollGetSensorInfo",
+      base::BindRepeating(
+          &SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "securityKeyBioEnrollEnumerate",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleEnumerate,
                           base::Unretained(this)));
@@ -619,12 +623,14 @@ void SecurityKeysBioEnrollmentHandler::Close() {
   provide_pin_cb_.Reset();
 }
 
-void SecurityKeysBioEnrollmentHandler::OnReady() {
+void SecurityKeysBioEnrollmentHandler::OnReady(
+    device::BioEnrollmentHandler::SensorInfo sensor_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bio_);
   DCHECK_EQ(state_, State::kGatherPIN);
   DCHECK(!callback_id_.empty());
   state_ = State::kReady;
+  sensor_info_ = std::move(sensor_info);
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
                             base::Value());
 }
@@ -699,6 +705,23 @@ void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(
   state_ = State::kGatherPIN;
   callback_id_ = args->GetList()[0].GetString();
   std::move(provide_pin_cb_).Run(args->GetList()[1].GetString());
+}
+
+void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
+    const base::ListValue* args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(state_, State::kReady);
+  base::DictionaryValue response;
+  response.SetIntKey("maxTemplateFriendlyName",
+                     sensor_info_.max_template_friendly_name);
+  if (sensor_info_.max_samples_for_enroll) {
+    response.SetIntKey("maxSamplesForEnroll",
+                       *sensor_info_.max_samples_for_enroll);
+  }
+  ResolveJavascriptCallback(
+      base::Value(std::move(args->GetList()[0].GetString())),
+      std::move(response));
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleEnumerate(

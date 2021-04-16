@@ -157,6 +157,7 @@ class TestSecurityKeysBioEnrollProxy extends TestSecurityKeysBrowserProxy {
     super([
       'startBioEnroll',
       'providePIN',
+      'getSensorInfo',
       'enumerateEnrollments',
       'startEnrolling',
       'cancelEnrollment',
@@ -174,6 +175,11 @@ class TestSecurityKeysBioEnrollProxy extends TestSecurityKeysBrowserProxy {
   /** @override */
   providePIN(pin) {
     return this.handleMethod('providePIN', pin);
+  }
+
+  /** @override */
+  getSensorInfo() {
+    return this.handleMethod('getSensorInfo');
   }
 
   /** @override */
@@ -697,7 +703,7 @@ suite('SecurityKeysCredentialManagement', function() {
     assertEquals(pin, '000000');
 
     // Show a list of three credentials.
-    pinResolver.resolve();
+    pinResolver.resolve(null);
     await browserProxy.whenCalled('enumerateCredentials');
     uiReady = eventToPromise(
         'credential-management-dialog-ready-for-testing', dialog);
@@ -821,6 +827,8 @@ suite('SecurityKeysBioEnrollment', function() {
     browserProxy.setResponseFor('startBioEnroll', startResolver.promise);
     const pinResolver = new PromiseResolver();
     browserProxy.setResponseFor('providePIN', pinResolver.promise);
+    const getSensorInfoResolver = new PromiseResolver();
+    browserProxy.setResponseFor('getSensorInfo', getSensorInfoResolver.promise);
     const enumerateResolver = new PromiseResolver();
     browserProxy.setResponseFor(
         'enumerateEnrollments', enumerateResolver.promise);
@@ -841,9 +849,14 @@ suite('SecurityKeysBioEnrollment', function() {
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePIN');
     assertEquals(pin, '000000');
+    pinResolver.resolve(null);
+
+    await browserProxy.whenCalled('getSensorInfo');
+    getSensorInfoResolver.resolve({
+      maxTemplateFriendlyName: 10,
+    });
 
     // Show a list of three enrollments.
-    pinResolver.resolve();
     await browserProxy.whenCalled('enumerateEnrollments');
     uiReady = eventToPromise('bio-enroll-dialog-ready-for-testing', dialog);
 
@@ -884,6 +897,8 @@ suite('SecurityKeysBioEnrollment', function() {
     browserProxy.setResponseFor('startBioEnroll', startResolver.promise);
     const pinResolver = new PromiseResolver();
     browserProxy.setResponseFor('providePIN', pinResolver.promise);
+    const getSensorInfoResolver = new PromiseResolver();
+    browserProxy.setResponseFor('getSensorInfo', getSensorInfoResolver.promise);
     const enumerateResolver = new PromiseResolver();
     browserProxy.setResponseFor(
         'enumerateEnrollments', enumerateResolver.promise);
@@ -904,9 +919,14 @@ suite('SecurityKeysBioEnrollment', function() {
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePIN');
     assertEquals(pin, '000000');
+    pinResolver.resolve(null);
+
+    await browserProxy.whenCalled('getSensorInfo');
+    getSensorInfoResolver.resolve({
+      maxTemplateFriendlyName: 20,
+    });
 
     // Ensure no enrollments exist.
-    pinResolver.resolve();
     await browserProxy.whenCalled('enumerateEnrollments');
     uiReady = eventToPromise('bio-enroll-dialog-ready-for-testing', dialog);
     enumerateResolver.resolve([]);
@@ -950,9 +970,21 @@ suite('SecurityKeysBioEnrollment', function() {
     dialog.$.confirmButton.click();
     await uiReady;
 
+    // Try renaming with a name that's longer than |maxTemplateFriendlyName|.
     assertShown(allDivs, dialog, 'chooseName');
     assertEquals(dialog.$.enrollmentName.value, enrollmentName);
-    const newEnrollmentName = 'Even Newer Fingerprint';
+    const invalidNewEnrollmentName = '21 bytes long string!';
+    dialog.$.enrollmentName.value = invalidNewEnrollmentName;
+    assertFalse(dialog.$.confirmButton.hidden);
+    assertFalse(dialog.$.confirmButton.disabled);
+    assertFalse(dialog.$.enrollmentName.invalid);
+    dialog.$.confirmButton.click();
+    assertTrue(dialog.$.enrollmentName.invalid);
+    assertEquals(browserProxy.getCallCount('renameEnrollment'), 0);
+
+    // Try renaming to a valid name.
+    assertShown(allDivs, dialog, 'chooseName');
+    const newEnrollmentName = '20 bytes long string';
     dialog.$.enrollmentName.value = newEnrollmentName;
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
@@ -963,6 +995,7 @@ suite('SecurityKeysBioEnrollment', function() {
     browserProxy.setResponseFor(
         'renameEnrollment', renameEnrollmentResolver.promise);
     dialog.$.confirmButton.click();
+    assertFalse(dialog.$.enrollmentName.invalid);
 
     const renameArgs = await browserProxy.whenCalled('renameEnrollment');
     assertDeepEquals(renameArgs, [enrollmentId, newEnrollmentName]);

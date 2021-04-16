@@ -169,7 +169,8 @@ base::Optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
   it = response_map.find(cbor::Value(static_cast<int>(
       BioEnrollmentResponseKey::kMaxCaptureSamplesRequiredForEnroll)));
   if (it != response_map.end()) {
-    if (!it->second.is_unsigned()) {
+    if (!it->second.is_unsigned() ||
+        it->second.GetUnsigned() > std::numeric_limits<uint8_t>::max()) {
       return base::nullopt;
     }
     response.max_samples_for_enroll = it->second.GetUnsigned();
@@ -203,7 +204,8 @@ base::Optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
   it = response_map.find(cbor::Value(
       static_cast<int>(BioEnrollmentResponseKey::kRemainingSamples)));
   if (it != response_map.end()) {
-    if (!it->second.is_unsigned()) {
+    if (!it->second.is_unsigned() ||
+        it->second.GetUnsigned() > std::numeric_limits<uint8_t>::max()) {
       return base::nullopt;
     }
     response.remaining_samples = it->second.GetUnsigned();
@@ -250,6 +252,16 @@ base::Optional<BioEnrollmentResponse> BioEnrollmentResponse::Parse(
       template_infos[std::move(id)] = std::move(name);
     }
     response.template_infos = std::move(template_infos);
+  }
+
+  it = response_map.find(cbor::Value(
+      static_cast<int>(BioEnrollmentResponseKey::kMaxTemplateFriendlyName)));
+  if (it != response_map.end()) {
+    if (!it->second.is_unsigned() ||
+        it->second.GetUnsigned() > std::numeric_limits<uint32_t>::max()) {
+      return base::nullopt;
+    }
+    response.max_template_friendly_name = it->second.GetUnsigned();
   }
 
   return std::move(response);

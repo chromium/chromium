@@ -7,15 +7,21 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 
 namespace device {
 
+BioEnrollmentHandler::SensorInfo::SensorInfo() = default;
+BioEnrollmentHandler::SensorInfo::SensorInfo(SensorInfo&&) = default;
+BioEnrollmentHandler::SensorInfo& BioEnrollmentHandler::SensorInfo::operator=(
+    SensorInfo&&) = default;
+
 BioEnrollmentHandler::BioEnrollmentHandler(
     const base::flat_set<FidoTransportProtocol>& supported_transports,
-    base::OnceClosure ready_callback,
+    ReadyCallback ready_callback,
     ErrorCallback error_callback,
     GetPINCallback get_pin_callback,
     FidoDiscoveryFactory* factory)
@@ -235,9 +241,28 @@ void BioEnrollmentHandler::OnHavePINToken(
     }
   }
 
-  state_ = State::kReady;
   pin_token_response_ = std::move(response);
-  std::move(ready_callback_).Run();
+  state_ = State::kGettingSensorInfo;
+  authenticator_->GetSensorInfo(base::BindOnce(
+      &BioEnrollmentHandler::OnGetSensorInfo, weak_factory_.GetWeakPtr()));
+}
+
+void BioEnrollmentHandler::OnGetSensorInfo(
+    CtapDeviceResponseCode status,
+    base::Optional<BioEnrollmentResponse> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, State::kGettingSensorInfo);
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    return;
+  }
+  state_ = State::kReady;
+  SensorInfo sensor_info;
+  sensor_info.max_samples_for_enroll = response->max_samples_for_enroll;
+  sensor_info.max_template_friendly_name =
+      response->max_template_friendly_name.value_or(
+          kDefaultMaxTemplateFriendlyName);
+  std::move(ready_callback_).Run(std::move(sensor_info));
 }
 
 void BioEnrollmentHandler::OnEnumerateTemplates(

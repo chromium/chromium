@@ -96,6 +96,12 @@ Polymer({
 
     /** @private */
     recentEnrollmentName_: String,
+
+    /** @private {?string} */
+    enrollmentNameError_: String,
+
+    /** @private */
+    enrollmentNameMaxUtf8Length_: Number,
   },
 
   /** @private {?SecurityKeysBioEnrollProxy} */
@@ -148,10 +154,14 @@ Polymer({
         .trySubmit(pin => this.browserProxy_.providePIN(pin))
         .then(
             () => {
-              // Leave confirm button disabled while enumerating fingerprints.
-              // It will be re-enabled by dialogPageChanged_() where
-              // appropriate.
-              this.showEnrollmentsPage_();
+              this.browserProxy_.getSensorInfo().then(sensorInfo => {
+                this.enrollmentNameMaxUtf8Length_ =
+                    sensorInfo.maxTemplateFriendlyName;
+                // Leave confirm button disabled while enumerating fingerprints.
+                // It will be re-enabled by dialogPageChanged_() where
+                // appropriate.
+                this.showEnrollmentsPage_();
+              });
             },
             () => {
               // Wrong PIN.
@@ -326,6 +336,19 @@ Polymer({
   /** @private */
   renameNewEnrollment_() {
     assert(this.dialogPage_ === BioEnrollDialogPage.CHOOSE_NAME);
+
+    // Check that the user-provided name doesn't exceed the maximum permissible
+    // length reported by the security key when encoded as UTF-8. (Note that
+    // JavaScript String length counts code units, but string length maximums in
+    // CTAP 2.1 are generally on UTF-8 bytes.)
+    if (new TextEncoder().encode(this.recentEnrollmentName_).length >
+        this.enrollmentNameMaxUtf8Length_) {
+      this.enrollmentNameError_ =
+          this.i18n('securityKeysBioEnrollmentNameLabelTooLong');
+      return;
+    }
+    this.enrollmentNameError_ = null;
+
     // Disable the confirm button to prevent concurrent submissions. It will
     // be re-enabled by dialogPageChanged_() where appropriate.
     this.confirmButtonDisabled_ = true;
@@ -421,5 +444,14 @@ Polymer({
         enrollments && enrollments.length ?
             'securityKeysBioEnrollmentEnrollmentsLabel' :
             'securityKeysBioEnrollmentNoEnrollmentsLabel');
+  },
+
+  /**
+   * @private
+   * @param {string} string
+   * @return {boolean}
+   */
+  isNullOrEmpty_(string) {
+    return string === '' || !string;
   },
 });

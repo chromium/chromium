@@ -40,6 +40,14 @@ export const Ctap2Status = {
 export let Credential;
 
 /**
+ * Encapsulates information about an authenticator's biometric sensor.
+ *
+ * @typedef {{maxTemplateFriendlyName: number,
+ *            maxSamplesForEnroll: ?number}}
+ */
+export let SensorInfo;
+
+/**
  * SampleStatus is the result for reading an individual sample ("touch")
  * during a fingerprint enrollment. This is a subset of the
  * lastEnrollSampleStatus enum defined in the CTAP spec.
@@ -201,15 +209,22 @@ export class SecurityKeysBioEnrollProxy {
    * Provides a PIN for a biometric enrollment operation. The startBioEnroll()
    * Promise must have resolved before this method may be called.
    *
-   * @return {!Promise<?number>} resolves with null if the PIN was correct,
-   *     the number of retries remaining otherwise.
+   * @return {!Promise<?number>} Resolves with null if the PIN was correct, or
+   *     with the number of retries remaining otherwise.
    */
   providePIN(pin) {}
 
   /**
+   * Obtains the |SensorInfo| for the authenticator. A correct PIN must have
+   * previously been supplied via providePIN() before this method may be called.
+   *
+   * @return {!Promise<!SensorInfo>}
+   */
+  getSensorInfo() {}
+
+  /**
    * Enumerates enrollments on the authenticator. A correct PIN must have
-   * previously been supplied via bioEnrollProvidePIN() before this method may
-   * be called.
+   * previously been supplied via providePIN() before this method may be called.
    *
    * @return {!Promise<!Array<!Enrollment>>}
    */
@@ -335,6 +350,11 @@ export class SecurityKeysBioEnrollProxyImpl {
   /** @override */
   providePIN(pin) {
     return sendWithPromise('securityKeyBioEnrollProvidePIN', pin);
+  }
+
+  /** @override */
+  getSensorInfo() {
+    return sendWithPromise('securityKeyBioEnrollGetSensorInfo');
   }
 
   /** @override */

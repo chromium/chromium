@@ -68,7 +68,8 @@ enum class BioEnrollmentResponseKey : uint8_t {
   kTemplateId = 0x04,
   kLastEnrollSampleStatus = 0x05,
   kRemainingSamples = 0x06,
-  kTemplateInfos = 0x07
+  kTemplateInfos = 0x07,
+  kMaxTemplateFriendlyName = 0x08,
 };
 
 enum class BioEnrollmentTemplateInfoParam : uint8_t {
@@ -166,6 +167,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {
   base::Optional<BioEnrollmentSampleStatus> last_status;
   base::Optional<uint8_t> remaining_samples;
   base::Optional<std::map<std::vector<uint8_t>, std::string>> template_infos;
+  base::Optional<uint32_t> max_template_friendly_name;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

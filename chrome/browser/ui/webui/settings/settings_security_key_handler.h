@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "device/fido/bio/enrollment.h"
+#include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -213,13 +214,15 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   void RegisterMessages() override;
   void Close() override;
 
-  void OnReady();
+  void OnReady(device::BioEnrollmentHandler::SensorInfo sensor_info);
   void OnError(device::BioEnrollmentStatus status);
   void OnGatherPIN(uint32_t min_pin_length,
                    int64_t retries,
                    base::OnceCallback<void(std::string)>);
 
   void HandleProvidePIN(const base::ListValue* args);
+
+  void HandleGetSensorInfo(const base::ListValue* args);
 
   void HandleEnumerate(const base::ListValue* args);
   void OnHaveEnumeration(
@@ -247,6 +250,7 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   std::string callback_id_;
   base::OnceCallback<void(std::string)> provide_pin_cb_;
   std::unique_ptr<device::BioEnrollmentHandler> bio_;
+  device::BioEnrollmentHandler::SensorInfo sensor_info_;
   base::WeakPtrFactory<SecurityKeysBioEnrollmentHandler> weak_factory_{this};
 };
 

@@ -95,7 +95,7 @@ Polymer({
       return Promise.reject();
     }
     return submitFunc(this.value_).then(retries => {
-      if (retries != null) {
+      if (retries !== null) {
         this.showIncorrectPINError_(retries);
         this.focus();
         return Promise.reject();

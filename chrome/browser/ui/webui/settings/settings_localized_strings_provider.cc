@@ -2506,6 +2506,8 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURITY_KEYS_BIO_CHOOSE_NAME},
       {"securityKeysBioEnrollmentNameLabel",
        IDS_SETTINGS_SECURITY_KEYS_BIO_NAME_LABEL},
+      {"securityKeysBioEnrollmentNameLabelTooLong",
+       IDS_SETTINGS_SECURITY_KEYS_BIO_NAME_LABEL_TOO_LONG},
       {"securityKeysConfirmPIN", IDS_SETTINGS_SECURITY_KEYS_CONFIRM_PIN},
       {"securityKeysCredentialWebsite",
        IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_WEBSITE},
