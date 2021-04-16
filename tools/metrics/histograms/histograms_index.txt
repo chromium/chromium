@@ -21,8 +21,8 @@ tools/metrics/histograms/histograms_xml/content/histograms.xml
 tools/metrics/histograms/histograms_xml/cookie/histograms.xml
 tools/metrics/histograms/histograms_xml/cras/histograms.xml
 tools/metrics/histograms/histograms_xml/cros/histograms.xml
+tools/metrics/histograms/histograms_xml/cross_device/histograms.xml
 tools/metrics/histograms/histograms_xml/crostini/histograms.xml
-tools/metrics/histograms/histograms_xml/crypt/histograms.xml
 tools/metrics/histograms/histograms_xml/cryptohome/histograms.xml
 tools/metrics/histograms/histograms_xml/custom_tabs/histograms.xml
 tools/metrics/histograms/histograms_xml/data_reduction_proxy/histograms.xml
@@ -49,7 +49,6 @@ tools/metrics/histograms/histograms_xml/holding_space/histograms.xml
 tools/metrics/histograms/histograms_xml/image/histograms.xml
 tools/metrics/histograms/histograms_xml/input/histograms.xml
 tools/metrics/histograms/histograms_xml/installer/histograms.xml
-tools/metrics/histograms/histograms_xml/instant/histograms.xml
 tools/metrics/histograms/histograms_xml/interstitial/histograms.xml
 tools/metrics/histograms/histograms_xml/invalidation/histograms.xml
 tools/metrics/histograms/histograms_xml/ios/histograms.xml
@@ -58,7 +57,6 @@ tools/metrics/histograms/histograms_xml/login/histograms.xml
 tools/metrics/histograms/histograms_xml/media/histograms.xml
 tools/metrics/histograms/histograms_xml/memory/histograms.xml
 tools/metrics/histograms/histograms_xml/mobile/histograms.xml
-tools/metrics/histograms/histograms_xml/multi_device/histograms.xml
 tools/metrics/histograms/histograms_xml/na_cl/histograms.xml
 tools/metrics/histograms/histograms_xml/navigation/histograms.xml
 tools/metrics/histograms/histograms_xml/nearby/histograms.xml
@@ -100,7 +98,6 @@ tools/metrics/histograms/histograms_xml/settings/histograms.xml
 tools/metrics/histograms/histograms_xml/sharing/histograms.xml
 tools/metrics/histograms/histograms_xml/signin/histograms.xml
 tools/metrics/histograms/histograms_xml/simple/histograms.xml
-tools/metrics/histograms/histograms_xml/smart/histograms.xml
 tools/metrics/histograms/histograms_xml/software/histograms.xml
 tools/metrics/histograms/histograms_xml/stability/histograms.xml
 tools/metrics/histograms/histograms_xml/startup/histograms.xml
