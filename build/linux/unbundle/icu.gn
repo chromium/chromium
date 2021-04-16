@@ -16,7 +16,6 @@ config("icu_config") {
   defines = [
     "USING_SYSTEM_ICU=1",
     "ICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_STATIC",
-    "UCHAR_TYPE=uint16_t",
 
     # U_EXPORT (defined in unicode/platform.h) is used to set public visibility
     # on classes through the U_COMMON_API and U_I18N_API macros (among others).
