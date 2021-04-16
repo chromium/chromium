@@ -38,7 +38,7 @@ enum class FrameSequenceTrackerType {
 using ActiveTrackers =
     std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
 
-constexpr bool IsScrollActive(const ActiveTrackers& trackers) {
+inline bool IsScrollActive(const ActiveTrackers& trackers) {
   return trackers.test(
              static_cast<size_t>(FrameSequenceTrackerType::kWheelScroll)) ||
          trackers.test(
@@ -47,7 +47,7 @@ constexpr bool IsScrollActive(const ActiveTrackers& trackers) {
              static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
 }
 
-constexpr bool HasMainThreadAnimation(const ActiveTrackers& trackers) {
+inline bool HasMainThreadAnimation(const ActiveTrackers& trackers) {
   return trackers.test(static_cast<size_t>(
              FrameSequenceTrackerType::kMainThreadAnimation)) ||
          trackers.test(
@@ -57,7 +57,7 @@ constexpr bool HasMainThreadAnimation(const ActiveTrackers& trackers) {
          trackers.test(static_cast<size_t>(FrameSequenceTrackerType::kRAF));
 }
 
-constexpr bool HasCompositorThreadAnimation(const ActiveTrackers& trackers) {
+inline bool HasCompositorThreadAnimation(const ActiveTrackers& trackers) {
   return trackers.test(
       static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
 }
