@@ -282,9 +282,9 @@ sharing::mojom::FramePtr GetValidIntroductionFrame() {
 
   std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
   mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
-      "unit_test_nearby_share_name", sharing::mojom::FileMetadata::Type::kVideo,
-      kFilePayloadId, kPayloadSize, "mime type",
-      /*id=*/100));
+      "unit_test_nearby_share_name_\x80",  // Filename contains non-ascii char.
+      sharing::mojom::FileMetadata::Type::kVideo, kFilePayloadId, kPayloadSize,
+      "mime type", /*id=*/100));
 
   sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
   mojo_v1frame->set_introduction(sharing::mojom::IntroductionFrame::New(
@@ -972,7 +972,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   base::FilePath CreateTestFile(const std::string& name,
                                 const std::vector<uint8_t>& content) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath path = temp_dir_.GetPath().AppendASCII(name);
+    base::FilePath path = temp_dir_.GetPath().Append(name);
     base::File file(path, base::File::Flags::FLAG_CREATE_ALWAYS |
                               base::File::Flags::FLAG_READ |
                               base::File::Flags::FLAG_WRITE);
