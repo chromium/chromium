@@ -1114,6 +1114,15 @@ bool PictureLayerImpl::ShouldDirectlyCompositeImage(float raster_scale) const {
   if (raster_scale < 0.1f)
     return true;
 
+#if defined(OS_FUCHSIA)
+  // Always downscale images on low-end devices to save memory. This is a
+  // temporary fix to work around crbug.com/1161327 .
+  // TODO(crbug.com/1161327): Implement proper solution that works on all
+  // devices.
+  if (base::SysInfo::IsLowEndDevice() && raster_scale > 1.0)
+    return false;
+#endif  // defined(OS_FUCHSIA)
+
   // If the results of scaling the bounds by the expected raster scale
   // would end up with a content rect whose width/height are more than one
   // pixel different from the layer bounds, don't directly composite the image
@@ -1163,13 +1172,7 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
       base::ClampToRange(ideal_source_scale_key(), min_scale, max_scale);
   while (adjusted_raster_scale < clamped_ideal_source_scale)
     adjusted_raster_scale *= 2.f;
-
-  // Make sure the adjusted scale is not more than 2x away from the ideal scale
-  // in order to save memory. Note that ShouldAdjustRasterScale() uses factor 4
-  // to determine when the scale needs to be updated. This means that the layer
-  // may need to be re-rasterized if scale is increased by factor of 2, but not
-  // again when it's scaled back to the original size.
-  while (adjusted_raster_scale >= 2 * clamped_ideal_source_scale)
+  while (adjusted_raster_scale > 4 * clamped_ideal_source_scale)
     adjusted_raster_scale /= 2.f;
 
   adjusted_raster_scale =
