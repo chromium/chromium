@@ -13,6 +13,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test_x11.h"
 #include "ui/base/ui_base_features.h"
@@ -50,8 +51,9 @@
 #endif
 
 namespace ui {
-
 namespace {
+
+using mojom::DragOperation;
 
 // Opacity for drag widget windows.
 constexpr float kDragWidgetOpacity = .75f;
@@ -1328,7 +1330,7 @@ bool X11Window::StartDrag(const OSExchangeData& data,
 
   drag_handler_delegate_ = delegate;
   drag_drop_client_->InitDrag(operation, &data);
-  drag_operation_ = 0;
+  allowed_drag_operations_ = 0;
   notified_enter_ = false;
 
   drag_loop_ = std::make_unique<X11WholeScreenMoveLoop>(this);
@@ -1385,14 +1387,13 @@ int X11Window::UpdateDrag(const gfx::Point& screen_point) {
                               GetKeyModifiers(source_client));
     notified_enter_ = true;
   }
-  drag_operation_ = drop_handler->OnDragMotion(gfx::PointF(screen_point),
-                                               suggested_operations,
-                                               GetKeyModifiers(source_client));
-  return drag_operation_;
+  allowed_drag_operations_ = drop_handler->OnDragMotion(
+      gfx::PointF(screen_point), suggested_operations,
+      GetKeyModifiers(source_client));
+  return allowed_drag_operations_;
 }
 
-void X11Window::UpdateCursor(
-    DragDropTypes::DragOperation negotiated_operation) {
+void X11Window::UpdateCursor(DragOperation negotiated_operation) {
   DCHECK(drag_handler_delegate_);
   drag_handler_delegate_->OnDragOperationChanged(negotiated_operation);
 }
@@ -1415,10 +1416,10 @@ void X11Window::OnBeforeDragLeave() {
   notified_enter_ = false;
 }
 
-int X11Window::PerformDrop() {
+DragOperation X11Window::PerformDrop() {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
   if (!drop_handler || !notified_enter_)
-    return DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   // The drop data has been supplied on entering the window.  The drop handler
   // should have it since then.
@@ -1427,13 +1428,14 @@ int X11Window::PerformDrop() {
   drop_handler->OnDragDrop({}, GetKeyModifiers(XDragDropClient::GetForWindow(
                                    target_current_context->source_window())));
   notified_enter_ = false;
-  return drag_operation_;
+  return PreferredDragOperation(allowed_drag_operations_);
 }
 
 void X11Window::EndDragLoop() {
   DCHECK(drag_handler_delegate_);
 
-  drag_handler_delegate_->OnDragFinished(drag_operation_);
+  drag_handler_delegate_->OnDragFinished(
+      PreferredDragOperation(allowed_drag_operations_));
   drag_loop_->EndMoveLoop();
 }
 

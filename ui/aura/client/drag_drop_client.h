@@ -34,12 +34,13 @@ class AURA_EXPORT DragDropClient {
   // applied at the end of the drag drop session. |screen_location| is in
   // screen coordinates. At most one drag and drop operation is allowed.
   // It must not start drag operation while |IsDragDropInProgress| returns true.
-  virtual int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                               aura::Window* root_window,
-                               aura::Window* source_window,
-                               const gfx::Point& screen_location,
-                               int operation,
-                               ui::mojom::DragEventSource source) = 0;
+  virtual ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) = 0;
 
   // Called when a drag and drop session is cancelled.
   virtual void DragCancel() = 0;

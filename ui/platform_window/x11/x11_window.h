@@ -180,11 +180,11 @@ class X11_WINDOW_EXPORT X11Window
   // XDragDropClient::Delegate
   std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
-  void UpdateCursor(DragDropTypes::DragOperation negotiated_operation) override;
+  void UpdateCursor(mojom::DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
   void OnEndForeignDrag() override;
   void OnBeforeDragLeave() override;
-  int PerformDrop() override;
+  mojom::DragOperation PerformDrop() override;
   void EndDragLoop() override;
 
   // X11MoveLoopDelegate
@@ -327,8 +327,8 @@ class X11_WINDOW_EXPORT X11Window
 
   // Whether the drop handler has notified that the drag has entered.
   bool notified_enter_ = false;
-  // Keeps the last negotiated operation returned by the drop handler.
-  int drag_operation_ = 0;
+  // Keeps the last negotiated operations returned by the drop handler.
+  int allowed_drag_operations_ = 0;
 
   // Handles XDND events going through this window.
   std::unique_ptr<XDragDropClient> drag_drop_client_;

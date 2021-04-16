@@ -26,6 +26,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/hit_test.h"
@@ -42,6 +43,8 @@
 
 namespace ash {
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 // The duration of the drag cancel animation in millisecond.
 constexpr base::TimeDelta kCancelAnimationDuration =
@@ -158,22 +161,23 @@ DragDropController::~DragDropController() {
   drag_image_widget_.reset();
 }
 
-int DragDropController::StartDragAndDrop(
+DragOperation DragDropController::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
-    int operation,
+    int allowed_operations,
     ui::mojom::DragEventSource source) {
   if (!enabled_ || IsDragDropInProgress())
-    return 0;
+    return DragOperation::kNone;
 
   const ui::OSExchangeDataProvider* provider = &data->provider();
   // We do not support touch drag/drop without a drag image.
   if (source == ui::mojom::DragEventSource::kTouch &&
       provider->GetDragImage().size().IsEmpty())
-    return 0;
+    return DragOperation::kNone;
 
+  operation_ = DragOperation::kNone;
   current_drag_event_source_ = source;
   DragDropTracker* tracker =
       new DragDropTracker(root_window, drag_drop_window_delegate_.get());
@@ -197,7 +201,7 @@ int DragDropController::StartDragAndDrop(
   pending_long_tap_.reset();
 
   drag_data_ = std::move(data);
-  drag_operation_ = operation;
+  allowed_operations_ = allowed_operations;
   current_drag_info_ = aura::client::DragUpdateInfo();
 
   start_location_ = screen_location;
@@ -242,7 +246,7 @@ int DragDropController::StartDragAndDrop(
     drag_source_window_ = nullptr;
   }
 
-  return drag_operation_;
+  return operation_;
 }
 
 void DragDropController::SetDragImage(const gfx::ImageSkia& image,
@@ -446,7 +450,7 @@ gfx::LinearAnimation* DragDropController::CreateCancelAnimation(
 void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                        event.root_location_f(), drag_operation_);
+                        event.root_location_f(), allowed_operations_);
   e.set_flags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
@@ -542,14 +546,13 @@ void DragDropController::Drop(aura::Window* target,
       aura::client::GetDragDropDelegate(target);
   if (delegate) {
     ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                          event.root_location_f(), drag_operation_);
+                          event.root_location_f(), allowed_operations_);
     e.set_flags(event.flags());
     ui::Event::DispatcherApi(&e).set_target(target);
 
     ui::OSExchangeData copied_data(drag_data_->provider().Clone());
-    drag_operation_ =
-        static_cast<int>(delegate->OnPerformDrop(e, std::move(drag_data_)));
-    if (drag_operation_ == 0 && tab_drag_drop_delegate_) {
+    operation_ = delegate->OnPerformDrop(e, std::move(drag_data_));
+    if (operation_ == DragOperation::kNone && tab_drag_drop_delegate_) {
       gfx::Point location_in_screen = event.root_location();
       ::wm::ConvertPointToScreen(target->GetRootWindow(), &location_in_screen);
       tab_drag_drop_delegate_->Drop(location_in_screen, copied_data);
@@ -557,9 +560,9 @@ void DragDropController::Drop(aura::Window* target,
       // that the tab or group was moved. Otherwise, the WebUI tab strip does
       // not know that a drop resulted in a tab being moved and will temporarily
       // visually return the tab to its original position. (crbug.com/1081905)
-      drag_operation_ = ui::DragDropTypes::DragOperation::DRAG_MOVE;
+      operation_ = DragOperation::kMove;
       StartCanceledAnimation(kCancelAnimationDuration);
-    } else if (drag_operation_ == 0) {
+    } else if (operation_ == DragOperation::kNone) {
       StartCanceledAnimation(kCancelAnimationDuration);
     } else {
       drag_image_widget_.reset();
@@ -568,10 +571,8 @@ void DragDropController::Drop(aura::Window* target,
     drag_image_widget_.reset();
   }
 
-  if (toplevel_window_drag_delegate_) {
-    drag_operation_ =
-        toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
-  }
+  if (toplevel_window_drag_delegate_)
+    operation_ = toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
 
   Cleanup();
   if (should_block_during_drag_drop_)
@@ -618,7 +619,6 @@ void DragDropController::DoDragCancel(
     toplevel_window_drag_delegate_->OnToplevelWindowDragCancelled();
 
   Cleanup();
-  drag_operation_ = 0;
   StartCanceledAnimation(drag_cancel_animation_duration);
   if (should_block_during_drag_drop_)
     std::move(quit_closure_).Run();
@@ -678,7 +678,7 @@ void DragDropController::Cleanup() {
     drag_window_->RemoveObserver(this);
   drag_window_ = nullptr;
   drag_data_.reset();
-
+  allowed_operations_ = 0;
   tab_drag_drop_delegate_.reset();
 
   // Cleanup can be called again while deleting DragDropTracker, so delete

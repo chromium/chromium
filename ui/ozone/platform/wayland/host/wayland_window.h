@@ -193,7 +193,7 @@ class WaylandWindow : public PlatformWindow,
   virtual int OnDragMotion(const gfx::PointF& point, int operation);
   virtual void OnDragDrop();
   virtual void OnDragLeave();
-  virtual void OnDragSessionClose(uint32_t dnd_action);
+  virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
   virtual base::Optional<std::vector<gfx::Rect>> GetWindowShape() const;
 

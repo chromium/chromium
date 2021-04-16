@@ -6,7 +6,7 @@
 #define UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 
 #include "base/component_export.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -25,10 +25,9 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
     // Called every time when the drag location has changed.
     virtual void OnDragLocationChanged(const gfx::Point& screen_point_px) = 0;
     // Called when the currently negotiated operation has changed.
-    virtual void OnDragOperationChanged(
-        DragDropTypes::DragOperation operation) = 0;
+    virtual void OnDragOperationChanged(mojom::DragOperation operation) = 0;
     // Called once when the operation has finished.
-    virtual void OnDragFinished(int operation) = 0;
+    virtual void OnDragFinished(mojom::DragOperation operation) = 0;
 
    protected:
     virtual ~Delegate();

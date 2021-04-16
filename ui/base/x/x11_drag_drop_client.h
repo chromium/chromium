@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/timer/timer.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_context.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
     // Creates the window finder.
     virtual std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() = 0;
 
-    // Updates the drag status by the new position.  Returns the drag operation
+    // Updates the drag status by the new position. Returns the drag operations
     // possible at that position.
     //
     // Handling XdndPosition can be paused while waiting for more data; this is
@@ -49,8 +49,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
     virtual int UpdateDrag(const gfx::Point& screen_point) = 0;
 
     // Updates the mouse cursor shape.
-    virtual void UpdateCursor(
-        DragDropTypes::DragOperation negotiated_operation) = 0;
+    virtual void UpdateCursor(mojom::DragOperation negotiated_operation) = 0;
 
     // Called when data from another application (not Chrome) enters the window.
     virtual void OnBeginForeignDrag(x11::Window window) = 0;
@@ -63,7 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
     virtual void OnBeforeDragLeave() = 0;
 
     // Drops data at the current location and returns the resulting operation.
-    virtual int PerformDrop() = 0;
+    virtual mojom::DragOperation PerformDrop() = 0;
 
     // Called to end the drag loop that is maintained by the subclass.
     virtual void EndDragLoop() = 0;
@@ -148,7 +147,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
     kOther,
   };
 
-  DragDropTypes::DragOperation negotiated_operation() const {
+  mojom::DragOperation negotiated_operation() const {
     return negotiated_operation_;
   }
 
@@ -214,18 +213,18 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
   const XOSExchangeDataProvider* source_provider_ = nullptr;
 
   // The operation bitfield as requested by StartDragAndDrop.
-  int drag_operation_ = 0;
+  int allowed_operations_ = 0;
 
   // The modifier state for the most recent mouse move.  Used to bypass an
   // asynchronous roundtrip through the X11 server.
   int current_modifier_state_ = 0;
 
-  // We offer the other window a list of possible operations,
-  // XdndActionsList. This is the requested action from the other window. This
-  // is DRAG_NONE if we haven't sent out an XdndPosition message yet, haven't
-  // yet received an XdndStatus or if the other window has told us that there's
-  // no action that we can agree on.
-  DragDropTypes::DragOperation negotiated_operation_ = DragDropTypes::DRAG_NONE;
+  // We offer the other window a list of possible operations, XdndActionsList.
+  // This is the requested action from the other window. This is
+  // DragOperation::kNone if we haven't sent out an XdndPosition message yet,
+  // haven't yet received an XdndStatus or if the other window has told us that
+  // there's no action that we can agree on.
+  mojom::DragOperation negotiated_operation_ = mojom::DragOperation::kNone;
 
   // In the Xdnd protocol, we aren't supposed to send another XdndPosition
   // message until we have received a confirming XdndStatus message.

@@ -14,7 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -43,6 +43,7 @@ namespace ui {
 namespace {
 
 using mojom::CursorType;
+using mojom::DragOperation;
 
 bool OverlayStackOrderCompare(
     const ui::ozone::mojom::WaylandOverlayConfigPtr& i,
@@ -226,7 +227,7 @@ bool WaylandWindow::IsVisible() const {
 
 void WaylandWindow::PrepareForShutdown() {
   if (drag_handler_delegate_)
-    OnDragSessionClose(DragDropTypes::DRAG_NONE);
+    OnDragSessionClose(DragOperation::kNone);
 }
 
 void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
@@ -535,9 +536,9 @@ void WaylandWindow::OnDragLeave() {
   drop_handler->OnDragLeave();
 }
 
-void WaylandWindow::OnDragSessionClose(uint32_t dnd_action) {
+void WaylandWindow::OnDragSessionClose(DragOperation operation) {
   DCHECK(drag_handler_delegate_);
-  drag_handler_delegate_->OnDragFinished(dnd_action);
+  drag_handler_delegate_->OnDragFinished(operation);
   drag_handler_delegate_ = nullptr;
   connection()->event_source()->ResetPointerFlags();
   std::move(drag_loop_quit_closure_).Run();

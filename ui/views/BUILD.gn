@@ -852,6 +852,7 @@ component("views") {
           "widget/desktop_aura/window_shape_updater.cc",
           "widget/desktop_aura/window_shape_updater.h",
         ]
+        public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
       }
       if (use_atk) {
         sources += [
