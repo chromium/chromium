@@ -17,7 +17,7 @@ struct wl_resource;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kZAuraShellVersion = 18;
+constexpr uint32_t kZAuraShellVersion = 19;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -49,6 +49,8 @@ class AuraSurface : public SurfaceObserver,
   void SetSnapRight();
   void UnsetSnap();
   void SetWindowSessionId(int32_t window_session_id);
+  void SetCanGoBack();
+  void UnsetCanGoBack();
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

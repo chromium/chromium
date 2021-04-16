@@ -68,6 +68,8 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void SetSnappedToLeft() override {}
   void SetSnappedToRight() override {}
   void UnsetSnap() override {}
+  void SetCanGoBack() override {}
+  void UnsetCanGoBack() override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

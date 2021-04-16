@@ -91,6 +91,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetImmersiveFullscreenStatus(bool status) override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
+  void SetCanGoBack(bool value) override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);

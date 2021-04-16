@@ -68,6 +68,10 @@ class SurfaceDelegate {
   virtual void SetSnappedToRight() = 0;
   virtual void UnsetSnap() = 0;
 
+  // Whether the current client window can go back, as per its navigation list.
+  virtual void SetCanGoBack() = 0;
+  virtual void UnsetCanGoBack() = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };

@@ -470,6 +470,16 @@ void WaylandToplevelWindow::CommitSnap(
       << "Window snapping isn't available for non-lacros builds.";
 }
 
+void WaylandToplevelWindow::SetCanGoBack(bool value) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_CAN_GO_BACK_SINCE_VERSION) {
+    if (value)
+      zaura_surface_set_can_go_back(aura_surface_.get());
+    else
+      zaura_surface_unset_can_go_back(aura_surface_.get());
+  }
+}
+
 void WaylandToplevelWindow::TriggerStateChanges() {
   if (!shell_toplevel_)
     return;

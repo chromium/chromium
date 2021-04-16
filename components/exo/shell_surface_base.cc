@@ -490,6 +490,16 @@ void ShellSurfaceBase::UnsetSnap() {
   CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
 }
 
+void ShellSurfaceBase::SetCanGoBack() {
+  if (widget_)
+    widget_->GetNativeWindow()->SetProperty(ash::kMinimizeOnBackKey, false);
+}
+
+void ShellSurfaceBase::UnsetCanGoBack() {
+  if (widget_)
+    widget_->GetNativeWindow()->SetProperty(ash::kMinimizeOnBackKey, true);
+}
+
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
   GetViewAccessibility().OverrideChildTreeID(child_ax_tree_id);
   this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);

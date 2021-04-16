@@ -39,6 +39,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // snapping.
   virtual void CommitSnap(WaylandWindowSnapDirection snap) = 0;
 
+  // Signals the underneath platform whether the current tab of the browser
+  // window can go back. The underneath platform might react, for example,
+  // by minimizing the window upon a system wide back gesture.
+  virtual void SetCanGoBack(bool value) = 0;
+
  protected:
   virtual ~WaylandExtension();
 

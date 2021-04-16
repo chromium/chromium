@@ -3295,6 +3295,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/tablet_mode_lacros_browsertest.cc",
+      "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
     ]
 
     deps = [

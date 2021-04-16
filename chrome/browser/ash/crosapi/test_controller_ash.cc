@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -162,6 +163,22 @@ void TestControllerAsh::GetWindowPositionInScreen(
     return;
   }
   std::move(cb).Run(window->GetBoundsInScreen().origin());
+}
+
+void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
+    const std::string& window_id,
+    GetMinimizeOnBackKeyWindowPropertyCallback cb) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(cb).Run(false);
+    return;
+  }
+  bool* value = window->GetProperty(ash::kMinimizeOnBackKey);
+  if (!value) {
+    std::move(cb).Run(false);
+    return;
+  }
+  std::move(cb).Run(*value);
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {

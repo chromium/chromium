@@ -1,0 +1,95 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/run_loop.h"
+#include "chrome/browser/lacros/browser_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/mojom/clipboard.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "ui/aura/window.h"
+
+class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
+ protected:
+  WebContentsCanGoBackObserverTest() = default;
+
+  WebContentsCanGoBackObserverTest(const WebContentsCanGoBackObserverTest&) =
+      delete;
+  WebContentsCanGoBackObserverTest& operator=(
+      const WebContentsCanGoBackObserverTest&) = delete;
+
+  void CheckCanGoBackOnServer(const std::string& window_id,
+                              bool expected_value) {
+    base::RunLoop outer_loop;
+    auto look_for_property_value = base::BindRepeating(
+        [](base::RunLoop* outer_loop, const std::string& window_id,
+           bool expected_value) {
+          auto* lacros_chrome_service =
+              chromeos::LacrosChromeServiceImpl::Get();
+
+          base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
+          bool out_value = false;
+          lacros_chrome_service->test_controller_remote()
+              ->GetMinimizeOnBackKeyWindowProperty(
+                  window_id,
+                  base::BindOnce(
+                      [](base::RunLoop* loop, bool* out_value, bool value) {
+                        *out_value = !value;
+                        loop->Quit();
+                      },
+                      &inner_loop, &out_value));
+          inner_loop.Run();
+
+          if (out_value == expected_value)
+            outer_loop->Quit();
+        },
+        &outer_loop, window_id, expected_value);
+    base::RepeatingTimer timer;
+    timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+                std::move(look_for_property_value));
+    outer_loop.Run();
+  }
+
+  ~WebContentsCanGoBackObserverTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
+  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  ASSERT_TRUE(lacros_chrome_service);
+  ASSERT_TRUE(lacros_chrome_service->IsTestControllerAvailable());
+
+  aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->frame()
+                             ->GetNativeWindow();
+  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  browser_test_util::WaitForWindowCreation(id);
+
+  EXPECT_FALSE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+
+  // Navigate away to any valid URL, so the back/forward list changes.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(chrome::CanGoBack(browser()));
+  EXPECT_FALSE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, true /* expected_value */);
+
+  // Tweak the back/forward list.
+  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_FALSE(chrome::CanGoBack(browser()));
+  EXPECT_TRUE(chrome::CanGoForward(browser()));
+  CheckCanGoBackOnServer(id, false /* expected_value */);
+}

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="18">
+  <interface name="zaura_shell" version="19">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -95,7 +95,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="18">
+  <interface name="zaura_surface" version="19">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -334,6 +334,23 @@
       </description>
       <arg name="id" type="int" summary="window session id"/>
     </request>
+
+    <!-- Version 19 additions -->
+    <request name="set_can_go_back" since="19">
+      <description summary="Set the minimize-on-back-gesture behavior.">
+        Sets that the surface can go back as per its navigation list.
+        This allows the server to react to by minimizing the window upon a
+        system wide back gesture.
+      </description>
+    </request>
+
+    <request name="unset_can_go_back" since="19">
+      <description summary="Unset the minimize-on-back-gesture behavior.">
+        Unsets that the surface can go back as per its navigation list.
+        See above.
+      </description>
+    </request>
+
   </interface>
 
   <interface name="zaura_output" version="6">

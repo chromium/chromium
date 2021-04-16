@@ -199,6 +199,10 @@ class Surface final : public ui::PropertyHandler {
   void SetSnappedToLeft();
   void UnsetSnap();
 
+  // Whether the current client window can go back, as per its navigation list.
+  void SetCanGoBack();
+  void UnsetCanGoBack();
+
   // This sets the color space for the buffer for this surface.
   void SetColorSpace(gfx::ColorSpace color_space);
 

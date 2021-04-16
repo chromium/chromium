@@ -88,6 +88,8 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, SetSnappedToRight, (), (override));
   MOCK_METHOD(void, SetSnappedToLeft, (), (override));
   MOCK_METHOD(void, UnsetSnap, (), (override));
+  MOCK_METHOD(void, SetCanGoBack, (), (override));
+  MOCK_METHOD(void, UnsetCanGoBack, (), (override));
 };
 
 }  // namespace

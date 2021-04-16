@@ -101,6 +101,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetSnappedToLeft() override {}
   void SetSnappedToRight() override {}
   void UnsetSnap() override {}
+  void SetCanGoBack() override {}
+  void UnsetCanGoBack() override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

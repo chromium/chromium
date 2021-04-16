@@ -596,6 +596,16 @@ void Surface::UnsetSnap() {
     delegate_->UnsetSnap();
 }
 
+void Surface::SetCanGoBack() {
+  if (delegate_)
+    delegate_->SetCanGoBack();
+}
+
+void Surface::UnsetCanGoBack() {
+  if (delegate_)
+    delegate_->UnsetCanGoBack();
+}
+
 void Surface::SetColorSpace(gfx::ColorSpace color_space) {
   TRACE_EVENT1("exo", "Surface::SetColorSpace", "color_space",
                color_space.ToString());

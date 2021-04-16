@@ -150,6 +150,10 @@
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/web_contents_can_go_back_observer.h"
+#endif
+
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
@@ -412,6 +416,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   chromeos::app_time::WebTimeNavigationObserver::MaybeCreateForWebContents(
       web_contents);
   policy::DlpContentTabHelper::CreateForWebContents(web_contents);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  WebContentsCanGoBackObserver::CreateForWebContents(web_contents);
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

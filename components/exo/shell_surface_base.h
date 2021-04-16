@@ -180,6 +180,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void UnsetSnap() override;
   void OnActivationRequested() override;
   void OnSetServerStartResize() override;
+  void SetCanGoBack() override;
+  void UnsetCanGoBack() override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
