@@ -90,9 +90,9 @@ class EditorViewController : public PaymentRequestSheetController,
   // |back_navigation_type| identifies what sort of back navigation should be
   // done when editing is successful. This is independent of the back arrow
   // which always goes back one step.
-  EditorViewController(PaymentRequestSpec* spec,
-                       PaymentRequestState* state,
-                       PaymentRequestDialogView* dialog,
+  EditorViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                       base::WeakPtr<PaymentRequestState> state,
+                       base::WeakPtr<PaymentRequestDialogView> dialog,
                        BackNavigationType back_navigation_type,
                        bool is_incognito);
   ~EditorViewController() override;

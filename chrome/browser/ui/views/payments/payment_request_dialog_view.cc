@@ -63,7 +63,7 @@ std::unique_ptr<views::View> CreateViewAndInstallController(
 
 // static
 base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
-    PaymentRequest* request,
+    base::WeakPtr<PaymentRequest> request,
     PaymentRequestDialogView::ObserverForTest* observer) {
   return (new PaymentRequestDialogView(request, observer))
       ->weak_ptr_factory_.GetWeakPtr();
@@ -125,7 +125,8 @@ void PaymentRequestDialogView::ShowErrorMessage() {
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ErrorMessageViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
   HideProcessingSpinner();
@@ -169,8 +170,9 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<PaymentHandlerWebFlowViewController>(
-              request_->spec(), request_->state(), this,
-              request_->web_contents(), GetProfile(), url, std::move(callback)),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), request_->web_contents(),
+              GetProfile(), url, std::move(callback)),
           &controller_map_),
       // Do not animate the view when the dialog size changes or payment sheet
       // is skipped.
@@ -302,7 +304,8 @@ void PaymentRequestDialogView::ShowContactProfileSheet() {
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetContactProfileViewController(
-              request_->spec(), request_->state(), this),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr()),
           &controller_map_),
       /* animate */ true);
   if (observer_for_testing_)
@@ -315,7 +318,8 @@ void PaymentRequestDialogView::ShowOrderSummary() {
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<OrderSummaryViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -328,7 +332,8 @@ void PaymentRequestDialogView::ShowPaymentMethodSheet() {
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentMethodViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -342,7 +347,8 @@ void PaymentRequestDialogView::ShowShippingProfileSheet() {
   view_stack_->Push(
       CreateViewAndInstallController(
           ProfileListViewController::GetShippingProfileViewController(
-              request_->spec(), request_->state(), this),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -355,7 +361,8 @@ void PaymentRequestDialogView::ShowShippingOptionSheet() {
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ShippingOptionViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -372,8 +379,9 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<CvcUnmaskViewController>(
-                            request_->spec(), request_->state(), this,
-                            credit_card, result_delegate, web_contents),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr(), credit_card,
+                            result_delegate, web_contents),
                         &controller_map_),
                     /* animate = */ true);
   if (observer_for_testing_)
@@ -392,9 +400,10 @@ void PaymentRequestDialogView::ShowCreditCardEditor(
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<CreditCardEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
-              next_ui_tag, std::move(on_edited), std::move(on_added),
-              credit_card, request_->IsOffTheRecord()),
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type, next_ui_tag,
+              std::move(on_edited), std::move(on_added), credit_card,
+              request_->IsOffTheRecord()),
           &controller_map_),
       /* animate = */ true);
   if (observer_for_testing_)
@@ -412,7 +421,8 @@ void PaymentRequestDialogView::ShowShippingAddressEditor(
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ShippingAddressEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
               std::move(on_edited), std::move(on_added), profile,
               request_->IsOffTheRecord()),
           &controller_map_),
@@ -432,7 +442,8 @@ void PaymentRequestDialogView::ShowContactInfoEditor(
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<ContactInfoEditorViewController>(
-              request_->spec(), request_->state(), this, back_navigation_type,
+              request_->spec(), request_->state(),
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
               std::move(on_edited), std::move(on_added), profile,
               request_->IsOffTheRecord()),
           &controller_map_),
@@ -459,7 +470,7 @@ Profile* PaymentRequestDialogView::GetProfile() {
 }
 
 PaymentRequestDialogView::PaymentRequestDialogView(
-    PaymentRequest* request,
+    base::WeakPtr<PaymentRequest> request,
     PaymentRequestDialogView::ObserverForTest* observer)
     : request_(request), observer_for_testing_(observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -469,7 +480,7 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
-                                  base::Unretained(this)));
+                                  weak_ptr_factory_.GetWeakPtr()));
 
   request->spec()->AddObserver(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -515,7 +526,8 @@ void PaymentRequestDialogView::OnDialogOpened() {
     view_stack_->Push(
         CreateViewAndInstallController(
             ProfileListViewController::GetShippingProfileViewController(
-                request_->spec(), request_->state(), this),
+                request_->spec(), request_->state(),
+                weak_ptr_factory_.GetWeakPtr()),
             &controller_map_),
         /* animate = */ false);
   }
@@ -530,7 +542,8 @@ void PaymentRequestDialogView::ShowInitialPaymentSheet() {
 
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<PaymentSheetViewController>(
-                            request_->spec(), request_->state(), this),
+                            request_->spec(), request_->state(),
+                            weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
 

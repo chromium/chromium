@@ -45,13 +45,14 @@ jlong JNI_PaymentRequestSpec_Create(
 }
 
 // static
-payments::PaymentRequestSpec* PaymentRequestSpec::FromJavaPaymentRequestSpec(
+base::WeakPtr<payments::PaymentRequestSpec>
+PaymentRequestSpec::FromJavaPaymentRequestSpec(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jpayment_request_spec) {
   return reinterpret_cast<PaymentRequestSpec*>(
              Java_PaymentRequestSpec_getNativePointer(env,
                                                       jpayment_request_spec))
-      ->spec_.get();
+      ->spec_->AsWeakPtr();
 }
 
 PaymentRequestSpec::PaymentRequestSpec(

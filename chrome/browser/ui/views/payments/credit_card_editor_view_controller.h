@@ -39,9 +39,9 @@ class CreditCardEditorViewController : public EditorViewController,
   // pointer to a card that needs to be updated, and which will outlive this
   // controller.
   CreditCardEditorViewController(
-      PaymentRequestSpec* spec,
-      PaymentRequestState* state,
-      PaymentRequestDialogView* dialog,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog,
       BackNavigationType back_navigation,
       int next_ui_tag,
       base::OnceClosure on_edited,

@@ -17,6 +17,11 @@ PaymentRequestUpdateEventListener::PaymentRequestUpdateEventListener(
 
 PaymentRequestUpdateEventListener::~PaymentRequestUpdateEventListener() {}
 
+base::WeakPtr<PaymentRequestUpdateEventListener>
+PaymentRequestUpdateEventListener::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool PaymentRequestUpdateEventListener::ChangePaymentMethod(
     const std::string& method_name,
     const std::string& stringified_data) {

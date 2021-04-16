@@ -143,11 +143,13 @@ class PaymentRequest : public mojom::PaymentRequest,
   bool skipped_payment_request_ui() { return skipped_payment_request_ui_; }
   bool is_show_user_gesture() const { return is_show_user_gesture_; }
 
-  PaymentRequestSpec* spec() { return spec_.get(); }
-  PaymentRequestState* state() { return state_.get(); }
+  base::WeakPtr<PaymentRequestSpec> spec() { return spec_->AsWeakPtr(); }
+  base::WeakPtr<PaymentRequestState> state() { return state_->AsWeakPtr(); }
 
-  PaymentRequestSpec* spec() const { return spec_.get(); }
-  PaymentRequestState* state() const { return state_.get(); }
+  base::WeakPtr<PaymentRequestSpec> spec() const { return spec_->AsWeakPtr(); }
+  base::WeakPtr<PaymentRequestState> state() const {
+    return state_->AsWeakPtr();
+  }
 
   base::WeakPtr<PaymentRequest> GetWeakPtr();
 
@@ -214,7 +216,7 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   // The end-point for the payment handler renderer process to call into the
   // browser process.
-  PaymentHandlerHost payment_handler_host_;
+  std::unique_ptr<PaymentHandlerHost> payment_handler_host_;
 
   // The scheme, host, and port of the top level frame that has invoked
   // PaymentRequest API as formatted by

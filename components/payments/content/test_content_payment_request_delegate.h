@@ -27,7 +27,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;
-  void ShowDialog(PaymentRequest* request) override;
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override;
   void RetryDialog() override;
   void CloseDialog() override;
   void ShowErrorMessage() override;

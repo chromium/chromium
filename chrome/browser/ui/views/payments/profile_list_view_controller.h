@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_item_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 
@@ -37,16 +38,18 @@ class ProfileListViewController : public PaymentRequestSheetController {
   // Creates a controller which lists and allows selection of profiles
   // for shipping address.
   static std::unique_ptr<ProfileListViewController>
-  GetShippingProfileViewController(PaymentRequestSpec* spec,
-                                   PaymentRequestState* state,
-                                   PaymentRequestDialogView* dialog);
+  GetShippingProfileViewController(
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog);
 
   // Creates a controller which lists and allows selection of profiles
   // for contact info.
   static std::unique_ptr<ProfileListViewController>
-  GetContactProfileViewController(PaymentRequestSpec* spec,
-                                  PaymentRequestState* state,
-                                  PaymentRequestDialogView* dialog);
+  GetContactProfileViewController(
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog);
 
   // PaymentRequestSheetController:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -73,9 +76,9 @@ class ProfileListViewController : public PaymentRequestSheetController {
 
  protected:
   // Does not take ownership of the arguments, which should outlive this object.
-  ProfileListViewController(PaymentRequestSpec* spec,
-                            PaymentRequestState* state,
-                            PaymentRequestDialogView* dialog);
+  ProfileListViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                            base::WeakPtr<PaymentRequestState> state,
+                            base::WeakPtr<PaymentRequestDialogView> dialog);
 
   // Returns the profiles cached by |request| which are appropriate for display
   // in this context.
@@ -96,6 +99,7 @@ class ProfileListViewController : public PaymentRequestSheetController {
   std::unique_ptr<views::Button> CreateRow(autofill::AutofillProfile* profile);
   PaymentRequestItemList list_;
 
+  base::WeakPtrFactory<ProfileListViewController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ProfileListViewController);
 };
 

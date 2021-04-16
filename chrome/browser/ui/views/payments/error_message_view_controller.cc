@@ -18,9 +18,9 @@
 namespace payments {
 
 ErrorMessageViewController::ErrorMessageViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {}
 
 ErrorMessageViewController::~ErrorMessageViewController() {}

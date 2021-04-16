@@ -25,9 +25,9 @@ class PaymentRequestDialogView;
 class ErrorMessageViewController : public PaymentRequestSheetController {
  public:
   // Does not take ownership of the arguments, which should outlive this object.
-  ErrorMessageViewController(PaymentRequestSpec* spec,
-                             PaymentRequestState* state,
-                             PaymentRequestDialogView* dialog);
+  ErrorMessageViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                             base::WeakPtr<PaymentRequestState> state,
+                             base::WeakPtr<PaymentRequestDialogView> dialog);
   ~ErrorMessageViewController() override;
 
  private:

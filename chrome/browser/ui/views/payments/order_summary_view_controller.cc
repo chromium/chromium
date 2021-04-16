@@ -119,9 +119,9 @@ std::unique_ptr<views::View> CreateLineItemView(const base::string16& label,
 }  // namespace
 
 OrderSummaryViewController::OrderSummaryViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog), pay_button_(nullptr) {
   DCHECK(spec);
   DCHECK(state);

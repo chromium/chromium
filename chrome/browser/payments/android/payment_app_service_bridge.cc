@@ -166,7 +166,7 @@ PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
     size_t number_of_factories,
     content::RenderFrameHost* render_frame_host,
     const GURL& top_origin,
-    PaymentRequestSpec* spec,
+    base::WeakPtr<PaymentRequestSpec> spec,
     const std::string& twa_package_name,
     scoped_refptr<PaymentManifestWebDataService> web_data_service,
     bool may_crawl_for_installable_payment_apps,
@@ -190,7 +190,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
     size_t number_of_factories,
     content::RenderFrameHost* render_frame_host,
     const GURL& top_origin,
-    PaymentRequestSpec* spec,
+    base::WeakPtr<PaymentRequestSpec> spec,
     const std::string& twa_package_name,
     scoped_refptr<PaymentManifestWebDataService> web_data_service,
     bool may_crawl_for_installable_payment_apps,
@@ -206,7 +206,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
           render_frame_host->GetLastCommittedURL())),
       frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
-      spec_(spec->GetWeakPtr()),
+      spec_(spec),
       twa_package_name_(twa_package_name),
       payment_manifest_web_data_service_(web_data_service),
       may_crawl_for_installable_payment_apps_(
@@ -301,8 +301,8 @@ void PaymentAppServiceBridge::ShowProcessingSpinner() {
   // Java UI determines when the show a spinner itself.
 }
 
-PaymentRequestSpec* PaymentAppServiceBridge::GetSpec() const {
-  return spec_.get();
+base::WeakPtr<PaymentRequestSpec> PaymentAppServiceBridge::GetSpec() const {
+  return spec_;
 }
 
 std::string PaymentAppServiceBridge::GetTwaPackageName() const {

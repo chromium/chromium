@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -34,7 +35,7 @@ class PaymentRequestDisplayManager : public KeyedService {
     DisplayHandle(PaymentRequestDisplayManager* display_manager,
                   ContentPaymentRequestDelegate* delegate);
     ~DisplayHandle();
-    void Show(PaymentRequest* request);
+    void Show(base::WeakPtr<PaymentRequest> request);
     void Retry();
     // Attempt to display |url| inside the Payment Request dialog and run
     // |callback| after navigation is completed, passing true/false to indicate

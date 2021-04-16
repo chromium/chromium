@@ -20,9 +20,9 @@ class PaymentRequestDialogView;
 class PaymentMethodViewController : public PaymentRequestSheetController {
  public:
   // Does not take ownership of the arguments, which should outlive this object.
-  PaymentMethodViewController(PaymentRequestSpec* spec,
-                              PaymentRequestState* state,
-                              PaymentRequestDialogView* dialog);
+  PaymentMethodViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                              base::WeakPtr<PaymentRequestState> state,
+                              base::WeakPtr<PaymentRequestDialogView> dialog);
   ~PaymentMethodViewController() override;
 
  private:

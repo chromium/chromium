@@ -31,7 +31,7 @@ class PaymentRequestSpecTest : public testing::Test,
       std::vector<mojom::PaymentMethodDataPtr> method_data) {
     spec_ = std::make_unique<PaymentRequestSpec>(
         mojom::PaymentOptions::New(), mojom::PaymentDetails::New(),
-        std::move(method_data), this, "en-US");
+        std::move(method_data), weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   void RecreateSpecWithOptionsAndDetails(mojom::PaymentOptionsPtr options,
@@ -40,7 +40,8 @@ class PaymentRequestSpecTest : public testing::Test,
       details->total = mojom::PaymentItem::New();
     spec_ = std::make_unique<PaymentRequestSpec>(
         std::move(options), std::move(details),
-        std::vector<mojom::PaymentMethodDataPtr>(), this, "en-US");
+        std::vector<mojom::PaymentMethodDataPtr>(),
+        weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   PaymentRequestSpec* spec() { return spec_.get(); }
@@ -48,6 +49,7 @@ class PaymentRequestSpecTest : public testing::Test,
  private:
   std::unique_ptr<PaymentRequestSpec> spec_;
   bool on_spec_updated_called_ = false;
+  base::WeakPtrFactory<PaymentRequestSpecTest> weak_ptr_factory_{this};
 };
 
 // Test that empty method data is parsed correctly.

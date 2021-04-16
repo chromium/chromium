@@ -133,7 +133,7 @@ class PreviewEliderLabel : public views::Label {
 };
 
 std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
-    views::ButtonListener* listener,
+    base::WeakPtr<views::ButtonListener> listener,
     const base::string16& section_name,
     const base::string16& accessible_content,
     std::unique_ptr<views::View> content_view,
@@ -151,7 +151,8 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
       kPaymentRequestRowVerticalInsets, kPaymentRequestRowHorizontalInsets,
       kPaymentRequestRowVerticalInsets, trailing_inset);
   std::unique_ptr<PaymentRequestRowView> row =
-      std::make_unique<PaymentRequestRowView>(listener, clickable, row_insets);
+      std::make_unique<PaymentRequestRowView>(listener.get(), clickable,
+                                              row_insets);
   views::GridLayout* layout =
       row->SetLayoutManager(std::make_unique<views::GridLayout>());
 
@@ -256,7 +257,7 @@ std::unique_ptr<views::View> CreateInlineCurrencyAmountItem(
 // functions to create the row view.
 class PaymentSheetRowBuilder {
  public:
-  PaymentSheetRowBuilder(views::ButtonListener* listener,
+  PaymentSheetRowBuilder(base::WeakPtr<views::ButtonListener> listener,
                          const base::string16& section_name)
       : listener_(listener), section_name_(section_name) {}
 
@@ -351,7 +352,7 @@ class PaymentSheetRowBuilder {
       const base::string16& button_string,
       bool button_enabled) {
     auto button =
-        std::make_unique<views::MdTextButton>(listener_, button_string);
+        std::make_unique<views::MdTextButton>(listener_.get(), button_string);
     button->SetProminent(true);
     button->set_tag(tag_);
     button->SetID(id_);
@@ -363,7 +364,7 @@ class PaymentSheetRowBuilder {
         /*extra_trailing_inset=*/false, views::GridLayout::CENTER);
   }
 
-  views::ButtonListener* listener_;
+  base::WeakPtr<views::ButtonListener> listener_;
   base::string16 section_name_;
   base::string16 accessible_content_;
   int tag_;
@@ -373,7 +374,8 @@ class PaymentSheetRowBuilder {
 
 // The primary button should show "Continue" when the selected payment app is
 // non-autofill.
-base::string16 CalculatePrimaryButtonLabel(const PaymentRequestState* state) {
+base::string16 CalculatePrimaryButtonLabel(
+    const base::WeakPtr<PaymentRequestState> state) {
   return state->selected_app() &&
                  state->selected_app()->type() != PaymentApp::Type::AUTOFILL
              ? l10n_util::GetStringUTF16(IDS_PAYMENTS_CONTINUE_BUTTON)
@@ -383,9 +385,9 @@ base::string16 CalculatePrimaryButtonLabel(const PaymentRequestState* state) {
 }  // namespace
 
 PaymentSheetViewController::PaymentSheetViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {
   DCHECK(spec);
   DCHECK(state);
@@ -688,7 +690,8 @@ PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
                                                  total_amount, false, true));
 
   PaymentSheetRowBuilder builder(
-      this, l10n_util::GetStringUTF16(IDS_PAYMENTS_ORDER_SUMMARY_LABEL));
+      weak_ptr_factory_.GetWeakPtr(),
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_ORDER_SUMMARY_LABEL));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_ORDER_SUMMARY_BUTTON)
       .Id(DialogViewID::PAYMENT_SHEET_SUMMARY_SECTION)
       .AccessibleContent(l10n_util::GetStringFUTF16(
@@ -728,7 +731,8 @@ PaymentSheetViewController::CreateShippingRow() {
 
   std::unique_ptr<views::Button> section;
   PaymentSheetRowBuilder builder(
-      this, GetShippingAddressSectionString(spec()->shipping_type()));
+      weak_ptr_factory_.GetWeakPtr(),
+      GetShippingAddressSectionString(spec()->shipping_type()));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_BUTTON);
   if (state()->selected_shipping_profile()) {
     builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION);
@@ -782,8 +786,9 @@ PaymentSheetViewController::CreatePaymentMethodRow() {
   PaymentApp* selected_app = state()->selected_app();
 
   PaymentSheetRowBuilder builder(
-      this, l10n_util::GetStringUTF16(
-                IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
+      weak_ptr_factory_.GetWeakPtr(),
+      l10n_util::GetStringUTF16(
+          IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_PAYMENT_METHOD_BUTTON);
 
   if (selected_app) {
@@ -868,7 +873,7 @@ PaymentSheetViewController::CreateContactInfoSectionContent(
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreateContactInfoRow() {
   PaymentSheetRowBuilder builder(
-      this,
+      weak_ptr_factory_.GetWeakPtr(),
       l10n_util::GetStringUTF16(IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_CONTACT_INFO_BUTTON);
 
@@ -935,7 +940,8 @@ PaymentSheetViewController::CreateShippingOptionRow() {
   // is one. It's not possible to select an option without selecting an address
   // first.
   PaymentSheetRowBuilder builder(
-      this, GetShippingOptionSectionString(spec()->shipping_type()));
+      weak_ptr_factory_.GetWeakPtr(),
+      GetShippingOptionSectionString(spec()->shipping_type()));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_OPTION_BUTTON);
 
   if (state()->selected_shipping_profile()) {

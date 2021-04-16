@@ -78,7 +78,7 @@ PaymentRequestSpec::PaymentRequestSpec(
     mojom::PaymentOptionsPtr options,
     mojom::PaymentDetailsPtr details,
     std::vector<mojom::PaymentMethodDataPtr> method_data,
-    Observer* observer,
+    base::WeakPtr<Observer> observer,
     const std::string& app_locale)
     : options_(std::move(options)),
       details_(std::move(details)),
@@ -87,7 +87,7 @@ PaymentRequestSpec::PaymentRequestSpec(
       selected_shipping_option_(nullptr),
       current_update_reason_(UpdateReason::NONE) {
   if (observer)
-    AddObserver(observer);
+    AddObserver(observer.get());
   if (!details_->display_items)
     details_->display_items = std::vector<mojom::PaymentItemPtr>();
   if (!details_->shipping_options)
@@ -366,7 +366,7 @@ bool PaymentRequestSpec::IsSecurePaymentConfirmationRequested() const {
              methods::kSecurePaymentConfirmation;
 }
 
-base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::GetWeakPtr() {
+base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

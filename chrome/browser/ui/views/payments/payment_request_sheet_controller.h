@@ -30,9 +30,9 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // that should be valid throughout this object's lifetime.
   // |state| and |spec| are also not owned by this and are guaranteed to outlive
   // dialog. Neither |state|, |spec| or |dialog| should be null.
-  PaymentRequestSheetController(PaymentRequestSpec* spec,
-                                PaymentRequestState* state,
-                                PaymentRequestDialogView* dialog);
+  PaymentRequestSheetController(base::WeakPtr<PaymentRequestSpec> spec,
+                                base::WeakPtr<PaymentRequestState> state,
+                                base::WeakPtr<PaymentRequestDialogView> dialog);
   ~PaymentRequestSheetController() override;
 
   // Creates a view to be displayed in the PaymentRequestDialog. The header view
@@ -52,12 +52,12 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // +---------------------------+
   std::unique_ptr<views::View> CreateView();
 
-  PaymentRequestSpec* spec() { return spec_.get(); }
-  PaymentRequestState* state() { return state_; }
+  base::WeakPtr<PaymentRequestSpec> spec() { return spec_; }
+  base::WeakPtr<PaymentRequestState> state() { return state_; }
 
   // The dialog that contains and owns this object.
   // Caller should not take ownership of the result.
-  PaymentRequestDialogView* dialog() { return dialog_; }
+  base::WeakPtr<PaymentRequestDialogView> dialog() { return dialog_; }
 
   // Returns the title to be displayed in this sheet's header.
   virtual base::string16 GetSheetTitle() = 0;
@@ -181,11 +181,9 @@ class PaymentRequestSheetController : public views::ButtonListener {
   void AddPrimaryButton(views::View* container);
   void AddSecondaryButton(views::View* container);
 
-  base::WeakPtr<PaymentRequestSpec> spec_;
-
-  // All these are not owned. Will outlive this.
-  PaymentRequestState* state_ = nullptr;
-  PaymentRequestDialogView* dialog_ = nullptr;
+  base::WeakPtr<PaymentRequestSpec> const spec_;
+  base::WeakPtr<PaymentRequestState> const state_;
+  base::WeakPtr<PaymentRequestDialogView> const dialog_;
 
   // This view is owned by its encompassing ScrollView.
   views::View* pane_ = nullptr;

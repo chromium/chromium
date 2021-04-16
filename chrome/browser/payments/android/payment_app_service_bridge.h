@@ -43,7 +43,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       size_t number_of_factories,
       content::RenderFrameHost* render_frame_host,
       const GURL& top_origin,
-      PaymentRequestSpec* spec,
+      base::WeakPtr<PaymentRequestSpec> spec,
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       bool may_crawl_for_installable_payment_apps,
@@ -78,7 +78,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   bool IsRequestedAutofillDataAvailable() override;
   ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
   void ShowProcessingSpinner() override;
-  PaymentRequestSpec* GetSpec() const override;
+  base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(const std::string& error_message) override;
@@ -93,7 +93,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       size_t number_of_factories,
       content::RenderFrameHost* render_frame_host,
       const GURL& top_origin,
-      PaymentRequestSpec* spec,
+      base::WeakPtr<PaymentRequestSpec> spec,
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       bool may_crawl_for_installable_payment_apps,

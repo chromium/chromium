@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/test/browser_task_environment.h"
@@ -87,7 +88,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
 
     spec_ = std::make_unique<PaymentRequestSpec>(
         mojom::PaymentOptions::New(), std::move(details),
-        std::move(method_data), this, "en-US");
+        std::move(method_data), weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   void TearDown() override {}
@@ -117,7 +118,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     icon_bitmap_ = stored_app->icon.get();
     app_ = std::make_unique<ServiceWorkerPaymentApp>(
         web_contents_, GURL("https://testmerchant.com"),
-        GURL("https://testmerchant.com/bobpay"), spec_.get(),
+        GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(stored_app), /*is_incognito=*/false,
         /*show_processing_spinner=*/base::DoNothing());
   }
@@ -141,6 +142,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::unique_ptr<ServiceWorkerPaymentApp> app_;
   const SkBitmap* icon_bitmap_;
+  base::WeakPtrFactory<ServiceWorkerPaymentAppTest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppTest);
 };

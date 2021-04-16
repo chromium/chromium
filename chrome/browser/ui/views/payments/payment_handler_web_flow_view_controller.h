@@ -47,9 +47,9 @@ class PaymentHandlerWebFlowViewController
   // |first_navigation_complete_callback| is invoked once the payment handler
   // WebContents finishes the initial navigation to |target|.
   PaymentHandlerWebFlowViewController(
-      PaymentRequestSpec* spec,
-      PaymentRequestState* state,
-      PaymentRequestDialogView* dialog,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog,
       content::WebContents* payment_request_web_contents,
       Profile* profile,
       GURL target,

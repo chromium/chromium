@@ -58,7 +58,8 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost,
   // is accomplished by the |delegate| owning this object. The |web_contents| is
   // used for developer tools logging and should be from the same browser
   // context as the payment handler.
-  PaymentHandlerHost(content::WebContents* web_contents, Delegate* delegate);
+  PaymentHandlerHost(content::WebContents* web_contents,
+                     base::WeakPtr<Delegate> delegate);
   ~PaymentHandlerHost() override;
 
   // Sets the origin of the payment handler / service worker registration scope.
@@ -131,7 +132,7 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost,
 
   // Not null and outlives this object. Either owns this object or is owned by
   // the owner of this object.
-  Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
 
   // The origin of the payment handler / service worker registration scope. Used
   // for developer tools logging.

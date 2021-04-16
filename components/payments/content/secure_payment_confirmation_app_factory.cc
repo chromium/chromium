@@ -116,7 +116,7 @@ void SecurePaymentConfirmationAppFactory::Create(
     base::WeakPtr<Delegate> delegate) {
   DCHECK(delegate);
 
-  PaymentRequestSpec* spec = delegate->GetSpec();
+  base::WeakPtr<PaymentRequestSpec> spec = delegate->GetSpec();
   if (!spec || !base::Contains(spec->payment_method_identifiers_set(),
                                methods::kSecurePaymentConfirmation)) {
     delegate->OnDoneCreatingPaymentApps();

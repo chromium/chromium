@@ -156,9 +156,9 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
 }  // namespace
 
 CreditCardEditorViewController::CreditCardEditorViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
     BackNavigationType back_navigation,
     int next_ui_tag,
     base::OnceClosure on_edited,

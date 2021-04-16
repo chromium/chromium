@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
@@ -31,9 +32,9 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
  public:
   // Does not take ownership of the arguments, which should outlive this object.
   // The `spec` and `state` objects should not be null.
-  PaymentSheetViewController(PaymentRequestSpec* spec,
-                             PaymentRequestState* state,
-                             PaymentRequestDialogView* dialog);
+  PaymentSheetViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                             base::WeakPtr<PaymentRequestState> state,
+                             base::WeakPtr<PaymentRequestDialogView> dialog);
   ~PaymentSheetViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -73,6 +74,8 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   std::unique_ptr<PaymentRequestRowView> CreateContactInfoRow();
   std::unique_ptr<PaymentRequestRowView> CreateShippingOptionRow();
   std::unique_ptr<views::View> CreateDataSourceRow();
+
+  base::WeakPtrFactory<PaymentSheetViewController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentSheetViewController);
 };

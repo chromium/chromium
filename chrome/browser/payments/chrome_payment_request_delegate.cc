@@ -68,7 +68,8 @@ ChromePaymentRequestDelegate::ChromePaymentRequestDelegate(
 
 ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() {}
 
-void ChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
+void ChromePaymentRequestDelegate::ShowDialog(
+    base::WeakPtr<PaymentRequest> request) {
   DCHECK_EQ(nullptr, shown_dialog_.get());
   DCHECK_EQ(nullptr, spc_dialog_.get());
 
@@ -77,8 +78,8 @@ void ChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
       shown_dialog_ = PaymentRequestDialogView::Create(request, nullptr);
       break;
     case DialogType::SECURE_PAYMENT_CONFIRMATION:
-      spc_dialog_ = std::make_unique<SecurePaymentConfirmationController>(
-          request->GetWeakPtr());
+      spc_dialog_ =
+          std::make_unique<SecurePaymentConfirmationController>(request);
       shown_dialog_ = spc_dialog_->GetWeakPtr();
       break;
   }

@@ -23,10 +23,10 @@ namespace {
 class ShippingOptionItem : public PaymentRequestItemList::Item {
  public:
   ShippingOptionItem(mojom::PaymentShippingOption* shipping_option,
-                     PaymentRequestSpec* spec,
-                     PaymentRequestState* state,
+                     base::WeakPtr<PaymentRequestSpec> spec,
+                     base::WeakPtr<PaymentRequestState> state,
                      PaymentRequestItemList* parent_list,
-                     PaymentRequestDialogView* dialog,
+                     base::WeakPtr<PaymentRequestDialogView> dialog,
                      bool selected)
       : PaymentRequestItemList::Item(spec,
                                      state,
@@ -84,9 +84,9 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
 }  // namespace
 
 ShippingOptionViewController::ShippingOptionViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog),
       shipping_option_list_(dialog) {
   spec->AddObserver(this);

@@ -45,14 +45,14 @@ constexpr int kEditIconSize = 16;
 
 }  // namespace
 
-PaymentRequestItemList::Item::Item(PaymentRequestSpec* spec,
-                                   PaymentRequestState* state,
+PaymentRequestItemList::Item::Item(base::WeakPtr<PaymentRequestSpec> spec,
+                                   base::WeakPtr<PaymentRequestState> state,
                                    PaymentRequestItemList* list,
                                    bool selected,
                                    bool clickable,
                                    bool show_edit_button)
     : PaymentRequestRowView(this, clickable, kRowInsets),
-      spec_(spec->GetWeakPtr()),
+      spec_(spec),
       state_(state),
       list_(list),
       selected_(selected),
@@ -180,7 +180,8 @@ void PaymentRequestItemList::Item::UpdateAccessibleName() {
   SetAccessibleName(accessible_content);
 }
 
-PaymentRequestItemList::PaymentRequestItemList(PaymentRequestDialogView* dialog)
+PaymentRequestItemList::PaymentRequestItemList(
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : selected_item_(nullptr), dialog_(dialog) {}
 
 PaymentRequestItemList::~PaymentRequestItemList() {}

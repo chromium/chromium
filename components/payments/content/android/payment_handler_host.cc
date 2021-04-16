@@ -40,7 +40,7 @@ PaymentHandlerHost::PaymentHandlerHost(
     : listener_(listener),
       payment_handler_host_(
           content::WebContents::FromJavaWebContents(web_contents),
-          /*delegate=*/&listener_) {}
+          /*delegate=*/listener_.AsWeakPtr()) {}
 
 PaymentHandlerHost::~PaymentHandlerHost() {}
 

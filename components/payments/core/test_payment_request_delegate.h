@@ -27,7 +27,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   ~TestPaymentRequestDelegate() override;
 
   // PaymentRequestDelegate
-  void ShowDialog(PaymentRequest* request) override {}
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override {}
   void RetryDialog() override {}
   void CloseDialog() override {}
   void ShowErrorMessage() override {}
