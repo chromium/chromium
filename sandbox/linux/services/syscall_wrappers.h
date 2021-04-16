@@ -17,8 +17,6 @@ struct sock_fprog;
 struct rlimit64;
 struct cap_hdr;
 struct cap_data;
-struct kernel_stat;
-struct kernel_stat64;
 
 namespace sandbox {
 
@@ -85,19 +83,6 @@ SANDBOX_EXPORT int sys_sigprocmask(int how,
 SANDBOX_EXPORT int sys_sigaction(int signum,
                                  const struct sigaction* act,
                                  struct sigaction* oldact);
-
-// Some architectures do not have stat() and lstat() syscalls. In that case,
-// these wrappers will use newfstatat(), which is available on all other
-// architectures, with the same capabilities as stat() and lstat().
-SANDBOX_EXPORT int sys_stat(const char* path, struct kernel_stat* stat_buf);
-SANDBOX_EXPORT int sys_lstat(const char* path, struct kernel_stat* stat_buf);
-
-// Takes care of unpoisoning |stat_buf| for MSAN. Check fails if fstatat64() is
-// not a supported syscall on the current platform.
-SANDBOX_EXPORT int sys_fstatat64(int dirfd,
-                                 const char* pathname,
-                                 struct kernel_stat64* stat_buf,
-                                 int flags);
 
 }  // namespace sandbox
 
