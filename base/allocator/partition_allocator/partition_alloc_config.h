@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/dcheck_is_on.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
@@ -74,5 +75,8 @@ static_assert(sizeof(void*) != 8, "");
     !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
 #define PA_HAS_FREELIST_HARDENING
 #endif
+
+// Specifies whether allocation extras need to be added.
+#define PA_EXTRAS_REQUIRED (DCHECK_IS_ON() || BUILDFLAG(USE_BACKUP_REF_PTR))
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

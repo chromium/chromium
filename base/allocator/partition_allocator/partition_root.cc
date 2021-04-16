@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -496,7 +497,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_DCHECK(!allow_aligned_alloc || !allow_ref_count);
 #endif
 
-#if PARTITION_EXTRAS_REQUIRED
+#if PA_EXTRAS_REQUIRED
     extras_size = 0;
     extras_offset = 0;
 

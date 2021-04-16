@@ -191,7 +191,7 @@ struct BASE_EXPORT PartitionRoot {
   static constexpr bool never_used_lazy_commit = true;
 #endif
 
-#if !PARTITION_EXTRAS_REQUIRED
+#if !PA_EXTRAS_REQUIRED
   // Teach the compiler that code can be optimized in builds that use no extras.
   static constexpr uint32_t extras_size = 0;
   static constexpr uint32_t extras_offset = 0;

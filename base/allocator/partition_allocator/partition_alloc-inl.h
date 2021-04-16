@@ -17,9 +17,6 @@
 #include <windows.h>
 #endif
 
-#define PARTITION_EXTRAS_REQUIRED \
-  (DCHECK_IS_ON() || BUILDFLAG(USE_BACKUP_REF_PTR))
-
 namespace base {
 
 namespace internal {
