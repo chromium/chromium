@@ -307,7 +307,6 @@ public class StatusView extends LinearLayout {
     void setStatusIconResources(
             @Nullable Drawable statusIconDrawable, @IconTransitionType int transitionType) {
         mStatusIconDrawable = statusIconDrawable;
-        requestLayout();
         animateStatusIcon(transitionType);
     }
 

@@ -172,8 +172,6 @@ public class PageInfoDiscoverabilityTest {
     @Mock
     UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
     @Mock
-    Runnable mMockForceModelViewReconciliationRunnable;
-    @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock
     Profile mProfile;
@@ -199,9 +197,8 @@ public class PageInfoDiscoverabilityTest {
             mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
-                    mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    mTemplateUrlServiceSupplier,
+                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
+                    mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
                     () -> mProfile, null, sPermissionTestRule.getActivity().getWindowAndroid());
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });

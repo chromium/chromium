@@ -70,8 +70,6 @@ public final class StatusMediatorUnitTest {
     @Mock
     UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
     @Mock
-    Runnable mMockForceModelViewReconciliationRunnable;
-    @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock
     Profile mProfile;
@@ -119,9 +117,9 @@ public final class StatusMediatorUnitTest {
             mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
-                    mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    mTemplateUrlServiceSupplier, () -> mProfile, null, null);
+                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
+                    mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
+                    () -> mProfile, null, null);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -348,12 +346,12 @@ public final class StatusMediatorUnitTest {
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
         mMediator.onIncognitoStateChanged();
-        verify(mMockForceModelViewReconciliationRunnable, times(0)).run();
+        Assert.assertEquals(null, mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+        Assert.assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
     }
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void testIncognitoStateChange_backFromIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -364,20 +362,8 @@ public final class StatusMediatorUnitTest {
         mMediator.onIncognitoStateChanged();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         mMediator.onIncognitoStateChanged();
-        verify(mMockForceModelViewReconciliationRunnable).run();
-    }
-
-    @Test
-    @SmallTest
-
-    @UiThreadTest
-    public void testIncognitoStateChange_shouldShowStatusIcon() {
-        mMediator.setShowIconsWhenUrlFocused(true);
-        doReturn(true).when(mLocationBarDataProvider).isIncognito();
-        mMediator.onIncognitoStateChanged();
-        doReturn(false).when(mLocationBarDataProvider).isIncognito();
-        mMediator.onIncognitoStateChanged();
-        verify(mMockForceModelViewReconciliationRunnable, times(0)).run();
+        Assert.assertEquals(null, mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+        Assert.assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
     }
 
     @Test
