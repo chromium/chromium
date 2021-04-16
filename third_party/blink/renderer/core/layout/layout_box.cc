@@ -7361,6 +7361,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
                  current->IsLayoutMultiColumnSpannerPlaceholder())) {
       // These objects do not need visual overflows in NG, and never have
       // children.
+      DCHECK(!current->SlowFirstChild());
       current = current->NextInPreOrderAfterChildren(this);
       continue;
     }
