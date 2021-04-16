@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.survey;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.AppHooks;
 
 /**
@@ -25,6 +27,11 @@ public class SurveyController {
             sInstance = AppHooks.get().createSurveyController();
         }
         return sInstance;
+    }
+
+    @VisibleForTesting
+    static void setInstanceForTesting(SurveyController testInstance) {
+        sInstance = testInstance;
     }
 
     /**

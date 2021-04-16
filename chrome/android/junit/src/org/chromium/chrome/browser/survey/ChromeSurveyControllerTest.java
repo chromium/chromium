@@ -17,12 +17,15 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.survey.ChromeSurveyController.FilteringResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
@@ -32,7 +35,7 @@ import org.chromium.content_public.browser.WebContents;
  * Unit tests for ChromeSurveyController.java.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = ShadowRecordHistogram.class)
 public class ChromeSurveyControllerTest {
     private static final String TEST_SURVEY_TRIGGER_ID = "foobar";
 
@@ -42,20 +45,18 @@ public class ChromeSurveyControllerTest {
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
     Tab mTab;
-
     @Mock
     WebContents mWebContents;
-
     @Mock
     TabModelSelector mSelector;
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
-
         mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID);
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = SharedPreferencesManager.getInstance();
@@ -90,14 +91,16 @@ public class ChromeSurveyControllerTest {
                 controller1.hasInfoBarBeenDisplayed());
         Assert.assertFalse("Infobar for triggerId2 should not be marked displayed yet.",
                 controller2.hasInfoBarBeenDisplayed());
+        verifyFilteringResultRecorded(FilteringResult.SURVEY_INFOBAR_ALREADY_DISPLAYED, 1);
 
         mSharedPreferences.writeLong(prefKey2, System.currentTimeMillis());
         Assert.assertTrue("Infobar for trggerId2 should be marked displayed.",
                 controller2.hasInfoBarBeenDisplayed());
+        verifyFilteringResultRecorded(FilteringResult.SURVEY_INFOBAR_ALREADY_DISPLAYED, 2);
     }
 
     @Test
-    public void testValidTab() {
+    public void testIsValidTabForSurvey_ValidTab() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isIncognito();
 
@@ -108,12 +111,12 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
-    public void testNullTab() {
+    public void testIsValidTabForSurvey_NullTab() {
         Assert.assertFalse(mTestController.isValidTabForSurvey(null));
     }
 
     @Test
-    public void testIncognitoTab() {
+    public void testIsValidTabForSurvey_IncognitoTab() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(true).when(mTab).isIncognito();
 
@@ -123,30 +126,13 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
-    public void testTabWithNoWebContents() {
+    public void testIsValidTabForSurvey_NoWebContents() {
         doReturn(null).when(mTab).getWebContents();
 
         Assert.assertFalse(mTestController.isValidTabForSurvey(mTab));
 
         verify(mTab, atLeastOnce()).getWebContents();
         verify(mTab, never()).isIncognito();
-    }
-
-    @Test
-    public void testSurveyAvailableWebContentsLoaded() {
-        doReturn(mTab).when(mSelector).getCurrentTab();
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(false).when(mTab).isIncognito();
-        doReturn(true).when(mTab).isUserInteractable();
-        doReturn(false).when(mWebContents).isLoading();
-
-        mTestController.onSurveyAvailable(null);
-        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabInfobarShown());
-
-        verify(mSelector, atLeastOnce()).getCurrentTab();
-        verify(mTab, atLeastOnce()).isIncognito();
-        verify(mTab, atLeastOnce()).isUserInteractable();
-        verify(mTab, atLeastOnce()).isLoading();
     }
 
     @Test
@@ -171,6 +157,23 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
+    public void testSurveyAvailableWebContentsLoaded() {
+        doReturn(mTab).when(mSelector).getCurrentTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(false).when(mTab).isIncognito();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(false).when(mWebContents).isLoading();
+
+        mTestController.onSurveyAvailable(null);
+        Assert.assertEquals("Tabs should be equal", mTab, mTestController.getLastTabInfobarShown());
+
+        verify(mSelector, atLeastOnce()).getCurrentTab();
+        verify(mTab, atLeastOnce()).isIncognito();
+        verify(mTab, atLeastOnce()).isUserInteractable();
+        verify(mTab, atLeastOnce()).isLoading();
+    }
+
+    @Test
     public void testSurveyAvailableNullTab() {
         doReturn(null).when(mSelector).getCurrentTab();
 
@@ -185,6 +188,7 @@ public class ChromeSurveyControllerTest {
         mSharedPreferences.writeInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, 4);
         Assert.assertTrue(
                 "Random selection should be true", mRiggedController.isRandomlySelectedForSurvey());
+        verifyFilteringResultRecorded(FilteringResult.USER_SELECTED_FOR_SURVEY, 1);
     }
 
     @Test
@@ -193,6 +197,7 @@ public class ChromeSurveyControllerTest {
         mSharedPreferences.writeInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, 5);
         Assert.assertFalse("Random selection should be false",
                 mRiggedController.isRandomlySelectedForSurvey());
+        verifyFilteringResultRecorded(FilteringResult.USER_ALREADY_SAMPLED_TODAY, 1);
     }
 
     @Test
@@ -211,12 +216,33 @@ public class ChromeSurveyControllerTest {
         mRiggedController = new RiggedSurveyController(5, 1, 10);
         Assert.assertFalse(
                 mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
-        Assert.assertFalse(
-                "Random selection should be true", mRiggedController.isRandomlySelectedForSurvey());
+        Assert.assertFalse("Random selection should be false",
+                mRiggedController.isRandomlySelectedForSurvey());
         Assert.assertEquals("Numbers should match", 1,
                 mSharedPreferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1));
+        verifyFilteringResultRecorded(FilteringResult.ROLLED_NON_ZERO_NUMBER, 1);
     }
 
+    @Test
+    public void testEligibilityNoMaxNumber() {
+        mRiggedController = new RiggedSurveyController(0, 1, -1);
+        Assert.assertFalse(
+                mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
+        Assert.assertFalse("Random selection should be false",
+                mRiggedController.isRandomlySelectedForSurvey());
+        Assert.assertFalse(
+                mSharedPreferences.contains(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED));
+        verifyFilteringResultRecorded(FilteringResult.MAX_NUMBER_MISSING, 1);
+    }
+
+    private void verifyFilteringResultRecorded(@FilteringResult int reason, int expectedCount) {
+        int count = ShadowRecordHistogram.getHistogramValueCountForTesting(
+                "Android.Survey.SurveyFilteringResults", reason);
+        Assert.assertEquals(String.format("FilteringResult for type <%s> does not match.", reason),
+                expectedCount, count);
+    }
+
+    /** Test class used to test the rate limiting logic for {@link ChromeSurveyController} */
     class RiggedSurveyController extends ChromeSurveyController {
         private int mRandomNumberToReturn;
         private int mDayOfYear;

@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -49,6 +51,9 @@ public class SurveyInfoBar extends InfoBar {
     // Boolean to track if the infobar was closed via survey acceptance or onCloseButtonClicked() to
     // prevent onStartHiding() from being called after.
     private boolean mClosedByInteraction;
+
+    // The clickable span that triggers the call to #showSurvey on the text prompt.
+    private NoUnderlineClickableSpan mClickableSpan;
 
     /**
      * Create and show the {@link SurveyInfoBar}.
@@ -108,16 +113,15 @@ public class SurveyInfoBar extends InfoBar {
             }
         });
 
-        NoUnderlineClickableSpan clickableSpan =
-                new NoUnderlineClickableSpan(layout.getResources(), (widget) -> {
-                    // Prevent double clicking on the text span.
-                    if (mClicked) return;
-                    showSurvey(tab);
-                    mClosedByInteraction = true;
-                });
+        mClickableSpan = new NoUnderlineClickableSpan(layout.getResources(), (widget) -> {
+            // Prevent double clicking on the text span.
+            if (mClicked) return;
+            showSurvey(tab);
+            mClosedByInteraction = true;
+        });
 
         CharSequence infoBarText = SpanApplier.applySpans(mDelegate.getSurveyPromptString(),
-                new SpanInfo("<LINK>", "</LINK>", clickableSpan));
+                new SpanInfo("<LINK>", "</LINK>", mClickableSpan));
 
         TextView prompt = new TextView(getContext());
         prompt.setText(infoBarText);
@@ -180,6 +184,11 @@ public class SurveyInfoBar extends InfoBar {
         SurveyController.getInstance().showSurveyIfAvailable(
                 TabUtils.getActivity(tab), mSiteId, mShowAsBottomSheet, mDisplayLogoResId);
         super.onCloseButtonClicked();
+    }
+
+    @VisibleForTesting
+    public NoUnderlineClickableSpan getClickableSpan() {
+        return mClickableSpan;
     }
 
     @NativeMethods

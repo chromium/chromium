@@ -529,6 +529,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGridLayoutTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGroupTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",
+  "javatests/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/AccountManagementFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/AutofillTest.java",
