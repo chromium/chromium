@@ -209,6 +209,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @DisableIf.Build(message = "See https://crbug.com/1199849",
+            sdk_is_greater_than = VERSION_CODES.O_MR1)
     public void setReturningUserFlag() {
         TriggerScriptProto.Builder firstTimeTriggerScript =
                 TriggerScriptProto.newBuilder()
