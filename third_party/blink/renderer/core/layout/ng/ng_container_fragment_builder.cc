@@ -306,7 +306,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     // position.
     if (fixedpos_containing_block && fixedpos_containing_block->fragment &&
         descendant.node.Style().GetPosition() == EPosition::kFixed) {
-      static_position.offset += additional_fixedpos_offset;
+      static_position.offset += additional_fixedpos_offset - offset;
       AddOutOfFlowFragmentainerDescendant(
           {descendant.node, static_position, new_inline_container,
            /* needs_block_offset_adjustment */ false,
