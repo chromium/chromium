@@ -181,20 +181,25 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
+  base::Optional<LayoutUnit> adjustment_for_oof_propagation;
+  if (propagate_oof_descendants)
+    adjustment_for_oof_propagation = BlockOffsetAdjustmentForFragmentainer();
+
   AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(),
-           offset_includes_relative_position, propagate_oof_descendants);
+           offset_includes_relative_position, adjustment_for_oof_propagation);
   if (fragment.IsBox())
     PropagateBreak(child_layout_result);
 }
 
-void NGBoxFragmentBuilder::AddChild(const NGPhysicalFragment& child,
-                                    const LogicalOffset& child_offset,
-                                    const LayoutInline* inline_container,
-                                    const NGMarginStrut* margin_strut,
-                                    bool is_self_collapsing,
-                                    bool offset_includes_relative_position,
-                                    bool propagate_oof_descendants) {
+void NGBoxFragmentBuilder::AddChild(
+    const NGPhysicalFragment& child,
+    const LogicalOffset& child_offset,
+    const LayoutInline* inline_container,
+    const NGMarginStrut* margin_strut,
+    bool is_self_collapsing,
+    bool offset_includes_relative_position,
+    base::Optional<LayoutUnit> adjustment_for_oof_propagation) {
   LogicalOffset adjusted_offset = child_offset;
 
   if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox &&
@@ -314,7 +319,7 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalFragment& child,
 #endif
 
   PropagateChildData(child, adjusted_offset, inline_container,
-                     propagate_oof_descendants);
+                     adjustment_for_oof_propagation);
   AddChildInternal(&child, adjusted_offset);
 }
 
@@ -606,6 +611,13 @@ void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
     descendant.fixedpos_containing_block.offset.block_offset -=
         previous_consumed_block_size;
   }
+}
+
+LayoutUnit NGBoxFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
+    LayoutUnit fragmentainer_consumed_block_size) const {
+  if (IsFragmentainerBoxType() && PreviousBreakToken())
+    return PreviousBreakToken()->ConsumedBlockSize();
+  return fragmentainer_consumed_block_size;
 }
 
 void NGBoxFragmentBuilder::

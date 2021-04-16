@@ -44,11 +44,10 @@ void NGContainerFragmentBuilder::PropagateChildData(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset,
     const LayoutInline* inline_container,
-    bool propagate_oof_descendants) {
-  if (propagate_oof_descendants) {
-    PropagateOOFPositionedInfo(child, child_offset,
-                               fragmentainer_consumed_block_size_,
-                               inline_container);
+    base::Optional<LayoutUnit> adjustment_for_oof_propagation) {
+  if (adjustment_for_oof_propagation) {
+    PropagateOOFPositionedInfo(child, child_offset, inline_container,
+                               *adjustment_for_oof_propagation);
   }
 
   // We only need to report if inflow or floating elements depend on the
@@ -115,15 +114,6 @@ void NGContainerFragmentBuilder::PropagateChildData(
         line_count_++;
         break;
     }
-  }
-
-  // Always store the consumed block size of the previous fragmentainer so the
-  // out-of-flow positioned-nodes in the next fragmentainers can use it to
-  // compute its start position.
-  if (child.BreakToken() && child.IsFragmentainerBox()) {
-    DCHECK(IsA<NGBlockBreakToken>(child.BreakToken()));
-    fragmentainer_consumed_block_size_ =
-        To<NGBlockBreakToken>(child.BreakToken())->ConsumedBlockSize();
   }
 }
 
@@ -290,8 +280,8 @@ void NGContainerFragmentBuilder::
 void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalFragment& fragment,
     LogicalOffset offset,
-    LayoutUnit fragmentainer_consumed_block_size,
     const LayoutInline* inline_container,
+    LayoutUnit containing_block_adjustment,
     const NGLogicalContainingBlock* fixedpos_containing_block,
     LogicalOffset additional_fixedpos_offset) {
   // Collect the child's out of flow descendants.
@@ -368,9 +358,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         descendant.containing_block.offset, containing_block_fragment->Size());
     if (!box_fragment->IsFragmentainerBox())
       containing_block_offset.block_offset += offset.block_offset;
-    if (IsBlockFragmentationContextRoot()) {
-      containing_block_offset.block_offset += fragmentainer_consumed_block_size;
-    }
+    containing_block_offset.block_offset += containing_block_adjustment;
 
     const NGPhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.fragment;
@@ -386,10 +374,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
                               fixedpos_containing_block_fragment->Size());
       if (!box_fragment->IsFragmentainerBox())
         fixedpos_containing_block_offset.block_offset += offset.block_offset;
-      if (IsBlockFragmentationContextRoot()) {
-        fixedpos_containing_block_offset.block_offset +=
-            fragmentainer_consumed_block_size;
-      }
+      fixedpos_containing_block_offset.block_offset +=
+          containing_block_adjustment;
     }
 
     if (!fixedpos_containing_block_fragment && fixedpos_containing_block) {

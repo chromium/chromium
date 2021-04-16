@@ -98,7 +98,7 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
       *fragment, child_offset, /* inline_container */ nullptr,
       /* margin_strut */ nullptr, /* is_self_collapsing */ false,
       /* offset_includes_relative_position */ true,
-      /* propagate_oof_descendants */ false);
+      /* adjustment_for_oof_propagation */ base::nullopt);
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {

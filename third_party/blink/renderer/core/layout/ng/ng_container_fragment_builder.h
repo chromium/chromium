@@ -193,8 +193,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void PropagateOOFPositionedInfo(
       const NGPhysicalFragment& fragment,
       LogicalOffset offset,
-      LayoutUnit fragmentainer_consumed_block_size,
       const LayoutInline* inline_container = nullptr,
+      LayoutUnit containing_block_adjustment = LayoutUnit(),
       const NGLogicalContainingBlock* fixedpos_containing_block = nullptr,
       LogicalOffset additional_fixedpos_offset = LogicalOffset());
 
@@ -265,10 +265,11 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     layout_object_ = node.GetLayoutBox();
   }
 
-  void PropagateChildData(const NGPhysicalFragment& child,
-                          const LogicalOffset& child_offset,
-                          const LayoutInline* inline_container = nullptr,
-                          bool propagate_oof_descendants = true);
+  void PropagateChildData(
+      const NGPhysicalFragment& child,
+      const LogicalOffset& child_offset,
+      const LayoutInline* inline_container = nullptr,
+      base::Optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
 
@@ -303,10 +304,6 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   LayoutUnit annotation_overflow_;
   // See NGLayoutResult::BlockEndAnotationSpace().
   LayoutUnit block_end_annotation_space_;
-
-  // The block size consumed by all preceding fragmentainers. Used to position
-  // OOF nodes.
-  LayoutUnit fragmentainer_consumed_block_size_;
 
   // The number of line boxes added to the builder. Only updated if we're
   // performing block fragmentation.

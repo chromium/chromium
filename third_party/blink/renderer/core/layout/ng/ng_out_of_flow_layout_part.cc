@@ -552,7 +552,7 @@ void NGOutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
   HeapVector<MulticolChildInfo> multicol_children;
-  const NGBlockBreakToken* previous_column_break_token = nullptr;
+  const NGBlockBreakToken* current_column_break_token = nullptr;
   LayoutUnit column_inline_progression = kIndefiniteSize;
 
   NGConstraintSpace multicol_constraint_space =
@@ -573,8 +573,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     WritingDirectionMode writing_direction = style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          multicol_box_fragment->Size());
-    const NGBlockBreakToken* current_column_break_token =
-        previous_column_break_token;
     wtf_size_t current_column_index = 0;
 
     if (column_inline_progression == kIndefiniteSize) {
@@ -607,7 +605,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
           *fragment, offset, /* inline_container */ nullptr,
           /* margin_strut */ nullptr, /* is_self_collapsing */ false,
           /* offset_includes_relative_position */ false,
-          /* propagate_oof_descendants */ false);
+          /* adjustment_for_oof_propagation */ base::nullopt);
       multicol_children.emplace_back(MulticolChildInfo(&child));
     }
 
@@ -650,21 +648,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
                                 fixedpos_containing_block_fragment->Size());
       }
 
-      // The containing block offset should be the offset from the top of the
-      // inner multicol to the start of the containing block (as if all of the
-      // columns are placed one on top of the other). When propagating OOFs
-      // in a nested fragmentation context, we miss the block contribution
-      // from columns in previous outer fragmentainers. Add the block size
-      // for such columns here to account for this.
-      if (previous_column_break_token) {
-        containing_block_offset.block_offset +=
-            previous_column_break_token->ConsumedBlockSize();
-        if (fixedpos_containing_block_fragment) {
-          fixedpos_containing_block_offset.block_offset +=
-              previous_column_break_token->ConsumedBlockSize();
-        }
-      }
-
       // The static position should remain relative to its containing block
       // fragment.
       const WritingModeConverter containing_block_converter(
@@ -684,7 +667,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
                                    fixedpos_containing_block_fragment)};
       oof_nodes_to_layout.push_back(node);
     }
-    previous_column_break_token = current_column_break_token;
   }
   DCHECK(!oof_nodes_to_layout.IsEmpty());
   DCHECK(!multicol_container_builder.HasOutOfFlowFragmentainerDescendants());
@@ -1327,9 +1309,14 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     additional_fixedpos_offset.block_offset +=
         descendant.break_token->ConsumedBlockSize();
   }
+
+  LayoutUnit containing_block_adjustment =
+      container_builder_->BlockOffsetAdjustmentForFragmentainer(
+          fragmentainer_consumed_block_size_);
+
   container_builder_->PropagateOOFPositionedInfo(
       result->PhysicalFragment(), result->OutOfFlowPositionedOffset(),
-      fragmentainer_consumed_block_size_, /* inline_container */ nullptr,
+      /* inline_container */ nullptr, containing_block_adjustment,
       &descendant.node_info.fixedpos_containing_block,
       additional_fixedpos_offset);
   algorithm->AppendOutOfFlowResult(result);
@@ -1384,7 +1371,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
         new_result->PhysicalFragment(), offset, /* inline_container */ nullptr,
         /* margin_strut */ nullptr, /* is_self_collapsing */ false,
         /* offset_includes_relative_position */ false,
-        /* propagate_oof_descendants */ false);
+        /* adjustment_for_oof_propagation */ base::nullopt);
   } else {
     const NGLayoutResult* new_result = algorithm->Layout();
     node.ReplaceColumnResult(new_result, fragment);

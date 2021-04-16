@@ -203,13 +203,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                  bool offset_includes_relative_position = false,
                  bool propagate_oof_descendants = true);
 
-  void AddChild(const NGPhysicalFragment&,
-                const LogicalOffset&,
-                const LayoutInline* inline_container = nullptr,
-                const NGMarginStrut* margin_strut = nullptr,
-                bool is_self_collapsing = false,
-                bool offset_includes_relative_position = false,
-                bool propagate_oof_descendants = true);
+  void AddChild(
+      const NGPhysicalFragment&,
+      const LogicalOffset&,
+      const LayoutInline* inline_container = nullptr,
+      const NGMarginStrut* margin_strut = nullptr,
+      bool is_self_collapsing = false,
+      bool offset_includes_relative_position = false,
+      base::Optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
@@ -573,6 +574,21 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       NGLogicalOutOfFlowPositionedNode& descendant,
       bool only_fixedpos_containing_block = false);
   void AdjustFixedposContainingBlockForFragmentainerDescendants();
+
+  // OOF positioned elements inside a fragmentation context are laid out once
+  // they reach the fragmentation context root, so we need to adjust the offset
+  // of its containing block to be relative to the fragmentation context
+  // root. This allows us to determine the proper offset for the OOF inside the
+  // same context. The block offset returned is the block contribution from
+  // previous fragmentainers, if the current builder is a fragmentainer.
+  // Otherwise, |fragmentainer_consumed_block_size| will be used. In some cases,
+  // for example, we won't be able to calculate the adjustment from the builder.
+  // This would happen when an OOF positioned element is nested inside another
+  // OOF positioned element. The nested OOF will never have propagated up
+  // through a fragmentainer builder. In such cases, the necessary adjustment
+  // will be passed in via |fragmentainer_consumed_block_size|.
+  LayoutUnit BlockOffsetAdjustmentForFragmentainer(
+      LayoutUnit fragmentainer_consumed_block_size = LayoutUnit()) const;
 
  private:
   // Update whether we have fragmented in this flow.
