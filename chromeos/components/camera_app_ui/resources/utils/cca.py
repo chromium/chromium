@@ -132,12 +132,7 @@ def test(args):
     assert 'CCAUI' not in args.device, (
         'The first argument should be <device> instead of a test name pattern.'
     )
-    tast_cmd = ['local_test_runner'] + args.pattern
-    cmd = [
-        'ssh',
-        args.device,
-        shell_join(tast_cmd),
-    ]
+    cmd = ['cros_run_test', '--device', args.device, '--tast'] + args.pattern
     run(cmd)
 
 
