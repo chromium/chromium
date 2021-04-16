@@ -304,8 +304,16 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
 
+// Disabled on macOS+ASAN due to high failure rate: crbug.com/1199854.
+#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_LanguageDetectionWithBackgroundTab \
+  DISABLED_LanguageDetectionWithBackgroundTab
+#else
+#define MAYBE_LanguageDetectionWithBackgroundTab \
+  LanguageDetectionWithBackgroundTab
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
-                       LanguageDetectionWithBackgroundTab) {
+                       MAYBE_LanguageDetectionWithBackgroundTab) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelFileForTesting(
