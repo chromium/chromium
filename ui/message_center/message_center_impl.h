@@ -113,7 +113,7 @@ class MessageCenterImpl : public MessageCenter,
   NotificationList::Notifications visible_notifications_;
   base::ObserverList<MessageCenterObserver> observer_list_;
   std::unique_ptr<PopupTimersController> popup_timers_controller_;
-  std::unique_ptr<base::OneShotTimer> quiet_mode_timer_;
+  base::OneShotTimer quiet_mode_timer_;
   std::vector<NotificationBlocker*> blockers_;
 
   bool visible_ = false;
