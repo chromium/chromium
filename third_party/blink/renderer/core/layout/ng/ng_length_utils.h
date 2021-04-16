@@ -91,6 +91,15 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
 
+// In this file the template parameter MinMaxSizesFunc should have the
+// following form:
+//
+// auto MinMaxSizesFunc = [](MinMaxSizesType) -> MinMaxSizesResult { };
+//
+// This is used for computing the min/max content or intrinsic sizes on-demand
+// rather than determining if a length resolving function will require these
+// sizes ahead of time.
+
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
 template <typename MinMaxSizesFunc>
 inline LayoutUnit ResolveMinInlineLength(
@@ -366,11 +375,13 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const NGBoxStrut& border_padding);
 
 template <typename MinMaxSizesFunc>
-MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
-                                     const NGBlockNode& node,
-                                     const NGBoxStrut& border_padding,
-                                     const MinMaxSizesFunc& min_max_sizes_func,
-                                     const Length* opt_min_length = nullptr) {
+MinMaxSizes ComputeMinMaxInlineSizes(
+    const NGConstraintSpace& space,
+    const NGBlockNode& node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizesFunc& min_max_sizes_func,
+    const Length* opt_min_length = nullptr,
+    base::Optional<bool> is_block_size_indefinite = base::nullopt) {
   const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
@@ -383,7 +394,8 @@ MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
   if (!style.AspectRatio().IsAuto() &&
-      BlockLengthUnresolvable(space, style.LogicalHeight())) {
+      is_block_size_indefinite.value_or(
+          BlockLengthUnresolvable(space, style.LogicalHeight()))) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
     sizes.min_size = std::max(

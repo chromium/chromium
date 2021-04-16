@@ -983,8 +983,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
       builder.SetIsFixedBlockSize(true);
     const auto space = builder.ToConstraintSpace();
 
-    if (compute_inline_from_ar &&
-        candidate_style.OverflowInlineDirection() == EOverflow::kVisible) {
+    if (node_info.node.IsTable() ||
+        (compute_inline_from_ar &&
+         candidate_style.OverflowInlineDirection() == EOverflow::kVisible)) {
       minmax_intrinsic_sizes_for_ar =
           node_info.node
               .ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
