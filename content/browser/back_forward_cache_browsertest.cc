@@ -47,6 +47,7 @@
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/idle_manager.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -10341,6 +10342,66 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     EXPECT_EQ(user_agent_override_2,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
   }
+}
+
+class BackForwardCacheBrowserTestWithMediaSession
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "supported_features",
+                              "MediaSessionImplOnServiceCreated");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
+                       DoNotCacheIfMediaSessionPlaybackStateChanged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page using MediaSession.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+    navigator.mediaSession.metadata = new MediaMetadata({
+      artwork: [
+        {src: "test_image.jpg", sizes: "1x1", type: "image/jpeg"},
+        {src: "test_image.jpg", sizes: "10x10", type: "image/jpeg"}
+      ]
+    });
+  )"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The page is restored since the playback state is not changed.
+  ExpectRestored(FROM_HERE);
+
+  // 4) Modify the playback state of the media session.
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+    navigator.mediaSession.playbackState = 'playing';
+  )"));
+
+  // 5) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 6) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The page is not restored due to the playback.
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaSession);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, FROM_HERE);
 }
 
 }  // namespace content

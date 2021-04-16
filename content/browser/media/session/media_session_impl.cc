@@ -21,6 +21,7 @@
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session.h"
@@ -1289,10 +1290,12 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
 void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
   const auto rfh_id = service->GetRenderFrameHostId();
 
-  BackForwardCache::DisableForRenderFrameHost(
-      rfh_id, BackForwardCacheDisable::DisabledReason(
-                  BackForwardCacheDisable::DisabledReasonId::
-                      kMediaSessionImplOnServiceCreated));
+  if (!BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed()) {
+    BackForwardCache::DisableForRenderFrameHost(
+        rfh_id, BackForwardCacheDisable::DisabledReason(
+                    BackForwardCacheDisable::DisabledReasonId::
+                        kMediaSessionImplOnServiceCreated));
+  }
 
   services_[rfh_id] = service;
   UpdateRoutedService();
@@ -1307,6 +1310,14 @@ void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
 
 void MediaSessionImpl::OnMediaSessionPlaybackStateChanged(
     MediaSessionServiceImpl* service) {
+  // Even though the back-forward cache is allowed at OnServiceCreated, it is
+  // disabled when the playback state is changed as this affects the visible UI
+  // for MediaSession.
+  BackForwardCache::DisableForRenderFrameHost(
+      service->GetRenderFrameHostId(),
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kMediaSession));
+
   if (service != routed_service_)
     return;
 

@@ -195,7 +195,9 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
       FeatureToBit(WebSchedulerTrackedFeature::kWebShare) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebSocket) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebVR) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebXR);
+      FeatureToBit(WebSchedulerTrackedFeature::kWebXR) |
+      FeatureToBit(
+          WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 
   uint64_t result = kAlwaysDisallowedFeatures;
 
@@ -850,6 +852,13 @@ bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kBackForwardCache, "check_eligibility_after_pagehide", false);
+}
+
+bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {
+  return (SupportedFeaturesBitmask() &
+          FeatureToBit(
+              WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated)) !=
+         0;
 }
 
 bool BackForwardCache::DisabledReason::operator<(

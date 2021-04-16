@@ -133,6 +133,9 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return {"OutstandingNetworkRequestDirectSocket",
               "outstanding network request (direct socket)"};
+    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
+      return {"MediaSessionImplOnServiceCreated",
+              "MediaSessionImplOnServiceCreated"};
   }
   return {};
 }
