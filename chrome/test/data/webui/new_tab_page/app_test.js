@@ -48,12 +48,6 @@ suite('NewTabPageAppTest', () => {
   /** @type {PromiseResolver} */
   let moduleResolver;
 
-  suiteSetup(() => {
-    loadTimeData.overrideValues({
-      modulesLoadTimeout: 0,
-    });
-  });
-
   setup(async () => {
     PolymerTest.clearBody();
 
@@ -463,81 +457,81 @@ suite('NewTabPageAppTest', () => {
     assertTrue(commandExecuted);
   });
 
-  // TODO(crbug.com/1196355): On linux modules are disabled by default, which
-  // makes this test fail. Find way to override setting in this test and enable.
-  test.skip('modules can open customize dialog', async () => {
-    // Act.
-    $$(app, 'ntp-modules').dispatchEvent(new Event('customize-module'));
-    $$(app, '#customizeDialogIf').render();
-
-    // Assert.
-    assertTrue(!!$$(app, 'ntp-customize-dialog'));
-    assertEquals(
-        CustomizeDialogPage.MODULES,
-        $$(app, 'ntp-customize-dialog').selectedPage);
-  });
-
-  // TODO(crbug.com/1196355): On linux modules are disabled by default, which
-  // makes this test fail. Find way to override setting in this test and enable.
-  test.skip('promo and modules coordinate', async () => {
-    // Arrange.
-    loadTimeData.overrideValues({navigationStartTime: 0.0});
-    windowProxy.setResultFor('now', 123.0);
-    const middleSlotPromo = $$(app, 'ntp-middle-slot-promo');
-    const modules = $$(app, 'ntp-modules');
-
-    // Assert.
-    assertStyle(middleSlotPromo, 'display', 'none');
-    assertStyle(modules, 'display', 'none');
-
-    // Act.
-    middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
-
-    // Assert.
-    assertStyle(middleSlotPromo, 'display', 'none');
-    assertStyle(modules, 'display', 'none');
-
-    // Act.
-    modules.dispatchEvent(new Event('modules-loaded'));
-
-    // Assert.
-    assertNotStyle(middleSlotPromo, 'display', 'none');
-    assertNotStyle(modules, 'display', 'none');
-    assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime'));
-    assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime', 123));
-  });
-
-  test('modules loaded but not rendered if counterfactual', async () => {
-    // Arrange.
-    loadTimeData.overrideValues({
-      modulesEnabled: false,
-      modulesLoadEnabled: true,
+  suite('modules', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: true,
+      });
     });
 
-    // Act.
-    moduleResolver.resolve([
-      {
-        descriptor: {id: 'foo'},
-        element: document.createElement('div'),
-      },
-      {
-        descriptor: {id: 'bar'},
-        element: document.createElement('div'),
-      }
-    ]);
-    await flushTasks();
+    test('modules can open customize dialog', async () => {
+      // Act.
+      $$(app, 'ntp-modules').dispatchEvent(new Event('customize-module'));
+      $$(app, '#customizeDialogIf').render();
 
-    // TODO(crbug.com/1196355): Need to re-initialize modules because load time
-    // data gets applied racily. We should remove the race condition.
-    moduleRegistry.reset();
-    handler.reset();
-    moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
-    await app.onLazyRendered_();
+      // Assert.
+      assertTrue(!!$$(app, 'ntp-customize-dialog'));
+      assertEquals(
+          CustomizeDialogPage.MODULES,
+          $$(app, 'ntp-customize-dialog').selectedPage);
+    });
 
-    // Assert.
-    assertEquals(1, moduleRegistry.getCallCount('initializeModules'));
-    assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
-    assertEquals(
-        0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
+    test('promo and modules coordinate', async () => {
+      // Arrange.
+      loadTimeData.overrideValues({navigationStartTime: 0.0});
+      windowProxy.setResultFor('now', 123.0);
+      const middleSlotPromo = $$(app, 'ntp-middle-slot-promo');
+      const modules = $$(app, 'ntp-modules');
+
+      // Assert.
+      assertStyle(middleSlotPromo, 'display', 'none');
+      assertStyle(modules, 'display', 'none');
+
+      // Act.
+      middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
+
+      // Assert.
+      assertStyle(middleSlotPromo, 'display', 'none');
+      assertStyle(modules, 'display', 'none');
+
+      // Act.
+      modules.dispatchEvent(new Event('modules-loaded'));
+
+      // Assert.
+      assertNotStyle(middleSlotPromo, 'display', 'none');
+      assertNotStyle(modules, 'display', 'none');
+      assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime'));
+      assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime', 123));
+    });
+  });
+
+  suite('counterfactual modules', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesEnabled: false,
+        modulesLoadEnabled: true,
+      });
+    });
+
+    test('modules loaded but not rendered if counterfactual', async () => {
+      // Act.
+      moduleResolver.resolve([
+        {
+          descriptor: {id: 'foo'},
+          element: document.createElement('div'),
+        },
+        {
+          descriptor: {id: 'bar'},
+          element: document.createElement('div'),
+        }
+      ]);
+      await flushTasks();
+
+      // Assert.
+      assertEquals(1, moduleRegistry.getCallCount('initializeModules'));
+      assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
+      assertEquals(
+          0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
+    });
   });
 });
