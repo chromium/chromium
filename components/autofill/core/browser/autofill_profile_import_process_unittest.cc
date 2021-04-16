@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,114 +20,6 @@ namespace autofill {
 using structured_address::VerificationStatus;
 
 namespace import_data_unittest {
-
-namespace {
-
-struct ProfileTestData {
-  ServerFieldType field_type;
-  std::string value;
-  structured_address::VerificationStatus verification_status =
-      structured_address::VerificationStatus::kNoStatus;
-};
-
-void SetProfileTestValues(AutofillProfile* profile,
-                          const std::vector<ProfileTestData>& profile_test_data,
-                          bool finalize = true) {
-  DCHECK(profile);
-
-  base::ranges::for_each(
-      profile_test_data, [&](const ProfileTestData& test_data) {
-        profile->SetRawInfoWithVerificationStatus(
-            test_data.field_type, base::UTF8ToUTF16(test_data.value),
-            test_data.verification_status);
-      });
-
-  if (finalize) {
-    profile->FinalizeAfterImport();
-  }
-}
-
-void CopyGUID(const AutofillProfile& from, AutofillProfile* to) {
-  to->set_guid(from.guid());
-}
-
-void SetProfileObservedTestValues(AutofillProfile* profile,
-                                  const std::vector<ProfileTestData>& test_data,
-                                  bool finalize = true) {
-  // Make a copy of the test data with all verification statuses replaced with
-  // 'kObserved'.
-  std::vector<ProfileTestData> observed_test_data;
-  base::ranges::for_each(test_data, [&](const ProfileTestData& entry) {
-    observed_test_data.emplace_back(ProfileTestData{
-        entry.field_type, entry.value, VerificationStatus::kObserved});
-  });
-
-  // Set this data to the profile.
-  SetProfileTestValues(profile, observed_test_data, finalize);
-}
-
-AutofillProfile StandardProfile() {
-  AutofillProfile profile;
-  const std::vector<ProfileTestData> observed_profile_test_data = {
-      {NAME_FULL, "Pablo Diego de la Ruiz y Picasso",
-       VerificationStatus::kUserVerified},
-      {ADDRESS_HOME_STREET_ADDRESS, "123 Mainstreet",
-       VerificationStatus::kObserved},
-      {ADDRESS_HOME_COUNTRY, "US", VerificationStatus::kObserved},
-      {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
-      {ADDRESS_HOME_ZIP, "98765", VerificationStatus::kObserved},
-      {ADDRESS_HOME_CITY, "Mountainview", VerificationStatus::kObserved}};
-  SetProfileTestValues(&profile, observed_profile_test_data);
-  return profile;
-}
-
-AutofillProfile UpdateableStandardProfile() {
-  AutofillProfile profile;
-  const std::vector<ProfileTestData> observed_profile_test_data = {
-      // Here, the verification status for the name is 'only' observed. When
-      // merged with the `StandardProfile()`, this should result in a silent
-      // update.
-      {NAME_FULL, "Pablo Diego de la Ruiz y Picasso",
-       VerificationStatus::kObserved},
-      {ADDRESS_HOME_STREET_ADDRESS, "123 Mainstreet",
-       VerificationStatus::kObserved},
-      {ADDRESS_HOME_COUNTRY, "US", VerificationStatus::kObserved},
-      {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
-      {ADDRESS_HOME_ZIP, "98765", VerificationStatus::kObserved},
-      {ADDRESS_HOME_CITY, "Mountainview", VerificationStatus::kObserved}};
-  SetProfileTestValues(&profile, observed_profile_test_data);
-  return profile;
-}
-
-AutofillProfile SubsetOfStandardProfile() {
-  AutofillProfile profile;
-  // This profile is both lacking a city and a ZIP code and should be merged
-  // with the `StandardProfile(}`.
-  const std::vector<ProfileTestData> observed_profile_test_data = {
-      {NAME_FULL, "Pablo Diego de la Ruiz y Picasso"},
-      {ADDRESS_HOME_STREET_ADDRESS, "123 Mainstreet"},
-      {ADDRESS_HOME_COUNTRY, "US"},
-      {ADDRESS_HOME_STATE, "CA"},
-      {ADDRESS_HOME_ZIP, ""},
-      {ADDRESS_HOME_CITY, ""}};
-  SetProfileObservedTestValues(&profile, observed_profile_test_data);
-  return profile;
-}
-
-AutofillProfile DifferentFromStandardProfile() {
-  AutofillProfile profile;
-  const std::vector<ProfileTestData> observed_profile_test_data = {
-      {NAME_FULL, "Neo Anderson"},
-      {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue"},
-      {ADDRESS_HOME_COUNTRY, "US"},
-      {ADDRESS_HOME_STATE, "CA"},
-      {ADDRESS_HOME_ZIP, "99666"},
-      {ADDRESS_HOME_CITY, "Los Angeles"}};
-  SetProfileObservedTestValues(&profile, observed_profile_test_data);
-  return profile;
-}
-
-}  // namespace
 
 // Test that two subsequently created `ProfileImportProcess`s have distinct ids.
 TEST(AutofillProfileImportProcess, DistinctIds) {
@@ -146,7 +39,7 @@ TEST(AutofillProfileImportProcess, DistinctIds) {
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile.
 TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAccepts) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -172,7 +65,7 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAccepts) {
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile but with additional edits..
 TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAcceptsWithEdits) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -181,8 +74,8 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAcceptsWithEdits) {
   // Simulate that the user accepts the save prompt but only after editing the
   // profile. Note, that the `guid` of the edited profile must match the `guid`
   // of the initial import candidate.
-  AutofillProfile edited_profile = DifferentFromStandardProfile();
-  CopyGUID(observed_profile, &edited_profile);
+  AutofillProfile edited_profile = test::DifferentFromStandardProfile();
+  test::CopyGUID(observed_profile, &edited_profile);
   import_data.AcceptWithEdits(edited_profile);
 
   // This operation should result in a profile change, and the type of the
@@ -202,7 +95,7 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserAcceptsWithEdits) {
 // Tests the import process for the scenario, that the user declines the import
 // of their first profile.
 TEST(AutofillProfileImportProcess, ImportFirstProfile_UserRejects) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -228,7 +121,7 @@ TEST(AutofillProfileImportProcess, ImportFirstProfile_UserRejects) {
 // Tests the import of a profile that is an exact duplicate of the only already
 // existing profile.
 TEST(AutofillProfileImportProcess, ImportDuplicateProfile) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile existing_profile = observed_profile;
 
   // Create the import process for the scenario that the observed profile is an
@@ -259,12 +152,13 @@ TEST(AutofillProfileImportProcess, ImportDuplicateProfile) {
 // updateable with the observed profile.
 TEST(AutofillProfileImportProcess,
      ImportDuplicateProfile_OutOfMultipleProfiles) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // This already existing profile is an exact duplicate of the observed one.
   AutofillProfile duplicate_existing_profile = observed_profile;
   // This already existing profile is neither mergeable nor updateable with the
   // observed one.
-  AutofillProfile distinct_existing_profile = DifferentFromStandardProfile();
+  AutofillProfile distinct_existing_profile =
+      test::DifferentFromStandardProfile();
 
   // Create the import process for the two already existing profiles.
   ProfileImportProcess import_data(
@@ -293,9 +187,9 @@ TEST(AutofillProfileImportProcess,
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile.
 TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Accepted) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
@@ -323,8 +217,8 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Accepted) {
   // Explicitly check the content of the stored profiles. The final profile
   // should have the same content as the observed profile, but the `guid` of the
   // `mergeable_profile`.
-  AutofillProfile final_profile = StandardProfile();
-  CopyGUID(mergeable_profile, &final_profile);
+  AutofillProfile final_profile = test::StandardProfile();
+  test::CopyGUID(mergeable_profile, &final_profile);
 
   std::vector<AutofillProfile> expected_resulting_profiles = {final_profile};
   EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
@@ -333,9 +227,9 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Accepted) {
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile for the scenario that the user introduced additional edits.
 TEST(AutofillProfileImportProcess, MergeWithExistingProfile_AcceptWithEdits) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
@@ -353,10 +247,10 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_AcceptWithEdits) {
   EXPECT_EQ(import_data.merge_candidate(), mergeable_profile);
 
   // Simulate that the user accepts this import with additional edits.
-  AutofillProfile edited_profile = DifferentFromStandardProfile();
+  AutofillProfile edited_profile = test::DifferentFromStandardProfile();
   // Note that it is necessary to maintain the `guid` of the initial import
   // candidate.
-  CopyGUID(mergeable_profile, &edited_profile);
+  test::CopyGUID(mergeable_profile, &edited_profile);
   import_data.AcceptWithEdits(edited_profile);
 
   // This should result in a change of stored profiles.
@@ -372,11 +266,11 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_AcceptWithEdits) {
 // existing profile for the scenario that there are multiple profiles stored.
 TEST(AutofillProfileImportProcess,
      MergeWithExistingProfile_MultipleStoredProfiles_Accepted) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
   // This is just another completely different profile.
-  AutofillProfile distinct_profile = DifferentFromStandardProfile();
+  AutofillProfile distinct_profile = test::DifferentFromStandardProfile();
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
@@ -401,8 +295,8 @@ TEST(AutofillProfileImportProcess,
 
   // Test that the user decision translates correctly to the expected end
   // result.
-  AutofillProfile merged_profile = StandardProfile();
-  CopyGUID(mergeable_profile, &merged_profile);
+  AutofillProfile merged_profile = test::StandardProfile();
+  test::CopyGUID(mergeable_profile, &merged_profile);
   std::vector<AutofillProfile> expected_resulting_profiles = {distinct_profile,
                                                               merged_profile};
 
@@ -412,9 +306,9 @@ TEST(AutofillProfileImportProcess,
 // Tests the rejection of the merge of the observed profile with an already
 // existing one.
 TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Rejected) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
@@ -450,9 +344,9 @@ TEST(AutofillProfileImportProcess, MergeWithExistingProfile_Rejected) {
 // Tests the scenario in which the observed profile results in a silent update
 // of the only already existing profile.
 TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
-  AutofillProfile updateable_profile = UpdateableStandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
@@ -477,7 +371,7 @@ TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
   EXPECT_TRUE(import_data.ProfilesChanged());
 
   // Test that the existing profile was correctly updated.
-  AutofillProfile updated_profile = StandardProfile();
+  AutofillProfile updated_profile = test::StandardProfile();
   updated_profile.set_guid(updateable_profile.guid());
   std::vector<AutofillProfile> expected_resulting_profiles = {updated_profile};
   EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
@@ -487,11 +381,11 @@ TEST(AutofillProfileImportProcess, SilentlyUpdateProfile) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users accepts the merge.
 TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
-  AutofillProfile updateable_profile = UpdateableStandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
   // This profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(
@@ -516,9 +410,9 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
   EXPECT_TRUE(import_data.ProfilesChanged());
 
   AutofillProfile updated_profile = observed_profile;
-  CopyGUID(updateable_profile, &updated_profile);
+  test::CopyGUID(updateable_profile, &updated_profile);
   AutofillProfile merged_profile = observed_profile;
-  CopyGUID(mergeable_profile, &merged_profile);
+  test::CopyGUID(mergeable_profile, &merged_profile);
   std::vector<AutofillProfile> expected_resulting_profiles = {updated_profile,
                                                               merged_profile};
   EXPECT_EQ(import_data.GetResultingProfiles(), expected_resulting_profiles);
@@ -528,11 +422,11 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Accepted) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users declines the merge.
 TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Rejected) {
-  AutofillProfile observed_profile = StandardProfile();
+  AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
-  AutofillProfile updateable_profile = UpdateableStandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
   // This profile should be mergeable with the observed profile.
-  AutofillProfile mergeable_profile = SubsetOfStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(
@@ -558,7 +452,7 @@ TEST(AutofillProfileImportProcess, BothMergeAndSilentUpdate_Rejected) {
   EXPECT_TRUE(import_data.ProfilesChanged());
 
   AutofillProfile updated_profile = observed_profile;
-  CopyGUID(updateable_profile, &updated_profile);
+  test::CopyGUID(updateable_profile, &updated_profile);
 
   std::vector<AutofillProfile> expected_resulting_profiles = {
       updated_profile, mergeable_profile};

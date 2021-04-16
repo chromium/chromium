@@ -716,6 +716,8 @@ source_set("unit_tests") {
     "personal_data_manager_unittest.cc",
     "randomized_encoder_unittest.cc",
     "rationalization_util_unittest.cc",
+    "test_utils/test_profiles.cc",
+    "test_utils/test_profiles.h",
     "ui/address_combobox_model_unittest.cc",
     "ui/country_combobox_model_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
