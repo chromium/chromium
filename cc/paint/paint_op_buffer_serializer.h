@@ -18,7 +18,9 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
  public:
   using SerializeCallback =
       base::RepeatingCallback<size_t(const PaintOp*,
-                                     const PaintOp::SerializeOptions&)>;
+                                     const PaintOp::SerializeOptions&,
+                                     const PaintFlags*,
+                                     const SkM44&)>;
 
   PaintOpBufferSerializer(SerializeCallback serialize_cb,
                           ImageProvider* image_provider,
@@ -137,7 +139,9 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
 
  private:
   size_t SerializeToMemory(const PaintOp* op,
-                           const PaintOp::SerializeOptions& options);
+                           const PaintOp::SerializeOptions& options,
+                           const PaintFlags* flags_to_serialize,
+                           const SkM44& original_ctm);
 
   void* memory_;
   const size_t total_;

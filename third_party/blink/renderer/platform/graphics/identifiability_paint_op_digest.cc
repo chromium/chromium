@@ -113,9 +113,9 @@ void IdentifiabilityPaintOpDigest::MaybeUpdateDigest(
 
     std::memset(SerializationBuffer().data(), 0, SerializationBuffer().size());
     size_t serialized_size;
-    while ((serialized_size = op->Serialize(SerializationBuffer().data(),
-                                            SerializationBuffer().size(),
-                                            serialize_options_)) == 0) {
+    while ((serialized_size = op->Serialize(
+                SerializationBuffer().data(), SerializationBuffer().size(),
+                serialize_options_, nullptr, SkM44())) == 0) {
       constexpr size_t kMaxBufferSize =
           gpu::raster::RasterInterface::kDefaultMaxOpSizeHint << 2;
       if (SerializationBuffer().size() >= kMaxBufferSize) {

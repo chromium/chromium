@@ -324,7 +324,10 @@ bool PaintOpBufferSerializer::SerializeOp(
   // correctly for analysis of records in filters.
   PlaybackOnAnalysisCanvas(op, options, params);
 
-  size_t bytes = serialize_cb_.Run(op, options);
+  // TODO(michaelludwig): flags_to_serialize and original_ctm will be removed
+  // from SerializeOptions in a later CL.
+  size_t bytes = serialize_cb_.Run(op, options, options.flags_to_serialize,
+                                   options.original_ctm);
   if (!bytes) {
     valid_ = false;
     return false;
@@ -411,12 +414,15 @@ SimpleBufferSerializer::~SimpleBufferSerializer() = default;
 
 size_t SimpleBufferSerializer::SerializeToMemory(
     const PaintOp* op,
-    const PaintOp::SerializeOptions& options) {
+    const PaintOp::SerializeOptions& options,
+    const PaintFlags* flags_to_serialize,
+    const SkM44& original_ctm) {
   if (written_ == total_)
     return 0u;
 
-  size_t bytes = op->Serialize(static_cast<char*>(memory_) + written_,
-                               total_ - written_, options);
+  size_t bytes =
+      op->Serialize(static_cast<char*>(memory_) + written_, total_ - written_,
+                    options, flags_to_serialize, original_ctm);
   if (!bytes)
     return 0u;
 

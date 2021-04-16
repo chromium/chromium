@@ -67,7 +67,9 @@ class CC_PAINT_EXPORT SharedImageProvider {
 // data they will need to write.  PaintOp::Serialize itself must update it.
 #define HAS_SERIALIZATION_FUNCTIONS()                                        \
   static size_t Serialize(const PaintOp* op, void* memory, size_t size,      \
-                          const SerializeOptions& options);                  \
+                          const SerializeOptions& options,                   \
+                          const PaintFlags* flags_to_serialize,              \
+                          const SkM44& original_ctm);                        \
   static PaintOp* Deserialize(const volatile void* input, size_t input_size, \
                               void* output, size_t output_size,              \
                               const DeserializeOptions& options)
@@ -223,9 +225,13 @@ class CC_PAINT_EXPORT PaintOp {
   // Subclasses should provide a static Serialize() method called from here.
   // If the op can be serialized to |memory| in no more than |size| bytes,
   // then return the number of bytes written.  If it won't fit, return 0.
+  // If |flags_to_serialize| is non-null, it overrides any flags within the op.
+  // |original_ctm| is the transform that SetMatrixOps must be made relative to.
   size_t Serialize(void* memory,
                    size_t size,
-                   const SerializeOptions& options) const;
+                   const SerializeOptions& options,
+                   const PaintFlags* flags_to_serialize,
+                   const SkM44& original_ctm) const;
 
   // Deserializes a PaintOp of this type from a given buffer |input| of
   // at most |input_size| bytes.  Returns null on any errors.
