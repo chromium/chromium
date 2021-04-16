@@ -503,8 +503,8 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
         std::make_unique<blink::EmptyNetworkManager>(network_manager_.get());
   }
   auto port_allocator = std::make_unique<P2PPortAllocator>(
-      p2p_socket_dispatcher_, std::move(network_manager), socket_factory_.get(),
-      port_config, requesting_origin);
+      std::move(network_manager), socket_factory_.get(), port_config,
+      requesting_origin);
   if (IsValidPortRange(min_port, max_port))
     port_allocator->SetPortRange(min_port, max_port);
 

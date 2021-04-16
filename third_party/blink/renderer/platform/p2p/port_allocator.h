@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class P2PSocketDispatcher;
-
 class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
  public:
   struct Config {
@@ -38,8 +36,7 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
     bool enable_default_local_candidate = true;
   };
 
-  P2PPortAllocator(const scoped_refptr<P2PSocketDispatcher>& socket_dispatcher,
-                   std::unique_ptr<rtc::NetworkManager> network_manager,
+  P2PPortAllocator(std::unique_ptr<rtc::NetworkManager> network_manager,
                    rtc::PacketSocketFactory* socket_factory,
                    const Config& config,
                    const GURL& origin);
@@ -50,7 +47,6 @@ class PLATFORM_EXPORT P2PPortAllocator : public cricket::BasicPortAllocator {
 
  private:
   std::unique_ptr<rtc::NetworkManager> network_manager_;
-  scoped_refptr<P2PSocketDispatcher> socket_dispatcher_;
   Config config_;
   GURL origin_;
 
