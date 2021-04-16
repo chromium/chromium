@@ -68,6 +68,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/scale_factor.h"
 
@@ -773,6 +774,14 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns a sad page bitmap used when the child frame has crashed.
   virtual SkBitmap* GetSadPageBitmap() { return nullptr; }
+
+  // V8 Converter -------------------------------------------------
+
+  // Returns WebV8ValueConverter that converts between v8::Value and
+  // base::Value.
+  virtual std::unique_ptr<WebV8ValueConverter> CreateWebV8ValueConverter() {
+    return nullptr;
+  }
 
  private:
   static void InitializeMainThreadCommon(Platform* platform,

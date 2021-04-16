@@ -173,6 +173,7 @@
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer_tree_as_text.h"
@@ -427,6 +428,64 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   WeakPersistent<LocalFrame> local_frame_;
   bool debug_url_set_ = false;
 };
+
+v8::Local<v8::Context> MainWorldScriptContext(LocalFrame* local_frame) {
+  ScriptState* script_state = ToScriptStateForMainWorld(local_frame);
+  DCHECK(script_state);
+  return script_state->GetContext();
+}
+
+base::Value GetJavaScriptExecutionResult(v8::Local<v8::Value> result,
+                                         LocalFrame* local_frame,
+                                         WebV8ValueConverter* converter) {
+  if (!result.IsEmpty()) {
+    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
+    v8::Context::Scope context_scope(context);
+    std::unique_ptr<base::Value> new_value =
+        converter->FromV8Value(result, context);
+    if (new_value)
+      return std::move(*new_value);
+  }
+  return base::Value();
+}
+
+v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
+                                      v8::Local<v8::Value> object,
+                                      const String& name) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::String> name_str = V8String(isolate, name);
+  v8::Local<v8::Object> object_obj;
+  if (!object->ToObject(context).ToLocal(&object_obj)) {
+    return v8::MaybeLocal<v8::Value>();
+  }
+  return object_obj->Get(context, name_str);
+}
+
+v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
+                                            const String& object_name,
+                                            const String& method_name,
+                                            base::Value arguments,
+                                            WebV8ValueConverter* converter) {
+  v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
+
+  v8::Context::Scope context_scope(context);
+  WTF::Vector<v8::Local<v8::Value>> args;
+  for (auto const& argument : arguments.GetList()) {
+    args.push_back(converter->ToV8Value(&argument, context));
+  }
+
+  v8::Local<v8::Value> object;
+  v8::Local<v8::Value> method;
+  if (!GetProperty(context, context->Global(), object_name).ToLocal(&object) ||
+      !GetProperty(context, object, method_name).ToLocal(&method)) {
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  return local_frame->DomWindow()
+      ->GetScriptController()
+      .EvaluateMethodInMainWorld(v8::Local<v8::Function>::Cast(method), object,
+                                 static_cast<int>(args.size()), args.data());
+}
 
 }  // namespace
 
@@ -3522,6 +3581,37 @@ void LocalFrame::PostMessageEvent(
       std::make_unique<SourceLocation>(String(), 0, 0, nullptr),
       message.locked_agent_cluster_id ? message.locked_agent_cluster_id.value()
                                       : base::UnguessableToken());
+}
+
+void LocalFrame::JavaScriptMethodExecuteRequest(
+    const String& object_name,
+    const String& method_name,
+    base::Value arguments,
+    bool wants_result,
+    JavaScriptMethodExecuteRequestCallback callback) {
+  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",
+                       TRACE_EVENT_SCOPE_THREAD);
+
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
+  converter->SetDateAllowed(true);
+  converter->SetRegExpAllowed(true);
+
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::Local<v8::Value> result;
+  if (!CallMethodOnFrame(this, object_name, method_name, std::move(arguments),
+                         converter.get())
+           .ToLocal(&result)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  if (wants_result) {
+    std::move(callback).Run(
+        GetJavaScriptExecutionResult(result, this, converter.get()));
+  } else {
+    std::move(callback).Run({});
+  }
 }
 
 void LocalFrame::BindReportingObserver(

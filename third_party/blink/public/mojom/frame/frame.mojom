@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
@@ -693,6 +694,24 @@ interface LocalFrame {
                    mojo_base.mojom.String16 source_origin,
                    mojo_base.mojom.String16 target_origin,
                    blink.mojom.TransferableMessage message);
+
+  // Request for the renderer to execute a given JavaScript method on a given
+  // object (both identified by name) in the frame's context.
+  //
+  // |object_name| is the global name of the object.
+  //
+  // |method_name| is the name of the method on the object.
+  //
+  // |arguments| is the list of arguments to pass to the method invocation.
+  //
+  // |wants_result| is true if the result of this execution is required by the
+  // caller. If it is false, a reply is still required by Mojo, but a null value
+  // should be returned to avoid issues serializing a large, unwanted reply.
+  JavaScriptMethodExecuteRequest(
+      mojo_base.mojom.String16 object_name,
+      mojo_base.mojom.String16 method_name,
+      mojo_base.mojom.ListValue arguments,
+      bool wants_result) => (mojo_base.mojom.Value result);
 
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using

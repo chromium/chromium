@@ -266,6 +266,7 @@ source_set("blink_headers") {
     "platform/web_url_request_extra_data.h",
     "platform/web_url_request_util.h",
     "platform/web_url_response.h",
+    "platform/web_v8_value_converter.h",
     "platform/web_vector.h",
     "platform/web_video_frame_submitter.h",
     "platform/web_worker_fetch_context.h",

@@ -677,6 +677,12 @@ class CORE_EXPORT LocalFrame final
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) final;
+  void JavaScriptMethodExecuteRequest(
+      const String& object_name,
+      const String& method_name,
+      base::Value arguments,
+      bool wants_result,
+      JavaScriptMethodExecuteRequestCallback callback) final;
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(

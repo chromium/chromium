@@ -1360,6 +1360,13 @@ _CONFIG = [
         'allowed': ['base::ThreadPriority'],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/frame/local_frame.cc',
+            'third_party/blink/renderer/core/frame/local_frame.h'
+        ],
+        'allowed': ['base::Value'],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/local_dom_window.cc'],
         'allowed': [
             'net::registry_controlled_domains::.+',

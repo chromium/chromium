@@ -1040,46 +1040,6 @@ void FillNavigationParamsOriginPolicy(
   }
 }
 
-v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
-                                      v8::Local<v8::Value> object,
-                                      const std::u16string& name) {
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::Local<v8::String> name_str =
-      gin::ConvertToV8(isolate, name).As<v8::String>();
-  v8::Local<v8::Object> object_obj;
-  if (!object->ToObject(context).ToLocal(&object_obj)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-  return object_obj->Get(context, name_str);
-}
-
-v8::MaybeLocal<v8::Value> CallMethodOnFrame(blink::WebNavigationControl* frame,
-                                            const std::u16string& object_name,
-                                            const std::u16string& method_name,
-                                            base::Value arguments) {
-  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-
-  v8::Context::Scope context_scope(context);
-  std::vector<v8::Local<v8::Value>> args;
-  V8ValueConverterImpl converter;
-  converter.SetDateAllowed(true);
-  converter.SetRegExpAllowed(true);
-  for (auto const& argument : arguments.GetList()) {
-    args.push_back(converter.ToV8Value(&argument, context));
-  }
-
-  v8::Local<v8::Value> object;
-  v8::Local<v8::Value> method;
-  if (!GetProperty(context, context->Global(), object_name).ToLocal(&object) ||
-      !GetProperty(context, object, method_name).ToLocal(&method)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-
-  return frame->ExecuteMethodAndReturnValue(
-      v8::Local<v8::Function>::Cast(method), object,
-      static_cast<int>(args.size()), args.data());
-}
-
 std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
     blink::mojom::PolicyContainerPtr in) {
   if (!in)
@@ -2227,35 +2187,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   // This will result in a call to RenderFrameImpl::FrameDetached, which
   // deletes the object. Do not access |this| after detach.
   frame_->Detach();
-}
-
-void RenderFrameImpl::JavaScriptMethodExecuteRequest(
-    const std::u16string& object_name,
-    const std::u16string& method_name,
-    base::Value arguments,
-    bool wants_result,
-    JavaScriptMethodExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  // Note that CallMethodOnFrame may end up killing this object.
-  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  v8::Local<v8::Value> result;
-  if (!CallMethodOnFrame(frame_, object_name, method_name, std::move(arguments))
-           .ToLocal(&result)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  if (!weak_this)
-    return;
-
-  if (wants_result)
-    std::move(callback).Run(GetJavaScriptExecutionResult(result));
-  else
-    std::move(callback).Run({});
 }
 
 void RenderFrameImpl::JavaScriptExecuteRequest(

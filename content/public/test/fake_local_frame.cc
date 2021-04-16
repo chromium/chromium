@@ -102,6 +102,13 @@ void FakeLocalFrame::PostMessageEvent(
     const std::u16string& target_origin,
     blink::TransferableMessage message) {}
 
+void FakeLocalFrame::JavaScriptMethodExecuteRequest(
+    const std::u16string& object_name,
+    const std::u16string& method_name,
+    base::Value arguments,
+    bool wants_result,
+    JavaScriptMethodExecuteRequestCallback callback) {}
+
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 
