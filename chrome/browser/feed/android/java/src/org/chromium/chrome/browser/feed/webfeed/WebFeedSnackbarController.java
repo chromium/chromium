@@ -36,19 +36,20 @@ class WebFeedSnackbarController {
     /**
      * Show appropriate post-follow snackbar depending on success/failure.
      */
-    void showSnackbarForFollow(WebFeedBridge.FollowResults results, GURL url, String title) {
+    void showSnackbarForFollow(
+            WebFeedBridge.FollowResults results, byte[] followId, GURL url, String fallbackTitle) {
         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             if (results.metadata != null) {
                 showFollowSuccessSnackbar(results.metadata.title);
             } else {
-                showFollowSuccessSnackbar(title);
+                showFollowSuccessSnackbar(fallbackTitle);
             }
         } else {
             // TODO(crbug/1152592): Add snackbars for specific failures.
             // Show follow failure snackbar.
             showSnackbar(
                     mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
-                    getFollowActionSnackbarController(url, title),
+                    getFollowActionSnackbarController(followId, url, fallbackTitle),
                     Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE,
                     R.string.web_feed_generic_failure_snackbar_action);
         }
@@ -60,9 +61,9 @@ class WebFeedSnackbarController {
     void showSnackbarForUnfollow(
             boolean successfulUnfollow, byte[] followId, GURL url, String title) {
         if (successfulUnfollow) {
-            showUnfollowSuccessSnackbar(url, title);
+            showUnfollowSuccessSnackbar(followId, url, title);
         } else {
-            showUnfollowFailureSnackbar(url, followId, title);
+            showUnfollowFailureSnackbar(followId, url, title);
         }
     }
 
@@ -78,22 +79,22 @@ class WebFeedSnackbarController {
                 R.string.web_feed_follow_success_snackbar_action);
     }
 
-    private void showUnfollowSuccessSnackbar(GURL url, String title) {
+    private void showUnfollowSuccessSnackbar(byte[] followId, GURL url, String title) {
         showSnackbar(mContext.getString(R.string.web_feed_unfollow_success_snackbar_message, title),
-                getFollowActionSnackbarController(url, title),
+                getFollowActionSnackbarController(followId, url, title),
                 Snackbar.UMA_WEB_FEED_UNFOLLOW_SUCCESS,
                 R.string.web_feed_unfollow_success_snackbar_action);
     }
 
-    private void showUnfollowFailureSnackbar(GURL url, byte[] followId, String title) {
+    private void showUnfollowFailureSnackbar(byte[] followId, GURL url, String title) {
         SnackbarController snackbarController = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
                 mWebFeedBridge.unfollow(followId, result -> {
                     if (result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
-                        showUnfollowSuccessSnackbar(url, title);
+                        showUnfollowSuccessSnackbar(followId, url, title);
                     } else {
-                        showUnfollowFailureSnackbar(url, followId, title);
+                        showUnfollowFailureSnackbar(followId, url, title);
                     }
                 });
             }
@@ -114,14 +115,23 @@ class WebFeedSnackbarController {
     }
 
     /**
-     * Returns {@link SnackbarController} for when the snackbar action is to follow.
+     * Returns {@link SnackbarController} for when the snackbar action is to follow. Prefers {@link
+     * WebFeedBridge#followFromId} if an ID is available.
      */
-    private SnackbarController getFollowActionSnackbarController(GURL url, String title) {
+    private SnackbarController getFollowActionSnackbarController(
+            byte[] followId, GURL url, String title) {
         return new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
-                mWebFeedBridge.followFromUrl(
-                        url, result -> { showSnackbarForFollow(result, url, title); });
+                if (followId == null || followId.length == 0) {
+                    mWebFeedBridge.followFromUrl(url, result -> {
+                        byte[] followId = result.metadata != null ? result.metadata.id : null;
+                        showSnackbarForFollow(result, followId, url, title);
+                    });
+                } else {
+                    mWebFeedBridge.followFromId(followId,
+                            result -> showSnackbarForFollow(result, followId, url, title));
+                }
             }
         };
     }

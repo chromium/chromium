@@ -73,7 +73,7 @@ public final class WebFeedSnackbarControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mWebFeedSnackbarController.showSnackbarForFollow(
-                                followResults, sTestUrl, sTitle));
+                                followResults, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
@@ -94,7 +94,7 @@ public final class WebFeedSnackbarControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mWebFeedSnackbarController.showSnackbarForFollow(
-                                followResults, sTestUrl, sTitle));
+                                followResults, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
@@ -107,14 +107,14 @@ public final class WebFeedSnackbarControllerTest {
 
     @Test
     @SmallTest
-    public void showSnackbarForFollow_unsuccessful() {
+    public void showSnackbarForFollow_noId_unsuccessful() {
         WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(/*success=*/
                 false);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mWebFeedSnackbarController.showSnackbarForFollow(
-                                followResults, sTestUrl, sTitle));
+                                followResults, "".getBytes(), sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
@@ -126,8 +126,37 @@ public final class WebFeedSnackbarControllerTest {
 
         // Click follow try again button.
         snackbar.getController().onAction(null);
-        verify(mWebFeedBridge, description("Follow should be called on follow try again."))
+        verify(mWebFeedBridge,
+                description("FollowFromUrl should be called on follow try again when ID is not "
+                        + "available."))
                 .followFromUrl(eq(sTestUrl), any());
+    }
+
+    @Test
+    @SmallTest
+    public void showSnackbarForFollow_withId_unsuccessful() {
+        WebFeedBridge.FollowResults followResults = new WebFeedBridge.FollowResults(/*success=*/
+                false);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mWebFeedSnackbarController.showSnackbarForFollow(
+                                followResults, sFollowId, sTestUrl, sTitle));
+
+        Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
+        assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
+        assertEquals("Snackbar should be for unsuccessful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_FAILURE, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for unsuccessful follow.",
+                mContext.getString(R.string.web_feed_follow_generic_failure_snackbar_message),
+                snackbar.getTextForTesting());
+
+        // Click follow try again button.
+        snackbar.getController().onAction(null);
+        verify(mWebFeedBridge,
+                description(
+                        "FollowFromId should be called on follow try again when ID is available."))
+                .followFromId(eq(sFollowId), any());
     }
 
     @Test
@@ -147,7 +176,7 @@ public final class WebFeedSnackbarControllerTest {
         // Click refollow button.
         snackbar.getController().onAction(null);
         verify(mWebFeedBridge, description("Follow should be called on refollow."))
-                .followFromUrl(eq(sTestUrl), any());
+                .followFromId(eq(sFollowId), any());
     }
 
     @Test

@@ -111,7 +111,9 @@ public class WebFeedFollowIntroController {
                         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
                             mWebFeedFollowIntroView.showFollowingBubble();
                         }
-                        mWebFeedSnackbarController.showSnackbarForFollow(results, url, title);
+                        byte[] followId = results.metadata != null ? results.metadata.id : null;
+                        mWebFeedSnackbarController.showSnackbarForFollow(
+                                results, followId, url, title);
                     }
                 }));
     }

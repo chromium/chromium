@@ -148,10 +148,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = findViewById(R.id.follow_chip_view);
         showEnabledChipView(
                 mChipView, mContext.getText(R.string.menu_follow), R.drawable.ic_add, (view) -> {
-                    mWebFeedBridge.followFromUrl(mUrl,
-                            (result)
-                                    -> mWebFeedSnackbarController.showSnackbarForFollow(
-                                            result, mUrl, mTitle));
+                    mWebFeedBridge.followFromUrl(mUrl, result -> {
+                        byte[] followId = result.metadata != null ? result.metadata.id : null;
+                        mWebFeedSnackbarController.showSnackbarForFollow(
+                                result, followId, mUrl, mTitle);
+                    });
                     mAppMenuHandler.hideAppMenu();
                 });
     }
