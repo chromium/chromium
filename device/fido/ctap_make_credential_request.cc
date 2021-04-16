@@ -154,6 +154,11 @@ base::Optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return base::nullopt;
         }
         request.large_blob_key = true;
+      } else if (extension_name == kExtensionCredBlob) {
+        if (!extension.second.is_bytestring()) {
+          return base::nullopt;
+        }
+        request.cred_blob = extension.second.GetBytestring();
       }
     }
   }
@@ -282,6 +287,10 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   if (request.cred_protect) {
     extensions.emplace(kExtensionCredProtect,
                        static_cast<int64_t>(*request.cred_protect));
+  }
+
+  if (request.cred_blob) {
+    extensions.emplace(kExtensionCredBlob, *request.cred_blob);
   }
 
   if (!extensions.empty()) {

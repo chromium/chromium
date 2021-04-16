@@ -131,6 +131,8 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
       const std::string& extension_string = extension.GetString();
       if (extension_string == "largeBlob") {
         mapped_params.SetPath("options.hasLargeBlob", base::Value(true));
+      } else if (extension_string == "credBlob") {
+        mapped_params.SetPath("options.hasCredBlob", base::Value(true));
       } else {
         return Status(kUnsupportedOperation,
                       extension_string + kUnrecognizedExtension);

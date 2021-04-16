@@ -124,6 +124,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   bool large_blob_key = false;
   bool large_blob_read = false;
   base::Optional<std::vector<uint8_t>> large_blob_write;
+  bool get_cred_blob = false;
 
   // Instructs the request handler only to dispatch this request via U2F.
   bool is_u2f_only = false;

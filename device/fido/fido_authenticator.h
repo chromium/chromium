@@ -247,6 +247,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool SupportsCredProtectExtension() const;
   virtual bool SupportsHMACSecretExtension() const;
   virtual bool SupportsEnterpriseAttestation() const;
+  virtual bool SupportsCredBlobOfSize(size_t num_bytes) const;
   virtual const base::Optional<AuthenticatorSupportedOptions>& Options()
       const = 0;
   virtual base::Optional<FidoTransportProtocol> AuthenticatorTransport()

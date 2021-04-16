@@ -195,6 +195,7 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
   caps->SetBoolPath("webauthn:virtualAuthenticators",
                     !capabilities.IsAndroid());
   caps->SetBoolPath("webauthn:extension:largeBlob", !capabilities.IsAndroid());
+  caps->SetBoolPath("webauthn:extension:credBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
   const std::string chromedriverVersionKey = base::StringPrintf(

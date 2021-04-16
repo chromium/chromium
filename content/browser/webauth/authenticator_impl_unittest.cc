@@ -3804,6 +3804,45 @@ TEST_F(AuthenticatorImplTest, InvalidU2FSignature) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+TEST_F(AuthenticatorImplTest, CredBlob) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.cred_blob_support = true;
+  // credProtect is required for credBlob per CTAP 2.1.
+  config.cred_protect_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  const std::vector<uint8_t> cred_blob = {1, 2, 3, 4};
+
+  std::vector<uint8_t> credential_id;
+  // Create a credential with a credBlob set.
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->cred_blob = cred_blob;
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    credential_id = std::move(result.response->info->raw_id);
+    EXPECT_TRUE(result.response->echo_cred_blob);
+    EXPECT_TRUE(result.response->cred_blob);
+  }
+
+  // Expect to be able to fetch the credBlob with an assertion.
+  {
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->allow_credentials[0] = device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, std::move(credential_id));
+    options->get_cred_blob = true;
+
+    auto result = AuthenticatorGetAssertion(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_TRUE(result.response->echo_get_cred_blob);
+    EXPECT_EQ(result.response->get_cred_blob, cred_blob);
+  }
+}
+
 static constexpr char kTestPIN[] = "1234";
 
 class UVTestAuthenticatorClientDelegate

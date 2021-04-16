@@ -58,6 +58,10 @@ namespace {
 constexpr std::array<uint8_t, kAaguidLength> kDeviceAaguid = {
     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04,
      0x05, 0x06, 0x07, 0x08}};
+constexpr size_t kMaxCredBlob = 32;
+static_assert(
+    kMaxCredBlob >= 32,
+    "CTAP 2.1 requires at least 32 bytes of credBlob storage if supported");
 
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
@@ -581,6 +585,11 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     extensions.emplace_back(device::kExtensionHmacSecret);
   }
 
+  if (config.cred_blob_support) {
+    extensions.emplace_back(device::kExtensionCredBlob);
+    device_info_->max_cred_blob_length = kMaxCredBlob;
+  }
+
   if (config.large_blob_support) {
     extensions.emplace_back(device::kExtensionLargeBlobKey);
   }
@@ -1102,6 +1111,23 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
   }
 
+  if (request.cred_blob) {
+    if (!config_.cred_blob_support) {
+      DLOG(ERROR) << "Rejecting makeCredential due to unexpected credBlob "
+                     "extension";
+      return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
+    }
+    if (request.cred_blob->size() > kMaxCredBlob) {
+      DLOG(ERROR) << "Rejecting makeCredential because credBlob is too large: "
+                  << request.cred_blob->size();
+      // This is stricter than the spec requires because Chromium should not
+      // send credBlob requests that will be rejected. But the spec says that
+      // an authenticator should report credBlob=false in this case.
+      return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
+    }
+    extensions_map.emplace(kExtensionCredBlob, true);
+  }
+
   if (config_.add_extra_extension) {
     extensions_map.emplace(cbor::Value("unsolicited"), cbor::Value(42));
   }
@@ -1201,6 +1227,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
 
   registration.large_blob_key = std::move(large_blob_key);
+  registration.cred_blob = std::move(request.cred_blob);
 
   StoreNewKey(key_handle, std::move(registration));
   return CtapDeviceResponseCode::kSuccess;
@@ -1441,6 +1468,12 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
       extensions_map.emplace(kExtensionHmacSecret,
                              std::move(encrypted_outputs));
+    }
+
+    if (request.get_cred_blob) {
+      extensions_map.emplace(
+          kExtensionCredBlob,
+          registration.second->cred_blob.value_or(std::vector<uint8_t>()));
     }
 
     base::Optional<cbor::Value> extensions;

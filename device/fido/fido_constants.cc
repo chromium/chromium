@@ -73,6 +73,7 @@ const char kCtap2_1Version[] = "FIDO_2_1";
 const char kExtensionHmacSecret[] = "hmac-secret";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
+const char kExtensionCredBlob[] = "credBlob";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval =
     base::TimeDelta::FromSeconds(2);

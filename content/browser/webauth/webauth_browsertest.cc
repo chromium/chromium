@@ -533,7 +533,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
         /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
         /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
-        /*is_payment_credential_creation=*/false);
+        /*is_payment_credential_creation=*/false, /*cred_blob=*/base::nullopt);
 
     return mojo_options;
   }
@@ -557,7 +557,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         device::UserVerificationRequirement::kPreferred, base::nullopt,
         std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
-        /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt);
+        /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt,
+        /*get_cred_blob=*/false);
     return mojo_options;
   }
 

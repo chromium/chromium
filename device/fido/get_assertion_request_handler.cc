@@ -118,6 +118,10 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
       // This extension is checked by |GetAssertionTask| because it needs to be
       // decrypted there.
       continue;
+    } else if (ext_name == kExtensionCredBlob) {
+      if (!request.get_cred_blob || !it.second.is_bytestring()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
@@ -255,6 +259,9 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
       authenticator.Options()->always_uv) {
     specialized_request.user_verification =
         UserVerificationRequirement::kRequired;
+  }
+  if (request.get_cred_blob && !authenticator.SupportsCredBlobOfSize(0)) {
+    specialized_request.get_cred_blob = false;
   }
   return specialized_request;
 }

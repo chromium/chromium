@@ -53,7 +53,8 @@ VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateU2FAuthenticator(
       device::ProtocolVersion::kU2f, /*ignored*/ device::Ctap2Version::kCtap2_0,
       transport, device::AuthenticatorAttachment::kCrossPlatform,
       /*has_resident_key=*/false,
-      /*has_user_verification=*/false, /*has_large_blob=*/false));
+      /*has_user_verification=*/false, /*has_large_blob=*/false,
+      /*has_cred_blob=*/false));
 }
 
 VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateCTAP2Authenticator(
@@ -62,10 +63,11 @@ VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateCTAP2Authenticator(
     device::AuthenticatorAttachment attachment,
     bool has_resident_key,
     bool has_user_verification,
-    bool has_large_blob) {
+    bool has_large_blob,
+    bool has_cred_blob) {
   return AddAuthenticator(std::make_unique<VirtualAuthenticator>(
       device::ProtocolVersion::kCtap2, ctap2_version, transport, attachment,
-      has_resident_key, has_user_verification, has_large_blob));
+      has_resident_key, has_user_verification, has_large_blob, has_cred_blob));
 }
 
 VirtualAuthenticator* VirtualAuthenticatorManagerImpl::GetAuthenticator(
@@ -125,7 +127,7 @@ void VirtualAuthenticatorManagerImpl::CreateAuthenticator(
       authenticator = CreateCTAP2Authenticator(
           options->ctap2_version, options->transport, options->attachment,
           options->has_resident_key, options->has_user_verification,
-          options->has_large_blob);
+          options->has_large_blob, options->has_cred_blob);
       break;
     case device::ProtocolVersion::kUnknown:
       break;

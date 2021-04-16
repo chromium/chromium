@@ -191,4 +191,8 @@ bool FidoAuthenticator::SupportsEnterpriseAttestation() const {
   return false;
 }
 
+bool FidoAuthenticator::SupportsCredBlobOfSize(size_t num_bytes) const {
+  return false;
+}
+
 }  // namespace device

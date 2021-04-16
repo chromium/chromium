@@ -55,6 +55,12 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   base::Optional<uint32_t> remaining_discoverable_credentials;
   base::Optional<bool> force_pin_change;
   base::Optional<uint32_t> min_pin_length;
+
+  // max_cred_blob_length is the maximum size credBlob that the authenticator
+  // supports per credential, or nullopt if credBlob is not supported. If
+  // present, this value will be >= 32.
+  base::Optional<uint32_t> max_cred_blob_length;
+
   AuthenticatorSupportedOptions options;
 
  private:

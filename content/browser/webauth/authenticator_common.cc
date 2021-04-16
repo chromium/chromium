@@ -79,6 +79,8 @@ enum class RequestExtension {
   kLargeBlobEnable,
   kLargeBlobRead,
   kLargeBlobWrite,
+  kCredBlob,
+  kGetCredBlob,
 };
 
 namespace client_data {
@@ -349,16 +351,25 @@ CreateMakeCredentialResponse(
   response->transports = std::move(transports);
 
   bool did_create_hmac_secret = false;
+  bool did_store_cred_blob = false;
   const base::Optional<cbor::Value>& maybe_extensions =
       response_data.attestation_object().authenticator_data().extensions();
   if (maybe_extensions) {
     DCHECK(maybe_extensions->is_map());
     const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
+
     const auto hmac_secret_it =
         extensions.find(cbor::Value(device::kExtensionHmacSecret));
     if (hmac_secret_it != extensions.end() &&
         hmac_secret_it->second.is_bool() && hmac_secret_it->second.GetBool()) {
       did_create_hmac_secret = true;
+    }
+
+    const auto cred_blob_it =
+        extensions.find(cbor::Value(device::kExtensionCredBlob));
+    if (cred_blob_it != extensions.end() && cred_blob_it->second.is_bool() &&
+        cred_blob_it->second.GetBool()) {
+      did_store_cred_blob = true;
     }
   }
 
@@ -384,9 +395,14 @@ CreateMakeCredentialResponse(
         response->supports_large_blob =
             response_data.large_blob_key().has_value();
         break;
+      case RequestExtension::kCredBlob:
+        response->echo_cred_blob = true;
+        response->cred_blob = did_store_cred_blob;
+        break;
       case RequestExtension::kAppID:
       case RequestExtension::kLargeBlobRead:
       case RequestExtension::kLargeBlobWrite:
+      case RequestExtension::kGetCredBlob:
         NOTREACHED();
         break;
     }
@@ -478,9 +494,23 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
         response->echo_large_blob_written = true;
         response->large_blob_written = response_data.large_blob_written;
         break;
+      case RequestExtension::kGetCredBlob: {
+        response->echo_get_cred_blob = true;
+        const base::Optional<cbor::Value>& extensions =
+            response_data.authenticator_data.extensions();
+        if (extensions) {
+          const cbor::Value::MapValue& map = extensions->GetMap();
+          const auto& it = map.find(cbor::Value(device::kExtensionCredBlob));
+          if (it != map.end() && it->second.is_bytestring()) {
+            response->get_cred_blob = it->second.GetBytestring();
+          }
+        }
+        break;
+      }
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
       case RequestExtension::kLargeBlobEnable:
+      case RequestExtension::kCredBlob:
         NOTREACHED();
         break;
     }
@@ -1099,6 +1129,10 @@ void AuthenticatorCommon::MakeCredential(
   if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
     requested_extensions_.insert(RequestExtension::kLargeBlobEnable);
   }
+  if (options->cred_blob) {
+    requested_extensions_.insert(RequestExtension::kCredBlob);
+    ctap_make_credential_request_->cred_blob = *options->cred_blob;
+  }
   make_credential_options_->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
   ctap_make_credential_request_->is_off_the_record_context =
@@ -1322,6 +1356,11 @@ void AuthenticatorCommon::GetAssertion(
         base::BindOnce(&AuthenticatorCommon::OnLargeBlobCompressed,
                        weak_factory_.GetWeakPtr()));
     return;
+  }
+
+  if (options->get_cred_blob) {
+    requested_extensions_.insert(RequestExtension::kGetCredBlob);
+    ctap_get_assertion_request_->get_cred_blob = true;
   }
 
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);

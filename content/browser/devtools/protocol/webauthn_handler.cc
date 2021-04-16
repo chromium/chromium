@@ -51,8 +51,8 @@ static constexpr char kInvalidUserHandle[] =
     "The User Handle must have a maximum size of ";
 static constexpr char kLargeBlobRequiresResidentKey[] =
     "Large blob requires resident key support";
-static constexpr char kLargeBlobRequiresCtap2_1[] =
-    "Large blob requires a CTAP 2.1 authenticator";
+static constexpr char kRequiresCtap2_1[] =
+    "Specified options require a CTAP 2.1 authenticator";
 static constexpr char kResidentCredentialNotSupported[] =
     "The Authenticator does not support Resident Credentials.";
 static constexpr char kRpIdRequired[] =
@@ -201,12 +201,16 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
     return Response::InvalidParams(kInvalidCtapVersion);
 
   bool has_large_blob = options->GetHasLargeBlob(/*default=*/false);
+  bool has_cred_blob = options->GetHasCredBlob(/*default=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*default=*/false);
+
   if (has_large_blob && !has_resident_key)
     return Response::InvalidParams(kLargeBlobRequiresResidentKey);
-  if (has_large_blob && (protocol != device::ProtocolVersion::kCtap2 ||
-                         ctap2_version < device::Ctap2Version::kCtap2_1)) {
-    return Response::InvalidParams(kLargeBlobRequiresCtap2_1);
+
+  if ((protocol != device::ProtocolVersion::kCtap2 ||
+       ctap2_version < device::Ctap2Version::kCtap2_1) &&
+      (has_large_blob || has_cred_blob)) {
+    return Response::InvalidParams(kRequiresCtap2_1);
   }
 
   VirtualAuthenticator* authenticator = nullptr;
@@ -221,7 +225,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
               ? device::AuthenticatorAttachment::kPlatform
               : device::AuthenticatorAttachment::kCrossPlatform,
           has_resident_key, options->GetHasUserVerification(/*default=*/false),
-          has_large_blob);
+          has_large_blob, has_cred_blob);
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

@@ -449,6 +449,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCtap2_1Version[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionHmacSecret[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredProtect[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredBlob[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before

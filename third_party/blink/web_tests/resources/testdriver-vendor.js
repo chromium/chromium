@@ -358,6 +358,7 @@
     mojoOptions.hasResidentKey = options.hasResidentKey;
     mojoOptions.hasUserVerification = options.hasUserVerification;
     mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
+    mojoOptions.hasCredBlob = options.extensions.indexOf("credBlob") !== -1;
     mojoOptions.isUserPresent = options.isUserConsenting;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;

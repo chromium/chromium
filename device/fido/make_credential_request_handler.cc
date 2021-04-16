@@ -298,6 +298,10 @@ bool ValidateResponseExtensions(
       if (!request.hmac_secret || !it.second.is_bool()) {
         return false;
       }
+    } else if (ext_name == kExtensionCredBlob) {
+      if (!request.cred_blob || !it.second.is_bool()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
@@ -931,8 +935,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->hmac_secret = false;
   }
 
-  if (request->large_blob_key &&
-      !authenticator->Options()->supports_large_blobs) {
+  if (request->large_blob_key && !auth_options->supports_large_blobs) {
     request->large_blob_key = false;
   }
 
@@ -955,6 +958,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       default:
         break;
     }
+  }
+
+  if (request->cred_blob &&
+      !authenticator->SupportsCredBlobOfSize(request->cred_blob->size())) {
+    request->cred_blob.reset();
   }
 }
 

@@ -25,13 +25,15 @@ VirtualAuthenticator::VirtualAuthenticator(
     device::AuthenticatorAttachment attachment,
     bool has_resident_key,
     bool has_user_verification,
-    bool has_large_blob)
+    bool has_large_blob,
+    bool has_cred_blob)
     : protocol_(protocol),
       ctap2_version_(ctap2_version),
       attachment_(attachment),
       has_resident_key_(has_resident_key),
       has_user_verification_(has_user_verification),
       has_large_blob_(has_large_blob),
+      has_cred_blob_(has_cred_blob),
       unique_id_(base::GenerateGUID()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
   state_->transport = transport;
@@ -123,6 +125,7 @@ std::unique_ptr<device::FidoDevice> VirtualAuthenticator::ConstructDevice() {
       }
       config.resident_key_support = has_resident_key_;
       config.large_blob_support = has_large_blob_;
+      config.cred_protect_support = config.cred_blob_support = has_cred_blob_;
       if (has_large_blob_ && has_user_verification_) {
         // Writing a large blob requires obtaining a PinUvAuthToken with
         // permissions if the authenticator is protected by user verification.

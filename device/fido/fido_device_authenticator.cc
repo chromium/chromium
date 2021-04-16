@@ -1012,6 +1012,13 @@ bool FidoDeviceAuthenticator::SupportsEnterpriseAttestation() const {
   return options_ && options_->enterprise_attestation;
 }
 
+bool FidoDeviceAuthenticator::SupportsCredBlobOfSize(size_t num_bytes) const {
+  const base::Optional<AuthenticatorGetInfoResponse>& get_info_response =
+      device_->device_info();
+  return get_info_response && get_info_response->max_cred_blob_length &&
+         num_bytes <= get_info_response->max_cred_blob_length.value();
+}
+
 const base::Optional<AuthenticatorSupportedOptions>&
 FidoDeviceAuthenticator::Options() const {
   return options_;

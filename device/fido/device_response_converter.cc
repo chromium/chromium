@@ -264,6 +264,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       std::move(protocol_versions), ctap2_versions,
       base::make_span<kAaguidLength>(it->second.GetBytestring()));
 
+  bool cred_blob_extension_seen = false;
   AuthenticatorSupportedOptions options;
   it = response_map.find(CBOR(0x02));
   if (it != response_map.end()) {
@@ -278,10 +279,17 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       const std::string& extension_str = extension.GetString();
       if (extension_str == kExtensionCredProtect) {
         options.supports_cred_protect = true;
+      } else if (extension_str == kExtensionCredBlob) {
+        cred_blob_extension_seen = true;
       }
       extensions.push_back(extension_str);
     }
     response.extensions = std::move(extensions);
+  }
+
+  // credBlob requires credProtect support.
+  if (cred_blob_extension_seen && !options.supports_cred_protect) {
+    return base::nullopt;
   }
 
   it = response_map.find(CBOR(0x04));
@@ -564,6 +572,24 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     }
     response.min_pin_length =
         base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+  }
+
+  it = response_map.find(CBOR(0x0f));
+  // The maxCredBlobLength field is present iff credBlob is supported.
+  if ((it != response_map.end()) != cred_blob_extension_seen) {
+    return base::nullopt;
+  }
+  if (cred_blob_extension_seen) {
+    if (!it->second.is_unsigned()) {
+      return base::nullopt;
+    }
+    const uint32_t max_cred_blob_length =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
+    // CTAP 2.1 requires at least 32 bytes of credBlob to be supported.
+    if (max_cred_blob_length < 32) {
+      return base::nullopt;
+    }
+    response.max_cred_blob_length = max_cred_blob_length;
   }
 
   it = response_map.find(CBOR(0x14));

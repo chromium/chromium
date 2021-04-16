@@ -170,6 +170,11 @@ base::Optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           return base::nullopt;
         }
         request.large_blob_key = true;
+      } else if (extension_id == kExtensionCredBlob) {
+        if (!extension.second.is_bool() || !extension.second.GetBool()) {
+          return base::nullopt;
+        }
+        request.get_cred_blob = true;
       }
     }
   }
@@ -275,6 +280,10 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
     hmac_extension.emplace(2, hmac_secret.encrypted_salts);
     hmac_extension.emplace(3, hmac_secret.salts_auth);
     extensions.emplace(kExtensionHmacSecret, std::move(hmac_extension));
+  }
+
+  if (request.get_cred_blob) {
+    extensions.emplace(kExtensionCredBlob, true);
   }
 
   if (!extensions.empty()) {

@@ -78,6 +78,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // may change depending on the number of resident credentials. We treat this
     // as a fixed size area for the large blob.
     size_t available_large_blob_storage = 1024;
+    bool cred_blob_support = false;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;

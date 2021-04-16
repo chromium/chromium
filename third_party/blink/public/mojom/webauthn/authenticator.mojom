@@ -102,6 +102,12 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_prf;
   bool prf;
 
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `credBlob` extension output.
+  // If so, |cred_blob| contains the value of the output.
+  bool echo_cred_blob;
+  bool cred_blob;
+
   // The DER-encoded, ASN.1 public key of the newly created credential. May be
   // missing if the browser does not understand the public-key type.
   array<uint8>? public_key_der;
@@ -184,6 +190,13 @@ struct GetAssertionAuthenticatorResponse {
   // with a `written` parameter. The value is indicated by |large_blob_written|.
   bool echo_large_blob_written;
   bool large_blob_written;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `getCredBlob` extension
+  // output.
+  bool echo_get_cred_blob;
+  // The value of the `getCredBlob` extension output, or empty if none.
+  array<uint8>? get_cred_blob;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -335,6 +348,10 @@ struct PublicKeyCredentialRequestOptions {
   // If present, large blob to be written on the credential.
   // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-write
   array<uint8>? large_blob_write;
+
+  // If true, attempt to read a credblob.
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  bool get_cred_blob;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
@@ -464,6 +481,10 @@ struct PublicKeyCredentialCreationOptions {
 
   // Whether this request is for making a PaymentCredential.
   bool is_payment_credential_creation;
+
+  // If present, attempt the store the given value as a credblob.
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  array<uint8>? cred_blob;
 };
 
 enum PublicKeyCredentialType {

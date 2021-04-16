@@ -28,4 +28,8 @@ dictionary AuthenticationExtensionsClientInputs {
 
   // https://w3c.github.io/webauthn/#sctn-large-blob-extension
   [RuntimeEnabled=WebAuthenticationLargeBlobExtension] AuthenticationExtensionsLargeBlobInputs largeBlob;
+
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  BufferSource credBlob;
+  boolean getCredBlob;
 };

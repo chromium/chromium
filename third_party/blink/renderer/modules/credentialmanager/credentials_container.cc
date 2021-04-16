@@ -554,6 +554,9 @@ void OnMakePublicKeyCredentialComplete(
     }
     extension_outputs->setCredProps(cred_props_output);
   }
+  if (credential->echo_cred_blob) {
+    extension_outputs->setCredBlob(credential->cred_blob);
+  }
   if (credential->echo_large_blob) {
     DCHECK(
         RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
@@ -624,6 +627,14 @@ void OnGetAssertionComplete(
         large_blob_outputs->setWritten(credential->large_blob_written);
       }
       extension_outputs->setLargeBlob(large_blob_outputs);
+    }
+    if (credential->echo_get_cred_blob) {
+      if (credential->get_cred_blob) {
+        extension_outputs->setGetCredBlob(
+            VectorToDOMArrayBuffer(std::move(*credential->get_cred_blob)));
+      } else {
+        extension_outputs->setGetCredBlob(nullptr);
+      }
     }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id, raw_id, authenticator_response,

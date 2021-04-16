@@ -580,6 +580,10 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       }
       mojo_options->large_blob_enable = ConvertTo<LargeBlobSupport>(support);
     }
+    if (extensions->hasCredBlob()) {
+      mojo_options->cred_blob =
+          ConvertTo<Vector<uint8_t>>(extensions->credBlob());
+    }
   }
 
   return mojo_options;
@@ -699,6 +703,9 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
         mojo_options->large_blob_write =
             ConvertTo<Vector<uint8_t>>(extensions->largeBlob()->write());
       }
+    }
+    if (extensions->hasGetCredBlob() && extensions->getCredBlob()) {
+      mojo_options->get_cred_blob = true;
     }
   }
 
