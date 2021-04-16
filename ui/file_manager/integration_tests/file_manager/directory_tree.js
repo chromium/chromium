@@ -72,17 +72,17 @@
     treeRow = await remoteCall.waitForElement(appId, '.tree-row[active]');
     chrome.test.assertTrue(treeRow.text.includes('My files'));
 
-    // Check: the Recent folder should be [selected].
+    // Check: the Videos Media View folder should be [selected].
     treeRow = await remoteCall.waitForElement(appId, '.tree-row[selected]');
-    chrome.test.assertTrue(treeRow.text.includes('Recent'));
+    chrome.test.assertTrue(treeRow.text.includes('Videos'));
 
     // Send Enter key to activate the selected folder.
     const enter = ['#directory-tree', 'Enter', false, false, false];
     await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, enter);
 
-    // Check: the Recent folder should be [selected] and [active].
+    // Check: the Videos folder should be [selected] and [active].
     treeRow = await remoteCall.waitForElement(appId, selectedActiveRow);
-    chrome.test.assertTrue(treeRow.text.includes('Recent'));
+    chrome.test.assertTrue(treeRow.text.includes('Videos'));
   };
 
   /**

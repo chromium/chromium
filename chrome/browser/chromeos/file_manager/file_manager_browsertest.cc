@@ -96,11 +96,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableUnifiedMediaView() {
-    options.unified_media_view = true;
-    return *this;
-  }
-
   TestCase& DontMountVolumes() {
     options.mount_volumes = false;
     return *this;
@@ -498,11 +493,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableGenericDocumentsProvider(),
         TestCase("checkContextMenuFocus"),
         TestCase("checkContextMenusForInputElements"),
-        TestCase("checkDeleteDisabledInRecents").EnableUnifiedMediaView(),
-        TestCase("checkGoToFileLocationEnabledInRecents")
-            .EnableUnifiedMediaView(),
-        TestCase("checkGoToFileLocationDisabledInMultipleSelection")
-            .EnableUnifiedMediaView()));
+        TestCase("checkDeleteDisabledInRecents"),
+        TestCase("checkGoToFileLocationEnabledInRecents"),
+        TestCase("checkGoToFileLocationDisabledInMultipleSelection")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
@@ -518,8 +511,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarRefreshButtonWithSelection")
             .EnableGenericDocumentsProvider(),
         TestCase("toolbarAltACommand"),
-        TestCase("toolbarRefreshButtonHiddenInRecents")
-            .EnableUnifiedMediaView(),
+        TestCase("toolbarRefreshButtonHiddenInRecents"),
         TestCase("toolbarMultiMenuFollowsButton"),
         TestCase("toolbarSharesheetButtonWithSelection").EnableSharesheet(),
         TestCase("toolbarSharesheetContextMenuWithSelection")
@@ -609,7 +601,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("directoryTreeActiveDirectory"),
         TestCase("directoryTreeSelectedDirectory"),
-        TestCase("directoryTreeRecentsSubtypeScroll").EnableUnifiedMediaView(),
+        TestCase("directoryTreeRecentsSubtypeScroll"),
         TestCase("directoryTreeHorizontalScroll"),
         TestCase("directoryTreeExpandHorizontalScroll"),
         TestCase("directoryTreeExpandHorizontalScrollRTL"),
@@ -1047,20 +1039,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("recentsDownloads"),
-        TestCase("recentsDrive"),
-        TestCase("recentsCrostiniNotMounted"),
-        TestCase("recentsCrostiniMounted"),
-        TestCase("recentsDownloadsAndDrive"),
-        TestCase("recentsDownloadsAndDriveWithOverlap"),
-        TestCase("recentsNested"),
-        TestCase("recentAudioDownloads").EnableUnifiedMediaView(),
-        TestCase("recentAudioDownloadsAndDrive").EnableUnifiedMediaView(),
-        TestCase("recentImagesDownloads").EnableUnifiedMediaView(),
-        TestCase("recentImagesDownloadsAndDrive").EnableUnifiedMediaView(),
-        TestCase("recentVideosDownloads").EnableUnifiedMediaView(),
-        TestCase("recentVideosDownloadsAndDrive").EnableUnifiedMediaView()));
+    ::testing::Values(TestCase("recentsDownloads"),
+                      TestCase("recentsDrive"),
+                      TestCase("recentsCrostiniNotMounted"),
+                      TestCase("recentsCrostiniMounted"),
+                      TestCase("recentsDownloadsAndDrive"),
+                      TestCase("recentsDownloadsAndDriveWithOverlap"),
+                      TestCase("recentsNested"),
+                      TestCase("recentAudioDownloads"),
+                      TestCase("recentAudioDownloadsAndDrive"),
+                      TestCase("recentImagesDownloads"),
+                      TestCase("recentImagesDownloadsAndDrive"),
+                      TestCase("recentVideosDownloads"),
+                      TestCase("recentVideosDownloadsAndDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.js */

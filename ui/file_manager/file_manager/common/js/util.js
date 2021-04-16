@@ -1481,14 +1481,6 @@ util.isCopyImageEnabled = () => {
 };
 
 /**
- * Returns true if the unified media view is enabled.
- * @return {boolean}
- */
-util.isUnifiedMediaViewEnabled = () => {
-  return loadTimeData.getBoolean('UNIFIED_MEDIA_VIEW_ENABLED');
-};
-
-/**
  * Returns true if filters in Recents view is enabled.
  * @return {boolean}
  */

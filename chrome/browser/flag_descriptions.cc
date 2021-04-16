@@ -4822,11 +4822,6 @@ const char kUiDevToolsDescription[] =
 const char kUiSlowAnimationsName[] = "Slow UI animations";
 const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 
-const char kUnifiedMediaViewName[] = "Unified media view in Files App";
-const char kUnifiedMediaViewDescription[] =
-    "Enable unified media view to browse recently-modified media files from"
-    " local disk, Google Drive, and Android.";
-
 const char kVaapiJpegImageDecodeAccelerationName[] =
     "VA-API JPEG decode acceleration for images";
 const char kVaapiJpegImageDecodeAccelerationDescription[] =

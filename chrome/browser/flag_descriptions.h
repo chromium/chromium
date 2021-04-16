@@ -2802,9 +2802,6 @@ extern const char kUiDevToolsDescription[];
 extern const char kUiSlowAnimationsName[];
 extern const char kUiSlowAnimationsDescription[];
 
-extern const char kUnifiedMediaViewName[];
-extern const char kUnifiedMediaViewDescription[];
-
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 

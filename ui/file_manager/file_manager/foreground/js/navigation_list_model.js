@@ -586,9 +586,12 @@
     // Items as per required order.
     this.navigationItems_ = [];
 
+    // If "Recents" are enabled, then the Unified Media Views
+    // (crbug.com/1033531), which are based on top of the "Recents"
+    // feature, are also added to the directory tree.
     if (this.recentModelItem_) {
       this.navigationItems_.push(this.recentModelItem_);
-      if (util.isUnifiedMediaViewEnabled() && !util.isRecentsFilterEnabled()) {
+      if (!util.isRecentsFilterEnabled()) {
         // Unified Media View (Images, Videos and Audio).
         this.navigationItems_.push(createFilteredRecentModelItem(
             str('MEDIA_VIEW_AUDIO_ROOT_LABEL'),
@@ -605,14 +608,6 @@
       }
     }
 
-    // Legacy Media View (Images, Videos and Audio).
-    if (!util.isUnifiedMediaViewEnabled()) {
-      for (const mediaView of getVolumes(
-               VolumeManagerCommon.VolumeType.MEDIA_VIEW)) {
-        this.navigationItems_.push(mediaView);
-        mediaView.section = NavigationSection.TOP;
-      }
-    }
     // Shortcuts.
     for (const shortcut of this.shortcutList_) {
       this.navigationItems_.push(shortcut);

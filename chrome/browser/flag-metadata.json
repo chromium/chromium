@@ -2871,11 +2871,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "files-unified-media-view",
-    "owners": [ "fukino", "weifangsun" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "files-zip-mount",
     "owners": [ "fdegros", "jboulic"],
     "expiry_milestone": 95

@@ -97,9 +97,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs smbfs for native SMB integration.
     bool smbfs = false;
 
-    // Whether test needs the unified media view feature.
-    bool unified_media_view = false;
-
     // Whether FilesApp should start with volumes mounted.
     bool mount_volumes = true;
 

@@ -299,8 +299,6 @@ extern const base::Feature kSystemLatinPhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kTelemetryExtension;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kUnifiedMediaView;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUpdatedCellularActivationUi;
 // Visible for testing. Call UseBrowserSyncConsent() to check the flag.
 COMPONENT_EXPORT(ASH_CONSTANTS)

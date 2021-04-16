@@ -1682,12 +1682,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  if (options.unified_media_view) {
-    enabled_features.push_back(chromeos::features::kUnifiedMediaView);
-  } else {
-    disabled_features.push_back(chromeos::features::kUnifiedMediaView);
-  }
-
   if (options.smbfs) {
     enabled_features.push_back(features::kSmbFs);
   }

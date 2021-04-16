@@ -664,11 +664,6 @@ const base::Feature kSystemLatinPhysicalTyping{
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables unified media view in Files app to browse recently-modified media
-// files from local local, Google Drive, and Android.
-const base::Feature kUnifiedMediaView{"UnifiedMediaView",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the updated cellular activation UI; see go/cros-cellular-design.
 const base::Feature kUpdatedCellularActivationUi{
     "UpdatedCellularActivationUi", base::FEATURE_DISABLED_BY_DEFAULT};

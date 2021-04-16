@@ -198,15 +198,19 @@
     // Check: current directory and selection should be the Drive root.
     await expectSelection(appId, DIRECTORY.Drive, DIRECTORY.Drive);
 
-    // Send Ctrl+3 key to file-list to select 3rd shortcut.
-    let key = ['#file-list', '3', true, false, false];
+    // Send Ctrl+6 key to file-list to select 6th volume in the
+    // directory tree. This corresponds to the second shortcut (to 'D')
+    // as shortcuts are ordered alphabetically. Volumes 1 - 4 are the
+    // Recent and Media Views.
+    let key = ['#file-list', '6', true, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
 
     // Check: current directory and selection should be D.
     await expectSelection(appId, DIRECTORY.D, DIRECTORY.D);
 
-    // Send UpArrow key to directory tree to select the shortcut above D.
+    // Send UpArrow key to directory tree to select the shortcut
+    // above D.
     key = ['#directory-tree', 'ArrowUp', false, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));

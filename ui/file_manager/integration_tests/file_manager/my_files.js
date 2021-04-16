@@ -34,6 +34,9 @@ async function selectMyFiles(appId) {
 testcase.showMyFiles = async () => {
   const expectedElementLabels = [
     'Recent: FakeItem',
+    'Audio: FakeItem',
+    'Images: FakeItem',
+    'Videos: FakeItem',
     'My files: EntryListItem',
     'Downloads: SubDirectoryItem',
     'Linux files: FakeItem',
@@ -45,7 +48,7 @@ testcase.showMyFiles = async () => {
     'Offline: SubDirectoryItem',
   ];
   if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedElementLabels.splice(5, 1);  // Remove 'Trash: ...'.
+    expectedElementLabels.splice(8, 1);  // Remove 'Trash: ...'.
   }
 
   // Open Files app on local Downloads.
