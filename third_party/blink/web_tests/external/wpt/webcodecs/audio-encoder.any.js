@@ -90,8 +90,12 @@ async function checkEncodingError(config, good_frames, bad_frame) {
       outputs++;
     }
   };
-
   let encoder = new AudioEncoder(init);
+
+
+  let support = await AudioEncoder.isConfigSupported(config);
+  assert_true(support.supported)
+  config = support.config;
 
   encoder.configure(config);
   for (let frame of good_frames) {
@@ -111,7 +115,7 @@ async function checkEncodingError(config, good_frames, bad_frame) {
 
 function channelNumberVariationTests() {
   let sample_rate = 48000;
-  for (let channels = 1; channels < 12; channels++) {
+  for (let channels = 1; channels <= 2; channels++) {
     let config = {
       codec: 'opus',
       sampleRate: sample_rate,
