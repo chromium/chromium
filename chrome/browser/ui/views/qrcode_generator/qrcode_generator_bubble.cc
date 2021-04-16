@@ -247,14 +247,12 @@ void QRCodeGeneratorBubble::Init() {
   column_set_center_error_label->AddColumn(
       views::GridLayout::CENTER, views::GridLayout::CENTER, 1.0,
       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  auto center_error_label = std::make_unique<views::Label>();
+  auto center_error_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_UNKNOWN),
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   center_error_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   center_error_label->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  center_error_label->SetEnabledColor(
-      center_error_label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelSecondaryColor));
-  center_error_label->SetText(l10n_util::GetStringUTF16(
-      IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_UNKNOWN));
   layout->StartRow(views::GridLayout::kFixedSize, kCenterErrorLabelColumnSetId);
   center_error_label_ = layout->AddView(std::move(center_error_label));
   ShrinkAndHideDisplay(center_error_label_);
@@ -288,16 +286,14 @@ void QRCodeGeneratorBubble::Init() {
   column_set_bottom_error_label->AddColumn(
       views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  auto bottom_error_label = std::make_unique<views::Label>();
-  bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  bottom_error_label->SetEnabledColor(
-      bottom_error_label->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_LabelSecondaryColor));
   // User-facing limit rounded down for readability.
-  int maxUrlLength = base::GetFieldTrialParamByFeatureAsInt(
+  int max_url_length = base::GetFieldTrialParamByFeatureAsInt(
       kSharingQRCodeGenerator, "max_url_length", 250);
-  bottom_error_label->SetText(l10n_util::GetStringFUTF16Int(
-      IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, maxUrlLength));
+  auto bottom_error_label = std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16Int(
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, max_url_length),
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+  bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
   layout->StartRow(views::GridLayout::kFixedSize, kBottomErrorLabelColumnSetId);
   bottom_error_label_ = layout->AddView(std::move(bottom_error_label));
