@@ -261,6 +261,18 @@ void SimulateMouseClickAt(WebContents* web_contents,
                           blink::WebMouseEvent::Button button,
                           const gfx::Point& point);
 
+// Retrieves the center coordinates of the element with id |id|.
+// ATTENTION: When using these coordinates to simulate a click or tap make sure
+// that the viewport is not zoomed as the coordinates returned by this method
+// are relative to the page not the viewport. In particular for Android make
+// sure the page has the meta tag
+// <meta name="viewport" content="width=device-width,minimum-scale=1">
+// TODO(https://crbug.com/1199644): Make the Simulate* methods more user
+// friendly by taking zooming into account.
+gfx::PointF GetCenterCoordinatesOfElementWithId(
+    content::WebContents* web_contents,
+    const std::string& id);
+
 // Retrieves the center coordinates of the element with id |id| and simulates a
 // mouse click there using SimulateMouseClickAt().
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,

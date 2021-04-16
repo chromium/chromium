@@ -1029,8 +1029,13 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
 }
 
 void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
-  if (view_.parent())
+  // Move to front only if we are the primary page (we don't want to receive
+  // events in the Prerender)
+  if (view_.parent() &&
+      RenderViewHost::From(host())->GetMainFrame()->GetLifecycleState() ==
+          RenderFrameHost::LifecycleState::kActive) {
     view_.parent()->MoveToFront(&view_);
+  }
   ResetGestureDetection();
   if (delegated_frame_host_)
     delegated_frame_host_->OnNavigateToNewPage();

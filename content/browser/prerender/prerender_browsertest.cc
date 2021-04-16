@@ -24,6 +24,7 @@
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -1818,6 +1819,28 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kDestroyed, 1);
+}
+
+// Make sure input events are routed to the primary FrameTree not the prerender
+// one. See https://crbug.com/1197136
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, InputRoutedToPrimaryFrameTree) {
+  const GURL kInitialUrl = GetUrl("/prerender/simple_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  // Touch / click the link and wait for the navigation to complete.
+  TestNavigationObserver navigation_observer(web_contents());
+  SyntheticTapGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.position = GetCenterCoordinatesOfElementWithId(web_contents(), "link");
+  web_contents()->GetRenderViewHost()->GetWidget()->QueueSyntheticGesture(
+      std::make_unique<SyntheticTapGesture>(params), base::DoNothing());
+  navigation_observer.Wait();
+
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
 }
 
 class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
