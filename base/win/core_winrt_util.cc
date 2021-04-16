@@ -19,20 +19,6 @@ FARPROC LoadComBaseFunction(const char* function_name) {
   return handle ? ::GetProcAddress(handle, function_name) : nullptr;
 }
 
-decltype(&::RoInitialize) GetRoInitializeFunction() {
-  static decltype(&::RoInitialize) const function =
-      reinterpret_cast<decltype(&::RoInitialize)>(
-          LoadComBaseFunction("RoInitialize"));
-  return function;
-}
-
-decltype(&::RoUninitialize) GetRoUninitializeFunction() {
-  static decltype(&::RoUninitialize) const function =
-      reinterpret_cast<decltype(&::RoUninitialize)>(
-          LoadComBaseFunction("RoUninitialize"));
-  return function;
-}
-
 decltype(&::RoActivateInstance) GetRoActivateInstanceFunction() {
   static decltype(&::RoActivateInstance) const function =
       reinterpret_cast<decltype(&::RoActivateInstance)>(
@@ -54,21 +40,7 @@ namespace win {
 
 bool ResolveCoreWinRTDelayload() {
   // TODO(finnur): Add AssertIOAllowed once crbug.com/770193 is fixed.
-  return GetRoInitializeFunction() && GetRoUninitializeFunction() &&
-         GetRoActivateInstanceFunction() && GetRoGetActivationFactoryFunction();
-}
-
-HRESULT RoInitialize(RO_INIT_TYPE init_type) {
-  auto ro_initialize_func = GetRoInitializeFunction();
-  if (!ro_initialize_func)
-    return E_FAIL;
-  return ro_initialize_func(init_type);
-}
-
-void RoUninitialize() {
-  auto ro_uninitialize_func = GetRoUninitializeFunction();
-  if (ro_uninitialize_func)
-    ro_uninitialize_func();
+  return GetRoActivateInstanceFunction() && GetRoGetActivationFactoryFunction();
 }
 
 HRESULT RoGetActivationFactory(HSTRING class_id,

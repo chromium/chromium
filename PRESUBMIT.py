@@ -1052,12 +1052,14 @@ _BANNED_CPP_FUNCTIONS = (
     (
       'RoInitialize',
       (
-        'Improper use of base::win::RoInitialize() has been implicated in a ',
+        'Improper use of [base::win]::RoInitialize() has been implicated in a ',
         'few COM initialization leaks. Use base::win::ScopedWinrtInitializer ',
         'instead. See http://crbug.com/1197722 for more information.'
       ),
       True,
-      (),
+      (
+          r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$'
+      ),
     ),
 )
 
