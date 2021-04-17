@@ -31,6 +31,9 @@ class MODULES_EXPORT ImageDecoderCore {
     // any reason; i.e., it's not limited to just a failure to decode metadata).
     bool failed = true;
 
+    // Only true after ImageDecoder::IsSizeAvailable() becomes true.
+    bool has_size = false;
+
     // ImageDecoder::FrameCount(). May change as data is appended.
     uint32_t frame_count = 0u;
 

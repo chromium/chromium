@@ -479,6 +479,11 @@ bool AVIFImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
   if (decoded_frame_count_ > 1)
     return true;
 
+  constexpr size_t kMajorBrandOffset = 8;
+  constexpr size_t kMajorBrandSize = 4;
+  if (data_->size() < kMajorBrandOffset + kMajorBrandSize)
+    return false;
+
   // TODO(wtc): We should rely on libavif to tell us if the file has both an
   // image and an animation track instead of just checking the major brand.
   //
@@ -488,10 +493,11 @@ bool AVIFImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
   //   unsigned int(32) major_brand;
   //   ...
   FastSharedBufferReader fast_reader(data_);
-  char buf[4];
-  const char* major_brand = fast_reader.GetConsecutiveData(8, 4, buf);
+  char buf[kMajorBrandSize];
+  const char* major_brand =
+      fast_reader.GetConsecutiveData(kMajorBrandOffset, kMajorBrandSize, buf);
   // The brand 'avis' is an AVIF image sequence (animation) brand.
-  return memcmp(major_brand, "avis", 4) == 0;
+  return memcmp(major_brand, "avis", kMajorBrandSize) == 0;
 }
 
 // static

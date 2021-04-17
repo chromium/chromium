@@ -511,6 +511,14 @@ void ImageDecoderExternal::OnMetadata(
     return;
   }
 
+  // If we don't have size metadata yet, don't attempt to setup the tracks since
+  // we also won't have a reliable frame count. A later call to DecodeMetadata()
+  // will be made as bytes come in.
+  if (!metadata.has_size) {
+    DCHECK(!data_complete_);
+    return;
+  }
+
   if (tracks_->IsEmpty()) {
     // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
     // expose tracks yet. So for now just assume a still and animated track for
