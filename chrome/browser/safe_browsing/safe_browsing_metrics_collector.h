@@ -51,8 +51,16 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     DANGEROUS_DOWNLOAD_BYPASS = 5,
     // The user bypasses the password reuse modal warning.
     PASSWORD_REUSE_MODAL_BYPASS = 6,
+    // The user accepts the extension install friction dialog (but does not
+    // necessarily install the extension).
+    // This dialog is only shown to ESB users. Added in M91.
+    EXTENSION_ALLOWLIST_INSTALL_BYPASS = 7,
+    // The user acknowledges and re-enables the extension that is not on the
+    // allowlist.
+    // This is only shown to ESB users. Added in M91.
+    NON_ALLOWLISTED_EXTENSION_RE_ENABLED = 8,
 
-    kMaxValue = PASSWORD_REUSE_MODAL_BYPASS
+    kMaxValue = NON_ALLOWLISTED_EXTENSION_RE_ENABLED
   };
 
   // Enum representing the current user state. They are used as keys of the

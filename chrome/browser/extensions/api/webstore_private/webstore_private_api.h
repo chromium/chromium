@@ -128,6 +128,11 @@ class WebstorePrivateBeginInstallWithManifest3Function
                                  content::WebContents* contents,
                                  base::OnceClosure done_callback);
 
+  // Adds friction accepted events to Safe Browsing metrics collector for
+  // further metrics logging. Called when a user decides to accept the friction
+  // prompt. Note that the extension may not be eventually installed.
+  void ReportFrictionAcceptedEvent();
+
   const Params::Details& details() const { return params_->details; }
 
   std::unique_ptr<Params> params_;

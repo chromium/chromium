@@ -33,6 +33,8 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -667,7 +669,24 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnFrictionPromptDone(
     return;
   }
 
+  ReportFrictionAcceptedEvent();
   ShowInstallDialog(web_contents);
+}
+
+void WebstorePrivateBeginInstallWithManifest3Function::
+    ReportFrictionAcceptedEvent() {
+  if (!profile_) {
+    return;
+  }
+  auto* metrics_collector =
+      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          profile_);
+  // `metrics_collector` can be null in incognito.
+  if (metrics_collector) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        safe_browsing::SafeBrowsingMetricsCollector::EventType::
+            EXTENSION_ALLOWLIST_INSTALL_BYPASS);
+  }
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(

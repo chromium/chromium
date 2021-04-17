@@ -342,6 +342,8 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
+    case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
+    case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
       return true;
   }
 }
@@ -375,6 +377,10 @@ std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
       return "DangerousDownloadBypass";
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
       return "PasswordReuseModalBypass";
+    case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
+      return "ExtensionAllowlistInstallBypass";
+    case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
+      return "NonAllowlistedExtensionReEnabled";
   }
 }
 
