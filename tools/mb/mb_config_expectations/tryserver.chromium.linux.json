@@ -396,6 +396,18 @@
       "use_goma": true
     }
   },
+  "linux-bionic-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_dummy_lastchange": true,
+      "use_goma": true
+    }
+  },
   "linux-blink-heap-concurrent-marking-tsan-rel": {
     "gn_args": {
       "dcheck_always_on": true,

@@ -5152,6 +5152,17 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
+    name = "linux-bionic-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "bio",
+    ),
+    main_console_view = "main",
+    os = os.LINUX_BIONIC,
+    tree_closing = False,
+)
+
+ci.linux_builder(
     name = "linux-trusty-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release",

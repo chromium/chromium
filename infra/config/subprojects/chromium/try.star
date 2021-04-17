@@ -1095,6 +1095,12 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-bionic-rel",
+    goma_jobs = goma.jobs.J150,
+    os = os.LINUX_BIONIC,
+)
+
+try_.chromium_linux_builder(
     name = "linux-blink-heap-concurrent-marking-tsan-rel",
 )
 
