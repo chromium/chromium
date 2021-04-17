@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
 
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -51,8 +52,17 @@ void X11ClipboardOzone::GetAvailableMimeTypes(
     ClipboardBuffer buffer,
     PlatformClipboard::GetMimeTypesClosure callback) {
   DCHECK(!callback.is_null());
-  auto available_types = helper_->GetAvailableAtomNames(buffer);
-  std::move(callback).Run(available_types);
+  // This is the only function clients may use to request available formats, so
+  // include both standard and platform-specific (atom names) values.
+  // TODO(crbug.com/1165466): Consider adding a way of filtering mime types and
+  // querying availability of specific formats, so implementations can optimize
+  // it, if possible. E.g: Avoid multiple roundtrips to check if a given format
+  // is available. See ClipboardX11::IsFormatAvailable for example.
+  auto types = helper_->GetAvailableTypes(buffer);
+  auto atoms = helper_->GetAvailableAtomNames(buffer);
+  std::set<std::string> uniq(types.begin(), types.end());
+  uniq.insert(atoms.begin(), atoms.end());
+  std::move(callback).Run({uniq.begin(), uniq.end()});
 }
 
 bool X11ClipboardOzone::IsSelectionOwner(ClipboardBuffer buffer) {
