@@ -28,6 +28,11 @@ template("ts_library") {
       root_dir = invoker.root_dir
     }
 
+    out_dir = target_gen_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
+
     if (defined(in_files)) {
       outputs += [ "$target_gen_dir/tsconfig.manifest" ]
       foreach(_source, in_files) {
@@ -36,8 +41,8 @@ template("ts_library") {
             rebase_path(get_path_info(_source, "gen_dir"), target_gen_dir)
         _filename = get_path_info(_source, "name")
         outputs += [
-          "$target_gen_dir/$_dirname/$_filename.js",
-          "$target_gen_dir/$_dirname/$_filename.d.ts",
+          "$out_dir/$_dirname/$_filename.js",
+          "$out_dir/$_dirname/$_filename.d.ts",
         ]
       }
     }
@@ -47,6 +52,8 @@ template("ts_library") {
       rebase_path(root_dir, root_build_dir),
       "--gen_dir",
       rebase_path(target_gen_dir, root_build_dir),
+      "--out_dir",
+      rebase_path(out_dir, root_build_dir),
     ]
 
     if (defined(in_files)) {

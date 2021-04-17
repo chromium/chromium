@@ -18,7 +18,7 @@ import node_modules
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--gen_dir', required=True)
+  parser.add_argument('--out_dir', required=True)
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--js_files', nargs='*', required=True)
   args = parser.parse_args(argv)
@@ -35,7 +35,7 @@ def main(argv):
       '--rootDir',
       args.root_dir,
       '--outDir',
-      args.gen_dir,
+      args.out_dir,
   ] + js_files)
 
 

@@ -22,18 +22,23 @@ template("ts_definitions") {
       root_dir = invoker.root_dir
     }
 
+    out_dir = target_gen_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
+
     foreach(_js_file, js_files) {
       inputs += [ "$root_dir/$_js_file" ]
-      _dirname = get_path_info(_js_file, "gen_dir")
+      _dirname = rebase_path(get_path_info(_js_file, "gen_dir"), target_gen_dir)
       _filename = get_path_info(_js_file, "name")
-      outputs += [ "$_dirname/$_filename.d.ts" ]
+      outputs += [ "$out_dir/$_dirname/$_filename.d.ts" ]
     }
 
     args = [
              "--root_dir",
              rebase_path(root_dir, root_build_dir),
-             "--gen_dir",
-             rebase_path(target_gen_dir, root_build_dir),
+             "--out_dir",
+             rebase_path(out_dir, root_build_dir),
              "--js_files",
            ] + js_files
 

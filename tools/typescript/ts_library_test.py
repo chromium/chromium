@@ -29,7 +29,7 @@ class TsLibraryTest(unittest.TestCase):
     ts_definitions.main([
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
-        '--gen_dir',
+        '--out_dir',
         gen_dir,
         '--js_files',
         'legacy_file.js',
@@ -40,6 +40,8 @@ class TsLibraryTest(unittest.TestCase):
         '--root_dir',
         os.path.join(_HERE_DIR, 'tests', 'project1'),
         '--gen_dir',
+        gen_dir,
+        '--out_dir',
         gen_dir,
         '--in_files',
         'foo.ts',
@@ -71,6 +73,8 @@ class TsLibraryTest(unittest.TestCase):
         os.path.join(_HERE_DIR, 'tests', 'project2'),
         '--gen_dir',
         gen_dir,
+        '--out_dir',
+        gen_dir,
         '--in_files',
         'bar.ts',
         '--deps',
@@ -101,6 +105,8 @@ class TsLibraryTest(unittest.TestCase):
         os.path.join(_HERE_DIR, 'tests', 'project3'),
         '--gen_dir',
         gen_dir,
+        '--out_dir',
+        gen_dir,
         '--definitions',
         '../../tests/project3/baz.d.ts',
     ])
@@ -129,12 +135,15 @@ class TsLibraryTest(unittest.TestCase):
   # thrown.
   def testError(self):
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    gen_dir = os.path.join(self._out_folder, 'project1')
     try:
       ts_library.main([
           '--root_dir',
           os.path.join(_HERE_DIR, 'tests', 'project1'),
           '--gen_dir',
-          os.path.join(self._out_folder, 'project1'),
+          gen_dir,
+          '--out_dir',
+          gen_dir,
           '--in_files',
           'errors.ts',
       ])
