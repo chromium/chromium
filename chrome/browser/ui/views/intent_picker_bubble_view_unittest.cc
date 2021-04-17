@@ -13,8 +13,10 @@
 #include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,7 +58,7 @@ bool IsIntentHelperPackage(const std::string& package_name) {
 }
 #endif
 
-class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
+class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() = default;
 
@@ -64,7 +66,7 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
     bubble_.reset();
 
-    BrowserWithTestWindowTest::TearDown();
+    TestWithBrowserView::TearDown();
   }
 
  protected:
@@ -72,7 +74,10 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
                         bool show_stay_in_chrome,
                         PageActionIconType icon_type,
                         const base::Optional<url::Origin>& initiating_origin) {
-    anchor_view_ = std::make_unique<views::View>();
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    anchor_view_ =
+        browser_view->toolbar()->AddChildView(std::make_unique<views::View>());
 
     // Pushing a couple of fake apps just to check they are created on the UI.
     app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
@@ -105,8 +110,8 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
     }
 
     bubble_ = IntentPickerBubbleView::CreateBubbleViewForTesting(
-        anchor_view_.get(), /*icon_view=*/nullptr, icon_type,
-        std::move(app_info), show_stay_in_chrome,
+        anchor_view_, /*icon_view=*/nullptr, icon_type, std::move(app_info),
+        show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)),
@@ -128,7 +133,7 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
                       bool should_persist) {}
 
   std::unique_ptr<IntentPickerBubbleView> bubble_;
-  std::unique_ptr<views::View> anchor_view_;
+  views::View* anchor_view_;
   std::vector<AppInfo> app_info_;
 
  private:
