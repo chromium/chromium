@@ -136,7 +136,8 @@ xdg_dir_time_list_free (XdgDirTimeList *list)
 }
 
 static int
-xdg_mime_init_from_directory (const char *directory, void* unused)
+xdg_mime_init_from_directory (const char *directory,
+                              void       *user_data)
 {
   char *file_name;
   struct stat st;

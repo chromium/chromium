@@ -31,7 +31,7 @@ _FILES_TO_COPY = (
     "src/xdgmimeparent.h",
 )
 
-_PATCHES = ("000-have-mmap.patch", "001-fix-casts-for-cfi.patch")
+_PATCHES = ("000-have-mmap.patch",)
 
 
 def main():
