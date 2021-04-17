@@ -604,15 +604,14 @@ Status ParsePageRanges(const base::DictionaryValue& params,
   }
 
   std::vector<std::string> ranges;
-  int page;
   std::string pages_str;
   for (const base::Value& page_range : *page_range_list) {
-    if (page_range.GetAsInteger(&page)) {
-      if (page < 0) {
+    if (page_range.is_int()) {
+      if (page_range.GetInt() < 0) {
         return Status(kInvalidArgument,
                       "a Number entry in 'pageRanges' must not be less than 0");
       }
-      ranges.push_back(base::NumberToString(page));
+      ranges.push_back(base::NumberToString(page_range.GetInt()));
     } else if (page_range.GetAsString(&pages_str)) {
       ranges.push_back(pages_str);
     } else {
