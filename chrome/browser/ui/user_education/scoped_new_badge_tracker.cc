@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/scoped_new_badge_tracker.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 
 #include "base/feature_list.h"
 #include "base/stl_util.h"

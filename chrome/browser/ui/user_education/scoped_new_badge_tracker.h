@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
-#define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
+#define CHROME_BROWSER_UI_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
 
 #include <set>
 
@@ -131,4 +131,4 @@ class ScopedNewBadgeTracker {
   std::set<const base::Feature*> active_badge_features_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_USER_EDUCATION_SCOPED_NEW_BADGE_TRACKER_H_
