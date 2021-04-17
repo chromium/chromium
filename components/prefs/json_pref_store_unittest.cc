@@ -272,14 +272,13 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
   EXPECT_FALSE(boolean);
 
   EXPECT_TRUE(pref_store->GetValue(kMaxTabs, &actual));
-  int integer = 0;
-  EXPECT_TRUE(actual->GetAsInteger(&integer));
-  EXPECT_EQ(20, integer);
+  ASSERT_TRUE(actual->is_int());
+  EXPECT_EQ(20, actual->GetInt());
   pref_store->SetValue(kMaxTabs, std::make_unique<Value>(10),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kMaxTabs, &actual));
-  EXPECT_TRUE(actual->GetAsInteger(&integer));
-  EXPECT_EQ(10, integer);
+  ASSERT_TRUE(actual->is_int());
+  EXPECT_EQ(10, actual->GetInt());
 
   pref_store->SetValue(
       kLongIntPref,
