@@ -97,30 +97,6 @@ BOOL WaitForHistoryToDisappear() {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
-// Tests that the NTP is still displayed after loading an invalid URL.
-- (void)testNTPStayForInvalidURL {
-  if (@available(iOS 13, *)) {
-  } else {
-    EARL_GREY_TEST_DISABLED(@"Failing on iOS 12.");
-  }
-// TODO(crbug.com/1067813): Test won't pass on iPad device.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_typeText(@"file://\n")];
-
-  // Make sure that the URL disappeared.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText("file://")]
-      assertWithMatcher:grey_nil()];
-
-  // Check that the NTP is still displayed (because the fake omnibox is here).
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests the metrics are reported correctly.
 - (void)testNTPMetrics {
   self.testServer->RegisterRequestHandler(

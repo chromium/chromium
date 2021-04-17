@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
@@ -641,6 +642,52 @@ TEST_F(HistoryURLProviderTest, WhatYouTyped) {
           base::size(results_6));
 }
 
+// Test that file: URLs are handled appropriately on each platform.
+// url_formatter has per-platform logic for Windows vs POSIX, and
+// AutocompleteInput has special casing for iOS.
+TEST_F(HistoryURLProviderTest, Files) {
+#if defined(OS_IOS)
+  // On iOS, check that file URIs are treated like queries.
+  AutocompleteInput ios_input_1(
+      u"file:///foo", std::u16string::npos, std::string(),
+      metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  autocomplete_->Start(ios_input_1, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+  EXPECT_EQ(matches_.size(), 0u);
+#endif  // defined(OS_IOS)
+
+#if !defined(OS_IOS)
+  // For everything but iOS, fixing up "file:" should result in an inline
+  // autocomplete offset of just after "file:", not just after "file://".
+  const std::u16string input_1(u"file:");
+  const UrlAndLegalDefault fixup_1[] = {{"file:///C:/foo.txt", true}};
+  ASSERT_NO_FATAL_FAILURE(
+      RunTest(input_1, std::string(), false, fixup_1, base::size(fixup_1)));
+  EXPECT_EQ(u"///C:/foo.txt", matches_.front().inline_autocompletion);
+#endif  // !defined(OS_IOS)
+
+#if defined(OS_POSIX) && !defined(OS_IOS)
+  // url_formatter::SegmentURLInternal does URL fixup differently depending on
+  // platform. On all POSIX systems including iOS, /foo --> file:///foo.
+  const std::u16string input_2(u"/foo");
+  const UrlAndLegalDefault fixup_2[] = {{"file:///foo", true}};
+  ASSERT_NO_FATAL_FAILURE(
+      RunTest(input_2, std::string(), false, fixup_2, base::size(fixup_2)));
+  EXPECT_TRUE(matches_[0].destination_url.SchemeIsFile());
+#elif defined(OS_IOS)
+  // However, AutocompleteInput ignores the URL fixup on iOS because it
+  // treates iOS like a query.
+  AutocompleteInput ios_input_2(u"/foo", std::u16string::npos, std::string(),
+                                metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+  autocomplete_->Start(ios_input_2, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+  EXPECT_EQ(matches_.size(), 0u);
+#endif  // defined(OS_POSIX) && !defined(OS_IOS)
+}
+
 TEST_F(HistoryURLProviderTest, Fixup) {
   // Test for various past crashes we've had.
   RunTest(u"\\", std::string(), false, nullptr, 0);
@@ -652,16 +699,6 @@ TEST_F(HistoryURLProviderTest, Fixup) {
   RunTest(u"\uff65@s", std::string(), false, fixup_crash,
           base::size(fixup_crash));
   RunTest(u"\u2015\u2015@ \uff7c", std::string(), false, nullptr, 0);
-
-  // Fixing up "file:" should result in an inline autocomplete offset of just
-  // after "file:", not just after "file://".
-  const std::u16string input_1(u"file:");
-  const UrlAndLegalDefault fixup_1[] = {
-    { "file:///C:/foo.txt", true }
-  };
-  ASSERT_NO_FATAL_FAILURE(
-      RunTest(input_1, std::string(), false, fixup_1, base::size(fixup_1)));
-  EXPECT_EQ(u"///C:/foo.txt", matches_.front().inline_autocompletion);
 
   // Fixing up "http:/" should result in an inline autocomplete offset of just
   // after "http:/", not just after "http:".
@@ -1073,6 +1110,7 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
     // set, npos if no ACMatchClassification should have the MATCH bit set.
     size_t match_classification_index;
   } test_cases[] = {
+    // clang-format off
     { "http://www.somesite.com", false,
       "http://www.somesite.com", {0, npos, npos}, 0 },
     { "http://www.somesite.com/", false,
@@ -1109,14 +1147,19 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       "mailto://a@b.com", {0, npos, npos}, 0 },
     { "http://a%20b/x%20y", false,
       "http://a%20b/x y", {0, npos, npos}, 0 },
+#if !defined(OS_IOS)
+    // file: URIs are treated like queries on iOS and need to be excluded from
+    // this test, which assumes that all the inputs have canonical URLs.
     { "file:///x%20y/a%20b", true,
       "file:///x y/a b", {0, npos, npos}, 0 },
     { "file://x%20y/a%20b", true,
       "file://x%20y/a b", {0, npos, npos}, 0 },
+#endif  // !defined(OS_IOS)
     { "view-source:x%20y/a%20b", true,
-      "view-source:x%20y/a b", {0, npos, npos}, 0 },
+     "view-source:x%20y/a b", {0, npos, npos}, 0 },
     { "view-source:http://x%20y/a%20b", false,
       "view-source:http://x%20y/a b", {0, npos, npos}, 0 },
+    // clang-format on
   };
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Index " << i << " input: "

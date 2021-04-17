@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -253,7 +254,13 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // A user might or might not type a scheme when entering a file URL.  In
     // either case, |parsed_scheme_utf8| will tell us that this is a file URL,
     // but |parts->scheme| might be empty, e.g. if the user typed "C:\foo".
+
+#if defined(OS_IOS)
+    // On iOS, which cannot display file:/// URLs, treat this case like a query.
+    return metrics::OmniboxInputType::QUERY;
+#else
     return metrics::OmniboxInputType::URL;
+#endif  // defined(OS_IOS)
   }
 
   // Treat javascript: scheme queries followed by things that are unlikely to

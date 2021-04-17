@@ -122,6 +122,12 @@ TEST(AutocompleteInputTest, InputType) {
     {u"C:\\Program Files", metrics::OmniboxInputType::URL},
     {u"\\\\Server\\Folder\\File", metrics::OmniboxInputType::URL},
 #endif  // defined(OS_WIN)
+#if defined(OS_IOS)
+    {u"file:///foo", metrics::OmniboxInputType::QUERY},
+    {u"/foo", metrics::OmniboxInputType::QUERY},
+#else
+    {u"file:///foo", metrics::OmniboxInputType::URL},
+#endif  // defined(OS_IOS)
     {u"http:foo", metrics::OmniboxInputType::URL},
     {u"http://foo", metrics::OmniboxInputType::URL},
     {u"http://foo._", metrics::OmniboxInputType::UNKNOWN},
