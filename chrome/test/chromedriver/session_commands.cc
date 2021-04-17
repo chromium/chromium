@@ -264,8 +264,7 @@ Status CheckSessionCreated(Session* session) {
   if (status.IsError())
     return Status(kSessionNotCreated, status);
 
-  int response;
-  if (!result->GetAsInteger(&response) || response != 1) {
+  if (!result->is_int() || result->GetInt() != 1) {
     return Status(kSessionNotCreated,
                   "unexpected response from browser");
   }
