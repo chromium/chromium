@@ -2307,8 +2307,6 @@ bool LocalFrameView::UpdateLifecycleToPrePaintClean(
 
 bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(
     DocumentUpdateReason reason) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return UpdateAllLifecyclePhasesExceptPaint(reason);
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kCompositingInputsClean, reason);
 }
