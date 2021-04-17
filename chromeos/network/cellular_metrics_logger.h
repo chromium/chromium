@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     ~ConnectionInfo();
     const std::string network_guid;
     base::Optional<bool> is_connected;
-    base::Optional<bool> is_connecting;
+    bool is_connecting = false;
     base::Optional<base::TimeTicks> last_disconnect_request_time;
     base::Optional<base::TimeTicks> last_connect_start_time;
   };
