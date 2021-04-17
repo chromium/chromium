@@ -212,6 +212,8 @@ class V8VarConverterTest : public testing::Test {
     v8::Local<v8::Context> context =
         v8::Local<v8::Context>::New(isolate_, context_);
     v8::Context::Scope context_scope(context);
+    v8::MicrotasksScope microtasks(isolate_,
+                                   v8::MicrotasksScope::kDoNotRunMicrotasks);
     v8::Local<v8::Value> v8_result;
     if (!converter_->ToV8Value(var, context, &v8_result))
       return false;
@@ -339,6 +341,8 @@ TEST_F(V8VarConverterTest, Cycles) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Var->V8 conversion.
   {

@@ -494,6 +494,8 @@ TEST_F(V8ValueConverterImplTest, WeirdTypes) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Local<v8::RegExp> regex(
       v8::RegExp::New(context, v8::String::NewFromUtf8Literal(isolate_, "."),
@@ -705,6 +707,8 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   V8ValueConverterImpl converter;
 
@@ -859,6 +863,8 @@ TEST_F(V8ValueConverterImplTest, ObjectsWithClashingIdentityHash) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   V8ValueConverterImpl converter;
 
   // We check that the converter checks identity correctly by disabling the
@@ -893,6 +899,8 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   V8ValueConverterImpl converter;
 
   // Create a recursive array.
@@ -1001,6 +1009,8 @@ TEST_F(V8ValueConverterImplTest, MaxRecursionDepth) {
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Must larger than kMaxRecursionDepth in v8_value_converter_impl.cc.
   int kDepth = 1000;
