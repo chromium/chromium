@@ -96,9 +96,10 @@ def backward_compatible_api_func(cg_context):
 
 def callback_function_name(cg_context,
                            overload_index=None,
-                           for_cross_origin=False,
-                           no_alloc_direct_call=False):
+                           for_cross_origin=False):
     assert isinstance(cg_context, CodeGenContext)
+    assert overload_index is None or isinstance(overload_index, int)
+    assert isinstance(for_cross_origin, bool)
 
     def _cxx_name(name):
         """
@@ -152,8 +153,10 @@ def callback_function_name(cg_context,
         suffix = "CrossOrigin"
     elif overload_index is not None:
         suffix = "Overload{}".format(overload_index + 1)
-    elif no_alloc_direct_call:
-        suffix = "NoAllocDirectCallback"
+    elif cg_context.no_alloc_direct_call:
+        suffix = "NoAllocDirectCallCallback"
+    elif cg_context.no_alloc_direct_call_for_testing:
+        suffix = "NoAllocDirectCallForTestingCallback"
     else:
         suffix = "Callback"
 
@@ -269,6 +272,7 @@ def bind_callback_local_vars(code_node, cg_context):
 
     S = SymbolNode
     T = TextNode
+    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
 
     local_vars = []
     template_vars = {}
@@ -377,22 +381,42 @@ def bind_callback_local_vars(code_node, cg_context):
         S("exception_state_context_type", _format(pattern, _1=_1)))
 
     # exception_state
-    pattern = "ExceptionState ${exception_state}({_1});{_2}"
-    _1 = ["${isolate}", "${exception_state_context_type}"]
-    if cg_context.is_named_constructor:
-        _1.append("\"{}\"".format(cg_context.property_.identifier))
-    else:
-        _1.append("${class_like_name}")
-    if (cg_context.property_ and cg_context.property_.identifier
-            and not cg_context.constructor_group):
-        _1.append("${property_name}")
-    _2 = ""
-    if cg_context.is_return_type_promise_type:
-        _2 = ("\n"
-              "ExceptionToRejectPromiseScope reject_promise_scope"
-              "(${info}, ${exception_state});")
+    def create_exception_state(symbol_node):
+        node = SymbolDefinitionNode(symbol_node)
+        pattern = ("{exception_state_type} ${exception_state}({init_args});"
+                   "{exception_to_reject_promise}")
+        exception_state_type = "ExceptionState"
+        init_args = ["${isolate}", "${exception_state_context_type}"]
+        exception_to_reject_promise = ""
+        if (cg_context.no_alloc_direct_call
+                or cg_context.no_alloc_direct_call_for_testing):
+            exception_state_type = "NoAllocDirectCallExceptionState"
+            init_args.insert(0, "${blink_receiver}")
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
+                ]))
+        if cg_context.is_named_constructor:
+            init_args.append("\"{}\"".format(cg_context.property_.identifier))
+        else:
+            init_args.append("${class_like_name}")
+        if (cg_context.property_ and cg_context.property_.identifier
+                and not cg_context.constructor_group):
+            init_args.append("${property_name}")
+        if cg_context.is_return_type_promise_type:
+            exception_to_reject_promise = (
+                "\n"
+                "ExceptionToRejectPromiseScope reject_promise_scope"
+                "(${info}, ${exception_state});")
+        node.append(
+            F(pattern,
+              exception_state_type=exception_state_type,
+              init_args=", ".join(init_args),
+              exception_to_reject_promise=exception_to_reject_promise))
+        return node
+
     local_vars.append(
-        S("exception_state", _format(pattern, _1=", ".join(_1), _2=_2)))
+        S("exception_state", definition_constructor=create_exception_state))
 
     # blink_receiver
     if cg_context.class_like.identifier == "Window":
@@ -673,7 +697,23 @@ def _make_blink_api_call(code_node,
     else:
         func_designator = _format("${blink_receiver}->{}", func_name)
 
-    return _format("{_1}({_2})", _1=func_designator, _2=", ".join(arguments))
+    expr = _format("{_1}({_2})", _1=func_designator, _2=", ".join(arguments))
+    if cg_context.no_alloc_direct_call_for_testing:
+        expr = "\n".join([
+            # GCC extension: a compound statement enclosed in parentheses
+            "({",
+            "ThreadState::NoAllocationScope nadc_no_allocation_scope"
+            "(ThreadState::Current());",
+            "v8::Isolate::DisallowJavascriptExecutionScope "
+            "nadc_disallow_js_exec_scope"
+            "(${isolate}, "
+            "v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);",
+            "blink::NoAllocDirectCallScope nadc_nadc_scope"
+            "(${blink_receiver}, &${v8_fast_api_callback_options});",
+            _format("{};", expr),
+            "})",
+        ])
+    return expr
 
 
 def bind_return_value(code_node, cg_context, overriding_args=None):
@@ -1044,8 +1084,8 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
 
     def make_node(pattern):
         value = _format("${info}[{}]", arg_index)
-        func_name = callback_function_name(cg_context,
-                                           func_like.overload_index)
+        func_name = callback_function_name(
+            cg_context, overload_index=func_like.overload_index)
         return TextNode(_format(pattern, value=value, func_name=func_name))
 
     def dispatch_if(expr):
@@ -1693,6 +1733,11 @@ def _make_empty_callback_def(cg_context, function_name):
         ]
         arg_names = ["v8_property_name", "v8_property_value", "info"]
 
+    if cg_context.no_alloc_direct_call_for_testing:
+        arg_decls.append(
+            "v8::FastApiCallbackOptions& v8_fast_api_callback_options")
+        arg_names.append("v8_fast_api_callback_options")
+
     func_def = CxxFuncDefNode(
         name=function_name, arg_decls=arg_decls, return_type="void")
     func_def.set_base_template_vars(cg_context.template_bindings())
@@ -2026,7 +2071,9 @@ def make_constructor_callback_def(cg_context, function_name):
         cgc = cg_context.make_copy(constructor=constructor)
         node.extend([
             make_constructor_function_def(
-                cgc, callback_function_name(cgc, constructor.overload_index)),
+                cgc,
+                callback_function_name(
+                    cgc, overload_index=constructor.overload_index)),
             EmptyNode(),
         ])
     node.append(
@@ -2213,7 +2260,66 @@ NoAllocDirectCallExceptionState no_alloc_exception_state(
     return func_def
 
 
+def make_no_alloc_direct_call_for_testing_callback_def(cg_context,
+                                                       function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(function_name, str)
+
+    func_def = _make_empty_callback_def(cg_context, function_name)
+    body = func_def.body
+
+    body.extend([
+        make_v8_set_return_value(cg_context),
+    ])
+
+    return ListNode([
+        TextNode("#if DCHECK_IS_ON()"),
+        func_def,
+        TextNode("#endif  // DCHECK_IS_ON()"),
+    ])
+
+
+def make_no_alloc_direct_call_for_testing_call(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    T = TextNode
+    F = lambda *args, **kwargs: T(_format(*args, **kwargs))
+
+    if "NoAllocDirectCall" not in cg_context.operation.extended_attributes:
+        return None
+
+    scope = SymbolScopeNode()
+    scope.register_code_symbol(
+        SymbolNode(
+            "v8_fast_api_callback_options",
+            "v8::FastApiCallbackOptions ${v8_fast_api_callback_options}"
+            " = v8::FastApiCallbackOptions::CreateForTesting(${isolate});"))
+    scope.extend([
+        F(
+            "{}(${info}, ${v8_fast_api_callback_options});",
+            callback_function_name(
+                cg_context.make_copy(no_alloc_direct_call_for_testing=True))),
+        CxxUnlikelyIfNode(cond="${blink_receiver}->HasDeferredActions()",
+                          body=[
+                              T("${blink_receiver}->FlushDeferredActions();"),
+                              T("return;"),
+                          ]),
+        CxxLikelyIfNode(cond="!${v8_fast_api_callback_options}.fallback",
+                        body=T("return;")),
+    ])
+
+    return ListNode([
+        T("#if DCHECK_IS_ON()"),
+        CxxUnlikelyIfNode(cond=("RuntimeEnabledFeatures::"
+                                "FakeNoAllocDirectCallForTestingEnabled()"),
+                          body=scope),
+        T("#endif  // DCHECK_IS_ON()"),
+    ])
+
+
 def make_no_alloc_direct_call_flush_deferred_actions(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
     if "NoAllocDirectCall" not in cg_context.operation.extended_attributes:
         return None
 
@@ -2268,6 +2374,8 @@ def make_operation_function_def(cg_context, function_name):
         EmptyNode(),
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
+        make_no_alloc_direct_call_for_testing_call(cg_context),
+        EmptyNode(),
         make_check_security_of_return_value(cg_context),
         make_v8_set_return_value(cg_context),
         make_report_high_entropy(cg_context),
@@ -2290,15 +2398,26 @@ def make_operation_callback_def(cg_context,
             or len(operation_group) == 1)
 
     if "NoAllocDirectCall" in operation_group.extended_attributes:
-        return ListNode([
-            make_operation_function_def(
-                cg_context.make_copy(operation=operation_group[0]),
-                function_name),
-            EmptyNode(),
+        nodes = ListNode()
+        cgc = cg_context.make_copy(operation=operation_group[0],
+                                   no_alloc_direct_call=True)
+        nodes.extend([
             make_no_alloc_direct_call_callback_def(
-                cg_context.make_copy(operation=operation_group[0]),
-                no_alloc_direct_callback_name),
+                cgc, no_alloc_direct_callback_name),
+            EmptyNode(),
         ])
+        cgc = cg_context.make_copy(operation=operation_group[0],
+                                   no_alloc_direct_call_for_testing=True)
+        nodes.extend([
+            make_no_alloc_direct_call_for_testing_callback_def(
+                cgc, callback_function_name(cgc)),
+            EmptyNode(),
+        ])
+        cgc = cg_context.make_copy(operation=operation_group[0])
+        nodes.extend([
+            make_operation_function_def(cgc, function_name),
+        ])
+        return nodes
 
     if len(operation_group) == 1:
         return make_operation_function_def(
@@ -2309,7 +2428,9 @@ def make_operation_callback_def(cg_context,
         cgc = cg_context.make_copy(operation=operation)
         node.extend([
             make_operation_function_def(
-                cgc, callback_function_name(cgc, operation.overload_index)),
+                cgc,
+                callback_function_name(
+                    cgc, overload_index=operation.overload_index)),
             EmptyNode(),
         ])
     node.append(
@@ -5005,7 +5126,7 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
             operation_group=operation_group, for_world=world)
         op_callback_name = callback_function_name(cgc)
         no_alloc_direct_callback_name = (
-            callback_function_name(cgc, no_alloc_direct_call=True)
+            callback_function_name(cgc.make_copy(no_alloc_direct_call=True))
             if "NoAllocDirectCall" in operation_group.extended_attributes else
             None)
         op_callback_node = make_operation_callback_def(

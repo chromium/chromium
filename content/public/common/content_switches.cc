@@ -340,7 +340,7 @@ const char kEnableExperimentalWebPlatformFeatures[] =
 // it will probably even make things a bit slower.  Its purpose is to guarantee
 // test coverage for the blink side of V8 Fast API calls, independently of
 // whether or not V8 actually activates the fast path, which depends on
-// heuristics.
+// heuristics.  This flag is effective only when DCHECKs are enabled.
 const char kEnableFakeNoAllocDirectCallForTesting[] =
     "enable-fake-no-alloc-direct-call-for-testing";
 
