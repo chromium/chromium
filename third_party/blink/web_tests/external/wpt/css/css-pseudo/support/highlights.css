@@ -1,0 +1,13 @@
+/**
+ * Container for the interesting part of a highlight reftest, to be
+ * used on both the test page and any reference pages.
+ */
+.highlight_reftest {
+    /*
+        https://drafts.csswg.org/css-pseudo-4/#highlight-bounds
+        For text, the corresponding overlay must cover at least
+        the entire em box and may extend further above/below the
+        em box to the line box edges.
+    */
+    line-height: 1;
+}
