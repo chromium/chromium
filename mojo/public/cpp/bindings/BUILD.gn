@@ -210,6 +210,7 @@ component("bindings") {
     "sync_event_watcher.h",
     "sync_handle_registry.h",
     "sync_handle_watcher.h",
+    "thread_safe_proxy.h",
     "unique_associated_receiver_set.h",
     "unique_ptr_impl_ref_traits.h",
     "unique_receiver_set.h",

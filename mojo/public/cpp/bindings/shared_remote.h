@@ -39,19 +39,8 @@ class ThreadSafeForwarder : public internal::ThreadSafeForwarderBase {
   // Any message sent through this forwarding interface will dispatch its reply,
   // if any, back to the sequence which called the corresponding interface
   // method.
-  ThreadSafeForwarder(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      ForwardMessageCallback forward,
-      ForwardMessageWithResponderCallback forward_with_responder,
-      ForceAsyncSendCallback force_async_send,
-      const AssociatedGroup& associated_group)
-      : ThreadSafeForwarderBase(std::move(task_runner),
-                                std::move(forward),
-                                std::move(forward_with_responder),
-                                std::move(force_async_send),
-                                associated_group),
-        proxy_(this) {}
-
+  explicit ThreadSafeForwarder(scoped_refptr<ThreadSafeProxy> thread_safe_proxy)
+      : ThreadSafeForwarderBase(std::move(thread_safe_proxy)), proxy_(this) {}
   ~ThreadSafeForwarder() override = default;
 
   ProxyType& proxy() { return proxy_; }
@@ -102,19 +91,12 @@ class SharedRemoteBase
                   scoped_refptr<base::SequencedTaskRunner> task_runner)
         : task_runner_(std::move(task_runner)),
           remote_(std::move(remote), task_runner_),
-          associated_group_(*remote_.internal_state()->associated_group()) {
-      // By default we force all messages to behave as if async within the
-      // Remote, as SharedRemote implements its own waiting mechanism to block
-      // only the calling thread when making sync calls.
-      remote_.internal_state()->force_outgoing_messages_async(true);
-    }
+          associated_group_(*remote_.internal_state()->associated_group()) {}
 
     std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder() {
       return std::make_unique<ThreadSafeForwarder<InterfaceType>>(
-          task_runner_, base::BindRepeating(&RemoteWrapper::Accept, this),
-          base::BindRepeating(&RemoteWrapper::AcceptWithResponder, this),
-          base::BindRepeating(&RemoteWrapper::ForceAsyncSend, this),
-          associated_group_);
+          remote_.internal_state()->CreateThreadSafeProxy(
+              base::MakeRefCounted<ProxyTarget>(this)));
     }
 
     void set_disconnect_handler(
@@ -149,19 +131,20 @@ class SharedRemoteBase
 
     ~RemoteWrapper() = default;
 
-    void Accept(Message message) {
-      remote_.internal_state()->ForwardMessage(std::move(message));
-    }
+    // This provides a roundabout way for a ThreadSafeProxy to hold a reference
+    // back to the RemoteWrapper which created it. The purpose is to ensure that
+    // the RemoteWrapper lives at least as long as the ThreadSafeProxy, which in
+    // turn ensures that it lives at least as long as any outgoing message task.
+    class ProxyTarget : public ThreadSafeProxy::Target {
+     public:
+      explicit ProxyTarget(scoped_refptr<RemoteWrapper> wrapper)
+          : wrapper_(std::move(wrapper)) {}
 
-    void AcceptWithResponder(Message message,
-                             std::unique_ptr<MessageReceiver> responder) {
-      remote_.internal_state()->ForwardMessageWithResponder(
-          std::move(message), std::move(responder));
-    }
+     private:
+      ~ProxyTarget() override = default;
 
-    void ForceAsyncSend(bool force) {
-      remote_.internal_state()->force_outgoing_messages_async(force);
-    }
+      const scoped_refptr<RemoteWrapper> wrapper_;
+    };
 
     void DeleteOnCorrectThread() const {
       if (!task_runner_->RunsTasksInCurrentSequence()) {

@@ -22,8 +22,10 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
@@ -32,6 +34,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 
 namespace mojo {
 
@@ -87,6 +90,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   AssociatedGroup* associated_group();
 
+  scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
+      scoped_refptr<ThreadSafeProxy::Target> target);
+
   // Sets a MessageFilter which can filter a message after validation but
   // before dispatch.
   void SetFilter(std::unique_ptr<MessageFilter> filter);
@@ -114,10 +120,23 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   bool AcceptWithResponder(Message* message,
                            std::unique_ptr<MessageReceiver> responder) override;
 
+  // Controls how sync messages are forwarded.
+  enum class SyncSendMode {
+    // Allows the InterfaceEndpointClient to do its own internal sync wait when
+    // sending a sync message. Used in the common case where the reply is waited
+    // upon from the InterfaceEndpointClient's bound sequence.
+    kAllowSyncWait,
+
+    // Forces the InterfaceEndpointClient to send a sync message as if it were
+    // async, leaving any waiting up to the caller.
+    kForceAsync,
+  };
+
   // Implementations used by both SendControlMessage* and Accept* above.
   bool SendMessage(Message* message, bool is_control_message);
   bool SendMessageWithResponder(Message* message,
                                 bool is_control_message,
+                                SyncSendMode sync_send_mode,
                                 std::unique_ptr<MessageReceiver> responder);
 
   // The following methods are called by the router. They must be called
@@ -166,10 +185,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void MaybeSendNotifyIdle();
 
   const char* interface_name() const { return interface_name_; }
-
-  void force_outgoing_messages_async(bool force) {
-    force_outgoing_messages_async_ = force;
-  }
 
 #if DCHECK_IS_ON()
   void SetNextCallLocation(const base::Location& location) {
@@ -281,17 +296,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // is actually transmitted for it.
   base::Location next_call_location_;
 #endif
-
-  // If set to |true|, the endpoint ignores the sync flag when sending messages.
-  // This means that all messages are sent as if they were async, and all
-  // incoming replies are treated as if they replied to an async message. It is
-  // NOT appropriate to call generated sync method signatures (i.e. mojom
-  // interface methods with output arguments) on such endpoints.
-  //
-  // This exists only to facilitate APIs forwarding opaque sync messages through
-  // the endpoint from some other sequence which blocks on the reply, such as
-  // with sync calls on a SharedRemote.
-  bool force_outgoing_messages_async_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

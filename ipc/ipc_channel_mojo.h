@@ -104,10 +104,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
       const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker);
 
-  void ForwardMessageFromThreadSafePtr(mojo::Message message);
-  void ForwardMessageWithResponderFromThreadSafePtr(
-      mojo::Message message,
-      std::unique_ptr<mojo::MessageReceiver> responder);
+  void ForwardMessage(mojo::Message message);
 
   // Channel::AssociatedInterfaceSupport:
   std::unique_ptr<mojo::ThreadSafeForwarder<mojom::Channel>>
