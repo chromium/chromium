@@ -57,24 +57,22 @@ Status ParseString(std::string* to_set,
 Status ParseInterval(int* to_set,
                      const base::Value& option,
                      Capabilities* capabilities) {
-  int parsed_int = 0;
-  if (!option.GetAsInteger(&parsed_int))
+  if (!option.is_int())
     return Status(kInvalidArgument, "must be an integer");
-  if (parsed_int <= 0)
+  if (option.GetInt() <= 0)
     return Status(kInvalidArgument, "must be positive");
-  *to_set = parsed_int;
+  *to_set = option.GetInt();
   return Status(kOk);
 }
 
 Status ParseTimeDelta(base::TimeDelta* to_set,
                       const base::Value& option,
                       Capabilities* capabilities) {
-  int milliseconds = 0;
-  if (!option.GetAsInteger(&milliseconds))
+  if (!option.is_int())
     return Status(kInvalidArgument, "must be an integer");
-  if (milliseconds < 0)
+  if (option.GetInt() < 0)
     return Status(kInvalidArgument, "must be positive or zero");
-  *to_set = base::TimeDelta::FromMilliseconds(milliseconds);
+  *to_set = base::TimeDelta::FromMilliseconds(option.GetInt());
   return Status(kOk);
 }
 
@@ -406,15 +404,14 @@ Status ParsePortNumber(int* to_set,
                      const base::Value& option,
                      Capabilities* capabilities) {
   int max_port_number = 65535;
-  int parsed_int = 0;
-  if (!option.GetAsInteger(&parsed_int))
+  if (!option.is_int())
     return Status(kInvalidArgument, "must be an integer");
-  if (parsed_int <= 0)
+  if (option.GetInt() <= 0)
     return Status(kInvalidArgument, "must be positive");
-  if (parsed_int > max_port_number)
+  if (option.GetInt() > max_port_number)
     return Status(kInvalidArgument, "must be less than or equal to " +
                                     base::NumberToString(max_port_number));
-  *to_set = parsed_int;
+  *to_set = option.GetInt();
   return Status(kOk);
 }
 
