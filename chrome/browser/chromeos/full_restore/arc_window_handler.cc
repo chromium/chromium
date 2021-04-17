@@ -68,10 +68,21 @@ ArcWindowHandler::ArcWindowHandler() {
 
 ArcWindowHandler::~ArcWindowHandler() = default;
 
+void ArcWindowHandler::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+void ArcWindowHandler::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+bool ArcWindowHandler::HasObserver(Observer* observer) {
+  return observer_list_.HasObserver(observer);
+}
+
 void ArcWindowHandler::OnAppInstanceConnected() {
   // TODO(sstan): Send existed ghost window info to ARC once ghost window
   // has been introduced.
-  app_instance_connected_ = true;
+  for (auto& observer : observer_list_)
+    observer.OnAppInstanceConnected();
 }
 
 }  // namespace full_restore

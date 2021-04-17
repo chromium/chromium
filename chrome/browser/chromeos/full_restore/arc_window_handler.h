@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -49,21 +51,33 @@ class ArcWindowHandler {
     ShellSurfaceMap* session_id_map_;
   };
 
+  // This class is used to notify observers that AppInstance is connected.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Observer for app instance connection ready.
+    virtual void OnAppInstanceConnected() {}
+
+   protected:
+    ~Observer() override = default;
+  };
+
  public:
   ArcWindowHandler();
   ArcWindowHandler(const ArcWindowHandler&) = delete;
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
+
   void OnAppInstanceConnected();
 
  private:
-  // The ghost windows would not send window info to app instance if the
-  // instance had not connected yet.
-  bool app_instance_connected_ = false;
-
   // Map window session id to ClientControlledShellSurface.
   ShellSurfaceMap session_id_to_shell_surface_;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace full_restore
