@@ -52,15 +52,23 @@ void GPURenderPassEncoder::setBindGroup(
                                            dynamic_offsets_data_length, data);
 }
 
-void GPURenderPassEncoder::setBlendColor(DoubleSequenceOrGPUColorDict& color,
-                                         ExceptionState& exception_state) {
+void GPURenderPassEncoder::setBlendConstant(DoubleSequenceOrGPUColorDict& color,
+                                            ExceptionState& exception_state) {
   if (color.IsDoubleSequence() && color.GetAsDoubleSequence().size() != 4) {
     exception_state.ThrowRangeError("color size must be 4");
     return;
   }
 
   WGPUColor dawn_color = AsDawnType(&color);
-  GetProcs().renderPassEncoderSetBlendColor(GetHandle(), &dawn_color);
+  GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
+}
+
+void GPURenderPassEncoder::setBlendColor(DoubleSequenceOrGPUColorDict& color,
+                                         ExceptionState& exception_state) {
+  device_->AddConsoleWarning(
+      "setBlendColor is deprecated. Use setBlendConstant instead.");
+
+  setBlendConstant(color, exception_state);
 }
 
 void GPURenderPassEncoder::executeBundles(

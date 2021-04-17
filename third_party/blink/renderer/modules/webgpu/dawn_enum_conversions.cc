@@ -532,11 +532,11 @@ WGPUBlendFactor AsDawnEnum<WGPUBlendFactor>(const WTF::String& webgpu_enum) {
   if (webgpu_enum == "one") {
     return WGPUBlendFactor_One;
   }
-  if (webgpu_enum == "src-color") {
-    return WGPUBlendFactor_SrcColor;
+  if (webgpu_enum == "src") {
+    return WGPUBlendFactor_Src;
   }
-  if (webgpu_enum == "one-minus-src-color") {
-    return WGPUBlendFactor_OneMinusSrcColor;
+  if (webgpu_enum == "one-minus-src") {
+    return WGPUBlendFactor_OneMinusSrc;
   }
   if (webgpu_enum == "src-alpha") {
     return WGPUBlendFactor_SrcAlpha;
@@ -544,11 +544,11 @@ WGPUBlendFactor AsDawnEnum<WGPUBlendFactor>(const WTF::String& webgpu_enum) {
   if (webgpu_enum == "one-minus-src-alpha") {
     return WGPUBlendFactor_OneMinusSrcAlpha;
   }
-  if (webgpu_enum == "dst-color") {
-    return WGPUBlendFactor_DstColor;
+  if (webgpu_enum == "dst") {
+    return WGPUBlendFactor_Dst;
   }
-  if (webgpu_enum == "one-minus-dst-color") {
-    return WGPUBlendFactor_OneMinusDstColor;
+  if (webgpu_enum == "one-minus-dst") {
+    return WGPUBlendFactor_OneMinusDst;
   }
   if (webgpu_enum == "dst-alpha") {
     return WGPUBlendFactor_DstAlpha;
@@ -558,6 +558,26 @@ WGPUBlendFactor AsDawnEnum<WGPUBlendFactor>(const WTF::String& webgpu_enum) {
   }
   if (webgpu_enum == "src-alpha-saturated") {
     return WGPUBlendFactor_SrcAlphaSaturated;
+  }
+  if (webgpu_enum == "constant") {
+    return WGPUBlendFactor_Constant;
+  }
+  if (webgpu_enum == "one-minus-constant") {
+    return WGPUBlendFactor_OneMinusConstant;
+  }
+
+  // Deprecated Formats
+  if (webgpu_enum == "src-color") {
+    return WGPUBlendFactor_SrcColor;
+  }
+  if (webgpu_enum == "one-minus-src-color") {
+    return WGPUBlendFactor_OneMinusSrcColor;
+  }
+  if (webgpu_enum == "dst-color") {
+    return WGPUBlendFactor_DstColor;
+  }
+  if (webgpu_enum == "one-minus-dst-color") {
+    return WGPUBlendFactor_OneMinusDstColor;
   }
   if (webgpu_enum == "blend-color") {
     return WGPUBlendFactor_BlendColor;

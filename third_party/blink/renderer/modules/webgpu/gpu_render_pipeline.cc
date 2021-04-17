@@ -32,24 +32,57 @@ namespace blink {
 
 namespace {
 
-WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc) {
+const char* GetUpdatedBlendFactor(WGPUBlendFactor blend_factor) {
+  switch (blend_factor) {
+    case WGPUBlendFactor_SrcColor:
+      return "src";
+    case WGPUBlendFactor_OneMinusSrcColor:
+      return "one-minus-src";
+    case WGPUBlendFactor_DstColor:
+      return "dst";
+    case WGPUBlendFactor_OneMinusDstColor:
+      return "one-minus-dst";
+    case WGPUBlendFactor_BlendColor:
+      return "constant";
+    case WGPUBlendFactor_OneMinusBlendColor:
+      return "one-minus-constant";
+    default:
+      return "";
+  }
+}
+
+WGPUBlendFactor AsDawnBlendFactor(const String& blend_factor,
+                                  GPUDevice* device) {
+  WGPUBlendFactor dawn_blend_factor = AsDawnEnum<WGPUBlendFactor>(blend_factor);
+  if (dawn_blend_factor >= WGPUBlendFactor_SrcColor && device != nullptr) {
+    WTF::String message = String("The blend factor '") +
+                          IDLEnumAsString(blend_factor) +
+                          String("' has been deprecated in favor of '") +
+                          GetUpdatedBlendFactor(dawn_blend_factor) + "'.";
+    device->AddConsoleWarning(message.Utf8().data());
+  }
+  return dawn_blend_factor;
+}
+
+WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc,
+                              GPUDevice* device) {
   DCHECK(webgpu_desc);
 
   WGPUBlendComponent dawn_desc = {};
-  dawn_desc.dstFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->dstFactor());
-  dawn_desc.srcFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->srcFactor());
+  dawn_desc.dstFactor = AsDawnBlendFactor(webgpu_desc->dstFactor(), device);
+  dawn_desc.srcFactor = AsDawnBlendFactor(webgpu_desc->srcFactor(), device);
   dawn_desc.operation =
       AsDawnEnum<WGPUBlendOperation>(webgpu_desc->operation());
 
   return dawn_desc;
 }
 
-WGPUBlendState AsDawnType(const GPUBlendState* webgpu_desc) {
+WGPUBlendState AsDawnType(const GPUBlendState* webgpu_desc, GPUDevice* device) {
   DCHECK(webgpu_desc);
 
   WGPUBlendState dawn_desc = {};
-  dawn_desc.color = AsDawnType(webgpu_desc->color());
-  dawn_desc.alpha = AsDawnType(webgpu_desc->alpha());
+  dawn_desc.color = AsDawnType(webgpu_desc->color(), device);
+  dawn_desc.alpha = AsDawnType(webgpu_desc->alpha(), device);
 
   return dawn_desc;
 }
@@ -62,8 +95,11 @@ WGPUColorStateDescriptor AsDawnType(
 
   WGPUColorStateDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.alphaBlend = AsDawnType(webgpu_desc->alphaBlend());
-  dawn_desc.colorBlend = AsDawnType(webgpu_desc->colorBlend());
+  // By not passing a device here we won't get deprecation warnings for the
+  // blend factors, but this path is only taken when using the deprecated
+  // renderPipelineDescriptor format, which carries it's own warning.
+  dawn_desc.alphaBlend = AsDawnType(webgpu_desc->alphaBlend(), nullptr);
+  dawn_desc.colorBlend = AsDawnType(webgpu_desc->colorBlend(), nullptr);
   dawn_desc.writeMask =
       AsDawnEnum<WGPUColorWriteMask>(webgpu_desc->writeMask());
   dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
@@ -359,7 +395,8 @@ void GPUVertexStateAsWGPUVertexState(
   dawn_desc->vertexBuffers = dawn_vertex_buffers->data();
 }
 
-void GPUFragmentStateAsWGPUFragmentState(const GPUFragmentState* descriptor,
+void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
+                                         const GPUFragmentState* descriptor,
                                          OwnedFragmentState* dawn_fragment) {
   DCHECK(descriptor);
   DCHECK(dawn_fragment);
@@ -384,7 +421,8 @@ void GPUFragmentStateAsWGPUFragmentState(const GPUFragmentState* descriptor,
   for (wtf_size_t i = 0; i < descriptor->targets().size(); ++i) {
     const GPUColorTargetState* color_target = descriptor->targets()[i];
     if (color_target->hasBlend()) {
-      dawn_fragment->blend_states[i] = AsDawnType(color_target->blend());
+      dawn_fragment->blend_states[i] =
+          AsDawnType(color_target->blend(), device);
       dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];
     }
   }
@@ -564,7 +602,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
 
   // Fragment
   if (webgpu_desc->hasFragment()) {
-    GPUFragmentStateAsWGPUFragmentState(webgpu_desc->fragment(),
+    GPUFragmentStateAsWGPUFragmentState(device, webgpu_desc->fragment(),
                                         &dawn_desc_info->fragment);
     dawn_desc_info->dawn_desc.fragment = &dawn_desc_info->fragment.dawn_desc;
   }
