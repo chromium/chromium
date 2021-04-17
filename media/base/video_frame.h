@@ -17,7 +17,7 @@
 #include "base/check_op.h"
 #include "base/hash/md5.h"
 #include "base/macros.h"
-#include "base/memory/aligned_memory.h"
+#include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/optional.h"
@@ -641,7 +641,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // alignment for each individual plane.
   static gfx::Size CommonAlignment(VideoPixelFormat format);
 
-  void AllocateMemory(bool zero_initialize_memory);
+  // Tries to allocate the requisite amount of memory for this frame. Returns
+  // false if this would cause an out of memory error.
+  WARN_UNUSED_RESULT bool AllocateMemory(bool zero_initialize_memory);
 
   // Calculates plane size.
   // It first considers buffer size layout_ object provides. If layout's
@@ -733,6 +735,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Sampler conversion information which is used in vulkan context for android.
   base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+
+  // Allocation which makes up |data_| planes for self-allocated frames.
+  std::unique_ptr<uint8_t, base::FreeDeleter> private_data_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoFrame);
 };

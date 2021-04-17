@@ -14,7 +14,7 @@
 #include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
+#include "base/process/memory.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -1422,8 +1422,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameWithLayout(
 
   scoped_refptr<VideoFrame> frame(new VideoFrame(
       std::move(layout), storage, visible_rect, natural_size, timestamp));
-  frame->AllocateMemory(zero_initialize_memory);
-  return frame;
+  return frame->AllocateMemory(zero_initialize_memory) ? frame : nullptr;
 }
 
 // static
@@ -1438,20 +1437,34 @@ gfx::Size VideoFrame::CommonAlignment(VideoPixelFormat format) {
   return gfx::Size(max_sample_width, max_sample_height);
 }
 
-void VideoFrame::AllocateMemory(bool zero_initialize_memory) {
+bool VideoFrame::AllocateMemory(bool zero_initialize_memory) {
   DCHECK_EQ(storage_type_, STORAGE_OWNED_MEMORY);
   static_assert(0 == kYPlane, "y plane data must be index 0");
 
   std::vector<size_t> plane_size = CalculatePlaneSize();
-  const size_t total_buffer_size =
+  const size_t buffer_size =
       std::accumulate(plane_size.begin(), plane_size.end(), 0u);
+  const size_t allocation_size =
+      buffer_size + (layout_.buffer_addr_align() - 1);
 
-  uint8_t* data = reinterpret_cast<uint8_t*>(
-      base::AlignedAlloc(total_buffer_size, layout_.buffer_addr_align()));
+  uint8_t* data = nullptr;
   if (zero_initialize_memory) {
-    memset(data, 0, total_buffer_size);
+    if (!base::UncheckedCalloc(1, allocation_size,
+                               reinterpret_cast<void**>(&data)) ||
+        !data) {
+      return false;
+    }
+  } else {
+    if (!base::UncheckedMalloc(allocation_size,
+                               reinterpret_cast<void**>(&data)) ||
+        !data) {
+      return false;
+    }
   }
-  AddDestructionObserver(base::BindOnce(&base::AlignedFree, data));
+  private_data_.reset(data);
+
+  data = base::bits::Align(data, layout_.buffer_addr_align());
+  DCHECK_LE(data + buffer_size, private_data_.get() + allocation_size);
 
   // Note that if layout.buffer_sizes is specified, color planes' layout is the
   // same as buffers'. See CalculatePlaneSize() for detail.
@@ -1459,6 +1472,8 @@ void VideoFrame::AllocateMemory(bool zero_initialize_memory) {
     data_[plane] = data + offset;
     offset += plane_size[plane];
   }
+
+  return true;
 }
 
 bool VideoFrame::IsValidSharedMemoryFrame() const {
