@@ -165,7 +165,9 @@ void PrefMember<int>::UpdatePref(const int& value) {
 template <>
 bool PrefMember<int>::Internal::UpdateValueInternal(
     const base::Value& value) const {
-  return value.GetAsInteger(&value_);
+  if (value.is_int())
+    value_ = value.GetInt();
+  return value.is_int();
 }
 
 template <>
