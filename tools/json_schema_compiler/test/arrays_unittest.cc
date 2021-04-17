@@ -215,9 +215,8 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
       arrays::AnyArray::Params::Create(*params_value));
   EXPECT_TRUE(params.get());
   ASSERT_EQ(3u, params->anys.size());
-  int int_temp = 0;
-  EXPECT_TRUE(params->anys[0]->GetAsInteger(&int_temp));
-  EXPECT_EQ(1, int_temp);
+  ASSERT_TRUE(params->anys[0]->is_int());
+  EXPECT_EQ(1, params->anys[0]->GetInt());
 }
 
 TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
