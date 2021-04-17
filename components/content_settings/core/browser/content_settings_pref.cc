@@ -39,12 +39,11 @@ bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
   const content_settings::ContentSettingsInfo* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
   if (info) {
-    int setting;
-    if (!value->GetAsInteger(&setting))
+    if (!value->is_int())
       return false;
-    if (setting == CONTENT_SETTING_DEFAULT)
+    if (value->GetInt() == CONTENT_SETTING_DEFAULT)
       return false;
-    return info->IsSettingValid(IntToContentSetting(setting));
+    return info->IsSettingValid(IntToContentSetting(value->GetInt()));
   }
 
   // TODO(raymes): We should permit different types of base::Value for
