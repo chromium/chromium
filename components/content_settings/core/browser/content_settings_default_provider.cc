@@ -51,10 +51,7 @@ ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value* initial_default = info->initial_default_value();
   if (!initial_default)
     return CONTENT_SETTING_DEFAULT;
-  int result = 0;
-  bool success = initial_default->GetAsInteger(&result);
-  DCHECK(success);
-  return static_cast<ContentSetting>(result);
+  return static_cast<ContentSetting>(initial_default->GetInt());
 }
 
 ContentSetting GetDefaultValue(ContentSettingsType type) {
@@ -323,10 +320,7 @@ void DefaultProvider::WriteToPref(ContentSettingsType content_type,
     return;
   }
 
-  int int_value = GetDefaultValue(content_type);
-  bool is_integer = value->GetAsInteger(&int_value);
-  DCHECK(is_integer);
-  prefs_->SetInteger(GetPrefName(content_type), int_value);
+  prefs_->SetInteger(GetPrefName(content_type), value->GetInt());
 }
 
 void DefaultProvider::OnPreferenceChanged(const std::string& name) {
