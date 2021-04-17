@@ -137,9 +137,8 @@ TEST(EvaluateScriptAndGetValue, Ok) {
   Status status = internal::EvaluateScriptAndGetValue(
       &client, 0, std::string(), base::TimeDelta::Max(), false, &result);
   ASSERT_EQ(kOk, status.code());
-  int value;
-  ASSERT_TRUE(result && result->GetAsInteger(&value));
-  ASSERT_EQ(1, value);
+  ASSERT_TRUE(result && result->is_int());
+  ASSERT_EQ(1, result->GetInt());
 }
 
 TEST(EvaluateScriptAndGetObject, NoObject) {
@@ -185,9 +184,8 @@ TEST(ParseCallFunctionResult, Ok) {
   dict.SetInteger("value", 1);
   Status status = internal::ParseCallFunctionResult(dict, &result);
   ASSERT_EQ(kOk, status.code());
-  int value;
-  ASSERT_TRUE(result && result->GetAsInteger(&value));
-  ASSERT_EQ(1, value);
+  ASSERT_TRUE(result && result->is_int());
+  ASSERT_EQ(1, result->GetInt());
 }
 
 TEST(ParseCallFunctionResult, ScriptError) {
