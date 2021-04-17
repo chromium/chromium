@@ -348,6 +348,8 @@ INSTANTIATE_TEST_SUITE_P(SampleRates,
                          PostProcessorTest,
                          ::testing::Values(44100, 48000));
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(PostProcessorTest);
+
 }  // namespace post_processor_test
 }  // namespace media
 }  // namespace chromecast
