@@ -119,7 +119,12 @@ class MouseCursorOverlayController::Observer final
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()
-    : mouse_move_behavior_atomic_(kNotMoving) {
+    : mouse_activity_ended_timer_(
+          FROM_HERE,
+          kIdleTimeout,
+          base::BindRepeating(&MouseCursorOverlayController::OnMouseHasGoneIdle,
+                              base::Unretained(this))),
+      mouse_move_behavior_atomic_(kNotMoving) {
   // MouseCursorOverlayController can be constructed on any thread, but
   // thereafter must be used according to class-level comments.
   DETACH_FROM_SEQUENCE(ui_sequence_checker_);

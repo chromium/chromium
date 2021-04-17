@@ -130,7 +130,7 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // Updated in the mouse event handlers and used to decide whether the user is
   // interacting with the view and whether to update the overlay.
   gfx::PointF mouse_move_start_location_;
-  base::OneShotTimer mouse_activity_ended_timer_;
+  base::RetainingOneShotTimer mouse_activity_ended_timer_;
 
   // Updated in the mouse event handlers and read by IsUserInteractingWithView()
   // (on any thread). This is not protected by a mutex since strict memory
