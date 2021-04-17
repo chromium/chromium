@@ -17,8 +17,10 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/wm_helper.h"
+#include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/class_property.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -26,6 +28,7 @@ namespace exo {
 namespace {
 
 constexpr char kNoEscHoldAppId[] = "no-esc-hold";
+constexpr char kEscToMinimizeAppId[] = "esc-to-minimize";
 
 struct SurfaceTriplet {
   std::unique_ptr<Surface> surface;
@@ -76,6 +79,9 @@ class UILockControllerTest : public test::ExoTestBase {
         ui::PropertyHandler& out_properties_container) override {
       out_properties_container.SetProperty(chromeos::kEscHoldToExitFullscreen,
                                            params.app_id != kNoEscHoldAppId);
+      out_properties_container.SetProperty(
+          chromeos::kEscHoldExitFullscreenToMinimized,
+          params.app_id == kEscToMinimizeAppId);
     }
   };
 
@@ -94,16 +100,32 @@ class UILockControllerTest : public test::ExoTestBase {
     test::ExoTestBase::TearDown();
   }
 
-  SurfaceTriplet BuildSurface(int w, int h) {
+  SurfaceTriplet BuildSurface(gfx::Point origin, int w, int h) {
     auto surface = std::make_unique<Surface>();
     auto shell_surface = std::make_unique<ShellSurface>(
-        surface.get(), gfx::Point{0, 0},
+        surface.get(), origin,
         /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId());
     auto buffer = std::make_unique<Buffer>(
         exo_test_helper()->CreateGpuMemoryBuffer({w, h}));
     surface->Attach(buffer.get());
 
     return {std::move(surface), std::move(shell_surface), std::move(buffer)};
+  }
+
+  SurfaceTriplet BuildSurface(int w, int h) {
+    return BuildSurface(gfx::Point(0, 0), w, h);
+  }
+
+  bool IsExitPopupVisible(aura::Window* window) {
+    FullscreenControlPopup* popup =
+        seat_->GetUILockControllerForTesting()->GetExitPopupForTesting(window);
+    if (popup && popup->IsAnimating()) {
+      gfx::AnimationTestApi animation_api(popup->GetAnimationForTesting());
+      base::TimeTicks now = base::TimeTicks::Now();
+      animation_api.SetStartTime(now);
+      animation_api.Step(now + base::TimeDelta::FromMilliseconds(500));
+    }
+    return popup && popup->IsVisible();
   }
 
   std::unique_ptr<Seat> seat_;
@@ -142,8 +164,8 @@ TEST_F(UILockControllerTest, HoldingCtrlEscapeDoesNotExitFullscreen) {
 
 TEST_F(UILockControllerTest,
        HoldingEscapeOnlyExitsFullscreenIfWindowPropertySet) {
-  // Do not set chromeos::kEscHoldToExitFullscreen on TopLevelWindow.
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  // Do not set chromeos::kEscHoldToExitFullscreen on TopLevelWindow.
   test_surface.shell_surface->SetApplicationId(kNoEscHoldAppId);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
@@ -237,11 +259,11 @@ TEST_F(UILockControllerTest, ShortHoldEscapeDoesNotExitFullscreen) {
 
 TEST_F(UILockControllerTest, HoldingEscapeMinimizesIfPropertySet) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
+  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldExitFullscreenToMinimized, true);
   auto* window_state = test_surface.GetTopLevelWindowState();
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -256,11 +278,11 @@ TEST_F(UILockControllerTest, HoldingEscapeMinimizesIfPropertySet) {
 
 TEST_F(UILockControllerTest, HoldingEscapeDoesNotMinimizeIfWindowed) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
+  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.surface->Commit();
   auto* window_state = test_surface.GetTopLevelWindowState();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldExitFullscreenToMinimized, true);
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
@@ -365,6 +387,92 @@ TEST_F(UILockControllerTest, BubbleIsReshown) {
   EXPECT_FALSE(
       seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
           test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, ExitPopup) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+  auto* window_state = test_surface.GetTopLevelWindowState();
+  EXPECT_TRUE(window_state->IsFullscreen());
+  aura::Window* window = test_surface.GetTopLevelWindow();
+  EXPECT_FALSE(IsExitPopupVisible(window));
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+
+  // Move mouse above y=3 should not show exit popup while bubble is visible.
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_FALSE(IsExitPopupVisible(window));
+
+  // Wait for bubble to close, now exit popup should show.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+  GetEventGenerator()->MoveMouseTo(1, 2);
+  EXPECT_TRUE(IsExitPopupVisible(window));
+
+  // Move mouse below y=150 should hide exit popup.
+  GetEventGenerator()->MoveMouseTo(0, 160);
+  EXPECT_FALSE(IsExitPopupVisible(window));
+
+  // Move mouse back above y=3 should show exit popup.
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_TRUE(IsExitPopupVisible(window));
+
+  // Popup should hide after 3s.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(IsExitPopupVisible(window));
+
+  // Moving mouse to y=100, then above y=3 should still have popup hidden.
+  GetEventGenerator()->MoveMouseTo(0, 100);
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_FALSE(IsExitPopupVisible(window));
+
+  // Moving mouse below y=150, then above y=3 should show exit popup.
+  GetEventGenerator()->MoveMouseTo(0, 160);
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_TRUE(IsExitPopupVisible(window));
+
+  // Clicking exit popup should exit fullscreen.
+  FullscreenControlPopup* popup =
+      seat_->GetUILockControllerForTesting()->GetExitPopupForTesting(window);
+  GetEventGenerator()->MoveMouseTo(
+      popup->GetPopupWidget()->GetWindowBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(window_state->IsFullscreen());
+  EXPECT_FALSE(IsExitPopupVisible(window));
+}
+
+TEST_F(UILockControllerTest, ExitPopupNotShownIfPropertySet) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
+  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+  EXPECT_FALSE(IsExitPopupVisible(test_surface.GetTopLevelWindow()));
+
+  // Move mouse above y=3 should not show exit popup.
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_FALSE(IsExitPopupVisible(test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, OnlyShowWhenActive) {
+  SurfaceTriplet test_surface1 = BuildSurface(1024, 768);
+  test_surface1.surface->Commit();
+  SurfaceTriplet test_surface2 = BuildSurface(gfx::Point(100, 100), 200, 200);
+  test_surface2.surface->Commit();
+
+  // Surface2 is active when we make Surface1 fullscreen.
+  // Esc notify bubble, and exit popup should not be shown.
+  test_surface1.shell_surface->SetFullscreen(true);
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface1.GetTopLevelWindow()));
+  GetEventGenerator()->MoveMouseTo(0, 2);
+  EXPECT_FALSE(IsExitPopupVisible(test_surface1.GetTopLevelWindow()));
 }
 
 }  // namespace

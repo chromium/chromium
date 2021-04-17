@@ -327,10 +327,12 @@ source_set("unit_tests") {
       "//build:chromeos_buildflags",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
+      "//components/fullscreen_control",
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
+      "//ui/gfx:test_support",
       "//ui/gfx/geometry",
     ]
   }
