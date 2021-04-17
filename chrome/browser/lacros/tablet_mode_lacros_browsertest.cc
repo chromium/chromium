@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 
@@ -22,10 +22,10 @@ using TabletModeBrowserTest = InProcessBrowserTest;
 // TODO(https://crbug.com/1157314): This test is not safe to run in parallel
 // with other lacros tests as tablet mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  ASSERT_TRUE(lacros_chrome_service->IsTestControllerAvailable());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   // This test requires the tablet mode API.
-  if (lacros_chrome_service->GetInterfaceVersion(
+  if (lacros_service->GetInterfaceVersion(
           crosapi::mojom::TestController::Uuid_) < 2) {
     LOG(WARNING) << "Unsupported ash version.";
     return;
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
 
   // Enter tablet mode.
   crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_chrome_service->test_controller_remote().get());
+      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
   waiter.EnterTabletMode();
 
   // Close the incognito window by closing all tabs and wait for it to stop

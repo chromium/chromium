@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/platform_window.h"
@@ -132,9 +132,10 @@ void SelectFileDialogLacros::SelectFileImpl(
     options->owning_shell_window_id = GetShellWindowUniqueId(owning_window);
 
   // Send request to ash-chrome.
-  chromeos::LacrosChromeServiceImpl::Get()->select_file_remote()->Select(
-      std::move(options),
-      base::BindOnce(&SelectFileDialogLacros::OnSelected, this));
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::SelectFile>()
+      ->Select(std::move(options),
+               base::BindOnce(&SelectFileDialogLacros::OnSelected, this));
 }
 
 void SelectFileDialogLacros::OnSelected(

@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace extensions {
 
@@ -60,7 +60,7 @@ const char kExtensionDoesNotHavePermission[] =
 // the ash implementation of KeystoreService necessary to support this
 // extension. |context| is the browser context in which the extension is hosted.
 std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
-  int version = chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+  int version = chromeos::LacrosService::Get()->GetInterfaceVersion(
       KeystoreService::Uuid_);
   if (version < min_version)
     return kUnsupportedByAsh;
@@ -158,8 +158,8 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
 
   auto c = base::BindOnce(
       &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey, this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->GenerateKey(keystore, std::move(signing), extension_id(), std::move(c));
   return RespondLater();
 }
@@ -196,8 +196,8 @@ EnterprisePlatformKeysGetCertificatesFunction::Run() {
 
   auto c = base::BindOnce(
       &EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates, this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->GetCertificates(keystore, std::move(c));
   return RespondLater();
 }
@@ -240,8 +240,8 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
 
   auto c = base::BindOnce(
       &EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate, this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->AddCertificate(keystore, params->certificate, std::move(c));
   return RespondLater();
 }
@@ -274,8 +274,8 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
   auto c = base::BindOnce(
       &EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate,
       this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->RemoveCertificate(keystore, params->certificate, std::move(c));
   return RespondLater();
 }
@@ -301,8 +301,8 @@ EnterprisePlatformKeysInternalGetTokensFunction::Run() {
 
   auto c = base::BindOnce(
       &EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores, this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->GetKeyStores(std::move(c));
   return RespondLater();
 }
@@ -356,8 +356,8 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   auto c = base::BindOnce(&EnterprisePlatformKeysChallengeMachineKeyFunction::
                               OnChallengeAttestationOnlyKeystore,
                           this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->ChallengeAttestationOnlyKeystore(
           StringFromVector(params->challenge),
           crosapi::mojom::KeystoreType::kDevice,
@@ -400,8 +400,8 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
   auto c = base::BindOnce(&EnterprisePlatformKeysChallengeUserKeyFunction::
                               OnChallengeAttestationOnlyKeystore,
                           this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->ChallengeAttestationOnlyKeystore(StringFromVector(params->challenge),
                                          crosapi::mojom::KeystoreType::kUser,
                                          /*migrate=*/params->register_key,

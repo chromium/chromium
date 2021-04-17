@@ -15,7 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,17 +28,18 @@ namespace {
 // position in DIP screen coordinates set to |target_position|.
 void WaitForWindowPositionInScreen(const std::string& window_id,
                                    const gfx::Point& target_position) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_service = chromeos::LacrosService::Get();
   base::RunLoop outer_loop;
   auto wait_for_position = base::BindLambdaForTesting([&]() {
     base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
     base::Optional<gfx::Point> position;
-    lacros_chrome_service->test_controller_remote()->GetWindowPositionInScreen(
-        window_id,
-        base::BindLambdaForTesting([&](const base::Optional<gfx::Point>& p) {
-          position = p;
-          inner_loop.Quit();
-        }));
+    lacros_service->GetRemote<crosapi::mojom::TestController>()
+        ->GetWindowPositionInScreen(
+            window_id, base::BindLambdaForTesting(
+                           [&](const base::Optional<gfx::Point>& p) {
+                             position = p;
+                             inner_loop.Quit();
+                           }));
     inner_loop.Run();
     if (position && *position == target_position)
       outer_loop.Quit();
@@ -55,10 +56,10 @@ using PopupBrowserTest = InProcessBrowserTest;
 // menu via long-press on a tab does not result in a popup window with empty
 // bounds. In bug caused a Wayland protocol error and lacros crash.
 IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  ASSERT_TRUE(lacros_chrome_service->IsTestControllerAvailable());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   // This test requires the tablet mode API.
-  if (lacros_chrome_service->GetInterfaceVersion(
+  if (lacros_service->GetInterfaceVersion(
           crosapi::mojom::TestController::Uuid_) < 3) {
     LOG(WARNING) << "Unsupported ash version.";
     return;
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   // Generate a touch press in ash, because the bug requires lacros to receive
   // events over the Wayland connection from ash.
   crosapi::mojom::TestControllerAsyncWaiter waiter(
-      lacros_chrome_service->test_controller_remote().get());
+      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
   waiter.SendTouchEvent(window_id, crosapi::mojom::TouchEventType::kPressed,
                         /*pointer_id=*/0u, gfx::PointF(tab_center_in_widget));
 

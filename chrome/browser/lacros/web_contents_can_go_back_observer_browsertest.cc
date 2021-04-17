@@ -12,7 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/aura/window.h"
@@ -32,12 +32,11 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
     auto look_for_property_value = base::BindRepeating(
         [](base::RunLoop* outer_loop, const std::string& window_id,
            bool expected_value) {
-          auto* lacros_chrome_service =
-              chromeos::LacrosChromeServiceImpl::Get();
+          auto* lacros_service = chromeos::LacrosService::Get();
 
           base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
           bool out_value = false;
-          lacros_chrome_service->test_controller_remote()
+          lacros_service->GetRemote<crosapi::mojom::TestController>()
               ->GetMinimizeOnBackKeyWindowProperty(
                   window_id,
                   base::BindOnce(
@@ -62,9 +61,9 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  ASSERT_TRUE(lacros_chrome_service);
-  ASSERT_TRUE(lacros_chrome_service->IsTestControllerAvailable());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  ASSERT_TRUE(lacros_service);
+  ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
 
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()

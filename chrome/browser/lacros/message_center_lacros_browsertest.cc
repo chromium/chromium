@@ -11,7 +11,7 @@
 #include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -62,8 +62,8 @@ class MessageCenterLacrosBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MessageCenterLacrosBrowserTest, Basics) {
-  auto& remote =
-      chromeos::LacrosChromeServiceImpl::Get()->message_center_remote();
+  auto& remote = chromeos::LacrosService::Get()
+                     ->GetRemote<crosapi::mojom::MessageCenter>();
   ASSERT_TRUE(remote.get());
 
   // Display some notifications. Use cryptographically random IDs so they won't

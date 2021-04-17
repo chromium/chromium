@@ -12,7 +12,7 @@
 #include "chrome/common/extensions/api/platform_keys_internal.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace extensions {
 
@@ -104,7 +104,7 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
       api_pki::GetPublicKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
           KeystoreService::Uuid_) <
       static_cast<int>(KeystoreService::kGetPublicKeyMinVersion)) {
     return RespondNow(Error(kUnsupportedByAsh));
@@ -125,8 +125,8 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
 
   auto cb = base::BindOnce(
       &PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey, this);
-  chromeos::LacrosChromeServiceImpl::Get()
-      ->keystore_service_remote()
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
       ->GetPublicKey(params->certificate, algorithm_name.value(),
                      std::move(cb));
   return RespondLater();
@@ -170,7 +170,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
       api_pki::Sign::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
           KeystoreService::Uuid_) <
       static_cast<int>(KeystoreService::kSignMinVersion)) {
     return RespondNow(Error(kUnsupportedByAsh));
@@ -196,9 +196,10 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
   }
 
   auto cb = base::BindOnce(&PlatformKeysInternalSignFunction::OnSign, this);
-  chromeos::LacrosChromeServiceImpl::Get()->keystore_service_remote()->Sign(
-      keystore_type.value(), params->public_key, scheme.value(), params->data,
-      extension_id(), std::move(cb));
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::KeystoreService>()
+      ->Sign(keystore_type.value(), params->public_key, scheme.value(),
+             params->data, extension_id(), std::move(cb));
   return RespondLater();
 }
 

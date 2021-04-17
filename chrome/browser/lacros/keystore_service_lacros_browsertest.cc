@@ -7,7 +7,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 
 // During GenerateKey* call this error means that the key was created, but
@@ -32,7 +32,8 @@ class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {
   ~KeystoreServiceLacrosBrowserTest() override = default;
 
   mojo::Remote<crosapi::mojom::KeystoreService>& keystore_service_remote() {
-    return chromeos::LacrosChromeServiceImpl::Get()->keystore_service_remote();
+    return chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::KeystoreService>();
   }
 };
 

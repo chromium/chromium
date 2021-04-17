@@ -6,18 +6,17 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/task_manager/providers/crosapi/task_manager_controller_lacros.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace crosapi {
 
 TaskManagerLacros::TaskManagerLacros() {
-  chromeos::LacrosChromeServiceImpl* impl =
-      chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsTaskManagerAvailable())
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::TaskManager>())
     return;
   id_ = base::UnguessableToken::Create();
-  impl->task_manager_remote()->RegisterTaskManagerProvider(
-      receiver_.BindNewPipeAndPassRemote(), id_);
+  service->GetRemote<crosapi::mojom::TaskManager>()
+      ->RegisterTaskManagerProvider(receiver_.BindNewPipeAndPassRemote(), id_);
 
   task_manager_controller_ =
       std::make_unique<task_manager::TaskManagerControllerLacros>();

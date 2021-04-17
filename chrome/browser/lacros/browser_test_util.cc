@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
@@ -47,18 +47,19 @@ void WaitForWindow(const std::string& id, bool exists) {
   auto wait_for_window = base::BindRepeating(
       [](base::RunLoop* outer_loop, const std::string& id,
          bool expected_exists) {
-        auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-        CHECK(lacros_chrome_service->IsTestControllerAvailable());
+        auto* lacros_service = chromeos::LacrosService::Get();
+        CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
 
         base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
         bool exists = false;
-        lacros_chrome_service->test_controller_remote()->DoesWindowExist(
-            id, base::BindOnce(
-                    [](base::RunLoop* loop, bool* out_exist, bool exist) {
-                      *out_exist = std::move(exist);
-                      loop->Quit();
-                    },
-                    &inner_loop, &exists));
+        lacros_service->GetRemote<crosapi::mojom::TestController>()
+            ->DoesWindowExist(
+                id, base::BindOnce(
+                        [](base::RunLoop* loop, bool* out_exist, bool exist) {
+                          *out_exist = std::move(exist);
+                          loop->Quit();
+                        },
+                        &inner_loop, &exists));
         inner_loop.Run();
 
         if (exists == expected_exists)
@@ -108,8 +109,8 @@ void SendAndWaitForMouseClick(aura::Window* window) {
   std::unique_ptr<AuraObserver> obs = std::make_unique<AuraObserver>(&run_loop);
   aura::Env::GetInstance()->AddWindowEventDispatcherObserver(obs.get());
 
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  lacros_chrome_service->test_controller_remote()->ClickWindow(id);
+  auto* lacros_service = chromeos::LacrosService::Get();
+  lacros_service->GetRemote<crosapi::mojom::TestController>()->ClickWindow(id);
   run_loop.Run();
   aura::Env::GetInstance()->RemoveWindowEventDispatcherObserver(obs.get());
 }

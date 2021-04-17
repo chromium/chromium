@@ -5,17 +5,17 @@
 #include "chrome/browser/lacros/crosapi_pref_observer.h"
 
 #include "base/callback.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 CrosapiPrefObserver::CrosapiPrefObserver(crosapi::mojom::PrefPath path,
                                          PrefChangedCallback callback)
     : callback_(std::move(callback)) {
-  auto* lacros_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (!lacros_service->IsPrefsAvailable()) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
     LOG(WARNING) << "crosapi: Prefs API not available";
     return;
   }
-  lacros_service->prefs_remote()->AddObserver(
+  lacros_service->GetRemote<crosapi::mojom::Prefs>()->AddObserver(
       path, receiver_.BindNewPipeAndPassRemote());
 }
 
