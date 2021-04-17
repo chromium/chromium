@@ -140,9 +140,8 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
       &provider, google_url, google_url, ContentSettingsType::IMAGES, false));
 
-  int int_value = -1;
-  value_ptr->GetAsInteger(&int_value);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, IntToContentSetting(int_value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
 
   // The PolicyProvider does not allow setting content settings as they are
   // enforced via policies and not set by the user or extension. So a call to
