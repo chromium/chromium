@@ -200,13 +200,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",
-
-    # TODO(crbug.com/118596): Reenable this on ChromeOS. This is temporarily
-    # removed, as it does not build, to have the 'all' target compile so it can
-    # be added to buildbots.
-    # Quick glance at build errors suggest that wayland_templater.py may need to
-    # be fixed for python3.
-    #    "//components/exo/wayland/fuzzer:unit_tests",
+    "//components/exo/wayland/fuzzer:unit_tests",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//skia",
     "//testing/gmock",
