@@ -146,10 +146,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     CHECK(mode->GetAsString(&string_mode));
     CHECK(ProxyPrefs::StringToProxyMode(string_mode, &proxy_mode));
   } else if (server_mode) {
-    int int_mode = 0;
-    CHECK(server_mode->GetAsInteger(&int_mode));
-
-    switch (int_mode) {
+    switch (server_mode->GetInt()) {
       case PROXY_SERVER_MODE:
         proxy_mode = ProxyPrefs::MODE_DIRECT;
         break;
@@ -277,15 +274,14 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(const PolicyMap& policies,
       return false;
     }
   } else if (server_mode) {
-    int server_mode_value;
-    if (!server_mode->GetAsInteger(&server_mode_value)) {
+    if (!server_mode->is_int()) {
       errors->AddError(key::kProxySettings, key::kProxyServerMode,
                        IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::INTEGER));
       return false;
     }
 
-    switch (server_mode_value) {
+    switch (server_mode->GetInt()) {
       case PROXY_SERVER_MODE:
         *mode_value = ProxyPrefs::kDirectProxyModeName;
         break;
@@ -322,7 +318,7 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(const PolicyMap& policies,
       default:
         errors->AddError(key::kProxySettings, key::kProxyServerMode,
                          IDS_POLICY_OUT_OF_RANGE_ERROR,
-                         base::NumberToString(server_mode_value));
+                         base::NumberToString(server_mode->GetInt()));
         return false;
     }
   }
