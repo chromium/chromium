@@ -2058,16 +2058,14 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
 
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(contents);
-  if (!chrome_translate_client->GetLanguageState()
-           .original_language()
-           .empty()) {
+  if (!chrome_translate_client->GetLanguageState().source_language().empty()) {
     // Delay the callback invocation until after the current JS call has
     // returned.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &TabsDetectLanguageFunction::RespondWithLanguage, this,
-            chrome_translate_client->GetLanguageState().original_language()));
+            chrome_translate_client->GetLanguageState().source_language()));
     return RespondLater();
   }
 

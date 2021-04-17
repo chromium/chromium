@@ -46,10 +46,11 @@ __gCrWeb.translate['installCallbacks'] = function() {
    */
   cr.googleTranslate.resultCallback = function() {
     __gCrWeb.message.invokeOnHost({
-        'command': 'translate.status',
-        'errorCode': cr.googleTranslate.errorCode,
-        'originalPageLanguage': cr.googleTranslate.sourceLang,
-        'translationTime': cr.googleTranslate.translationTime});
+      'command': 'translate.status',
+      'errorCode': cr.googleTranslate.errorCode,
+      'pageSourceLanguage': cr.googleTranslate.sourceLang,
+      'translationTime': cr.googleTranslate.translationTime
+    });
   };
 
   /**

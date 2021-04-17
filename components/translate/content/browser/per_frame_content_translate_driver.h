@@ -123,7 +123,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
       bool is_main_frame,
       mojo::AssociatedRemote<mojom::TranslateAgent> translate_agent,
       bool cancelled,
-      const std::string& original_lang,
+      const std::string& source_lang,
       const std::string& translated_lang,
       TranslateErrors::Type error_type);
 

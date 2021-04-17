@@ -50,12 +50,12 @@ class LanguageState {
   bool InTranslateNavigation() const;
 
   // Returns true if the current page in the associated tab has been translated.
-  bool IsPageTranslated() const { return original_lang_ != current_lang_; }
+  bool IsPageTranslated() const { return source_lang_ != current_lang_; }
 
-  // Returns the original language represented as a lowercase alphabetic string
+  // Returns the source language represented as a lowercase alphabetic string
   // of length 0 to 3 or "zh-CN" or "zh-TW".
-  const std::string& original_language() const { return original_lang_; }
-  void SetOriginalLanguage(const std::string& language);
+  const std::string& source_language() const { return source_lang_; }
+  void SetSourceLanguage(const std::string& language);
 
   // Returns the current language represented as a lowercase alphabetic string
   // of length 0 to 3 or "zh-CN" or "zh-TW".
@@ -103,14 +103,14 @@ class LanguageState {
   bool is_page_translated_;
 
   // The languages this page is in. Note that current_lang_ is different from
-  // original_lang_ when the page has been translated.
+  // source_lang_ when the page has been translated.
   // Note that these might be empty if the page language has not been determined
   // yet.
-  std::string original_lang_;
+  std::string source_lang_;
   std::string current_lang_;
 
   // Same as above but for the previous page.
-  std::string prev_original_lang_;
+  std::string prev_source_lang_;
   std::string prev_current_lang_;
 
   // Provides driver-level context to the shared code of the component. Must

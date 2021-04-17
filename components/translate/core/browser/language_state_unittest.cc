@@ -21,19 +21,19 @@ TEST(LanguageStateTest, IsPageTranslated) {
 
   // Navigate to a French page.
   language_state.LanguageDetermined("fr", true);
-  EXPECT_EQ("fr", language_state.original_language());
+  EXPECT_EQ("fr", language_state.source_language());
   EXPECT_EQ("fr", language_state.current_language());
   EXPECT_FALSE(language_state.IsPageTranslated());
 
   // Translate the page into English.
   language_state.SetCurrentLanguage("en");
-  EXPECT_EQ("fr", language_state.original_language());
+  EXPECT_EQ("fr", language_state.source_language());
   EXPECT_EQ("en", language_state.current_language());
   EXPECT_TRUE(language_state.IsPageTranslated());
 
   // Move on another page in Japanese.
   language_state.LanguageDetermined("ja", true);
-  EXPECT_EQ("ja", language_state.original_language());
+  EXPECT_EQ("ja", language_state.source_language());
   EXPECT_EQ("ja", language_state.current_language());
   EXPECT_FALSE(language_state.IsPageTranslated());
 }

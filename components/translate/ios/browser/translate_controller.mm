@@ -143,7 +143,7 @@ bool TranslateController::OnTranslateReady(
 bool TranslateController::OnTranslateComplete(
     const base::DictionaryValue& command) {
   double error_code = 0.;
-  std::string original_language;
+  std::string source_language;
   double translation_time = 0.;
 
   if (!command.HasKey("errorCode") ||
@@ -156,16 +156,16 @@ bool TranslateController::OnTranslateComplete(
   TranslateErrors::Type error_type =
       static_cast<TranslateErrors::Type>(error_code);
   if (error_type == TranslateErrors::NONE) {
-    if (!command.HasKey("originalPageLanguage") ||
+    if (!command.HasKey("pageSourceLanguage") ||
         !command.HasKey("translationTime")) {
       return false;
     }
-    command.GetString("originalPageLanguage", &original_language);
+    command.GetString("pageSourceLanguage", &source_language);
     command.GetDouble("translationTime", &translation_time);
   }
 
   if (observer_)
-    observer_->OnTranslateComplete(error_type, original_language,
+    observer_->OnTranslateComplete(error_type, source_language,
                                    translation_time);
   return true;
 }

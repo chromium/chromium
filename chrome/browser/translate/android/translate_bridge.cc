@@ -77,7 +77,7 @@ static void JNI_TranslateBridge_TranslateToLanguage(
   const std::string target_language_code(
       ConvertJavaStringToUTF8(env, j_target_language_code));
   const std::string& source_language_code =
-      client->GetLanguageState().original_language();
+      client->GetLanguageState().source_language();
   if (source_language_code.empty()) {
     // TODO(crbug.com/1181400): Add support for specifying a target language for
     // ManualTranslateWhenReady().
@@ -121,8 +121,7 @@ static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(
   translate::TranslateManager* manager = client->GetTranslateManager();
   DCHECK(manager);
 
-  const std::string page_lang =
-      manager->GetLanguageState()->original_language();
+  const std::string page_lang = manager->GetLanguageState()->source_language();
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       client->GetTranslatePrefs());
 
@@ -149,7 +148,7 @@ static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
 }
 
 static base::android::ScopedJavaLocalRef<jstring>
-JNI_TranslateBridge_GetOriginalLanguage(
+JNI_TranslateBridge_GetSourceLanguage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
@@ -157,12 +156,12 @@ JNI_TranslateBridge_GetOriginalLanguage(
   ChromeTranslateClient* client =
       ChromeTranslateClient::FromWebContents(web_contents);
   DCHECK(client);
-  const std::string& original_language_code =
-      client->GetLanguageState().original_language();
-  DCHECK(!original_language_code.empty());
-  base::android::ScopedJavaLocalRef<jstring> j_original_language =
-      base::android::ConvertUTF8ToJavaString(env, original_language_code);
-  return j_original_language;
+  const std::string& source_language_code =
+      client->GetLanguageState().source_language();
+  DCHECK(!source_language_code.empty());
+  base::android::ScopedJavaLocalRef<jstring> j_source_language =
+      base::android::ConvertUTF8ToJavaString(env, source_language_code);
+  return j_source_language;
 }
 
 static base::android::ScopedJavaLocalRef<jstring>

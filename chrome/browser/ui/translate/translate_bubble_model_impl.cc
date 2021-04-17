@@ -169,7 +169,7 @@ bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
       ui_delegate_->GetLanguageState();
   if (language_state) {
     return ui_delegate_->GetSourceLanguageCode() ==
-               language_state->original_language() &&
+               language_state->source_language() &&
            ui_delegate_->GetTargetLanguageCode() ==
                language_state->current_language();
   }

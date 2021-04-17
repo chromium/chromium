@@ -250,10 +250,9 @@ void IOSTranslateDriver::OnTranslateScriptReady(
   translate_controller_->StartTranslation(source_language_, target_language_);
 }
 
-void IOSTranslateDriver::OnTranslateComplete(
-    TranslateErrors::Type error_type,
-    const std::string& original_language,
-    double translation_time) {
+void IOSTranslateDriver::OnTranslateComplete(TranslateErrors::Type error_type,
+                                             const std::string& source_language,
+                                             double translation_time) {
   if (!IsPageValid(pending_page_seq_no_))
     return;
 
@@ -264,7 +263,7 @@ void IOSTranslateDriver::OnTranslateComplete(
   }
 
   TranslationDidSucceed(source_language_, target_language_,
-                        pending_page_seq_no_, original_language,
+                        pending_page_seq_no_, source_language,
                         translation_time);
 }
 

@@ -62,7 +62,7 @@ static const char kTestValidScript[] =
     "        getDetectedLanguage : function() {"
     "          return \"\";"
     "        },"
-    "        translatePage : function(originalLang, targetLang,"
+    "        translatePage : function(sourceLang, targetLang,"
     "                                 onTranslateProgress) {"
     "          onTranslateProgress(100, true, false);"
     "        }"
@@ -136,8 +136,8 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     waiter->Wait();
 
     // Language detection sometimes fires early with an "und" detected code.
-    while (GetLanguageState().original_language() == "und" ||
-           GetLanguageState().original_language().empty()) {
+    while (GetLanguageState().source_language() == "und" ||
+           GetLanguageState().source_language().empty()) {
       CreateTranslateWaiter(browser_->tab_strip_model()->GetActiveWebContents(),
                             TranslateWaiter::WaitEvent::kLanguageDetermined)
           ->Wait();

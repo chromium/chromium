@@ -923,7 +923,7 @@ TEST_F(TranslateManagerTest, RecordInitilizationError) {
 TEST_F(TranslateManagerTest, GetManualSourceAndTargetLanguages) {
   PrepareTranslateManager();
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
-  EXPECT_EQ("fr", translate_manager_->GetLanguageState()->original_language());
+  EXPECT_EQ("fr", translate_manager_->GetLanguageState()->source_language());
   EXPECT_EQ("fr", translate_manager_->GetLanguageState()->current_language());
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("es", 1.0)};
@@ -936,7 +936,7 @@ TEST_F(TranslateManagerTest, GetManualSourceAndTargetLanguages) {
   EXPECT_FALSE(translate_manager_->GetLanguageState()->IsPageTranslated());
 
   const std::string source_code = TranslateDownloadManager::GetLanguageCode(
-      translate_manager_->GetLanguageState()->original_language());
+      translate_manager_->GetLanguageState()->source_language());
   EXPECT_EQ("fr", source_code);
 
   const std::string target_lang = TranslateManager::GetManualTargetLanguage(
@@ -950,7 +950,7 @@ TEST_F(TranslateManagerTest,
   PrepareTranslateManager();
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
   translate_manager_->GetLanguageState()->SetCurrentLanguage("de");
-  EXPECT_EQ("fr", translate_manager_->GetLanguageState()->original_language());
+  EXPECT_EQ("fr", translate_manager_->GetLanguageState()->source_language());
   EXPECT_EQ("de", translate_manager_->GetLanguageState()->current_language());
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("es", 1.0)};
@@ -963,7 +963,7 @@ TEST_F(TranslateManagerTest,
   EXPECT_TRUE(translate_manager_->GetLanguageState()->IsPageTranslated());
 
   const std::string source_code = TranslateDownloadManager::GetLanguageCode(
-      translate_manager_->GetLanguageState()->original_language());
+      translate_manager_->GetLanguageState()->source_language());
   EXPECT_EQ("fr", source_code);
 
   const std::string target_lang = TranslateManager::GetManualTargetLanguage(

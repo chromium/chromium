@@ -97,7 +97,7 @@ public class VoiceRecognitionHandler {
     @VisibleForTesting
     static final String EXTRA_PAGE_URL = "com.android.chrome.voice.PAGE_URL";
     /**
-     * Extra containing the original language code of the current page.
+     * Extra containing the source language code of the current page.
      *
      * This is only populated for pages that are translatable and only for intents initiated via the
      * toolbar button.
@@ -296,11 +296,11 @@ public class VoiceRecognitionHandler {
         }
 
         /**
-         * Returns the original language code of the given tab. Empty string if no language was
+         * Returns the source language code of the given tab. Empty string if no language was
          * detected yet.
          */
-        public String getOriginalLanguage(Tab tab) {
-            return TranslateBridge.getOriginalLanguage(tab);
+        public String getSourceLanguage(Tab tab) {
+            return TranslateBridge.getSourceLanguage(tab);
         }
 
         /**
@@ -947,16 +947,16 @@ public class VoiceRecognitionHandler {
 
         // The page's URL is used to ensure the Translate intent doesn't translate the wrong page.
         String url = getUrl();
-        // The presence of original and current language fields are used to indicate whether the
+        // The presence of source and current language fields are used to indicate whether the
         // page is translated and/or is translatable. Only include them if they are both available.
-        String originalLanguageCode = mTranslateBridgeWrapper.getOriginalLanguage(currentTab);
+        String sourceLanguageCode = mTranslateBridgeWrapper.getSourceLanguage(currentTab);
         String currentLanguageCode = mTranslateBridgeWrapper.getCurrentLanguage(currentTab);
-        if (TextUtils.isEmpty(url) || TextUtils.isEmpty(originalLanguageCode)
+        if (TextUtils.isEmpty(url) || TextUtils.isEmpty(sourceLanguageCode)
                 || TextUtils.isEmpty(currentLanguageCode)) {
             return false;
         }
 
-        intent.putExtra(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, originalLanguageCode);
+        intent.putExtra(EXTRA_TRANSLATE_ORIGINAL_LANGUAGE, sourceLanguageCode);
         intent.putExtra(EXTRA_TRANSLATE_CURRENT_LANGUAGE, currentLanguageCode);
 
         // If ASSISTANT_INTENT_PAGE_URL is enabled, the URL may have already been added.

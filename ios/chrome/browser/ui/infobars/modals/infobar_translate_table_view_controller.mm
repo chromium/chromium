@@ -261,7 +261,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       tableViewTextButtonCell.selectionStyle =
           UITableViewCellSelectionStyleNone;
       [tableViewTextButtonCell.button addTarget:self.infobarModalDelegate
-                                         action:@selector(showOriginalLanguage)
+                                         action:@selector(showSourceLanguage)
                                forControlEvents:UIControlEventTouchUpInside];
       break;
     }

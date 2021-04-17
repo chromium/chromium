@@ -109,7 +109,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 #pragma mark - InfobarTranslateModalDelegate
 
-- (void)showOriginalLanguage {
+- (void)showSourceLanguage {
   [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_REVERT];
   [self dispatchResponse:
             OverlayResponse::CreateWithInfo<
@@ -274,10 +274,10 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (NSArray<TableViewTextItem*>*)loadTranslateLanguageItemsForSelectingLanguage:
     (BOOL)sourceLanguage {
-  // In the instance that the user has already selected a different original
+  // In the instance that the user has already selected a different source
   // language, then we should be using that language as the one to potentially
   // check or not show.
-  std::u16string originalLanguageName =
+  std::u16string sourceLanguageName =
       self.newSourceLanguageIndex != kInvalidLanguageIndex
           ? self.config->language_names().at(self.newSourceLanguageIndex)
           : self.config->source_language_name();
@@ -296,7 +296,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     item.text =
         base::SysUTF16ToNSString(self.config->language_names().at((int)i));
 
-    if (self.config->language_names().at((int)i) == originalLanguageName) {
+    if (self.config->language_names().at((int)i) == sourceLanguageName) {
       if (!sourceLanguage) {
         // Disable for source language if selecting the target
         // language to prevent same language translation. Need to add item,
@@ -316,7 +316,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     }
 
     if ((sourceLanguage &&
-         originalLanguageName == self.config->language_names().at((int)i)) ||
+         sourceLanguageName == self.config->language_names().at((int)i)) ||
         (!sourceLanguage &&
          targetLanguageName == self.config->language_names().at((int)i))) {
       item.checked = YES;

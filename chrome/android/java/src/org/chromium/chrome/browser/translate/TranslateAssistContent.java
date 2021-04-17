@@ -103,8 +103,8 @@ public class TranslateAssistContent {
                 return structuredData.toString();
             }
 
-            String originalLanguageCode = TranslateBridge.getOriginalLanguage(tab);
-            if (TextUtils.isEmpty(originalLanguageCode)) {
+            String sourceLanguageCode = TranslateBridge.getSourceLanguage(tab);
+            if (TextUtils.isEmpty(sourceLanguageCode)) {
                 recordTranslateAssistContentResultUMA(
                         TranslateAssistContentResult.MISSING_ORIGINAL_LANGUAGE);
                 return structuredData.toString();
@@ -120,7 +120,7 @@ public class TranslateAssistContent {
             String targetLanguageCode = TranslateBridge.getTargetLanguage();
 
             structuredData.put(IN_LANGUAGE_KEY, currentLanguageCode);
-            if (currentLanguageCode.equals(originalLanguageCode)) {
+            if (currentLanguageCode.equals(sourceLanguageCode)) {
                 if (!TextUtils.isEmpty(targetLanguageCode)) {
                     structuredData.put(WORK_TRANSLATION_KEY,
                             new JSONObject().put(IN_LANGUAGE_KEY, targetLanguageCode));
@@ -129,7 +129,7 @@ public class TranslateAssistContent {
                         TranslateAssistContentResult.TRANSLATABLE_PAGE);
             } else {
                 structuredData.put(TRANSLATION_OF_WORK_KEY,
-                        new JSONObject().put(IN_LANGUAGE_KEY, originalLanguageCode));
+                        new JSONObject().put(IN_LANGUAGE_KEY, sourceLanguageCode));
                 recordTranslateAssistContentResultUMA(TranslateAssistContentResult.TRANSLATED_PAGE);
             }
             return structuredData.toString();
