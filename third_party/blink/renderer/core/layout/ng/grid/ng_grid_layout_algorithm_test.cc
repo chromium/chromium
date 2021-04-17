@@ -76,8 +76,8 @@ class NGGridLayoutAlgorithmTest
                                                 &items_->grid_items_);
 
     for (auto& grid_item : items_->grid_items_) {
-      grid_item.SetIndices(column_track_collection_);
-      grid_item.SetIndices(row_track_collection_);
+      grid_item.ComputeSetIndices(column_track_collection_, grid_placement);
+      grid_item.ComputeSetIndices(row_track_collection_, grid_placement);
     }
 
     grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),

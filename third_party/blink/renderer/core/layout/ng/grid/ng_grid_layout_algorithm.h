@@ -72,6 +72,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         GridTrackSizingDirection track_direction) const;
     bool IsSpanningIntrinsicTrack(
         GridTrackSizingDirection track_direction) const;
+    bool IsSpanningAutoMinimumTrack(
+        GridTrackSizingDirection track_direction) const;
 
     bool IsBaselineAlignedForDirection(
         GridTrackSizingDirection track_direction) const;
@@ -79,14 +81,15 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         const ComputedStyle& container_style);
 
-    // For this item and track direction, computes and stores the pair of
-    // indices "begin" and "end" such that the item spans every set from the
-    // respective collection's |sets_| with an index in the range [begin, end).
-    // |grid_placement| is used to resolve the grid lines of out of flow items
-    // and it has a default nullptr value for grid items.
-    ItemSetIndices SetIndices(
+    // For this item and track direction, computes the pair of indices |begin|
+    // and |end| such that the item spans every set from the respective
+    // collection's |sets_| with an index in the range [begin, end).
+    // |grid_placement| is used to resolve the grid lines of out of flow items.
+    void ComputeSetIndices(
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
-        const NGGridPlacement* grid_placement = nullptr);
+        const NGGridPlacement& grid_placement);
+    const ItemSetIndices& SetIndices(
+        GridTrackSizingDirection track_direction) const;
 
     void Trace(Visitor* visitor) const;
 
@@ -108,11 +111,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
 
-    // These fields are used to determine the sets this item spans in the
-    // respective track collection; see |SetIndices|. We use optional since some
-    // scenarios don't require to compute the indices at all.
-    base::Optional<ItemSetIndices> column_set_indices;
-    base::Optional<ItemSetIndices> row_set_indices;
+    ItemSetIndices column_set_indices;
+    ItemSetIndices row_set_indices;
   };
 
   struct CORE_EXPORT GridItems {
@@ -206,13 +206,17 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   //  start: 3, end: 5 -> indefinite as:
   //    "start <= sets[end].last_indefinite_index"
   struct SetGeometry {
-    Vector<SetOffsetData> sets;
-    LayoutUnit gutter_size;
+    SetGeometry() = default;
+    SetGeometry(const Vector<SetOffsetData>& sets, LayoutUnit gutter_size)
+        : sets(sets), gutter_size(gutter_size) {}
 
     LayoutUnit FinalGutterSize() const {
       DCHECK_GT(sets.size(), 0u);
       return (sets.size() == 1) ? LayoutUnit() : gutter_size;
     }
+
+    Vector<SetOffsetData> sets;
+    LayoutUnit gutter_size;
   };
 
   // Typically we pass around both the column, and row geometry together.

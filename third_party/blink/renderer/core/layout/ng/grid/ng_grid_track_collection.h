@@ -343,14 +343,15 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     return non_collapsed_track_count_;
   }
   GridTrackSizingDirection Direction() const { return direction_; }
-  // If any of the tracks will change based on the available-size.
-  bool DependsOnAvailableSize() const { return depends_on_available_size_; }
-  bool HasFlexTracks() const { return has_flex_tracks_; }
-  bool AllTracksHaveDefiniteSize() const {
-    return all_tracks_have_definite_size_;
-  }
   bool IsForColumns() const { return direction_ == kForColumns; }
   const Vector<Range>& Ranges() const { return ranges_; }
+
+  // If any of the tracks will change based on the available-size.
+  bool DependsOnAvailableSize() const { return depends_on_available_size_; }
+  bool IsSpanningFlexibleTrack() const { return is_spanning_flexible_track_; }
+  bool IsSpanningOnlyDefiniteTracks() const {
+    return is_spanning_only_definite_tracks_;
+  }
 
  protected:
   // NGGridTrackCollectionBase overrides.
@@ -367,9 +368,10 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
 
   wtf_size_t non_collapsed_track_count_;
   GridTrackSizingDirection direction_;
+
   bool depends_on_available_size_ : 1;
-  bool has_flex_tracks_ : 1;
-  bool all_tracks_have_definite_size_ : 1;
+  bool is_spanning_flexible_track_ : 1;
+  bool is_spanning_only_definite_tracks_ : 1;
 
   Vector<Range> ranges_;
   // A vector of every set element that compose the entire collection's ranges;

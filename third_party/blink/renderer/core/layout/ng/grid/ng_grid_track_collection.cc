@@ -537,8 +537,8 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     : non_collapsed_track_count_(0),
       direction_(block_track_collection.Direction()),
       depends_on_available_size_(false),
-      has_flex_tracks_(false),
-      all_tracks_have_definite_size_(true) {
+      is_spanning_flexible_track_(false),
+      is_spanning_only_definite_tracks_(true) {
   for (auto range_iterator = block_track_collection.RangeIterator();
        !range_iterator.IsAtEnd(); range_iterator.MoveToNextRange()) {
     const NGGridBlockTrackCollection::Range& block_track_range =
@@ -613,38 +613,45 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
       // Record if any of the tracks depend on the available-size. We need to
       // record any percentage tracks *before* normalization as they will
       // change once the available-size becomes definite.
-      depends_on_available_size_ |= set_track_size.HasPercentage() ||
-                                    set_track_size.HasFlexMaxTrackBreadth();
+      depends_on_available_size_ |= set_track_size.HasPercentage();
     }
   }
 
   // Cache this range's track span properties.
   bool is_range_spanning_flexible_track = false;
   bool is_range_spanning_intrinsic_track = false;
+  bool is_range_spanning_auto_minimum_track = false;
 
   for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
-    const GridTrackSize& set_track_size =
+    const auto& set_track_size =
         sets_[new_range.starting_set_index + i].TrackSize();
 
     // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
     // sizing function shouldn't happen as it would be normalized to 'auto'.
     DCHECK(!set_track_size.HasFlexMinTrackBreadth());
-    has_flex_tracks_ |= set_track_size.HasFlexMaxTrackBreadth();
-    all_tracks_have_definite_size_ &=
-        set_track_size.HasFixedMinTrackBreadth() &&
-        set_track_size.HasFixedMaxTrackBreadth() &&
-        (set_track_size.MinTrackBreadth().length() ==
-         set_track_size.MaxTrackBreadth().length());
+
     is_range_spanning_flexible_track |= set_track_size.HasFlexMaxTrackBreadth();
     is_range_spanning_intrinsic_track |=
         set_track_size.HasIntrinsicMinTrackBreadth() ||
         set_track_size.HasIntrinsicMaxTrackBreadth();
+    is_range_spanning_auto_minimum_track |=
+        set_track_size.HasAutoMinTrackBreadth();
+
+    is_spanning_only_definite_tracks_ &=
+        set_track_size.HasFixedMinTrackBreadth() &&
+        set_track_size.HasFixedMaxTrackBreadth() &&
+        (set_track_size.MinTrackBreadth().length() ==
+         set_track_size.MaxTrackBreadth().length());
   }
 
-  if (is_range_spanning_flexible_track)
+  if (is_range_spanning_flexible_track) {
+    depends_on_available_size_ = is_spanning_flexible_track_ = true;
     new_range.properties.SetProperty(TrackSpanProperties::kHasFlexibleTrack);
+  }
   if (is_range_spanning_intrinsic_track)
     new_range.properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
+  if (is_range_spanning_auto_minimum_track)
+    new_range.properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
   ranges_.push_back(new_range);
 }
 
