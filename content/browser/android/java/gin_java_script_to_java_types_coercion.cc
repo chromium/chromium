@@ -516,10 +516,9 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
   // range for a Java array length, return null.
   jsize length = -1;
   if (length_value->is_int()) {
-    int int_length;
-    length_value->GetAsInteger(&int_length);
-    if (int_length >= 0 && int_length <= std::numeric_limits<int32_t>::max()) {
-      length = static_cast<jsize>(int_length);
+    if (length_value->GetInt() >= 0 &&
+        length_value->GetInt() <= std::numeric_limits<int32_t>::max()) {
+      length = static_cast<jsize>(length_value->GetInt());
     }
   } else if (length_value->is_double()) {
     double double_length;
