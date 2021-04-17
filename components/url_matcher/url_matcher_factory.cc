@@ -249,10 +249,9 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
   }
 
   for (const auto& entry : *value_list) {
-    int port = 0;
     const base::ListValue* range = nullptr;
-    if (entry.GetAsInteger(&port)) {
-      ranges.push_back(URLMatcherPortFilter::CreateRange(port));
+    if (entry.is_int()) {
+      ranges.push_back(URLMatcherPortFilter::CreateRange(entry.GetInt()));
     } else if (entry.GetAsList(&range)) {
       int from = 0, to = 0;
       if (range->GetSize() != 2u ||
