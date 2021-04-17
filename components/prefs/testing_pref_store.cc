@@ -168,7 +168,11 @@ bool TestingPrefStore::GetInteger(const std::string& key, int* value) const {
   if (!prefs_.GetValue(key, &stored_value) || !stored_value)
     return false;
 
-  return stored_value->GetAsInteger(value);
+  if (value && stored_value->is_int()) {
+    *value = stored_value->GetInt();
+    return true;
+  }
+  return stored_value->is_int();
 }
 
 bool TestingPrefStore::GetBoolean(const std::string& key, bool* value) const {
