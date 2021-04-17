@@ -732,7 +732,8 @@ void RenderWidgetHostViewMac::Destroy() {
 
 void RenderWidgetHostViewMac::SetTooltipText(
     const std::u16string& tooltip_text) {
-  GetCursorManager()->SetTooltipTextForView(this, tooltip_text);
+  if (GetCursorManager()->IsViewUnderCursor(this))
+    DisplayTooltipText(tooltip_text);
 }
 
 void RenderWidgetHostViewMac::DisplayTooltipText(

@@ -20,13 +20,6 @@ void CursorManager::UpdateCursor(RenderWidgetHostViewBase* view,
     root_view_->DisplayCursor(cursor);
 }
 
-void CursorManager::SetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                                          const std::u16string& tooltip_text) {
-  if (view == view_under_cursor_) {
-    root_view_->DisplayTooltipText(tooltip_text);
-  }
-}
-
 void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   if (view == view_under_cursor_)
     return;
@@ -36,7 +29,7 @@ void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   // though this is only guaranteed if the view's tooltip is non-empty, so
   // clearing here is important. Tooltips sent from the previous view will be
   // ignored.
-  SetTooltipTextForView(view_under_cursor_, std::u16string());
+  root_view_->DisplayTooltipText(std::u16string());
   view_under_cursor_ = view;
   WebCursor cursor(ui::mojom::CursorType::kPointer);
 
@@ -54,6 +47,10 @@ void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewBase* view) {
   // until UpdateViewUnderCursor is called again.
   if (view == view_under_cursor_ && view != root_view_)
     UpdateViewUnderCursor(root_view_);
+}
+
+bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewBase* view) const {
+  return view == view_under_cursor_;
 }
 
 bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,

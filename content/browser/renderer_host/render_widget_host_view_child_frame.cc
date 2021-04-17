@@ -410,7 +410,8 @@ void RenderWidgetHostViewChildFrame::SetTooltipText(
   if (!cursor_manager)
     return;
 
-  cursor_manager->SetTooltipTextForView(this, tooltip_text);
+  if (cursor_manager->IsViewUnderCursor(this))
+    root_view->DisplayTooltipText(tooltip_text);
 }
 
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
