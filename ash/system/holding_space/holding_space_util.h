@@ -37,6 +37,7 @@ void AnimateOut(views::View* view,
                 base::TimeDelta duration,
                 ui::LayerAnimationObserver* observer);
 
+// TODO(crbug.com/1199925): Move to ash typography.
 // Enumeration of supported label styles.
 enum class LabelStyle {
   kBadge,

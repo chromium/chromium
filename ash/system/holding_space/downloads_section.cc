@@ -72,20 +72,12 @@ class Header : public views::Button {
     layout->SetFlexForView(label, 1);
 
     // Chevron.
-    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
-    auto* chevron = AddChildView(std::make_unique<views::ImageView>());
-    chevron->SetFlipCanvasOnPaintForRTLUI(true);
-    chevron->SetImage(gfx::CreateVectorIcon(
-        kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize,
-        ash_color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    chevron_ = AddChildView(std::make_unique<views::ImageView>());
+    chevron_->SetFlipCanvasOnPaintForRTLUI(true);
 
     // Focus ring.
-    focus_ring()->SetColor(ash_color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
-
     // Though the entirety of the header is focusable and behaves as a single
-    // button, the focus ring is drawn as a circle around just the `chevron`.
+    // button, the focus ring is drawn as a circle around just the `chevron_`.
     focus_ring()->SetPathGenerator(
         std::make_unique<CallbackPathGenerator>(base::BindRepeating(
             [](const views::View* chevron) {
@@ -98,16 +90,35 @@ class Header : public views::Button {
               }
               return path;
             },
-            base::Unretained(chevron))));
+            base::Unretained(chevron_))));
   }
 
  private:
+  // views::Button:
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
+
+    // Chevron.
+    chevron_->SetImage(gfx::CreateVectorIcon(
+        kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize,
+        ash_color_provider->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+
+    // Focus ring.
+    focus_ring()->SetColor(ash_color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
+  }
+
   void OnPressed() {
     holding_space_metrics::RecordDownloadsAction(
         holding_space_metrics::DownloadsAction::kClick);
 
     HoldingSpaceController::Get()->client()->OpenDownloads(base::DoNothing());
   }
+
+  // Owned by view hierarchy.
+  views::ImageView* chevron_ = nullptr;
 };
 
 }  // namespace

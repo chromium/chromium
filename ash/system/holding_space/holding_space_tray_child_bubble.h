@@ -74,6 +74,7 @@ class HoldingSpaceTrayChildBubble : public views::View,
   void ChildVisibilityChanged(views::View* child) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnThemeChanged() override;
 
   // Invoked to animate in/out this view if necessary.
   void MaybeAnimateIn();

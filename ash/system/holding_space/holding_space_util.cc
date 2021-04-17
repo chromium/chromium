@@ -60,6 +60,33 @@ class CirclePainter : public views::Painter {
   const base::Optional<gfx::InsetsF> insets_;
 };
 
+// LabelWithThemeChangedCallback -----------------------------------------------
+
+// A label which invokes a constructor-specified callback in `OnThemeChanged()`.
+class LabelWithThemeChangedCallback : public views::Label {
+ public:
+  using ThemeChangedCallback = base::RepeatingCallback<void(views::Label*)>;
+
+  LabelWithThemeChangedCallback(const std::u16string& text,
+                                ThemeChangedCallback theme_changed_callback)
+      : views::Label(text),
+        theme_changed_callback_(std::move(theme_changed_callback)) {}
+
+  LabelWithThemeChangedCallback(const LabelWithThemeChangedCallback&) = delete;
+  LabelWithThemeChangedCallback& operator=(
+      const LabelWithThemeChangedCallback&) = delete;
+  ~LabelWithThemeChangedCallback() override = default;
+
+ private:
+  // views::Label:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    theme_changed_callback_.Run(this);
+  }
+
+  ThemeChangedCallback theme_changed_callback_;
+};
+
 // Helpers ---------------------------------------------------------------------
 
 // Creates a `ui::LayerAnimationSequence` for the specified `element` with
@@ -146,7 +173,17 @@ void ApplyStyle(views::Label* label, LabelStyle style) {
 
 std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
                                           const std::u16string& text) {
-  auto label = std::make_unique<views::Label>(text);
+  auto label = std::make_unique<LabelWithThemeChangedCallback>(
+      text,
+      /*theme_changed_callback=*/base::BindRepeating(
+          [](LabelStyle style, views::Label* label) {
+            ApplyStyle(label, style);
+          },
+          style));
+  // Apply `style` to `label` manually in case the view is painted without ever
+  // having being added to the view hierarchy. In such cases, the `label` will
+  // not receive an `OnThemeChanged()` event. This occurs, for example, with
+  // holding space drag images.
   ApplyStyle(label.get(), style);
   return label;
 }

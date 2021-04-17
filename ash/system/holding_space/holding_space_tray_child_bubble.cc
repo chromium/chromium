@@ -129,8 +129,6 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
-  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetOpacity(0.f);
@@ -274,6 +272,12 @@ void HoldingSpaceTrayChildBubble::OnGestureEvent(ui::GestureEvent* event) {
 bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceTrayChildBubbleMousePressed(event);
   return true;
+}
+
+void HoldingSpaceTrayChildBubble::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
 }
 
 void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {

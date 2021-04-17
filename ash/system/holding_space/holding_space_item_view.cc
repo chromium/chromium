@@ -100,12 +100,6 @@ HoldingSpaceItemView::HoldingSpaceItemView(
   GetViewAccessibility().OverrideName(item->text());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
-  // Background.
-  SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      kHoldingSpaceCornerRadius));
-
   // Layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -216,6 +210,12 @@ void HoldingSpaceItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   AshColorProvider* const ash_color_provider = AshColorProvider::Get();
 
+  // Background.
+  SetBackground(views::CreateRoundedRectBackground(
+      ash_color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      kHoldingSpaceCornerRadius));
+
   // Checkmark.
   checkmark_->SetBackground(holding_space_util::CreateCircleBackground(
       ash_color_provider->GetControlsLayerColor(
@@ -225,6 +225,23 @@ void HoldingSpaceItemView::OnThemeChanged() {
       kCheckIcon, kHoldingSpaceIconSize,
       ash_color_provider->IsDarkModeEnabled() ? gfx::kGoogleGrey900
                                               : SK_ColorWHITE));
+
+  // Focused/selected layers.
+  InvalidateLayer(focused_layer_owner_->layer());
+  InvalidateLayer(selected_layer_owner_->layer());
+
+  if (!pin_)
+    return;
+
+  // Pin.
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
+      views::kUnpinIcon, kHoldingSpaceIconSize, icon_color);
+  const gfx::ImageSkia pinned_icon =
+      gfx::CreateVectorIcon(views::kPinIcon, kHoldingSpaceIconSize, icon_color);
+  pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
+  pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
@@ -281,23 +298,11 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   pin_ = parent->AddChildView(std::make_unique<views::ToggleImageButton>());
   pin_->SetID(kHoldingSpaceItemPinButtonId);
   pin_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  pin_->SetVisible(false);
-
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-
-  const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
-      views::kUnpinIcon, kHoldingSpaceIconSize, icon_color);
-  const gfx::ImageSkia pinned_icon =
-      gfx::CreateVectorIcon(views::kPinIcon, kHoldingSpaceIconSize, icon_color);
-
-  pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
-  pin_->SetToggledImage(views::Button::STATE_NORMAL, &pinned_icon);
-
   pin_->SetImageHorizontalAlignment(
       views::ToggleImageButton::HorizontalAlignment::ALIGN_CENTER);
   pin_->SetImageVerticalAlignment(
       views::ToggleImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  pin_->SetVisible(false);
 
   pin_->SetCallback(base::BindRepeating(&HoldingSpaceItemView::OnPinPressed,
                                         base::Unretained(this)));
