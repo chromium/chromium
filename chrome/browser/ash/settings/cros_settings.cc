@@ -138,8 +138,10 @@ bool CrosSettings::GetInteger(const std::string& path,
                               int* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
-  if (value)
-    return value->GetAsInteger(out_value);
+  if (value && value->is_int()) {
+    *out_value = value->GetInt();
+    return true;
+  }
   return false;
 }
 
