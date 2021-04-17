@@ -26,11 +26,15 @@ bool ReportError(const base::Value& from,
 }  // namespace
 
 bool PopulateItem(const base::Value& from, int* out) {
-  return from.GetAsInteger(out);
+  if (out && from.is_int()) {
+    *out = from.GetInt();
+    return true;
+  }
+  return from.is_int();
 }
 
 bool PopulateItem(const base::Value& from, int* out, std::u16string* error) {
-  if (!from.GetAsInteger(out))
+  if (!PopulateItem(from, out))
     return ReportError(from, base::Value::Type::INTEGER, error);
   return true;
 }
