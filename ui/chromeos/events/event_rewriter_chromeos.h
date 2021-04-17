@@ -153,6 +153,13 @@ class EventRewriterChromeOS : public EventRewriter {
   EventRewriterChromeOS(Delegate* delegate,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported);
+
+  // Only explicitly use this constructor for tests. Does not take ownership of
+  // |ime_keyboard|.
+  EventRewriterChromeOS(Delegate* delegate,
+                        EventRewriter* sticky_keys_controller,
+                        bool privacy_screen_supported,
+                        ::chromeos::input_method::ImeKeyboard* ime_keyboard);
   ~EventRewriterChromeOS() override;
 
   // Calls KeyboardDeviceAdded.
@@ -168,10 +175,6 @@ class EventRewriterChromeOS : public EventRewriter {
 
   void set_last_keyboard_device_id_for_testing(int device_id) {
     last_keyboard_device_id_ = device_id;
-  }
-  void set_ime_keyboard_for_testing(
-      ::chromeos::input_method::ImeKeyboard* ime_keyboard) {
-    ime_keyboard_for_testing_ = ime_keyboard;
   }
 
   void set_privacy_screen_for_testing(bool supported) {
@@ -331,8 +334,6 @@ class EventRewriterChromeOS : public EventRewriter {
   // used to interpret modifiers on pointer events.
   int last_keyboard_device_id_;
 
-  ::chromeos::input_method::ImeKeyboard* ime_keyboard_for_testing_;
-
   Delegate* const delegate_;
 
   // For each pair, the first element is the rewritten key state and the second
@@ -367,6 +368,8 @@ class EventRewriterChromeOS : public EventRewriter {
   int pressed_modifier_latches_;
   int latched_modifier_latches_;
   int used_modifier_latches_;
+
+  ::chromeos::input_method::ImeKeyboard* const ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably

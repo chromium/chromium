@@ -190,8 +190,8 @@ class EventRewriterTest : public ChromeAshTestBase {
         nullptr, std::move(deprecation_controller));
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
-    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(delegate_.get(),
-                                                            nullptr, false);
+    rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
+        delegate_.get(), nullptr, false, &fake_ime_keyboard_);
     ChromeAshTestBase::SetUp();
   }
 
@@ -364,6 +364,7 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
+  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
   ash::DeprecationNotificationController*
       deprecation_controller_;  // Not owned.
@@ -1286,10 +1287,8 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
   InitModifierKeyPref(&search, prefs::kLanguageRemapSearchKeyTo,
                       ui::chromeos::ModifierKey::kCapsLockKey);
 
-  chromeos::input_method::FakeImeKeyboard ime_keyboard;
   SetupKeyboard("Internal Keyboard");
-  rewriter_->set_ime_keyboard_for_testing(&ime_keyboard);
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Press Search.
   EXPECT_EQ(
@@ -1300,7 +1299,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Search.
   EXPECT_EQ(
@@ -1310,7 +1309,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Press Search.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1321,7 +1320,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Search.
   EXPECT_EQ(
@@ -1331,7 +1330,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Do the same on external Chrome OS keyboard.
   SetupKeyboard("External Chrome Keyboard", kKbdTopRowLayout1Tag,
@@ -1346,7 +1345,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Search.
   EXPECT_EQ(
@@ -1356,7 +1355,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Press Search.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1367,7 +1366,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Search.
   EXPECT_EQ(
@@ -1377,7 +1376,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Try external keyboard with Caps Lock.
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
@@ -1392,7 +1391,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Caps Lock.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
@@ -1402,17 +1401,15 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_NONE, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLock) {
   chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
 
-  chromeos::input_method::FakeImeKeyboard ime_keyboard;
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
                 ui::INPUT_DEVICE_UNKNOWN);
-  rewriter_->set_ime_keyboard_for_testing(&ime_keyboard);
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // On Chrome OS, CapsLock is mapped to CapsLock with Mod3Mask.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1423,7 +1420,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_FALSE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                       ui::DomCode::CAPS_LOCK, ui::EF_NONE,
@@ -1432,30 +1429,117 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(ime_keyboard.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Remap Caps Lock to Control.
   IntegerPrefMember caps_lock;
   InitModifierKeyPref(&caps_lock, prefs::kLanguageRemapCapsLockKeyTo,
                       ui::chromeos::ModifierKey::kControlKey);
 
-  // Press Caps Lock.
-  EXPECT_EQ(GetExpectedResultAsString(
-                ui::ET_KEY_PRESSED, ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                ui::EF_CONTROL_DOWN, ui::DomKey::CONTROL, kNoScanCode),
+  // Press Caps Lock. CapsLock is enabled but we have remapped the key to
+  // now be Control. We want to ensure that the CapsLock modifier is still
+  // active even after pressing the remapped Capslock key.
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
+                                      ui::DomCode::CONTROL_LEFT,
+                                      ui::EF_CONTROL_DOWN | ui::EF_CAPS_LOCK_ON,
+                                      ui::DomKey::CONTROL, kNoScanCode),
             GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
 
   // Release Caps Lock.
-  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
-                                      ui::DomCode::CONTROL_LEFT, ui::EF_NONE,
-                                      ui::DomKey::CONTROL, kNoScanCode),
+  EXPECT_EQ(
+      GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+                                ui::DomCode::CONTROL_LEFT, ui::EF_CAPS_LOCK_ON,
+                                ui::DomKey::CONTROL, kNoScanCode),
+      GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
+                                ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                ui::EF_CAPS_LOCK_ON, ui::DomKey::CAPS_LOCK,
+                                kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+}
+
+TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
+  chromeos::Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
+                ui::INPUT_DEVICE_UNKNOWN);
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  // Turn on CapsLock.
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                      ui::DomCode::CAPS_LOCK,
+                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
+            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
+                                      kNoScanCode));
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                      ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
+            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
+                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
+                                      kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  // Remap CapsLock to Search.
+  IntegerPrefMember search;
+  InitModifierKeyPref(&search, prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::chromeos::ModifierKey::kSearchKey);
+
+  // Now that CapsLock is enabled, press the remapped CapsLock button again
+  // and expect to not disable CapsLock.
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
+                                      ui::DomCode::META_LEFT,
+                                      ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
+                                      ui::DomKey::META, kNoScanCode),
+            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                      ui::EF_CAPS_LOCK_ON,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  EXPECT_EQ(GetExpectedResultAsString(
+                ui::ET_KEY_RELEASED, ui::VKEY_LWIN, ui::DomCode::META_LEFT,
+                ui::EF_CAPS_LOCK_ON, ui::DomKey::META, kNoScanCode),
+            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
+                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                      ui::EF_CAPS_LOCK_ON,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  // Remap CapsLock key back to CapsLock.
+  IntegerPrefMember capslock;
+  InitModifierKeyPref(&capslock, prefs::kLanguageRemapCapsLockKeyTo,
+                      ui::chromeos::ModifierKey::kCapsLockKey);
+
+  // Now press CapsLock again and now expect that the CapsLock modifier is
+  // removed.
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
+                                      ui::DomCode::CAPS_LOCK,
+                                      ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
+            GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED,
+                                      ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
+                                      ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
+                                      kNoScanCode));
+  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+
+  // Disabling CapsLocks only happens on release of the CapsLock key.
+  EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
+                                      ui::DomCode::CAPS_LOCK, ui::EF_NONE,
+                                      ui::DomKey::CAPS_LOCK, kNoScanCode),
             GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED,
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_NONE, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
+  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLockToControl) {
@@ -3595,7 +3679,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
     delegate_ = std::make_unique<EventRewriterDelegateImpl>(nullptr);
     delegate_->set_pref_service_for_testing(prefs());
     rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(
-        delegate_.get(), sticky_keys_controller_, false);
+        delegate_.get(), sticky_keys_controller_, false, &fake_ime_keyboard_);
     chromeos::Preferences::RegisterProfilePrefs(prefs_.registry());
     source_.AddEventRewriter(rewriter_.get());
     sticky_keys_controller_->Enable(true);
@@ -3611,6 +3695,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
+  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
 
   EventBuffer buffer_;
@@ -4383,8 +4468,8 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
 
   void SetUp() override {
     EventRewriterAshTest::SetUp();
-    event_rewriter_chromeos_ =
-        std::make_unique<ui::EventRewriterChromeOS>(this, nullptr, false);
+    event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
+        this, nullptr, false, &fake_ime_keyboard_);
   }
 
   void SetModifierRemapping(const std::string& pref_name,
@@ -4411,6 +4496,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
 
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
+  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
 
  private:

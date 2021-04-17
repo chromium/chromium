@@ -710,14 +710,25 @@ EventRewriterChromeOS::EventRewriterChromeOS(
     Delegate* delegate,
     EventRewriter* sticky_keys_controller,
     bool privacy_screen_supported)
+    : EventRewriterChromeOS(delegate,
+                            sticky_keys_controller,
+                            privacy_screen_supported,
+                            ::chromeos::input_method::InputMethodManager::Get()
+                                ->GetImeKeyboard()) {}
+
+EventRewriterChromeOS::EventRewriterChromeOS(
+    Delegate* delegate,
+    EventRewriter* sticky_keys_controller,
+    bool privacy_screen_supported,
+    ::chromeos::input_method::ImeKeyboard* ime_keyboard)
     : last_keyboard_device_id_(ED_UNKNOWN_DEVICE),
-      ime_keyboard_for_testing_(nullptr),
       delegate_(delegate),
       sticky_keys_controller_(sticky_keys_controller),
       privacy_screen_supported_(privacy_screen_supported),
       pressed_modifier_latches_(EF_NONE),
       latched_modifier_latches_(EF_NONE),
-      used_modifier_latches_(EF_NONE) {}
+      used_modifier_latches_(EF_NONE),
+      ime_keyboard_(ime_keyboard) {}
 
 EventRewriterChromeOS::~EventRewriterChromeOS() {}
 
@@ -952,10 +963,17 @@ bool EventRewriterChromeOS::RewriteModifierKeys(const KeyEvent& key_event,
     state->key = remapped_key->result.key;
     incoming.flags |= characteristic_flag;
     characteristic_flag = remapped_key->flag;
-    if (incoming.key_code == VKEY_CAPITAL) {
-      // Caps Lock is rewritten to another key event, remove EF_CAPS_LOCK_ON
-      // flag to prevent the keyboard's Caps Lock state being synced to the
-      // rewritten key event's flag in InputMethodChromeOS.
+
+    // If the internal state of CapLocks is enabled, we should not remove
+    // the modifier flag. This is important for the case in which the user
+    // remaps the CapsLock key to another key (e.g. Search) and CapsLock is
+    // enabled. If the user were to press the CapsLock key (remapped to Search),
+    // we risk removing the CapsLock modifier and accidentally disabling
+    // CapsLocks.
+    if (incoming.key_code == VKEY_CAPITAL &&
+        !ime_keyboard_->CapsLockIsEnabled()) {
+      // We remove the CapsLock modifier here because we do not want to
+      // turn on the Capslock modifier when the key has been remapped.
       incoming.flags &= ~EF_CAPS_LOCK_ON;
     }
     if (remapped_key->remap_to == chromeos::ModifierKey::kCapsLockKey)
@@ -993,12 +1011,7 @@ bool EventRewriterChromeOS::RewriteModifierKeys(const KeyEvent& key_event,
   // AcceleratorController, so that the event is visible to apps (see
   // crbug.com/775743).
   if (key_event.type() == ET_KEY_RELEASED && state->key_code == VKEY_CAPITAL) {
-    ::chromeos::input_method::ImeKeyboard* ime_keyboard =
-        ime_keyboard_for_testing_
-            ? ime_keyboard_for_testing_
-            : ::chromeos::input_method::InputMethodManager::Get()
-                  ->GetImeKeyboard();
-    ime_keyboard->SetCapsLockEnabled(!ime_keyboard->CapsLockIsEnabled());
+    ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->CapsLockIsEnabled());
   }
   return exact_event;
 }

@@ -75,6 +75,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -3471,9 +3472,10 @@ class DesksAcceleratorsTest : public DesksTest,
     DesksTest::SetUp();
 
     auto* event_rewriter_controller = EventRewriterController::Get();
-    event_rewriter_controller->AddEventRewriter(
-        std::make_unique<ui::EventRewriterChromeOS>(
-            this, Shell::Get()->sticky_keys_controller(), false));
+    auto event_rewriter = std::make_unique<ui::EventRewriterChromeOS>(
+        this, Shell::Get()->sticky_keys_controller(), false,
+        &fake_ime_keyboard_);
+    event_rewriter_controller->AddEventRewriter(std::move(event_rewriter));
   }
 
   // ui::EventRewriterChromeOS::Delegate:
@@ -3507,6 +3509,8 @@ class DesksAcceleratorsTest : public DesksTest,
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DesksAcceleratorsTest);
+
+  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
 };
 
 namespace {
