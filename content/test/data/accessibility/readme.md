@@ -121,6 +121,14 @@ per line. For example, in the case of an HTML file the directives are located in
 between `<!--` and `-->`, in the case of a PDF file the directives are
 preceding by `%` character designating a comment.
 
+Directives have format of `@directive_name:directive_value`. Directives can be
+spawned over multiple lines:
+```
+@directive_name:
+  directive_value
+  directive_value
+```
+
 Certain directives are platform dependent. If so, then such directives are
 prefixed by a platform name:
 * `@WIN-` applied to Windows platform, MSAA/IAccessible2 APIs;

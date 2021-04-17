@@ -64,6 +64,16 @@ TEST_F(AXInspectScenarioTest, PropertyFilters) {
   EXPECT_EQ(scenario.property_filters[2].match_str, "AXTitle");
 }
 
+TEST_F(AXInspectScenarioTest, PropertyFilters_Multiline) {
+  AXInspectScenario scenario = AXInspectScenario::From(
+      "@MAC", {"@MAC-ALLOW:", "  AXRoleDescription", "  AXARIALive"});
+  EXPECT_EQ(scenario.property_filters.size(), 2U);
+  EXPECT_EQ(scenario.property_filters[0].type, AXPropertyFilter::ALLOW);
+  EXPECT_EQ(scenario.property_filters[0].match_str, "AXRoleDescription");
+  EXPECT_EQ(scenario.property_filters[1].type, AXPropertyFilter::ALLOW);
+  EXPECT_EQ(scenario.property_filters[1].match_str, "AXARIALive");
+}
+
 TEST_F(AXInspectScenarioTest, NodeFilters) {
   AXInspectScenario scenario =
       AXInspectScenario::From("@MAC", {"@MAC-DENY-NODE:AXRole=AXCheckBox"});

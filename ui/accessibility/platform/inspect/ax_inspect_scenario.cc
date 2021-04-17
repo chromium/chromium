@@ -25,24 +25,37 @@ AXInspectScenario AXInspectScenario::From(
     const std::vector<std::string>& lines,
     const std::vector<ui::AXPropertyFilter>& default_filters) {
   AXInspectScenario scenario(default_filters);
+  Directive directive = kNone;
+  // Directives have format of @directive:value[..value], value per line.
   for (const std::string& line : lines) {
-    // Directives have format of @directive:value.
+    // Treat empty line the multiline directive end.
+    if (line.empty()) {
+      directive = kNone;
+    }
+
+    // Implicit directive case: use the most recent directive.
     if (!base::StartsWith(line, "@")) {
+      if (directive != kNone) {
+        std::string value(base::TrimWhitespaceASCII(line, base::TRIM_ALL));
+        if (!value.empty())
+          scenario.ProcessDirective(directive, value);
+      }
       continue;
     }
 
+    // Parse directive.
     auto directive_end_pos = line.find_first_of(':');
-    if (directive_end_pos == std::string::npos) {
+    if (directive_end_pos == std::string::npos)
       continue;
-    }
 
-    Directive directive =
+    directive =
         ParseDirective(directive_prefix, line.substr(0, directive_end_pos));
     if (directive == kNone)
       continue;
 
     std::string value = line.substr(directive_end_pos + 1);
-    scenario.ProcessDirective(directive, value);
+    if (!value.empty())
+      scenario.ProcessDirective(directive, value);
   }
   return scenario;
 }
