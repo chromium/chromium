@@ -5331,6 +5331,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6957044667612803194">Šis saugos raktas nepalaiko PIN kodų</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{nuoroda}one{# nuoroda}few{# nuorodos}many{# nuorodos}other{# nuorodų}}</translation>
 <translation id="6960507406838246615">Reikia atnaujinti „Linux“</translation>
+<translation id="6960565108681981554">Nesuaktyvinta. Susisiekite su operatoriumi.</translation>
 <translation id="696103774840402661">Visam laikui ištrinti visų naudotojų bet kurie failai ir vietiniai duomenys, esantys šiame įrenginyje (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Herojus</translation>
 <translation id="6964760285928603117">Pašalinti iš grupės</translation>

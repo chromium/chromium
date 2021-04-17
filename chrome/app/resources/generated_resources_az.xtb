@@ -2921,7 +2921,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4207932031282227921">İcazə tələb edilib, cavablandırmaq üçün F6 düyməsini basın</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> axtarın</translation>
 <translation id="4209092469652827314">Böyük</translation>
-<translation id="4209251085232852247">Deaktiv edildi</translation>
+<translation id="4209251085232852247">Deaktivdir</translation>
 <translation id="4209464433672152343">Sənədlər çapa hazırlanmaq üçün <ph name="BEGIN_LINK_HELP" />Google'a göndərildi<ph name="END_LINK_HELP" />. Printer və printer tarixçəsinə <ph name="BEGIN_LINK_DASHBOARD" />Google Bulud Çap panelində<ph name="END_LINK_DASHBOARD" /> baxa, redaktə edə və idarə edə bilərsiniz.</translation>
 <translation id="4210048056321123003">Virtual cihaz endirilir</translation>
 <translation id="421182450098841253">Əlfəcin panelini göstərin</translation>
@@ -5318,6 +5318,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6957044667612803194">Bu güvənlik açarı PIN kodları dəstəkləmir</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{keçid}other{# keçid}}</translation>
 <translation id="6960507406838246615">Linux güncəlləməsi tələb edilir</translation>
+<translation id="6960565108681981554">Aktiv edilməyib. Operatorunuz ilə əlaqə saxlayın.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> cihazındakı bütün istifadəçilər üçün bütün fayllar və yerli data həmişəlik silinib.</translation>
 <translation id="6964390816189577014">Qəhrəman</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>

@@ -5328,6 +5328,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6957044667612803194">Denne sikkerhedsnøgle understøtter ikke pinkoder</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}one{# link}other{# links}}</translation>
 <translation id="6960507406838246615">Kræver Linux-opdatering</translation>
+<translation id="6960565108681981554">Ikke aktiveret. Kontakt dit mobilselskab.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>

@@ -878,7 +878,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini ditetapkan, browser akan mulai menghapus tab untuk menghemat memori setelah melampaui batas. Namun, tidak ada jaminan bahwa browser selalu berjalan di bawah batas. Setiap nilai yang kurang dari 1024 akan dibulatkan ke 1024.
 
       Jika kebijakan ini tidak ditetapkan, browser hanya akan mulai mencoba menghemat memori setelah mendeteksi bahwa perangkatnya memiliki jumlah memori fisik yang rendah.</translation>
-<translation id="2164610500194388856">Beri aplikasi web akses ke berbagai jenis file</translation>
 <translation id="2166472654199325139">Jangan filter konten khusus dewasa dari situs</translation>
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>
@@ -2790,6 +2789,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada sertifikat yang dihasilkan dan panggilan ke <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> akan gagal.</translation>
 <translation id="4742973303930120836">Membatasi mode pencetakan grafis latar belakang</translation>
 <translation id="4752880493649142945">Sertifikat klien untuk menyambung ke RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Jika kebijakan disetel ke <ph name="ASK_FILE_HANDLING" />, aplikasi web akan dapat meminta akses ke berbagai jenis file melalui File Handling API. Jika kebijakan disetel ke <ph name="BLOCK_FILE_HANDLING" />, aplikasi web akan dilarang mengakses berbagai jenis file.
+
+      Jika kebijakan tidak disetel, aplikasi web akan dapat meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="4757053978738874325">Mengaktifkan fitur aksesibilitas audio mono.
 
           Fitur ini berfungsi untuk mengeluarkan audio stereo yang menyertakan saluran yang berbeda pada kiri dan kanan sehingga setiap telinga dapat mendengarkan suara yang berbeda.
@@ -2967,6 +2969,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="4962262530309732070">Jika kebijakan ini disetel ke true atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mengizinkan setelan Tambahkan Pengguna dari pengelola pengguna.
 
       Jika kebijakan ini disetel ke false, <ph name="PRODUCT_NAME" /> tidak akan mengizinkan pembuatan profil baru dari pengelola pengguna.</translation>
+<translation id="4970046075219007744">Izinkan aplikasi web meminta pengguna memberikan akses ke berbagai jenis file melalui File Handling API</translation>
 <translation id="4970855112942626932">Nonaktifkan login browser</translation>
 <translation id="4977702914571821981">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk menampilkan konten campuran (konten HTTP di situs HTTPS) yang dapat diblokir (aktif). Daftar tersebut juga dapat menentukan situs yang konten campurannya yang dapat diblokir secara opsional (pasif) akan diupgrade.
 
@@ -4312,9 +4315,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6782977971207381602">Jika kebijakan disetel ke Aktif, perangkat dapat menjalankan mesin virtual di <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> dan <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> harus disetel ke Aktif untuk menggunakan <ph name="PRODUCT_CROSTINI_NAME" />. Jika kebijakan disetel ke Nonaktif, perangkat tidak dapat menjalankan mesin virtual. Jika setelan diubah ke Nonaktif, kebijakan mulai diterapkan ke mesin virtual baru yang akan dijalankan, bukan yang sudah berjalan.
 
       Jika kebijakan ini tidak disetel di perangkat terkelola, perangkat tidak akan menjalankan mesin virtual. Perangkat yang tidak terkelola dapat menjalankan mesin virtual.</translation>
-<translation id="6786575816328462682">Jika kebijakan disetel ke 1, aplikasi web akan dapat mengakses berbagai jenis file. Jika kebijakan disetel ke 2, aplikasi web akan dilarang mengakses berbagai jenis file.
-
-      Jika kebijakan tidak disetel, aplikasi web akan dapat meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6786967369487349613">Menyetel direktori profil roaming</translation>
 <translation id="6789422336869764846">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan status tombol dev perangkat saat perangkat di-booting.

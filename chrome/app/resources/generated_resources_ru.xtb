@@ -5327,6 +5327,7 @@
 <translation id="6957044667612803194">Электронный ключ не поддерживает PIN-коды.</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
 <translation id="6960507406838246615">Требуется обновление Linux</translation>
+<translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="696103774840402661">Файлы и локальные данные всех пользователей будут удалены с этого устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Удалить из группы</translation>

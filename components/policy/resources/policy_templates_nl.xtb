@@ -864,7 +864,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als het beleid is ingesteld, worden tabbladen in de browser verwijderd om geheugen te besparen als de limiet wordt bereikt. Er is geen garantie dat de browser altijd onder de limiet wordt uitgevoerd. Elke waarde lager dan 1024 wordt afgerond naar 1024.
 
       Als dit beleid niet is ingesteld, begint de browser pas met het besparen van geheugen nadat is gedetecteerd dat er nog maar een kleine hoeveelheid fysiek geheugen op de machine beschikbaar is.</translation>
-<translation id="2164610500194388856">Web-apps toegang tot bestandstypen geven</translation>
 <translation id="2166472654199325139">Sites niet filteren op content voor volwassenen</translation>
 <translation id="2168397434410358693">Inactieve vertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="217013996107840632">Opdrachtregelparameters voor overschakeling vanaf de alternatieve browser.</translation>
@@ -2751,6 +2750,9 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid niet toepast of niet instelt, wordt er geen certificaat gegenereerd en mislukken aanroepen naar de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />.</translation>
 <translation id="4742973303930120836">De modus voor afdrukken met achtergrondbeelden beperken</translation>
 <translation id="4752880493649142945">Clientcertificaat voor verbinding maken met RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Als je het beleid instelt op <ph name="ASK_FILE_HANDLING" />, kunnen web-apps toegang vragen tot bestandstypen via de File Handling API. Als je het beleid instelt op <ph name="BLOCK_FILE_HANDLING" />, wordt toegang tot bestandstypen geweigerd.
+
+      Als dit beleid niet is ingesteld, kunnen web-apps toegang vragen, maar gebruikers kunnen deze instelling wijzigen.</translation>
 <translation id="4757053978738874325">Zet de toegankelijkheidsfunctie voor monogeluid aan.
 
           Met deze functie wordt stereogeluid met verschillende linker- en rechterkanalen uitgevoerd, zodat verschillende oren verschillende geluiden horen.
@@ -2925,6 +2927,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4962262530309732070">Als dit beleid is ingesteld op 'True' of niet wordt geconfigureerd, staat <ph name="PRODUCT_NAME" /> 'Persoon toevoegen' toe vanuit gebruikersbeheer.
 
       Als dit beleid is ingesteld op 'False', staat <ph name="PRODUCT_NAME" /> het maken van nieuwe profielen niet toe vanuit gebruikersbeheer.</translation>
+<translation id="4970046075219007744">Web-apps toestaan om de gebruiker toegang te geven tot bestandstypen via de File Handling API</translation>
 <translation id="4970855112942626932">Inloggen bij browser uitzetten</translation>
 <translation id="4977702914571821981">Hiermee kun je een lijst met URL-patronen opgeven van sites waarop blokkeerbare (actieve) gemengde content (zoals HTTP-content op HTTPS-sites) niet mag worden weergegeven en waarvoor optioneel blokkeerbare (passieve) gemengde content wordt geüpgraded.
 
@@ -4237,9 +4240,6 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6782977971207381602">Als je dit beleid toepast, kan het apparaat virtuele machines uitvoeren op <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> moeten aanstaan om <ph name="PRODUCT_CROSTINI_NAME" /> te gebruiken. Als je het beleid niet toepast, kan het apparaat geen virtuele machines uitvoeren. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe virtuele machines en niet op virtuele machines die al actief zijn.
 
       Als dit beleid niet is ingesteld op een beheerd apparaat, kan het apparaat geen virtuele machines uitvoeren. Niet-beheerde apparaten kunnen virtuele machines uitvoeren.</translation>
-<translation id="6786575816328462682">Als je het beleid instelt op 1, hebben web-apps toegang tot bestandstypen. Als je het beleid instelt op 2, wordt toegang tot bestandstypen geweigerd.
-
-      Als dit beleid niet is ingesteld, kunnen web-apps toegang vragen, maar gebruikers kunnen deze instelling wijzigen.</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786967369487349613">De map voor roaming-profielen instellen</translation>
 <translation id="6789422336869764846">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.

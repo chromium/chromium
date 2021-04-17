@@ -3312,7 +3312,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4647090755847581616">&amp;Sulje välilehti</translation>
 <translation id="4647283074445570750">Vaihe <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647697156028544508">Anna laitteen <ph name="DEVICE_NAME" /> PIN-koodi:</translation>
-<translation id="4648491805942548247">Käyttöluvat eivät riitä</translation>
+<translation id="4648491805942548247">Luvat eivät riitä</translation>
 <translation id="4650591383426000695">Irrota <ph name="DEVICE_TYPE" /> puhelimesta</translation>
 <translation id="4651484272688821107">Verkkoelementtiä ei voitu ladata esittelytilan resursseilla.</translation>
 <translation id="4652935475563630866">Kamera-asetuksen muutos edellyttää Parallels Desktopin käynnistämistä uudelleen. Käynnistä Parallels Desktop uudelleen jatkaaksesi.</translation>
@@ -4306,7 +4306,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5800020978570554460">Kohdetiedosto on katkaistu tai poistettu edellisen latauksen jälkeen.</translation>
 <translation id="5801568494490449797">Asetukset</translation>
 <translation id="5804175651771201311">Roaming pois päältä</translation>
-<translation id="5804241973901381774">Käyttöoikeudet</translation>
+<translation id="5804241973901381774">Luvat</translation>
 <translation id="5805697420284793859">Ikkunat</translation>
 <translation id="5806773519584576205">0° (oletus)</translation>
 <translation id="5810809306422959727">Tällä tilillä ei voi käyttää lapsilukkoa</translation>
@@ -5324,6 +5324,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6957044667612803194">Tämä suojausavain ei tue PIN-koodia</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{linkki}other{# linkkiä}}</translation>
 <translation id="6960507406838246615">Linux-päivitys vaaditaan</translation>
+<translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> on tyhjennetty, joten kaikkien käyttäjien tiedostot ja paikallinen data on poistettu pysyvästi.</translation>
 <translation id="6964390816189577014">Sankari</translation>
 <translation id="6964760285928603117">Poista ryhmästä</translation>
@@ -6563,7 +6564,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8325413836429495820">Leikepöydän tarkastelu kielletty</translation>
 <translation id="8326478304147373412">PKCS #7, varmenneketju</translation>
 <translation id="8327039559959785305">Virhe Linux-tiedostojen käyttöönotossa. Yritä uudelleen.</translation>
-<translation id="8327676037044516220">Käyttöoikeudet ja sisältöasetukset</translation>
+<translation id="8327676037044516220">Luvat ja sisältöasetukset</translation>
 <translation id="833256022891467078">Crostinin jaetut kansiot</translation>
 <translation id="8335587457941836791">Poista kiinnitys hyllystä</translation>
 <translation id="8336407002559723354">Päivitykset päättyvät <ph name="MONTH_AND_YEAR" /></translation>

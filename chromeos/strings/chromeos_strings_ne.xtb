@@ -147,7 +147,7 @@
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्क्यान गरेर यहाँ सेभ गर्नुहोस्</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
-<translation id="4483049906298469269">नेटवर्कको पूर्वनिर्धारित गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
+<translation id="4483049906298469269">नेटवर्कको डिफल्ट गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4548483925627140043">सिग्नल फेला परेन</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ब्याट्री</translation>
@@ -329,7 +329,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
-<translation id="8230672074305416752">पूर्वनिर्धारित नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
+<translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -352,19 +352,19 @@
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>
-<translation id="8723108084122415655">पूर्वनिर्धारित नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
+<translation id="8723108084122415655">डिफल्ट नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8726019395068607495">रोकियो - प्रिन्टरको कभर खुला छ</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8798099450830957504">पूर्वनिर्धारित</translation>
+<translation id="8798099450830957504">डिफल्ट</translation>
 <translation id="8798441408945964110">प्रदायकको नाम</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">वालपेपर</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>
-<translation id="8910721771319628100">पूर्वनिर्धारित नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
+<translation id="8910721771319628100">डिफल्ट नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="8930622219860340959">वायरलेस</translation>

@@ -5330,6 +5330,7 @@
 <translation id="6957044667612803194">Цей ключ безпеки не підтримує PIN-коди</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{посилання}one{# посилання}few{# посилання}many{# посилань}other{# посилання}}</translation>
 <translation id="6960507406838246615">Потрібно оновити Linux</translation>
+<translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
 <translation id="696103774840402661">Усі файли та локальні дані всіх користувачів на цьому пристрої <ph name="DEVICE_TYPE" /> видалено назавжди.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Вилучити з групи</translation>

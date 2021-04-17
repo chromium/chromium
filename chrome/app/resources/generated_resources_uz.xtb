@@ -5325,6 +5325,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6957044667612803194">Bu elektron kalitda PIN kodlar ishlamaydi</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{havola}other{# ta havola}}</translation>
 <translation id="6960507406838246615">Linuxni yangilash zarur</translation>
+<translation id="6960565108681981554">Faollashtirilmagan. Aloqa operatoringizga murojaat qiling.</translation>
 <translation id="696103774840402661">Ushbu <ph name="DEVICE_TYPE" /> qurilmasidagi barcha fayllar va foydalanuvchi maʼlumotlari butunlay tozalandi.</translation>
 <translation id="6964390816189577014">Super qahramon</translation>
 <translation id="6964760285928603117">Guruhdan chiqarish</translation>

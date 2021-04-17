@@ -871,7 +871,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida, o navegador começará a descartar guias para economizar memória quando o limite for excedido. Entretanto, não há garantia de que o navegador seja sempre executado dentro dos limites. Qualquer valor abaixo de 1.024 será arredondado para esse número.
 
       Se esta política não for definida, o navegador só começará a economizar memória quando detectar que a quantidade de memória física da máquina está baixa.</translation>
-<translation id="2164610500194388856">Conceder aos apps da Web acesso aos tipos de arquivo</translation>
 <translation id="2166472654199325139">Não filtrar sites com conteúdo adulto</translation>
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
@@ -2774,6 +2773,9 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se a política for definida como "Desativada" ou deixada sem definição, nenhum certificado será gerado e as chamadas para <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> falharão.</translation>
 <translation id="4742973303930120836">Restringir modo de impressão de gráficos de segundo plano</translation>
 <translation id="4752880493649142945">Certificado de cliente para conexão a RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Se a política for definida como <ph name="ASK_FILE_HANDLING" />, os apps da Web poderão solicitar acesso a tipos de arquivos usando a API File Handling. Se a política for definida como <ph name="BLOCK_FILE_HANDLING" />, o acesso será negado.
+
+      Se ela não for definida, os apps da Web solicitarão acesso, mas os usuários poderão mudar a configuração.</translation>
 <translation id="4757053978738874325">Ativar o recurso de acessibilidade de áudio mono.
 
           Este recurso é responsável pela saída de áudio estéreo, que inclui os canais esquerdo e direito, para que cada ouvido possa receber sons diferentes.
@@ -2949,6 +2951,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4962262530309732070">Se esta política for definida como verdadeira ou não for configurada, o <ph name="PRODUCT_NAME" /> permitirá a adição de uma pessoa no gerenciador de usuários.
 
       Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não permitirá a criação de novos perfis no gerenciador de usuários.</translation>
+<translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4977702914571821981">Permite que você defina uma lista de padrões de URL que especificam sites sem permissão para exibir conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que será feito o upgrade de conteúdo misto passivo (opcionalmente bloqueável).
 
@@ -4284,9 +4287,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6782977971207381602">Se a política for definida como "Ativada", o dispositivo poderá executar máquinas virtuais no <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> precisam estar ativadas para usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a política for definida como "Desativada", o dispositivo não poderá executar máquinas virtuais. Se a definição for mudada para "Desativada", a política será aplicada para executar novas máquinas virtuais em vez das já existentes.
 
       Quando a política não for definida em um dispositivo gerenciado, não será possível executar máquinas virtuais. Dispositivos não gerenciados podem executar máquinas virtuais.</translation>
-<translation id="6786575816328462682">Se a política for definida como 1, os apps da Web poderão acessar tipos de arquivos. Se for definida como 2, o acesso será negado.
-
-      Se ela não for definida, os apps da Web pedirão o acesso, mas os usuários poderão mudar a configuração.</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6786967369487349613">Configurar o diretório do perfil de roaming</translation>
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.

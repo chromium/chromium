@@ -5330,6 +5330,7 @@
 <translation id="6957044667612803194">لا يوفّر مفتاح الأمان هذا أرقام التعريف الشخصية</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{رابط واحد}zero{# رابط}two{رابطان}few{# روابط}many{# رابطًا}other{# رابط}}</translation>
 <translation id="6960507406838246615">‏يجب تحديث نظام التشغيل Linux.</translation>
+<translation id="6960565108681981554">لم يتم تفعيل الشبكة. يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
 <translation id="6964390816189577014">بطل</translation>
 <translation id="6964760285928603117">الإزالة من مجموعة</translation>
@@ -5409,7 +5410,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - تم ربط المنفذ التسلسلي</translation>
 <translation id="7036706669646341689">‏يُنصَح بتوفير <ph name="DISK_SIZE" /> من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="7037509989619051237">نص للمعاينة</translation>
-<translation id="7038632520572155338">الوصول عبر مفتاح التحويل</translation>
+<translation id="7038632520572155338">الوصول عبر مفتاح تبديل</translation>
 <translation id="7038710352229712897">‏إضافة حساب آخر على Google للمستخدم "<ph name="USER_NAME" />"</translation>
 <translation id="7039326228527141150">‏الدخول إلى أجهزة USB من <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">‏تسجيل دخول البطاقة الذكية لـ Microsoft</translation>

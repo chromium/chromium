@@ -360,7 +360,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="225207911366869382">Ova vrijednost je zastarjela za ovo pravilo.</translation>
 <translation id="2258928405015593961">Unesite datum isteka koji je u budućnosti i pokušajte ponovo</translation>
 <translation id="225943865679747347">Kôd pogreške: <ph name="ERROR_CODE" /></translation>
-<translation id="2262243747453050782">Ggreška na HTTP-u</translation>
+<translation id="2262243747453050782">HTTP greška</translation>
 <translation id="2267047181501709434">Potvrđivanje vašeg identiteta...</translation>
 <translation id="2270484714375784793">Broj telefona</translation>
 <translation id="2276057643614339130">Baza za štampanje</translation>

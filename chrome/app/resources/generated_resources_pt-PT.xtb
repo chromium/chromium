@@ -5328,6 +5328,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6957044667612803194">Esta chave de segurança não suporta PINs.</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# links}}</translation>
 <translation id="6960507406838246615">Atualização do Linux necessária</translation>
+<translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
 <translation id="696103774840402661">Todos os ficheiros e dados locais para todos os utilizadores neste dispositivo <ph name="DEVICE_TYPE" /> foram eliminados de forma permanente.</translation>
 <translation id="6964390816189577014">Herói</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>

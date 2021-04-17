@@ -3295,7 +3295,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4629521233550547305">Opna prófílinn <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Sérsníða spjöld</translation>
 <translation id="4633003931260532286">Viðbótin krefst „<ph name="IMPORT_NAME" />“ með „<ph name="IMPORT_VERSION" />“ eða nýrri útgáfu en aðeins útgáfa „<ph name="INSTALLED_VERSION" />“ er uppsett</translation>
-<translation id="4633757335284074492">Taka afrit á Google Drive. Endurheimtu gögn eða skiptu um tæki hvenær sem er. Þetta öryggisafrit inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
+<translation id="4633757335284074492">Vista öryggisafrit á Google Drive. Endurheimtu gögn eða skiptu um tæki hvenær sem er. Þetta öryggisafrit inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
 <translation id="4634575639321169635">Settu þetta tæki upp fyrir notkun við vinnu eða til einkanota</translation>
 <translation id="4634771451598206121">Skráðu þig inn aftur...</translation>
 <translation id="4635072447747973225">Fjarlægja Crostini</translation>
@@ -5327,6 +5327,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6957044667612803194">Þessi öryggislykill styður ekki PIN-númer</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{tengill}one{# tengill}other{# tenglar}}</translation>
 <translation id="6960507406838246615">Linux-uppfærslu er krafist</translation>
+<translation id="6960565108681981554">Ekki virkt. Hafðu samband við símafyrirtækið.</translation>
 <translation id="696103774840402661">Öllum skrám og staðbundnum gögnum fyrir alla notendur í þessu <ph name="DEVICE_TYPE" /> hefur verið eytt varanlega.</translation>
 <translation id="6964390816189577014">Hetja</translation>
 <translation id="6964760285928603117">Fjarlægja úr hópi</translation>
@@ -5898,7 +5899,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7609148976235050828">Tengstu internetinu og reyndu aftur.</translation>
 <translation id="7612655942094160088">Kveikja á tengdum eiginleikum í síma</translation>
 <translation id="7614260613810441905">Spyrja þegar vefsvæði vill breyta skrám eða möppum í tækinu (ráðlagt)</translation>
-<translation id="761530003705945209">Taka afrit á Google Drive. Endurheimtu gögnin þín eða skiptu um tæki hvenær sem er. Öryggisafritið inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
+<translation id="761530003705945209">Vista öryggisafrit á Google Drive. Endurheimtu gögnin þín eða skiptu um tæki hvenær sem er. Öryggisafritið inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reikningsins.</translation>
 <translation id="7615365294369022248">Villa kom upp við að bæta við reikningi</translation>
 <translation id="7616214729753637086">Skráir tæki...</translation>
 <translation id="7617263010641145920">Kveikja á Play Store</translation>
@@ -7179,7 +7180,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9012122671773859802">Láta skjáinn fylgja músarbendlinum</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> af lausu plássi er nauðsynlegt til að setja upp Linux. Eyddu skrám úr tækinu til að auka geymslurýmið.</translation>
 <translation id="9013707997379828817">Kerfisstjórinn þinn færði þetta tæki aftur í eldri útgáfu. Vistaðu mikilvægar skrár og endurræstu. Öllum gögnum á tækinu verður eytt.</translation>
-<translation id="901668144954885282">Taka afrit á Google Drive</translation>
+<translation id="901668144954885282">Vista öryggisafrit á Google Drive</translation>
 <translation id="9018218886431812662">Uppsetningu lokið</translation>
 <translation id="901834265349196618">tölvupóstur</translation>
 <translation id="9019062154811256702">Lesa og breyta stillingum sjálfvirkrar útfyllingar</translation>
@@ -7200,7 +7201,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9030515284705930323">Fyrirtækið þitt hefur ekki virkjað Google Play Store fyrir reikninginn þinn. Hafðu samband við stjórnanda til að fá frekari upplýsingar.</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> er ekki studdur lengur</translation>
-<translation id="9031549947500880805">Taka afrit á Google Drive. Endurheimtu gögnin þín eða skiptu um tæki hvenær sem er. Öryggisafritið inniheldur forritsgögn.</translation>
+<translation id="9031549947500880805">Vista öryggisafrit á Google Drive. Endurheimtu gögnin þín eða skiptu um tæki hvenær sem er. Öryggisafritið inniheldur forritsgögn.</translation>
 <translation id="9033765790910064284">Halda samt áfram</translation>
 <translation id="9033857511263905942">Líma</translation>
 <translation id="9037818663270399707">Tengingin þín er ekki lokuð fyrir alla netumferð</translation>

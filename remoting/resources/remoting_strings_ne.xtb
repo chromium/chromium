@@ -137,7 +137,7 @@
 <translation id="7434397035092923453">ग्राहको लागि पहूँच अस्वीकार गरियो: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">जडित ग्राहक: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">खाता परिवर्तन गर्नुहोस्</translation>
-<translation id="7628469622942688817">यो यन्त्रमा मेरो PIN सम्झनुहोस्।</translation>
+<translation id="7628469622942688817">यो डिभाइसमा मेरो PIN सम्झनुहोस्।</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
@@ -149,7 +149,7 @@
 <translation id="7936528439960309876">दायाँतिर डक गर्नुहोस्</translation>
 <translation id="7970576581263377361">प्रमाणीकरण विफल भयो। कृपया फेरि Chromium मा साइन इन गर्नुहोस्।</translation>
 <translation id="7981525049612125370">रिमोट सत्रको म्याद समाप्त भएको छ।</translation>
-<translation id="8038111231936746805">(पूर्वनिर्धारित)</translation>
+<translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8060029310790625334">मद्दत केन्द्र</translation>
 <translation id="806699900641041263"><ph name="HOSTNAME" /> मा जडान हुँदै</translation>
@@ -177,7 +177,7 @@
 <translation id="8906511416443321782">अडियो क्याप्चर गर्न र उक्त अडियो Chrome को रिमोट डेस्कटप क्लाइन्टलाई स्ट्रिम गर्न माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="9111855907838866522">तपाईं आफ्नो रिमोट यन्त्रसँग जोडिनुभएको छ। मेनु खोल्नका लागि कृपया चार औंलाहरूले स्क्रिनमा ट्याप गर्नुहोस्।</translation>
 <translation id="9126115402994542723">यस उपकरणबाट यो होस्टमा जडान गर्दै गर्दा फेरि PIN को लागि नसोध्नुहोस्।</translation>
-<translation id="916856682307586697">पूर्वनिर्धारित XSession सुरु गर्नुहोस्</translation>
+<translation id="916856682307586697">डिफल्ट XSession सुरु गर्नुहोस्</translation>
 <translation id="9187628920394877737"><ph name="PRODUCT_NAME" /> लाई 'स्क्रिन रेकर्ड गर्ने' अनुमति दिनुहोस्</translation>
 <translation id="9213184081240281106">अमान्य होस्ट कन्फिगुरेसन।</translation>
 <translation id="981121421437150478">अफलाइन</translation>

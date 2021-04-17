@@ -868,7 +868,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika ayarlanırsa tarayıcı, sınır geçildikten sonra bellekten tasarruf etmek için sekmeleri silmeye başlar. Bununla birlikte, tarayıcının her zaman sınırın altında çalışacağına dair herhangi bir garanti yoktur. 1024'ün altındaki değerler 1024'e yuvarlanır.
 
       Bu politika ayarlanmazsa tarayıcı yalnızca makinesindeki fiziksel bellek miktarının düştüğünü algıladığında bellekten tasarruf etmeye çalışır.</translation>
-<translation id="2164610500194388856">Web uygulamalarının, dosya türlerine erişimine izni ver</translation>
 <translation id="2166472654199325139">Yetişkinlere uygun içerik için siteler filtreleme</translation>
 <translation id="2168397434410358693">AC güçle çalışırken boşta kalma gecikmesi</translation>
 <translation id="217013996107840632">Alternatif tarayıcıdan geçiş yapmak için komut satırı parametreleri.</translation>
@@ -2767,6 +2766,9 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir sertifika oluşturulmaz ve <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> için yapılan çağrılar başarısız olur.</translation>
 <translation id="4742973303930120836">Arka plan grafikleri yazdırma modunu kısıtla</translation>
 <translation id="4752880493649142945">RemoteAccessHostTokenValidationUrl'ye bağlanmak için istemci sertifikası</translation>
+<translation id="475479145997699293">Politikanın <ph name="ASK_FILE_HANDLING" /> olarak ayarlanması, web uygulamalarının File Handling API üzerinden dosya türlerine erişim istemesine olanak tanır. Politikayı <ph name="BLOCK_FILE_HANDLING" /> değerine ayarlamak dosya türlerine erişime izin vermez.
+
+      Politika ayarlanmazsa web uygulamaları erişim izni ister ancak kullanıcılar bu ayarı değiştirebilirler.</translation>
 <translation id="4757053978738874325">Mono ses erişilebilirlik özelliklerini etkinleştirin.
 
           Bu özellik, farklı kulakların farklı sesleri alması için sağ ve sol kanalı içeren stereo ses çıkışından sorumludur.
@@ -2942,6 +2944,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4962262530309732070">Bu politika doğru seçeneğine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" />, kullanıcı yöneticisinin Kişi Ekle işlevinin kullanılmasına izin verir.
 
       Bu politika yanlış seçeneğine ayarlanırsa <ph name="PRODUCT_NAME" />, kullanıcı yöneticisinin yeni profiller oluşturmasına izin vermez.</translation>
+<translation id="4970046075219007744">Web uygulamalarının, kullanıcıdan File Handling API üzerinden dosya türlerine erişim istemesine izin ver</translation>
 <translation id="4970855112942626932">Tarayıcıda oturum açmayı devre dışı bırak</translation>
 <translation id="4977702914571821981">Engellenebilir (ör. etkin) karma içeriği (ör. HTTPS sitelerindeki HTTP içeriği) görüntülemelerine izin verilmeyen sitelerin belirtildiği ve isteğe bağlı olarak engellenebilir (ör. pasif) karma içeriğin yükseltileceği bir URL kalıpları listesini ayarlamanıza olanak tanır.
 
@@ -4255,9 +4258,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6782977971207381602">Politikanın Etkin değerine ayarlanması cihazın, <ph name="PRODUCT_OS_NAME" /> işletim sistemi üstünde sanal makineleri çalıştırmasına olanak tanır. <ph name="PRODUCT_CROSTINI_NAME" /> kullanılabilmesi için <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> ve <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> politikalarının Etkin değerine ayarlanması gerekir. Politika Devre Dışı değerine ayarlanırsa cihaz, sanal makineleri çalıştıramaz. Politika Devre Dışı olarak değiştirilirse halihazırda çalışan sanal makinelere değil, başlatılan yeni sanal makinelere uygulanmaya başlar.
 
       Yönetilen bir cihazda bu politika ayarlanmadığında cihaz, sanal makineleri çalıştıramaz. Yönetilmeyen cihazlar, sanal makineleri çalıştırabilir.</translation>
-<translation id="6786575816328462682">Politikayı 1 değerine ayarlamak web uygulamalarının dosya türlerine erişmesine izin verir. Politikayı 2 değerine ayarlamak dosya türlerine erişime izin vermez.
-
-      Politika ayarlanmazsa web uygulamaları erişim izni ister ancak kullanıcılar bu ayarı değiştirebilirler.</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
 <translation id="6786967369487349613">Dolaşım profili dizinini ayarlayın</translation>
 <translation id="6789422336869764846">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar makinenin açılışında cihazın geliştirici anahtarının durumunu bildirir.

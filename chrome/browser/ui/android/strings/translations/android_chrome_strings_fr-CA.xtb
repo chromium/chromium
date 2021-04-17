@@ -396,7 +396,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Afficher le mot de passe</translation>
-<translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'identifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
+<translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">La réinitialisation efface l'historique de vos économies de données, y compris la liste des sites consultés.</translation>
 <translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>

@@ -5329,6 +5329,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6957044667612803194">Šī drošības atslēga neatbalsta PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{saite}zero{# saišu}one{# saite}other{# saites}}</translation>
 <translation id="6960507406838246615">Nepieciešama Linux atjaunināšana</translation>
+<translation id="6960565108681981554">Nav aktivizēts. Sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="696103774840402661">No šīs ierīces (<ph name="DEVICE_TYPE" />) ir pilnīgi un neatgriezeniski izdzēsti visu lietotāju faili un lokālie dati.</translation>
 <translation id="6964390816189577014">Varonis</translation>
 <translation id="6964760285928603117">Noņemt no grupas</translation>

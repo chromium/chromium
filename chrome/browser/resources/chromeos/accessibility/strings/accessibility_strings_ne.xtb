@@ -110,7 +110,7 @@
 <translation id="1653266918374749391">अघिल्लो तह 3 शीर्षक</translation>
 <translation id="1657616855184033958">घटनाका स्ट्रिमसम्बन्धी फिल्टरहरू देखाउनुहोस्</translation>
 <translation id="1659072772017912254">जाँच गरिएको छैन</translation>
-<translation id="1666326070478924810">चयन गरेर बोल्ने नामक सेवाका सेटिङहरू</translation>
+<translation id="1666326070478924810">सेलेक्ट टु स्पिक नामक सेवाका सेटिङहरू</translation>
 <translation id="1674262202423278359">ChromeVox समद्रयात्रा</translation>
 <translation id="16777221443363124">मेनु पट्टी</translation>
 <translation id="1680732992526857724"><ph name="NAME" /> को स्विच सक्रिय छ</translation>
@@ -529,7 +529,7 @@
 <translation id="4740661827607246557">मद्दत आदेशहरू</translation>
 <translation id="4755857887974653209">ChromeVox असक्षम गर्नुहोस्</translation>
 <translation id="4763480195061959176">भिडियो</translation>
-<translation id="4764692524839457597">पूर्वनिर्धारित मान</translation>
+<translation id="4764692524839457597">डिफल्ट मान</translation>
 <translation id="4772771694153161212">अधोरेखाङ्कन होइन</translation>
 <translation id="4780458943471935919">स्क्रोल गरी अर्को पृष्ठमा जानुहोस्</translation>
 <translation id="4784215347943747396">केवल १ वा २ स्विचहरूको प्रयोग गरी यन्त्र नियन्त्रण गर्नुहोस्</translation>
@@ -650,7 +650,7 @@
 <translation id="5585044216466955529">पाठ सम्पदन गर्नुहोस्, इमेल प्रविष्टी</translation>
 <translation id="5597170376237141345">अर्को जाँच बाकस</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडियो बटन छानिएन</translation>
-<translation id="5601172225407283979">पूर्वनिर्धारित कार्य गर्नुहोस्</translation>
+<translation id="5601172225407283979">डिफल्ट कार्य गर्नुहोस्</translation>
 <translation id="5608798115546226984">स्वत: पूर्णता रेखा</translation>
 <translation id="5616029807486814372">अर्को पाठ</translation>
 <translation id="561939826962581046">समय</translation>
@@ -694,7 +694,7 @@
 <translation id="5876817486144482042">बोलीको भोल्युम घटाउनुहोस्</translation>
 <translation id="5878206664863390311">विषयहरू ब्राउज गर्न Search + दायाँ एरो की वा Search +  बायाँ एरो की थिच्नुहोस्</translation>
 <translation id="5878908838135392163">पाउडर जस्तो निलो</translation>
-<translation id="588108970619830498">टेक्स्ट टु स्पिचको सेटिङलाई रिसेट गरी पूर्वनिर्धारित मान बनाउनुहोस्</translation>
+<translation id="588108970619830498">टेक्स्ट टु स्पिचको सेटिङलाई रिसेट गरी डिफल्ट मान बनाउनुहोस्</translation>
 <translation id="5891934789323004067">तालिका</translation>
 <translation id="5899860758576822363">ChromeVox ले बोल्दा अडियो कम आवाजमा बजाउनुहोस्</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
@@ -937,7 +937,7 @@
 <translation id="7735498529470878067">तपाईंले छोएर अन्वेषण गर्नुभयो भने तपाईं स्क्रिनमा भएका कुराबारे तुरुन्तै थाहा पाउन सक्नुहुन्छ।</translation>
 <translation id="773906353055481349">कक्षहरूमा यताउता नेभिगेसन गर्न तीर कुञ्जीहरू सहित Search+Ctrl+Alt थिच्‍नुहोस्</translation>
 <translation id="7763537600611320912">डाउनलोड सुरु भयो <ph name="FILE_NAME" /></translation>
-<translation id="7768784765476638775">चयन गरेर बोल्ने</translation>
+<translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7776293189010177726">ChromeVox का मेनुहरू खोल्नुहोस्</translation>
 <translation id="7799302833060027366">गणितीय सामग्रीको अन्वेषण गर्न माथि, तल, बाँया वा दायाँ तीर कुञ्जी थिच्नुहोस्</translation>
 <translation id="7800558923657349506">उपसंहार</translation>

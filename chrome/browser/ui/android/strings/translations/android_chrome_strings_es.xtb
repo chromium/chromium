@@ -143,7 +143,7 @@
 <translation id="1984705450038014246">Sincronizar tus datos de Chrome</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> Botón <ph name="LINK_NAME" /></translation>
-<translation id="1993768208584545658"><ph name="SITE" /> quiere vincularse</translation>
+<translation id="1993768208584545658"><ph name="SITE" /> quiere emparejarse</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# archivo}other{# archivos}}</translation>
 <translation id="2017836877785168846">Borra el historial y los autocompletados de la barra de direcciones.</translation>
@@ -718,7 +718,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="5810864297166300463">Asistencia en la Web</translation>
 <translation id="5814131985548525293">Escribe aquí o toca el icono de voz para empezar</translation>
-<translation id="5817918615728894473">Vincular</translation>
+<translation id="5817918615728894473">Emparejar</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5833984609253377421">Compartir enlace</translation>
 <translation id="5836192821815272682">Descargando actualización de Chrome…</translation>
@@ -1169,7 +1169,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidad de la señal: # barra}other{Nivel de intensidad de la señal: # barras}}</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
-<translation id="8712637175834984815">Listo</translation>
+<translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Reintentar</translation>
 <translation id="8748850008226585750">Contenidos ocultos</translation>
 <translation id="8773160212632396039">Procesando solicitud</translation>

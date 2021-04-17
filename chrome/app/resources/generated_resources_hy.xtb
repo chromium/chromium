@@ -1353,7 +1353,7 @@
 <translation id="2462752602710430187">Ավելացվեց <ph name="PRINTER_NAME" /></translation>
 <translation id="2464089476039395325">HTTP միջնորդ սերվեր</translation>
 <translation id="2465237718053447668">Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։ Կամ ներբեռնեք վճարովի թրաֆիկով կապուղով (կարող է գումար գանձվել)։</translation>
-<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ցանց, անջատած է</translation>
+<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ցանց, անջատված է</translation>
 <translation id="2468178265280335214">Հպահարթակով ոլորման արագացում</translation>
 <translation id="2468205691404969808">Օգտագործում է քուքիները՝ ձեր նախընտրանքները հիշելու համար, նույնիսկ եթե չեք այցելում այդ կայքեր</translation>
 <translation id="2468402215065996499">Տամագոչի</translation>
@@ -1452,7 +1452,7 @@
 <translation id="2554553592469060349">Ընտրված ֆայլը չափազանց մեծ է (առավ. չափը` 3 ՄԲ):</translation>
 <translation id="2558896001721082624">Ցույց տալ մատչելիության ընտրանքները համակարգի ընտրացանկում</translation>
 <translation id="2562743677925229011">Մուտք գործած չեք <ph name="SHORT_PRODUCT_NAME" /></translation>
-<translation id="2564520396658920462">AppleScript-ի միջոցով JavaScript-ի օգտագործումն անջատած է: Միացնելու համար ցանկագոտուց անցեք Դիտում &gt; Մշակող &gt; Թույլատրել JavaScript-ը Apple-ի իրադարձություններից: Լրացուցիչ տեղեկությունների համար անցեք https://support.google.com/chrome/?p=applescript</translation>
+<translation id="2564520396658920462">AppleScript-ի միջոցով JavaScript-ի օգտագործումն անջատված է: Միացնելու համար ցանկագոտուց անցեք Դիտում &gt; Մշակող &gt; Թույլատրել JavaScript-ը Apple-ի իրադարձություններից: Լրացուցիչ տեղեկությունների համար անցեք https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ուղղագրության ընդլայնված ստուգում</translation>
 <translation id="2568774940984945469">Տեղեկագոտու կոնտեյներ</translation>
 <translation id="2571655996835834626">Փոխել կարգավորումները, որոնք կառավարում քուքիների, JavaScript-ի, փլագինների, տեղադրության տվյալների, խոսափողի, ֆոտոխցիկի և այլ գործառույթների հասանելիությունը կայքերի համար։</translation>
@@ -1674,7 +1674,7 @@
 <translation id="2803375539583399270">Մուտքագրեք PIN կոդը</translation>
 <translation id="2804043232879091219">Չհաջողվեց բացել այլընտրանքային դիտարկիչը</translation>
 <translation id="2804667941345577550">Դուք դուրս կգրվեք հաշվից այս կայքում և բաց ներդիրներում</translation>
-<translation id="2804680522274557040">Տեսախցիկն անջատած է</translation>
+<translation id="2804680522274557040">Տեսախցիկն անջատված է</translation>
 <translation id="2805539617243680210">Պատրաստ է</translation>
 <translation id="2805646850212350655">Microsoft-ի գաղտնագրված ֆայլային համակարգ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
@@ -2961,7 +2961,7 @@
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4252035718262427477">Կայքէջ, մեկ ֆայլ (վեբ փաթեթ)</translation>
 <translation id="4252852543720145436">Պաշտպանված բովանդակության նույնացուցիչներ</translation>
-<translation id="4252899949534773101">Bluetooth-ն անջատած է</translation>
+<translation id="4252899949534773101">Bluetooth-ն անջատված է</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Ներդիրի բովանդակությունը հրապարակվում է</translation>
 <translation id="4253183225471855471">Ցանց չի գտնվել։ Նորից փորձելուց առաջ տեղադրեք ձեր SIM քարտը և վերագործարկեք սարքը։</translation>
 <translation id="4254813446494774748">Թարգմանության լեզուն՝</translation>
@@ -3939,7 +3939,7 @@
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}one{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}other{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="5379140238605961210">Շարունակել արգելափակել խոսափողի օգտագործումը</translation>
 <translation id="5382591305415226340">Կառավարել աջակցվող հղումները</translation>
-<translation id="5383377866517186886">Տեսախցիկն անջատած է Mac-ի համակարգի կարգավորումներում</translation>
+<translation id="5383377866517186886">Տեսախցիկն անջատված է Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="5383740867328871413">Անանուն խումբ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="538822246583124912">Կորպորատիվ կանոն է փոխվել։ Գործիքագոտում ավելացվել է «Փորձարկումներ» կոճակը։ Սեղմեք կոճակը՝ փորձարկումները միացնելու պատուհանը բացելու համար։</translation>
 <translation id="5388885445722491159">Զուգակցված է</translation>
@@ -4312,7 +4312,7 @@
 <translation id="5799508265798272974">Linux վիրտուալ մեքենա՝ <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Վերջին ներբեռնումից հետո ընտրված ֆայլը վնասվել կամ հեռացվել է:</translation>
 <translation id="5801568494490449797">Նախընտրանքներ</translation>
-<translation id="5804175651771201311">Ռոումինգն անջատած է</translation>
+<translation id="5804175651771201311">Ռոումինգն անջատված է</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5805697420284793859">Պատուհանների կառավարիչ</translation>
 <translation id="5806773519584576205">0° (կանխադրված)</translation>
@@ -4756,7 +4756,7 @@
 <translation id="6308493641021088955">Մուտք «<ph name="EXTENSION_NAME" />» ընդլայնման միջոցով</translation>
 <translation id="6308937455967653460">Պահել հղ&amp;ումը որպես…</translation>
 <translation id="6309443618838462258">Ձեր ադմինիստրատորը թույլ չի տալիս ներածման այս մեթոդը</translation>
-<translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատած է</translation>
+<translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատված է</translation>
 <translation id="6310472381159916879">Հեռացնել պրոֆիլը</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
@@ -4965,7 +4965,7 @@
 <translation id="6541638731489116978">Այս կայքին արգելվել է օգտագործել շարժման տվիչները:</translation>
 <translation id="6545665334409411530">Կրկնման արագությունը</translation>
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
-<translation id="6545867563032584178">Խոսափողն անջատած է Mac-ի համակարգի կարգավորումներում</translation>
+<translation id="6545867563032584178">Խոսափողն անջատված է Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="6547354035488017500">Որպեսզի սարքն աշխատի, անհրաժեշտ է առնվազն 512 ՄԲ տարածք: Խորհուրդ ենք տալիս սարքի հիշողությունից ֆայլեր ջնջել և տարածք ազատել:</translation>
 <translation id="654871471440386944">Միացնե՞լ ստեղնային դիտարկումը</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
@@ -5331,6 +5331,7 @@
 <translation id="6957044667612803194">Անվտանգության բանալին չի աջակցում PIN կոդեր</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{հղում}one{# հղում}other{# հղում}}</translation>
 <translation id="6960507406838246615">Պահանջվում է թարմացնել Լինուքսը</translation>
+<translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="696103774840402661">Այս <ph name="DEVICE_TYPE" /> սարքի բոլոր օգտատերերի ֆայլերն ու տեղային տվյալները ընդմիշտ ջնջվել են։</translation>
 <translation id="6964390816189577014">Հերոս</translation>
 <translation id="6964760285928603117">Հեռացնել խմբից</translation>

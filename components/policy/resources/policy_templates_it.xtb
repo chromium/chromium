@@ -870,7 +870,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio viene impostato, una volta superato il limite il browser inizierà a eliminare le schede per risparmiare memoria. Non vi è, tuttavia, alcuna garanzia che il browser venga sempre eseguito al di sotto di tale limite. Qualsiasi valore inferiore a 1024 verrà arrotondato per eccesso a 1024.
 
       Se questo criterio non viene impostato, il browser farà dei tentativi per risparmiare memoria solo una volta rilevato che la memoria fisica del computer è in esaurimento.</translation>
-<translation id="2164610500194388856">Consenti alle app web di accedere a determinati tipi di file</translation>
 <translation id="2166472654199325139">Non filtrare i siti di contenuti per adulti</translation>
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
@@ -2768,6 +2767,9 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4752880493649142945">Certificato client per la connessione a RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Se il criterio è impostato su <ph name="ASK_FILE_HANDLING" />, le app web possono richiedere l'accesso ai tipi di file tramite l'API File Handling. Se è impostato su <ph name="BLOCK_FILE_HANDLING" />, viene negato l'accesso ai di file.
+
+      Se non è configurato, le app web possono richiedere l'accesso, ma gli utenti possono modificare questa impostazione.</translation>
 <translation id="4757053978738874325">Consente di attivare la funzione di accessibilità di audio in formato mono.
 
           Questa funzione consente di emettere audio in formato stereo, che include diversi canali a destra e a sinistra, per cui ogni orecchio percepisce suoni diversi.
@@ -2945,6 +2947,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4962262530309732070">Se questo criterio è impostato su true o non viene configurato, su <ph name="PRODUCT_NAME" /> sarà possibile aggiungere persone con la funzione Aggiungi persona di Gestione utenti.
 
       Se questo criterio è impostato su false, in <ph name="PRODUCT_NAME" /> non sarà possibile creare nuovi profili da Gestione utenti.</translation>
+<translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4977702914571821981">Consente di impostare un elenco di pattern URL che specifica i siti non autorizzati a mostrare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali i contenuti misti bloccabili facoltativi (ossia passivi) verranno aggiornati.
 
@@ -4264,9 +4267,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6782977971207381602">Se il criterio viene impostato su Attivato, al dispositivo viene consentito di eseguire macchine virtuali su <ph name="PRODUCT_OS_NAME" />. I criteri <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> devono essere impostati su Attivato per utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Se il criterio viene impostato su Disattivato, significa che il dispositivo non può eseguire macchine virtuali. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuove macchine virtuali, non a quelle già in esecuzione.
 
       Se il criterio non è impostato su un dispositivo gestito, quest'ultimo non può eseguire macchine virtuali. I dispositivi non gestiti non possono eseguire macchine virtuali.</translation>
-<translation id="6786575816328462682">Se il criterio è impostato su 1, consente alle app web di accedere a determinati tipi di file. Se il criterio è impostato su 2, viene negato l'accesso a determinati tipi di file.
-
-      Se il criterio non è impostato, le app web possono richiedere l'accesso ma gli utenti possono cambiare questa impostazione.</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6786967369487349613">Imposta la directory profilo di roaming</translation>
 <translation id="6789422336869764846">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano lo stato della modalità sviluppatore del dispositivo all'avvio.

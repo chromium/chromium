@@ -921,7 +921,7 @@
 <translation id="1976150099241323601">Accedi a dispositivo di sicurezza</translation>
 <translation id="1977965994116744507">Avvicina il telefono per sbloccare il tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Rimuovi indirizzo</translation>
-<translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.</translation>
+<translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.</translation>
 <translation id="1979280758666859181">Stai per passare a un canale con una versione precedente di <ph name="PRODUCT_NAME" />. Il cambio di canale verrà applicato quando la versione del canale corrisponderà alla versione attualmente installata sul dispositivo.</translation>
 <translation id="197989455406964291">KDC non supporta il tipo di crittografia</translation>
 <translation id="1983497378699148207">Per completare la configurazione di Linux, aggiorna Chrome OS e riprova.</translation>
@@ -5326,6 +5326,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6957044667612803194">Questo token di sicurezza non supporta i PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# link}}</translation>
 <translation id="6960507406838246615">Aggiornamento di Linux necessario</translation>
+<translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
@@ -7189,7 +7190,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9022847679183471841">L'account è già utilizzato su questo computer da <ph name="AVATAR_NAME" />.</translation>
 <translation id="9023009238991294202">Altri utenti del dispositivo possono usare questa rete.</translation>
 <translation id="9023015617655685412">Aggiungi questa scheda ai preferiti…</translation>
-<translation id="9023909777842748145">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.</translation>
+<translation id="9023909777842748145">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.</translation>
 <translation id="9024127637873500333">&amp;Apri in un'altra scheda</translation>
 <translation id="9024158959543687197">Errore durante il montaggio della condivisione. Verifica l'URL condivisione file e riprova.</translation>
 <translation id="9026731007018893674">download</translation>

@@ -5329,6 +5329,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6957044667612803194">Cette clé de sécurité n'accepte pas les codes d'identification personnels</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{lien}one{# lien}other{# liens}}</translation>
 <translation id="6960507406838246615">Mise à jour de Linux requise</translation>
+<translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
 <translation id="696103774840402661">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) ont été supprimés définitivement.</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>

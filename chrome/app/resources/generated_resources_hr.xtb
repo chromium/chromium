@@ -1377,7 +1377,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2485005079599453134">Zaporka je spremljena na ovom uređaju</translation>
 <translation id="2485394160472549611">Najbolji odabiri za vas</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
-<translation id="2487067538648443797">Dodaj novu oznaku</translation>
+<translation id="2487067538648443797">Dodajte novu oznaku</translation>
 <translation id="2487268545026948104">Da biste vratili svoje podatke, povežite se s internetom</translation>
 <translation id="2489829450872380594">Sljedeći će put novi telefon otključati ovaj uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="2489918096470125693">Dodavanje &amp;mape...</translation>
@@ -1537,7 +1537,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2661714428027871023">Pregledavajte brže i smanjite podatkovni promet uz Jednostavni način. Kliknite da biste saznali više.</translation>
 <translation id="2662876636500006917">Chrome web-trgovina</translation>
 <translation id="2663302507110284145">Jezik</translation>
-<translation id="2665394472441560184">Dodaj novu riječ</translation>
+<translation id="2665394472441560184">Dodajte novu riječ</translation>
 <translation id="2665647207431876759">Isteklo</translation>
 <translation id="2665717534925640469">Ova je stranica sada na cijelom zaslonu i onemogućila je pokazivač miša.</translation>
 <translation id="2665919335226618153">O, ne! Došlo je do pogreške prilikom formatiranja.</translation>
@@ -2793,7 +2793,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4029556917477724407">Povratak sa stranice <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Mikrofon je dopušten</translation>
 <translation id="4031527940632463547">Senzori su blokirani</translation>
-<translation id="4033471457476425443">Dodaj novu mapu</translation>
+<translation id="4033471457476425443">Dodajte novu mapu</translation>
 <translation id="4033963223187371752">Sigurne web-lokacije mogu ugraditi sadržaj poput slika ili web-okvira koji nisu sigurni</translation>
 <translation id="4034824040120875894">Pisač</translation>
 <translation id="4035758313003622889">&amp;Upravitelj zadacima</translation>
@@ -5328,6 +5328,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6957044667612803194">Ovaj sigurnosni ključ ne podržava PIN-ove</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{veza}one{# veza}few{# veze}other{# veza}}</translation>
 <translation id="6960507406838246615">Potrebno je ažurirati Linux</translation>
+<translation id="6960565108681981554">Nije aktivirano. Obratite se mobilnom operateru.</translation>
 <translation id="696103774840402661">Sve datoteke i svi lokalni podaci za sve korisnike na ovom uređaju <ph name="DEVICE_TYPE" /> trajno su izbrisani.</translation>
 <translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>
@@ -5390,7 +5391,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="701080569351381435">Prikaži izvor</translation>
 <translation id="7014174261166285193">Instalacija nije uspjela.</translation>
 <translation id="7017004637493394352">Ponovo recite "Ok Google"</translation>
-<translation id="7017219178341817193">Dodaj novu stranicu</translation>
+<translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7017354871202642555">Nakon postavljanja prozora nije moguće postaviti način.</translation>
 <translation id="7018275672629230621">pročitati i promijeniti povijest pregledavanja</translation>
 <translation id="7019805045859631636">Brzo</translation>

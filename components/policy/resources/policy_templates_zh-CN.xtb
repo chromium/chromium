@@ -857,7 +857,6 @@
       如果设置了此政策，那么当超出该上限后，浏览器将开始舍弃标签页以节省内存空间。不过，我们无法保证浏览器运行时占用的内存量会始终低于该上限。任何小于 1024 的值都会被向上舍入到 1024。
 
       如果此政策未设置，那么仅当检测到所用机器的物理内存容量即将用尽时，浏览器才会开始尝试节省内存空间。</translation>
-<translation id="2164610500194388856">授权 Web 应用访问各类文件</translation>
 <translation id="2166472654199325139">不滤除提供成人内容的网站</translation>
 <translation id="2168397434410358693">使用交流电源供电时的闲置延迟时间</translation>
 <translation id="217013996107840632">用于从替代浏览器切换至 Chrome 的命令行参数。</translation>
@@ -2748,6 +2747,9 @@
       如果此政策已停用或未设置，系统将不会生成任何证书，并且无法调用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />。</translation>
 <translation id="4742973303930120836">限制背景图片打印模式</translation>
 <translation id="4752880493649142945">连接到 RemoteAccessHostTokenValidationUrl 时使用的客户端证书</translation>
+<translation id="475479145997699293">如果此政策设为 <ph name="ASK_FILE_HANDLING" />，系统会允许 Web 应用通过 File Handling API 请求访问各类文件。如果此政策设为 <ph name="BLOCK_FILE_HANDLING" />，系统会禁止 Web 应用访问各类文件。
+
+      如果此政策未设置，系统会允许 Web 应用请求获取访问权限，但用户可以更改此设置。</translation>
 <translation id="4757053978738874325">启用“单声道音频”无障碍功能。
 
           此功能负责输出立体声音频（包括不同的左右声道），因此双耳能够听到不同的声音。
@@ -2922,6 +2924,7 @@
 <translation id="4962262530309732070">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 会允许通过用户管理器添加用户。
 
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 会禁止通过用户管理器创建新的个人资料。</translation>
+<translation id="4970046075219007744">允许 Web 应用通过 File Handling API 请求用户授权其访问各类文件</translation>
 <translation id="4970855112942626932">禁止登录浏览器</translation>
 <translation id="4977702914571821981">让您能够设置一系列网址格式，从而指定不允许哪些网站显示可屏蔽的（即主动型）混合内容（即 HTTPS 网站上的 HTTP 内容），以及要为哪些网站升级可选的可屏蔽（即被动型）混合内容。
 
@@ -4235,9 +4238,6 @@
 <translation id="6782977971207381602">如果此政策已启用，系统会允许设备在 <ph name="PRODUCT_OS_NAME" />下运行虚拟机。<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 必须均已启用，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果此政策已停用，意味着设备无法运行虚拟机。如果将此政策的状态改为已停用，此政策将开始应用于新启动的虚拟机，而非应用于已在运行的虚拟机。
 
       如果某部受管理的设备未设置此政策，该设备便无法运行虚拟机。不受管理的设备可以运行虚拟机。</translation>
-<translation id="6786575816328462682">如果此政策设为 1，系统会允许 Web 应用访问各类文件。如果此政策设为 2，系统会禁止 Web 应用访问各类文件。
-
-      如果此政策未设置，系统会允许 Web 应用请求获取访问权限，但用户可以更改此设置。</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6786967369487349613">设置漫游个人资料目录</translation>
 <translation id="6789422336869764846">如果此政策已启用或未设置，已注册的设备将会报告设备的开发者模式切换按钮在机器启动时的状态。

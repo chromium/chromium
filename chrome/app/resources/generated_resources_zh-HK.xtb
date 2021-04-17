@@ -5326,6 +5326,7 @@
 <translation id="6957044667612803194">此安全密鑰不支援 PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="6960507406838246615">Linux 需要更新</translation>
+<translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>

@@ -844,7 +844,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1885106732301550621">Speicherplatz</translation>
 <translation id="1886996562706621347">Registrierung von Websites als Standard-Handler für Protokolle zulassen (empfohlen)</translation>
 <translation id="1887442540531652736">Fehler bei der Anmeldung</translation>
-<translation id="1887597546629269384">Sagen Sie noch einmal "Ok Google"</translation>
+<translation id="1887597546629269384">Sagen Sie noch einmal „Hey Google“</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">Es ist nur noch sehr wenig Speicherplatz vorhanden. Geben Sie bitte Speicherplatz frei.</translation>
 <translation id="189210018541388520">In Vollbildmodus öffnen</translation>
@@ -3193,7 +3193,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4531924570968473143">Wen möchtest du diesem Gerät (<ph name="DEVICE_TYPE" />) hinzufügen?</translation>
 <translation id="4532625150642446981">"<ph name="USB_DEVICE_NAME" />" wird gegenwärtig verwendet. Wenn Sie das Gerät neu zuweisen, während es verwendet wird, kann dies zu Fehlern führen. Möchten Sie den Vorgang wirklich fortsetzen?</translation>
 <translation id="4532646538815530781">Diese Website nutzt Bewegungssensoren.</translation>
-<translation id="4533846798469727141">Sagen Sie jetzt "Ok Google"</translation>
+<translation id="4533846798469727141">Sagen Sie jetzt „Hey Google“</translation>
 <translation id="4533985347672295764">CPU-Zeit</translation>
 <translation id="4534661889221639075">Versuchen Sie es noch einmal.</translation>
 <translation id="4535127706710932914">Standardprofil</translation>

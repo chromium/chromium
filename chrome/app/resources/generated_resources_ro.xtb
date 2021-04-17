@@ -5328,6 +5328,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6957044667612803194">Această cheie de securitate nu acceptă coduri PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}few{# linkuri}other{# de linkuri}}</translation>
 <translation id="6960507406838246615">Este necesară o actualizare Linux</translation>
+<translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
 <translation id="696103774840402661">Toate fișierele și datele locale pentru utilizatorii de pe acest <ph name="DEVICE_TYPE" /> au fost șterse definitiv.</translation>
 <translation id="6964390816189577014">Erou</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>

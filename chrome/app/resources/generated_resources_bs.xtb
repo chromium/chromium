@@ -5328,6 +5328,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6957044667612803194">Ovaj sigurnosni ključ ne podržava PIN-ove.</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}one{# link}few{# linka}other{# linkova}}</translation>
 <translation id="6960507406838246615">Potrebno je ažurirati Linux</translation>
+<translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
 <translation id="696103774840402661">Trajno su izbrisani svi fajlovi i lokalni podaci za sve korisnike na ovom uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>

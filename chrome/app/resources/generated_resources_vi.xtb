@@ -145,7 +145,7 @@
 <translation id="1150565364351027703">Kính mát</translation>
 <translation id="1151917987301063366">Luôn cho phép <ph name="HOST" /> sử dụng các cảm biến của thiết bị</translation>
 <translation id="1152346050262092795">Nhập lại mật khẩu để xác minh tài khoản của bạn.</translation>
-<translation id="1153356358378277386">Thiết bị được ghép nối</translation>
+<translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1153636665119721804">Chương trình Bảo vệ nâng cao của Google</translation>
 <translation id="1155816283571436363">Đang kết nối với điện thoại của bạn</translation>
 <translation id="1161575384898972166">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xuất chứng chỉ ứng dụng khách.</translation>
@@ -1799,7 +1799,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2936851848721175671">Sao lưu và khôi phục</translation>
 <translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2938845886082362843">Xem và xóa dữ liệu đăng nhập lưu trữ trên khóa bảo mật của bạn</translation>
-<translation id="2939938020978911855">Hiển thị các thiết bị Bluetooth khả dụng</translation>
+<translation id="2939938020978911855">Hiện các thiết bị Bluetooth có sẵn</translation>
 <translation id="2941112035454246133">Thấp</translation>
 <translation id="2942279350258725020">Android Tin nhắn</translation>
 <translation id="2942560570858569904">Đang chờ...</translation>
@@ -3620,7 +3620,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5021750053540820849">Chưa cập nhật</translation>
 <translation id="5026492829171796515">Đăng nhập để thêm Tài khoản Google</translation>
 <translation id="5026806129670917316">Bật Wi-Fi</translation>
-<translation id="5026874946691314267">Không hiển thị lại thông báo này</translation>
+<translation id="5026874946691314267">Không hiện lại thông báo này</translation>
 <translation id="5027550639139316293">Chứng chỉ Email</translation>
 <translation id="5027562294707732951">Thêm tiện ích</translation>
 <translation id="5029568752722684782">Xóa bản sao</translation>
@@ -3951,7 +3951,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5402815541704507626">Tải xuống bản cập nhật bằng cách dùng dữ liệu di động</translation>
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
 <translation id="540495485885201800">Hoán đổi với mục trước</translation>
-<translation id="5405146885510277940">Đặt lại các tùy chọn cài đặt</translation>
+<translation id="5405146885510277940">Đặt lại chế độ cài đặt</translation>
 <translation id="5407119150486192764">Nhập Khóa mở mã PIN gồm 8 chữ số do nhà mạng cung cấp</translation>
 <translation id="5408750356094797285">Thu phóng: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Từ Tài khoản Google của bạn</translation>
@@ -4861,7 +4861,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6434309073475700221">Hủy</translation>
 <translation id="6434325376267409267">Bạn cần cập nhật thiết bị của mình để sử dụng <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Xem trong Cửa hàng trực tuyến</translation>
-<translation id="6438234780621650381">Đặt lại cài đặt</translation>
+<translation id="6438234780621650381">Đặt lại chế độ cài đặt</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Phát âm thanh</translation>
 <translation id="6442187272350399447">Tuyệt vời</translation>
 <translation id="6444070574980481588">Đặt ngày giờ</translation>
@@ -5327,6 +5327,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6957044667612803194">Khóa bảo mật này không hỗ trợ mã PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{đường liên kết}other{# đường liên kết}}</translation>
 <translation id="6960507406838246615">Cần cập nhật Linux</translation>
+<translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="696103774840402661">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
 <translation id="6964390816189577014">Anh hùng</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
@@ -5382,7 +5383,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7005496624875927304">Quyền bổ sung</translation>
 <translation id="7005812687360380971">Lỗi</translation>
 <translation id="7005848115657603926">Phạm vi trang không hợp lệ, sử dụng <ph name="EXAMPLE_PAGE_RANGE" /></translation>
-<translation id="700651317925502808">Đặt lại các tùy chọn cài đặt?</translation>
+<translation id="700651317925502808">Đặt lại chế độ cài đặt</translation>
 <translation id="7006634003215061422">Lề dưới</translation>
 <translation id="7007648447224463482">Mở tất cả trong cửa sổ mới</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> đang sử dụng máy ảnh của bạn</translation>
@@ -6656,7 +6657,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8440630305826533614">Ứng dụng Linux</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8447409163267621480">Bao gồm phím Ctrl hoặc phím Alt</translation>
-<translation id="8448729345478502352">Thu nhỏ hoặc phóng to các mục trên màn hình</translation>
+<translation id="8448729345478502352">Tăng hoặc giảm kích thước các mục trên màn hình</translation>
 <translation id="8449008133205184768">Dán và Khớp Kiểu</translation>
 <translation id="8449036207308062757">Quản lý bộ nhớ</translation>
 <translation id="8452135315243592079">Thiếu thẻ SIM</translation>

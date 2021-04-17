@@ -5327,6 +5327,7 @@
 <translation id="6957044667612803194">Овај безбедносни кључ не подржава PIN-ове</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{линк}one{# линк}few{# линка}other{# линкова}}</translation>
 <translation id="6960507406838246615">Треба да ажурирате Linux</translation>
+<translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="696103774840402661">Сви фајлови и локални подаци за све кориснике на овом уређају (<ph name="DEVICE_TYPE" />) трајно су избрисани.</translation>
 <translation id="6964390816189577014">Херој</translation>
 <translation id="6964760285928603117">Уклони из групе</translation>

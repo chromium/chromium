@@ -880,7 +880,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est configurée, le navigateur commence à ignorer des onglets pour économiser de la mémoire lorsque la limite est dépassée. Il n'est cependant pas garanti que le navigateur fonctionne toujours en deçà de cette limite. Toute valeur inférieure à 1024 est arrondie à ce nombre.
 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
-<translation id="2164610500194388856">Autoriser les applis Web à accéder à certains types de fichiers</translation>
 <translation id="2166472654199325139">Ne pas filtrer les sites de contenus réservés aux adultes</translation>
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>
@@ -2765,6 +2764,9 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
 <translation id="4752880493649142945">Certificat client pour se connecter à RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Si la règle est définie sur <ph name="ASK_FILE_HANDLING" />, les applications Web peuvent demander l'accès à ces types de fichiers via l'API File Handling. Si la règle est définie sur <ph name="BLOCK_FILE_HANDLING" />, l'accès à ces types de fichiers est refusé.
+
+      Si la règle n'est pas définie, les applications Web peuvent demander l'accès, mais les utilisateurs sont autorisés à modifier ce paramètre.</translation>
 <translation id="4757053978738874325">Active la fonctionnalité d'accessibilité d'audio mono.
 
           Cette fonctionnalité permet d'activer une sortie audio stéréo incluant plusieurs canaux de gauche et de droite, permettant à différents sons de sortir dans chaque oreille.
@@ -2937,6 +2939,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4962262530309732070">Si cette règle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> permettra d'ajouter une personne à partir du gestionnaire d'utilisateurs.
 
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'autorisera pas la création de profils à partir du gestionnaire d'utilisateurs.</translation>
+<translation id="4970046075219007744">Autoriser les applications Web à demander aux utilisateurs l'accès à ces types de fichiers via l'API File Handling</translation>
 <translation id="4970855112942626932">Désactiver la connexion au navigateur</translation>
 <translation id="4977702914571821981">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à afficher du contenu mixte (contenu HTTP affiché sur des sites HTTPS) blocable (actif), et pour lesquels le contenu mixte blocable de manière facultative (passif) est mis à niveau.
 
@@ -4282,9 +4285,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="6782977971207381602">Si cette règle est activée, l'appareil est autorisé à exécuter des machines virtuelles sur <ph name="PRODUCT_OS_NAME" />. Vous devez activer <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> pour pouvoir utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si cette règle est désactivée, l'appareil n'est pas autorisé à exécuter des machines virtuelles. Si vous la désactivez, elle est appliquée aux machines virtuelles qui vont être lancées, mais pas à celles qui le sont déjà.
 
       Si cette règle n'est pas définie sur un appareil géré, l'appareil n'est pas autorisé à exécuter de machines virtuelles. Les appareils non gérés sont autorisés à exécuter des machines virtuelles.</translation>
-<translation id="6786575816328462682">Si cette règle est définie sur "1", les applis Web peuvent accéder à certains types de fichiers. Si cette règle est définie sur "2", l'accès à ces types de fichiers est refusé.
-
-      Si la règle n'est pas définie, les applis Web peuvent demander l'accès, mais les utilisateurs sont autorisés à modifier ce paramètre.</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6786967369487349613">Définir le répertoire des profils itinérants</translation>
 <translation id="6789422336869764846">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés indiquent l'état de l'interrupteur du mode développeur lors du démarrage de la machine.

@@ -166,7 +166,7 @@
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2787047795752739979">मूललाई अधिलेखन गर्नुहोस्</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
-<translation id="2843806747483486897">पूर्वनिर्धारित परिवर्तन गर्नुहोस्...</translation>
+<translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
 <translation id="2850124913210091882">जगेडा गर्नुहोस्</translation>
 <translation id="2873951654529031587">ट्र्यास</translation>
 <translation id="288024221176729610">चेक</translation>
@@ -208,7 +208,7 @@
 <translation id="3245321423178950146">अज्ञात कलाकार</translation>
 <translation id="3248185426436836442">सुरु भएको छैन</translation>
 <translation id="3252266817569339921">फ्रेन्च</translation>
-<translation id="3254434849914415189"><ph name="FILE_TYPE" /> फाइलहरूको लागि पूर्वनिर्धारित एप छान्नुहोस्:</translation>
+<translation id="3254434849914415189"><ph name="FILE_TYPE" /> फाइलहरूको लागि डिफल्ट एप छान्नुहोस्:</translation>
 <translation id="3255159654094949700">अरबी</translation>
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" खोल्न सकिएन</translation>
@@ -250,7 +250,7 @@
 <translation id="3644896802912593514">चौडाइ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
 <translation id="3645531960514756307">फोल्डर अनपिन गर्नुहोस्</translation>
-<translation id="3685122418104378273">Google ड्राइभ सिंक पूर्वनिर्धारित रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
+<translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3691184985318546178">सिंहली</translation>
 <translation id="3726463242007121105">यो यन्त्रलाई खोल्न सकिँदैन किनभने यसको फाइल सिस्टम समर्थित छैन।</translation>
@@ -684,7 +684,7 @@
 <translation id="8008366997883261463">ज्याक रसल टेरियर</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="803771048473350947">फाइल</translation>
-<translation id="8038111231936746805">(पूर्वनिर्धारित)</translation>
+<translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> अडियो</translation>
 <translation id="8045462269890919536">रोमेनियन</translation>
 <translation id="8066773524873206594">सबै सम्पादनहरू <ph name="DOWNLOADS_FOLDER" /> मा सुरक्षित हुने छन्।</translation>

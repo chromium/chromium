@@ -5327,6 +5327,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6957044667612803194">See turvavõti ei toeta PIN-koode</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# linki}}</translation>
 <translation id="6960507406838246615">Linuxit on vaja värskendada</translation>
+<translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
 <translation id="696103774840402661">Kõigi seadmes <ph name="DEVICE_TYPE" /> olevate kasutajate kõik failid ja kohalikud andmed on jäädavalt kustutatud.</translation>
 <translation id="6964390816189577014">Kangelane</translation>
 <translation id="6964760285928603117">Grupist eemaldamine</translation>

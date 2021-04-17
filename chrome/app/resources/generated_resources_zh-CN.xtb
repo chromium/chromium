@@ -5321,6 +5321,7 @@
 <translation id="6957044667612803194">此安全密钥不支持 PIN 码</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="6960507406838246615">需要更新 Linux</translation>
+<translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="696103774840402661">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都已被永久删除。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">从组中移除</translation>

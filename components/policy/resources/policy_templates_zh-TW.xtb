@@ -859,7 +859,6 @@
       設定這項政策後，如果超過記憶體使用限制，瀏覽器會開始捨棄分頁以節省記憶體。不過，我們無法保證瀏覽器運作時，記憶體使用量會一律在限制值以下。1024 以下的值會進位到 1024。
 
       如果不設定這項政策，瀏覽器只會在偵測到電腦上的實體記憶體即將用盡時，才會開始嘗試節省記憶體。</translation>
-<translation id="2164610500194388856">授予網頁應用程式特定類型檔案的存取權</translation>
 <translation id="2166472654199325139">不要針對成人內容篩選網站。</translation>
 <translation id="2168397434410358693">在 AC 供電環境下執行時的閒置延遲時間</translation>
 <translation id="217013996107840632">從替代瀏覽器切換到 Chrome 所使用的指令列參數。</translation>
@@ -2743,6 +2742,9 @@
       如果將這項政策設為停用或不設定，則系統不會產生憑證，對 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的呼叫也會失敗。</translation>
 <translation id="4742973303930120836">限制背景圖形列印模式</translation>
 <translation id="4752880493649142945">用於連線至 RemoteAccessHostTokenValidationUrl 的用戶端憑證</translation>
+<translation id="475479145997699293">如果將這項政策設為 <ph name="ASK_FILE_HANDLING" />，網頁應用程式就能要求透過 File Handling API 存取特定類型的檔案。如果將這項政策設為 <ph name="BLOCK_FILE_HANDLING" />，系統會禁止網頁應用程式存取特定類型的檔案。
+
+      如果不設定這項政策，就表示網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
 <translation id="4757053978738874325">啟用單聲道音訊無障礙功能。
 
           這項功能可管理立體聲音訊的輸出，其中包括左聲道和右聲道的不同設定，讓使用者的左耳和右耳聽見不同的聲音。
@@ -2916,6 +2918,7 @@
 <translation id="4962262530309732070">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 將允許從使用者管理工具新增使用者。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 就無法讓使用者從使用者管理工具建立新設定檔。</translation>
+<translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
 <translation id="4977702914571821981">你可以設定網址模式清單，指定哪些網站不能顯示可封鎖的 (即主動) 複合型內容 (亦即 HTTPS 網站上的 HTTP 內容)，並讓那些網站升級可選擇性封鎖的 (即被動) 複合型內容。
 
@@ -4218,9 +4221,6 @@
 <translation id="6782977971207381602">如果將這項政策設為啟用，裝置即可在 <ph name="PRODUCT_OS_NAME" />上執行虛擬機器。必須啟用 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，裝置將無法執行虛擬機器。變更為停用後，系統會開始將這項政策套用到新的虛擬機器，不會套用到已經在執行的虛擬機器。
 
       如果受管理的裝置上沒有設定這項政策，該裝置就無法執行虛擬機器。未受管理的裝置可以執行虛擬機器。</translation>
-<translation id="6786575816328462682">如果將這項政策設為 1，系統會允許網頁應用程式存取特定類型的檔案。如果將這項政策設為 2，系統會禁止網站應用程式存取特定類型的檔案。
-
-      如果不設定這項政策，網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786967369487349613">設定漫遊設定檔目錄</translation>
 <translation id="6789422336869764846">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置的開發人員模式切換設定在開機時的狀態。

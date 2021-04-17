@@ -32,7 +32,7 @@
 <translation id="1743802530341753419">Հարցնել՝ նախքան կայքերին որևէ սարքի միանալ թույլատրելը (խորհուրդ է տրվում)</translation>
 <translation id="1779089405699405702">Պատկերի ապակոդավորիչ</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-ին AR ռեժիմն օգտագործելու թույլտվություն տալու համար միացրեք նաև տեսախցիկը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
-<translation id="1887786770086287077">Սարքի տեղորոշումն անջատած է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
+<translation id="1887786770086287077">Սարքի տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
 <translation id="1919950603503897840">Ընտրեք կոնտակտներ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -61,7 +61,7 @@
 <translation id="2498359688066513246">Օգնություն և հետադարձ կապ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Արգելափակվել է 1 քուքի ֆայլ}one{Արգելափակվել է # քուքի ֆայլ}other{Արգելափակվել է # քուքի ֆայլ}}</translation>
-<translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատած է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
+<translation id="2570922361219980984">Այս սարքի տեղորոշումը նույնպես անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="257931822824936280">Ընդարձակված - կոծկելու համար սեղմեք:</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2621115761605608342">Թույլատրել JavaScript-ը նշված կայքի համար:</translation>

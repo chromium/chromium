@@ -5325,6 +5325,7 @@
 <translation id="6957044667612803194">این کلید امنیتی از پین‌ها پشتیبانی نمی‌کند</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{پیوند}one{# پیوند}other{# پیوند}}</translation>
 <translation id="6960507406838246615">‏Linux باید به‌روزرسانی شود</translation>
+<translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="696103774840402661">همه فایل‌ها و داده‌های محلی برای همه کاربران این <ph name="DEVICE_TYPE" /> به‌طور دائم حذف شده‌اند.</translation>
 <translation id="6964390816189577014">قهرمان</translation>
 <translation id="6964760285928603117">برداشتن از گروه</translation>
@@ -6042,7 +6043,7 @@
 <translation id="7765158879357617694">انتقال</translation>
 <translation id="7765507180157272835">‏بلوتوث و Wi-Fi لازم است</translation>
 <translation id="7766082757934713382">با متوقف کردن موقت به‌روزرسانی‌های خودکار سیستم و برنامه‌ها، مصرف داده شبکه را کاهش دهید</translation>
-<translation id="7766807826975222231">شرکت در تور</translation>
+<translation id="7766807826975222231">گشت زدن</translation>
 <translation id="7766838926148951335">پذیرفتن مجوزها</translation>
 <translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
 <translation id="7768770796815395237">تغییر دادن</translation>

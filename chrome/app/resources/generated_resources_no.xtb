@@ -5322,6 +5322,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6957044667612803194">Denne sikkerhetsnøkkelen støtter ikke PIN-koder</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# linker}}</translation>
 <translation id="6960507406838246615">Linux-oppdatering kreves</translation>
+<translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten er slettet permanent.</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>

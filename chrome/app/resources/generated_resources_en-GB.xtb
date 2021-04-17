@@ -2933,7 +2933,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4209464433672152343">Documents are <ph name="BEGIN_LINK_HELP" />sent to Google<ph name="END_LINK_HELP" /> to prepare them for printing. View, edit and manage your printers and printer history on the <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print dashboard<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Downloading the virtual machine</translation>
 <translation id="421182450098841253">&amp;Show Bookmarks Bar</translation>
-<translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
+<translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregated data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
 <translation id="4217571870635786043">Dictation</translation>
@@ -5327,6 +5327,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6957044667612803194">This security key doesn’t support PINs</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# links}}</translation>
 <translation id="6960507406838246615">Linux update required</translation>
+<translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>

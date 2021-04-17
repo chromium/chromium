@@ -5332,6 +5332,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6957044667612803194">Ta varnostni ključ ne podpira kod PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{povezava}one{# povezava}two{# povezavi}few{# povezave}other{# povezav}}</translation>
 <translation id="6960507406838246615">Potrebna je posodobitev Linuxa</translation>
+<translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="696103774840402661">Vse datoteke in lokalni podatki za vse uporabnike v tej napravi <ph name="DEVICE_TYPE" /> so bili trajno izbrisani.</translation>
 <translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Odstranitev iz skupine</translation>

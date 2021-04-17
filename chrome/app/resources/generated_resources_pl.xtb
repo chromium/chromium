@@ -2139,7 +2139,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3341703758641437857">Zezwalaj na dostęp do adresów URL plików</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” chce usunąć to rozszerzenie.</translation>
 <translation id="3345135638360864351">Nie udało się wysłać żądania dostępu do strony do <ph name="NAME" />. Spróbuj ponownie.</translation>
-<translation id="3345634917232014253">Potwierdzenie bezpieczeństwa zostało wykonane przed chwilą.</translation>
+<translation id="3345634917232014253">Kontrola zabezpieczeń została wykonane przed chwilą.</translation>
 <translation id="3345886924813989455">Nie znaleziono obsługiwanej przeglądarki</translation>
 <translation id="3347086966102161372">K&amp;opiuj adres obrazu</translation>
 <translation id="3348038390189153836">Wykryto urządzenie wymienne</translation>
@@ -4082,7 +4082,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5546865291508181392">Znajdź</translation>
 <translation id="5548075230008247516">Wszystkie elementy zostały odznaczone. Opuszczono tryb wyboru.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” i jeszcze jedna karta}few{„<ph name="TAB_TITLE" />” i # inne karty}many{„<ph name="TAB_TITLE" />” i # innych kart}other{„<ph name="TAB_TITLE" />” i # innej karty}}</translation>
-<translation id="5548606607480005320">Potwierdzenie bezpieczeństwa</translation>
+<translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Klawiatura i wprowadzanie tekstu</translation>
 <translation id="5553089923092577885">Odwzorowania zasad certyfikatu</translation>
@@ -5324,6 +5324,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6957044667612803194">Ten klucz bezpieczeństwa nie obsługuje kodów PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{Link}few{# linki}many{# linków}other{# linku}}</translation>
 <translation id="6960507406838246615">Wymagana aktualizacja Linuksa</translation>
+<translation id="6960565108681981554">Nie aktywowano. Skontaktuj się ze swoim operatorem.</translation>
 <translation id="696103774840402661">Wszystkie pliki i dane lokalne wszystkich użytkowników na tym urządzeniu <ph name="DEVICE_TYPE" /> zostały trwale usunięte.</translation>
 <translation id="6964390816189577014">Bohater</translation>
 <translation id="6964760285928603117">Usuń z grupy</translation>

@@ -5327,6 +5327,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6957044667612803194">Ez a biztonsági hardverkulcs nem támogatja a PIN-kódok használatát</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# link}}</translation>
 <translation id="6960507406838246615">Linux-frissítés szükséges</translation>
+<translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
 <translation id="696103774840402661">Az összes felhasználó összes fájlja és helyi adata véglegesen törlődött erről az eszközről (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6964390816189577014">Hős</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>

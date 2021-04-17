@@ -5326,6 +5326,7 @@
 <translation id="6957044667612803194">Този ключ за сигурност не поддържа ПИН кодове</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{връзка}other{# връзки}}</translation>
 <translation id="6960507406838246615">Изисква се актуализиране на Linux</translation>
+<translation id="6960565108681981554">Не е активирана. Свържете се с оператора си.</translation>
 <translation id="696103774840402661">Всички файлове и локални данни за всички потребители на това устройство <ph name="DEVICE_TYPE" /> бяха изтрити за постоянно.</translation>
 <translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>

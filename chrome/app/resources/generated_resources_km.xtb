@@ -5328,6 +5328,7 @@
 <translation id="6957044667612803194">សោសុវត្ថិភាពនេះ​មិនអាចប្រើកូដ​ PIN បានទេ</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{តំណ}other{តំណ #}}</translation>
 <translation id="6960507406838246615">តម្រូវឱ្យ​ដំឡើងកំណែ Linux</translation>
+<translation id="6960565108681981554">មិនបាន​បើកដំណើរការ​ទេ។ សូម​ទាក់ទង​​ក្រុមហ៊ុន​សេវា​ទូរសព្ទ​របស់​អ្នក។</translation>
 <translation id="696103774840402661">ឯកសារ និងទិន្នន័យមូលដ្ឋាន​ទាំងអស់សម្រាប់អ្នកប្រើប្រាស់ទាំងអស់នៅលើ <ph name="DEVICE_TYPE" /> នេះត្រូវបានលុបជាអចិន្ត្រៃយ៍។</translation>
 <translation id="6964390816189577014">វីរៈបុរស</translation>
 <translation id="6964760285928603117">លុបចេញ​ពីក្រុម</translation>
@@ -5407,7 +5408,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />៖ បានភ្ជាប់​រន្ធស៊េរី</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> នៃទំហំផ្ទុក​ត្រូវបានណែនាំ​ឱ្យប្រើសម្រាប់ Linux។ ដើម្បីបង្កើនទំហំផ្ទុក សូមលុបឯកសារចេញពីឧបករណ៍របស់អ្នក។</translation>
 <translation id="7037509989619051237">អត្ថបទត្រូវ​មើលសាកល្បង</translation>
-<translation id="7038632520572155338">ប្រើប៊ូតុងចុច</translation>
+<translation id="7038632520572155338">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
 <translation id="7038710352229712897">បញ្ចូល​គណនី Google ផ្សេងទៀត​សម្រាប់ <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">ចូលប្រើឧបករណ៍ USB ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">ការចូលប្រើកាតឆ្លាតវៃ Microsoft</translation>

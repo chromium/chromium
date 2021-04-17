@@ -873,7 +873,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces la política, el navegador comenzará a descartar pestañas para ahorrar memoria cuando se supere el límite. Sin embargo, no hay garantía de que el navegador se ejecute siempre por debajo del límite. Se redondeará a 1024 cualquier valor por debajo de 1024.
 
       Si no estableces esta política, el navegador solo comenzará a ahorrar memoria cuando detecte que queda poca cantidad de memoria física disponible en la máquina.</translation>
-<translation id="2164610500194388856">Otorgar a las aplicaciones web acceso a determinados tipos de archivos</translation>
 <translation id="2166472654199325139">No aplicar filtros de contenido para adultos a los sitios</translation>
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>
@@ -2776,6 +2775,9 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la inhabilitas o no la estableces, no se generará ningún certificado y las llamadas a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> fallarán.</translation>
 <translation id="4742973303930120836">Restringe el modo de impresión con gráficos de fondo</translation>
 <translation id="4752880493649142945">Certificado de cliente para conectarse a RemoteAccessHostTokenValidationUrl</translation>
+<translation id="475479145997699293">Si estableces la política como <ph name="ASK_FILE_HANDLING" />, las aplicaciones web podrán solicitar acceso a determinados tipos de archivos a través de la API de File Handling. Si estableces la política como <ph name="BLOCK_FILE_HANDLING" />, las aplicaciones web no podrán acceder a determinados tipos de archivos.
+
+      Si no la estableces, las aplicaciones web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="4757053978738874325">Habilita la función de accesibilidad de audio mono.
 
           Esta función permite la salida de audio en estéreo, es decir, audio en el que el canal izquierdo es distinto del derecho, de manera que cada oído escucha diferentes sonidos.
@@ -2951,6 +2953,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4962262530309732070">Si esta política se establece como verdadera o no se configura, <ph name="PRODUCT_NAME" /> permitirá la opción para agregar una persona desde el Administrador de usuarios.
 
       Si esta política se establece como falsa, <ph name="PRODUCT_NAME" /> no permitirá la creación de perfiles nuevos desde el Administrador de usuarios.</translation>
+<translation id="4970046075219007744">Permitir que las aplicaciones web le soliciten al usuario acceso a determinados tipos de archivos a través de la API de File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar el acceso en el navegador</translation>
 <translation id="4977702914571821981">Te permite configurar una lista de patrones de URL donde se indiquen los sitios que no pueden mostrar contenido mixto (p. ej., contenido HTTP en sitios HTTPS) bloqueable (p. ej., activo) y para los cuales se actualizará el contenido mixto bloqueable de forma opcional (p. ej., pasivo).
 
@@ -4295,9 +4298,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6782977971207381602">Si habilitas la política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas para poder usar <ph name="PRODUCT_CROSTINI_NAME" />. Si inhabilitas la política, el dispositivo no podrá ejecutar máquinas virtuales. En ese caso, se comenzará a aplicar la política en las máquinas virtuales que se inicien a partir de ese momento, pero no en aquellas que ya estén en ejecución.
 
       Si no se establece esta política en un dispositivo administrado, el dispositivo no podrá ejecutar máquinas virtuales. En cambio, los dispositivos no administrados sí podrán ejecutar máquinas virtuales.</translation>
-<translation id="6786575816328462682">Si estableces la política en 1, las aplicaciones web tendrán acceso a determinados tipos de archivos. Si estableces la política en 2, las aplicaciones web no podrán acceder a determinados tipos de archivos.
-
-      Si no la estableces, las aplicaciones web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Establecer el directorio del perfil de itinerancia</translation>
 <translation id="6789422336869764846">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado del interruptor del modo de desarrollador del dispositivo cuando se inicia la máquina.

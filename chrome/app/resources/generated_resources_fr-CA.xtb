@@ -969,7 +969,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 Sinon, déconnectez-vous maintenant pour que les changements apportés à ce compte soient pris en compte sur cet appareil.
 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions à ce sujet dans un courriel.</translation>
-<translation id="2040460856718599782">Oups... Nous n'avons pas réussi à vous authentifier. Veuillez vérifier vos identifiants de connexion puis réessayer.</translation>
+<translation id="2040460856718599782">Oups... Nous n'avons pas réussi à vous authentifier. Veuillez vérifier vos authentifiants de connexion, puis réessayer.</translation>
 <translation id="2044014337866019681">Assurez-vous de vérifier <ph name="ACCOUNT" /> pour déverrouiller la session.</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045117674524495717">Aide des raccourcis-clavier</translation>
@@ -5187,7 +5187,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="680572642341004180">Activer le suivi RLZ pour <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6808039367995747522">Pour continuer, insérez et touchez votre clé de sécurité</translation>
 <translation id="6808193438228982088">Renard</translation>
-<translation id="6810613314571580006">Connexion automatique à des sites Web à l'aide d'identifiants enregistrés. Lorsque la fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
+<translation id="6810613314571580006">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
 <translation id="6810768462515084623">Erreur! Votre mot de passe semble avoir expiré. Veuillez le renouveler sur un autre appareil et réessayer.</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
 <translation id="6811332638216701903">Nom d'hôte DHCP</translation>
@@ -5327,6 +5327,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6957044667612803194">Cette clé de sécurité ne prend pas en charge les NIP</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{lien}one{# lien}other{# liens}}</translation>
 <translation id="6960507406838246615">La mise à jour de Linux est requise</translation>
+<translation id="6960565108681981554">Pas activée. Communiquez avec votre fournisseur de services.</translation>
 <translation id="696103774840402661">Tous les fichiers et toutes les données locales associés à tous les utilisateurs sur cet appareil <ph name="DEVICE_TYPE" /> ont été supprimés définitivement.</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Supprimer du groupe</translation>
@@ -5815,7 +5816,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7506541170099744506">Votre <ph name="DEVICE_TYPE" /> est bien enregistré pour la gestion d'entreprise.</translation>
 <translation id="7507207699631365376">Consulter la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="7507930499305566459">Certificat du répondeur d'état</translation>
-<translation id="7513029293694390567">Connexion automatique à des sites Web à l'aide d'identifiants enregistrés. Si cette fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
+<translation id="7513029293694390567">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Si cette fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
 <translation id="7514239104543605883">Copier vers votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Attribuer une action</translation>
