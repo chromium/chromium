@@ -4754,6 +4754,7 @@ test("unit_tests") {
       "../browser/ui/user_education/reopen_tab_in_product_help_unittest.cc",
       "../browser/ui/web_applications/app_browser_controller_unittest.cc",
       "../browser/ui/web_applications/share_target_utils_unittest.cc",
+      "../browser/ui/web_applications/web_app_launch_manager_unittest.cc",
       "../browser/ui/web_applications/web_app_launch_utils_unittest.cc",
       "../browser/ui/webui/components/components_handler_unittest.cc",
       "../browser/ui/webui/customize_themes/chrome_customize_themes_handler_unittest.cc",

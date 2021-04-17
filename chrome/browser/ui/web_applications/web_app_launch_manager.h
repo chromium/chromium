@@ -42,7 +42,7 @@ class WebAppLaunchManager {
   explicit WebAppLaunchManager(Profile* profile);
   WebAppLaunchManager(const WebAppLaunchManager&) = delete;
   WebAppLaunchManager& operator=(const WebAppLaunchManager&) = delete;
-  ~WebAppLaunchManager();
+  virtual ~WebAppLaunchManager();
 
   // apps::LaunchManager:
   content::WebContents* OpenApplication(apps::AppLaunchParams&& params);
@@ -61,7 +61,7 @@ class WebAppLaunchManager {
       OpenApplicationCallback callback);
 
  private:
-  void LaunchWebApplication(
+  virtual void LaunchWebApplication(
       apps::AppLaunchParams&& params,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>

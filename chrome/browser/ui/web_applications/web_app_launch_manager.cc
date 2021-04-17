@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -170,7 +171,14 @@ bool IsProtocolHandlerCommandLineArg(const base::CommandLine::StringType& arg) {
 #else
   GURL url(arg);
 #endif
-  return url.is_valid();
+
+  if (url.is_valid() && url.has_scheme()) {
+    bool has_custom_scheme_prefix = false;
+    return blink::IsValidCustomHandlerScheme(url.scheme(),
+                                             /* allow_ext_plus_prefix */ false,
+                                             has_custom_scheme_prefix);
+  }
+  return false;
 }
 
 bool DoesCommandLineContainProtocolUrl(const base::CommandLine& command_line) {
