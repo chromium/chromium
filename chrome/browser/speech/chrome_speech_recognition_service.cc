@@ -70,9 +70,6 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   DCHECK(profile_prefs);
   DCHECK(global_prefs);
 
-  if (!profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled))
-    return;
-
   auto binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
   auto config_path =
       ChromeSpeechRecognitionService::GetSodaConfigPath(profile_prefs);
