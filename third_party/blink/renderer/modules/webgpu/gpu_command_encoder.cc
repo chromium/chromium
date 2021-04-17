@@ -33,7 +33,12 @@ WGPURenderPassColorAttachmentDescriptor AsDawnType(
   DCHECK(webgpu_desc);
 
   WGPURenderPassColorAttachmentDescriptor dawn_desc = {};
-  dawn_desc.attachment = webgpu_desc->attachment()->GetHandle();
+  if (webgpu_desc->hasView()) {
+    dawn_desc.view = webgpu_desc->view()->GetHandle();
+  } else if (webgpu_desc->hasAttachment()) {
+    // Deprecated path
+    dawn_desc.view = webgpu_desc->attachment()->GetHandle();
+  }
   dawn_desc.resolveTarget = webgpu_desc->resolveTarget()
                                 ? webgpu_desc->resolveTarget()->GetHandle()
                                 : nullptr;
@@ -69,7 +74,12 @@ WGPURenderPassDepthStencilAttachmentDescriptor AsDawnType(
   DCHECK(webgpu_desc);
 
   WGPURenderPassDepthStencilAttachmentDescriptor dawn_desc = {};
-  dawn_desc.attachment = webgpu_desc->attachment()->GetHandle();
+  if (webgpu_desc->hasView()) {
+    dawn_desc.view = webgpu_desc->view()->GetHandle();
+  } else if (webgpu_desc->hasAttachment()) {
+    // Deprecated path
+    dawn_desc.view = webgpu_desc->attachment()->GetHandle();
+  }
 
   if (webgpu_desc->depthLoadValue().IsGPULoadOp()) {
     const WTF::String& gpuLoadOp =
@@ -172,6 +182,9 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     ExceptionState& exception_state) {
   DCHECK(descriptor);
 
+  // Until the .attachment property is removed manual validation needs to be
+  // done for every attachment point
+
   uint32_t color_attachment_count =
       static_cast<uint32_t>(descriptor->colorAttachments().size());
 
@@ -179,6 +192,16 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   for (wtf_size_t i = 0; i < color_attachment_count; ++i) {
     const GPURenderPassColorAttachmentDescriptor* color_attachment =
         descriptor->colorAttachments()[i];
+
+    if (color_attachment->hasAttachment()) {
+      device_->AddConsoleWarning(
+          "Specifying the texture view for a render pass color attachment with "
+          "'attachment' has been deprecated. Use 'view' instead.");
+    } else if (!color_attachment->hasView()) {
+      exception_state.ThrowTypeError("required member view is undefined.");
+      return nullptr;
+    }
+
     const GPULoadOpOrDoubleSequenceOrGPUColorDict load_value =
         color_attachment->loadValue();
 
@@ -207,6 +230,15 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   WGPURenderPassDepthStencilAttachmentDescriptor depthStencilAttachment = {};
   if (descriptor->hasDepthStencilAttachment()) {
+    if (descriptor->depthStencilAttachment()->hasAttachment()) {
+      device_->AddConsoleWarning(
+          "Specifying the texture view for a render pass depth/stencil "
+          "attachment with 'attachment' has been deprecated. Use 'view' "
+          "instead.");
+    } else if (!descriptor->depthStencilAttachment()->hasView()) {
+      exception_state.ThrowTypeError("required member view is undefined.");
+      return nullptr;
+    }
     depthStencilAttachment = AsDawnType(descriptor->depthStencilAttachment());
     dawn_desc.depthStencilAttachment = &depthStencilAttachment;
   } else {
