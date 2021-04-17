@@ -59,6 +59,7 @@ mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
       /*auto_upgrade_bandwidth=*/true,
       /*enforce_topology_constraints=*/true,
       /*enable_bluetooth_listening=*/use_ble,
+      /*enable_webrtc_listening=*/false,
       /*fast_advertisement_service_uuid=*/
       device::BluetoothUUID(kFastAdvertisementServiceUuid));
 }

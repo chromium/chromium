@@ -115,7 +115,10 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   bool use_ble = !is_high_power;
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power, /*ble=*/use_ble,
-      ShouldEnableWebRtc(data_usage, power_level),
+      // Using kHighPower here rather than power_level to signal that power
+      // level isn't a factor when deciding whether or not to allow WebRTC
+      // upgrades from this advertisement.
+      ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
       /*wifi_lan=*/is_high_power && kIsWifiLanSupported);
   NS_LOG(VERBOSE) << __func__ << ": "
                   << "is_high_power=" << (is_high_power ? "yes" : "no")
@@ -142,6 +145,8 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
           kStrategy, std::move(allowed_mediums), auto_upgrade_bandwidth,
           /*enforce_topology_constraints=*/true,
           /*enable_bluetooth_listening=*/use_ble,
+          /*enable_webrtc_listening=*/
+          ShouldEnableWebRtc(data_usage, power_level),
           /*fast_advertisement_service_uuid=*/
           device::BluetoothUUID(kFastAdvertisementServiceUuid)),
       std::move(lifecycle_listener), std::move(callback));

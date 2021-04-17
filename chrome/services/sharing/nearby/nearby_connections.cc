@@ -356,6 +356,7 @@ void NearbyConnections::StartAdvertising(
       .auto_upgrade_bandwidth = options->auto_upgrade_bandwidth,
       .enforce_topology_constraints = options->enforce_topology_constraints,
       .enable_bluetooth_listening = options->enable_bluetooth_listening,
+      .enable_webrtc_listening = options->enable_webrtc_listening,
       .fast_advertisement_service_uuid =
           options->fast_advertisement_service_uuid.canonical_value()};
 
