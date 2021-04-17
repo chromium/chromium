@@ -78,10 +78,9 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::INTEGER: {
-      int int_value;
-      if (!value.GetAsInteger(&int_value))
+      if (!value.is_int())
         return false;
-      return key.WriteValue(name.c_str(), int_value) == ERROR_SUCCESS;
+      return key.WriteValue(name.c_str(), value.GetInt()) == ERROR_SUCCESS;
     }
 
     case base::Value::Type::DOUBLE: {
