@@ -21,6 +21,7 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareActionsCancel", IDS_NEARBY_ACTIONS_CANCEL},
       {"nearbyShareActionsClose", IDS_NEARBY_ACTIONS_CLOSE},
       {"nearbyShareActionsConfirm", IDS_NEARBY_ACTIONS_CONFIRM},
+      {"nearbyShareActionsDecline", IDS_NEARBY_ACTIONS_DECLINE},
       {"nearbyShareActionsNext", IDS_NEARBY_ACTIONS_NEXT},
       {"nearbyShareActionsReject", IDS_NEARBY_ACTIONS_REJECT},
       {"nearbyShareConfirmationPageAddContactSubtitle",

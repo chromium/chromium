@@ -636,7 +636,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
 
   std::vector<std::u16string> expected_button_titles;
   expected_button_titles.push_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACCEPT_ACTION));
   expected_button_titles.push_back(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION));
 
@@ -903,7 +903,7 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Accept) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   ASSERT_EQ(2u, notifications[0].buttons().size());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACCEPT_ACTION),
             notifications[0].buttons()[0].title);
 
   // Expect call to Accept on button click.

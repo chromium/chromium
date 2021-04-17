@@ -110,6 +110,9 @@
   <message name="IDS_NEARBY_ACTIONS_CONFIRM" desc="Action button text to confirm a transfer in the Nearby Share UI.">
     Confirm
   </message>
+  <message name="IDS_NEARBY_ACTIONS_DECLINE" desc="Action button text to decline an incoming transfer in the Nearby Share UI.">
+    Decline
+  </message>
   <message name="IDS_NEARBY_ACTIONS_NEXT" desc="Action button text to go to the next step in the Nearby Share UI.">
     Next
   </message>
@@ -294,6 +297,9 @@
   <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL" desc="Notification action button text that opens the received URL.">
     Open
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_ACCEPT_ACTION" desc="Text shown on the notification action to accept receiving data via Nearby Share.">
+    Accept
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE" desc="Text shown as the message of a notfication when a nearby device requests a connection via Nearby Share.">
     {COUNT, plural,
       =1 {<ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing <ph name="ATTACHMENTS">$2<ex>1 item</ex></ph> with you.}
@@ -310,9 +316,6 @@
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE" desc="Text shown as the title of a notification when a nearby device is attempting to share data via Nearby Share.">
     Device nearby is sharing
-  </message>
-  <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION" desc="Text shown on the notification action to accept receiving data via Nearby Share.">
-    Receive
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE" desc="Text shown as the title of a notfication when receiving data via Nearby Share failed.">
     {COUNT, plural,

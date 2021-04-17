@@ -769,7 +769,7 @@ void NearbyNotificationManager::ShowConnectionRequest(
 
   std::vector<message_center::ButtonInfo> notification_actions;
   notification_actions.emplace_back(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACCEPT_ACTION));
   notification_actions.emplace_back(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION));
   notification.set_buttons(notification_actions);
