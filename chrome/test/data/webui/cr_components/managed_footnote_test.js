@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for managed-footnote. */
 
 // clang-format off
-import 'chrome://resources/cr_components/managed_footnote/managed_footnote.m.js';
+import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

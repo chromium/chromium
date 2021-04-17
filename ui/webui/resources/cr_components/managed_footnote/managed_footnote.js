@@ -11,9 +11,21 @@
  * becomes visible.
  */
 
-(function() {
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../../cr_elements/icons.m.js';
+import '../../cr_elements/shared_vars_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {loadTimeData} from '../../js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '../../js/web_ui_listener_behavior.m.js';
+
 Polymer({
   is: 'managed-footnote',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior, WebUIListenerBehavior],
 
@@ -66,4 +78,3 @@ Polymer({
 });
 
 chrome.send('observeManagedUI');
-})();

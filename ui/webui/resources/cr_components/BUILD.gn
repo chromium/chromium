@@ -12,7 +12,9 @@ preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_mojom_manifest = "preprocessed_mojom_manifest.json"
-preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
+if (is_chromeos_ash) {
+  preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
+}
 preprocess_src_manifest = "preprocessed_src_manifest.json"
 
 generate_grd("build_grdp") {
@@ -119,7 +121,7 @@ preprocess_if_expr("preprocess_generated") {
     "customize_themes/customize_themes.js",
     "customize_themes/theme_icon.js",
     "managed_dialog/managed_dialog.js",
-    "managed_footnote/managed_footnote.m.js",
+    "managed_footnote/managed_footnote.js",
     "omnibox/cr_autocomplete_match_list.js",
   ]
 
@@ -224,15 +226,12 @@ preprocess_if_expr("preprocess_generated") {
   }
 }
 
-preprocess_if_expr("preprocess_polymer2") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
-  in_files = [
-    "managed_footnote/managed_footnote.html",
-    "managed_footnote/managed_footnote.js",
-  ]
-  if (is_chromeos_ash) {
+if (is_chromeos_ash) {
+  preprocess_if_expr("preprocess_polymer2") {
+    in_folder = "./"
+    out_folder = "$preprocess_folder"
+    out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
+    in_files = []
     if (!optimize_webui) {
       in_files += [
         "chromeos/bluetooth/bluetooth_dialog.html",
@@ -396,7 +395,6 @@ group("closure_compile") {
     "customize_themes:closure_compile",
     "managed_dialog:closure_compile",
     "managed_footnote:closure_compile",
-    "managed_footnote:closure_compile_module",
     "omnibox:closure_compile",
   ]
 
@@ -410,7 +408,7 @@ group("polymer3_elements") {
     "certificate_manager:web_components",
     "customize_themes:web_components",
     "managed_dialog:web_components",
-    "managed_footnote:managed_footnote_module",
+    "managed_footnote:web_components",
     "omnibox:web_components",
   ]
   if (is_chromeos_ash) {
