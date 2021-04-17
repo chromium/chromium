@@ -353,10 +353,9 @@ bool GetAsDouble(const base::DictionaryValue& object,
   const base::Value* value = NULL;
   if (!object.Get(property_name, &value))
     return false;
-  int value_as_int;
   DCHECK(value);
-  if (value->GetAsInteger(&value_as_int)) {
-    *out = value_as_int;
+  if (value->is_int()) {
+    *out = value->GetInt();
     return true;
   }
   return value->GetAsDouble(out);
