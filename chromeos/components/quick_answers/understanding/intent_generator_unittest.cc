@@ -50,6 +50,8 @@ class IntentGeneratorTest : public testing::Test {
         base::BindOnce(&IntentGeneratorTest::IntentGeneratorTestCallback,
                        base::Unretained(this)));
 
+    intent_generator_->UseTextAnnotatorForTesting();
+
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kQuickAnswersTextAnnotator,
          chromeos::features::kQuickAnswersTranslation},

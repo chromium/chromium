@@ -189,7 +189,7 @@ void QuickAnswersClient::IntentGeneratorCallback(
 
   delegate_->OnRequestPreprocessFinished(processed_request);
 
-  if (features::IsQuickAnswersTextAnnotatorEnabled()) {
+  if (features::ShouldUseQuickAnswersTextAnnotator()) {
     RecordIntentType(intent_info.intent_type);
     if (intent_info.intent_type == IntentType::kUnknown) {
       // Don't fetch answer if no intent is generated.

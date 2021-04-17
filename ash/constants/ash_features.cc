@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/system/sys_info.h"
 
 namespace ash {
 namespace features {
@@ -881,10 +882,6 @@ bool IsQuickAnswersEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswers);
 }
 
-bool IsQuickAnswersTextAnnotatorEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersTextAnnotator);
-}
-
 bool IsQuickAnswersTranslationEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
 }
@@ -925,6 +922,12 @@ bool ShouldUseBrowserSyncConsent() {
   // UseBrowserSyncConsent requires SplitSettingsSync.
   return base::FeatureList::IsEnabled(kSplitSettingsSync) &&
          base::FeatureList::IsEnabled(kUseBrowserSyncConsent);
+}
+
+bool ShouldUseQuickAnswersTextAnnotator() {
+  // The text classifier is only available on ChromeOS.
+  return base::FeatureList::IsEnabled(kQuickAnswersTextAnnotator) &&
+         base::SysInfo::IsRunningOnChromeOS();
 }
 
 bool ShouldUseV1DeviceSync() {

@@ -135,18 +135,24 @@ IntentGenerator::~IntentGenerator() {
 }
 
 void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
-  if (!features::IsQuickAnswersTextAnnotatorEnabled()) {
-    std::move(complete_callback_)
-        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+  if (features::ShouldUseQuickAnswersTextAnnotator() ||
+      use_text_annotator_for_testing_) {
+    // Load text classifier.
+    chromeos::machine_learning::ServiceConnection::GetInstance()
+        ->GetMachineLearningService()
+        .LoadTextClassifier(
+            text_classifier_.BindNewPipeAndPassReceiver(),
+            base::BindOnce(&IntentGenerator::LoadModelCallback,
+                           weak_factory_.GetWeakPtr(), request));
     return;
   }
 
-  // Load text classifier.
-  chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadTextClassifier(text_classifier_.BindNewPipeAndPassReceiver(),
-                          base::BindOnce(&IntentGenerator::LoadModelCallback,
-                                         weak_factory_.GetWeakPtr(), request));
+  std::move(complete_callback_)
+      .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+}
+
+void IntentGenerator::UseTextAnnotatorForTesting() {
+  use_text_annotator_for_testing_ = true;
 }
 
 void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,

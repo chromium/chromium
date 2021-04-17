@@ -378,7 +378,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersOnEditableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersRichUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersSettingToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersStandaloneSettingsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTextAnnotatorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -390,6 +389,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseBrowserSyncConsent();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseQuickAnswersTextAnnotator();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV1DeviceSync();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 
