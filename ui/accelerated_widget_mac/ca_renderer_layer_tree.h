@@ -72,13 +72,14 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
  private:
   class SolidColorContents;
-  struct RootLayer;
-  struct ClipAndSortingLayer;
-  struct TransformLayer;
-  struct ContentLayer;
-  friend struct ContentLayer;
+  class RootLayer;
+  class ClipAndSortingLayer;
+  class TransformLayer;
+  class ContentLayer;
+  friend class ContentLayer;
 
-  struct RootLayer {
+  class RootLayer {
+   public:
     RootLayer();
 
     // This will remove |ca_layer| from its superlayer, if |ca_layer| is
@@ -108,13 +109,14 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // transparent background, false otherwise.
     bool WantsFullcreenLowPowerBackdrop() const;
 
-    std::vector<ClipAndSortingLayer> clip_and_sorting_layers;
-    base::scoped_nsobject<CALayer> ca_layer;
+    std::vector<ClipAndSortingLayer> clip_and_sorting_layers_;
+    base::scoped_nsobject<CALayer> ca_layer_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(RootLayer);
   };
-  struct ClipAndSortingLayer {
+  class ClipAndSortingLayer {
+   public:
     ClipAndSortingLayer(bool is_clipped,
                         gfx::Rect clip_rect,
                         gfx::RRectF rounded_corner_bounds,
@@ -131,19 +133,20 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                     ClipAndSortingLayer* old_layer,
                     float scale_factor);
 
-    std::vector<TransformLayer> transform_layers;
-    bool is_clipped = false;
-    gfx::Rect clip_rect;
-    gfx::RRectF rounded_corner_bounds;
-    unsigned sorting_context_id = 0;
-    bool is_singleton_sorting_context = false;
-    base::scoped_nsobject<CALayer> clipping_ca_layer;
-    base::scoped_nsobject<CALayer> rounded_corner_ca_layer;
+    std::vector<TransformLayer> transform_layers_;
+    bool is_clipped_ = false;
+    gfx::Rect clip_rect_;
+    gfx::RRectF rounded_corner_bounds_;
+    unsigned sorting_context_id_ = 0;
+    bool is_singleton_sorting_context_ = false;
+    base::scoped_nsobject<CALayer> clipping_ca_layer_;
+    base::scoped_nsobject<CALayer> rounded_corner_ca_layer_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ClipAndSortingLayer);
   };
-  struct TransformLayer {
+  class TransformLayer {
+   public:
     TransformLayer(const gfx::Transform& transform);
     TransformLayer(TransformLayer&& layer);
 
@@ -156,14 +159,15 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                     TransformLayer* old_layer,
                     float scale_factor);
 
-    gfx::Transform transform;
-    std::vector<ContentLayer> content_layers;
-    base::scoped_nsobject<CALayer> ca_layer;
+    gfx::Transform transform_;
+    std::vector<ContentLayer> content_layers_;
+    base::scoped_nsobject<CALayer> ca_layer_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(TransformLayer);
   };
-  struct ContentLayer {
+  class ContentLayer {
+   public:
     ContentLayer(CARendererLayerTree* tree,
                  base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
                  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
@@ -186,33 +190,33 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // Ensure that the IOSurface be marked as in-use as soon as it is received.
     // When they are committed to the window server, that will also increment
     // their use count.
-    const gfx::ScopedInUseIOSurface io_surface;
-    const base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
-    scoped_refptr<SolidColorContents> solid_color_contents;
-    gfx::RectF contents_rect;
-    gfx::RectF rect;
-    unsigned background_color = 0;
+    const gfx::ScopedInUseIOSurface io_surface_;
+    const base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
+    scoped_refptr<SolidColorContents> solid_color_contents_;
+    gfx::RectF contents_rect_;
+    gfx::RectF rect_;
+    unsigned background_color_ = 0;
     // The color space of |io_surface|. Used for HDR tonemapping.
-    gfx::ColorSpace io_surface_color_space;
+    gfx::ColorSpace io_surface_color_space_;
     // Note that the CoreAnimation edge antialiasing mask is not the same as
     // the edge antialiasing mask passed to the constructor.
-    CAEdgeAntialiasingMask ca_edge_aa_mask = 0;
-    float opacity = 1;
-    NSString* const ca_filter = nil;
+    CAEdgeAntialiasingMask ca_edge_aa_mask_ = 0;
+    float opacity_ = 1;
+    NSString* const ca_filter_ = nil;
 
-    CALayerType type = CALayerType::kDefault;
+    CALayerType type_ = CALayerType::kDefault;
 
     // If |type| is CALayerType::kVideo and |video_type_can_downgrade| then
     // |type| can be downgraded to kDefault. This can be set to false for
     // HDR video (that cannot be displayed by a regular CALayer) or for
     // protected content (see https://crbug.com/1026703).
-    bool video_type_can_downgrade = true;
+    bool video_type_can_downgrade_ = true;
 
-    base::scoped_nsobject<CALayer> ca_layer;
+    base::scoped_nsobject<CALayer> ca_layer_;
 
     // If this layer's contents can be represented as an
     // AVSampleBufferDisplayLayer, then |ca_layer| will point to |av_layer|.
-    base::scoped_nsobject<AVSampleBufferDisplayLayer> av_layer;
+    base::scoped_nsobject<AVSampleBufferDisplayLayer> av_layer_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ContentLayer);
