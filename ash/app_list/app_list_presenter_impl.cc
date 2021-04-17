@@ -43,12 +43,6 @@
 namespace ash {
 namespace {
 
-constexpr std::array<int, 6> kIdsOfContainersThatWontHideAppList = {
-    kShellWindowId_AppListContainer,     kShellWindowId_HomeScreenContainer,
-    kShellWindowId_MenuContainer,        kShellWindowId_SettingBubbleContainer,
-    kShellWindowId_ShelfBubbleContainer, kShellWindowId_ShelfContainer,
-};
-
 inline ui::Layer* GetLayer(views::Widget* widget) {
   return widget->GetNativeView()->layer();
 }
@@ -92,6 +86,9 @@ class CallbackRunnerLayerAnimationObserver
 };
 
 }  // namespace
+
+constexpr std::array<int, 7>
+    AppListPresenterImpl::kIdsOfContainersThatWontHideAppList;
 
 AppListPresenterImpl::AppListPresenterImpl(
     AppListControllerImpl* controller,

@@ -15,6 +15,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -39,6 +40,15 @@ class ASH_EXPORT AppListPresenterImpl
       public ui::ImplicitAnimationObserver,
       public views::WidgetObserver {
  public:
+  static constexpr std::array<int, 7> kIdsOfContainersThatWontHideAppList = {
+      kShellWindowId_AppListContainer,
+      kShellWindowId_HomeScreenContainer,
+      kShellWindowId_MenuContainer,
+      kShellWindowId_PowerMenuContainer,
+      kShellWindowId_SettingBubbleContainer,
+      kShellWindowId_ShelfBubbleContainer,
+      kShellWindowId_ShelfContainer};
+
   // Callback which fills out the passed settings object. Used by
   // UpdateYPositionAndOpacityForHomeLauncher so different callers can do
   // similar animations with different settings.
