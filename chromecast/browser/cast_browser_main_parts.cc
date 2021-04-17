@@ -616,6 +616,9 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
         std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
   }
 
+  display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(
+      cast_browser_process_->display_configurator(), window_manager_.get());
+
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(
       std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));

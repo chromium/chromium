@@ -9,10 +9,6 @@
 
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
-#include "chromecast/graphics/cast_window_manager.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 #if defined(USE_AURA)
@@ -39,19 +35,16 @@ float Interpolate(const std::vector<float>& vec, float idx) {
 }  // namespace
 
 ColorTemperatureAnimation::ColorTemperatureAnimation(
-    CastWindowManager* window_manager,
     shell::CastDisplayConfigurator* display_configurator,
     const DisplaySettingsManager::ColorTemperatureConfig& config)
     : gfx::LinearAnimation(kManualAnimationDuration,
                            kAnimationFrameRate,
                            nullptr),
-      window_manager_(window_manager),
       display_configurator_(display_configurator),
       config_(config),
       start_temperature_(config.neutral_temperature),
       current_temperature_(config.neutral_temperature),
       target_temperature_(config_.neutral_temperature) {
-  DCHECK(window_manager_);
 #if defined(USE_AURA)
   DCHECK(display_configurator_);
 #endif  // defined(USE_AURA)
@@ -123,12 +116,6 @@ void ColorTemperatureAnimation::ApplyValuesToDisplay() {
     std::vector<float> color_matrix = {red_scale, 0, 0, 0,         green_scale,
                                        0,         0, 0, blue_scale};
     display_configurator_->SetColorMatrix(color_matrix);
-    // The CTM is applied on the next swap buffers, so we need to make sure the
-    // root window triggers a swap buffer otherwise the content will not update.
-    window_manager_->GetRootWindow()
-        ->GetHost()
-        ->compositor()
-        ->ScheduleFullRedraw();
 #endif  // defined(USE_AURA)
   }
 }

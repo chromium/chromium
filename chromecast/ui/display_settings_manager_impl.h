@@ -80,8 +80,6 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
 
   void UpdateBrightness(float brightness, base::TimeDelta duration);
 
-  void OnScreenEnabled(PowerToggleCallback callback, bool status);
-
   CastWindowManager* const window_manager_;
   shell::CastDisplayConfigurator* const display_configurator_;
 
