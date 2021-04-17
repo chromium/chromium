@@ -30,7 +30,11 @@ bool ParseValue(const base::Value* value, bool* out_value) {
 }
 
 bool ParseValue(const base::Value* value, int* out_value) {
-  return value->GetAsInteger(out_value);
+  if (out_value && value->is_int()) {
+    *out_value = value->GetInt();
+    return true;
+  }
+  return value->is_int();
 }
 
 bool ParseValue(const base::Value* value, double* out_value) {
