@@ -72,15 +72,11 @@ class FilesAppChip : public views::Button {
     return kFilesAppChipHeight;
   }
 
-  void Init() {
-    SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
-    SetCallback(
-        base::BindRepeating(&FilesAppChip::OnPressed, base::Unretained(this)));
-    SetID(kHoldingSpaceFilesAppChipId);
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
 
     // Background.
-    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
     SetBackground(views::CreateRoundedRectBackground(
         ash_color_provider->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::
@@ -94,9 +90,19 @@ class FilesAppChip : public views::Button {
     // Ink drop.
     const AshColorProvider::RippleAttributes ripple_attributes =
         ash_color_provider->GetRippleAttributes();
-    SetInkDropMode(InkDropMode::ON);
     SetInkDropBaseColor(ripple_attributes.base_color);
     SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  }
+
+  void Init() {
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
+    SetCallback(
+        base::BindRepeating(&FilesAppChip::OnPressed, base::Unretained(this)));
+    SetID(kHoldingSpaceFilesAppChipId);
+
+    // Ink drop.
+    SetInkDropMode(InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kFilesAppChipHeight / 2);
 
