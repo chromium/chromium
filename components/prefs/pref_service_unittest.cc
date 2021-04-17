@@ -158,9 +158,8 @@ TEST(PrefServiceTest, GetValueChangedType) {
   const base::Value* value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  int actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kTestValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kTestValue, value->GetInt());
 }
 
 TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
@@ -178,9 +177,8 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   const base::Value* value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  int actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kDefaultValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kDefaultValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns no value.
   value = pref->GetRecommendedValue();
@@ -193,9 +191,8 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kUserValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kUserValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns no value.
   value = pref->GetRecommendedValue();
@@ -209,17 +206,15 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kUserValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kUserValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns the recommended value.
   value = pref->GetRecommendedValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 
   // Remove the user-set value.
   prefs.RemoveUserPref(kPrefName);
@@ -228,17 +223,15 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   value = pref->GetValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 
   // Check that GetRecommendedValue() returns the recommended value.
   value = pref->GetRecommendedValue();
   ASSERT_TRUE(value);
   EXPECT_EQ(base::Value::Type::INTEGER, value->type());
-  actual_int_value = -1;
-  EXPECT_TRUE(value->GetAsInteger(&actual_int_value));
-  EXPECT_EQ(kRecommendedValue, actual_int_value);
+  ASSERT_TRUE(value->is_int());
+  EXPECT_EQ(kRecommendedValue, value->GetInt());
 }
 
 TEST(PrefServiceTest, SetTimeValue_RegularTime) {
