@@ -274,8 +274,7 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
 
   // kTotalHosts = 3
   for (int i = 0; i < kTotalHosts; i++) {
-    std::unique_ptr<FakeHostResolver::DnsResult> resolution;
-    resolution = std::make_unique<FakeHostResolver::DnsResult>(
+    auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
         net::AddressList(FakeIPAddress()));
     fake_dns_results.push_back(resolution.get());
@@ -295,8 +294,7 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
 
   // kTotalHosts = 3
   for (int i = 0; i < kTotalHosts; i++) {
-    std::unique_ptr<FakeHostResolver::DnsResult> resolution;
-    resolution = std::make_unique<FakeHostResolver::DnsResult>(
+    auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
         net::AddressList(FakeIPAddress()));
     fake_dns_results.push_back(resolution.get());
@@ -317,8 +315,7 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
 
   // kTotalHosts = 3
   for (int i = 0; i < kTotalHosts; i++) {
-    std::unique_ptr<FakeHostResolver::DnsResult> resolution;
-    resolution = std::make_unique<FakeHostResolver::DnsResult>(
+    auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
         net::AddressList(FakeIPAddress()));
     fake_dns_results.push_back(resolution.get());
@@ -339,8 +336,7 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
 
   // kTotalHosts = 3
   for (int i = 0; i < kTotalHosts; i++) {
-    std::unique_ptr<FakeHostResolver::DnsResult> resolution;
-    resolution = std::make_unique<FakeHostResolver::DnsResult>(
+    auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
         net::AddressList(FakeIPAddress()));
     fake_dns_results.push_back(resolution.get());

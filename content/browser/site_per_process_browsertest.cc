@@ -3218,8 +3218,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
   // Disable host resolution in the test server and try to navigate the subframe
   // cross-site, which will lead to a committed net error.
   GURL url_b = embedded_test_server()->GetURL("b.com", "/title3.html");
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-  url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+  auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
       base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_NOT_IMPLEMENTED;

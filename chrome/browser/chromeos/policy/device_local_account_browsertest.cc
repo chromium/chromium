@@ -1264,8 +1264,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
              0, base::Time::Now());
   extensions::ExtensionCacheImpl cache_impl(
       std::make_unique<extensions::ChromeOSExtensionCacheDelegate>(impl_path));
-  std::unique_ptr<base::RunLoop> run_loop;
-  run_loop = std::make_unique<base::RunLoop>();
+  auto run_loop = std::make_unique<base::RunLoop>();
   cache_impl.Start(base::BindOnce(&OnExtensionCacheImplInitialized, &run_loop));
   run_loop->Run();
 

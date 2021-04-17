@@ -811,8 +811,7 @@ IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyRobotAuthTest, MAYBE_Test) {
     base::RunLoop run_loop;
     // Listen to store event which is fired after policy validation if token is
     // valid.
-    std::unique_ptr<PolicyFetchStoreObserver> store_observer;
-    store_observer = std::make_unique<PolicyFetchStoreObserver>(
+    auto store_observer = std::make_unique<PolicyFetchStoreObserver>(
         manager->store(), run_loop.QuitClosure());
 
     g_browser_process->browser_policy_connector()

@@ -777,8 +777,7 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverReadError) {
   net::IoMode mode = GetParam();
   const net::MockRead kReadError[] = {net::MockRead(mode, net::ERR_TIMED_OUT)};
   std::vector<std::unique_ptr<net::StaticSocketDataProvider>> data_providers;
-  std::unique_ptr<net::StaticSocketDataProvider> provider;
-  provider = std::make_unique<net::StaticSocketDataProvider>(
+  auto provider = std::make_unique<net::StaticSocketDataProvider>(
       kReadError, base::span<net::MockWrite>());
   provider->set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   data_providers.push_back(std::move(provider));

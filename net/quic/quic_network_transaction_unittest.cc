@@ -829,8 +829,7 @@ class QuicNetworkTransactionTest
   }
 
   void AddHangingNonAlternateProtocolSocketData() {
-    std::unique_ptr<StaticSocketDataProvider> hanging_data;
-    hanging_data = std::make_unique<StaticSocketDataProvider>();
+    auto hanging_data = std::make_unique<StaticSocketDataProvider>();
     MockConnect hanging_connect(SYNCHRONOUS, ERR_IO_PENDING);
     hanging_data->set_connect_data(hanging_connect);
     hanging_data_.push_back(std::move(hanging_data));

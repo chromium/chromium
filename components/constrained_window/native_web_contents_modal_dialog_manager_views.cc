@@ -124,8 +124,7 @@ void NativeWebContentsModalDialogManagerViews::Show() {
 void NativeWebContentsModalDialogManagerViews::Hide() {
   views::Widget* widget = GetWidget(dialog());
 #if defined(USE_AURA)
-  std::unique_ptr<wm::SuspendChildWindowVisibilityAnimations> suspend;
-  suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
+  auto suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
       widget->GetNativeWindow()->parent());
 #endif
   widget->Hide();

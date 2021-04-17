@@ -628,16 +628,14 @@ void TouchExplorationController::SendSimulatedClick() {
 
 void TouchExplorationController::SendSimulatedTap(
     const Continuation continuation) {
-  std::unique_ptr<ui::TouchEvent> touch_press;
-  touch_press = std::make_unique<ui::TouchEvent>(
+  auto touch_press = std::make_unique<ui::TouchEvent>(
       ui::ET_TOUCH_PRESSED, gfx::Point(), Now(),
       initial_press_->pointer_details());
   touch_press->set_location_f(anchor_point_dip_);
   touch_press->set_root_location_f(anchor_point_dip_);
   DispatchEvent(touch_press.get(), continuation);
 
-  std::unique_ptr<ui::TouchEvent> touch_release;
-  touch_release = std::make_unique<ui::TouchEvent>(
+  auto touch_release = std::make_unique<ui::TouchEvent>(
       ui::ET_TOUCH_RELEASED, gfx::Point(), Now(),
       initial_press_->pointer_details());
   touch_release->set_location_f(anchor_point_dip_);

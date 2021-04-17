@@ -118,8 +118,7 @@ TEST_F(UnifiedSystemInfoViewNoSessionTest, ChildVisible) {
   ASSERT_FALSE(session->IsActiveUserSessionStarted());
 
   // Before login the supervised user view is invisible.
-  std::unique_ptr<UnifiedSystemInfoView> info_view_;
-  info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
+  auto info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
   EXPECT_FALSE(info_view_->supervised_->GetVisible());
   info_view_.reset();
 

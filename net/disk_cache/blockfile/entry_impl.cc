@@ -938,8 +938,7 @@ bool EntryImpl::CouldBeSparse() const {
   if (sparse_.get())
     return true;
 
-  std::unique_ptr<SparseControl> sparse;
-  sparse = std::make_unique<SparseControl>(const_cast<EntryImpl*>(this));
+  auto sparse = std::make_unique<SparseControl>(const_cast<EntryImpl*>(this));
   return sparse->CouldBeSparse();
 }
 

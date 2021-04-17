@@ -807,8 +807,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
 
   ASSERT_TRUE(primary_crtc_plane != nullptr);
 
-  std::unique_ptr<ui::HardwareDisplayController> hdc_controller;
-  hdc_controller = std::make_unique<ui::HardwareDisplayController>(
+  auto hdc_controller = std::make_unique<ui::HardwareDisplayController>(
       controller_->RemoveCrtc(drm_, kPrimaryCrtc), controller_->origin());
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();

@@ -372,8 +372,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleOriginRequest(
       const net::test_server::HttpRequest& request) {
     EXPECT_EQ(request.method, net::test_server::METHOD_GET);
-    std::unique_ptr<net::test_server::BasicHttpResponse> response;
-    response = std::make_unique<net::test_server::BasicHttpResponse>();
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
 
     return std::move(response);
@@ -384,9 +383,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     base::AutoLock lock(lock_);
 
     ++count_hints_requests_received_;
-    std::unique_ptr<net::test_server::BasicHttpResponse> response;
-
-    response = std::make_unique<net::test_server::BasicHttpResponse>();
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     // If the request is a GET, it corresponds to a navigation so return a
     // normal response.
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);

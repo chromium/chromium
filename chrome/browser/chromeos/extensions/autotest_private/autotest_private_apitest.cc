@@ -106,8 +106,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
   // Start ARC
   arc::ArcSessionManager::Get()->StartArcForTesting();
 
-  std::unique_ptr<arc::FakeAppInstance> app_instance;
-  app_instance = std::make_unique<arc::FakeAppInstance>(prefs);
+  auto app_instance = std::make_unique<arc::FakeAppInstance>(prefs);
   prefs->app_connection_holder()->SetInstance(app_instance.get());
   arc::WaitForInstanceReady(prefs->app_connection_holder());
 

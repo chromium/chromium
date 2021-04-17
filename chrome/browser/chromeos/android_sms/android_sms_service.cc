@@ -78,8 +78,7 @@ void AndroidSmsService::OnSessionStateChanged() {
     return;
   }
 
-  std::unique_ptr<ConnectionEstablisher> connection_establisher;
-  connection_establisher = std::make_unique<FcmConnectionEstablisher>(
+  auto connection_establisher = std::make_unique<FcmConnectionEstablisher>(
       std::make_unique<base::OneShotTimer>());
 
   connection_manager_ = std::make_unique<ConnectionManager>(

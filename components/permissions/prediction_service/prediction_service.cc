@@ -282,8 +282,7 @@ PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
     return GeneratePredictionsResponseJsonToMessage(*response_body);
   }
 
-  std::unique_ptr<GeneratePredictionsResponse> predictions_response;
-  predictions_response = std::make_unique<GeneratePredictionsResponse>();
+  auto predictions_response = std::make_unique<GeneratePredictionsResponse>();
   if (!predictions_response->ParseFromString(*response_body)) {
     return nullptr;
   }

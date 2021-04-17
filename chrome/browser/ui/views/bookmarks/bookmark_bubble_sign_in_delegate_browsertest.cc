@@ -62,8 +62,7 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
 }
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser);
+  auto delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser);
   delegate->OnEnableSync(AccountInfo());
 }
 

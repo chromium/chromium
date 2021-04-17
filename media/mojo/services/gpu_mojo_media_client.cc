@@ -238,9 +238,9 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       auto get_stub_cb = base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
           command_buffer_id->channel_token, command_buffer_id->route_id);
-      std::unique_ptr<SharedImageVideoProvider> image_provider;
-      image_provider = std::make_unique<DirectSharedImageVideoProvider>(
-          gpu_task_runner_, get_stub_cb);
+      std::unique_ptr<SharedImageVideoProvider> image_provider =
+          std::make_unique<DirectSharedImageVideoProvider>(gpu_task_runner_,
+                                                           get_stub_cb);
       if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
         // Wrap |image_provider| in a pool.
         image_provider = PooledSharedImageVideoProvider::Create(

@@ -72,8 +72,7 @@ CancelCallbackOnce SendMultipartUploadResult(
 
   // MultipartUploadXXXFile is an asynchronous function, so don't callback
   // directly.
-  std::unique_ptr<FileResource> entry;
-  entry = std::make_unique<FileResource>();
+  auto entry = std::make_unique<FileResource>();
   entry->set_md5_checksum(kTestDummyMd5);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

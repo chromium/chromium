@@ -285,8 +285,7 @@ void FakeDriveService::AddTeamDrive(const std::string& id,
                                     const std::string& name,
                                     const std::string& start_page_token) {
   DCHECK(entries_.find(id) == entries_.end());
-  std::unique_ptr<TeamDriveResource> team_drive;
-  team_drive = std::make_unique<TeamDriveResource>();
+  auto team_drive = std::make_unique<TeamDriveResource>();
   team_drive->set_id(id);
   team_drive->set_name(name);
   team_drive_value_.push_back(std::move(team_drive));
@@ -369,8 +368,7 @@ void FakeDriveService::GetTeamDriveListInternal(
     max_results = team_drive_value_.size();
   }
 
-  std::unique_ptr<TeamDriveList> result;
-  result = std::make_unique<TeamDriveList>();
+  auto result = std::make_unique<TeamDriveList>();
   size_t next_start_offset = start_offset + max_results;
   if (next_start_offset < team_drive_value_.size()) {
     // Embed next start offset to next page token to be read in

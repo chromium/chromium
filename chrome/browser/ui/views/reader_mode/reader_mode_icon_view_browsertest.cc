@@ -184,8 +184,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(ReaderModeIconViewBrowserTest,
                        NonSecurePagesNotDistillable) {
-  std::unique_ptr<net::EmbeddedTestServer> https_server_expired;
-  https_server_expired = std::make_unique<net::EmbeddedTestServer>(
+  auto https_server_expired = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_expired->SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   https_server_expired->ServeFilesFromSourceDirectory(GetChromeTestDataDir());

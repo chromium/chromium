@@ -111,8 +111,7 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
       shortcut_icon = gfx::CreateVectorIcon(
           kClipboardSearchIcon, kKeyboardShortcutIconSize, icon_color);
     }
-    std::unique_ptr<views::ImageView> keyboard_shortcut_icon;
-    keyboard_shortcut_icon = std::make_unique<views::ImageView>();
+    auto keyboard_shortcut_icon = std::make_unique<views::ImageView>();
     keyboard_shortcut_icon->SetImage(shortcut_icon);
     keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(2, 4, 0, -2));
 

@@ -493,8 +493,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
     if (request.GetURL().spec().find("redirect") == std::string::npos)
       return nullptr;
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> response;
-    response = std::make_unique<net::test_server::BasicHttpResponse>();
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_FOUND);
     response->AddCustomHeader("Location",
                               without_accept_ch_without_lifetime_url().spec());

@@ -330,9 +330,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, EmptyContextMenu) {
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   ASSERT_TRUE(menu->HasCommandWithId(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   ASSERT_TRUE(
@@ -350,9 +349,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenu) {
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   int first_extensions_command_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -380,9 +378,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -413,9 +410,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   params.is_editable = true;
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -439,9 +435,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuSelection) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   params.selection_text = u"Hello World";
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -464,9 +459,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.bar");
-  std::unique_ptr<PlatformAppContextMenu> menu;
-  menu = std::make_unique<PlatformAppContextMenu>(web_contents->GetMainFrame(),
-                                                  params);
+  auto menu = std::make_unique<PlatformAppContextMenu>(
+      web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);

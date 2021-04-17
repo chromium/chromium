@@ -981,8 +981,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       shell()->web_contents()->GetController());
 
   // Set up an URLLoaderInterceptor which will cause all navigations to fail.
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-  url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+  auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
       base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_NOT_IMPLEMENTED;
@@ -2077,8 +2076,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   // Set up an URLLoaderInterceptor which will cause all navigations to fail.
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-  url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+  auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
       base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_NOT_IMPLEMENTED;
@@ -2374,8 +2372,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   {
     // Navigate to the same URL (browser-initiated), but this time we hit a
     // network error and end up in an error page.
-    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
         base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NOT_IMPLEMENTED;
@@ -15450,8 +15447,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // Navigate the subframe (browser-initiated) to the same URL it's currently
     // on, but end up in an error page instead.
-    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
         base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NOT_IMPLEMENTED;
@@ -15702,8 +15698,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // Reload the subframe (browser-initiated), but this time we hit a network
     // error and end up in an error page.
-    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
-    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
         base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NOT_IMPLEMENTED;

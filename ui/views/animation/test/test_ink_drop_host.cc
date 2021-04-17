@@ -104,9 +104,8 @@ std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {
 
 std::unique_ptr<InkDropHighlight> TestInkDropHost::CreateInkDropHighlight()
     const {
-  std::unique_ptr<InkDropHighlight> highlight;
-  highlight = std::make_unique<TestInkDropHighlight>(size(), 0, gfx::PointF(),
-                                                     SK_ColorBLACK);
+  auto highlight = std::make_unique<TestInkDropHighlight>(
+      size(), 0, gfx::PointF(), SK_ColorBLACK);
   if (disable_timers_for_test_)
     highlight->GetTestApi()->SetDisableAnimationTimers(true);
   num_ink_drop_highlights_created_++;

@@ -377,9 +377,8 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
             "client_model_v5_variation_5.pb");
 
   // No Finch setup. Should default to 4.
-  std::unique_ptr<ModelLoader> loader;
-  loader = std::make_unique<ModelLoader>(base::RepeatingClosure(), nullptr,
-                                         false /* is_extended_reporting */);
+  auto loader = std::make_unique<ModelLoader>(
+      base::RepeatingClosure(), nullptr, false /* is_extended_reporting */);
   EXPECT_EQ(loader->name(), "client_model_v5_variation_6.pb");
   EXPECT_EQ(loader->url_.spec(),
             "https://ssl.gstatic.com/safebrowsing/csd/"

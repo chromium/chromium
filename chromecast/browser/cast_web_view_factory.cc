@@ -24,9 +24,8 @@ std::unique_ptr<CastWebView> CastWebViewFactory::CreateWebView(
     const CastWebView::CreateParams& params,
     CastWebService* web_service,
     const GURL& initial_url) {
-  std::unique_ptr<CastWebView> webview;
-  webview = std::make_unique<CastWebViewDefault>(params, web_service,
-                                                 browser_context_);
+  auto webview = std::make_unique<CastWebViewDefault>(params, web_service,
+                                                      browser_context_);
   if (webview) {
     webview->AddObserver(this);
   }
