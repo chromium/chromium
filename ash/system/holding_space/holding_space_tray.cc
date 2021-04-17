@@ -160,11 +160,20 @@ bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
 std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(kHoldingSpaceTrayDefaultIconId);
-  icon->SetImage(gfx::CreateVectorIcon(
-      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+  icon->SetPaintToLayer();
+  icon->layer()->SetFillsBoundsOpaquely(false);
+  return icon;
+}
+
+// Creates the icon to be parented by the drop target overlay to indicate that
+// the parent view is a drop target and is capable of handling the current drag
+// payload.
+std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  icon->SetPreferredSize({kHoldingSpaceIconSize, kHoldingSpaceIconSize});
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
   return icon;
@@ -177,23 +186,8 @@ std::unique_ptr<views::View> CreateDropTargetOverlay() {
   auto drop_target_overlay = std::make_unique<views::View>();
   drop_target_overlay->SetID(kHoldingSpaceTrayDropTargetOverlayId);
   drop_target_overlay->SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  // Layer.
   drop_target_overlay->SetPaintToLayer();
   drop_target_overlay->layer()->SetFillsBoundsOpaquely(false);
-
-  // Icon.
-  auto* icon =
-      drop_target_overlay->AddChildView(std::make_unique<views::ImageView>());
-  icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  icon->SetImage(gfx::CreateVectorIcon(
-      views::kUnpinIcon, kHoldingSpaceIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  icon->SetPaintToLayer();
-  icon->layer()->SetFillsBoundsOpaquely(false);
-
   return drop_target_overlay;
 }
 
@@ -265,6 +259,10 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   //   * the cursor is sufficiently close to this view.
   drop_target_overlay_ = AddChildView(CreateDropTargetOverlay());
   drop_target_overlay_->layer()->SetOpacity(0.f);
+
+  // Drop target icon.
+  drop_target_icon_ =
+      drop_target_overlay_->AddChildView(CreateDropTargetIcon());
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -441,6 +439,21 @@ void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
           GetWidget()->GetNativeWindow()->GetRootWindow()),
       /*event_callback=*/base::BindRepeating(
           &HoldingSpaceTray::UpdateDropTargetState, base::Unretained(this)));
+}
+
+void HoldingSpaceTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+
+  const SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  // Default tray icon.
+  default_tray_icon_->SetImage(gfx::CreateVectorIcon(
+      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize, color));
+
+  // Drop target icon.
+  drop_target_icon_->SetImage(
+      gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize, color));
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {

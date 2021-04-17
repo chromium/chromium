@@ -85,6 +85,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
       const ui::DropTargetEvent& event) override;
   void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  void OnThemeChanged() override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;
@@ -180,6 +181,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // The view drawn on top of all other child views to indicate that this
   // view is a drop target capable of handling the current drag payload.
   views::View* drop_target_overlay_ = nullptr;
+
+  // The icon parented by the `drop_target_overlay_` to indicate that this view
+  // is a drop target capable of handling the current drag payload.
+  views::ImageView* drop_target_icon_ = nullptr;
 
   // When the holding space previews feature is enabled, the user can enable/
   // disable previews at runtime. This registrar is associated with the active
