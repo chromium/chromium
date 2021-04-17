@@ -179,6 +179,13 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
   void UpdateWindowTitle() override {}
   void SizeConstraintsChanged() override {}
 
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(target, this);
+    return false;
+  }
+
  private:
   views::Widget* widget_;
 
