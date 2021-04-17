@@ -21,10 +21,9 @@ bool ParseContentSettingValue(const base::Value* value,
     *setting = CONTENT_SETTING_DEFAULT;
     return true;
   }
-  int int_value = -1;
-  if (!value->GetAsInteger(&int_value))
+  if (!value->is_int())
     return false;
-  *setting = IntToContentSetting(int_value);
+  *setting = IntToContentSetting(value->GetInt());
   return *setting != CONTENT_SETTING_DEFAULT;
 }
 
