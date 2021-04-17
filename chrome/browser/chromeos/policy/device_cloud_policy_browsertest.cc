@@ -173,9 +173,8 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
                                           std::string() /* component_id */))
             .GetValue(kPolicyKey);
     EXPECT_TRUE(policy_value);
-    int refresh_rate = -1;
-    EXPECT_TRUE(policy_value->GetAsInteger(&refresh_rate));
-    return refresh_rate;
+    EXPECT_EQ(policy_value->type(), base::Value::Type::INTEGER);
+    return policy_value->GetIfInt().value_or(-1);
   }
 
   void WaitForInstalledPolicyValue(int expected_policy_value) {
