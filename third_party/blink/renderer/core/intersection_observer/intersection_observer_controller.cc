@@ -65,7 +65,7 @@ bool IntersectionObserverController::ComputeIntersections(
     LocalFrameUkmAggregator& ukm_aggregator) {
   needs_occlusion_tracking_ = false;
   if (GetExecutionContext()) {
-    TRACE_EVENT0("blink",
+    TRACE_EVENT0("blink,devtools.timeline",
                  "IntersectionObserverController::"
                  "computeIntersections");
     HeapVector<Member<IntersectionObserver>> observers_to_process;
