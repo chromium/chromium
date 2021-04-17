@@ -88,11 +88,10 @@ void WebAppShimManagerDelegate::LaunchApp(
     Profile* profile,
     const AppId& app_id,
     const std::vector<base::FilePath>& files,
-    const std::vector<GURL>& urls,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   DCHECK(AppIsInstalled(profile, app_id));
   if (UseFallback(profile, app_id)) {
-    fallback_delegate_->LaunchApp(profile, app_id, files, urls,
+    fallback_delegate_->LaunchApp(profile, app_id, files,
                                   login_item_restore_state);
     return;
   }
@@ -111,9 +110,6 @@ void WebAppShimManagerDelegate::LaunchApp(
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                launch_source);
   params.launch_files = files;
-  // We only support launching the one url, so take the first one.
-  if (!urls.empty())
-    params.protocol_handler_launch_url = urls[0];
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
