@@ -174,11 +174,12 @@ bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
   if (!input)
     return true;
 
-  int value;
-  if (!input->GetAsInteger(&value)) {
+  if (!input->is_int()) {
     NOTREACHED();
     return false;
   }
+
+  int value = input->GetInt();
 
   if (value < min_ || value > max_) {
     if (errors) {
