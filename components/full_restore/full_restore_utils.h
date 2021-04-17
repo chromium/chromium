@@ -70,6 +70,11 @@ extern const ui::ClassProperty<int32_t*>* const kActivationIndexKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<bool>* const kParentToHiddenContainerKey;
 
+// A property key indicating whether a window was launched from full restore.
+// These windows will not be activatable until they are shown.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<bool>* const kLaunchedFromFullRestoreKey;
+
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_path,

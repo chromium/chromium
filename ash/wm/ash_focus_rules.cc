@@ -13,6 +13,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
@@ -99,6 +100,9 @@ bool AshFocusRules::CanActivateWindow(const aura::Window* window) const {
   // Clearing activation is always permissible.
   if (!window)
     return true;
+
+  if (window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+    return false;
 
   if (!BaseFocusRules::CanActivateWindow(window))
     return false;

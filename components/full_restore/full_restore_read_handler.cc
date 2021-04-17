@@ -218,7 +218,8 @@ bool FullRestoreReadHandler::ModifyWidgetParams(
     // are shown are activated by default. Force the widget to not be
     // activatable; the activation will be restored in ash once the window is
     // launched.
-    out_params->activatable = views::Widget::InitParams::Activatable::kNo;
+    out_params->init_properties_container.SetProperty(
+        kLaunchedFromFullRestoreKey, true);
   }
   if (window_info->desk_id)
     out_params->workspace = base::NumberToString(*window_info->desk_id);

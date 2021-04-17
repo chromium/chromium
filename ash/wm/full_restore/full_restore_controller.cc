@@ -21,7 +21,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -200,10 +199,8 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](aura::Window* window) {
-                       views::Widget* widget =
-                           views::Widget::GetWidgetForNativeView(window);
-                       DCHECK(widget);
-                       widget->widget_delegate()->SetCanActivate(true);
+                       window->SetProperty(
+                           full_restore::kLaunchedFromFullRestoreKey, false);
                      },
                      window));
 

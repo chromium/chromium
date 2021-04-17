@@ -22,6 +22,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIdKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
 
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {

@@ -99,10 +99,11 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
         .SetBounds(bounds)
-        .SetContext(root_window)
-        .SetActivatable(false);
+        .SetContext(root_window);
     widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
                                      new int32_t(activation_index));
+    widget_builder.SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey,
+                                     true);
     // If this is not given, the window will get assigned an id in
     // `OnWindowInitialized()`.
     if (restore_window_id) {
@@ -452,13 +453,13 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
 
   // Widget cannot be activated and is not active after it is created from full
   // restore.
-  EXPECT_FALSE(widget->CanActivate());
+  EXPECT_FALSE(wm::CanActivateWindow(widget->GetNativeWindow()));
   EXPECT_FALSE(widget->IsActive());
 
   // Activation permissions are restored in a post task. Spin the run loop and
   // verify.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(widget->CanActivate());
+  EXPECT_TRUE(wm::CanActivateWindow(widget->GetNativeWindow()));
 }
 
 // Tests that widgets are restored to their proper stacking order, even if they

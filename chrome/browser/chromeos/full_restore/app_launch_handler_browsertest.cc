@@ -52,6 +52,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/wm/core/window_util.h"
 
 namespace mojo {
 
@@ -220,6 +221,17 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
   widget->Show();
   widget->Activate();
   return widget;
+}
+
+// Gets the browser whose restore window id is same as `window_id`.
+Browser* GetBrowserForWindowId(int32_t window_id) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->window()->GetNativeWindow()->GetProperty(
+            ::full_restore::kRestoreWindowIdKey) == window_id) {
+      return browser;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -595,11 +607,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
 
   // Windows created from full restore are not activated. They will become
   // activatable after a post task is run.
-  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-  EXPECT_FALSE(widget->IsActive());
-  EXPECT_FALSE(widget->CanActivate());
+  EXPECT_FALSE(views::Widget::GetWidgetForNativeView(window)->IsActive());
+  EXPECT_FALSE(wm::CanActivateWindow(window));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(widget->CanActivate());
+  EXPECT_TRUE(wm::CanActivateWindow(window));
 
   EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
 
@@ -1097,7 +1108,7 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
   content::RunAllTasksUntilIdle();
 
   // Get the restored browser for the system web app.
-  Browser* restore_app_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
   ASSERT_TRUE(restore_app_browser);
   ASSERT_NE(browser(), restore_app_browser);
 
@@ -1146,7 +1157,7 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   content::RunAllTasksUntilIdle();
 
   // Get the restored browser for the system web app.
-  Browser* restore_app_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
   ASSERT_TRUE(restore_app_browser);
   ASSERT_NE(browser(), restore_app_browser);
 
