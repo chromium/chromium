@@ -107,7 +107,11 @@ void PrefValueMap::SetString(const std::string& key, const std::string& value) {
 
 bool PrefValueMap::GetInteger(const std::string& key, int* value) const {
   const base::Value* stored_value = nullptr;
-  return GetValue(key, &stored_value) && stored_value->GetAsInteger(value);
+  if (GetValue(key, &stored_value) && stored_value->is_int()) {
+    *value = stored_value->GetInt();
+    return true;
+  }
+  return false;
 }
 
 void PrefValueMap::SetInteger(const std::string& key, const int value) {
