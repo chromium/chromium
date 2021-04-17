@@ -54,7 +54,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     private static final long REQUIRED_VISIBILITY_DURATION_MS = 5000;
 
     @VisibleForTesting
-    static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
+    public static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
     @VisibleForTesting
     static final String MAX_NUMBER = "max-number";
     @VisibleForTesting
