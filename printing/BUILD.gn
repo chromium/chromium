@@ -328,9 +328,7 @@ static_library("test_support") {
   if (is_android) {
     sources += [ "image_android.cc" ]
   }
-  if (is_fuchsia) {
-    sources += [ "image_fuchsia.cc" ]
-  }
+
   if (is_linux || is_chromeos) {
     sources += [ "image_linux.cc" ]
   }
