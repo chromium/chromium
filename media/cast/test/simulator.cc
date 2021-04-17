@@ -437,8 +437,7 @@ void RunSimulation(const base::FilePath& source_path,
                                base::BindOnce(&LogAudioOperationalStatus));
   cast_sender->InitializeVideo(media_source.get_video_config(),
                                base::BindRepeating(&LogVideoOperationalStatus),
-                               CreateDefaultVideoEncodeAcceleratorCallback(),
-                               CreateDefaultVideoEncodeMemoryCallback());
+                               base::DoNothing());
   task_runner->RunTasks();
 
   // Truncate YUV files to prepare for writing.

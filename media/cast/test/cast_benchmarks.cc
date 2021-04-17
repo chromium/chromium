@@ -496,8 +496,7 @@ void RunOneBenchmark::Create(const MeasuringPoint& p) {
                                 base::BindOnce(&ExpectAudioSuccess));
   cast_sender_->InitializeVideo(video_sender_config_,
                                 base::BindRepeating(&ExpectVideoSuccess),
-                                CreateDefaultVideoEncodeAcceleratorCallback(),
-                                CreateDefaultVideoEncodeMemoryCallback());
+                                base::DoNothing());
 
   receiver_to_sender_->Initialize(CreateSimplePipe(p),
                                   transport_sender_.PacketReceiverForTesting(),

@@ -36,8 +36,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
       const gfx::Size& frame_size,
       FrameId first_frame_id,
       StatusChangeCallback status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_memory_cb);
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   ~ExternalVideoEncoder() final;
 
@@ -66,13 +65,12 @@ class ExternalVideoEncoder final : public VideoEncoder {
       std::unique_ptr<media::VideoEncodeAccelerator> vea);
 
   const scoped_refptr<CastEnvironment> cast_environment_;
-  const CreateVideoEncodeMemoryCallback create_video_encode_memory_cb_;
 
   // The size of the visible region of the video frames to be encoded.
   const gfx::Size frame_size_;
 
   int bit_rate_;
-  bool key_frame_requested_;
+  bool key_frame_requested_ = false;
 
   scoped_refptr<VEAClientImpl> client_;
 
@@ -92,8 +90,7 @@ class SizeAdaptableExternalVideoEncoder final
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
       StatusChangeCallback status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_memory_cb);
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   ~SizeAdaptableExternalVideoEncoder() final;
 
@@ -102,9 +99,7 @@ class SizeAdaptableExternalVideoEncoder final
 
  private:
   // Special callbacks needed by media::cast::ExternalVideoEncoder.
-  // TODO(miu): Remove these.  http://crbug.com/454029
   const CreateVideoEncodeAcceleratorCallback create_vea_cb_;
-  const CreateVideoEncodeMemoryCallback create_video_encode_memory_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(SizeAdaptableExternalVideoEncoder);
 };
@@ -135,13 +130,6 @@ class QuantizerEstimator {
   double EstimateForDeltaFrame(const VideoFrame& frame);
 
  private:
-  enum {
-    // The percentage of each frame to sample.  This value is based on an
-    // analysis that showed sampling 10% of the rows of a frame generated
-    // reasonably accurate results.
-    FRAME_SAMPLING_PERCENT = 10,
-  };
-
   // Returns true if the frame is in planar YUV format.
   static bool CanExamineFrame(const VideoFrame& frame);
 
@@ -149,7 +137,7 @@ class QuantizerEstimator {
   // based on the probabilities of values falling within each of the buckets of
   // the given |histogram|.
   static double ComputeEntropyFromHistogram(const int* histogram,
-                                            size_t num_buckets,
+                                            size_t histogram_size,
                                             int num_samples);
 
   // Map the |shannon_entropy| to its corresponding software VP8 quantizer.

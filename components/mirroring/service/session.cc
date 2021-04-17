@@ -14,8 +14,6 @@
 #include "base/cpu.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -557,20 +555,6 @@ void Session::CreateVideoEncodeAccelerator(
                           std::move(mojo_vea));
 }
 
-void Session::CreateVideoEncodeMemory(
-    size_t size,
-    media::cast::ReceiveVideoEncodeMemoryCallback callback) {
-  DVLOG(1) << __func__;
-
-  base::UnsafeSharedMemoryRegion buf =
-      base::UnsafeSharedMemoryRegion::Create(size);
-
-  if (!buf.IsValid())
-    LOG(WARNING) << "Browser failed to allocate shared memory.";
-
-  std::move(callback).Run(std::move(buf));
-}
-
 void Session::OnTransportStatusChanged(CastTransportStatus status) {
   DVLOG(1) << __func__ << ": status=" << status;
   switch (status) {
@@ -776,8 +760,6 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
           base::BindRepeating(&Session::OnEncoderStatusChange,
                               weak_factory_.GetWeakPtr()),
           base::BindRepeating(&Session::CreateVideoEncodeAccelerator,
-                              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(&Session::CreateVideoEncodeMemory,
                               weak_factory_.GetWeakPtr()),
           cast_transport_.get(),
           base::BindRepeating(&Session::SetTargetPlayoutDelay,

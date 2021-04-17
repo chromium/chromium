@@ -108,13 +108,10 @@ class CastSender {
 
   // Initialize the video stack. Must be called in order to send video frames.
   // |status_change_cb| will be run as operational status changes.
-  //
-  // TODO(miu): Remove the VEA-specific callbacks.  http://crbug.com/454029
   virtual void InitializeVideo(
       const FrameSenderConfig& video_config,
       const StatusChangeCallback& status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb) = 0;
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb) = 0;
 
   // Change the target delay. This is only valid if the receiver
   // supports the "adaptive_target_delay" rtp extension.

@@ -31,8 +31,7 @@ class CastSenderImpl final : public CastSender {
   void InitializeVideo(
       const FrameSenderConfig& video_config,
       const StatusChangeCallback& status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb) final;
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb) final;
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay) final;
 

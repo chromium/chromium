@@ -43,16 +43,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
   // Request a fresh video frame from the capturer.
   virtual void RequestRefreshFrame() = 0;
 
-  // The following are for hardware video encoding.
-
+  // The VEA is necessary for hardware encoding.
   virtual void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) = 0;
 
-  // TODO(crbug.com/1015472): Remove this interface. Instead, create the shared
-  // memory in external video encoder through mojo::ScopedSharedBufferHandle.
-  virtual void CreateVideoEncodeMemory(
-      size_t size,
-      media::cast::ReceiveVideoEncodeMemoryCallback callback) = 0;
 };
 
 // Receives video frames and submits the data to media::cast::VideoSender. It

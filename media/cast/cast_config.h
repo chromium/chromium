@@ -245,7 +245,6 @@ struct FrameReceiverConfig {
   std::string aes_iv_mask;
 };
 
-// TODO(miu): Remove the CreateVEA callbacks.  http://crbug.com/454029
 typedef base::OnceCallback<void(scoped_refptr<base::SingleThreadTaskRunner>,
                                 std::unique_ptr<media::VideoEncodeAccelerator>)>
     ReceiveVideoEncodeAcceleratorCallback;
@@ -253,10 +252,6 @@ typedef base::RepeatingCallback<void(ReceiveVideoEncodeAcceleratorCallback)>
     CreateVideoEncodeAcceleratorCallback;
 typedef base::OnceCallback<void(base::UnsafeSharedMemoryRegion)>
     ReceiveVideoEncodeMemoryCallback;
-typedef base::RepeatingCallback<void(size_t size,
-                                     ReceiveVideoEncodeMemoryCallback)>
-    CreateVideoEncodeMemoryCallback;
-
 }  // namespace cast
 }  // namespace media
 

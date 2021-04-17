@@ -126,8 +126,7 @@ void CastSenderImpl::InitializeAudio(
 void CastSenderImpl::InitializeVideo(
     const FrameSenderConfig& video_config,
     const StatusChangeCallback& status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb) {
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
   VLOG(1) << "CastSenderImpl@" << this << "::InitializeVideo()";
@@ -137,7 +136,7 @@ void CastSenderImpl::InitializeVideo(
       cast_environment_, video_config,
       base::BindRepeating(&CastSenderImpl::OnVideoStatusChange,
                           weak_factory_.GetWeakPtr(), status_change_cb),
-      create_vea_cb, create_video_encode_mem_cb, transport_sender_,
+      create_vea_cb, transport_sender_,
       base::BindRepeating(&CastSenderImpl::SetTargetPlayoutDelay,
                           weak_factory_.GetWeakPtr()),
       media::VideoCaptureFeedbackCB());

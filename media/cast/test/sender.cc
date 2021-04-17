@@ -293,8 +293,7 @@ int main(int argc, char** argv) {
                      base::Unretained(cast_sender.get()),
                      fake_media_source->get_video_config(),
                      base::BindRepeating(&QuitLoopOnInitializationResult),
-                     media::cast::CreateDefaultVideoEncodeAcceleratorCallback(),
-                     media::cast::CreateDefaultVideoEncodeMemoryCallback()));
+                     base::DoNothing()));
   base::RunLoop().Run();  // Wait for video initialization.
   io_task_executor.task_runner()->PostTask(
       FROM_HERE,

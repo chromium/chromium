@@ -44,7 +44,6 @@ class VideoSender : public FrameSender {
               const FrameSenderConfig& video_config,
               StatusChangeCallback status_change_cb,
               const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-              const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb,
               CastTransport* const transport_sender,
               PlayoutDelayChangeCB playout_delay_change_cb,
               media::VideoCaptureFeedbackCB feedback_callback);

@@ -29,13 +29,6 @@ FrameSenderConfig GetDefaultAudioSenderConfig();
 // 30 Hz VP8 coded code. Default values for SSRCs and payload type.
 FrameSenderConfig GetDefaultVideoSenderConfig();
 
-// Returns a callback that does nothing.
-CreateVideoEncodeAcceleratorCallback
-    CreateDefaultVideoEncodeAcceleratorCallback();
-
-// Returns a callback that does nothing.
-CreateVideoEncodeMemoryCallback CreateDefaultVideoEncodeMemoryCallback();
-
 }  // namespace cast
 }  // namespace media
 

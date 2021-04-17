@@ -112,13 +112,11 @@ class PeerVideoSender : public VideoSender {
       const FrameSenderConfig& video_config,
       const StatusChangeCallback& status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb,
       CastTransport* const transport_sender)
       : VideoSender(cast_environment,
                     video_config,
                     status_change_cb,
                     create_vea_cb,
-                    create_video_encode_mem_cb,
                     transport_sender,
                     base::BindRepeating(&IgnorePlayoutDelayChanges),
                     base::BindRepeating(&PeerVideoSender::ProcessFeedback,
@@ -196,16 +194,12 @@ class VideoSenderTest : public ::testing::Test {
           base::BindRepeating(
               &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
               base::Unretained(&vea_factory_)),
-          base::BindRepeating(
-              &FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
-              base::Unretained(&vea_factory_)),
           transport_sender_.get());
     } else {
       video_sender_ = std::make_unique<PeerVideoSender>(
           cast_environment_, video_config,
           base::BindRepeating(&SaveOperationalStatus, &operational_status_),
-          CreateDefaultVideoEncodeAcceleratorCallback(),
-          CreateDefaultVideoEncodeMemoryCallback(), transport_sender_.get());
+          base::DoNothing(), transport_sender_.get());
     }
     task_runner_->RunTasks();
   }
@@ -286,7 +280,6 @@ TEST_F(VideoSenderTest, ExternalEncoder) {
   // VideoSender created an encoder for 1280x720 frames, in order to provide the
   // INITIALIZED status.
   EXPECT_EQ(1, vea_factory_.vea_response_count());
-  EXPECT_LT(0, vea_factory_.shm_response_count());
 
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
 
@@ -297,13 +290,11 @@ TEST_F(VideoSenderTest, ExternalEncoder) {
     // VideoSender re-created the encoder for the 320x240 frames we're
     // providing.
     EXPECT_EQ(1, vea_factory_.vea_response_count());
-    EXPECT_LT(0, vea_factory_.shm_response_count());
   }
 
   video_sender_.reset(NULL);
   task_runner_->RunTasks();
   EXPECT_EQ(1, vea_factory_.vea_response_count());
-  EXPECT_LT(0, vea_factory_.shm_response_count());
 }
 
 TEST_F(VideoSenderTest, ExternalEncoderInitFails) {

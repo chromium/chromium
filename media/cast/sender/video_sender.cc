@@ -90,7 +90,6 @@ VideoSender::VideoSender(
     const FrameSenderConfig& video_config,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb,
     CastTransport* const transport_sender,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_callback)
@@ -112,12 +111,8 @@ VideoSender::VideoSender(
       low_latency_mode_(false),
       last_reported_encoder_utilization_(-1.0),
       last_reported_lossy_utilization_(-1.0) {
-  video_encoder_ = VideoEncoder::Create(
-      cast_environment_,
-      video_config,
-      status_change_cb,
-      create_vea_cb,
-      create_video_encode_mem_cb);
+  video_encoder_ = VideoEncoder::Create(cast_environment_, video_config,
+                                        status_change_cb, create_vea_cb);
   if (!video_encoder_) {
     cast_environment_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,

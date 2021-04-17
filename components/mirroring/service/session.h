@@ -77,9 +77,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   void RequestRefreshFrame() override;
   void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) override;
-  void CreateVideoEncodeMemory(
-      size_t size,
-      media::cast::ReceiveVideoEncodeMemoryCallback callback) override;
 
   // Callbacks by media::cast::CastTransport::Client.
   void OnTransportStatusChanged(media::cast::CastTransportStatus status);

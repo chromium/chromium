@@ -935,9 +935,7 @@ void End2EndTest::Create() {
       audio_sender_config_, base::BindOnce(&ExpectSuccessOperationalStatus));
   cast_sender_->InitializeVideo(
       video_sender_config_,
-      base::BindRepeating(&ExpectSuccessOperationalStatus),
-      CreateDefaultVideoEncodeAcceleratorCallback(),
-      CreateDefaultVideoEncodeMemoryCallback());
+      base::BindRepeating(&ExpectSuccessOperationalStatus), base::DoNothing());
   task_runner_->RunTasks();
 
   receiver_to_sender_->SetPacketReceiver(

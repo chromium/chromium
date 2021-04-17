@@ -20,8 +20,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
     StatusChangeCallback status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    const CreateVideoEncodeMemoryCallback& create_video_encode_memory_cb) {
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
 // On MacOS or IOS, attempt to use the system VideoToolbox library to
 // perform optimized H.264 encoding.
 #if defined(OS_MAC)
@@ -36,7 +35,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   if (ExternalVideoEncoder::IsSupported(video_config)) {
     return std::unique_ptr<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
         cast_environment, video_config, std::move(status_change_cb),
-        create_vea_cb, create_video_encode_memory_cb));
+        create_vea_cb));
   }
 
   // Attempt to use the software encoder implementation.
