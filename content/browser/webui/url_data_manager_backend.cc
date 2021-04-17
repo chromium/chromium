@@ -265,9 +265,7 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
   if (net_error_codes_dict != nullptr) {
     for (base::DictionaryValue::Iterator itr(*net_error_codes_dict);
          !itr.IsAtEnd(); itr.Advance()) {
-      int net_error_code;
-      itr.value().GetAsInteger(&net_error_code);
-      if (error_code == net_error_code)
+      if (error_code == itr.value().GetInt())
         return true;
     }
   }
