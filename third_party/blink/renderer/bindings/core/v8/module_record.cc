@@ -103,6 +103,8 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
 
   DCHECK(!record.IsEmpty());
   v8::Local<v8::Context> context = script_state->GetContext();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Script IDs are not available on errored modules or on non-source text
   // modules, so we give them a default value.
