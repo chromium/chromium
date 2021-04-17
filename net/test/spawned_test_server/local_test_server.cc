@@ -30,11 +30,8 @@ bool AppendArgumentFromJSONValue(const std::string& key,
       command_line->AppendArg(argument_name);
       break;
     case base::Value::Type::INTEGER: {
-      int value;
-      bool result = value_node.GetAsInteger(&value);
-      DCHECK(result);
       command_line->AppendArg(argument_name + "=" +
-                              base::NumberToString(value));
+                              base::NumberToString(value_node.GetInt()));
       break;
     }
     case base::Value::Type::STRING: {
