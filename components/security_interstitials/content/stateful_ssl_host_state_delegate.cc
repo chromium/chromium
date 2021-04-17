@@ -423,9 +423,8 @@ bool StatefulSSLHostStateDelegate::HasAllowException(
   DCHECK(success);
 
   for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd(); it.Advance()) {
-    int policy_decision;  // Owned by dict
-    success = it.value().GetAsInteger(&policy_decision);
-    if (success && (static_cast<CertJudgment>(policy_decision) == ALLOWED))
+    if (it.value().is_int() &&
+        (static_cast<CertJudgment>(it.value().GetInt()) == ALLOWED))
       return true;
   }
 
