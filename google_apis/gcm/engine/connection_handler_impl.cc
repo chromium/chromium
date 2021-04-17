@@ -52,7 +52,10 @@ ConnectionHandlerImpl::ConnectionHandlerImpl(
     const ProtoSentCallback& write_callback,
     const ConnectionChangedCallback& connection_callback)
     : io_task_runner_(std::move(io_task_runner)),
-      read_timeout_(read_timeout),
+      read_timeout_timer_(FROM_HERE,
+                          read_timeout,
+                          base::BindRepeating(&ConnectionHandlerImpl::OnTimeout,
+                                              base::Unretained(this))),
       handshake_complete_(false),
       message_tag_(0),
       message_size_(0),
@@ -142,9 +145,7 @@ void ConnectionHandlerImpl::Login(
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 
-  read_timeout_timer_.Start(FROM_HERE, read_timeout_,
-                            base::BindOnce(&ConnectionHandlerImpl::OnTimeout,
-                                           weak_ptr_factory_.GetWeakPtr()));
+  read_timeout_timer_.Reset();
   WaitForData(MCS_VERSION_TAG_AND_SIZE);
 }
 
@@ -322,11 +323,8 @@ void ConnectionHandlerImpl::OnGotMessageTag() {
   DVLOG(1) << "Received proto of type "
            << static_cast<unsigned int>(message_tag_);
 
-  if (!read_timeout_timer_.IsRunning()) {
-    read_timeout_timer_.Start(FROM_HERE, read_timeout_,
-                              base::BindOnce(&ConnectionHandlerImpl::OnTimeout,
-                                             weak_ptr_factory_.GetWeakPtr()));
-  }
+  if (!read_timeout_timer_.IsRunning())
+    read_timeout_timer_.Reset();
   OnGotMessageSize();
 }
 
@@ -441,10 +439,7 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
                 << ", expecting " << message_size_;
       input_stream_->RebuildBuffer();
 
-      read_timeout_timer_.Start(
-          FROM_HERE, read_timeout_,
-          base::BindOnce(&ConnectionHandlerImpl::OnTimeout,
-                         weak_ptr_factory_.GetWeakPtr()));
+      read_timeout_timer_.Reset();
       WaitForData(MCS_PROTO_BYTES);
       return;
     }

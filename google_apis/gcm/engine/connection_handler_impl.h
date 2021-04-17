@@ -107,8 +107,7 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
   // only stopped when a full message is processed.
   // TODO(zea): consider enforcing a separate timeout when waiting for
   // a message to send.
-  const base::TimeDelta read_timeout_;
-  base::OneShotTimer read_timeout_timer_;
+  base::RetainingOneShotTimer read_timeout_timer_;
 
   // This connection's input/output streams.
   std::unique_ptr<SocketInputStream> input_stream_;
