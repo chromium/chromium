@@ -165,12 +165,6 @@ class StartupObserver : public WebContentsObserver {
   void OnFailsafeTimeout() { OnStartupComplete(); }
 
   // WebContentsObserver overrides
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override {
-    if (!render_frame_host->GetParent())
-      OnStartupComplete();
-  }
-
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override {
@@ -179,12 +173,15 @@ class StartupObserver : public WebContentsObserver {
   }
 
   // Starting the browser with a file download url will not result in
-  // DidFinishLoad firing, so watch for this case too. crbug.com/1006954
+  // DidFirstVisuallyNonEmptyPaint firing, so watch for this case too.
+  // crbug.com/1006954
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->IsInMainFrame() && navigation_handle->IsDownload())
       OnStartupComplete();
   }
+
+  void DidFirstVisuallyNonEmptyPaint() override { OnStartupComplete(); }
 
   void WebContentsDestroyed() override { OnStartupComplete(); }
 
