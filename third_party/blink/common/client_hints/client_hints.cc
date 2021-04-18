@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -86,10 +87,7 @@ std::string SerializeLangClientHint(const std::string& raw_language_list) {
   while (t.GetNext()) {
     if (!result.empty())
       result.append(", ");
-
-    result.append("\"");
-    result.append(t.token().c_str());
-    result.append("\"");
+    base::StrAppend(&result, {"\"", t.token_piece(), "\""});
   }
   return result;
 }
