@@ -51,7 +51,7 @@
 <translation id="1246424317317450637">Negrita</translation>
 <translation id="1251750620252348585">Siguiente encabezado de nivel 6</translation>
 <translation id="1268366246392928616">No hay ninguna expresión matemática anterior</translation>
-<translation id="1273314450961659276">Configuración de síntesis de voz</translation>
+<translation id="1273314450961659276">Configuración de conversión de texto a voz</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1284576163386164372">Para ver tutoriales en cualquier momento, abre los menús tocando con cuatro dedos. Luego activa el tutorial en la sección "ChromeVox".</translation>
 <translation id="1291286136605998134">Botón activar/desactivar</translation>
@@ -213,7 +213,7 @@
 <translation id="2471138580042810658">Título 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}other{# asteriscos}}</translation>
 <translation id="2490721194269245365">Marrón rosáceo</translation>
-<translation id="249330843868392562">Abrir configuración de la síntesis de voz</translation>
+<translation id="249330843868392562">Abrir configuración de la conversión de texto a voz</translation>
 <translation id="2497706219848005458">Amarillo verdoso</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Combinaciones de teclas de Chromebook</translation>
@@ -553,7 +553,7 @@
 <translation id="4855927945655956315">Teclas imprescindibles: Ctrl</translation>
 <translation id="4862744964787595316">Sin negrita</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
-<translation id="4867316986324544967">Habilita registro de síntesis de voz</translation>
+<translation id="4867316986324544967">Habilita registro de conversión de texto a voz</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
 <translation id="4892105484979139179">Cian oscuro</translation>
 <translation id="489907760999452556">Enlace interno</translation>
@@ -696,7 +696,7 @@
 <translation id="5876817486144482042">Disminuye el volumen de voz</translation>
 <translation id="5878206664863390311">Pulsa la tecla de búsqueda + flecha hacia la derecha o hacia la izquierda para desplazarte por los temas</translation>
 <translation id="5878908838135392163">Azul polvo</translation>
-<translation id="588108970619830498">Restablecer los valores predeterminados de síntesis de voz</translation>
+<translation id="588108970619830498">Restablecer los valores predeterminados de conversión de texto a voz</translation>
 <translation id="5891934789323004067">Tabla</translation>
 <translation id="5899860758576822363">Reproducir a un volumen inferior cuando ChromeVox habla</translation>
 <translation id="5901630391730855834">Amarillo</translation>
@@ -868,7 +868,7 @@
 <translation id="7244947685630430863">No hay ningún elemento gráfico anterior</translation>
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="725969808843520477">Siguiente botón de opción</translation>
-<translation id="7261612856573623172">Nombre de la síntesis de voz del sistema</translation>
+<translation id="7261612856573623172">Nombre de la conversión de texto a voz del sistema</translation>
 <translation id="7269119382257320590">Ningún signo de puntuación</translation>
 <translation id="7271278495464744706">Habilitar descripciones detalladas</translation>
 <translation id="7273174640290488576">Línea vacía</translation>
@@ -925,7 +925,7 @@
 <translation id="7668307052366682650">{COUNT,plural, =1{hora}other{horas}}</translation>
 <translation id="7674576868851035240">Siguiente enlace</translation>
 <translation id="7674768236845044097">etiqueta de marcado</translation>
-<translation id="7676847077928500578">Restablecer los ajustes de síntesis de voz</translation>
+<translation id="7676847077928500578">Restablecer los ajustes de conversión de texto a voz</translation>
 <translation id="7684431668231950609">Edita texto, entrada de URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de opción anterior</translation>
@@ -1018,7 +1018,7 @@
 <translation id="831207808878314375">Definición</translation>
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Naranja pálido</translation>
-<translation id="8324974933005349667">Personalizar la configuración de síntesis de voz</translation>
+<translation id="8324974933005349667">Personalizar la configuración de conversión de texto a voz</translation>
 <translation id="8326783648485765113">Verde césped</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{almohadilla}other{# almohadillas}}</translation>
 <translation id="8378855320830505539">Región</translation>

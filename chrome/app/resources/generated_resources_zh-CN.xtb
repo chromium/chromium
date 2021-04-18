@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">连接到网络</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
+<translation id="1976928778492259496">指纹传感器位于您 <ph name="DEVICE_TYPE" />的左侧。请用任一根手指轻触它。</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
@@ -1314,6 +1315,7 @@
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
 <translation id="2428978615149723410">这些购物车</translation>
 <translation id="2431027948063157455">无法加载 Google 助理。请检查您的网络连接，然后重试。</translation>
+<translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
 <translation id="2433452467737464329">在网址中添加查询参数以便自动刷新网页：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2433836460518180625">仅解锁设备</translation>
@@ -1844,6 +1846,7 @@
 <translation id="2993517869960930405">应用信息</translation>
 <translation id="2996286169319737844">数据已使用您的同步密码加密。这并不包括 Google Pay 中的付款方式和地址。</translation>
 <translation id="2996722619877761919">长边翻转</translation>
+<translation id="2996932914629936323">会从所有已同步的设备中清除历史记录</translation>
 <translation id="3000236644796679448">网站可以请求使用您的麦克风（推荐）</translation>
 <translation id="3000378525979847272">授予了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="3000461861112256445">单声道音频</translation>
@@ -3362,6 +3365,7 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
+<translation id="4702656508969495934">能看到“实时字幕”气泡了，使用窗口切换器可切换焦点</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -4409,6 +4413,7 @@
 <translation id="5932124097031739492">已成功升级 Linux。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
+<translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
 <translation id="5932881020239635062">序列号</translation>
 <translation id="5933376509899483611">时区</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> 正在使用您的摄像头和麦克风</translation>
@@ -4622,6 +4627,7 @@
 <translation id="6169666352732958425">无法投射桌面。</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6170498031581934115">无法启用 ADB 调试。请转到“设置”，然后重试。</translation>
+<translation id="617213288191670920">未添加任何语言</translation>
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
 <translation id="6175314957787328458">Microsoft 域 GUID</translation>
 <translation id="6176043333338857209">蓝牙将暂时开启，以便与您的安全密钥通信</translation>
@@ -5319,6 +5325,7 @@
 <translation id="6957044667612803194">此安全密钥不支持 PIN 码</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="6960507406838246615">需要更新 Linux</translation>
+<translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="696103774840402661">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都已被永久删除。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">从组中移除</translation>
@@ -5396,6 +5403,7 @@
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
+<translation id="7034692021407794547">拥有结算管理权限的管理员必须先接受管理控制台的“Google Meet 设备”部分中的 Google Meet 设备服务条款。</translation>
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
 <translation id="7038632520572155338">开关控制</translation>
@@ -6377,6 +6385,7 @@
 <translation id="8113476325385351118">继续禁止此网站完全控制 MIDI 设备</translation>
 <translation id="8114199541033039755">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。如果启用了 ChromeVox 或自动点击功能，系统会开启此设置。</translation>
 <translation id="8114875720387900039">水平分割</translation>
+<translation id="8115139559594092084">来自您的 Google 云端硬盘</translation>
 <translation id="8116972784401310538">书签管理器(&amp;B)</translation>
 <translation id="8117752106453549166">您的管理员正在配置 Linux。此过程将需要几分钟的时间。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
@@ -6397,6 +6406,7 @@
 <translation id="8138082791834443598">选填 - 输入与此设备相关的新信息或更新现有信息。</translation>
 <translation id="8138217203226449454">更改搜索服务提供商是您的本意吗？</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8139447493436036221">Google 云端硬盘文件</translation>
 <translation id="8141584439523427891">目前正在替代浏览器中打开</translation>
 <translation id="8141725884565838206">管理您的密码</translation>
 <translation id="8143442547342702591">无效的应用</translation>
@@ -6602,6 +6612,7 @@
 <translation id="8386091599636877289">找不到此政策。</translation>
 <translation id="8386819192691131213">允许 Google 助理根据屏幕上的信息提供快速解答，例如翻译、定义、单位换算等等</translation>
 <translation id="8386903983509584791">已完成扫描</translation>
+<translation id="838705362287678887">若要清除<ph name="BEGIN_LINK_SEARCH" />搜索<ph name="END_LINK_SEARCH" />记录或其他形式的历史记录，请前往<ph name="BEGIN_LINK_GOOGLE" />我的 Google 帐号<ph name="END_LINK_GOOGLE" />页面</translation>
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8389416080014625855">为此页面创建二维码</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您在所访问的网站上留存的所有数据：</translation>
@@ -6615,6 +6626,7 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8400146488506985033">管理用户</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
+<translation id="8404893580027489425">指纹传感器位于您 <ph name="DEVICE_TYPE" />的右侧。请用任一根手指轻触它。</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
@@ -6653,7 +6665,6 @@
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>
-<translation id="8454502708934796641">让 Google 查找您添加到购物车中的商品的折扣信息？</translation>
 <translation id="8455026683977728932">未能启用 ADB 图示</translation>
 <translation id="8456512334795994339">寻觅适合工作与娱乐的应用</translation>
 <translation id="845702320058262034">无法连接。请确保您手机的蓝牙已开启。</translation>

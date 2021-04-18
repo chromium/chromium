@@ -883,6 +883,7 @@
 <translation id="1928202201223835302">輸入舊的 PIN</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="1929186283613845153">系統正在掃瞄此檔案。</translation>
+<translation id="1929343511231420085">任何序列連接埠</translation>
 <translation id="1929546189971853037">讀取您已登入的所有裝置上的瀏覽記錄</translation>
 <translation id="1930879306590754738">密碼已從此裝置及您的 Google 帳戶中刪除</translation>
 <translation id="1931152874660185993">未安裝任何組件。</translation>
@@ -919,6 +920,7 @@
 <translation id="1974821797477522211">連線至網絡</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登入安全性裝置</translation>
+<translation id="1976928778492259496">指紋感應器喺 <ph name="DEVICE_TYPE" /> 嘅左手邊。請用任何一隻手指掂一下指紋感應器。</translation>
 <translation id="1977965994116744507">手機靠近您的 <ph name="DEVICE_TYPE" /> 即可將其解鎖。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。</translation>
@@ -1317,6 +1319,7 @@
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
 <translation id="2428978615149723410">這些購物車</translation>
 <translation id="2431027948063157455">無法載入「Google 助理」，請檢查您的網絡連線，然後再試一次。</translation>
+<translation id="243179355394256322">您的機構限制只有授權使用者可以註冊裝置。這位使用者未獲授權，因此無法註冊裝置。請前往管理控制台的「使用者」部分，確認該使用者擁有「註冊 Google Meet 硬件」的管理員權限。</translation>
 <translation id="2433452467737464329">在網址中新增查詢參數即可自動重新整理網頁：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2433836460518180625">只解鎖裝置</translation>
@@ -1848,6 +1851,7 @@
 <translation id="2993517869960930405">應用程式資料</translation>
 <translation id="2996286169319737844">系統已使用您的同步密碼短語加密資料。Google Pay 的付款方法和地址不會包括在內。</translation>
 <translation id="2996722619877761919">長邊翻頁</translation>
+<translation id="2996932914629936323">清除所有已同步裝置上的記錄</translation>
 <translation id="3000236644796679448">網站可要求使用麥克風 (建議)</translation>
 <translation id="3000378525979847272">已允許<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">單聲道音效</translation>
@@ -2939,6 +2943,7 @@
 <translation id="4218274196133425560">移除 <ph name="HOST_NAME" /> 的例外情況</translation>
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4222772810963087151">版本詳細資料</translation>
+<translation id="4224284700924043865">來自供應商 <ph name="VENDOR_ID" /> 的 USB 裝置 (產品編號：<ph name="PRODUCT_ID" />)</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
@@ -3011,6 +3016,7 @@
 <translation id="431076611119798497">詳情(&amp;D)</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
+<translation id="4316650123995163262">來自「<ph name="VENDOR_NAME" />」的 USB 裝置 (產品編號：<ph name="PRODUCT_ID" />)</translation>
 <translation id="4316850752623536204">開發人員網站</translation>
 <translation id="4317820549299924617">驗證失敗</translation>
 <translation id="4320177379694898372">沒有互聯網連線</translation>
@@ -3367,6 +3373,7 @@
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
+<translation id="4702656508969495934">顯示咗即時字幕，用視窗切換選項將焦點移去即時字幕</translation>
 <translation id="4708794300267213770">從休眠狀態喚醒時顯示螢幕鎖定畫面</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">還原設定</translation>
@@ -3452,6 +3459,7 @@
 <translation id="4824958205181053313">要取消同步功能嗎？</translation>
 <translation id="4827675678516992122">無法連線</translation>
 <translation id="4827784381479890589">Chrome 瀏覽器的進階拼字檢查功能 (文字會傳送給 Google 以提供拼字建議)</translation>
+<translation id="482952334869563894">來自供應商 <ph name="VENDOR_ID" /> 的 USB 裝置</translation>
 <translation id="4829768588131278040">設定 PIN</translation>
 <translation id="4830121310592638841">在網站要求在您的螢幕上開啟並放置視窗時詢問您</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
@@ -3741,6 +3749,7 @@
 <translation id="5159419673777902220">您的家長已停用擴充程式權限</translation>
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">來自「<ph name="VENDOR_NAME" />」的 USB 裝置</translation>
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
 <translation id="5165085578392358314">指派按鈕：<ph name="ACTION" /></translation>
@@ -4414,6 +4423,7 @@
 <translation id="5932124097031739492">已成功升級 Linux。</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> 的 USB 裝置</translation>
+<translation id="5932441198730183141">您的可用授權不足，無法註冊此 Google Meet 硬件裝置。如要購買更多授權，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="5932881020239635062">序號</translation>
 <translation id="5933376509899483611">時區</translation>
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用您的相機和麥克風</translation>
@@ -4627,6 +4637,7 @@
 <translation id="6169666352732958425">無法投放桌面。</translation>
 <translation id="6170470584681422115">三文治</translation>
 <translation id="6170498031581934115">無法啟用 ADB 偵錯。請前往「設定」，然後再試一次。</translation>
+<translation id="617213288191670920">沒有新增任何語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
 <translation id="6176043333338857209">將會暫時開啟藍牙，以便與安全密鑰通訊</translation>
@@ -5324,6 +5335,7 @@
 <translation id="6957044667612803194">此安全密鑰不支援 PIN</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="6960507406838246615">Linux 需要更新</translation>
+<translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
@@ -5365,6 +5377,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在您的裝置上：</translation>
 <translation id="6998793565256476099">註冊視像會議裝置</translation>
+<translation id="6999640176621571692">要允許 Google 為您加入購物車的商品尋找相關折扣嗎？</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324">已連接 <ph name="PRINTER_NAME" />，但需要設定</translation>
 <translation id="7000347579424117903">必須以 Ctrl、Alt 鍵或搜尋鍵開頭</translation>
@@ -5401,6 +5414,7 @@
 <translation id="7029307918966275733">尚未安裝 Crostini。請安裝 Crostini 來查看製作人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 連接咗序列連接埠</translation>
+<translation id="7034692021407794547">擁有「管理賬單」權限的管理員必須先前往管理控制台的「Google Meet 硬件」部分接受《Google Meet 硬件服務條款》。</translation>
 <translation id="7036706669646341689">Linux 需要 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
 <translation id="7037509989619051237">要預覽的文字</translation>
 <translation id="7038632520572155338">按鈕控制</translation>
@@ -6382,6 +6396,7 @@
 <translation id="8113476325385351118">繼續禁止此網站全權控制 MIDI 裝置</translation>
 <translation id="8114199541033039755">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。系統會在您啟用 ChromeVox 或「自動點擊」時開啟此功能。</translation>
 <translation id="8114875720387900039">水平分割</translation>
+<translation id="8115139559594092084">來自您的「Google 雲端硬碟」</translation>
 <translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
 <translation id="8117752106453549166">您的管理員正在設定 Linux。過程需時數分鐘。</translation>
 <translation id="8118362518458010043">Chrome 已停用這個擴充程式。這個擴充程式可能不安全。</translation>
@@ -6402,6 +6417,7 @@
 <translation id="8138082791834443598">可選 — 輸入新資訊，或更新要與此裝置相關的資訊。</translation>
 <translation id="8138217203226449454">您要變更搜尋服務供應商嗎？</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8139447493436036221">「Google 雲端硬碟」檔案</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理您的密碼</translation>
 <translation id="8143442547342702591">無效的應用程式</translation>
@@ -6607,6 +6623,7 @@
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8386819192691131213">允許「Google 助理」使用畫面上的資料提供快速解答，例如翻譯、定義、單位轉換等</translation>
 <translation id="8386903983509584791">掃瞄完成</translation>
+<translation id="838705362287678887">如要清除<ph name="BEGIN_LINK_SEARCH" />搜尋<ph name="END_LINK_SEARCH" />或其他類型的記錄，請前往<ph name="BEGIN_LINK_GOOGLE" />我的 Google 帳戶<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">不允許查看您的位置</translation>
 <translation id="8389416080014625855">為此頁面建立二維條碼</translation>
 <translation id="8389492867173948260">允許此擴充程式讀取及變更您瀏覽的網站上的所有資料：</translation>
@@ -6620,6 +6637,7 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8400146488506985033">管理使用者</translation>
 <translation id="8401432541486058167">請輸入與智能資訊卡相關聯的 PIN。</translation>
+<translation id="8404893580027489425">指紋感應器喺 <ph name="DEVICE_TYPE" /> 嘅右手邊。請用任何一隻手指掂一下指紋感應器。</translation>
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄等級：</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網絡，正在連線</translation>
@@ -6658,7 +6676,6 @@
 <translation id="8449008133205184768">貼上並配對樣式</translation>
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>
-<translation id="8454502708934796641">要讓 Google 為您加入購物車的商品尋找相關折扣嗎？</translation>
 <translation id="8455026683977728932">無法啟用 ADB 插圖</translation>
 <translation id="8456512334795994339">尋找適合工作與娛樂的應用程式</translation>
 <translation id="845702320058262034">無法連線。請確保手機已開啟藍牙。</translation>

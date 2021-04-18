@@ -85,6 +85,7 @@
 <translation id="1122089575901325963">このポリシーでは、<ph name="WILCO_NAME" /> の診断およびテレメトリー用コントローラ（DTC）を設定できます（デバイスで使用可能な場合）。設定のサイズは 1 MB（1,000,000 バイト）以下とし、JSON 形式にする必要があります。この処理は <ph name="WILCO_NAME" /> DTC が行います。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。この設定はダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。</translation>
+<translation id="1133622335785078255">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可する</translation>
 <translation id="1133814529606590009">このポリシーを有効に設定した場合、URL キーによる匿名化データの収集が常に有効になり、検索とブラウジングを改善するため、ユーザーがアクセスしたページの URL が Google に送信されます。
 
       このポリシーを無効に設定した場合、URL キーによる匿名化データの収集は行われません。
@@ -794,6 +795,7 @@
       対象となるデータの種類は <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" /> です。
       ブラウザでは、選択した種類のデータについて、保存期間が <ph name="TIME_TO_LIVE_IN_HOURS" /> を経過すると自動的に削除されます。設定できる最小値は 1 時間です。まれに、データが削除されるまでに時間がかかる場合がありますが、最終的には必ず削除されます。</translation>
 <translation id="2057317273526988987">URL のリストへのアクセスを許可する</translation>
+<translation id="2061123930713023976">デバッグのネットワーク パケット キャプチャを許可する</translation>
 <translation id="2061810934846663491">リモート アクセス ホストの必須のドメイン名を設定する</translation>
 <translation id="2069350366303315077">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> ではゲスト セッションが強制的に適用され、プロフィールのログインはできなくなります。ゲストログインでは、ウィンドウがシークレット モードで開く <ph name="PRODUCT_NAME" /> プロフィールが使用されます。この設定を無効に設定するか未設定のままにした場合、またはブラウザのゲストモードを無効にした場合（<ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> を使用）、新しいプロフィールと既存のプロフィールのどちらも使用できます。</translation>
 <translation id="2070744136203607632">DNS 傍受チェックを行わない</translation>
@@ -954,6 +956,13 @@
 <translation id="2290270645214705008">このポリシーを無効に設定した場合、リモート アクセス ホストサービスを開始したり、受信方向の接続を許可するよう設定したりできなくなります。このポリシーは、リモート サポートのシナリオには影響しません。
 
           このポリシーを有効に設定するか、空白または未設定のままにした場合、ポリシーは無視されます。</translation>
+<translation id="2290589982136082117">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可します。
+
+      BrowserAddPersonEnabled、BrowserGuestModeEnabled と同じように、このポリシーを false に設定するか未設定のままにした場合、ユーザーは予備のプロフィールを作成、使用できず、ゲストモードも使用できません。以前に作成した予備のプロフィールがある場合は、使用できなくなります。
+
+      このポリシーを true に設定した場合、ユーザーは予備のプロフィールを作成、使用でき、ゲストモードも使用できます。
+
+      なお、このポリシーを true に設定しても、BrowserAddPersonEnabled が false に設定されている場合、ユーザーは予備のプロフィールを作成できません。BrowserGuestModeEnabled とゲストモードについても同様です。</translation>
 <translation id="229322770310505679">ポリシーの最小単位グループの概念を有効にする</translation>
 <translation id="22941467117331786">このポリシーを True に設定した場合、アクティブなセッション中に画面がロックされていなければ、システムトレイに赤い大きなログアウト ボタンが表示されます。このポリシーを False に設定するか未設定のままにした場合、ボタンは表示されません。</translation>
 <translation id="2294382669900758280">Android アプリで再生中の動画は、このポリシーを <ph name="TRUE" /> に設定した場合でも考慮されません。</translation>
@@ -1140,6 +1149,7 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを未設定のままにした場合、テキストカーソルによるハイライト表示が無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
+<translation id="2509748672176727116">ネットワーク パケット キャプチャの実行をユーザーに許可する</translation>
 <translation id="2509919237512982967">M84 まで従来のフォーム コントロールを使用する</translation>
 <translation id="2515699738406900920">起動時のプロフィール選択画面の状態</translation>
 <translation id="2517466659416174529">バックグラウンド タブの凍結を許可する</translation>
@@ -2289,6 +2299,7 @@
       これらの制限は、ウェブページのコンテンツや [リンクをダウンロード] メニューからダウンロードした場合に適用されます。表示中のページを保存またはダウンロードした場合、あるいは印刷オプションから PDF として保存した場合は適用されません。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4051723201852944592">ウィンドウ オクルージョンを有効にします</translation>
 <translation id="4056910949759281379">SPDY プロトコルを無効にする</translation>
 <translation id="4061590579642538878">障害レポートに関する情報を報告します。</translation>
@@ -2616,6 +2627,10 @@
 
       Windows の場合、このポリシーを未設定のままにすると、デフォルトのローミング プロフィール パスが使用されます。</translation>
 <translation id="4596517047440640833">PIN のロック解除</translation>
+<translation id="4596742680861734343">デバイスでデバッグのネットワーク パケット キャプチャを許可します。
+
+      このポリシーを true に設定するか未設定のままにした場合、ユーザーはデバイスでネットワーク パケット キャプチャを実行できます。
+      false に設定した場合、デバイスでネットワーク パケット キャプチャは使用できません。</translation>
 <translation id="4600786265870346112">大きいカーソルを有効にする</translation>
 <translation id="4607416370554533118">このポリシーでは、Chrome でクライアント証明書を自動的に選択できるサイトを指定する URL パターンのリストを作成できます。値は文字列変換した JSON 辞書の配列で、それぞれ <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> の形式で指定します。<ph name="URL_PATTERN_PLACEHOLDER" /> は、コンテンツを設定するパターンです。<ph name="FILTER_PLACEHOLDER" /> は、ブラウザで自動的に選択されるクライアント証明書の発行元を限定するフィルタです。なお、フィルタの設定にかかわらず、サーバーの証明書リクエストに一致する証明書のみが選択されます。
 
@@ -2704,6 +2719,9 @@
       このポリシーを無効に設定するか未設定のままにした場合、証明書は生成されず、<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> の呼び出しは失敗します。</translation>
 <translation id="4742973303930120836">背景のグラフィックの印刷モードを制限する</translation>
 <translation id="4752880493649142945">RemoteAccessHostTokenValidationUrl への接続用のクライアント証明書</translation>
+<translation id="475479145997699293">このポリシーを <ph name="ASK_FILE_HANDLING" /> に設定した場合、ウェブアプリは File Handling API を通じたファイル形式へのアクセスを求めることができます。このポリシーを <ph name="BLOCK_FILE_HANDLING" /> に設定した場合、ファイル形式へのアクセスは許可されません。
+
+      このポリシーを未設定のままにした場合、ウェブアプリはアクセスを要求できますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="4757053978738874325">「モノラル音声」のユーザー補助機能を有効にします。
 
           この機能は、左右のチャンネルで音声が異なる、つまり左右の耳に入る音が異なるステレオ音声の出力に適用されます。
@@ -2872,6 +2890,7 @@
 <translation id="4962262530309732070">このポリシーが true に設定されているか未設定の場合は、<ph name="PRODUCT_NAME" /> のユーザー管理画面で [ユーザーを追加] を使用することができます。
 
       このポリシーが false に設定されている場合は、<ph name="PRODUCT_NAME" /> のユーザー管理画面で新しいプロフィールを作成することはできません。</translation>
+<translation id="4970046075219007744">File Handling API を通じたファイル形式へのアクセスをユーザーに求めることをウェブアプリに許可する</translation>
 <translation id="4970855112942626932">ブラウザのログインを無効にする</translation>
 <translation id="4977702914571821981">ブロック可能な（アクティブな）混合コンテンツ（HTTPS サイトの HTTP コンテンツ）の表示を許可しないサイトと、任意でブロック可能な（パッシブな）混合コンテンツをアップグレードするサイトを URL パターンのリストで設定できます。
 
@@ -4938,6 +4957,7 @@
       このポリシーを未設定のままにした場合、ユーザーはスリープ状態からデバイスのロックを解除する際にパスワードの入力を求めるかどうかを選択できます。</translation>
 <translation id="7784062550705119230"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="7788511847830146438">プロフィール単位</translation>
+<translation id="7792796937016596423">ネットワーク パケット キャプチャの実行をユーザーに許可しない</translation>
 <translation id="7798441698807517880"><ph name="FLASH_PLUGIN_NAME" /> のサポートが終了したため、このポリシーは <ph name="PRODUCT_NAME" /> バージョン 89 以降で削除されています。
 
       このポリシーを True に設定した場合、<ph name="FLASH_PLUGIN_NAME" /> が許可されているウェブサイトで、埋め込まれているすべての <ph name="FLASH_PLUGIN_NAME" /> コンテンツ（他のソースからのコンテンツ、小さなコンテンツを含む）が実行されます。

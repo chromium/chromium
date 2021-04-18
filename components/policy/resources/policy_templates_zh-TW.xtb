@@ -89,6 +89,7 @@
 <translation id="1122089575901325963">你可以透過這項政策設定 <ph name="WILCO_NAME" /> 診斷與遙測控制器 (DTC)，前提是裝置提供相關支援。設定檔大小不得超過 1 MB (1,000,000 個位元組)，且必須採用 JSON 格式。<ph name="WILCO_NAME" /> DTC 會負責處理相關設定。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個設定檔，而且只要網址或雜湊一有變動，就會重新下載檔案。
 
       如果你設定這項政策，使用者將無法變更設定。</translation>
+<translation id="1133622335785078255">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="1133814529606590009">如果將這項政策設為啟用，系統會將輸入網址匿名資料收集功能設為一律開啟；該功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
 
       如果將這項政策設為停用，則會關閉輸入網址匿名資料收集功能。
@@ -799,6 +800,7 @@
 
       瀏覽器會根據選擇的資料類型，自動在資料存放時間超過 <ph name="TIME_TO_LIVE_IN_HOURS" />後執行刪除作業。下限值是 1 小時。在極少數情況下，瀏覽器可能會延遲資料刪除作業，但最終仍會刪除資料。</translation>
 <translation id="2057317273526988987">允許存取網址清單</translation>
+<translation id="2061123930713023976">允許針對網路封包擷取作業進行偵錯</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
 <translation id="2069350366303315077">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會強制執行訪客工作階段，並禁止使用者登入設定檔。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，視窗會以無痕模式開啟。
 
@@ -964,6 +966,15 @@
 <translation id="2290270645214705008">如果將這項政策設為「停用」，將無法開啟遠端存取主機服務，也無法將該服務設為接受外來連線。這項政策不適用於遠端支援情境。
 
           如果設為「啟用」、保留空白或不設定，這項政策就不會生效。</translation>
+<translation id="2290589982136082117">如果啟用這項設定，使用者就能在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，也可以使用訪客模式。
+
+      這項設定類似 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled；如果將這項政策設為 false 或未設定，使用者就無法建立及使用次要設定檔，也無法使用訪客模式。
+
+      如果先前已建立任何次要設定檔，這些次要設定檔將無法使用。
+
+      如果將這項政策設為 true，代表使用者可以建立及使用次要設定檔，也可以使用訪客模式。
+
+      但請注意，如果將這項政策設為 true，但 BrowserAddPersonEnabled 設為 false，使用者便無法建立次要設定檔。這個原則也適用於 BrowserGuestModeEnabled 和訪客模式。</translation>
 <translation id="229322770310505679">啟用不可部分完成的政策群組概念</translation>
 <translation id="22941467117331786">如果將這項政策設為 True，在有效工作階段期間且螢幕未鎖定時，系統匣中會顯示大型的紅色登出按鈕。
 
@@ -1164,6 +1175,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果未設定這項政策，系統預設會停用插入點醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
+<translation id="2509748672176727116">使用者將可以執行網路封包擷取作業</translation>
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2515699738406900920">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
@@ -2317,6 +2329,7 @@
       這些限制適用於網頁內容和 [下載連結] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的儲存或下載作業，或透過列印選項另存為 PDF 檔的作業。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="4043796890723386527">禁止使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="4051723201852944592">啟用視窗遮蔽功能</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061590579642538878">回報當機報告相關資訊。</translation>
@@ -2651,6 +2664,10 @@
       在非 Windows 平台上，必須設定這項政策，漫遊設定檔才能運作。
       在 Windows 上，如未設定這項政策，系統會使用預設的漫遊設定檔路徑。</translation>
 <translation id="4596517047440640833">PIN 碼解鎖</translation>
+<translation id="4596742680861734343">允許基於偵錯目的在裝置上執行網路封包擷取作業。
+
+      如果將這項政策設為 true 或未設定，使用者就可以在裝置上執行網路封包擷取作業。
+      如果設為 false，使用者則無法在裝置上執行網路封包擷取作業。</translation>
 <translation id="4600786265870346112">啟用大型游標</translation>
 <translation id="4607416370554533118">你可以透過這項政策建立網址模式清單，用於指定 Chrome 可自動選取用戶端憑證的網站。政策的值是字串化的 JSON 條目陣列，每個條目的格式都是 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />，其中 <ph name="URL_PATTERN_PLACEHOLDER" /> 是內容設定格式。<ph name="FILTER_PLACEHOLDER" /> 會限制瀏覽器可自動選取的用戶端憑證。無論是否設定篩選器，瀏覽器都只會選取符合伺服器憑證要求的憑證。
 
@@ -2739,6 +2756,9 @@
       如果將這項政策設為停用或不設定，則系統不會產生憑證，對 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的呼叫也會失敗。</translation>
 <translation id="4742973303930120836">限制背景圖形列印模式</translation>
 <translation id="4752880493649142945">用於連線至 RemoteAccessHostTokenValidationUrl 的用戶端憑證</translation>
+<translation id="475479145997699293">如果將這項政策設為 <ph name="ASK_FILE_HANDLING" />，網頁應用程式就能要求透過 File Handling API 存取特定類型的檔案。如果將這項政策設為 <ph name="BLOCK_FILE_HANDLING" />，系統會禁止網頁應用程式存取特定類型的檔案。
+
+      如果不設定這項政策，就表示網頁應用程式可以要求存取權，但使用者可以變更這項設定。</translation>
 <translation id="4757053978738874325">啟用單聲道音訊無障礙功能。
 
           這項功能可管理立體聲音訊的輸出，其中包括左聲道和右聲道的不同設定，讓使用者的左耳和右耳聽見不同的聲音。
@@ -2912,6 +2932,7 @@
 <translation id="4962262530309732070">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 將允許從使用者管理工具新增使用者。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 就無法讓使用者從使用者管理工具建立新設定檔。</translation>
+<translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
 <translation id="4977702914571821981">你可以設定網址模式清單，指定哪些網站不能顯示可封鎖的 (即主動) 複合型內容 (亦即 HTTPS 網站上的 HTTP 內容)，並讓那些網站升級可選擇性封鎖的 (即被動) 複合型內容。
 
@@ -5035,6 +5056,7 @@
       如果不設定這項政策，使用者可選擇在解鎖休眠的裝置時，是否要收到輸入密碼的提示。</translation>
 <translation id="7784062550705119230">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="7788511847830146438">根據設定檔</translation>
+<translation id="7792796937016596423">使用者將無法執行網路封包擷取作業</translation>
 <translation id="7798441698807517880">由於 <ph name="FLASH_PLUGIN_NAME" /> 已淘汰，因此這項政策自 <ph name="PRODUCT_NAME" /> 89 版起已移除。
 
       如果將這項政策設為 True，系統會在允許 <ph name="FLASH_PLUGIN_NAME" /> 的網站上執行所有內嵌的 <ph name="FLASH_PLUGIN_NAME" /> 內容，包括來自其他來源的內容或檔案較小的內容。

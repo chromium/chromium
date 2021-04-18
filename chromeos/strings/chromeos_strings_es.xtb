@@ -17,7 +17,7 @@
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
-<translation id="131461803491198646">Red doméstica, sin itinerancia</translation>
+<translation id="131461803491198646">Red doméstica, sin roaming</translation>
 <translation id="1327977588028644528">Pasarela</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar al área de escaneado</translation>
@@ -194,7 +194,7 @@
 <translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
-<translation id="5252456968953390977">Itinerancia</translation>
+<translation id="5252456968953390977">Roaming</translation>
 <translation id="5264277876637023664">Realizar prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Repetir rutinas</translation>
@@ -349,12 +349,12 @@
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
 <translation id="8576249514688522074">No inicializado</translation>
-<translation id="8620617069779373398">Estado de itinerancia</translation>
+<translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>
 <translation id="8723108084122415655">La red no predeterminada supera el umbral de latencia</translation>
 <translation id="8726019395068607495">Detenido: cubierta abierta</translation>
-<translation id="8730621377337864115">Listo</translation>
+<translation id="8730621377337864115">Hecho</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>

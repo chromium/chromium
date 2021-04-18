@@ -31,7 +31,7 @@
 <translation id="3996880007329611795">Nhận thông báo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="4212246570487010370">Tiếp tục duyệt web</translation>
-<translation id="4450893287417543264">Không hiển thị lại</translation>
+<translation id="4450893287417543264">Không hiện lại</translation>
 <translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá)}other{(<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá)}}</translation>
 <translation id="4850886885716139402">Xem</translation>
@@ -66,7 +66,7 @@
 <translation id="7966321538264951561">Đóng nội dung đề xuất.</translation>
 <translation id="814503310257431685">Xem tất cả</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
-<translation id="8304833501377495048">Không hiển thị lại dải thẻ?</translation>
+<translation id="8304833501377495048">Không hiện lại dải thẻ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="8557923272772633250">Mở rộng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
 <translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>

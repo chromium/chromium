@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">네트워크에 연결</translation>
 <translation id="1975841812214822307">삭제...</translation>
 <translation id="1976150099241323601">보안 장치 로그인</translation>
+<translation id="1976928778492259496">지문 센서는 <ph name="DEVICE_TYPE" /> 왼쪽에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 더 가까이 가져오세요.</translation>
 <translation id="1978057560491495741">주소 삭제</translation>
 <translation id="1979095679518582070">기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
@@ -1318,6 +1319,7 @@
 <translation id="2428939361789119025">Wi-Fi 사용 중지</translation>
 <translation id="2428978615149723410">장바구니</translation>
 <translation id="2431027948063157455">Google 어시스턴트를 로드할 수 없습니다. 네트워크 연결 상태를 확인하고 다시 시도해 보세요.</translation>
+<translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
 <translation id="2433452467737464329">URL에 다음 검색어 매개변수를 추가하여 페이지를 자동으로 새로고침: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">모양</translation>
 <translation id="2433836460518180625">기기만 잠금 해제</translation>
@@ -1849,6 +1851,7 @@
 <translation id="2993517869960930405">앱 정보</translation>
 <translation id="2996286169319737844">동기화 암호로 데이터가 암호화됩니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="2996722619877761919">옆으로 넘김</translation>
+<translation id="2996932914629936323">동기화된 모든 기기에서 기록 삭제</translation>
 <translation id="3000236644796679448">사이트에서 마이크 사용을 요청할 수 있음(권장)</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용함</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
@@ -3366,6 +3369,7 @@
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
+<translation id="4702656508969495934">실시간 자막 표시, 창 전환 도구를 사용하여 포커스 설정</translation>
 <translation id="4708794300267213770">절전 모드 해제 시 잠금 화면 표시</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
@@ -4413,6 +4417,7 @@
 <translation id="5932124097031739492">Linux가 업그레이드되었습니다.</translation>
 <translation id="5932224571077948991">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시함</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />의 USB 기기</translation>
+<translation id="5932441198730183141">사용 가능한 라이선스가 부족하여 Google Meet 하드웨어 기기를 등록할 수 없습니다. 판매처에 문의하여 추가로 구매하세요. 이 메시지가 잘못 표시되었다고 생각하는 경우 지원팀에 문의하세요.</translation>
 <translation id="5932881020239635062">일련번호</translation>
 <translation id="5933376509899483611">시간대</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
@@ -4626,6 +4631,7 @@
 <translation id="6169666352732958425">데스크톱을 전송할 수 없음</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6170498031581934115">ADB 디버깅을 사용 설정할 수 없습니다. 설정으로 이동하여 다시 시도해 보세요.</translation>
+<translation id="617213288191670920">추가된 언어 없음</translation>
 <translation id="6173623053897475761">PIN을 다시 입력하세요</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6176043333338857209">보안 키와 통신하기 위해 블루투스가 일시적으로 켜집니다.</translation>
@@ -5323,6 +5329,7 @@
 <translation id="6957044667612803194">PIN을 지원하지 않는 보안 키입니다.</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
 <translation id="6960507406838246615">Linux 업데이트 필요</translation>
+<translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
 <translation id="6964390816189577014">영웅</translation>
 <translation id="6964760285928603117">그룹에서 삭제</translation>
@@ -5400,6 +5407,7 @@
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
+<translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
 <translation id="7038632520572155338">스위치 제어</translation>
@@ -6381,6 +6389,7 @@
 <translation id="8113476325385351118">이 사이트의 MIDI 기기 전체 제어 계속 차단</translation>
 <translation id="8114199541033039755">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다. ChromeVox 또는 자동 클릭을 사용 중일 때 켜집니다.</translation>
 <translation id="8114875720387900039">수평 분할</translation>
+<translation id="8115139559594092084">내 Google Drive의 파일</translation>
 <translation id="8116972784401310538">북마크 관리자(&amp;B)</translation>
 <translation id="8117752106453549166">관리자가 Linux를 설정하는 중입니다. 설정에는 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="8118362518458010043">Chrome에서 사용 중지했습니다. 이 확장 프로그램은 안전하지 않을 수 있습니다.</translation>
@@ -6402,6 +6411,7 @@
 <translation id="8138082791834443598">선택사항 — 이 기기와 연결되도록 새 카드를 입력하거나 기존 카드 정보를 업데이트하세요.</translation>
 <translation id="8138217203226449454">검색 제공업체를 변경하려고 하셨나요?</translation>
 <translation id="813913629614996137">초기화 중...</translation>
+<translation id="8139447493436036221">Google Drive 파일</translation>
 <translation id="8141584439523427891">지금 대체 브라우저에서 열립니다.</translation>
 <translation id="8141725884565838206">비밀번호 관리</translation>
 <translation id="8143442547342702591">잘못된 애플리케이션</translation>
@@ -6607,6 +6617,7 @@
 <translation id="8386091599636877289">정책을 찾을 수 없습니다.</translation>
 <translation id="8386819192691131213">번역, 정의, 단위 변환과 같은 빠른 답변을 제공하기 위해 어시스턴트가 화면의 정보를 사용하도록 허용합니다.</translation>
 <translation id="8386903983509584791">검색 완료</translation>
+<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />검색<ph name="END_LINK_SEARCH" /> 또는 다른 형태의 기록을 삭제하려면 <ph name="BEGIN_LINK_GOOGLE" />내 Google 계정<ph name="END_LINK_GOOGLE" />으로 이동하세요.</translation>
 <translation id="8387361103813440603">사용자 위치 확인이 허용되지 않음</translation>
 <translation id="8389416080014625855">이 페이지의 QR 코드 생성</translation>
 <translation id="8389492867173948260">이 확장 프로그램이 내가 방문하는 다음 웹사이트의 모든 데이터를 읽고 변경하도록 허용합니다.</translation>
@@ -6620,6 +6631,7 @@
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8400146488506985033">사용자 관리</translation>
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
+<translation id="8404893580027489425">지문 센서는 <ph name="DEVICE_TYPE" /> 오른쪽에 있습니다. 손가락으로 가볍게 터치하세요.</translation>
 <translation id="8405046151008197676">최신 업데이트에서 중요한 사항을 확인하세요.</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
@@ -6658,7 +6670,6 @@
 <translation id="8449008133205184768">붙여넣고 스타일 일치시킴</translation>
 <translation id="8449036207308062757">저장용량 관리</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>
-<translation id="8454502708934796641">장바구니에 추가한 상품의 할인 가격을 찾아달라고 Google에 요청하시겠습니까?</translation>
 <translation id="8455026683977728932">ADB 사용 설정 실패 삽화</translation>
 <translation id="8456512334795994339">업무와 재미를 위한 앱 찾기</translation>
 <translation id="845702320058262034">연결할 수 없습니다. 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>

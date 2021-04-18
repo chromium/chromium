@@ -21,7 +21,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
 <translation id="112308213915226829">Tự động ẩn kệ</translation>
-<translation id="1153356358378277386">Thiết bị được ghép nối</translation>
+<translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1165712434476988950">Bạn cần phải khởi động lại thiết bị để áp dụng bản cập nhật.</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -414,7 +414,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4430019312045809116">Âm lượng</translation>
 <translation id="4445159312344259901">Đăng nhập để mở khóa</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 thông báo quan trọng}other{# thông báo quan trọng}}</translation>
-<translation id="4450893287417543264">Không hiển thị lại</translation>
+<translation id="4450893287417543264">Không hiện lại</translation>
 <translation id="445864333228800152">Xin chào!</translation>
 <translation id="4458688154122353284">Dừng ghi màn hình</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>

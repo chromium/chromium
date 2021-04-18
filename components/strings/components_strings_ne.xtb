@@ -85,7 +85,7 @@
 <translation id="1257286744552378071">तपाईंले आफ्नो संगठनले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न, अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
-        निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिने छैन:
+        निम्न क्रियाकलाप यो डिभाइसमा सुरक्षित गरिने छैन:
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा हेर्ने पेजहरू
@@ -343,7 +343,7 @@
 <translation id="2181821976797666341">नीतिहरू</translation>
 <translation id="2183608646556468874">फोन नम्बर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{१ ठेगाना}other{# ठेगानाहरू}}</translation>
-<translation id="2187317261103489799">पत्ता लगाउनुहोस् (पूर्वनिर्धारित मान)</translation>
+<translation id="2187317261103489799">पत्ता लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="2188375229972301266">फेदमा एकभन्दा बढी प्वाल</translation>
 <translation id="2202020181578195191">म्याद सकिने मान्य वर्ष प्रविष्टि गर्नुहोस्</translation>
 <translation id="22081806969704220">ट्रे ३</translation>
@@ -391,7 +391,7 @@
 <translation id="2367567093518048410">चरण</translation>
 <translation id="2372464001869762664">तपाईंले पुष्टि गरिसकेपछि तपाईंको Google खातामा रहेका कार्डसम्बन्धी विवरणहरू यो साइटसँग सेयर गरिने छन्। तपाईं आफ्नो Plex खातासम्बन्धी विवरणहरूमा गई CVC हेर्न सक्नुहुन्छ।</translation>
 <translation id="2380886658946992094">Legal</translation>
-<translation id="2384307209577226199">उद्यम पूर्वनिर्धारित</translation>
+<translation id="2384307209577226199">उद्यम डिफल्ट</translation>
 <translation id="2385809941344967209">आफ्नो Chrome ब्राउजरका सेटिङमा गई Chrome अपडेट गर्नुहोस्</translation>
 <translation id="2386255080630008482">सर्भरको प्रमाणपत्रलाई खारेज गरिएको छ।</translation>
 <translation id="2392959068659972793">कुनै मान सेट बिना नै नीतिहरू देखाउनुहोस्</translation>
@@ -423,7 +423,7 @@
 <translation id="2505268675989099013">खाता सेभ गर्नुहोस्</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
-<translation id="2523886232349826891">यो यन्त्रमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
+<translation id="2523886232349826891">यो डिभाइसमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
 <translation id="2524461107774643265">थप जानकारी थप्नुहोस्</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
@@ -646,7 +646,7 @@
 <translation id="3422248202833853650">मेमोरी खाली गर्न अन्य प्रोग्रामहरूबाट बाहिर निस्की हेर्नुहोस्।</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> हाल पहुँच गर्न सकिँदैन।</translation>
 <translation id="3423742043356668186">प्रणालीले तोकेको</translation>
-<translation id="3427092606871434483">अनुमति दिनुहोस् (पूर्वनिर्धारित मान)</translation>
+<translation id="3427092606871434483">अनुमति दिनुहोस् (डिफल्ट मान)</translation>
 <translation id="3427342743765426898">सम्पादन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="342781501876943858">तपाईंले आफ्नो पासवर्ड अन्य साइटहरूमा प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंको पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates सर्भरका टेम्प्लेटका एक वा सोभन्दा बढी URI हरू अमान्य भएकाले तिनको प्रयोग गरिने छैन।</translation>
@@ -703,7 +703,7 @@
 <translation id="3615877443314183785">म्याद सकिने मान्य मिति प्रविष्टि गर्नुहोस्</translation>
 <translation id="36224234498066874">ब्राउजिङको डेटा मेटाउनुहोस्...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
-<translation id="3625635938337243871">तपाईं इन्कोग्निटो मोडबाट बाहिरिएपछि साइन इन गर्न प्रयोग गरिएको डेटा यो यन्त्रमा भण्डारण गरिने छ।</translation>
+<translation id="3625635938337243871">तपाईं इन्कोग्निटो मोडबाट बाहिरिएपछि साइन इन गर्न प्रयोग गरिएको डेटा यो डिभाइसमा भण्डारण गरिने छ।</translation>
 <translation id="3630155396527302611">यदि यसलाई नेटवर्कमा पहुँच गर्ने अनुमति भएको प्रोग्रामको रूपमा पहिले नै सूचीबद्ध गरिएको छ भने यसलाई
       सूचीबाट हटाएर फेरि थप्ने प्रयास गर्नुहोस्।</translation>
 <translation id="3630699740441428070">यो डिभाइसका एड्मिनहरूले तपाईंले हेर्ने वेबसाइटलगायत तपाईंको नेटवर्क ट्राफिक हेर्न पाउने गरी तपाईंको नेटवर्क कनेक्सन कन्फिगर गर्नुभएको छ।</translation>
@@ -831,7 +831,7 @@
 <translation id="413544239732274901">थप जान्नुहोस्</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
 <translation id="4148925816941278100">अमेरिकन एक्स्प्रेस</translation>
-<translation id="4151403195736952345">विश्वव्यापी पूर्वनिर्धारित (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
+<translation id="4151403195736952345">विश्वव्यापी डिफल्ट (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पृष्ठ १}other{पृष्ठ {COUNT}}}</translation>
 <translation id="4154664944169082762">औँलाछापहरू</translation>
 <translation id="4159784952369912983">बैजनी</translation>
@@ -897,7 +897,7 @@
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
 <translation id="4305817255990598646">स्विच</translation>
 <translation id="4312613361423056926">B2</translation>
-<translation id="4312866146174492540">रोक लगाउनुहोस् (पूर्वनिर्धारित मान)</translation>
+<translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4318312030194671742">पेन्टसम्बन्धी पूर्वावलोकनको कम्पोजिटर सेवा</translation>
 <translation id="4318566738941496689">तपाईंको डिभाइसको नाम र नेटवर्कको ठेगाना</translation>
@@ -940,7 +940,7 @@
 <translation id="4482953324121162758">यो साइटको अनुवाद गरिने छैन।</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गरियोस्</translation>
-<translation id="4492519888999857993">यी सुविधाहरू पूर्वनिर्धारित रूपमा असक्षम पारिएका छन्। यिनीहरू Chrome का भावी संस्करणमा उपलब्ध हुने छैनन्।</translation>
+<translation id="4492519888999857993">यी सुविधाहरू डिफल्ट रूपमा असक्षम पारिएका छन्। यिनीहरू Chrome का भावी संस्करणमा उपलब्ध हुने छैनन्।</translation>
 <translation id="4493480324863638523">अमान्य URL। अनिवार्य रूपमा मानक योजनाबमोजिमको URL हुनु पर्छ, जस्तै, http://example.com वा https://example.com।</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">प्रमाणीकरण त्रुटि: <ph name="VALIDATION_ERROR" /></translation>
@@ -1008,7 +1008,7 @@
 <translation id="4764776831041365478"><ph name="URL" /> को वेबपेज अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="4766713847338118463">फेदमा दुई स्टिच</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
-        तपाईंले गर्ने निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिन्छ:
+        तपाईंले गर्ने निम्न क्रियाकलाप यो डिभाइसमा सुरक्षित गरिन्छ:
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा डाउनलोड गर्ने सबै फाइलहरू
@@ -1028,7 +1028,7 @@
 <translation id="4809079943450490359">तपाईंको डिभाइसको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4816492930507672669">पृष्ठमा अटाउनुहोस्</translation>
-<translation id="4819347708020428563">एनोटेसनहरू पूर्वनिर्धारित भ्यूमा सम्पादन गर्ने हो?</translation>
+<translation id="4819347708020428563">एनोटेसनहरू डिफल्ट भ्यूमा सम्पादन गर्ने हो?</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -1037,7 +1037,7 @@
 <translation id="4876305945144899064">कुनै पनि प्रयोगकर्ता नाम छैन</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> को खोज</translation>
-<translation id="4879491255372875719">स्वचालित (पूर्वनिर्धारित)</translation>
+<translation id="4879491255372875719">स्वचालित (डिफल्ट)</translation>
 <translation id="4879725228911483934">तपाईंको स्क्रिनमा विन्डो राख्ने र त्यहाँ भएका विन्डो खोल्ने</translation>
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
@@ -1069,7 +1069,7 @@
 <translation id="4989809363548539747">यो प्लगइनलाई समर्थन गरिँदैन</translation>
 <translation id="4995216769782533993">यो साइटसँग आफ्नो कार्डका विवरणहरू आदान प्रदान गर्न सुरक्षा कोड पुष्टि गर्नुहोस्</translation>
 <translation id="4995474875135717171">परिमार्जन गरिएको मिति:</translation>
-<translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो यन्त्रमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
+<translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो डिभाइसमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
 <translation id="5011561501798487822">पत्ता लागेको भाषा</translation>
 <translation id="5015510746216210676">मेसिनको नाम:</translation>
 <translation id="5017554619425969104">तपाईंले प्रतिलिपि गर्नुभएको पाठ</translation>
@@ -1525,7 +1525,7 @@
 <translation id="67862343314499040">हल्का निलो</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
-<translation id="679355240208270552">पूर्वनिर्धारित खोजलाई नीतिअनुसार असक्षम नपारिएको हुनाले बेवास्ता गरियो।</translation>
+<translation id="679355240208270552">डिफल्ट खोजलाई नीतिअनुसार असक्षम नपारिएको हुनाले बेवास्ता गरियो।</translation>
 <translation id="6794951432696553238">अब उप्रान्त Windows Hello प्रयोग गरी आफ्ना कार्डहरू अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="681021252041861472">अनिवार्य क्षेत्र</translation>
 <translation id="6810899417690483278">अनुकूलनको ID</translation>
@@ -1577,6 +1577,7 @@
 <translation id="7004583254764674281">कार्डहरू अझ छिटो पुष्टि गर्न Windows Hello प्रयोग गर्नुहोस्</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
+<translation id="7012404007611495949">आकार बदल्नेसम्बन्धी सेटिङ</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
@@ -1695,7 +1696,7 @@
 <translation id="7442725080345379071">हल्का सुन्तले रङ्ग</translation>
 <translation id="7445762425076701745">तपाइँ जडान हुनु भएको सर्भरको पहिचान पूर्ण रूपमा मान्य गर्न सकिदैन। तपाइँ आफ्नो नेटवर्क भित्र मात्रै मान्य नाम प्रयोग गरेर आफ्नो सर्भरसँग हुनुभएको छ, जसलाई बाह्य प्रमाणपत्र अधिकारीसँग मालिक मान्यता दिने अधिकार छैन। यसका बाबजुद पनि यी नामहरूको लागि, केही प्रमाणपत्र अधिकारीहरूले प्रमाणपत्रहरू जारी गर्नेछन्, तपाइँ लक्षित वेबसाइटमा जडान हुनभएको छ तथा आक्रमणकारीसँग होइन भन्ने कुराको सुनिश्चित गर्न त्यहाँ कुनैपनि आधार छैन।</translation>
 <translation id="7451311239929941790">यस समस्या बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="7455133967321480974">विश्वव्यापी पूर्वनिर्धारित प्रयोग गर्नुहोस् (ब्लक)</translation>
+<translation id="7455133967321480974">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (ब्लक)</translation>
 <translation id="7460618730930299168">यो स्क्रिनिङ तपाईंले चयन गर्नुभएको भन्दा फरक छ। जारी राख्ने हो?</translation>
 <translation id="7469935732330206581">यो फारम सुरक्षित छैन</translation>
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
@@ -1853,10 +1854,10 @@
 <translation id="8034522405403831421">यो पृष्ठ <ph name="SOURCE_LANGUAGE" /> मा छ। यसलाई <ph name="TARGET_LANGUAGE" /> मा अनुवाद गर्ने?</translation>
 <translation id="8035152190676905274">कलम</translation>
 <translation id="8037117624646282037">हालसालै यन्त्र प्रयोग गर्ने व्यक्ति</translation>
-<translation id="8037357227543935929">सोध्नुहोस् (पूर्वनिर्धारित मान)</translation>
+<translation id="8037357227543935929">सोध्नुहोस् (डिफल्ट मान)</translation>
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
-<translation id="8041940743680923270">विश्वव्यापी पूर्वनिर्धारित प्रयोग गर्नुहोस् (सोध्नुहोस्)</translation>
+<translation id="8041940743680923270">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (सोध्नुहोस्)</translation>
 <translation id="8042918947222776840">पिकअपको विधि छनौट गर्नुहोस्</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" सही तरिकाले कन्फिगर गरिएको छैन। सामान्यतया "<ph name="SOFTWARE_NAME" />" को स्थापना रद्द गरेमा समस्याको समाधान हुन्छ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">माफ गर्नुहोला, केही चिज गडबड भयो।</translation>
@@ -1888,7 +1889,7 @@
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
-<translation id="8184538546369750125">विश्वव्यापी पूर्वनिर्धारित प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
+<translation id="8184538546369750125">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
 <translation id="8194797478851900357">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" भएको विस्तारका लागि अवैध अद्यावधिक URL</translation>
 <translation id="8202097416529803614">अर्डरको सारांश</translation>
@@ -1914,6 +1915,7 @@
 <translation id="825929999321470778">सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262952874573525464">फेदको किनारमा स्टिच</translation>
+<translation id="826298712171642726">आकार बदल्ने सुविधा अन गर्ने हो?</translation>
 <translation id="8265992338205884890">देखिने डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> रूपमा साइन इन गर्दै</translation>
 <translation id="8269242089528251720">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध गरिएका प्रतिहरू</translation>
@@ -1992,7 +1994,7 @@
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="856887218454489335"><ph name="BEGIN_BOLD" />
-        निम्न क्रियाकलाप यो यन्त्रमा सुरक्षित गरिने छैन:
+        निम्न क्रियाकलाप यो डिभाइसमा सुरक्षित गरिने छैन:
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />तपाईंले यो विन्डोमा हेर्ने पेजहरू
@@ -2053,7 +2055,7 @@
 <translation id="8790007591277257123">मेटाउने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="8792621596287649091">तपाईंले आफ्नो <ph name="ORG_NAME" /> खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको ब्राउजरमा Chrome Enterprise Connectors अन गरेको छ। यी कनेक्टरले तपाईंका केही डेटा प्रयोग गर्न सक्छन्।</translation>
-<translation id="8798099450830957504">पूर्वनिर्धारित</translation>
+<translation id="8798099450830957504">डिफल्ट</translation>
 <translation id="8805819170075074995">सूचीको प्रविष्टि "<ph name="LANGUAGE_ID" />": प्रविष्टिलाई SpellcheckLanguage नीतिमा पनि समावेश गरिएका कारण यसलाई बेवास्ता गरियो।</translation>
 <translation id="8807160976559152894">हरेक पृष्ठपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>

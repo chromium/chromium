@@ -883,6 +883,7 @@
 <translation id="1928202201223835302">Enter old PIN</translation>
 <translation id="1928696683969751773">Updates</translation>
 <translation id="1929186283613845153">This file is being scanned.</translation>
+<translation id="1929343511231420085">Any serial port</translation>
 <translation id="1929546189971853037">Read your browsing history on all your signed-in devices</translation>
 <translation id="1930879306590754738">Password deleted from this device and your Google Account</translation>
 <translation id="1931152874660185993">No components installed.</translation>
@@ -919,6 +920,7 @@
 <translation id="1974821797477522211">Connect to network</translation>
 <translation id="1975841812214822307">Remove...</translation>
 <translation id="1976150099241323601">Sign in to Security Device</translation>
+<translation id="1976928778492259496">The fingerprint sensor is on the left-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="1977965994116744507">Bring your phone closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Remove address</translation>
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
@@ -1318,6 +1320,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2428978615149723410">these baskets</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
+<translation id="243179355394256322">Your organisation limits device enrolment to authorised users only. This user is not authorised to enrol devices. Please make sure that the user has the 'Enrol Google Meet hardware' administrator privilege in the Users section of the Admin console.</translation>
 <translation id="2433452467737464329">Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2433836460518180625">Unlock device only</translation>
@@ -1849,6 +1852,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2993517869960930405">App Info</translation>
 <translation id="2996286169319737844">Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="2996722619877761919">Flip on long edge</translation>
+<translation id="2996932914629936323">Clears history from all synced devices</translation>
 <translation id="3000236644796679448">Sites can ask to use your microphone (recommended)</translation>
 <translation id="3000378525979847272">Allowed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -2933,13 +2937,14 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4209464433672152343">Documents are <ph name="BEGIN_LINK_HELP" />sent to Google<ph name="END_LINK_HELP" /> to prepare them for printing. View, edit and manage your printers and printer history on the <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print dashboard<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Downloading the virtual machine</translation>
 <translation id="421182450098841253">&amp;Show Bookmarks Bar</translation>
-<translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
+<translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregated data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4218274196133425560">Remove exception for <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">An error occurred during activation.</translation>
 <translation id="4222772810963087151">Build details</translation>
+<translation id="4224284700924043865">USB devices with product ID <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">On all sites</translation>
 <translation id="4231095370974836764">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configure Kerberos</translation>
@@ -3012,6 +3017,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
+<translation id="4316650123995163262">USB devices with product ID <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Developer Website</translation>
 <translation id="4317820549299924617">Verification was not successful</translation>
 <translation id="4320177379694898372">No internet connection</translation>
@@ -3368,6 +3374,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
+<translation id="4702656508969495934">Live Caption visible; use window switcher to focus</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
@@ -3453,6 +3460,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
 <translation id="4827675678516992122">Couldn't connect</translation>
 <translation id="4827784381479890589">Enhanced spell check in Chrome browser (text is sent to Google for spelling suggestions)</translation>
+<translation id="482952334869563894">USB devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Set up PIN</translation>
 <translation id="4830121310592638841">Ask when a site wants to open and place windows on your screens</translation>
 <translation id="4830502475412647084">Installing OS update</translation>
@@ -3742,6 +3750,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5159419673777902220">Your parent has disabled extension permissions</translation>
 <translation id="5160634252433617617">Physical keyboard</translation>
 <translation id="5160857336552977725">Sign in to your <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB devices from <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> has been blocked</translation>
 <translation id="5163910114647549394">Tab moved to end of tabstrip</translation>
 <translation id="5165085578392358314">Assign switch: <ph name="ACTION" /></translation>
@@ -4415,6 +4424,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5932124097031739492">Linux has been successfully upgraded.</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
 <translation id="59324397759951282">USB device from <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">You do not have enough available licences to enrol this Google Meet hardware device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933376509899483611">Time Zone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> is using your camera and microphone</translation>
@@ -4628,6 +4638,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6169666352732958425">Unable to cast desktop.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Couldn't enable ADB debugging. Go to Settings and try again.</translation>
+<translation id="617213288191670920">No languages added</translation>
 <translation id="6173623053897475761">Type your PIN again</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6176043333338857209">Bluetooth will be temporarily turned on to communicate with your security key</translation>
@@ -5325,6 +5336,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6957044667612803194">This security key doesn’t support PINs</translation>
 <translation id="6957914043905853560">{COUNT,plural, =1{link}other{# links}}</translation>
 <translation id="6960507406838246615">Linux update required</translation>
+<translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove From Group</translation>
@@ -5366,6 +5378,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Activity Log</translation>
 <translation id="6997707937646349884">On your devices:</translation>
 <translation id="6998793565256476099">Enrol device for video conferencing</translation>
+<translation id="6999640176621571692">Allow Google to find discounts on what you add to your baskets?</translation>
 <translation id="6999956497249459195">New group</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is connected but needs configuration</translation>
 <translation id="7000347579424117903">Include Ctrl, Alt or Search</translation>
@@ -5402,6 +5415,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
+<translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037509989619051237">Text to preview</translation>
 <translation id="7038632520572155338">Switch access</translation>
@@ -6383,6 +6397,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8113476325385351118">Continue blocking this site from having full control of MIDI devices</translation>
 <translation id="8114199541033039755">Navigate home or back and switch apps with buttons in tablet mode. Turned on when ChromeVox or automatic clicks is enabled.</translation>
 <translation id="8114875720387900039">Split horizontal</translation>
+<translation id="8115139559594092084">From your Google Drive</translation>
 <translation id="8116972784401310538">&amp;Bookmark manager</translation>
 <translation id="8117752106453549166">Linux is being configured by your administrator. Configuration will take a few minutes.</translation>
 <translation id="8118362518458010043">Disabled by Chrome. This extension may be unsafe.</translation>
@@ -6404,6 +6419,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8138082791834443598">Optional – enter new or update existing information to be associated with this device.</translation>
 <translation id="8138217203226449454">Did you mean to change your search provider?</translation>
 <translation id="813913629614996137">Initialising...</translation>
+<translation id="8139447493436036221">Google Drive files</translation>
 <translation id="8141584439523427891">Opening in alternative browser now</translation>
 <translation id="8141725884565838206">Manage your passwords</translation>
 <translation id="8143442547342702591">Invalid application</translation>
@@ -6609,6 +6625,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8386091599636877289">Policy not found.</translation>
 <translation id="8386819192691131213">Allow Assistant to use information on the screen to provide quick answers such as translation, definition, unit conversion and more</translation>
 <translation id="8386903983509584791">Scan completed</translation>
+<translation id="838705362287678887">To clear <ph name="BEGIN_LINK_SEARCH" />search<ph name="END_LINK_SEARCH" /> or other forms of history, visit <ph name="BEGIN_LINK_GOOGLE" />My Google Account<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Not allowed to see your location</translation>
 <translation id="8389416080014625855">Create QR code for this page</translation>
 <translation id="8389492867173948260">Allow this extension to read and change all your data on websites that you visit:</translation>
@@ -6622,6 +6639,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8398877366907290961">Proceed anyway</translation>
 <translation id="8400146488506985033">Manage people</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
+<translation id="8404893580027489425">The fingerprint sensor is on the right-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="8405046151008197676">Get highlights from the latest update</translation>
 <translation id="8407199357649073301">Log level:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> network, connecting</translation>
@@ -6660,7 +6678,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8449008133205184768">Paste and Match Style</translation>
 <translation id="8449036207308062757">Manage storage</translation>
 <translation id="8452135315243592079">Missing SIM card</translation>
-<translation id="8454502708934796641">Ask Google to find discounts on what you’ve added to your baskets?</translation>
 <translation id="8455026683977728932">Failed to enable ADB illustration</translation>
 <translation id="8456512334795994339">Find apps for work and play</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
