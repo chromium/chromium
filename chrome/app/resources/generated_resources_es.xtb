@@ -5387,7 +5387,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando tu cámara</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
-<translation id="7017004637493394352">Di otra vez "Ok Google"</translation>
+<translation id="7017004637493394352">Di otra vez "Hey Google"</translation>
 <translation id="7017219178341817193">Añadir una nueva página</translation>
 <translation id="7017354871202642555">No se puede establecer un modo después de crear una ventana.</translation>
 <translation id="7018275672629230621">Leer y modificar tu historial de navegación</translation>
@@ -5823,7 +5823,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7517063221058203587">{0,plural, =1{Actualizar dispositivo dentro de 1 minuto}other{Actualizar dispositivo dentro de # minutos}}</translation>
 <translation id="7520766081042531487">Portal de incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7522255036471229694">Di "Ok Google"</translation>
+<translation id="7522255036471229694">Di "Hey Google"</translation>
 <translation id="7523585675576642403">Cambiar nombre del perfil</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7525625923260515951">Escuchar texto seleccionado</translation>

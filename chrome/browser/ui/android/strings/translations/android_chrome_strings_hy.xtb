@@ -35,7 +35,7 @@
 <translation id="1206892813135768548">Պատճենել հղման տեքստը</translation>
 <translation id="1208340532756947324">Սարքերը համաժամացնելու և անհատականացնելու համար միացրեք համաժամացումը</translation>
 <translation id="1209206284964581585">Առայժմ թաքցնել</translation>
-<translation id="1227058898775614466">Նավարկման պատմություն</translation>
+<translation id="1227058898775614466">Նավիգացիայի պատմություն</translation>
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="123724288017357924">Վերաբեռնել ընթացիկ էջը` անտեսելով հիշապահեստի բովանդակությունը</translation>
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
@@ -53,7 +53,7 @@
 <translation id="1307205233980126133">Չհաջողվեց ստուգել ձեր տվյալները</translation>
 <translation id="1310482092992808703">Խմբավորել ներդիրները</translation>
 <translation id="1311657260431405215">Այս QR կոդը URL չէ՝ <ph name="QRCODEVALUE" /></translation>
-<translation id="1327257854815634930">Նավարկման պատմության թերթն ամբողջությամբ բացված է</translation>
+<translation id="1327257854815634930">Նավիգացիայի պատմության թերթն ամբողջությամբ բացված է</translation>
 <translation id="1331212799747679585">Չհաջողվեց թարմացնել Chrome-ը։ Այլ կարգավորումներ</translation>
 <translation id="1332501820983677155">Google Chrome-ի գործառույթների դյուրանցումներ</translation>
 <translation id="1344653310988386453">Ներառել ընդգծված տեքստի հղումը</translation>
@@ -658,7 +658,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
-<translation id="5483197086164197190">Նավարկում Chrome-ում</translation>
+<translation id="5483197086164197190">Նավիգացիա Chrome-ում</translation>
 <translation id="5487521232677179737">Ջնջել տվյալները</translation>
 <translation id="549025011754480756">Ինչպես որոնել ձայնի միջոցով</translation>
 <translation id="5500777121964041360">Գործառույթը կարող է հասանելի չլինել ձեր երկրում։</translation>
@@ -1173,7 +1173,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8773160212632396039">Հարցումը մշակվում է</translation>
-<translation id="8788265440806329501">Նավարկման պատմության թերթը փակված է</translation>
+<translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
@@ -1231,7 +1231,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>
-<translation id="9169507124922466868">Նավարկման պատմության թերթը կիսաբացված է</translation>
+<translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>
 <translation id="9206873250291191720">Ա</translation>
