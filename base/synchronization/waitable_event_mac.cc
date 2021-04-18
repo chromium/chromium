@@ -39,6 +39,7 @@ static inline void RecordReplayEnsureOrdered(int lock_id) {
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
+  // Pointer registration is needed for sorting in WaitSet.user_events_
   recordreplay::RegisterPointer(this);
   record_replay_ordered_lock_id_ = (int)recordreplay::CreateOrderedLock("WaitableEvent");
 

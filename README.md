@@ -5,7 +5,7 @@ This repository is a chromium fork that has has been adapted to use the record/r
 
 Only one build configuration is currently supported.
 
-Install chromium tree and depot_tools per https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md.
+Install chromium tree and depot_tools per https://www.chromium.org/developers/how-tos/get-the-code.
 
 Then change update the remote URLs for chromium and V8 to our forks.  The `gclient sync` here ensures that other third party dependencies are at the right point for our chromium fork, and not upstream tip.
 
@@ -36,7 +36,22 @@ Add the following settings:
 ```
 is_debug = false
 enable_nacl = false
+```
+
+On linux add the following settings to disable the allocator shim. This may not be
+necessary but avoids interactions between the driver and chromium.
+
+```
 use_allocator = "none"
+use_allocator_shim = false
+```
+
+On linux the following setting may be helpful for looking at stack traces while
+recording. This isn't used for production builds because the resulting binary size
+is pretty huge.
+
+```
+symbol_level = 1
 ```
 
 Build:
