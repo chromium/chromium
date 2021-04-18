@@ -69,6 +69,7 @@ JingleThreadWrapper::JingleThreadWrapper(
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
       task_runner_(task_runner),
       send_allowed_(false),
+      lock_("JingleThreadWrapper.lock_"),
       last_task_id_(0),
       pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {

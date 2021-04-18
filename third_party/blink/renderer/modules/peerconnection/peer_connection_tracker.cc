@@ -1196,6 +1196,9 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
   }
   update_type = update_type + callback_type;
 
+  recordreplay::Assert("PeerConnectionTracker::TrackSessionDescriptionCallback %d %lu %lu",
+                       id, update_type.length(), value.length());
+
   SendPeerConnectionUpdate(id, update_type, value);
 }
 

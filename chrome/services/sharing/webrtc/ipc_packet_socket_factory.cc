@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/record_replay.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -493,6 +494,10 @@ void IpcPacketSocket::SetError(int error) {
 
 void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
                              const net::IPEndPoint& remote_address) {
+  recordreplay::Assert("IpcPacketSocket::OnOpen %s %s",
+                       local_address.ToString().c_str(),
+                       remote_address.ToString().c_str());
+
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!jingle_glue::IPEndPointToSocketAddress(local_address, &local_address_)) {

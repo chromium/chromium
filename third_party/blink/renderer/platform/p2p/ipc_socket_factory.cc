@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
@@ -522,6 +523,10 @@ void IpcPacketSocket::SetError(int error) {
 
 void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
                              const net::IPEndPoint& remote_address) {
+  recordreplay::Assert("IpcPacketSocket::OnOpen %s %s",
+                       local_address.ToString().c_str(),
+                       remote_address.ToString().c_str());
+
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!jingle_glue::IPEndPointToSocketAddress(local_address, &local_address_)) {
@@ -530,6 +535,9 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
     OnError();
     return;
   }
+
+  recordreplay::Assert("IpcPacketSocket::OnOpen #1 %d",
+                       local_address_.IsAnyIP());
 
   state_ = IS_OPEN;
   TraceSendThrottlingState();

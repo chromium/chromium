@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task_runner.h"
@@ -357,6 +358,10 @@ void ChannelPosix::OnFileCanWriteWithoutBlocking(int fd) {
 // cannot be written, it's queued and a wait is initiated to write the message
 // ASAP on the I/O thread.
 bool ChannelPosix::WriteNoLock(MessageView message_view) {
+  recordreplay::Assert("ChannelPosix::WriteNoLock %d %lu",
+                       socket_.get(),
+                       message_view.data_num_bytes());
+
   if (server_.is_valid()) {
     outgoing_messages_.emplace_front(std::move(message_view));
     return true;

@@ -27,7 +27,9 @@ void OnNameCreatedForAddress(
     const String& name,
     bool announcement_scheduled) {
   // We currently ignore whether there is an announcement sent for the name.
+  recordreplay::Assert("OnNameCreatedForAddress Start");
   callback(addr, name.Utf8());
+  recordreplay::Assert("OnNameCreatedForAddress Done");
 }
 
 void OnNameRemovedForAddress(
