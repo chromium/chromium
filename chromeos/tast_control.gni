@@ -67,4 +67,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1199053
   "mlservice.WebHandwritingRecognition",
+
+  # crbug.com/1192623
+  "policy.AllowDeletingBrowserHistory",
 ]
