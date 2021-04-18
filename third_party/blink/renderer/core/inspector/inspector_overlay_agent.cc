@@ -1053,16 +1053,18 @@ void InspectorOverlayAgent::PaintOverlayPage() {
     return;
 
   LocalFrame* overlay_frame = OverlayMainFrame();
-  // To make overlay render the same size text with any emulation scale,
-  // compensate the emulation scale using page scale.
-  float emulation_scale =
-      frame->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
   IntSize viewport_size = frame->GetPage()->GetVisualViewport().Size();
-  viewport_size.Scale(emulation_scale);
-  overlay_page_->GetVisualViewport().SetSize(viewport_size);
-  overlay_page_->SetDefaultPageScaleLimits(1 / emulation_scale,
-                                           1 / emulation_scale);
-  overlay_page_->GetVisualViewport().SetScale(1 / emulation_scale);
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // To make overlay render the same size text with any emulation scale,
+    // compensate the emulation scale using page scale.
+    float emulation_scale =
+        frame->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
+    viewport_size.Scale(emulation_scale);
+    overlay_page_->GetVisualViewport().SetSize(viewport_size);
+    overlay_page_->SetDefaultPageScaleLimits(1 / emulation_scale,
+                                             1 / emulation_scale);
+    overlay_page_->GetVisualViewport().SetScale(1 / emulation_scale);
+  }
   overlay_frame->SetPageZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
 
