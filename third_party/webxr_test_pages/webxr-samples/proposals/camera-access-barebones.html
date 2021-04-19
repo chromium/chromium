@@ -86,8 +86,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         const fsSource = `
             varying highp vec2 vTextureCoord;
             uniform sampler2D uSampler;
+            precision mediump float;
             void main(void) {
-              gl_FragColor = texture2D(uSampler, vTextureCoord);
+              vec4 col = texture2D(uSampler, vTextureCoord);
+              gl_FragColor.rgb = col.rgb;
+              gl_FragColor.a = 0.75;
             }
         `;
 
@@ -142,7 +145,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             initializeGLCube(gl);
 
             session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
-            session.requestReferenceSpace('local').then((refSpace) => {
+            session.requestReferenceSpace('viewer').then((refSpace) => {
                 xrRefSpace = refSpace;
                 session.requestAnimationFrame(onXRFrame);
             });
@@ -164,6 +167,117 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             gl = null;
         }
 
+        // Only print each unique intrinsic string once.
+        const intrinsicsPrinted = {};
+
+        // Calculates the camera intrinsics matrix from a projection matrix and viewport
+        //
+        // Projection matrix convention as per
+        //   http://www.songho.ca/opengl/gl_projectionmatrix.html
+        //
+        // P = p0  p4  p8  p12
+        //     p1  p5  p9  p13
+        //     p2  p6  p10 p14
+        //     p3  p7  p11 p15
+        //
+        // P = p0  p4  p8  0      = 2n/(r-l) skew     (r+l)/(r-l)   0
+        //     0   p5  p9  0        0        2n/(t-b) (t+b)/(t-b)   0
+        //     0   0   p10 p14      0        0        -(f+n)/(f-n) -2fn/(f-n)
+        //     0   0   -1  0        0        0        -1            0
+        //
+        // The skew factor controls how much of the Y coordinate is mixed into the X coordinate.
+        // It is usually zero, but WebXR allows nonzero skew values which results in rhomboid
+        // (nonrectangular) pixels.
+        //
+        // The GL projection matrix transforms to clip space, then to NDC after perspective divide.
+        // This needs to be scaled to pixels based on the viewport. The NDC x and y ranges (-1 .. 1)
+        // are transformed to (vp.x .. vp.x + vp.width) and (vp.y .. vp.y + vp.height) respectively.
+        // For example:
+        //
+        //   screen_x = vp.w * (ndc_x + 1) / 2 + vp.x
+        //            = (vp.w/2) * ndc_x + (vp.w/2 + vp.x)
+        //
+        // Using a matrix S for the NDC-to-screen-coordinate transform, this is:
+        //
+        //   p_screen.xy = (S * p_ndc).xy
+        //
+        //   with S = vp.w/2  0       0  vp.w/2 + vp.x
+        //            0       vp.h/2  0  vp.h/2 + vp.y
+        //            0       0       1  0
+        //            0       0       0  1
+        //
+        // This transforms a camera-space point into screen space as follows:
+        //
+        //   p_screen.xy = (S * p_ndc).xy
+        //               = (S * p_clip).xy / p_clip.w
+        //               = (S * P * p_camera).xy / (P * p_camera).w
+        //               = (S * P * p_camera).xy / (-p_camera.z)
+        //
+        // Note that this uses the usual GL convention of looking along the negative Z axis, with
+        // negative-z points being visible.
+        //
+        // Intrinsic matrix convention as per
+        //   https://en.wikipedia.org/wiki/Camera_resectioning#Intrinsic_parameters
+        //
+        //   K = ax  gamma u0 0
+        //       0   ay    v0 0
+        //       0   0     1  0
+        //
+        // The intrinsic matrix K transforms from camera space to homogenous screen space, providing
+        // pixel screen coordinates after the perspective divide. This convention assumes looking
+        // along the positive Z axis, with positive-z points being visible.
+        //
+        // For compatibility with WebXR, invert the Z coordinate, and insert a placeholder 3rd row
+        // to get a 4x4 matrix. This produces a modified intrinsic matrix K':
+        //
+        //   K' = 1  0  0  0 * K = ax  gamma -u0 0
+        //        0  1  0  0       0   ay    -v0 0
+        //        0  0 -1  0       *   *      *  *
+        //        0  0  0  1       0   0      -1 0
+        //
+        // This results in the following transformation from camera space to screen space:
+        //
+        //   p_screen.xy = (K' * p_camera).xy / (K' * p_camera).w
+        //               = (K' * p_camera).xy / (-p_camera.z)
+        //
+        // Since the p_screen.xy coordinates must be the same for both calculation methods, it
+        // follows that the intrinsic matrix K' is simply S * P:
+        //
+        //   p_screen.xy = (K' * p_camera).xy / (-p_camera.z)
+        //               = (S * P * p_camera).xy / (-p_camera.z)
+        // => K' = S * P
+        //
+        // For example, K'[0,2] is -u0, and equals the product of row 0 of S with column 2 of P:
+        //   K'[0,2] = S[0,] * P[,2]
+        //   -u0 = [vp.v/2, 0, 0, vp.w/2 + vp.x] * [p8, p9, p10, -1]
+        //       = (vp.w/2) * p8 + 0 * p9 + 0 * p10 + (vp.w/2 + vp.x) * (-1)
+        //       = vp.w/2 * (p8 - 1) - vp.x
+        // => u0 = vp.w/2 * (1 - p8) + vp.x
+        function getCameraIntrinsics(projectionMatrix, viewport) {
+            const p = projectionMatrix;
+            // Principal point in pixels (typically at or near the center of the viewport)
+            let u0 = (1 - p[8]) * viewport.width / 2 + viewport.x;
+            let v0 = (1 - p[9]) * viewport.height / 2 + viewport.y;
+            // Focal lengths in pixels (these are equal for square pixels)
+            let ax = viewport.width / 2 * p[0];
+            let ay = viewport.height / 2 * p[5];
+            // Skew factor in pixels (nonzero for rhomboid pixels)
+            let gamma = viewport.width / 2 * p[4];
+
+            // Print the calculated intrinsics, but once per unique value to
+            // avoid log spam. These can change every frame for some XR devices.
+            const intrinsicString = (
+                "intrinsics: u0=" +u0 + " v0=" + v0 + " ax=" + ax + " ay=" + ay +
+                    " gamma=" + gamma + " for viewport {width=" +
+                    viewport.width + ",height=" + viewport.height + ",x=" +
+                    viewport.x + ",y=" + viewport.y + "}");
+            if (!intrinsicsPrinted[intrinsicString]) {
+                console.log("projection:", Array.from(projectionMatrix).join(", "));
+                console.log(intrinsicString);
+                intrinsicsPrinted[intrinsicString] = true;
+            }
+        }
+
         function onXRFrame(t, frame) {
             let session = frame.session;
             session.requestAnimationFrame(onXRFrame);
@@ -177,12 +291,35 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 // Clear the framebuffer
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+                gl.enable(gl.DEPTH_TEST);
+
                 for (let view of pose.views) {
                     let viewport = session.renderState.baseLayer.getViewport(view);
+
                     gl.viewport(viewport.x, viewport.y,
                                 viewport.width, viewport.height);
 
+                    // For an application working in viewport space, get the camera intrinsics
+                    // based on the viewport dimensions:
+                    getCameraIntrinsics(view.projectionMatrix, viewport);
+
                     if (view.camera) {
+                      // For an application working in camera texture space, get the camera
+                      // intrinsics based on the camera texture width/height which may be
+                      // different from the XR framebuffer width/height.
+                      //
+                      // Note that the camera texture has origin at bottom left, and the
+                      // returned intrinsics are based on that convention. If a library
+                      // has a different coordinate convention, the coordinates would
+                      // need to be adjusted, for example mirroring the Y coordinate if
+                      // the origin needs to be at the top left.
+                      const cameraViewport = {
+                          width: view.camera.width,
+                          height: view.camera.height,
+                          x: 0,
+                          y: 0};
+                      getCameraIntrinsics(view.projectionMatrix, cameraViewport);
+
                       // Update camera image texture.
                       let texture = glBinding.getCameraImage(view.camera);
                       // Render cube with camera image texture on each face.
@@ -540,7 +677,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           mat4.translate(
             modelViewMatrix, // destination matrix
             modelViewMatrix, // matrix to translate
-            [-0.0, 1.0, -6.0]
+            [0.0, 0.0, -6.0]
           ); // amount to translate
           mat4.rotate(
             modelViewMatrix, // destination matrix
