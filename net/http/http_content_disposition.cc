@@ -26,11 +26,10 @@ enum RFC2047EncodingType {
 
 // Decodes a "Q" encoded string as described in RFC 2047 section 4.2. Similar to
 // decoding a quoted-printable string.  Returns true if the input was valid.
-bool DecodeQEncoding(const std::string& input, std::string* output) {
+bool DecodeQEncoding(base::StringPiece input, std::string* output) {
   std::string temp;
   temp.reserve(input.size());
-  for (std::string::const_iterator it = input.begin(); it != input.end();
-       ++it) {
+  for (auto* it = input.begin(); it != input.end(); ++it) {
     if (*it == '_') {
       temp.push_back(' ');
     } else if (*it == '=') {
@@ -61,7 +60,7 @@ bool DecodeQEncoding(const std::string& input, std::string* output) {
 
 // Decodes a "Q" or "B" encoded string as per RFC 2047 section 4. The encoding
 // type is specified in |enc_type|.
-bool DecodeBQEncoding(const std::string& part,
+bool DecodeBQEncoding(base::StringPiece part,
                       RFC2047EncodingType enc_type,
                       const std::string& charset,
                       std::string* output) {
@@ -79,7 +78,7 @@ bool DecodeBQEncoding(const std::string& part,
   return ConvertToUtf8(decoded, charset.c_str(), output);
 }
 
-bool DecodeWord(const std::string& encoded_word,
+bool DecodeWord(base::StringPiece encoded_word,
                 const std::string& referrer_charset,
                 bool* is_rfc2047,
                 std::string* output,
@@ -92,7 +91,7 @@ bool DecodeWord(const std::string& encoded_word,
   if (!base::IsStringASCII(encoded_word)) {
     // Try UTF-8, referrer_charset and the native OS default charset in turn.
     if (base::IsStringUTF8(encoded_word)) {
-      *output = encoded_word;
+      *output = std::string(encoded_word);
     } else {
       std::u16string utf16_output;
       if (!referrer_charset.empty() &&
@@ -117,10 +116,11 @@ bool DecodeWord(const std::string& encoded_word,
   *is_rfc2047 = true;
   int part_index = 0;
   std::string charset;
-  base::StringTokenizer t(encoded_word, "?");
+  base::CStringTokenizer t(encoded_word.data(),
+                           encoded_word.data() + encoded_word.size(), "?");
   RFC2047EncodingType enc_type = Q_ENCODING;
   while (*is_rfc2047 && t.GetNext()) {
-    std::string part = t.token();
+    base::StringPiece part = t.token_piece();
     switch (part_index) {
       case 0:
         if (part != "=") {
@@ -131,7 +131,7 @@ bool DecodeWord(const std::string& encoded_word,
         break;
       case 1:
         // Do we need charset validity check here?
-        charset = part;
+        charset = std::string(part);
         ++part_index;
         break;
       case 2:
@@ -237,8 +237,9 @@ bool DecodeFilenameValue(const std::string& input,
     // in a single encoded-word. Firefox/Thunderbird do not support
     // it, either.
     std::string decoded;
-    if (!DecodeWord(t.token(), referrer_charset, &is_previous_token_rfc2047,
-                    &decoded, &current_parse_result_flags))
+    if (!DecodeWord(t.token_piece(), referrer_charset,
+                    &is_previous_token_rfc2047, &decoded,
+                    &current_parse_result_flags))
       return false;
     decoded_value.append(decoded);
   }
@@ -256,35 +257,35 @@ bool ParseExtValueComponents(const std::string& input,
                              std::string* value_chars) {
   base::StringTokenizer t(input, "'");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
-  std::string temp_charset;
-  std::string temp_value;
-  int numDelimsSeen = 0;
+  base::StringPiece temp_charset;
+  base::StringPiece temp_value;
+  int num_delims_seen = 0;
   while (t.GetNext()) {
     if (t.token_is_delim()) {
-      ++numDelimsSeen;
+      ++num_delims_seen;
       continue;
     } else {
-      switch (numDelimsSeen) {
+      switch (num_delims_seen) {
         case 0:
-          temp_charset = t.token();
+          temp_charset = t.token_piece();
           break;
         case 1:
           // Language is ignored.
           break;
         case 2:
-          temp_value = t.token();
+          temp_value = t.token_piece();
           break;
         default:
           return false;
       }
     }
   }
-  if (numDelimsSeen != 2)
+  if (num_delims_seen != 2)
     return false;
   if (temp_charset.empty() || temp_value.empty())
     return false;
-  charset->swap(temp_charset);
-  value_chars->swap(temp_value);
+  *charset = std::string(temp_charset);
+  *value_chars = std::string(temp_value);
   return true;
 }
 
