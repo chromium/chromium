@@ -13,6 +13,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -38,9 +39,9 @@ std::string FtpUtil::UnixFilePathToVMS(const std::string& unix_path) {
     return std::string();
 
   base::StringTokenizer tokenizer(unix_path, "/");
-  std::vector<std::string> tokens;
+  std::vector<base::StringPiece> tokens;
   while (tokenizer.GetNext())
-    tokens.push_back(tokenizer.token());
+    tokens.push_back(tokenizer.token_piece());
 
   if (unix_path[0] == '/') {
     // It's an absolute path.
@@ -51,18 +52,18 @@ std::string FtpUtil::UnixFilePathToVMS(const std::string& unix_path) {
     }
 
     if (tokens.size() == 1)
-      return tokens.front();  // Return without leading slashes.
+      return std::string(tokens.front());  // Return without leading slashes.
 
-    std::string result(tokens[0] + ":[");
+    std::string result = base::StrCat({tokens[0], ":["});
     if (tokens.size() == 2) {
       // Don't ask why, it just works that way on VMS.
       result.append("000000");
     } else {
-      result.append(tokens[1]);
+      base::StrAppend(&result, {tokens[1]});
       for (size_t i = 2; i < tokens.size() - 1; i++)
-        result.append("." + tokens[i]);
+        base::StrAppend(&result, {".", tokens[i]});
     }
-    result.append("]" + tokens.back());
+    base::StrAppend(&result, {"]", tokens.back()});
     return result;
   }
 
@@ -71,8 +72,8 @@ std::string FtpUtil::UnixFilePathToVMS(const std::string& unix_path) {
 
   std::string result("[");
   for (size_t i = 0; i < tokens.size() - 1; i++)
-    result.append("." + tokens[i]);
-  result.append("]" + tokens.back());
+    base::StrAppend(&result, {".", tokens[i]});
+  base::StrAppend(&result, {"]", tokens.back()});
   return result;
 }
 
