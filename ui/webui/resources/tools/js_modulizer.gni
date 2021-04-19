@@ -61,5 +61,10 @@ template("js_modulizer") {
     if (defined(invoker.namespace_rewrites)) {
       args += invoker.namespace_rewrites
     }
+
+    # TODO(crbug.com/1030998) Remove when File Manager uses JS modules only.
+    if (defined(invoker.preserve_offsets)) {
+      args += [ "--preserve_offsets" ] + invoker.preserve_offsets
+    }
   }
 }

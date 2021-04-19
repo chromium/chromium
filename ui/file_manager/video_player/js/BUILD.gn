@@ -218,6 +218,8 @@ js_modulizer("modulize") {
     "background.js",
     "video_player.js",
   ]
+
+  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =

@@ -2187,6 +2187,8 @@ js_modulizer("modulize") {
                          "cr.ui.ComboButton|ComboButton",
                          "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
                        ]
+
+  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =

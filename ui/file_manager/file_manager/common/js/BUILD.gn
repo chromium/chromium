@@ -650,4 +650,6 @@ js_modulizer("modulize") {
   ]
 
   namespace_rewrites = cr_namespace_rewrites
+
+  preserve_offsets = [ "True" ]
 }

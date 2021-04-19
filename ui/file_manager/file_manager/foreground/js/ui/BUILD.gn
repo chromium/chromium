@@ -1199,4 +1199,6 @@ js_modulizer("modulize") {
     "cr.filebrowser.InstallLinuxPackageDialog|InstallLinuxPackageDialog",
     "cr.filebrowser.ImportCrostiniImageDialog|ImportCrostiniImageDialog",
   ]
+
+  preserve_offsets = [ "True" ]
 }

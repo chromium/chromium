@@ -190,4 +190,6 @@ js_modulizer("modulize") {
     "volume_info_list.js",
     "volume_manager.js",
   ]
+
+  preserve_offsets = [ "True" ]
 }

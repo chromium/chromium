@@ -144,4 +144,6 @@ js_modulizer("modulize") {
     "progress_center.js",
     "task_queue.js",
   ]
+
+  preserve_offsets = [ "True" ]
 }

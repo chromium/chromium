@@ -503,6 +503,8 @@ js_modulizer("modulize") {
     "xf_panel_item.js",
     "xf_display_panel.js",
   ]
+
+  preserve_offsets = [ "True" ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {

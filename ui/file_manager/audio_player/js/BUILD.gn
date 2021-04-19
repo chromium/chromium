@@ -178,6 +178,8 @@ js_modulizer("modulize") {
 
     "Polymer.CaseMap.dashToCamelCase|dashToCamelCase",
   ]
+
+  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =

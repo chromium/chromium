@@ -265,6 +265,8 @@ js_modulizer("modulize") {
     "image_request_task.js",
     "image_loader.js",
   ]
+
+  preserve_offsets = [ "True" ]
 }
 
 preprocess_folder =
