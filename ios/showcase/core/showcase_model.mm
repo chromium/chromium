@@ -182,7 +182,7 @@
     @{
       showcase::kClassForDisplayKey : @"SCFirstRunDefaultScreenViewController",
       showcase::
-      kClassForInstantiationKey : @"SCFirstRunDefaultScreenViewController",
+      kClassForInstantiationKey : @"SCFirstRunDefaultScreenCoordinator",
       showcase::kUseCaseKey : @"New FRE default screen example",
     },
     @{

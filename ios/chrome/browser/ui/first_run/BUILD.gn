@@ -32,6 +32,7 @@ source_set("first_run") {
     "first_run_screen_type.h",
     "first_run_screen_view_controller.h",
     "first_run_screen_view_controller.mm",
+    "first_run_screen_view_controller_delegate.h",
     "first_run_util.h",
     "first_run_util.mm",
     "location_permissions_commands.h",

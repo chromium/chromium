@@ -22,7 +22,7 @@
   self.titleText = @"Scrolling Screen";
   self.subtitleText =
       @"New FRE screen with long content to simulate dynamic types, forcing "
-      @"content to scroll.Lorem ipsum dolor sit amet, consectetur adipiscing "
+      @"content to scroll. Lorem ipsum dolor sit amet, consectetur adipiscing "
       @"elit. Duis volutpat auctor pretium. Donec quis turpis semper, laoreet "
       @"tellus vel, vehicula elit. Vestibulum venenatis convallis dolor eget "
       @"venenatis. Fusce in volutpat metus. Integer eget quam a orci ultrices "
@@ -31,7 +31,12 @@
       @"erat tortor semper libero, id consequat eros ligula at nulla. Donec "
       @"vel scelerisque nibh, ac laoreet magna. Sed orci lacus, auctor sit "
       @"amet nisi vel, imperdiet iaculis augue. Duis venenatis nisl sit amet "
-      @"placerat euismod. In gravida lorem nec massa tincidunt.";
+      @"placerat euismod. In gravida lorem nec massa tincidunt. Lorem ipsum "
+      @"dolor sit amet, consectetur adipiscing elit. Duis volutpat auctor "
+      @"pretium. Donec quis turpis semper, laoreet tellus vel, vehicula elit. "
+      @"Vestibulum venenatis convallis dolor eget venenatis. Fusce in volutpat "
+      @"metus. Integer eget quam a orci ultrices gravida. Sed a justo sit amet "
+      @"lorem scelerisque rhoncus.";
   self.primaryActionString = @"Continue";
   self.bannerImage = [UIImage imageNamed:@"Sample-banner"];
   self.isTallBanner = NO;

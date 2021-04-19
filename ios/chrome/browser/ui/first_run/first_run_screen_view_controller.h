@@ -7,11 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller_delegate.h"
+
 // A base view controller for the common UI controls in the new First Run
 // Experience screens.
 @interface FirstRunScreenViewController : UIViewController
 
-// // The banner image. Must be set before the view is loaded.
+// The banner image. Must be set before the view is loaded.
 @property(nonatomic, strong) UIImage* bannerImage;
 
 // When set to YES, the banner will be tall (35% of view height). When set to
@@ -38,6 +40,10 @@
 // The text for the tertiary action. Must be set before the view is loaded. If
 // not set, there won't be a tertiary action button.
 @property(nonatomic, copy) NSString* tertiaryActionString;
+
+// The delegate to invoke when buttons are tapped. Can be derived by screen-
+// specific view controllers if additional buttons are used.
+@property(nonatomic, weak) id<FirstRunScreenViewControllerDelegate> delegate;
 
 @end
 

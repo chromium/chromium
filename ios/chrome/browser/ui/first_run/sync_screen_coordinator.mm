@@ -39,7 +39,10 @@
   // [self.delegate willFinishPresenting]
   // if yes:
   self.viewController = [[SyncScreenViewController alloc] init];
-  self.viewController.delegate = self;
+  // TODO(crbug.com/1189840): once the view controller's delegate is unified
+  // with the base FirstRunScreenViewController delegate, change this back to
+  // self.viewController.delegate = self;
+  self.viewController.delegate2 = self;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }

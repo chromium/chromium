@@ -262,6 +262,9 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kFirstRunPrimaryActionAccessibilityIdentifier;
+    [_primaryActionButton addTarget:self
+                             action:@selector(didTapPrimaryActionButton)
+                   forControlEvents:UIControlEventTouchUpInside];
   }
   return _primaryActionButton;
 }
@@ -273,6 +276,9 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
         [self createButtonWithText:self.secondaryActionString
             accessibilityIdentifier:
                 kFirstRunSecondaryActionAccessibilityIdentifier];
+    [_secondaryActionButton addTarget:self
+                               action:@selector(didTapSecondaryActionButton)
+                     forControlEvents:UIControlEventTouchUpInside];
   }
 
   return _secondaryActionButton;
@@ -284,6 +290,9 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
     _tertiaryActionButton = [self
            createButtonWithText:self.tertiaryActionString
         accessibilityIdentifier:kFirstRunTertiaryActionAccessibilityIdentifier];
+    [_tertiaryActionButton addTarget:self
+                              action:@selector(didTapTertiaryActionButton)
+                    forControlEvents:UIControlEventTouchUpInside];
   }
 
   return _tertiaryActionButton;
@@ -312,6 +321,26 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
   return button;
 }
 
-// TODO(crbug.com/1186762): Add action handler logic.
+- (void)didTapPrimaryActionButton {
+  if ([self.delegate respondsToSelector:@selector(didTapPrimaryActionButton)]) {
+    [self.delegate didTapPrimaryActionButton];
+  }
+}
+
+- (void)didTapSecondaryActionButton {
+  DCHECK(self.secondaryActionString);
+  if ([self.delegate
+          respondsToSelector:@selector(didTapSecondaryActionButton)]) {
+    [self.delegate didTapSecondaryActionButton];
+  }
+}
+
+- (void)didTapTertiaryActionButton {
+  DCHECK(self.tertiaryActionString);
+  if ([self.delegate
+          respondsToSelector:@selector(didTapTertiaryActionButton)]) {
+    [self.delegate didTapTertiaryActionButton];
+  }
+}
 
 @end

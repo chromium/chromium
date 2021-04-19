@@ -26,7 +26,11 @@
 // View controller of sync screen.
 @interface SyncScreenViewController : FirstRunScreenViewController
 
-@property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate;
+// TODO(crbug.com/1189840): unify this delegate with
+// FirstRunScreenViewController's delegate property, by making the
+// SyncScreenViewControllerDelegate protocol extend the
+// FirstRunScreenViewControllerDelegate protocol.
+@property(nonatomic, weak) id<SyncScreenViewControllerDelegate> delegate2;
 
 @end
 
