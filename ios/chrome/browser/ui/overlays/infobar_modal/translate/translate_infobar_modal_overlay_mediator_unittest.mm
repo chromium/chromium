@@ -101,13 +101,13 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
 }
 
 // Tests that TranslateInfobarModalOverlayMediator calls RevertTranslation when
-// its showSourceLanguage API is called.
-TEST_F(TranslateInfobarModalOverlayMediatorTest, ShowSourceLanguage) {
+// its showOriginalLanguage API is called.
+TEST_F(TranslateInfobarModalOverlayMediatorTest, ShowOriginalLanguage) {
   EXPECT_CALL(
       callback_receiver_,
       DispatchCallback(request_.get(), RevertTranslation::ResponseSupport()));
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
-  [mediator_ showSourceLanguage];
+  [mediator_ showOriginalLanguage];
 }
 
 // Tests that TranslateInfobarModalOverlayMediator calls UpdateLanguageInfo and

@@ -202,7 +202,7 @@ void ChromeTranslateClient::GetTranslateLanguages(
   DCHECK(target != nullptr);
 
   *source = translate::TranslateDownloadManager::GetLanguageCode(
-      GetLanguageState().source_language());
+      GetLanguageState().original_language());
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -301,7 +301,7 @@ int ChromeTranslateClient::GetInfobarIconID() const {
 }
 
 void ChromeTranslateClient::ManualTranslateWhenReady() {
-  if (GetLanguageState().source_language().empty()) {
+  if (GetLanguageState().original_language().empty()) {
     manual_translate_on_ready_ = true;
   } else {
     translate::TranslateManager* manager = GetTranslateManager();

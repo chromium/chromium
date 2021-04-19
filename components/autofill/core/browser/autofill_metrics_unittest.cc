@@ -11011,7 +11011,7 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "ub";
   autofill_manager_->OnLanguageDetermined(language_detection_details);
-  autofill_client_.GetLanguageState()->SetSourceLanguage("ub");
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("ub");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("ub");
   int language_code = 'u' * 256 + 'b';
 
@@ -11036,7 +11036,7 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "en";
   autofill_manager_->OnLanguageDetermined(language_detection_details);
-  autofill_client_.GetLanguageState()->SetSourceLanguage("en");
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("en");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("other");
 
   // Simulate form submission.

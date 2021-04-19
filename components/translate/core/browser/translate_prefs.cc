@@ -497,12 +497,13 @@ void TranslatePrefs::DeleteNeverPromptSitesBetween(base::Time begin,
 }
 
 bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
-    base::StringPiece source_language,
+    base::StringPiece original_language,
     base::StringPiece target_language) {
   const base::DictionaryValue* dict =
       prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
   if (dict) {
-    const std::string* auto_target_lang = dict->FindStringKey(source_language);
+    const std::string* auto_target_lang =
+        dict->FindStringKey(original_language);
     if (auto_target_lang && *auto_target_lang == target_language)
       return true;
   }
@@ -510,7 +511,7 @@ bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
 }
 
 void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
-    base::StringPiece source_language,
+    base::StringPiece original_language,
     base::StringPiece target_language) {
   DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
   base::DictionaryValue* dict = update.Get();
@@ -519,18 +520,18 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
     return;
   }
   // Get translate version of language codes.
-  std::string translate_source_language(source_language);
-  language::ToTranslateLanguageSynonym(&translate_source_language);
+  std::string translate_original_language(original_language);
+  language::ToTranslateLanguageSynonym(&translate_original_language);
   std::string translate_target_language(target_language);
   language::ToTranslateLanguageSynonym(&translate_target_language);
 
-  dict->SetStringKey(translate_source_language, translate_target_language);
-  // Remove source language from block list if present.
-  UnblockLanguage(translate_source_language);
+  dict->SetStringKey(translate_original_language, translate_target_language);
+  // Remove original language from block list if present.
+  UnblockLanguage(translate_original_language);
 }
 
 void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
-    base::StringPiece source_language,
+    base::StringPiece original_language,
     base::StringPiece target_language) {
   DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
   base::DictionaryValue* dict = update.Get();
@@ -539,19 +540,19 @@ void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
     return;
   }
   // Get translate version of language codes.
-  std::string translate_source_language(source_language);
-  language::ToTranslateLanguageSynonym(&translate_source_language);
-  dict->RemoveKey(translate_source_language);
+  std::string translate_original_language(original_language);
+  language::ToTranslateLanguageSynonym(&translate_original_language);
+  dict->RemoveKey(translate_original_language);
 }
 
 void TranslatePrefs::SetLanguageAlwaysTranslateState(
-    base::StringPiece source_language,
+    base::StringPiece original_language,
     bool always_translate) {
   if (always_translate) {
-    AddLanguagePairToAlwaysTranslateList(source_language,
+    AddLanguagePairToAlwaysTranslateList(original_language,
                                          GetRecentTargetLanguage());
   } else {
-    RemoveLanguagePairFromAlwaysTranslateList(source_language,
+    RemoveLanguagePairFromAlwaysTranslateList(original_language,
                                               GetRecentTargetLanguage());
   }
 }
@@ -761,11 +762,11 @@ bool TranslatePrefs::CanTranslateLanguage(
   return false;
 }
 
-bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece source_language,
+bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece original_language,
                                          std::string* target_language) {
   const base::DictionaryValue* dict =
       prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
-  if (dict && dict->GetString(source_language, target_language)) {
+  if (dict && dict->GetString(original_language, target_language)) {
     DCHECK(!target_language->empty());
     return !target_language->empty();
   }

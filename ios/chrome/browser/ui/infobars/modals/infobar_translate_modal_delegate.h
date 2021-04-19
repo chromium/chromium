@@ -14,7 +14,7 @@
 
 // Indicates the user chose to undo the translation (i.e. show the page in its
 // original language).
-- (void)showSourceLanguage;
+- (void)showOriginalLanguage;
 
 // Indicates the user changed the source/target language and wishes to Translate
 // again.

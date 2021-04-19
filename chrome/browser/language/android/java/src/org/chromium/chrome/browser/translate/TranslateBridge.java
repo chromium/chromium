@@ -67,21 +67,21 @@ public class TranslateBridge {
     }
 
     /**
-     * Get the page source language of the given Tab.
-     * @param tab The tab to get source language code for.
-     * @return String The source language code. Empty string if no language has been detected.
+     * Get the original page language of the given Tab.
+     * @param tab The tab to get original language code for.
+     * @return String The original language code. Empty string if no language has been detected.
      */
-    public static String getSourceLanguage(Tab tab) {
-        return getSourceLanguage(tab.getWebContents());
+    public static String getOriginalLanguage(Tab tab) {
+        return getOriginalLanguage(tab.getWebContents());
     }
 
     /**
-     * Get the page source language of the given contents.
-     * @param webContents The web contents to get source language code for.
-     * @return String The source language code. Empty string if no language has been detected.
+     * Get the original page language of the given contents.
+     * @param webContents The web contents to get original language code for.
+     * @return String The original language code. Empty string if no language has been detected.
      */
-    public static String getSourceLanguage(WebContents webContents) {
-        return TranslateBridgeJni.get().getSourceLanguage(webContents);
+    public static String getOriginalLanguage(WebContents webContents) {
+        return TranslateBridgeJni.get().getOriginalLanguage(webContents);
     }
 
     /**
@@ -276,7 +276,7 @@ public class TranslateBridge {
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
         boolean shouldShowManualTranslateIPH(WebContents webContents);
         void setPredefinedTargetLanguage(WebContents webContents, String targetLanguage);
-        String getSourceLanguage(WebContents webContents);
+        String getOriginalLanguage(WebContents webContents);
         String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         void setDefaultTargetLanguage(String targetLanguage);

@@ -89,7 +89,7 @@ class IOSTranslateDriver
                               double load_time,
                               double ready_time) override;
   void OnTranslateComplete(TranslateErrors::Type error_type,
-                           const std::string& source_language,
+                           const std::string& original_language,
                            double translation_time) override;
 
   // Stops observing |web_state_| and sets it to null.

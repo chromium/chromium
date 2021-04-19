@@ -277,7 +277,7 @@ bool TranslateAgent::StartTranslation() {
       BuildTranslationScript(source_lang_, target_lang_), false);
 }
 
-std::string TranslateAgent::GetPageSourceLanguage() {
+std::string TranslateAgent::GetOriginalPageLanguage() {
   return ExecuteScriptAndGetStringResult("cr.googleTranslate.sourceLang");
 }
 
@@ -463,7 +463,7 @@ void TranslateAgent::CheckTranslateStatus() {
     // Translation was successfull, if it was auto, retrieve the source
     // language the Translate Element detected.
     if (source_lang_ == kAutoDetectionLanguage) {
-      actual_source_lang = GetPageSourceLanguage();
+      actual_source_lang = GetOriginalPageLanguage();
       if (actual_source_lang.empty()) {
         NotifyBrowserTranslationFailed(TranslateErrors::UNKNOWN_LANGUAGE);
         return;

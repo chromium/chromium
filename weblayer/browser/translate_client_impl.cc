@@ -151,7 +151,7 @@ void TranslateClientImpl::OnLanguageDetermined(
 }
 
 void TranslateClientImpl::ManualTranslateWhenReady() {
-  if (GetLanguageState().source_language().empty()) {
+  if (GetLanguageState().original_language().empty()) {
     manual_translate_on_ready_ = true;
   } else {
     GetTranslateManager()->InitiateManualTranslation();

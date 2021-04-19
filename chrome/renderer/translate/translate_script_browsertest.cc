@@ -50,7 +50,7 @@ const char kElementJs[] =
     "  return {"
     "    isAvailable: function() { return true; },"
     "    restore: function() {},"
-    "    translatePage: function(sourceLang, targetLang, cb) {"
+    "    translatePage: function(originalLang, targetLang, cb) {"
     "      if (window['throwUnexpectedScriptError']) {"
     "        throw 'all your base are belong to us';"
     "      }"

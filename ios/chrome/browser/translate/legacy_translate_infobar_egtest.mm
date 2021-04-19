@@ -260,7 +260,7 @@ using translate::LanguageDetectionController;
       base::UTF8ToUTF16("__gCrWeb.message.invokeOnHost({"
                         "  'command': 'translate.status',"
                         "  'errorCode': 0,"
-                        "  'pageSourceLanguage': 'fr',"
+                        "  'originalPageLanguage': 'fr',"
                         "  'translationTime': 0});"));
 }
 

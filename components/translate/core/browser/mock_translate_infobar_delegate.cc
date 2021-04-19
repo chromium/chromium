@@ -52,14 +52,14 @@ MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
     bool is_off_the_record,
     translate::TranslateStep step,
-    const std::string& source_language,
+    const std::string& original_language,
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     bool triggered_from_menu)
     : translate::TranslateInfoBarDelegate(translate_manager,
                                           is_off_the_record,
                                           step,
-                                          source_language,
+                                          original_language,
                                           target_language,
                                           error_type,
                                           triggered_from_menu) {}
@@ -67,7 +67,7 @@ MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
 MockTranslateInfoBarDelegate::~MockTranslateInfoBarDelegate() {}
 
 MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
-    const std::string& source_language,
+    const std::string& original_language,
     const std::string& target_language) {
   pref_service_ =
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -84,8 +84,8 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
   delegate_ = std::make_unique<MockTranslateInfoBarDelegate>(
       manager_->GetWeakPtr(), false,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      source_language, target_language, translate::TranslateErrors::Type::NONE,
-      false);
+      original_language, target_language,
+      translate::TranslateErrors::Type::NONE, false);
 }
 
 MockTranslateInfoBarDelegateFactory::~MockTranslateInfoBarDelegateFactory() {}

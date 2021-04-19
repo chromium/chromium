@@ -233,10 +233,10 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
   // an infobar, it must be done after that.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
-                     weak_pointer_factory_.GetWeakPtr(),
-                     translate_manager_->GetLanguageState()->source_language(),
-                     0));
+      base::BindOnce(
+          &ContentTranslateDriver::InitiateTranslation,
+          weak_pointer_factory_.GetWeakPtr(),
+          translate_manager_->GetLanguageState()->original_language(), 0));
 }
 
 // content::WebContentsObserver methods
@@ -329,7 +329,7 @@ void ContentTranslateDriver::RegisterPage(
 
 void ContentTranslateDriver::OnPageTranslated(
     bool cancelled,
-    const std::string& source_lang,
+    const std::string& original_lang,
     const std::string& translated_lang,
     TranslateErrors::Type error_type) {
   if (cancelled) {
@@ -339,9 +339,10 @@ void ContentTranslateDriver::OnPageTranslated(
     return;
   }
 
-  translate_manager_->PageTranslated(source_lang, translated_lang, error_type);
+  translate_manager_->PageTranslated(
+      original_lang, translated_lang, error_type);
   for (auto& observer : translation_observers_)
-    observer.OnPageTranslated(source_lang, translated_lang, error_type);
+    observer.OnPageTranslated(original_lang, translated_lang, error_type);
 }
 
 void ContentTranslateDriver::GetLanguageDetectionModel(

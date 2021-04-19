@@ -145,11 +145,11 @@ class TranslatePrefs {
   // Translate is enabled.
   void ResetToDefaults();
 
-  // Before adding to, removing from, or checking the block list the source
+  // Before adding to, removing from, or checking the block list the original
   // language is converted to its translate synonym.
-  bool IsBlockedLanguage(base::StringPiece source_language) const;
-  void BlockLanguage(base::StringPiece source_language);
-  void UnblockLanguage(base::StringPiece source_language);
+  bool IsBlockedLanguage(base::StringPiece original_language) const;
+  void BlockLanguage(base::StringPiece original_language);
+  void UnblockLanguage(base::StringPiece original_language);
 
   // Adds the language to the language list at chrome://settings/languages.
   // If the param |force_blocked| is set to true, the language is added to the
@@ -210,23 +210,23 @@ class TranslatePrefs {
 
   bool HasLanguagePairsToAlwaysTranslate() const;
 
-  bool IsLanguagePairOnAlwaysTranslateList(base::StringPiece source_language,
+  bool IsLanguagePairOnAlwaysTranslateList(base::StringPiece original_language,
                                            base::StringPiece target_language);
-  // Converts the source and target language to their translate synonym and
+  // Converts the original and target language to their translate synonym and
   // adds the pair to the always translate dict.
-  void AddLanguagePairToAlwaysTranslateList(base::StringPiece source_language,
+  void AddLanguagePairToAlwaysTranslateList(base::StringPiece original_language,
                                             base::StringPiece target_language);
-  // Removes the translate synonym of source_language from the always
+  // Removes the translate synonym of original_language from the always
   // translate dict.
   void RemoveLanguagePairFromAlwaysTranslateList(
-      base::StringPiece source_language,
+      base::StringPiece original_language,
       base::StringPiece target_language);
 
   // Sets the always translate state for a language.
   // The always translate language list is actually a dict mapping
   // source_language -> target_language.  We use the current target language
   // when adding |language| to the dict.
-  void SetLanguageAlwaysTranslateState(base::StringPiece source_language,
+  void SetLanguageAlwaysTranslateState(base::StringPiece original_language,
                                        bool always_translate);
 
   // Gets the languages that are set to always translate formatted as Chrome
@@ -287,7 +287,7 @@ class TranslatePrefs {
 
   bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
                             base::StringPiece language);
-  bool ShouldAutoTranslate(base::StringPiece source_language,
+  bool ShouldAutoTranslate(base::StringPiece original_language,
                            std::string* target_language);
 
   // Stores and retrieves the last-observed translate target language. Used to
