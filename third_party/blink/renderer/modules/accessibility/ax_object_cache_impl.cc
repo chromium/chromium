@@ -557,7 +557,7 @@ AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
 
 
 AXObject* AXObjectCacheImpl::FocusedObject() {
-  return GetOrCreateFocusedObjectFromNode(this->FocusedElement());
+  return GetOrCreateFocusedObjectFromNode(FocusedElement());
 }
 
 AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
@@ -2692,7 +2692,7 @@ Settings* AXObjectCacheImpl::GetSettings() {
 }
 
 bool AXObjectCacheImpl::InlineTextBoxAccessibilityEnabled() {
-  Settings* settings = this->GetSettings();
+  Settings* settings = GetSettings();
   if (!settings)
     return false;
   return settings->GetInlineTextBoxAccessibilityEnabled();
@@ -2879,7 +2879,7 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
     UpdateActiveAriaModalDialog(new_focused_element);
 
   DeferTreeUpdate(&AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout,
-                  this->FocusedElement());
+                  FocusedElement());
 }
 
 // Check if the focused node is inside an active aria-modal dialog. If so, we

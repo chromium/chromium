@@ -39,7 +39,7 @@ void MIDIAccessInitializer::ContextDestroyed() {
 }
 
 ScriptPromise MIDIAccessInitializer::Start() {
-  ScriptPromise promise = this->Promise();
+  ScriptPromise promise = Promise();
 
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =

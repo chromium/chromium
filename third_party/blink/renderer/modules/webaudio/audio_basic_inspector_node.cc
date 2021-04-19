@@ -52,7 +52,7 @@ void AudioBasicInspectorHandler::CheckNumberOfChannelsForInput(
   DCHECK(Context()->IsAudioThread());
   Context()->AssertGraphOwner();
 
-  DCHECK_EQ(input, &this->Input(0));
+  DCHECK_EQ(input, &Input(0));
 
   unsigned number_of_channels = input->NumberOfChannels();
 

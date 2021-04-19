@@ -392,7 +392,7 @@ TEST_F(MediaControlsImplTest, HideAndReset) {
 }
 
 TEST_F(MediaControlsImplTest, ResetDoesNotTriggerInitialLayout) {
-  Document& document = this->GetDocument();
+  Document& document = GetDocument();
   int old_element_count = document.GetStyleEngine().StyleForElementCount();
   // Also assert that there are no layouts yet.
   ASSERT_EQ(0, old_element_count);

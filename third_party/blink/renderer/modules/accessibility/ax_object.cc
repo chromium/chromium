@@ -972,7 +972,7 @@ void AXObject::EnsureCorrectParentComputation() {
 
 const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(
     AOMStringProperty property) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return g_null_atom;
 
@@ -981,7 +981,7 @@ const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(
 
 Element* AXObject::GetAOMPropertyOrARIAAttribute(
     AOMRelationProperty property) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return nullptr;
 
@@ -990,7 +990,7 @@ Element* AXObject::GetAOMPropertyOrARIAAttribute(
 
 bool AXObject::HasAOMProperty(AOMRelationListProperty property,
                               HeapVector<Member<Element>>& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1000,7 +1000,7 @@ bool AXObject::HasAOMProperty(AOMRelationListProperty property,
 bool AXObject::HasAOMPropertyOrARIAAttribute(
     AOMRelationListProperty property,
     HeapVector<Member<Element>>& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1009,7 +1009,7 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMBooleanProperty property,
                                              bool& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1037,7 +1037,7 @@ bool AXObject::AOMPropertyOrARIAAttributeIsFalse(
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMUIntProperty property,
                                              uint32_t& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1049,7 +1049,7 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(AOMUIntProperty property,
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMIntProperty property,
                                              int32_t& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1061,7 +1061,7 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(AOMIntProperty property,
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMFloatProperty property,
                                              float& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1073,7 +1073,7 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(AOMFloatProperty property,
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMStringProperty property,
                                              AtomicString& result) const {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return false;
 
@@ -1421,7 +1421,7 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
 }
 
 void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
-  Element* element = this->GetElement();
+  Element* element = GetElement();
   if (!element)
     return;
 
@@ -1847,7 +1847,7 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
 
   // Native checked state
   if (role != ax::mojom::blink::Role::kToggleButton) {
-    const Node* node = this->GetNode();
+    const Node* node = GetNode();
     if (!node)
       return ax::mojom::blink::CheckedState::kNone;
 

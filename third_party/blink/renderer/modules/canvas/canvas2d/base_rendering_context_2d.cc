@@ -1284,7 +1284,7 @@ void BaseRenderingContext2D::drawImage(
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
-  FloatSize default_object_size(this->Width(), this->Height());
+  FloatSize default_object_size(Width(), Height());
   FloatSize source_rect_size = image_source_internal->ElementSize(
       default_object_size,
       RespectImageOrientationInternal(image_source_internal));

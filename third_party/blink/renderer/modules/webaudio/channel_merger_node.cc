@@ -72,7 +72,7 @@ scoped_refptr<ChannelMergerHandler> ChannelMergerHandler::Create(
 }
 
 void ChannelMergerHandler::Process(uint32_t frames_to_process) {
-  AudioNodeOutput& output = this->Output(0);
+  AudioNodeOutput& output = Output(0);
   DCHECK_EQ(frames_to_process, output.Bus()->length());
 
   unsigned number_of_output_channels = output.NumberOfChannels();
@@ -80,7 +80,7 @@ void ChannelMergerHandler::Process(uint32_t frames_to_process) {
 
   // Merge multiple inputs into one output.
   for (unsigned i = 0; i < number_of_output_channels; ++i) {
-    AudioNodeInput& input = this->Input(i);
+    AudioNodeInput& input = Input(i);
     DCHECK_EQ(input.NumberOfChannels(), 1u);
     AudioChannel* output_channel = output.Bus()->Channel(i);
     if (input.IsConnected()) {

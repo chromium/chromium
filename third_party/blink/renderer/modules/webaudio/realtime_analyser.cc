@@ -129,7 +129,7 @@ void RealtimeAnalyser::DoFFTAnalysis() {
 
   // Unroll the input buffer into a temporary buffer, where we'll apply an
   // analysis window followed by an FFT.
-  uint32_t fft_size = this->FftSize();
+  uint32_t fft_size = FftSize();
 
   AudioFloatArray temporary_buffer(fft_size);
   float* input_buffer = input_buffer_.Data();
@@ -276,7 +276,7 @@ void RealtimeAnalyser::GetFloatTimeDomainData(
   DCHECK(IsMainThread());
   DCHECK(destination_array);
 
-  unsigned fft_size = this->FftSize();
+  unsigned fft_size = FftSize();
   size_t len =
       std::min(static_cast<size_t>(fft_size), destination_array->length());
   if (len > 0) {
@@ -303,7 +303,7 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
   DCHECK(IsMainThread());
   DCHECK(destination_array);
 
-  unsigned fft_size = this->FftSize();
+  unsigned fft_size = FftSize();
   size_t len =
       std::min(static_cast<size_t>(fft_size), destination_array->length());
   if (len > 0) {

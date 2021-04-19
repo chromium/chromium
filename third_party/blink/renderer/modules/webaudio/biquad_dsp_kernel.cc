@@ -95,7 +95,7 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
                                          const float* gain,
                                          const float* detune) {
   // Convert from Hertz to normalized frequency 0 -> 1.
-  double nyquist = this->Nyquist();
+  double nyquist = Nyquist();
 
   biquad_.SetHasSampleAccurateValues(number_of_frames > 1);
 

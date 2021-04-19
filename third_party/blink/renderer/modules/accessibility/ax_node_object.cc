@@ -1053,7 +1053,7 @@ void AXNodeObject::AccessibilityChildrenFromAOMProperty(
 }
 
 bool AXNodeObject::IsMultiline() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return false;
 
@@ -1124,7 +1124,7 @@ Element* AXNodeObject::MenuItemElementForMenu() const {
 }
 
 Element* AXNodeObject::MouseButtonListener() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return nullptr;
 
@@ -1176,7 +1176,7 @@ bool AXNodeObject::IsAXNodeObject() const {
 }
 
 bool AXNodeObject::IsControl() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return false;
 
@@ -1186,7 +1186,7 @@ bool AXNodeObject::IsControl() const {
 }
 
 bool AXNodeObject::IsControllingVideoElement() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return true;
 
@@ -1235,7 +1235,7 @@ bool AXNodeObject::IsFieldset() const {
 }
 
 bool AXNodeObject::IsHovered() const {
-  if (Node* node = this->GetNode())
+  if (Node* node = GetNode())
     return node->IsHovered();
   return false;
 }
@@ -1305,7 +1305,7 @@ bool AXNodeObject::IsMultiSelectable() const {
 }
 
 bool AXNodeObject::IsNativeImage() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return false;
 
@@ -1619,13 +1619,13 @@ bool AXNodeObject::IsRequired() const {
 bool AXNodeObject::CanvasHasFallbackContent() const {
   if (IsDetached())
     return false;
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   return IsA<HTMLCanvasElement>(node) && node->hasChildren();
 }
 
 int AXNodeObject::HeadingLevel() const {
   // headings can be in block flow and non-block flow
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return 0;
 
@@ -4008,7 +4008,7 @@ double AXNodeObject::EstimatedLoadingProgress() const {
 //
 
 Element* AXNodeObject::ActionElement() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return nullptr;
 
@@ -4024,7 +4024,7 @@ Element* AXNodeObject::ActionElement() const {
 }
 
 Element* AXNodeObject::AnchorElement() const {
-  Node* node = this->GetNode();
+  Node* node = GetNode();
   if (!node)
     return nullptr;
 
@@ -4319,7 +4319,7 @@ void AXNodeObject::SelectionChanged() {
 
 void AXNodeObject::HandleAriaExpandedChanged() {
   // Find if a parent of this object should handle aria-expanded changes.
-  AXObject* container_parent = this->ParentObject();
+  AXObject* container_parent = ParentObject();
   while (container_parent) {
     bool found_parent = false;
 
@@ -4881,7 +4881,7 @@ String AXNodeObject::NativeTextAlternative(
 
   // Document.
   if (IsWebArea()) {
-    Document* document = this->GetDocument();
+    Document* document = GetDocument();
     if (document) {
       name_from = ax::mojom::blink::NameFrom::kAttribute;
       if (name_sources) {

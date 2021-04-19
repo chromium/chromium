@@ -204,7 +204,7 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource() {
   if (!frame)
     return nullptr;
 
-  frame->SetOriginClean(this->OriginClean());
+  frame->SetOriginClean(OriginClean());
   return frame;
 }
 
@@ -230,7 +230,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
   scoped_refptr<StaticBitmapImage> image = GetImage();
   if (!image)
     return nullptr;
-  image->SetOriginClean(this->OriginClean());
+  image->SetOriginClean(OriginClean());
   // Before discarding the image resource, we need to flush pending render ops
   // to fully resolve the snapshot.
   image->PaintImageForCurrentFrame().FlushPendingSkiaOps();

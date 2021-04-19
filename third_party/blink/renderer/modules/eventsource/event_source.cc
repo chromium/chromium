@@ -126,7 +126,7 @@ void EventSource::Connect() {
   DCHECK(!loader_);
   DCHECK(GetExecutionContext());
 
-  ExecutionContext& execution_context = *this->GetExecutionContext();
+  ExecutionContext& execution_context = *GetExecutionContext();
   ResourceRequest request(current_url_);
   request.SetHttpMethod(http_names::kGET);
   request.SetHttpHeaderField(http_names::kAccept, "text/event-stream");

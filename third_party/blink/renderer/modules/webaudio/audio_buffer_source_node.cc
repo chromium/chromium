@@ -181,7 +181,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   DCHECK(bus);
   DCHECK(Buffer());
 
-  unsigned number_of_channels = this->NumberOfChannels();
+  unsigned number_of_channels = NumberOfChannels();
   unsigned bus_number_of_channels = bus->NumberOfChannels();
 
   bool channel_count_good =

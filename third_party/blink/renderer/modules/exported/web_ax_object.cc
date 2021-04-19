@@ -1266,7 +1266,7 @@ void WebAXObject::Swap(WebAXObject& other) {
 
   AXObject* temp = private_.Get();
   DCHECK(temp) << "|private_| should not be null.";
-  this->Assign(other);
+  Assign(other);
   other = temp;
 }
 
