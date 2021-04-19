@@ -200,6 +200,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
     }
     return size;
   }
+  gfx::Size GetMinimumSize() const override { return gfx::Size(50, 50); }
 
   void ComboboxChanged() {
     int index = combobox_->GetSelectedIndex();
