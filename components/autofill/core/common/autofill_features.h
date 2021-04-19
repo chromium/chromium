@@ -25,6 +25,7 @@ extern const base::Feature kAutofillAddressEnhancementVotes;
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 extern const base::Feature kAutofillAllowNonHttpActivation;
+extern const base::Feature kAutofillCacheQueryResponses;
 extern const base::Feature kAutofillCreateDataForTest;
 extern const base::Feature kAutofillDisableFilling;
 extern const base::Feature kAutofillDisableAddressImport;
