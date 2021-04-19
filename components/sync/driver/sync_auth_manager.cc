@@ -53,12 +53,48 @@ constexpr net::BackoffEntry::Policy kRequestAccessTokenBackoffPolicy = {
     false,
 };
 
+// Used when SyncRetryFirstTokenFetchAttemptImmediately is enabled.
+constexpr net::BackoffEntry::Policy
+    kIgnoreFirstErrorRequestAccessTokenBackoffPolicy = {
+        // Number of initial errors (in sequence) to ignore before applying
+        // exponential back-off rules.
+        1,
+
+        // Initial delay for exponential back-off in ms.
+        2000,
+
+        // Factor by which the waiting time will be multiplied.
+        2,
+
+        // Fuzzing percentage. ex: 10% will spread requests randomly
+        // between 90%-100% of the calculated time.
+        0.2,  // 20%
+
+        // Maximum amount of time we are willing to delay our request in ms.
+        // TODO(crbug.com/246686): We should retry RequestAccessToken on
+        // connection state change after backoff.
+        1000 * 3600 * 4,  // 4 hours.
+
+        // Time to keep an entry from being discarded even when it
+        // has no significant state, -1 to never discard.
+        -1,
+
+        // Don't use initial delay unless the last request was an error.
+        false,
+};
+
 }  // namespace
 
 // Enables the retry of the token fetch without backoff on the first fetch
 // cancellation.
 const base::Feature kSyncRetryFirstCanceledTokenFetch = {
     "SyncRetryFirstCanceledTokenFetch", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables the retry of the token fetch without backoff after the first failure.
+// TODO(crbug.com/1097054): remove once rolled out.
+const base::Feature kSyncRetryFirstTokenFetchAttemptImmediately = {
+    "SyncRetryFirstTokenFetchAttemptImmediately",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 SyncAuthManager::SyncAuthManager(
     signin::IdentityManager* identity_manager,
@@ -67,7 +103,11 @@ SyncAuthManager::SyncAuthManager(
     : identity_manager_(identity_manager),
       account_state_changed_callback_(account_state_changed),
       credentials_changed_callback_(credentials_changed),
-      request_access_token_backoff_(&kRequestAccessTokenBackoffPolicy) {
+      request_access_token_backoff_(
+          base::FeatureList::IsEnabled(
+              kSyncRetryFirstTokenFetchAttemptImmediately)
+              ? &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy
+              : &kRequestAccessTokenBackoffPolicy) {
   // |identity_manager_| can be null if local Sync is enabled.
 }
 
