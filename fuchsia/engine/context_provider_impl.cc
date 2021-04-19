@@ -36,11 +36,13 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -146,9 +148,6 @@ bool SetContentDirectoriesArgsAndLaunchInfo(
       return false;
     }
 
-    // Note that this leaks the directory in the case in which some later
-    // stage of CreateContext() fails. This will be fixed as part of migrating
-    // to launching WebEngine instances as Components.
     const base::FilePath kContentDirectories("/content-directories");
     launch_info->flat_namespace->paths.push_back(
         kContentDirectories.Append(directory.name()).value());
@@ -651,7 +650,6 @@ void ContextProviderImpl::Create(
   // in the web instance component manifest to be satisfied by the caller-
   // supplied service directory. This ensures that the instance cannot access
   // any services outside those provided by the caller.
-  // TODO(1010222): Introduce an isolated nested-environment to host instances.
   launch_info.additional_services = fuchsia::sys::ServiceList::New();
   launch_info.additional_services->names = LoadWebInstanceSandboxServices();
   launch_info.additional_services->host_directory =
@@ -662,14 +660,10 @@ void ContextProviderImpl::Create(
   launch_info.arguments = std::vector<std::string>(
       launch_args.argv().begin() + 1, launch_args.argv().end());
 
-  // Launch the component with the accumulated settings.
-  fuchsia::sys::ComponentControllerPtr component_controller;
-  base::ComponentContextForProcess()
-      ->svc()
-      ->Connect<fuchsia::sys::Launcher>()
-      ->CreateComponent(std::move(launch_info),
-                        component_controller.NewRequest());
-  component_controller->Detach();
+  // Launch the component with the accumulated settings.  The Component will
+  // self-terminate when the fuchsia.web.Context client disconnects.
+  IsolatedEnvironmentLauncher()->CreateComponent(std::move(launch_info),
+                                                 nullptr /* controller */);
 
   // Route the fuchsia.web.Context request to the new Component.
   component_services->Connect(std::move(context_request));
@@ -680,4 +674,50 @@ void ContextProviderImpl::EnableDevTools(
     EnableDevToolsCallback callback) {
   devtools_listeners_.AddInterfacePtr(listener.Bind());
   callback();
+}
+
+fuchsia::sys::Launcher* ContextProviderImpl::IsolatedEnvironmentLauncher() {
+  if (isolated_environment_launcher_)
+    return isolated_environment_launcher_.get();
+
+  // Create the nested isolated Environment. This environment provides only the
+  // fuchsia.sys.Loader service, which is required to allow the Launcher to
+  // resolve the web instance package. All other services are provided
+  // explicitly to each web instance, from those passed to |CreateContext()|.
+  auto environment = base::ComponentContextForProcess()
+                         ->svc()
+                         ->Connect<fuchsia::sys::Environment>();
+
+  // Populate a ServiceList providing only the Loader service.
+  auto services = fuchsia::sys::ServiceList::New();
+  services->names.push_back(fuchsia::sys::Loader::Name_);
+  fidl::InterfaceHandle<::fuchsia::io::Directory> services_channel;
+  environment->GetDirectory(services_channel.NewRequest().TakeChannel());
+  services->host_directory = services_channel.TakeChannel();
+
+  // Instantiate the isolated environment. This ContextProvider instance's PID
+  // is included in the label to ensure that concurrent service instances
+  // launched in the same Environment (e.g. during tests) do not clash.
+  fuchsia::sys::EnvironmentPtr isolated_environment;
+  environment->CreateNestedEnvironment(
+      isolated_environment.NewRequest(),
+      isolated_environment_controller_.NewRequest(),
+      base::StringPrintf("web_instances:%lu", base::Process::Current().Pid()),
+      std::move(services),
+      {.inherit_parent_services = false,
+       .use_parent_runners = false,
+       .delete_storage_on_death = true});
+
+  // The ContextProvider only needs to retain the EnvironmentController and
+  // a connection to the Launcher service for the isolated environment.
+  isolated_environment->GetLauncher(
+      isolated_environment_launcher_.NewRequest());
+  isolated_environment_launcher_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "Launcher disconnected.";
+  });
+  isolated_environment_controller_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "EnvironmentController disconnected.";
+  });
+
+  return isolated_environment_launcher_.get();
 }

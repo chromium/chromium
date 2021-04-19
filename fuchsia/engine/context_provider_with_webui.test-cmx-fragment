@@ -1,0 +1,5 @@
+{
+  "program": {
+    "args": [ "--with-webui" ]
+  }
+}

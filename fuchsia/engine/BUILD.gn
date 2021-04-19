@@ -335,11 +335,21 @@ fuchsia_package_runner("web_engine_installer") {
 # resources, to allow e.g. chrome://gpu to be used.  An installer script is
 # defined, for ease of development.
 
-# TODO(crbug.com/1010222): Remove once all callers have migrated to launching
-# instances directly as Components, or the launcher supports relative component
-# URLs.
+# TODO(crbug.com/1010222): Remove the with-WebUI ContextProvider component
+# definition once all callers have migrated to launching instances directly as
+# Components, or the launcher supports relative component URLs.
+cmc_merge("context_provider_with_webui_manifest") {
+  sources = [
+    "context_provider.cmx",
+    "context_provider_with_webui.test-cmx-fragment",
+  ]
+  output_name = "context_provider_with_webui.cmx"
+  visibility = [ ":*" ]
+}
+
 fuchsia_component("context_provider_with_webui_component") {
-  manifest = "context_provider_with_webui.cmx"
+  deps = [ ":context_provider_with_webui_manifest" ]
+  manifest = "$target_out_dir/context_provider_with_webui.cmx"
   manifest_output_name = "context_provider"
   data_deps = [ ":web_engine_exe" ]
   visibility = [ ":*" ]

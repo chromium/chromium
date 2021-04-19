@@ -104,19 +104,23 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
   return 0;
 }
 
+// Fake implementation of the Launcher for the isolated environment in which
+// web instance Components are launched.
 class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
  public:
   using CreateComponentCallback =
       base::OnceCallback<void(const base::CommandLine&)>;
 
-  FakeSysLauncher(sys::OutgoingDirectory* outgoing_directory,
-                  fuchsia::sys::Launcher* real_launcher)
-      : scoped_binding_(outgoing_directory, this),
-        real_launcher_(real_launcher) {}
+  FakeSysLauncher(fuchsia::sys::Launcher* real_launcher)
+      : real_launcher_(real_launcher) {}
   ~FakeSysLauncher() final {}
 
   void set_create_component_callback(CreateComponentCallback callback) {
     create_component_callback_ = std::move(callback);
+  }
+
+  void Bind(fidl::InterfaceRequest<fuchsia::sys::Launcher> request) {
+    bindings_.AddBinding(this, std::move(request));
   }
 
   // fuchsia::sys::Launcher implementation.
@@ -181,14 +185,96 @@ class FakeSysLauncher : public fuchsia::sys::testing::Launcher_TestBase {
     real_launcher_->CreateComponent(std::move(launch_info), std::move(request));
   }
 
+ private:
   void NotImplemented_(const std::string& name) final {
     ADD_FAILURE() << "Unexpected call: " << name;
   }
 
- private:
-  base::ScopedServiceBinding<fuchsia::sys::Launcher> scoped_binding_;
+  fidl::BindingSet<fuchsia::sys::Launcher> bindings_;
   fuchsia::sys::Launcher* const real_launcher_;
   CreateComponentCallback create_component_callback_;
+};
+
+// Fake implementation of the isolated Environment created by ContextProvider.
+class FakeNestedSysEnvironment
+    : public fuchsia::sys::testing::Environment_TestBase {
+ public:
+  explicit FakeNestedSysEnvironment(FakeSysLauncher* fake_launcher)
+      : fake_launcher_(fake_launcher) {}
+  ~FakeNestedSysEnvironment() final = default;
+
+  void Bind(fidl::InterfaceRequest<fuchsia::sys::Environment> request) {
+    bindings_.AddBinding(this, std::move(request));
+  }
+
+  // fuchsia::sys::Environment implementation.
+  void GetLauncher(
+      fidl::InterfaceRequest<fuchsia::sys::Launcher> launcher_request) final {
+    fake_launcher_->Bind(std::move(launcher_request));
+  }
+
+ private:
+  void NotImplemented_(const std::string& name) final {
+    ADD_FAILURE() << "Unexpected call: " << name;
+  }
+
+  FakeSysLauncher* const fake_launcher_;
+  fidl::BindingSet<fuchsia::sys::Environment> bindings_;
+};
+
+// Fake implementation of the Environment in which the ContextProvider runs.
+class FakeSysEnvironment : public fuchsia::sys::testing::Environment_TestBase {
+ public:
+  FakeSysEnvironment(sys::OutgoingDirectory* outgoing_directory,
+                     fuchsia::sys::Launcher* real_launcher)
+      : bindings_(outgoing_directory, this),
+        fake_launcher_(real_launcher),
+        fake_nested_environment_(&fake_launcher_) {}
+  ~FakeSysEnvironment() final = default;
+
+  FakeSysLauncher& fake_launcher() { return fake_launcher_; }
+
+  // fuchsia::sys::Environment implementation.
+  void CreateNestedEnvironment(
+      fidl::InterfaceRequest<fuchsia::sys::Environment> environment_request,
+      fidl::InterfaceRequest<fuchsia::sys::EnvironmentController>
+          controller_request,
+      std::string label,
+      fuchsia::sys::ServiceListPtr additional_services,
+      fuchsia::sys::EnvironmentOptions options) final {
+    EXPECT_TRUE(environment_request);
+    EXPECT_TRUE(controller_request);
+    EXPECT_FALSE(label.empty());
+
+    // The nested environment should receive only the Loader service.
+    ASSERT_TRUE(additional_services);
+    ASSERT_EQ(additional_services->names.size(), 1u);
+    EXPECT_EQ(additional_services->names[0], "fuchsia.sys.Loader");
+    EXPECT_TRUE(additional_services->host_directory);
+
+    EXPECT_FALSE(options.inherit_parent_services);
+    EXPECT_FALSE(options.use_parent_runners);
+    EXPECT_TRUE(options.delete_storage_on_death);
+
+    fake_nested_environment_.Bind(std::move(environment_request));
+    nested_environment_controller_request_ = std::move(controller_request);
+  }
+  void GetDirectory(zx::channel request) final {
+    base::ComponentContextForProcess()->svc()->CloneChannel(
+        fidl::InterfaceRequest<fuchsia::io::Directory>(std::move(request)));
+  }
+
+ private:
+  void NotImplemented_(const std::string& name) final {
+    ADD_FAILURE() << "Unexpected call: " << name;
+  }
+
+  base::ScopedServiceBinding<fuchsia::sys::Environment> bindings_;
+  FakeSysLauncher fake_launcher_;
+  FakeNestedSysEnvironment fake_nested_environment_;
+
+  fidl::InterfaceRequest<fuchsia::sys::EnvironmentController>
+      nested_environment_controller_request_;
 };
 
 fuchsia::web::CreateContextParams BuildCreateContextParams() {
@@ -226,8 +312,8 @@ class ContextProviderImplTest : public base::MultiProcessTest {
       : sys_launcher_(base::ComponentContextForProcess()
                           ->svc()
                           ->Connect<fuchsia::sys::Launcher>()),
-        fake_launcher_(test_component_context_.additional_services(),
-                       sys_launcher_.get()),
+        fake_environment_(test_component_context_.additional_services(),
+                          sys_launcher_.get()),
         provider_(std::make_unique<ContextProviderImpl>()) {
     bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
   }
@@ -294,10 +380,11 @@ class ContextProviderImplTest : public base::MultiProcessTest {
   // context replaces the process' component context.
   fuchsia::sys::LauncherPtr sys_launcher_;
 
-  // Used to replaces the process component context with one providing a fake
-  // fuchsia.sys.Launcher implementation.
+  // Used to replace the process component context with one providing a fake
+  // fuchsia.sys.Environment, through which a nested Environment and fake
+  // Launcher are obtained.
   base::TestComponentContextForProcess test_component_context_;
-  FakeSysLauncher fake_launcher_;
+  FakeSysEnvironment fake_environment_;
 
   std::unique_ptr<ContextProviderImpl> provider_;
   fuchsia::web::ContextProviderPtr provider_ptr_;
@@ -496,7 +583,7 @@ TEST_F(ContextProviderImplTest, WithConfigWithCommandLineArgs) {
 
   base::RunLoop loop;
   provider_->set_config_for_test(std::move(config_dict));
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_TRUE(command.HasSwitch("renderer-process-limit"));
@@ -520,7 +607,7 @@ TEST_F(ContextProviderImplTest, WithConfigWithDisallowedCommandLineArgs) {
 
   base::RunLoop loop;
   provider_->set_config_for_test(std::move(config_dict));
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_FALSE(command.HasSwitch("kittens-are-nice"));
@@ -547,7 +634,7 @@ TEST_F(ContextProviderImplTest, WithConfigWithWronglyTypedCommandLineArgs) {
 
   base::RunLoop loop;
   provider_->set_config_for_test(std::move(config_dict));
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         ADD_FAILURE();
@@ -567,7 +654,7 @@ TEST_F(ContextProviderImplTest, WithConfigWithWronglyTypedCommandLineArgs) {
 // command-line arguments to the Context process.
 TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
   base::RunLoop loop;
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_TRUE(command.HasSwitch(switches::kAllowRunningInsecureContent));
@@ -599,7 +686,7 @@ TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
 
 TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
   base::RunLoop loop;
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII("data-quota-bytes"),
@@ -632,8 +719,9 @@ TEST_F(ContextProviderImplTest, WithGoogleApiKeyValue) {
 
   base::RunLoop loop;
   provider_->set_config_for_test(std::move(config_dict));
-  fake_launcher_.set_create_component_callback(base::BindLambdaForTesting(
-      [&loop, kDummyApiKey](const base::CommandLine& command) {
+  fake_environment_.fake_launcher().set_create_component_callback(
+      base::BindLambdaForTesting([&loop, kDummyApiKey](
+                                     const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey),
                   kDummyApiKey);
@@ -655,7 +743,7 @@ TEST_F(ContextProviderImplTest, WithGoogleApiKeyValue) {
 #if defined(ARCH_CPU_ARM64)
 TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
   base::RunLoop loop;
-  fake_launcher_.set_create_component_callback(
+  fake_environment_.fake_launcher().set_create_component_callback(
       base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
         loop.Quit();
         EXPECT_EQ(command.GetSwitchValueASCII("cdm-data-quota-bytes"),

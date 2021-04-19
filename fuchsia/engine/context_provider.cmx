@@ -11,7 +11,8 @@
       "fuchsia.feedback.ComponentDataRegister",
       "fuchsia.feedback.CrashReportingProductRegister",
       "fuchsia.logger.LogSink",
-      "fuchsia.sys.Launcher"
+      "fuchsia.sys.Environment",
+      "fuchsia.sys.Loader"
     ]
   }
 }

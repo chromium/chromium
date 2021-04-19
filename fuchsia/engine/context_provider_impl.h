@@ -44,11 +44,20 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
       fidl::InterfaceHandle<fuchsia::web::DevToolsListener> listener,
       EnableDevToolsCallback callback) override;
 
+  // Returns the Launcher for the isolated Environment in which web instances
+  // should run. If the Environment does not presently exist then it will be
+  // created.
+  fuchsia::sys::Launcher* IsolatedEnvironmentLauncher();
+
   // Set by configuration tests.
   base::Value config_for_test_;
 
   // The DevToolsListeners registered via the Debug interface.
   fidl::InterfacePtrSet<fuchsia::web::DevToolsListener> devtools_listeners_;
+
+  // Used to manage the isolated Environment that web instances run in.
+  fuchsia::sys::LauncherPtr isolated_environment_launcher_;
+  fuchsia::sys::EnvironmentControllerPtr isolated_environment_controller_;
 };
 
 #endif  // FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_
