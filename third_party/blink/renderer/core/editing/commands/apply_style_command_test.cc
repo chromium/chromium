@@ -155,4 +155,18 @@ TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
   EXPECT_EQ("<div style=\"text-align: center;\">|<br>x</div>",
             GetSelectionTextFromBody());
 }
+
+// This is a regression test for https://crbug.com/1199902
+TEST_F(ApplyStyleCommandTest, StyledInlineElementIsActuallyABlock) {
+  InsertStyleElement("sub { display: block; }");
+  Selection().SetSelection(SetSelectionTextToBody("^<sub>a</sub>|"),
+                           SetSelectionOptions());
+  GetDocument().setDesignMode("on");
+  Element* styled_inline_element = GetDocument().QuerySelector("sub");
+  bool remove_only = true;
+  // Shouldn't crash.
+  MakeGarbageCollected<ApplyStyleCommand>(styled_inline_element, remove_only)
+      ->Apply();
+  EXPECT_EQ("^a|", GetSelectionTextFromBody());
+}
 }  // namespace blink

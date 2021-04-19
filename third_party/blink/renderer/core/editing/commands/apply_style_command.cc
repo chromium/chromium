@@ -1416,8 +1416,8 @@ void ApplyStyleCommand::PushDownInlineStyleAroundNode(
 void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
                                           const EphemeralRange& range,
                                           EditingState* editing_state) {
-  const Position& start = range.StartPosition();
-  const Position& end = range.EndPosition();
+  Position start = range.StartPosition();
+  Position end = range.EndPosition();
   DCHECK(Position::CommonAncestorTreeScope(start, end)) << start << " " << end;
   // FIXME: We should assert that start/end are not in the middle of a text
   // node.
@@ -1462,21 +1462,25 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
   if (editing_state->IsAborted())
     return;
 
-  // The s and e variables store the positions used to set the ending selection
-  // after style removal takes place. This will help callers to recognize when
-  // either the start node or the end node are removed from the document during
-  // the work of this function.
   // If pushDownInlineStyleAroundNode has pruned start.anchorNode() or
   // end.anchorNode(), use pushDownStart or pushDownEnd instead, which
   // pushDownInlineStyleAroundNode won't prune.
-  Position s = start.IsNull() || start.IsOrphan() ? push_down_start : start;
-  Position e = end.IsNull() || end.IsOrphan() ? push_down_end : end;
+  if (start.IsNull() || start.IsOrphan())
+    start = push_down_start;
+  if (end.IsNull() || end.IsOrphan())
+    end = push_down_end;
 
   // Current ending selection resetting algorithm assumes |start| and |end|
   // are in a same DOM tree even if they are not in document.
   if (!Position::CommonAncestorTreeScope(start, end))
     return;
 
+  // The s and e variables store the positions used to set the ending selection
+  // after style removal takes place. This will help callers to recognize when
+  // either the start node or the end node are removed from the document during
+  // the work of this function.
+  Position s = start;
+  Position e = end;
   Node* node = start.AnchorNode();
   while (node) {
     Node* next_to_process = nullptr;
