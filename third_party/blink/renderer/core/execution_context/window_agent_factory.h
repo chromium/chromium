@@ -20,7 +20,6 @@ class Isolate;
 
 namespace blink {
 
-class Agent;
 class SecurityOrigin;
 class WindowAgent;
 
@@ -50,10 +49,6 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
                                  bool is_origin_agent_cluster);
 
   void Trace(Visitor*) const;
-
-  // Helpers for debugging via crash logging.
-  bool IsUniversalAccessAgent(const Agent& agent) const;
-  bool IsFileUrlAgent(const Agent& agent) const;
 
  private:
   struct SchemeAndRegistrableDomain {

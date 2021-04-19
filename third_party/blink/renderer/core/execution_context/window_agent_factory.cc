@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
-
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -90,14 +89,6 @@ void WindowAgentFactory::Trace(Visitor* visitor) const {
   visitor->Trace(opaque_origin_agents_);
   visitor->Trace(origin_keyed_agent_cluster_agents_);
   visitor->Trace(tuple_origin_agents_);
-}
-
-bool WindowAgentFactory::IsUniversalAccessAgent(const Agent& agent) const {
-  return universal_access_agent_.Get() == &agent;
-}
-
-bool WindowAgentFactory::IsFileUrlAgent(const Agent& agent) const {
-  return file_url_agent_.Get() == &agent;
 }
 
 // static
