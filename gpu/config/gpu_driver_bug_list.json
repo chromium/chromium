@@ -2118,21 +2118,6 @@
       ]
     },
     {
-      "id": 237,
-      "description": "eglSwapBuffers intermittently fails on Android when app goes to background",
-      "cr_bugs": [744678],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "9.0"
-        }
-      },
-      "features": [
-        "dont_disable_webgl_when_compositor_context_lost"
-      ]
-    },
-    {
       "id": 239,
       "description": "Reset TexImage2D base level to 0 on Intel Mac 10.12.4",
       "cr_bugs": [705865],

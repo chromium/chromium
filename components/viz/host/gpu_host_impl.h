@@ -262,7 +262,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
   // set to true in DidInitialize(), where GPU service has started and GPU
   // driver bug workarounds have been computed and sent back.
   bool wake_up_gpu_before_drawing_ = false;
-  bool dont_disable_webgl_when_compositor_context_lost_ = false;
 
   // Track the URLs of the pages which have live offscreen contexts, assumed to
   // be associated with untrusted content such as WebGL. For best robustness,
