@@ -755,9 +755,16 @@ different values that you could emit.
 For more information, see [sparse_histograms.h](https://cs.chromium.org/chromium/src/base/metrics/sparse_histogram.h).
 
 
-# Team Documentation
+# Becoming a Metrics Reviewer
 
-## Reviewing Metrics CLs
+Any Chromium committer who is also a Google employee is eligible to become a 
+metrics reviewer. Please follow the instructions at [go/reviewing-metrics](https://goto.google.com/reviewing-metrics). 
+This consists of reviewing our training materials and passing an informational 
+quiz. Since metrics have a direct impact on internal systems and have privacy 
+considerations, we're currently only adding Googlers into this program.
+
+
+# Reviewing Metrics CLs
 
 If you are a metric OWNER, you have the serious responsibility of ensuring
 Chrome's data collection is following best practices. If there's any concern
@@ -767,14 +774,14 @@ chromium-metrics-reviews@google.com.
 When reviewing metrics CLs, look at the following, listed in approximate order
 of importance:
 
-### Privacy
+## Privacy
 
 Does anything tickle your privacy senses? (Googlers, see
 [go/uma-privacy](https://goto.google.com/uma-privacy) for guidelines.)
 
 **Please escalate if there's any doubt!**
 
-### Clarity
+## Clarity
 
 Is the metadata clear enough for [all Chromies](#Understandable-to-Everyone) to
 understand what the metric is recording? Consider the histogram name,
@@ -788,12 +795,12 @@ Note: Clarity is a bit less important for very niche metrics used only by a
 couple of engineers. However, it's hard to assess the metric design and
 correctness if the metadata is especially unclear.
 
-### Metric design
+## Metric design
 
 * Does the metric definition make sense?
 * Will the resulting data be interpretable at analysis time?
 
-### Correctness
+## Correctness
 
 Is the histogram being recorded correctly?
 
@@ -831,7 +838,7 @@ might be to update the metadata, or it might be to update the client
 logic. Guide this decision by considering what data will be more easily
 interpretable and what data will have hidden surprises/gotchas.
 
-### Sustainability
+## Sustainability
 
 * Is the CL adding a reasonable number of metrics/buckets?
   * When reviewing a CL that is trying to add many metrics at once, guide the CL
@@ -846,7 +853,7 @@ interpretable and what data will have hidden surprises/gotchas.
 * Are expiry dates being set
   [appropriately](#How-to-choose-expiry-for-histograms)?
 
-### Everything Else!
+## Everything Else!
 
 This document describes many other nuances that are important for defining and
 recording useful metrics. Check CLs for these other types of issues as well.
@@ -854,27 +861,8 @@ recording useful metrics. Check CLs for these other types of issues as well.
 And, as you would with a language style guide, periodically re-review the doc to
 stay up to date on the details.
 
-### Becoming a Metrics Owner
 
-If you would like to be listed as one of the OWNERS for metrics metadata, reach
-out to one of the existing //base/metrics/OWNERS. Similar to language
-readability review teams, we have a reverse shadow onboarding process:
-
-1. First, read through this document to get up to speed on best practices.
-
-2. Partner up with an experienced reviewer from //base/metrics/OWNERS.
-
-3. Join the cs/chrome-metrics.gwsq.
-
-   Note: This step is optional if you are not on the metrics team. Still,
-   consider temporarily joining the metrics gwsq as a quick way to get a breadth
-   of experience. You can remove yourself once your training is completed.
-
-4. Start reviewing CLs! Once you're ready to approve a CL, add a comment like "I
-   am currently ramping up as a metrics reviewer, +username for OWNERS approval"
-   and add your partner as a reviewer on the CL. Once at a point where there's
-   pretty good alignment in the code review feedback, your partner will add you
-   to the OWNERS file.
+# Team Documentation
 
 
 ## Processing histograms.xml
