@@ -14,6 +14,7 @@
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_service.mojom.h"
@@ -70,17 +71,22 @@ class UtilityProcessSandboxBrowserTest
     done_closure_ =
         base::BindOnce(&UtilityProcessSandboxBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure());
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &UtilityProcessSandboxBrowserTest::RunUtilityProcessOnIOThread,
-            base::Unretained(this)));
-    run_loop.Run();
+    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+      RunUtilityProcessOnProcessThread();
+    } else {
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&UtilityProcessSandboxBrowserTest::
+                                        RunUtilityProcessOnProcessThread,
+                                    base::Unretained(this)));
+      run_loop.Run();
+    }
   }
 
  private:
-  void RunUtilityProcessOnIOThread() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  void RunUtilityProcessOnProcessThread() {
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
     UtilityProcessHost* host = new UtilityProcessHost();
     host->SetSandboxType(GetParam());
     host->SetName(u"SandboxTestProcess");
@@ -90,12 +96,14 @@ class UtilityProcessSandboxBrowserTest
     host->GetChildProcess()->BindReceiver(
         service_.BindNewPipeAndPassReceiver());
     service_->GetSandboxStatus(base::BindOnce(
-        &UtilityProcessSandboxBrowserTest::OnGotSandboxStatusOnIOThread,
+        &UtilityProcessSandboxBrowserTest::OnGotSandboxStatusOnProcessThread,
         base::Unretained(this)));
   }
 
-  void OnGotSandboxStatusOnIOThread(int32_t sandbox_status) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  void OnGotSandboxStatusOnProcessThread(int32_t sandbox_status) {
+    DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                            ? content::BrowserThread::UI
+                            : content::BrowserThread::IO);
 
     // Aside from kNoSandbox, every utility process launched explicitly with a
     // sandbox type should always end up with a sandbox.
