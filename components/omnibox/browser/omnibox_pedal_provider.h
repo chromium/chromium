@@ -64,7 +64,7 @@ class OmniboxPedalProvider {
   // Generate a token sequence for text using internal dictionary & delimiters.
   // Returns empty sequence if any delimited part of text is not in dictionary.
   // Note, the ignore_group is applied to eliminate stop words from output.
-  OmniboxPedal::Tokens Tokenize(const std::u16string& text) const;
+  OmniboxPedal::TokenSequence Tokenize(const std::u16string& text) const;
 
   void LoadPedalConcepts();
   OmniboxPedal::SynonymGroup LoadSynonymGroup(

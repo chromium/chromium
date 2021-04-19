@@ -90,8 +90,8 @@ size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
     const std::u16string& match_text) {
-  OmniboxPedal::Tokens match_tokens = Tokenize(match_text);
-  if (match_tokens.empty()) {
+  OmniboxPedal::TokenSequence match_tokens = Tokenize(match_text);
+  if (match_tokens.Size() == 0) {
     return nullptr;
   }
   for (const auto& pedal : pedals_) {
@@ -124,27 +124,26 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
   return found;
 }
 
-OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(
+OmniboxPedal::TokenSequence OmniboxPedalProvider::Tokenize(
     const std::u16string& text) const {
   std::u16string reduced_text = base::i18n::ToLower(text);
-  OmniboxPedal::Tokens match_tokens;
-  match_tokens.reserve(max_tokens_);
+  OmniboxPedal::TokenSequence match_tokens(max_tokens_);
   if (tokenize_characters_.empty()) {
     // Tokenize on Unicode character boundaries when we have no delimiters.
     base::i18n::UTF16CharIterator char_iter(reduced_text);
-    int32_t left = 0;
+    size_t left = 0;
     while (!char_iter.end()) {
       char_iter.Advance();
-      int32_t right = char_iter.array_pos();
+      size_t right = char_iter.array_pos();
       if (right > left) {
         const auto token = reduced_text.substr(left, right - left);
         const auto iter = dictionary_.find(token);
-        if (iter == dictionary_.end() || match_tokens.size() >= max_tokens_) {
+        if (iter == dictionary_.end() || match_tokens.Size() >= max_tokens_) {
           // No Pedal can possibly match because we found a token not
           // present in the token dictionary, or the text has too many tokens.
-          return OmniboxPedal::Tokens();
+          return OmniboxPedal::TokenSequence(0);
         } else {
-          match_tokens.push_back(iter->second);
+          match_tokens.Add(iter->second);
         }
         left = right;
       } else {
@@ -156,17 +155,25 @@ OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(
     StringTokenizer16 tokenizer(reduced_text, tokenize_characters_);
     while (tokenizer.GetNext()) {
       const auto iter = dictionary_.find(tokenizer.token());
-      if (iter == dictionary_.end() || match_tokens.size() >= max_tokens_) {
+      if (iter == dictionary_.end() || match_tokens.Size() >= max_tokens_) {
         // No Pedal can possibly match because we found a token not
         // present in the token dictionary, or the text has too many tokens.
-        return OmniboxPedal::Tokens();
+        return OmniboxPedal::TokenSequence(0);
       } else {
-        match_tokens.push_back(iter->second);
+        match_tokens.Add(iter->second);
       }
     }
   }
 
-  ignore_group_.EraseMatchesIn(&match_tokens);
+  // Note the ignore group is the only one that does full container
+  // element erasure. This is necessary to prevent stop words from
+  // breaking meaningful token sequences. For example, in the case
+  // "make the most of chrome features", "the" must be fully
+  // removed so as to not break detection of sequence "make the most of"
+  // where "the" is removed by preprocessing. It becomes
+  // "make most of" and would not match sequence "make _ most of"
+  // where "the" was merely consumed instead of fully removed.
+  ignore_group_.EraseMatchesIn(match_tokens, true);
 
   return match_tokens;
 }
@@ -248,10 +255,9 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroup(
   for (const auto& synonyms_value : synonyms) {
     DCHECK(synonyms_value.is_list());
     const auto& synonyms_value_list = synonyms_value.GetList();
-    OmniboxPedal::Tokens synonym_all_tokens;
-    synonym_all_tokens.reserve(synonyms_value_list.size());
+    OmniboxPedal::TokenSequence synonym_all_tokens(synonyms_value_list.size());
     for (const auto& token_index_value : synonyms_value_list) {
-      synonym_all_tokens.push_back(token_index_value.GetInt());
+      synonym_all_tokens.Add(token_index_value.GetInt());
     }
     synonym_group.AddSynonym(std::move(synonym_all_tokens));
   }

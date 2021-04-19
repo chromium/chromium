@@ -37,7 +37,78 @@ class OmniboxClient;
 // checking trigger queries against suggested match queries.
 class OmniboxPedal {
  public:
-  typedef std::vector<int> Tokens;
+  struct Token {
+    // Token identifier from the common token dictionary.
+    int id;
+
+    // Index of the next unconsumed token node. Initially this is set to
+    // the token's own index, indicating this token is unconsumed. Calls
+    // to |TokenSequence::Consume| may then update it to greater values,
+    // indicating that this token is consumed.
+    size_t link;
+  };
+
+  // This is a specialized container for the sequence matching algorithm.
+  // It is intended only for single-threaded access by OmniboxPedal classes.
+  class TokenSequence {
+   public:
+    // Construct with reserved size; used when loading real data.
+    explicit TokenSequence(size_t reserve_size);
+
+    // Construct with given sequence of |token_ids|; used by tests.
+    explicit TokenSequence(std::vector<int> token_ids);
+
+    // TODO(orinj): Don't use copies. They were necessary with old algorithm,
+    // but this structure is amenable to efficient resets on kept instances.
+    TokenSequence(const TokenSequence&);
+    TokenSequence(TokenSequence&&);
+    ~TokenSequence();
+
+    // Returns true if all tokens are consumed (true for empty sequences).
+    bool IsFullyConsumed();
+
+    // Returns the number of unconsumed tokens remaining. Used by tests.
+    size_t CountUnconsumed() const;
+
+    // Add token with given |id| to sequence.
+    void Add(int id);
+
+    // Initializes all links in sequence to their own index, indicating
+    // unconsumed state for all. This is needed after calls to Erase.
+    void ResetLinks();
+
+    // Removes one or more instances of |erase_sequence| from this sequence
+    // by erasing token items from the |_tokens| container.
+    // Returns true if this sequence was changed; false if no match is found.
+    bool Erase(const TokenSequence& erase_sequence, bool erase_only_once);
+
+    // Consumes one or more instances of |consume_sequence| from this sequence
+    // by updating links on matching tokens. The container is not modified,
+    // only its contained elements may be mutated.
+    // Returns true if matches were found and consumed; false if no match.
+    bool Consume(const TokenSequence& consume_sequence, bool consume_only_once);
+
+    // Returns the total number of tokens, regardless of consumed status.
+    inline size_t Size() const { return _tokens.size(); }
+
+    // Returns collection memory estimate for tracing.
+    size_t EstimateMemoryUsage() const;
+
+   private:
+    // Returns true if this sequence, starting at |index|, matches given
+    // |sequence|. The |index_mask| can be used to disregard consumed status (0)
+    // or require that all tokens must be unconsumed to match (~0).
+    bool MatchesAt(const TokenSequence& sequence,
+                   size_t index,
+                   size_t index_mask) const;
+
+    // Follows links on tokens starting at |from_index| and returns the first
+    // unconsumed index. Returns |Size()| if no unconsumed token is found.
+    size_t WalkToUnconsumedIndexFrom(size_t from_index);
+
+    // Storage for tokens.
+    std::vector<Token> _tokens;
+  };
 
   struct LabelStrings {
     LabelStrings(int id_hint,
@@ -71,13 +142,10 @@ class OmniboxPedal {
     // Removes one or more matching synonyms from given |remaining| sequence if
     // any are found.  Returns true if checking may continue; false if no more
     // checking is required because what remains cannot be a concept match.
-    bool EraseMatchesIn(Tokens* remaining) const;
+    bool EraseMatchesIn(TokenSequence& remaining, bool fully_erase) const;
 
     // Add a synonym token sequence to this group.
-    void AddSynonym(Tokens&& synonym);
-
-    // Increase acceptable input size range according to this group's content.
-    void UpdateTokenSequenceSizeRange(size_t* out_min, size_t* out_max) const;
+    void AddSynonym(TokenSequence synonym);
 
     // Estimates RAM usage in bytes for this synonym group.
     size_t EstimateMemoryUsage() const;
@@ -99,7 +167,7 @@ class OmniboxPedal {
     // 'delete', etc.  Even though these are not strictly synonymous in natural
     // language, they are considered equivalent within the context of intention
     // to perform this Pedal's action.
-    std::vector<Tokens> synonyms_;
+    std::vector<TokenSequence> synonyms_;
   };
 
   // ExecutionContext provides the necessary structure for Pedal
@@ -164,7 +232,7 @@ class OmniboxPedal {
   // Returns true if the preprocessed match suggestion sequence triggers
   // presentation of this Pedal.  This is not intended for general use,
   // and only OmniboxPedalProvider should need to call this method.
-  bool IsTriggerMatch(const Tokens& match_sequence) const;
+  bool IsTriggerMatch(const TokenSequence& match_sequence) const;
 
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
@@ -185,7 +253,7 @@ class OmniboxPedal {
   // required group is not present, or if match_sequence contains extraneous
   // tokens not covered by any synonym group, then it's not a concept match and
   // this returns false.
-  bool IsConceptMatch(const Tokens& match_sequence) const;
+  bool IsConceptMatch(const TokenSequence& match_sequence) const;
 
   // Use this for the common case of navigating to a URL.
   void OpenURL(ExecutionContext& context, const GURL& url) const;
