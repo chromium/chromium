@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -76,12 +76,12 @@ public class DefaultSearchEnginePromoDialogTest {
                                 }));
         templateUrlServiceInit.waitForCallback(0);
 
-        final SearchActivity searchActivity = ActivityUtils.waitForActivity(
+        final SearchActivity searchActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SearchActivity.class);
         final DefaultSearchEnginePromoDialog searchDialog = showDialog(searchActivity);
         Assert.assertEquals(searchDialog, DefaultSearchEnginePromoDialog.getCurrentDialog());
 
-        ChromeTabbedActivity tabbedActivity = ActivityUtils.waitForActivity(
+        ChromeTabbedActivity tabbedActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class);
         final DefaultSearchEnginePromoDialog tabbedDialog = showDialog(tabbedActivity);
         Assert.assertEquals(tabbedDialog, DefaultSearchEnginePromoDialog.getCurrentDialog());

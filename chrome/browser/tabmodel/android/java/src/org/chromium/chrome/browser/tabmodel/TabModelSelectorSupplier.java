@@ -29,6 +29,16 @@ public class TabModelSelectorSupplier extends UnownedUserDataSupplier<TabModelSe
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
+    /**
+     * Return {@link TabModelSelector} associated with the given {@link WindowAndroid} or null if
+     * none exists.
+     */
+    public static @Nullable TabModelSelector getValueOrNullFrom(WindowAndroid windowAndroid) {
+        ObservableSupplier<TabModelSelector> supplier = from(windowAndroid);
+        if (supplier == null) return null;
+        return supplier.get();
+    }
+
     /** Return the current {@link Tab} associated with {@link WindowAndroid} or null. */
     public static @Nullable Tab getCurrentTabFrom(WindowAndroid windowAndroid) {
         ObservableSupplier<TabModelSelector> supplier = from(windowAndroid);

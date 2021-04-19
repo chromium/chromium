@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.BrowserPaymentRequest;
@@ -112,7 +114,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
-            ChromeActivity activity = ChromeActivity.fromWebContents(liveWebContents);
+            Activity activity = ActivityUtils.getActivityFromWebContents(liveWebContents);
             return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
         }
 

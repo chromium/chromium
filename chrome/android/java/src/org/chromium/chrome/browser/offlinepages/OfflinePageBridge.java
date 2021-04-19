@@ -16,10 +16,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -271,11 +271,11 @@ public class OfflinePageBridge {
      */
     public void savePage(final WebContents webContents, final ClientId clientId,
             final SavePageCallback callback) {
-        ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
         OfflinePageOrigin origin;
-        if (activity != null && activity.getActivityTab() != null) {
-            origin = new OfflinePageOrigin(
-                    ContextUtils.getApplicationContext(), activity.getActivityTab());
+        Tab currentTab =
+                TabModelSelectorSupplier.getCurrentTabFrom(webContents.getTopLevelNativeWindow());
+        if (currentTab != null) {
+            origin = new OfflinePageOrigin(ContextUtils.getApplicationContext(), currentTab);
         } else {
             origin = new OfflinePageOrigin();
         }

@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -205,7 +205,7 @@ public class FirstRunTest {
         SettingsActivity settingsActivity = null;
         if (showSettings) {
             settingsActivity =
-                    ActivityUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                    ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                             SettingsActivity.class, new Runnable() {
                                 @Override
                                 public void run() {

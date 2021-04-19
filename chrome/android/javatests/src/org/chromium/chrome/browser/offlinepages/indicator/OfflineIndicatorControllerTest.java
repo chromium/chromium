@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -240,7 +240,7 @@ public class OfflineIndicatorControllerTest {
     public void testDoNotShowOfflineIndicatorOnDownloadsWhenOffline() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
-        DownloadActivity downloadActivity = ActivityUtils.waitForActivity(
+        DownloadActivity downloadActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), DownloadActivity.class,
                 new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
                         mActivityTestRule.getActivity(), R.id.downloads_menu_id));

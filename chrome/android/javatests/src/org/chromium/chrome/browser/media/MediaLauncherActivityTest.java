@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.Arrays;
@@ -127,7 +127,7 @@ public class MediaLauncherActivityTest {
 
     private void waitForCustomTabActivityToStart(Callable<Void> trigger, String expectedUrl)
             throws Exception {
-        CustomTabActivity cta = ActivityUtils.waitForActivity(
+        CustomTabActivity cta = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), CustomTabActivity.class, trigger);
 
         CriteriaHelper.pollUiThread(() -> {

@@ -40,8 +40,8 @@ import java.util.concurrent.Callable;
 /**
  * Collection of activity utilities.
  */
-public class ActivityUtils {
-    private static final String TAG = "ActivityUtils";
+public class ActivityTestUtils {
+    private static final String TAG = "ActivityTestUtils";
 
     private static final long ACTIVITY_START_TIMEOUT_MS = 3000L;
     private static final long CONDITION_POLL_INTERVAL_MS = 100;
@@ -83,8 +83,8 @@ public class ActivityUtils {
      * @param activityTrigger The action that will trigger the new activity (run in this thread).
      * @return The spawned activity.
      */
-    public static <T> T waitForActivity(Instrumentation instrumentation, Class<T> activityType,
-            Runnable activityTrigger) {
+    public static <T> T waitForActivity(
+            Instrumentation instrumentation, Class<T> activityType, Runnable activityTrigger) {
         Callable<Void> callableWrapper = new Callable<Void>() {
             @Override
             public Void call() {
@@ -112,8 +112,8 @@ public class ActivityUtils {
      */
     public static <T> T waitForActivity(Instrumentation instrumentation, Class<T> activityType,
             Callable<Void> activityTrigger) throws Exception {
-        return waitForActivityWithTimeout(instrumentation, activityType, activityTrigger,
-                ACTIVITY_START_TIMEOUT_MS);
+        return waitForActivityWithTimeout(
+                instrumentation, activityType, activityTrigger, ACTIVITY_START_TIMEOUT_MS);
     }
 
     /**

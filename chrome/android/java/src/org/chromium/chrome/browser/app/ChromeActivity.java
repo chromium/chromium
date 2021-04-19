@@ -57,6 +57,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
@@ -2499,18 +2500,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      *
      * @param webContents The web contents for which to lookup the Chrome activity.
      * @return Possibly null Chrome activity that should never be cached.
+     * @deprecated Use {@link ActivityUtils#getActivityFromWebContents(WebContents)} instead.
      */
     @Nullable
+    @Deprecated
     public static ChromeActivity fromWebContents(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
-
-        if (webContents.isDestroyed()) return null;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-
-        Activity activity = window.getActivity().get();
-        if (activity == null) return null;
+        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
         if (!(activity instanceof ChromeActivity)) return null;
 
         return (ChromeActivity) activity;

@@ -133,7 +133,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.ViewUtils;
@@ -195,7 +195,7 @@ public class InstantStartTest {
     @After
     public void tearDown() {
         if (mActivityTestRule.getActivity() != null) {
-            ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+            ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         }
     }
 
@@ -1116,7 +1116,7 @@ public class InstantStartTest {
                         isDisplayed()));
 
         // Rotate to landscape mode.
-        ActivityUtils.rotateActivityToOrientation(
+        ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(

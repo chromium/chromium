@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 
 /** Utility class for TWA package management */
@@ -19,7 +20,7 @@ public class TwaPackageManagerDelegate {
      * @return The package name of a given activity if it is a Trusted Web Activity; null otherwise.
      */
     @Nullable
-    public String getTwaPackageName(ChromeActivity activity) {
+    public String getTwaPackageName(Activity activity) {
         assert activity != null;
         if (!(activity instanceof CustomTabActivity)) return null;
         CustomTabActivity customTabActivity = ((CustomTabActivity) activity);

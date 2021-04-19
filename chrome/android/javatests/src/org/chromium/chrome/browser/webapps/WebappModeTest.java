@@ -246,7 +246,7 @@ public class WebappModeTest {
 
     /**
      * Starts a WebappActivity for the given data and waits for it to be initialized.  We can't use
-     * ActivityUtils.waitForActivity() because of the way WebappActivity is instanced on pre-L
+     * ActivityTestUtils.waitForActivity() because of the way WebappActivity is instanced on pre-L
      * devices.
      */
     private WebappActivity startWebappActivity(String id, String url, String title, String icon) {

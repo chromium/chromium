@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -163,7 +163,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            BookmarkActivity bookmarkActivity = ActivityUtils.waitForActivity(
+            BookmarkActivity bookmarkActivity = ActivityTestUtils.waitForActivity(
                     InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
                     new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
                             mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
@@ -171,7 +171,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            DownloadActivity downloadActivity = ActivityUtils.waitForActivity(
+            DownloadActivity downloadActivity = ActivityTestUtils.waitForActivity(
                     InstrumentationRegistry.getInstrumentation(), DownloadActivity.class,
                     new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
                             mActivityTestRule.getActivity(), R.id.downloads_menu_id));
@@ -179,7 +179,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            HistoryActivity historyActivity = ActivityUtils.waitForActivity(
+            HistoryActivity historyActivity = ActivityTestUtils.waitForActivity(
                     InstrumentationRegistry.getInstrumentation(), HistoryActivity.class,
                     new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
                             mActivityTestRule.getActivity(), R.id.open_history_menu_id));

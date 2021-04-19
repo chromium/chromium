@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -67,7 +67,7 @@ public class ManageSyncSettingsWithFakeProfileSyncServiceTest {
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
         clickPreference(encryption);
 
-        final PassphraseDialogFragment passphraseFragment = ActivityUtils.waitForFragment(
+        final PassphraseDialogFragment passphraseFragment = ActivityTestUtils.waitForFragment(
                 mSettingsActivity, ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE);
         Assert.assertTrue(passphraseFragment.isAdded());
 

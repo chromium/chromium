@@ -72,7 +72,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -595,7 +595,7 @@ public class SearchActivityTest {
 
 
         // Make sure the new tab is launched.
-        final ChromeTabbedActivity cta = ActivityUtils.waitForActivity(
+        final ChromeTabbedActivity cta = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class,
                 new Callable<Void>() {
                     @Override
@@ -665,7 +665,7 @@ public class SearchActivityTest {
         intent.putExtra(IntentHandler.EXTRA_POST_DATA, imageSuggestion.getPostData());
 
         final ChromeTabbedActivity cta =
-                ActivityUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                         ChromeTabbedActivity.class, new Callable<Void>() {
                             @Override
                             public Void call() {
@@ -775,7 +775,7 @@ public class SearchActivityTest {
 
     private void waitForChromeTabbedActivityToStart(Callable<Void> trigger, String expectedUrl)
             throws Exception {
-        final ChromeTabbedActivity cta = ActivityUtils.waitForActivity(
+        final ChromeTabbedActivity cta = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class, trigger);
 
         CriteriaHelper.pollUiThread(() -> {

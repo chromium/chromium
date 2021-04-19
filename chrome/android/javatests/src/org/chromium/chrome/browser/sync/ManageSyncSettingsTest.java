@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -640,17 +640,17 @@ public class ManageSyncSettingsTest {
     }
 
     private PassphraseDialogFragment getPassphraseDialogFragment() {
-        return ActivityUtils.waitForFragment(
+        return ActivityTestUtils.waitForFragment(
                 mSettingsActivity, ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE);
     }
 
     private PassphraseTypeDialogFragment getPassphraseTypeDialogFragment() {
-        return ActivityUtils.waitForFragment(
+        return ActivityTestUtils.waitForFragment(
                 mSettingsActivity, ManageSyncSettings.FRAGMENT_PASSPHRASE_TYPE);
     }
 
     private PassphraseCreationDialogFragment getPassphraseCreationDialogFragment() {
-        return ActivityUtils.waitForFragment(
+        return ActivityTestUtils.waitForFragment(
                 mSettingsActivity, ManageSyncSettings.FRAGMENT_CUSTOM_PASSPHRASE);
     }
 

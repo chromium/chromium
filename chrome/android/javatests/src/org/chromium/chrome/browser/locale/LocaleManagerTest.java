@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -60,7 +60,7 @@ public class LocaleManagerTest {
         });
 
         // Launch any activity as an Activity ref is required to attempt to show the activity.
-        final SearchActivity searchActivity = ActivityUtils.waitForActivity(
+        final SearchActivity searchActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SearchActivity.class);
 
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();

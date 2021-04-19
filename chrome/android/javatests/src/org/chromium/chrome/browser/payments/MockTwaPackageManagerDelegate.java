@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.annotation.Nullable;
+import android.app.Activity;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import androidx.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +40,7 @@ class MockTwaPackageManagerDelegate extends TwaPackageManagerDelegate {
 
     @Override
     @Nullable
-    public String getTwaPackageName(ChromeActivity activity) {
+    public String getTwaPackageName(Activity activity) {
         return mMockTwaPackage;
     }
 
