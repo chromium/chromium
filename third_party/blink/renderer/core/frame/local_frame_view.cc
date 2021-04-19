@@ -1362,12 +1362,7 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
         scrollable_area->ClampScrollOffsetAfterOverflowChange();
     }
 
-    // TODO(pdr): |UsesCompositing()| will be false with CompositeAfterPaint but
-    // do we need to do these updates?
-    if (layout_view->UsesCompositing()) {
-      layout_view->Layer()->SetNeedsCompositingInputsUpdate();
-      SetNeedsPaintPropertyUpdate();
-    }
+    layout_view->Layer()->SetNeedsCompositingInputsUpdate();
   }
 
   if (GetFrame().GetDocument())

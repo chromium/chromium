@@ -842,11 +842,6 @@ void LayoutView::UpdateHitTestResult(HitTestResult& result,
   }
 }
 
-bool LayoutView::UsesCompositing() const {
-  NOT_DESTROYED();
-  return compositor_ && compositor_->StaleInCompositingMode();
-}
-
 PaintLayerCompositor* LayoutView::Compositor() {
   NOT_DESTROYED();
   return compositor_;

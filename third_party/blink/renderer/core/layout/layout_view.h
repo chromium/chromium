@@ -230,7 +230,6 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   }
 
   PaintLayerCompositor* Compositor();
-  bool UsesCompositing() const;
 
   PhysicalRect DocumentRect() const;
 
