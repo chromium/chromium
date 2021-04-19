@@ -1954,7 +1954,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 
   const bool has_user_gesture = false;
   const bool wants_result = !callback.is_null();
-  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, wants_result, has_user_gesture, world_id,
       std::move(callback));
 }
@@ -1972,7 +1972,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
       blink::mojom::UserActivationNotificationType::kTest);
 
   const bool has_user_gesture = true;
-  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, false, has_user_gesture, world_id, base::NullCallback());
 }
 

@@ -2211,44 +2211,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   frame_->Detach();
 }
 
-void RenderFrameImpl::JavaScriptExecuteRequestForTests(
-    const std::u16string& javascript,
-    bool wants_result,
-    bool has_user_gesture,
-    int32_t world_id,
-    JavaScriptExecuteRequestForTestsCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequestForTests",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  // Note that ExecuteScriptAndReturnValue may end up killing this object.
-  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
-
-  // A bunch of tests expect to run code in the context of a user gesture, which
-  // can grant additional privileges (e.g. the ability to create popups).
-  if (has_user_gesture)
-    frame_->NotifyUserActivation(
-        blink::mojom::UserActivationNotificationType::kTest);
-
-  v8::HandleScope handle_scope(blink::MainThreadIsolate());
-  v8::Local<v8::Value> result;
-  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
-    result = frame_->ExecuteScriptAndReturnValue(
-        WebScriptSource(WebString::FromUTF16(javascript)));
-  } else {
-    result = frame_->ExecuteScriptInIsolatedWorldAndReturnValue(
-        world_id, WebScriptSource(WebString::FromUTF16(javascript)),
-        blink::BackForwardCacheAware::kAllow);
-  }
-
-  if (!weak_this)
-    return;
-
-  if (wants_result)
-    std::move(callback).Run(GetJavaScriptExecutionResult(result));
-  else
-    std::move(callback).Run({});
-}
-
 void RenderFrameImpl::JavaScriptExecuteRequestInIsolatedWorld(
     const std::u16string& javascript,
     bool wants_result,

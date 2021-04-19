@@ -808,12 +808,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void UpdateSubresourceLoaderFactories(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories) override;
-  void JavaScriptExecuteRequestForTests(
-      const std::u16string& javascript,
-      bool wants_result,
-      bool has_user_gesture,
-      int32_t world_id,
-      JavaScriptExecuteRequestForTestsCallback callback) override;
   void JavaScriptExecuteRequestInIsolatedWorld(
       const std::u16string& javascript,
       bool wants_result,

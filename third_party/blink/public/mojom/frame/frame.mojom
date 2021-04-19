@@ -729,6 +729,16 @@ interface LocalFrame {
       mojo_base.mojom.BigString16 javascript,
       bool wants_result) => (mojo_base.mojom.Value result);
 
+  // ONLY FOR TESTS: Same as above but this can optionally trigger a fake user
+  // activation notification to test functionalities that are gated by user
+  // activation.
+  JavaScriptExecuteRequestForTests(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result,
+      bool has_user_gesture,
+      int32 world_id)
+      => (mojo_base.mojom.Value result);
+
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using
   // TextInputHost.
