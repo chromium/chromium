@@ -917,6 +917,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_SEARCH_HISTORY_LINK" desc="Text informing the user that they can clear search history and other data using MyActivity.">
         To clear <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>search<ph name="END_LINK1">&lt;/link1&gt;</ph> or other forms of history, visit <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>My Google Activity<ph name="END_LINK2">&lt;/link2&gt;</ph>
       </message>
+      <message name="IDS_CLEAR_SEARCH_HISTORY_NON_GOOGLE_DSE" desc="Text informing the user about the way to clear their search history when their Default Search Engine is not Google.">
+        Your search engine is <ph name="dse">%1$s<ex>Bing</ex></ph>. If applicable, see their instructions to delete your search history.
+      </message>
       <message name="IDS_CLEAR_PASSWORDS_TITLE" desc="Title for Clear Passwords in Clear Browsing Data preference">
         Saved passwords
       </message>

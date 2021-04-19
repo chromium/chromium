@@ -14,11 +14,14 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -33,6 +36,8 @@ import java.util.List;
  * explanatory text.
  */
 public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
+    private static final String SEARCH_ENGINE_NAME_GOOGLE = "Google";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,16 +82,41 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                 Profile.getLastUsedRegularProfile());
         Preference searchHistoryTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_TEXT);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                && identityManager.hasPrimaryAccount() && searchHistoryTextPref != null) {
-            searchHistoryTextPref.setSummary(buildSearchHistoryText());
-        } else if (searchHistoryTextPref != null) {
-            // Remove the search history text when the flag is disabled or the user is signed out.
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
+        TemplateUrl defaultSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)) {
+            if (defaultSearchEngine == null) {
+                // Remove the search history text when DSE is disabled.
+                deleteSearchHistoryTextIfExists();
+            } else if (!defaultSearchEngine.getIsPrepopulated()
+                    || !defaultSearchEngine.getShortName().equals(SEARCH_ENGINE_NAME_GOOGLE)) {
+                // Non-Google DSE is selected. Update the text to refer to that DSE.
+                searchHistoryTextPref.setSummary(
+                        getContext().getString(R.string.clear_search_history_non_google_dse,
+                                defaultSearchEngine.getShortName()));
+            } else if (identityManager.hasPrimaryAccount() && searchHistoryTextPref != null) {
+                // Google DSE, signed in; build the text with links to My Activity.
+                searchHistoryTextPref.setSummary(buildGoogleSearchHistoryText());
+            } else {
+                // Google DSE, not signed-in; remove the text.
+                deleteSearchHistoryTextIfExists();
+            }
+        } else {
+            // Remove the search history text when the flag is disabled.
+            deleteSearchHistoryTextIfExists();
+        }
+    }
+
+    private void deleteSearchHistoryTextIfExists() {
+        Preference searchHistoryTextPref =
+                findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_TEXT);
+        if (searchHistoryTextPref != null) {
             getPreferenceScreen().removePreference(searchHistoryTextPref);
         }
     }
 
-    private SpannableString buildSearchHistoryText() {
+    private SpannableString buildGoogleSearchHistoryText() {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext().getResources(),
