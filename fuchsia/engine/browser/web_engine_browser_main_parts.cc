@@ -13,11 +13,13 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/important_file_writer_cleaner.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/intl_profile_watcher.h"
 #include "base/fuchsia/process_context.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -88,44 +90,24 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK(!screen_);
+  DCHECK_EQ(context_bindings_.size(), 0u);
 
-  // Watch for changes to the user's locale setting.
-  intl_profile_watcher_ = std::make_unique<base::FuchsiaIntlProfileWatcher>(
-      base::BindRepeating(&WebEngineBrowserMainParts::OnIntlProfileChanged,
-                          base::Unretained(this)));
-
-  screen_ = std::make_unique<aura::ScreenOzone>();
-  display::Screen::SetScreenInstance(screen_.get());
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
 
   // If Vulkan is not enabled then disable hardware acceleration. Otherwise gpu
   // process will be restarted several times trying to initialize GL before
   // falling back to software compositing.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseVulkan)) {
+  if (!command_line->HasSwitch(switches::kUseVulkan)) {
     content::GpuDataManager* gpu_data_manager =
         content::GpuDataManager::GetInstance();
     DCHECK(gpu_data_manager);
     gpu_data_manager->DisableHardwareAcceleration();
   }
 
-  DCHECK_EQ(context_bindings_.size(), 0u);
+  devtools_controller_ =
+      WebEngineDevToolsController::CreateFromCommandLine(*command_line);
 
-  devtools_controller_ = WebEngineDevToolsController::CreateFromCommandLine(
-      *base::CommandLine::ForCurrentProcess());
-
-  // TODO(crbug.com/1163073): Update tests to make a service connection to the
-  // Context and remove this workaround.
-  if (*g_test_request)
-    HandleContextRequest(std::move(*g_test_request));
-
-  // Publish the fuchsia.web.Context service, and allow exactly one connection.
-  base::ComponentContextForProcess()->outgoing()->AddPublicService(
-      fidl::InterfaceRequestHandler<fuchsia::web::Context>(fit::bind_member(
-          this, &WebEngineBrowserMainParts::HandleContextRequest)),
-      "fuchsia.web.Context");
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseLegacyMetricsService)) {
+  if (command_line->HasSwitch(switches::kUseLegacyMetricsService)) {
     legacy_metrics_client_ =
         std::make_unique<cr_fuchsia::LegacyMetricsClient>();
 
@@ -136,6 +118,31 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
     legacy_metrics_client_->Start(kMetricsReportingInterval);
   }
+
+  // Configure SysInfo to report total/free space under "/data" based on the
+  // requested soft-quota, if any. This only affects persistent instances.
+  if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
+    // Setting quota on "/data" is benign in incognito contexts, but indicates
+    // that the client probably mis-configured this instance.
+    DCHECK(command_line->HasSwitch(switches::kIncognito))
+        << "data_quota_bytes set for incognito instance.";
+
+    uint64_t quota_bytes = 0;
+    CHECK(base::StringToUint64(
+        command_line->GetSwitchValueASCII(switches::kDataQuotaBytes),
+        &quota_bytes));
+    base::SysInfo::SetAmountOfTotalDiskSpace(
+        base::FilePath(base::kPersistedDataDirectoryPath), quota_bytes);
+  }
+
+  // Watch for changes to the user's locale setting.
+  intl_profile_watcher_ = std::make_unique<base::FuchsiaIntlProfileWatcher>(
+      base::BindRepeating(&WebEngineBrowserMainParts::OnIntlProfileChanged,
+                          base::Unretained(this)));
+
+  // Configure Ozone with an Aura implementation of the Screen abstraction.
+  screen_ = std::make_unique<aura::ScreenOzone>();
+  display::Screen::SetScreenInstance(screen_.get());
 
   // Create the MediaResourceProviderService at startup rather than on-demand,
   // to allow it to perform potentially expensive startup work in the
@@ -148,6 +155,24 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // level.
   content::RenderFrameHost::AllowInjectingJavaScript();
 
+  // Make sure temporary files associated with this process are cleaned up.
+  base::ImportantFileWriterCleaner::GetInstance().Start();
+
+  // Publish the fuchsia.web.Context service, and allow exactly one connection.
+  base::ComponentContextForProcess()->outgoing()->AddPublicService(
+      fidl::InterfaceRequestHandler<fuchsia::web::Context>(fit::bind_member(
+          this, &WebEngineBrowserMainParts::HandleContextRequest)));
+
+  // Now that all services have been published, it is safe to start processing
+  // requests to the service directory.
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+
+  // TODO(crbug.com/1163073): Update tests to make a service connection to the
+  // Context and remove this workaround.
+  if (*g_test_request)
+    HandleContextRequest(std::move(*g_test_request));
+
+  // In browser tests |ui_task| runs the "body" of each test.
   if (parameters_.ui_task) {
     // Since the main loop won't run, there is nothing to quit.
     quit_closure_ = base::DoNothing::Once();
@@ -156,13 +181,6 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
-
-  // Make sure temporary files associated with this process are cleaned up.
-  base::ImportantFileWriterCleaner::GetInstance().Start();
-
-  // Now that all services have been published, it is safe to start processing
-  // requests to the service directory.
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
@@ -207,10 +225,18 @@ void WebEngineBrowserMainParts::HandleContextRequest(
     return;
   }
 
-  // Create the Context and configure channel-disconnect to teardown
-  // the WebEngine instance.
-  auto browser_context = std::make_unique<WebEngineBrowserContext>(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito));
+  // Create the BrowserContext for the fuchsia.web.Context, with persistence
+  // configured as requested via the command-line.
+  std::unique_ptr<WebEngineBrowserContext> browser_context;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito)) {
+    browser_context = WebEngineBrowserContext::CreateIncognito();
+  } else {
+    browser_context = WebEngineBrowserContext::CreatePersistent(
+        base::FilePath(base::kPersistedDataDirectoryPath));
+  }
+
+  // Create the fuchsia.web.Context implementation using the BrowserContext and
+  // configure it to terminate the process when the client goes away.
   context_bindings_.AddBinding(
       std::make_unique<ContextImpl>(std::move(browser_context),
                                     devtools_controller_.get()),

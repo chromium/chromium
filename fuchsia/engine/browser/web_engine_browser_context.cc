@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
-#include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
@@ -23,51 +22,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "fuchsia/engine/browser/web_engine_net_log_observer.h"
-#include "fuchsia/engine/browser/web_engine_permission_delegate.h"
 #include "fuchsia/engine/switches.h"
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace {
-
-// Determines whether a data directory is configured, and returns its path.
-// Passes the quota, if specified, for SysInfo to report as total disk space.
-// TODO(crbug.com/1010222): Remove this check for the presence of /data, and
-// instead rely upon the "incognito" switch.
-base::FilePath InitializeDataDirectoryAndQuotaFromCommandLine() {
-  base::FilePath data_directory_path;
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_directory_path));
-
-  // Enumerating the root namespace for the presence of the /data directory
-  // avoids the need for scoped blocking, as PathExists would require.
-  fdio_flat_namespace_t* flat_root_namespace = nullptr;
-  zx_status_t status = fdio_ns_export_root(&flat_root_namespace);
-  ZX_CHECK(status == ZX_OK, status);
-  bool have_data_directory = false;
-  for (size_t i = 0; i < flat_root_namespace->count; ++i) {
-    if (data_directory_path.value().data() == flat_root_namespace->path[i]) {
-      have_data_directory = true;
-      break;
-    }
-  }
-  fdio_ns_free_flat_ns(flat_root_namespace);
-  if (!have_data_directory)
-    return base::FilePath();
-
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
-    // Configure SysInfo to use the specified quota as the total-disk-space
-    // for the |data_dir_path_|.
-    uint64_t quota_bytes = 0;
-    CHECK(base::StringToUint64(
-        command_line->GetSwitchValueASCII(switches::kDataQuotaBytes),
-        &quota_bytes));
-    base::SysInfo::SetAmountOfTotalDiskSpace(data_directory_path, quota_bytes);
-  }
-
-  return data_directory_path;
-}
 
 std::unique_ptr<WebEngineNetLogObserver> CreateNetLogObserver() {
   std::unique_ptr<WebEngineNetLogObserver> result;
@@ -95,20 +55,17 @@ class WebEngineBrowserContext::ResourceContext
   DISALLOW_COPY_AND_ASSIGN(ResourceContext);
 };
 
-WebEngineBrowserContext::WebEngineBrowserContext(bool force_incognito)
-    : net_log_observer_(CreateNetLogObserver()),
-      resource_context_(new ResourceContext()) {
-  if (!force_incognito) {
-    data_dir_path_ = InitializeDataDirectoryAndQuotaFromCommandLine();
-  }
+// static
+std::unique_ptr<WebEngineBrowserContext>
+WebEngineBrowserContext::CreatePersistent(base::FilePath data_directory) {
+  return base::WrapUnique(
+      new WebEngineBrowserContext(std::move(data_directory)));
+}
 
-  simple_factory_key_ =
-      std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
-  SimpleKeyMap::GetInstance()->Associate(this, simple_factory_key_.get());
-
-  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
-  // However, since WebEngine does not persist any, that would currently be a
-  // no-op.
+// static
+std::unique_ptr<WebEngineBrowserContext>
+WebEngineBrowserContext::CreateIncognito() {
+  return base::WrapUnique(new WebEngineBrowserContext({}));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -176,9 +133,7 @@ WebEngineBrowserContext::GetSSLHostStateDelegate() {
 
 content::PermissionControllerDelegate*
 WebEngineBrowserContext::GetPermissionControllerDelegate() {
-  if (!permission_delegate_)
-    permission_delegate_ = std::make_unique<WebEnginePermissionDelegate>();
-  return permission_delegate_.get();
+  return &permission_delegate_;
 }
 
 content::ClientHintsControllerDelegate*
@@ -214,4 +169,16 @@ WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
       std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
           nullptr /* seed_db_provider */),
       media::learning::FeatureProviderFactoryCB());
+}
+
+WebEngineBrowserContext::WebEngineBrowserContext(base::FilePath data_directory)
+    : data_dir_path_(std::move(data_directory)),
+      net_log_observer_(CreateNetLogObserver()),
+      simple_factory_key_(GetPath(), IsOffTheRecord()),
+      resource_context_(std::make_unique<ResourceContext>()) {
+  SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
+
+  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
+  // However, since WebEngine does not persist any, that would currently be a
+  // no-op.
 }

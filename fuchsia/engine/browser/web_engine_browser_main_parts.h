@@ -68,8 +68,11 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   ContextImpl* context_for_test() const;
 
  private:
+  // Receives requests for the fuchsia.web.Context capability.
   void HandleContextRequest(
       fidl::InterfaceRequest<fuchsia::web::Context> request);
+
+  // Notified if the system timezone, language, settings change.
   void OnIntlProfileChanged(const fuchsia::intl::Profile& profile);
 
   content::ContentBrowserClient* const browser_client_;
