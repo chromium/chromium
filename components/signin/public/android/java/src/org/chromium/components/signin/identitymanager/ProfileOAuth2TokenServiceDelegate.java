@@ -16,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;

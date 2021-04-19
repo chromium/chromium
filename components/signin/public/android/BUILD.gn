@@ -25,7 +25,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountManagerResult.java",
     "java/src/org/chromium/components/signin/AccountRenameChecker.java",
-    "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/AccountUtils.java",
     "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
     "java/src/org/chromium/components/signin/AuthException.java",
@@ -43,6 +42,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -56,12 +56,12 @@ generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
-    "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -128,10 +128,10 @@ java_library("junit") {
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
     "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
-    "junit/src/org/chromium/components/signin/AccountTrackerServiceTest.java",
     "junit/src/org/chromium/components/signin/ObservableValueTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceTest.java",
+    "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
   ]
   deps = [
     ":java",

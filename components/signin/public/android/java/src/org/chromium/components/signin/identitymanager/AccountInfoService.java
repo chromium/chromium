@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
-import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.AccountInfo;
 
 /**
