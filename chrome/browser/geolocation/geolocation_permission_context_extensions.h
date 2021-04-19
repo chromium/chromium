@@ -34,7 +34,6 @@ class GeolocationPermissionContextExtensions {
   // is not used.
   bool DecidePermission(content::WebContents* web_contents,
                         const permissions::PermissionRequestID& request_id,
-                        int bridge_id,
                         const GURL& requesting_frame,
                         bool user_gesture,
                         base::OnceCallback<void(ContentSetting)>* callback,

@@ -87,14 +87,15 @@ class StorageAccessGrantPermissionContextTest
   }
 
   permissions::PermissionRequestID CreateFakeID() {
-    return permissions::PermissionRequestID(web_contents()->GetMainFrame(),
-                                            ++next_request_id_);
+    return permissions::PermissionRequestID(
+        web_contents()->GetMainFrame(), request_id_generator_.GenerateNextId());
   }
 
  private:
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
-  int next_request_id_ = 0;
+  permissions::PermissionRequestID::RequestLocalId::Generator
+      request_id_generator_;
 };
 
 TEST_F(StorageAccessGrantPermissionContextTest, InsecureOriginsAreAllowed) {
