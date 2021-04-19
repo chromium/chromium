@@ -147,7 +147,7 @@ public class AddressEditor
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
             address = toEdit;
-            editTitle = toEdit.getEditTitle();
+            editTitle = mContext.getString(R.string.payments_edit_address);
         }
 
         mEditor = new EditorModel(editTitle);
