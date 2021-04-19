@@ -375,14 +375,6 @@ class CORE_EXPORT LocalFrameView final
 
   bool UpdateLifecycleToPrePaintClean(DocumentUpdateReason reason);
 
-  // After calling this method, all frames will be in a lifecycle
-  // state >= CompositingClean, and scrolling has been updated (unless
-  // throttling is allowed), unless the frame was throttled or inactive.
-  // Returns whether the lifecycle was successfully updated to the
-  // desired state.
-  bool UpdateLifecycleToCompositingCleanPlusScrolling(
-      DocumentUpdateReason reason);
-
   // Computes the style, layout, and compositing inputs lifecycle stages if
   // needed. After calling this method, all frames will be in a lifecycle state
   // >= CompositingInputsClean, unless the frame was throttled or inactive.

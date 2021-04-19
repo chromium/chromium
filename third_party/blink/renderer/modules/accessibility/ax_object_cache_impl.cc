@@ -538,10 +538,8 @@ AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
     // popup. Ensure the popup document has a clean layout before trying to
     // create an AXObject from a node in it.
     if (node->GetDocument().View()) {
-      node->GetDocument()
-          .View()
-          ->UpdateLifecycleToCompositingCleanPlusScrolling(
-              DocumentUpdateReason::kAccessibility);
+      node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kAccessibility);
     }
   }
 
@@ -2259,7 +2257,7 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
     // This should only occur when focus goes into a popup document. The main
     // document has an updated layout, but the popup does not.
     DCHECK_NE(document_, node->GetDocument());
-    node->GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+    node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kAccessibility);
   }
 

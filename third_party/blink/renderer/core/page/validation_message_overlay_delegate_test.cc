@@ -64,7 +64,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   auto overlay =
       std::make_unique<FrameOverlay>(&GetFrame(), std::move(delegate));
   delegate_ptr->CreatePage(*overlay);
-  ASSERT_TRUE(GetFrame().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+  ASSERT_TRUE(GetFrame().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest));
 
   // Trigger the overlay animations.

@@ -2290,15 +2290,6 @@ bool LocalFrameView::UpdateAllLifecyclePhasesForTest() {
   return result;
 }
 
-// TODO(schenney): add a scrolling update lifecycle phase.
-bool LocalFrameView::UpdateLifecycleToCompositingCleanPlusScrolling(
-    DocumentUpdateReason reason) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return UpdateAllLifecyclePhasesExceptPaint(reason);
-  return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
-      DocumentLifecycle::kCompositingAssignmentsClean, reason);
-}
-
 bool LocalFrameView::UpdateLifecycleToPrePaintClean(
     DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(

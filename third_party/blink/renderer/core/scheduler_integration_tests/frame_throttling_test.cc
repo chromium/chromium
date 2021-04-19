@@ -1538,7 +1538,7 @@ TEST_P(FrameThrottlingTest, LifecycleUpdateAfterUnthrottledCompositingUpdate) {
 
   frame_document->getElementById("div")->setAttribute(kStyleAttr,
                                                       "will-change: transform");
-  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
 
   // Then do a full lifecycle with throttling enabled. This should not crash.

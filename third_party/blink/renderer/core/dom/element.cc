@@ -2127,7 +2127,7 @@ const AtomicString& Element::computedRole() {
   if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
       document.Lifecycle().GetState() <
           DocumentLifecycle::kCompositingAssignmentsClean) {
-    document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }
   AXContext ax_context(document);
@@ -2141,7 +2141,7 @@ String Element::computedName() {
   if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
       document.Lifecycle().GetState() <
           DocumentLifecycle::kCompositingAssignmentsClean) {
-    document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }
   AXContext ax_context(document);

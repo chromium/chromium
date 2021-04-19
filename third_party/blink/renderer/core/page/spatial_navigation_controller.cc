@@ -299,10 +299,8 @@ bool SpatialNavigationController::Advance(
   if (!interest_node)
     return false;
 
-  interest_node->GetDocument()
-      .View()
-      ->UpdateLifecycleToCompositingCleanPlusScrolling(
-          DocumentUpdateReason::kSpatialNavigation);
+  interest_node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kSpatialNavigation);
 
   Node* container = ScrollableAreaOrDocumentOf(interest_node);
 

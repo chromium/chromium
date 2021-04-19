@@ -3028,11 +3028,8 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
   if (MainFrameImpl()) {
     // Force lifecycle update to ensure we're good to call
     // LocalFrameView::setBaseBackgroundColor().
-    MainFrameImpl()
-        ->GetFrame()
-        ->View()
-        ->UpdateLifecycleToCompositingCleanPlusScrolling(
-            DocumentUpdateReason::kBaseColor);
+    MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kBaseColor);
   }
 
   Color color = BaseBackgroundColor();

@@ -62,7 +62,7 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
 TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
   // Tests that we don't crash if a new layer shifts during a second compositing
   // update before prepaint sets up property tree state.  See crbug.com/881735
-  // (which invokes UpdateLifecycleToCompositingCleanPlusScrolling through
+  // (which invokes UpdateAllLifecyclePhasesExceptPaint through
   // accessibilityController.accessibleElementById).
 
   SetBodyInnerHTML(R"HTML(
@@ -80,7 +80,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
 
   GetDocument().getElementById("B")->setAttribute(html_names::kClassAttr,
                                                   AtomicString("tr"));
-  GetFrameView().UpdateLifecycleToCompositingCleanPlusScrolling(
+  GetFrameView().UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   GetDocument().getElementById("A")->setAttribute(html_names::kClassAttr,
                                                   AtomicString("hide"));

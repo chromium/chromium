@@ -1270,7 +1270,7 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
                   ->needs_descendant_dependent_flags_update_);
 
   // Do an unthrottled compositing update, this should clear flags;
-  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(ChildDocument()
                    .View()
