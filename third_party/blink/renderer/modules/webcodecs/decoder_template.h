@@ -137,7 +137,6 @@ class MODULES_EXPORT DecoderTemplate
   void OnInitializeDone(media::Status status);
   void OnDecodeDone(uint32_t id, media::Status);
   void OnFlushDone(media::Status);
-  void OnConfigureFlushDone(media::Status);
   void OnResetDone();
   void OnOutput(uint32_t reset_generation, scoped_refptr<MediaOutputType>);
 
@@ -164,6 +163,10 @@ class MODULES_EXPORT DecoderTemplate
   std::unique_ptr<CodecLogger> logger_;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+
+  // Cached config from the last kConfigure request which successfully completed
+  // initialization.
+  std::unique_ptr<MediaConfigType> active_config_;
 
   // TODO(sandersd): Store the last config, flush, and reset so that
   // duplicates can be elided.

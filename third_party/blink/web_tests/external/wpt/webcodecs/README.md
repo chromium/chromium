@@ -76,3 +76,9 @@ channels.
 
 ### four-colors.mp4
 Used a [custom tool](https://storage.googleapis.com/dalecurtis/avif2mp4.html) to convert four-colors.avif into a .mp4 file.
+
+### sfx-opus.ogg
+```
+sox -n -r 48000 sfx.wav synth 1 sine 480
+ffmpeg -i sfx.wav -frames:a 10 -acodec libopus -b:a 96K sfx-opus.ogg
+```

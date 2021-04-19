@@ -376,3 +376,29 @@ promise_test(t => {
   // or error coming.
   return promise_rejects_exactly(t, undefined, flushPromise);
 }, 'Close while decoding corrupt VP9 frame');
+
+promise_test(async t => {
+  let buffer = await vp9.buffer();
+
+  let numOutputs = 0;
+  let decoder = new VideoDecoder({
+    output: t.step_func(frame => {
+      frame.close();
+      ++numOutputs;
+    }),
+    error: t.unreached_func()
+  });
+
+  decoder.configure({codec: vp9.codec});
+  decoder.decode(new EncodedVideoChunk(
+      {type: 'key', timestamp: 0, data: view(buffer, vp9.frames[0])}));
+
+  await decoder.flush();
+  assert_equals(numOutputs, 1, 'outputs');
+
+  decoder.decode(new EncodedVideoChunk(
+      {type: 'key', timestamp: 1, data: view(buffer, vp9.frames[0])}));
+
+  await decoder.flush();
+  assert_equals(numOutputs, 2, 'outputs');
+}, 'Test decoding after flush.');
