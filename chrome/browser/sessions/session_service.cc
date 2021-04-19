@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/background/background_mode_manager.h"
@@ -69,6 +70,9 @@ SessionService::SessionService(Profile* profile)
 }
 
 SessionService::~SessionService() {
+  base::UmaHistogramCounts100("SessionRestore.UnrecoverableWriteErrorCount",
+                              unrecoverable_write_error_count_);
+
   // This must be called from SessionService because Save() calls back into
   // SessionService, which will have been destructed already if we try to
   // do this in SessionServiceBase.
