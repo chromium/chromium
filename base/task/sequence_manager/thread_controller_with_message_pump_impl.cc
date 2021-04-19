@@ -343,6 +343,8 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     if (!task)
       break;
 
+    recordreplay::NewCheckpoint();
+
     work_id_provider_->IncrementWorkId();
 
     // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
