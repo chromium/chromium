@@ -3993,6 +3993,8 @@ static_library("ui") {
       "views/page_info/page_info_main_view.h",
       "views/page_info/page_info_new_bubble_view.cc",
       "views/page_info/page_info_new_bubble_view.h",
+      "views/page_info/page_switcher_view.cc",
+      "views/page_info/page_switcher_view.h",
       "views/page_info/permission_icon.cc",
       "views/page_info/permission_icon.h",
       "views/page_info/permission_selector_row.cc",

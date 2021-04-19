@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_switcher_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
@@ -16,18 +17,6 @@ namespace {
 // Bubble width constraints.
 constexpr int kMinBubbleWidth = 320;
 constexpr int kMaxBubbleWidth = 1000;
-
-class PageSwitcherView : public views::View {
- public:
-  PageSwitcherView() {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-  }
-
-  void ChildPreferredSizeChanged(views::View* child) override {
-    PreferredSizeChanged();
-  }
-};
 
 }  // namespace
 
@@ -75,7 +64,7 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   page_container_ = AddChildView(std::make_unique<PageSwitcherView>());
-  page_container_->AddChildView(std::make_unique<PageInfoMainView>(
+  page_container_->SwitchToPage(std::make_unique<PageInfoMainView>(
       presenter_.get(), ui_delegate_.get(), profile));
   SizeToContents();
 }

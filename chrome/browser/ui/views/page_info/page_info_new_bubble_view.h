@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 
+class PageSwitcherView;
+
 // The experimental new implementation of the Views page info UI (under a flag
 // PageInfoV2Desktop). Current implementation (PageInfoBubbleView) will be
 // deprecated when the redesign is finished.
@@ -30,7 +32,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase {
   void WebContentsDestroyed() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  views::View* page_container_ = nullptr;
+  PageSwitcherView* page_container_ = nullptr;
 
   // The presenter that controls the Page Info UI.
   std::unique_ptr<PageInfo> presenter_;
