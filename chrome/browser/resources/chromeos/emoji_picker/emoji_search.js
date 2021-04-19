@@ -120,7 +120,8 @@ export class EmojiSearch extends PolymerElement {
 
     const isDown = ev.key === 'ArrowDown';
     const isEnter = ev.key === 'Enter';
-    if (isDown || isEnter) {
+    const isTab = ev.key === 'Tab';
+    if (isDown || isEnter || isTab) {
       ev.preventDefault();
       ev.stopPropagation();
 
