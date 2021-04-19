@@ -40,12 +40,6 @@ enum class SandboxType {
   kMediaFoundationCdm,
 #endif
 
-#if defined(OS_FUCHSIA)
-  // Sandbox type for the web::Context process on Fuchsia. Functionally it's an
-  // equivalent of the browser process on other platforms.
-  kWebContext,
-#endif
-
   // Renderer or worker process. Most common case.
   kRenderer,
 

@@ -28,11 +28,8 @@ class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
   explicit SandboxPolicyFuchsia(SandboxType type);
   ~SandboxPolicyFuchsia();
 
-  // Sets the service directory to pass to the child process when launching it.
-  // This is only supported for SandboxType::kWebContext processes.  If this is
-  // not called for a WEB_CONTEXT process then it will receive no services.
-  void SetServiceDirectory(
-      fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory_client);
+  SandboxPolicyFuchsia(const SandboxPolicyFuchsia&) = delete;
+  SandboxPolicyFuchsia& operator=(const SandboxPolicyFuchsia&) = delete;
 
   // Modifies the process launch |options| to achieve  the level of
   // isolation appropriate for current the sandbox type. The caller may then add
@@ -50,8 +47,6 @@ class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
 
   // Job in which the child process is launched.
   zx::job job_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxPolicyFuchsia);
 };
 
 }  // namespace policy

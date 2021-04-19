@@ -55,29 +55,13 @@ enum SandboxFeature {
   // Read only access to /config/ssl, which contains root certs info.
   kProvideSslConfig = 1 << 2,
 
-  // Uses a service directory channel that is explicitly passed by the caller
-  // instead of automatically connecting to the service directory of the current
-  // process' namespace. Intended for use by SandboxType::kWebContext.
-  kUseServiceDirectoryOverride = 1 << 3,
-
   // Allows the process to use the ambient mark-vmo-as-executable capability.
-  kAmbientMarkVmoAsExecutable = 1 << 4,
+  kAmbientMarkVmoAsExecutable = 1 << 3,
 };
 
 struct SandboxConfig {
   base::span<const char* const> services;
   uint32_t features;
-};
-
-constexpr SandboxConfig kWebContextConfig = {
-    // Services directory is passed by calling SetServiceDirectory().
-    base::span<const char* const>(),
-
-    // Context processes only actually use the kUseServiceDirectoryOverride
-    // and kCloneJob |features| themselves. However, they must be granted
-    // all of the other features to delegate to child processes.
-    kCloneJob | kProvideVulkanResources | kProvideSslConfig |
-        kUseServiceDirectoryOverride,
 };
 
 constexpr SandboxConfig kGpuConfig = {
@@ -132,8 +116,6 @@ const SandboxConfig* GetConfigForSandboxType(SandboxType type) {
       return &kNetworkConfig;
     case SandboxType::kRenderer:
       return &kRendererConfig;
-    case SandboxType::kWebContext:
-      return &kWebContextConfig;
     case SandboxType::kVideoCapture:
       return &kVideoCaptureConfig;
     // Remaining types receive no-access-to-anything.
@@ -166,12 +148,13 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(SandboxType type) {
   } else {
     type_ = type;
   }
+
   // If we need to pass some services for the given sandbox type then create
   // |sandbox_directory_| and initialize it with the corresponding list of
   // services. FilteredServiceDirectory must be initialized on a thread that has
   // async_dispatcher.
   const SandboxConfig* config = GetConfigForSandboxType(type_);
-  if (config && !(config->features & kUseServiceDirectoryOverride)) {
+  if (config) {
     service_directory_task_runner_ = base::ThreadTaskRunnerHandle::Get();
     service_directory_ = std::make_unique<base::FilteredServiceDirectory>(
         base::ComponentContextForProcess()->svc().get());
@@ -201,14 +184,6 @@ SandboxPolicyFuchsia::~SandboxPolicyFuchsia() {
   }
 }
 
-void SandboxPolicyFuchsia::SetServiceDirectory(
-    fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory_client) {
-  DCHECK(GetConfigForSandboxType(type_)->features &
-         kUseServiceDirectoryOverride);
-  DCHECK(!service_directory_client_);
-
-  service_directory_client_ = std::move(service_directory_client);
-}
 
 void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
     base::LaunchOptions* options) {

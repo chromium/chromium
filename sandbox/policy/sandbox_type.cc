@@ -49,9 +49,6 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kCdm:
     case SandboxType::kPrintBackend:
     case SandboxType::kPrintCompositor:
-#if defined(OS_FUCHSIA)
-    case SandboxType::kWebContext:
-#endif
 #if defined(OS_MAC)
     case SandboxType::kNaClLoader:
 #endif
@@ -136,10 +133,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
           switches::kServiceSandboxType,
           StringFromUtilitySandboxType(sandbox_type));
       break;
-#if defined(OS_FUCHSIA)
-    case SandboxType::kWebContext:
-      break;
-#endif  // defined(OS_FUCHSIA)
 #if defined(OS_MAC)
     case SandboxType::kNaClLoader:
       break;
@@ -267,9 +260,6 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
 #if defined(OS_MAC)
     case SandboxType::kNaClLoader:
 #endif  // defined(OS_MAC)
-#if defined(OS_FUCHSIA)
-    case SandboxType::kWebContext:
-#endif  // defined(OS_FUCHSIA)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     case SandboxType::kZygoteIntermediateSandbox:
 #endif
