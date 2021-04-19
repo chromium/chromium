@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
@@ -1148,6 +1150,8 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser) {
 
 void MaybeShowBookmarkBarForReadLater(Browser* browser) {
 #if !defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSidePanel))
+    return;
   PrefService* pref_service = browser->profile()->GetPrefs();
   if (pref_service &&
       !pref_service->GetBoolean(
@@ -1157,6 +1161,7 @@ void MaybeShowBookmarkBarForReadLater(Browser* browser) {
     base::UmaHistogramEnumeration(
         "ReadingList.BookmarkBarState.OnFirstAddToReadingList",
         browser->bookmark_bar_state());
+
     if (browser->bookmark_bar_state() == BookmarkBar::HIDDEN)
       ToggleBookmarkBar(browser);
   }
