@@ -62007,6 +62007,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="OFFLINE"/>
   <int value="26" label="LIST_VM_DISKS_FAILED"/>
   <int value="27" label="OUT_OF_DISK_SPACE"/>
+  <int value="28" label="DOWNLOAD_FAILED_401"/>
+  <int value="29" label="DOWNLOAD_FAILED_403"/>
+  <int value="30" label="DOWNLOAD_FAILED_404"/>
 </enum>
 
 <enum name="PluginVmSetupResult">

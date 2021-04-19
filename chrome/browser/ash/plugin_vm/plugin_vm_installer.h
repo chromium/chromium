@@ -75,9 +75,12 @@ class PluginVmInstaller : public KeyedService,
     INVALID_LICENSE = 24,
     OFFLINE = 25,
     LIST_VM_DISKS_FAILED = 26,
-    OUT_OF_DISK_SPACE = 27,  // Hard error, we actually ran out of space.
+    OUT_OF_DISK_SPACE = 27,    // Hard error, we actually ran out of space.
+    DOWNLOAD_FAILED_401 = 28,  // Common HTTP status codes for errors.
+    DOWNLOAD_FAILED_403 = 29,
+    DOWNLOAD_FAILED_404 = 30,
 
-    kMaxValue = OUT_OF_DISK_SPACE,
+    kMaxValue = DOWNLOAD_FAILED_404,
   };
 
   enum class InstallingState {

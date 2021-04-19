@@ -398,6 +398,10 @@ std::u16string PluginVmInstallerView::GetMessage() const {
               IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_CONFIG_ERROR, app_name_,
               base::NumberToString16(
                   static_cast<std::underlying_type_t<Reason>>(*reason_)));
+        case Reason::DOWNLOAD_FAILED_401:
+        case Reason::DOWNLOAD_FAILED_403:
+        case Reason::DOWNLOAD_FAILED_404:
+          // TODO(b/160897236): Add a new string for this case.
         case Reason::DOWNLOAD_FAILED_UNKNOWN:
         case Reason::DOWNLOAD_FAILED_NETWORK:
         case Reason::DOWNLOAD_FAILED_ABORTED:

@@ -57,6 +57,8 @@ void PluginVmImageDownloadClient::OnDownloadStarted(
   }
 
   content_length_ = headers ? headers->GetContentLength() : -1;
+  response_code_ = headers ? headers->response_code() : -1;
+
   GetInstaller()->OnDownloadStarted();
 }
 
@@ -76,8 +78,17 @@ void PluginVmImageDownloadClient::OnDownloadFailed(
       PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_UNKNOWN;
   switch (clientReason) {
     case download::Client::FailureReason::NETWORK:
-      VLOG(1) << "Failure reason: NETWORK";
-      failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_NETWORK;
+      VLOG(1) << "Failure reason: NETWORK, response_code: " << response_code_;
+      if (response_code_ == 401) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_401;
+      } else if (response_code_ == 403) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_403;
+      } else if (response_code_ == 404) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_404;
+      } else {
+        failureReason =
+            PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_NETWORK;
+      }
       break;
     case download::Client::FailureReason::UPLOAD_TIMEDOUT:
       VLOG(1) << "Failure reason: UPLOAD_TIMEDOUT";

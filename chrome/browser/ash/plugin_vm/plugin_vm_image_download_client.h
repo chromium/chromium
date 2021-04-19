@@ -30,6 +30,7 @@ class PluginVmImageDownloadClient : public download::Client {
  private:
   Profile* profile_ = nullptr;
   int64_t content_length_ = -1;
+  int response_code_ = -1;
 
   PluginVmInstaller* GetInstaller();
   // Returns false for cancelled downloads.
