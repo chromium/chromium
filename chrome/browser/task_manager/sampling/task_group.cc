@@ -17,6 +17,7 @@
 #include "components/nacl/browser/nacl_browser.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "gpu/ipc/common/memory_stats.h"
 
 #if defined(OS_WIN)
@@ -72,7 +73,7 @@ void GetWindowsHandles(base::ProcessHandle handle,
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_NACL)
-int GetNaClDebugStubPortOnIoThread(int process_id) {
+int GetNaClDebugStubPortOnProcessThread(int process_id) {
   return nacl::NaClBrowser::GetInstance()->GetProcessGdbDebugStubPort(
       process_id);
 }
@@ -286,11 +287,17 @@ void TaskGroup::RefreshWindowsHandles() {
 
 #if BUILDFLAG(ENABLE_NACL)
 void TaskGroup::RefreshNaClDebugStubPort(int child_process_unique_id) {
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetNaClDebugStubPortOnIoThread, child_process_unique_id),
-      base::BindOnce(&TaskGroup::OnRefreshNaClDebugStubPortDone,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    OnRefreshNaClDebugStubPortDone(
+        GetNaClDebugStubPortOnProcessThread(child_process_unique_id));
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetNaClDebugStubPortOnProcessThread,
+                       child_process_unique_id),
+        base::BindOnce(&TaskGroup::OnRefreshNaClDebugStubPortDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void TaskGroup::OnRefreshNaClDebugStubPortDone(int nacl_debug_stub_port) {
