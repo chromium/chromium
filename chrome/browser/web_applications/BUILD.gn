@@ -81,6 +81,7 @@ source_set("web_applications") {
     "web_app_tab_helper.h",
   ]
 
+  # web_applications must not depend on //chrome/browser/extensions and //extensions
   deps = [
     ":web_app_group",
     "//build:chromeos_buildflags",
@@ -305,7 +306,6 @@ source_set("web_applications_browser_tests") {
 
   deps = [
     ":web_applications",
-    ":web_applications_on_extensions",
     ":web_applications_test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -333,25 +333,6 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ui",
     ]
   }
-}
-
-# TODO(crbug.com/877898): Erase this and move all migration code to
-# //chrome/browser/web_applications/extensions:extensions GN source set.
-source_set("web_applications_on_extensions") {
-  sources = [ "web_app_migration_manager.cc" ]
-
-  deps = [
-    ":web_app_group",
-    ":web_applications",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/web_applications/components",
-    "//chrome/browser/web_applications/extensions",
-    "//chrome/common",
-    "//components/keyed_service/content",
-    "//components/pref_registry:pref_registry",
-    "//components/sync",
-    "//extensions/browser",
-  ]
 }
 
 group("unit_tests") {

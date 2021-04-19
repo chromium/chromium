@@ -7,8 +7,11 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
 
+# TODO(crbug.com/1065748): Delete web_applications/extensions/ directory.
 source_set("extensions") {
   sources = [
+    # TODO(crbug.com/1199918): Delete WebAppMigrationManager class.
+    "../web_app_migration_manager.cc",
     "bookmark_app_file_handler_manager.cc",
     "bookmark_app_file_handler_manager.h",
     "bookmark_app_finalizer_utils.cc",
@@ -72,7 +75,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
-    "//chrome/browser/web_applications:web_applications_on_extensions",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/components",
     "//chrome/common",

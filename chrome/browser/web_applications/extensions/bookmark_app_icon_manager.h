@@ -15,8 +15,7 @@ class Profile;
 namespace extensions {
 
 // Class used to read icons of extensions-based bookmark apps.
-// TODO(crbug.com/877898): Erase this subclass once BookmarkApps are off
-// Extensions.
+// TODO(crbug.com/1065748): Erase this subclass.
 class BookmarkAppIconManager : public web_app::AppIconManager {
  public:
   explicit BookmarkAppIconManager(Profile* profile);

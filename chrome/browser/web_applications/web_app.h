@@ -264,8 +264,6 @@ class WebApp {
   std::string description_;
   GURL start_url_;
   base::Optional<std::string> launch_query_params_;
-  // TODO(loyso): Implement IsValid() function that verifies that the start_url
-  // is within the scope.
   GURL scope_;
   base::Optional<SkColor> theme_color_;
   base::Optional<SkColor> background_color_;

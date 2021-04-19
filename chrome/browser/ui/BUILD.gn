@@ -1663,9 +1663,6 @@ static_library("ui") {
     if (enable_extensions) {
       deps += [
         "//chrome/browser/web_applications",
-
-        # TODO(loyso): Erase these. crbug.com/877898.
-        "//chrome/browser/web_applications:web_applications_on_extensions",
         "//chrome/browser/web_applications/components",
         "//chrome/browser/web_applications/extensions",
         "//google_apis/drive",

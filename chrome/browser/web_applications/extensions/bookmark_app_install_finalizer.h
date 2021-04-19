@@ -22,7 +22,7 @@ class CrxInstaller;
 class Extension;
 
 // Class used to actually install the Bookmark App in the system.
-// TODO(loyso): Erase this subclass once crbug.com/877898 fixed.
+// TODO(crbug.com/1065748): Erase this subclass.
 class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
  public:
   // Constructs a BookmarkAppInstallFinalizer that will install the Bookmark App

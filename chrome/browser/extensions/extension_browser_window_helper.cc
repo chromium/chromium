@@ -29,8 +29,8 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
                                      Browser* browser,
                                      content::WebContents* web_contents) {
   // Bookmark app extensions are handled by WebAppBrowserController, if enabled.
-  // TODO(crbug.com/877898): Remove app_controller() part of the condition after
-  // unified browser controller launch.
+  // TODO(crbug.com/1065748): Remove app_controller() part of the condition
+  // after unified browser controller launch.
   if (extension->from_bookmark() &&
       (!browser->app_controller() ||
        browser->app_controller()->AsWebAppBrowserController())) {
