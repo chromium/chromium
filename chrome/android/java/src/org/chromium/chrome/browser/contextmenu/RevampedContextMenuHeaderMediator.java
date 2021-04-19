@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.contextmenu;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -166,16 +164,16 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
     }
 
     private void setVideoIcon() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        Bitmap bitmap = BitmapFactory.decodeResource(
-                mContext.getResources(), R.drawable.ic_videocam_white_24dp, options);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        paint.setColorFilter(new PorterDuffColorFilter(
+        Drawable drawable = ApiCompatibilityUtils.getDrawable(
+                mContext.getResources(), R.drawable.gm_filled_videocam_24);
+        drawable.setColorFilter(
                 ApiCompatibilityUtils.getColor(mContext.getResources(), R.color.default_icon_color),
-                PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, new Matrix(), paint);
+                PorterDuff.Mode.SRC_IN);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
         setHeaderImage(bitmap, false);
     }
 
