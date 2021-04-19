@@ -16153,10 +16153,12 @@ should be able to be added at any place in this file.
   <owner>olivierrobin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
-    App transitioned from background to foreground. This action is directly or
-    indirectly triggered by the user. Example of direct trigger: the user tapped
-    on app icon or choose the app in app switcher. Example of indirect trigger:
-    the user tapped on GMail link or used Today's View extension. iOS only.
+    App transitioned from background to foreground. Only recorded when the app
+    was previously running; i.e., not recorded on cold starts. This action is
+    directly or indirectly triggered by the user. Example of direct trigger: the
+    user tapped on app icon or choose the app in app switcher. Example of
+    indirect trigger: the user tapped on GMail link or used Today's View
+    extension. iOS only.
   </description>
 </action>
 

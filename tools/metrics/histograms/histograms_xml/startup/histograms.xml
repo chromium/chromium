@@ -436,7 +436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-22">
   <obsolete>
     Removed 03/2021. Broken starting M-87; removed and replaced with
-    Startup.ColdStartFromProcessCreationTime2 in M-91.
+    Startup.ColdStartFromProcessCreationTimeV2 in M-91.
   </obsolete>
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -456,10 +456,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The duration of all initializations from process creation time to UI ready.
-    This includes code loading, static initializers and the execution time
+    The duration of all initializations from process creation time to UI ready
+    to receive input. iOS specific, from M91+
+
+    The process can only be created in response to a user action, either tapping
+    the icon, tapping a link that opens in Chrome, or using the app switcher to
+    switch to Chrome after it has been background-killed by the OS.
+
+    The metric is recorded at the point where the Chrome window starts receiving
+    input events like touches and keypresses. However, the Chrome splash screen
+    is showing at this point, so there aren't any UI elements for a user to
+    interact with.
+
+    It includes code loading, static initializers and the execution time
     contained in Startup.ColdStartWithExternalURLTime and
-    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific, from M91+.
+    Startup.ColdStartWithoutExternalURLTime metrics.
+
+    The total counts in this histogram can be compared with the number of emits
+    to the user action MobileWillEnterForeground. The former reports the number
+    of cold starts. The latter is only recorded when Chrome comes to the
+    foreground on non-cold starts.
   </summary>
 </histogram>
 
