@@ -425,6 +425,10 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   mutable gfx::PointF mouse_down_post_transformed_coordinate_;
   RenderWidgetHostViewBase* last_mouse_down_target_ = nullptr;
 
+  // Set to true when we first DwoC on an invalid RWHVB* in DispatchTouchEvent.
+  // Used to prevent multiple dumps.
+  bool has_dumped_ = false;
+
   base::WeakPtrFactory<RenderWidgetHostInputEventRouter> weak_ptr_factory_{
       this};
 
