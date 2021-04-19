@@ -1,3 +1,4 @@
+
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -115,7 +116,34 @@ TEST(AutofillPopupViewUtilsTest, NotEnoughHeightForAnItem) {
   gfx::Rect content_area_bounds(x, window_y + 2, width, height - 2);
   gfx::Rect element_bounds(x, window_y + 3, width, height - 3);
 
-  bool enough_height_for_item = HasEnoughHeightForOneRow(
-      item_height, content_area_bounds, element_bounds);
-  EXPECT_FALSE(enough_height_for_item);
+  EXPECT_FALSE(
+      CanShowDropdownHere(item_height, content_area_bounds, element_bounds));
+}
+
+TEST(AutofillPopupViewUtilsTest, ElementOutOfContentAreaBounds) {
+  // In this test, each row of the popup has a height of 8 pixels, and there is
+  // no enough height in the content area to show one row.
+  //
+  //  |---------------------|    ---> y = 5
+  //  |       Window        |
+  //  | |-----------------| |    ---> y = 7
+  //  | |                 | |
+  //  | |   Content Area  | |
+  //  | |                 | |
+  //  |-|-----------------|-|    ---> y = 50
+  //      |-------------|        ---> y = 53
+  //      |   Element   |
+  //      |-------------|        ---> y = 63
+
+  constexpr int item_height = 8;
+  constexpr int window_y = 5;
+  constexpr int x = 10;
+  constexpr int width = 5;
+  constexpr int height = 46;
+
+  gfx::Rect content_area_bounds(x, window_y + 2, width, height - 2);
+  gfx::Rect element_bounds(x, window_y + height + 3, width, 10);
+
+  EXPECT_FALSE(
+      CanShowDropdownHere(item_height, content_area_bounds, element_bounds));
 }

@@ -113,4 +113,12 @@ void WaitForPersonalDataChange(Browser* browser) {
   observer.Wait();
 }
 
+// Adjusted from crrev/c/2628287 to fix failure in crrev/c/2822155
+void WaitForPersonalDataManagerToBeLoaded(Browser* browser) {
+  PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForProfile(browser->profile());
+  while (!pdm->IsDataLoaded())
+    WaitForPersonalDataChange(browser);
+}
+
 }  // namespace autofill

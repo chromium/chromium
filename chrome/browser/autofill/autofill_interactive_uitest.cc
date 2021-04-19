@@ -2781,7 +2781,14 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest, SimpleCrossSiteFill) {
+// Flaky on ChromeOS http://crbug.com/1175735
+#if defined(OS_CHROMEOS)
+#define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
+#else
+#define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
+                       MAYBE_SimpleCrossSiteFill) {
   CreateTestProfile();
 
   // Main frame is on a.com, iframe is on b.com.
@@ -2824,7 +2831,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest, SimpleCrossSiteFill) {
 // This test verifies that credit card (payment card list) popup works when the
 // form is inside an OOPIF.
 // Flaky on Windows http://crbug.com/728488
-#if defined(OS_WIN)
+// Flaky on ChromeOS http://crbug.com/1175735
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_CrossSitePaymentForms DISABLED_CrossSitePaymentForms
 #else
 #define MAYBE_CrossSitePaymentForms CrossSitePaymentForms
@@ -2862,8 +2870,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_CrossSitePaymentForms) {
                        {ObservedUiEvents::kSuggestionShown});
 }
 
+// Flaky on ChromeOS http://crbug.com/1175735
+#if defined(OS_CHROMEOS)
+#define MAYBE_DeletingFrameUnderSuggestion DISABLED_DeletingFrameUnderSuggestion
+#else
+#define MAYBE_DeletingFrameUnderSuggestion DeletingFrameUnderSuggestion
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
-                       DeletingFrameUnderSuggestion) {
+                       MAYBE_DeletingFrameUnderSuggestion) {
   CreateTestProfile();
 
   // Main frame is on a.com, iframe is on b.com.

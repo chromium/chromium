@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -77,6 +78,10 @@ void AutofillUiTest::SetUpOnMainThread() {
   RenderFrameHostChanged(/* old_host = */ nullptr,
                          /* new_host = */ GetWebContents()->GetMainFrame());
   Observe(GetWebContents());
+
+  // Wait for Personal Data Manager to be fully loaded to prevent that
+  // spurious notifications deceive the tests.
+  WaitForPersonalDataManagerToBeLoaded(browser());
 
   disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);

@@ -24,6 +24,9 @@ void AddTestAutofillData(Browser* browser,
                          const CreditCard& card);
 void WaitForPersonalDataChange(Browser* browser);
 
+// Adjusted from crrev/c/2628287 to fix failure in crrev/c/2822155
+void WaitForPersonalDataManagerToBeLoaded(Browser* browser);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_UTIL_H_
