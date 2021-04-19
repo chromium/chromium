@@ -4,7 +4,9 @@
 
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -222,6 +224,37 @@ TEST(AutocorrectManagerTest, UndoAutocorrectNoComposition) {
   manager.UndoAutocorrect();
 
   EXPECT_EQ(fake_text_input_client.text(), u"teh ");
+}
+
+TEST(AutocorrectManagerTest, RecordVirtualKeyboardMetricsWhenVisible) {
+  ui::IMEBridge::Initialize();
+  ui::MockIMEInputContextHandler mock_ime_input_context_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
+  ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
+  AutocorrectManager manager(&mock_suggestion_handler);
+  auto keyboard_client = ChromeKeyboardControllerClient::CreateForTest();
+  keyboard_client->set_keyboard_visible_for_test(true);
+  base::HistogramTester histogram_tester;
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.Autocorrect.Actions.VK",
+      1 /*AutocorrectActions::kUnderlined*/, 1);
+}
+
+TEST(AutocorrectManagerTest,
+     DoesNotRecordVirtualKeyboardMetricsWhenNotVisible) {
+  ui::IMEBridge::Initialize();
+  ui::MockIMEInputContextHandler mock_ime_input_context_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
+  ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
+  AutocorrectManager manager(&mock_suggestion_handler);
+  auto keyboard_client = ChromeKeyboardControllerClient::CreateForTest();
+  keyboard_client->set_keyboard_visible_for_test(false);
+  base::HistogramTester histogram_tester;
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.Autocorrect.Actions.VK",
+      1 /*AutocorrectActions::kUnderlined*/, 0);
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/suggestion_enums.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
@@ -86,6 +87,12 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
     AutocorrectActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
                                 action);
+
+  if (ChromeKeyboardControllerClient::HasInstance() &&
+      ChromeKeyboardControllerClient::Get()->is_keyboard_visible()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.Autocorrect.Actions.VK", action);
+  }
 
   if (IsCurrentInputMethodExperimentalMultilingual()) {
     base::UmaHistogramEnumeration(
