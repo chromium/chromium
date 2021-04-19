@@ -238,9 +238,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
       return v8::Boolean::New(isolate, value->GetBool());
 
     case base::Value::Type::INTEGER: {
-      int val = 0;
-      CHECK(value->GetAsInteger(&val));
-      return v8::Integer::New(isolate, val);
+      return v8::Integer::New(isolate, value->GetInt());
     }
 
     case base::Value::Type::DOUBLE: {
