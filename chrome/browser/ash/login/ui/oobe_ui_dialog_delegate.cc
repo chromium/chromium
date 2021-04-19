@@ -273,7 +273,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   layout_view_->SetHasShelf(
       !ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
 
-  dialog_view_->AddObserver(this);
+  view_observer_.Observe(dialog_view_);
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       dialog_view_->web_contents());
@@ -289,7 +289,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 }
 
 OobeUIDialogDelegate::~OobeUIDialogDelegate() {
-  dialog_view_->RemoveObserver(this);
+  view_observer_.Reset();
   if (captive_portal_delegate_)
     captive_portal_delegate_->Close();
   if (controller_)
@@ -447,6 +447,12 @@ void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
       ConvertDialogPaddingMode(layout_view_->GetPadding()));
   GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
       layout_view_->GetContentsBounds().size());
+}
+
+void OobeUIDialogDelegate::OnViewIsDeleting(views::View* observed_view) {
+  DCHECK_EQ(observed_view, dialog_view_);
+  view_observer_.Reset();
+  dialog_view_ = nullptr;
 }
 
 void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {
