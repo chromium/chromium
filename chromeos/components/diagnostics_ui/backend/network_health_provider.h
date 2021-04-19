@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_NETWORK_HEALTH_PROVIDER_H_
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_NETWORK_HEALTH_PROVIDER_H_
 
+#include <map>
+#include <string>
 #include <vector>
 
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -35,7 +37,18 @@ class NetworkHealthProvider
   void OnVpnProvidersChanged() override;
   void OnNetworkCertificatesChanged() override;
 
+  std::vector<std::string> GetNetworkGuidListForTesting();
+
  private:
+  // Handler for receiving a list of active networks.
+  void OnActiveNetworkStateListReceived(
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+
+  // Map of networks that are active and of a supported
+  // type (Ethernet, WiFi, Cellular).
+  std::map<std::string, network_config::mojom::NetworkStatePropertiesPtr>
+      guid_to_network_map;
+
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

@@ -4,11 +4,32 @@
 
 #include "chromeos/components/diagnostics_ui/backend/network_health_provider.h"
 
+#include <string>
+#include <utility>
+
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
 namespace chromeos {
 namespace diagnostics {
+namespace {
+
+bool IsSupportedNetworkType(network_config::mojom::NetworkType type) {
+  switch (type) {
+    case network_config::mojom::NetworkType::kWiFi:
+    case network_config::mojom::NetworkType::kCellular:
+    case network_config::mojom::NetworkType::kEthernet:
+      return true;
+    case network_config::mojom::NetworkType::kMobile:
+    case network_config::mojom::NetworkType::kTether:
+    case network_config::mojom::NetworkType::kVPN:
+    case network_config::mojom::NetworkType::kAll:
+    case network_config::mojom::NetworkType::kWireless:
+      return false;
+  }
+}
+
+}  // namespace
 
 NetworkHealthProvider::NetworkHealthProvider() {
   network_config::BindToInProcessInstance(
@@ -19,16 +40,37 @@ NetworkHealthProvider::NetworkHealthProvider() {
 
 NetworkHealthProvider::~NetworkHealthProvider() = default;
 
-// TODO(michaelcheco): Use these functions to aggregate data and call Mojo API.
 void NetworkHealthProvider::OnNetworkStateListChanged() {}
 void NetworkHealthProvider::OnDeviceStateListChanged() {}
 void NetworkHealthProvider::OnActiveNetworksChanged(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr>
-        active_networks) {}
+        active_networks) {
+  OnActiveNetworkStateListReceived(std::move(active_networks));
+}
+
 void NetworkHealthProvider::OnNetworkStateChanged(
     network_config::mojom::NetworkStatePropertiesPtr network_state) {}
 void NetworkHealthProvider::OnVpnProvidersChanged() {}
 void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
+
+void NetworkHealthProvider::OnActiveNetworkStateListReceived(
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+  guid_to_network_map.clear();
+  for (auto& network : networks) {
+    if (IsSupportedNetworkType(network->type)) {
+      guid_to_network_map[network->guid] = std::move(network);
+    }
+  }
+  // TODO(michaelcheco): Call Mojo API here.
+}
+
+std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
+  std::vector<std::string> network_guids;
+  for (const auto& entry : guid_to_network_map) {
+    network_guids.push_back(entry.first);
+  }
+  return network_guids;
+}
 
 }  // namespace diagnostics
 }  // namespace chromeos
