@@ -905,6 +905,7 @@ html element picture
 html element plaintext
 html element popup
     property hide
+    property initiallyOpen
     property open
     property show
 html element pre

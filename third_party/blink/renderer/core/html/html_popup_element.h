@@ -51,6 +51,10 @@ class HTMLPopupElement final : public HTMLElement {
   void ScheduleHideEvent();
   void MarkStyleDirty();
 
+  Node::InsertionNotificationRequest InsertedInto(
+      ContainerNode& insertion_point) override;
+  void ParserDidSetAttributes() override;
+
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
   void AdjustPopupPositionForSelectMenu(ComputedStyle&);
@@ -62,6 +66,7 @@ class HTMLPopupElement final : public HTMLElement {
   static const HTMLPopupElement* NearestOpenAncestralPopup(Node*);
 
   bool open_;
+  bool had_initiallyopen_when_parsed_;
   WeakMember<Element> invoker_;
 
   bool needs_repositioning_for_select_menu_;

@@ -21,6 +21,7 @@ namespace blink {
 HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
+      had_initiallyopen_when_parsed_(false),
       invoker_(nullptr),
       needs_repositioning_for_select_menu_(false),
       owner_select_menu_element_(nullptr) {
@@ -75,6 +76,30 @@ void HTMLPopupElement::show() {
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   PushNewPopupElement(this);
   MarkStyleDirty();
+}
+
+Node::InsertionNotificationRequest HTMLPopupElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  HTMLElement::InsertedInto(insertion_point);
+
+  if (had_initiallyopen_when_parsed_) {
+    DCHECK(isConnected()) << "This should be being inserted by the parser";
+    // If a <popup> has the initiallyopen attribute upon page
+    // load, and it is the first such popup, show it.
+    if (!GetDocument().PopupShowing())
+      show();
+    had_initiallyopen_when_parsed_ = false;
+  }
+  return kInsertionDone;
+}
+
+void HTMLPopupElement::ParserDidSetAttributes() {
+  HTMLElement::ParserDidSetAttributes();
+
+  if (FastHasAttribute(html_names::kInitiallyopenAttr)) {
+    DCHECK(!isConnected());
+    had_initiallyopen_when_parsed_ = true;
+  }
 }
 
 void HTMLPopupElement::PushNewPopupElement(HTMLPopupElement* popup) {

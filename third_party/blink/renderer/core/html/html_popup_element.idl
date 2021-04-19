@@ -6,6 +6,7 @@
 [Exposed=Window,HTMLConstructor,RuntimeEnabled=HTMLPopupElement]
 interface HTMLPopupElement : HTMLElement {
     [CEReactions] readonly attribute boolean open;
+    [CEReactions, Reflect] attribute boolean initiallyOpen;
     [CEReactions, Measure] void show();
     [CEReactions, Measure] void hide();
 };

@@ -4034,10 +4034,12 @@ interface HTMLPictureElement : HTMLElement
     method constructor
 interface HTMLPopupElement : HTMLElement
     attribute @@toStringTag
+    getter initiallyOpen
     getter open
     method constructor
     method hide
     method show
+    setter initiallyOpen
 interface HTMLPreElement : HTMLElement
     attribute @@toStringTag
     getter width
