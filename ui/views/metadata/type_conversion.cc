@@ -348,14 +348,15 @@ base::Optional<gfx::ShadowValues> TypeConverter<gfx::ShadowValues>::FromString(
     tokenizer.set_options(base::String16Tokenizer::RETURN_DELIMS);
     int x, y;
     double blur;
-    if (tokenizer.GetNext() && tokenizer.token() == u"(" &&
-        tokenizer.GetNext() && base::StringToInt(tokenizer.token(), &x) &&
-        tokenizer.GetNext() && tokenizer.token() == u"," &&
-        tokenizer.GetNext() && base::StringToInt(tokenizer.token(), &y) &&
-        tokenizer.GetNext() && tokenizer.token() == u")" &&
-        tokenizer.GetNext() && tokenizer.token() == u"," &&
-        tokenizer.GetNext() && base::StringToDouble(tokenizer.token(), &blur) &&
-        tokenizer.GetNext() && tokenizer.token() == u"," &&
+    if (tokenizer.GetNext() && tokenizer.token_piece() == u"(" &&
+        tokenizer.GetNext() && base::StringToInt(tokenizer.token_piece(), &x) &&
+        tokenizer.GetNext() && tokenizer.token_piece() == u"," &&
+        tokenizer.GetNext() && base::StringToInt(tokenizer.token_piece(), &y) &&
+        tokenizer.GetNext() && tokenizer.token_piece() == u")" &&
+        tokenizer.GetNext() && tokenizer.token_piece() == u"," &&
+        tokenizer.GetNext() &&
+        base::StringToDouble(tokenizer.token_piece(), &blur) &&
+        tokenizer.GetNext() && tokenizer.token_piece() == u"," &&
         tokenizer.GetNext()) {
       const auto color =
           SkColorConverter::GetNextColor(tokenizer.token_begin(), value.cend());
