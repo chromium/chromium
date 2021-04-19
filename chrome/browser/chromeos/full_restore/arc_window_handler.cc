@@ -39,7 +39,8 @@ namespace chromeos {
 namespace full_restore {
 
 bool IsArcGhostWindowEnabled() {
-  return ash::features::IsFullRestoreEnabled() && arc::IsArcVmEnabled();
+  return ash::features::IsFullRestoreEnabled() &&
+         ash::features::IsArcGhostWindowEnabled() && arc::IsArcVmEnabled();
 }
 
 apps::mojom::WindowInfoPtr HandleArcWindowInfo(
