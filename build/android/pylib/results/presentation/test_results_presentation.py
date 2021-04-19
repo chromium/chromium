@@ -250,8 +250,10 @@ def create_suite_table(results_dict):
       suite_row[FAIL_COUNT_INDEX]['data'] += 1
       footer_row[FAIL_COUNT_INDEX]['data'] += 1
 
-    suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
-    footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+    # Some types of crashes can have 'null' values for elapsed_time_ms.
+    if result['elapsed_time_ms'] is not None:
+      suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+      footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
 
   for suite in suite_row_dict.values():
     if suite[FAIL_COUNT_INDEX]['data'] > 0:
