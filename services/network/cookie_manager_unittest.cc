@@ -486,7 +486,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ("B", cookies[0].Value());
   EXPECT_EQ(kCookieDomain, cookies[0].Domain());
   EXPECT_EQ("/", cookies[0].Path());
-  EXPECT_LT(before_creation, cookies[0].CreationDate());
+  EXPECT_LE(before_creation, cookies[0].CreationDate());
   EXPECT_LE(cookies[0].CreationDate(), after_creation);
   EXPECT_EQ(cookies[0].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[0].ExpiryDate(), base::Time());
@@ -501,7 +501,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ("D", cookies[1].Value());
   EXPECT_EQ("foo_host2", cookies[1].Domain());
   EXPECT_EQ("/with/path", cookies[1].Path());
-  EXPECT_LT(before_creation, cookies[1].CreationDate());
+  EXPECT_LE(before_creation, cookies[1].CreationDate());
   EXPECT_LE(cookies[1].CreationDate(), after_creation);
   EXPECT_EQ(cookies[1].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[1].ExpiryDate(), base::Time());
@@ -516,7 +516,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ("F", cookies[2].Value());
   EXPECT_EQ(kCookieDomain, cookies[2].Domain());
   EXPECT_EQ("/with/path", cookies[2].Path());
-  EXPECT_LT(before_creation, cookies[2].CreationDate());
+  EXPECT_LE(before_creation, cookies[2].CreationDate());
   EXPECT_LE(cookies[2].CreationDate(), after_creation);
   EXPECT_EQ(cookies[2].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[2].ExpiryDate(), base::Time());
@@ -531,7 +531,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ("E", cookies[3].Value());
   EXPECT_EQ(kCookieDomain, cookies[3].Domain());
   EXPECT_EQ("/with/path", cookies[3].Path());
-  EXPECT_LT(before_creation, cookies[3].CreationDate());
+  EXPECT_LE(before_creation, cookies[3].CreationDate());
   EXPECT_LE(cookies[3].CreationDate(), after_creation);
   EXPECT_EQ(cookies[3].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[3].ExpiryDate(), base::Time());
@@ -546,7 +546,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
   EXPECT_EQ("G", cookies[4].Value());
   EXPECT_EQ(kCookieDomain, cookies[4].Domain());
   EXPECT_EQ("/with/path", cookies[4].Path());
-  EXPECT_LT(before_creation, cookies[4].CreationDate());
+  EXPECT_LE(before_creation, cookies[4].CreationDate());
   EXPECT_LE(cookies[4].CreationDate(), after_creation);
   EXPECT_EQ(cookies[4].LastAccessDate(), base::Time());
   EXPECT_EQ(cookies[4].ExpiryDate(), base::Time());
