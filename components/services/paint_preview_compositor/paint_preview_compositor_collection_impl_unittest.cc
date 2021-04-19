@@ -105,4 +105,38 @@ TEST(PaintPreviewCompositorCollectionTest,
   compositor->SetRootFrameUrl(GURL("https://www.foo.com"));
 }
 
+TEST(PaintPreviewCompositorCollectionTest, MemoryPressure) {
+  base::test::TaskEnvironment task_environment;
+
+  base::UnguessableToken token;
+  auto create_cb = base::BindOnce(
+      [](base::UnguessableToken* out_token,
+         const base::UnguessableToken& token) { *out_token = token; },
+      base::Unretained(&token));
+  ASSERT_TRUE(token.is_empty());
+  mojo::Remote<mojom::PaintPreviewCompositor> compositor;
+  {
+    mojo::Remote<mojom::PaintPreviewCompositorCollection> collection;
+    PaintPreviewCompositorCollectionImpl collection_instance(
+        collection.BindNewPipeAndPassReceiver(), false, nullptr);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_TRUE(collection.is_connected());
+    // Moderate will just purge caches. They aren't needed as urgently.
+    base::MemoryPressureListener::SimulatePressureNotification(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_TRUE(collection.is_connected());
+
+    // Critial will kill process.
+    base::MemoryPressureListener::SimulatePressureNotification(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    task_environment.RunUntilIdle();
+    EXPECT_TRUE(collection.is_bound());
+    EXPECT_FALSE(collection.is_connected());
+  }
+  task_environment.RunUntilIdle();
+}
+
 }  // namespace paint_preview

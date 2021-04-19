@@ -161,10 +161,6 @@ PaintPreviewCompositorImpl::PaintPreviewCompositorImpl(
     receiver_.Bind(std::move(receiver));
     receiver_.set_disconnect_handler(std::move(disconnect_handler));
   }
-  listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&PaintPreviewCompositorImpl::OnMemoryPressure,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PaintPreviewCompositorImpl::~PaintPreviewCompositorImpl() {
@@ -371,14 +367,6 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
 
 void PaintPreviewCompositorImpl::SetRootFrameUrl(const GURL& url) {
   url_ = url;
-}
-
-void PaintPreviewCompositorImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level >=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    receiver_.reset();
-  }
 }
 
 bool PaintPreviewCompositorImpl::AddFrame(

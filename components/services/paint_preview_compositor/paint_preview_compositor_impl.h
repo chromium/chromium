@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/optional.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
@@ -65,9 +64,6 @@ class PaintPreviewCompositorImpl : public mojom::PaintPreviewCompositor {
   void SetRootFrameUrl(const GURL& url) override;
 
  private:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
   // Adds |frame_proto| to |frames_| and copies required data into |response|.
   // Consumes the corresponding file in |file_map|. Returns true on success.
   bool AddFrame(
@@ -106,8 +102,6 @@ class PaintPreviewCompositorImpl : public mojom::PaintPreviewCompositor {
   // |BeginMainFrameComposite| succeeds.
   // Must be modified only by |BeginMainFrameComposite|.
   sk_sp<SkPicture> root_frame_;
-
-  std::unique_ptr<base::MemoryPressureListener> listener_;
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;

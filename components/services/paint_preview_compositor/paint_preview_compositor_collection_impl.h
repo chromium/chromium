@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -60,6 +61,8 @@ class PaintPreviewCompositorCollectionImpl
   void ListCompositors(ListCompositorsCallback callback) override;
 
  private:
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
   // Invoked by a |compositor| when it is disconnected from its remote. Used to
   // delete the corresponding instance from |compositors_|.
   void OnDisconnect(const base::UnguessableToken& id);
@@ -80,6 +83,7 @@ class PaintPreviewCompositorCollectionImpl
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
+  std::unique_ptr<base::MemoryPressureListener> listener_;
 
   base::WeakPtrFactory<PaintPreviewCompositorCollectionImpl> weak_ptr_factory_{
       this};
