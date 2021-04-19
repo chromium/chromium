@@ -10132,7 +10132,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--debug"
+          "--debug",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -10148,13 +10149,14 @@
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "cores": "8|12",
           "dimension_sets": [
             {
               "os": "Mac-10.15"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 25
+          "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },

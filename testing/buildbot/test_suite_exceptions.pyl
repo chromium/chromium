@@ -277,9 +277,13 @@
       'Mac10.15 Tests (dbg)': {
         'args': [
           '--debug',
+          # crbug.com/1196416
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
         'swarming': {
-          'shards': 25,
+          # These shards are liable to time out when running on macmini7,1.
+          # crbug.com/1042757
+          'cores': '8|12',
         },
       },
       'ToTFuchsia x64': {
