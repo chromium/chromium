@@ -2211,29 +2211,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   frame_->Detach();
 }
 
-void RenderFrameImpl::JavaScriptExecuteRequest(
-    const std::u16string& javascript,
-    bool wants_result,
-    JavaScriptExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  // Note that ExecuteScriptAndReturnValue may end up killing this object.
-  base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  v8::Local<v8::Value> result = frame_->ExecuteScriptAndReturnValue(
-      WebScriptSource(WebString::FromUTF16(javascript)));
-
-  if (!weak_this)
-    return;
-
-  if (wants_result)
-    std::move(callback).Run(GetJavaScriptExecutionResult(result));
-  else
-    std::move(callback).Run({});
-}
-
 void RenderFrameImpl::JavaScriptExecuteRequestForTests(
     const std::u16string& javascript,
     bool wants_result,
@@ -2470,7 +2447,8 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
 }
 
 void RenderFrameImpl::ExecuteJavaScript(const std::u16string& javascript) {
-  JavaScriptExecuteRequest(javascript, false, base::DoNothing());
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  frame_->ExecuteScript(WebScriptSource(WebString::FromUTF16(javascript)));
 }
 
 void RenderFrameImpl::BindLocalInterface(

@@ -713,6 +713,22 @@ interface LocalFrame {
       mojo_base.mojom.ListValue arguments,
       bool wants_result) => (mojo_base.mojom.Value result);
 
+  // Request for the renderer to execute JavaScript in the frame's context.
+  //
+  // |javascript| is the string containing the JavaScript to be executed in the
+  // target frame's context. Note that this uses BigString16 rather than
+  // String16 as this is used in contexts, like DevTools, where the contents of
+  // the JavaScript script is user-provided, and therefore we can't guarantee
+  // the size of the script.
+  //
+  // |wants_result| is true if the result of this execution is required by the
+  // caller. If it is false, a reply is still required by Mojo, but a null value
+  // should be returned to avoid issues serializing a large, unwanted reply.
+  //
+  JavaScriptExecuteRequest(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result) => (mojo_base.mojom.Value result);
+
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using
   // TextInputHost.

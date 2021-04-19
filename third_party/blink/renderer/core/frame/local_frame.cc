@@ -36,6 +36,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
@@ -73,6 +74,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
@@ -169,6 +171,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -3607,6 +3610,31 @@ void LocalFrame::JavaScriptMethodExecuteRequest(
   }
 
   if (wants_result) {
+    std::move(callback).Run(
+        GetJavaScriptExecutionResult(result, this, converter.get()));
+  } else {
+    std::move(callback).Run({});
+  }
+}
+
+void LocalFrame::JavaScriptExecuteRequest(
+    const String& javascript,
+    bool wants_result,
+    JavaScriptExecuteRequestCallback callback) {
+  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
+                       TRACE_EVENT_SCOPE_THREAD);
+
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::Local<v8::Value> result =
+      ClassicScript::CreateUnspecifiedScript(javascript)
+          ->RunScriptAndReturnValue(DomWindow());
+
+  if (wants_result) {
+    std::unique_ptr<WebV8ValueConverter> converter =
+        Platform::Current()->CreateWebV8ValueConverter();
+    converter->SetDateAllowed(true);
+    converter->SetRegExpAllowed(true);
+
     std::move(callback).Run(
         GetJavaScriptExecutionResult(result, this, converter.get()));
   } else {

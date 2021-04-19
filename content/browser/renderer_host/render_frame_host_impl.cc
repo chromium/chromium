@@ -1929,7 +1929,7 @@ void RenderFrameHostImpl::ExecuteJavaScript(const std::u16string& javascript,
   CHECK(CanExecuteJavaScript());
 
   const bool wants_result = !callback.is_null();
-  GetMojomFrameInRenderer()->JavaScriptExecuteRequest(javascript, wants_result,
+  GetAssociatedLocalFrame()->JavaScriptExecuteRequest(javascript, wants_result,
                                                       std::move(callback));
 }
 

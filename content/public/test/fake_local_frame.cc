@@ -109,6 +109,11 @@ void FakeLocalFrame::JavaScriptMethodExecuteRequest(
     bool wants_result,
     JavaScriptMethodExecuteRequestCallback callback) {}
 
+void FakeLocalFrame::JavaScriptExecuteRequest(
+    const std::u16string& javascript,
+    bool wants_result,
+    JavaScriptExecuteRequestCallback callback) {}
+
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 

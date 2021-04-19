@@ -683,6 +683,10 @@ class CORE_EXPORT LocalFrame final
       base::Value arguments,
       bool wants_result,
       JavaScriptMethodExecuteRequestCallback callback) final;
+  void JavaScriptExecuteRequest(
+      const String& javascript,
+      bool wants_result,
+      JavaScriptExecuteRequestCallback callback) final;
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
