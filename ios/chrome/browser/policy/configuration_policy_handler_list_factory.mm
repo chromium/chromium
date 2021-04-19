@@ -23,6 +23,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
+#include "components/sync/driver/sync_policy_handler.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/pref_names.h"
@@ -142,6 +143,7 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
           chrome_schema));
+  handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
 
   if (ShouldInstallURLBlocklistPolicyHandlers()) {
     handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(

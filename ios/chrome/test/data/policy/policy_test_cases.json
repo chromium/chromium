@@ -475,7 +475,15 @@
       }
     ]
   },
-
+  "SyncDisabled": {
+    "os": ["ios"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "SyncDisabled": true },
+        "prefs": { "sync.managed": {} }
+      }
+    ]
+  },
   "TranslateEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,

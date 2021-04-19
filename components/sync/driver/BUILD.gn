@@ -47,6 +47,8 @@ static_library("driver") {
     "sync_driver_switches.h",
     "sync_internals_util.cc",
     "sync_internals_util.h",
+    "sync_policy_handler.cc",
+    "sync_policy_handler.h",
     "sync_service.cc",
     "sync_service.h",
     "sync_service_crypto.cc",
@@ -100,13 +102,6 @@ static_library("driver") {
     "//components/version_info:generate_version_info",
     "//services/network/public/cpp",
   ]
-
-  if (!is_ios) {
-    sources += [
-      "sync_policy_handler.cc",
-      "sync_policy_handler.h",
-    ]
-  }
 
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]

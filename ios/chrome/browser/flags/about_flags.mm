@@ -822,6 +822,15 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     }];
   }
 
+  if ([defaults boolForKey:@"EnableSyncDisabledPolicy"]) {
+    [testing_policies addEntriesFromDictionary:@{
+      base::SysUTF8ToNSString(policy::key::kSyncDisabled) : @YES
+    }];
+  }
+  NSString* sync_policy_key =
+      base::SysUTF8ToNSString(policy::key::kSyncDisabled);
+  [allowed_experimental_policies addObject:sync_policy_key];
+
   // If an incognito mode availability is set, add the policy key to the list of
   // allowed experimental policies, and set the value.
   NSString* incognito_policy_key =

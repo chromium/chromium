@@ -3625,7 +3625,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
-      'future_on': ['android'],
+      'future_on': ['android','ios'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
