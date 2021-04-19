@@ -1323,16 +1323,15 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
        element_to_adjust =
            FlatTreeTraversal::ParentElement(*element_to_adjust)) {
     if (ElementAffectsDirectionality(element_to_adjust)) {
-      if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-        if (To<HTMLElement>(element_to_adjust)
-                ->CalculateAndAdjustAutoDirectionality(
-                    stay_within ? stay_within : element_to_adjust)) {
-          SetNeedsStyleRecalc(kLocalStyleChange,
-                              StyleChangeReasonForTracing::Create(
-                                  style_change_reason::kPseudoClass));
-        }
-        element_to_adjust->PseudoStateChanged(CSSSelector::kPseudoDir);
+      if (To<HTMLElement>(element_to_adjust)
+              ->CalculateAndAdjustAutoDirectionality(
+                  stay_within ? stay_within : element_to_adjust)) {
+        SetNeedsStyleRecalc(kLocalStyleChange,
+                            StyleChangeReasonForTracing::Create(
+                                style_change_reason::kPseudoClass));
       }
+      if (RuntimeEnabledFeatures::CSSPseudoDirEnabled())
+        element_to_adjust->PseudoStateChanged(CSSSelector::kPseudoDir);
       return;
     }
   }
