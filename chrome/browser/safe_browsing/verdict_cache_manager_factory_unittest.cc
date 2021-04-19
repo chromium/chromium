@@ -35,7 +35,7 @@ TEST(VerdictCacheManagerFactoryTest, OffTheRecordUseDifferentService) {
           testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       VerdictCacheManagerFactory::GetForProfile(
           testing_profile->GetOffTheRecordProfile(
-              Profile::OTRProfileID("Test::VerdictCachecManager"),
+              Profile::OTRProfileID::CreateUniqueForTesting(),
               /*create_if_needed=*/true)));
 }
 

@@ -30,7 +30,7 @@ class ProfileDestroyerTest : public BrowserWithTestWindowTest,
       TestingProfile::Builder builder;
       Profile::OTRProfileID profile_id =
           is_primary_otr_ ? Profile::OTRProfileID::PrimaryID()
-                          : Profile::OTRProfileID("Test::ProfileDestroyer");
+                          : Profile::OTRProfileID::CreateUniqueForTesting();
       otr_profile_ =
           builder.BuildOffTheRecord(GetOriginalProfile(), profile_id);
       otr_profile_->SetProfileDestructionObserver(

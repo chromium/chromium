@@ -443,14 +443,17 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, ProfileFromProfileKey) {
                           profile2->GetProfileKey()));
 
   // Create off-the-record profiles.
+  auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
+  auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
+
   Profile* otr_1a = profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  Profile* otr_1b = profile1->GetOffTheRecordProfile(
-      Profile::OTRProfileID("profile::otr1"), /*create_if_needed=*/true);
-  Profile* otr_1c = profile1->GetOffTheRecordProfile(
-      Profile::OTRProfileID("profile::otr2"), /*create_if_needed=*/true);
+  Profile* otr_1b = profile1->GetOffTheRecordProfile(otr_profile_id1,
+                                                     /*create_if_needed=*/true);
+  Profile* otr_1c = profile1->GetOffTheRecordProfile(otr_profile_id2,
+                                                     /*create_if_needed=*/true);
   Profile* otr_2a = profile2->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  Profile* otr_2b = profile2->GetOffTheRecordProfile(
-      Profile::OTRProfileID("profile::otr1"), /*create_if_needed=*/true);
+  Profile* otr_2b = profile2->GetOffTheRecordProfile(otr_profile_id1,
+                                                     /*create_if_needed=*/true);
 
   EXPECT_EQ(otr_1a,
             profile_manager->GetProfileFromProfileKey(otr_1a->GetProfileKey()));

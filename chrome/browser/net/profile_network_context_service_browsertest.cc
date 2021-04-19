@@ -362,7 +362,7 @@ class AmbientAuthenticationTestWithPolicy
     Profile* incognito_profile =
         regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     Profile* non_primary_otr_profile = regular_profile->GetOffTheRecordProfile(
-        Profile::OTRProfileID("Test::AmbientAuthentication"),
+        Profile::OTRProfileID::CreateUniqueForTesting(),
         /*create_if_needed=*/true);
 
     EXPECT_TRUE(AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(

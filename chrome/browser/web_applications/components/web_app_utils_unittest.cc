@@ -72,7 +72,8 @@ TEST_P(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_TRUE(AreWebAppsEnabled(
       regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_TRUE(AreWebAppsEnabled(regular_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::WebAppUtils"), /*create_if_needed=*/true)));
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true)));
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());
@@ -133,7 +134,7 @@ TEST_P(WebAppUtilsTest, AreWebAppsUserInstallable) {
       regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_FALSE(
       AreWebAppsUserInstallable(regular_profile->GetOffTheRecordProfile(
-          Profile::OTRProfileID("Test::WebAppUtils"),
+          Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true)));
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
@@ -175,7 +176,7 @@ TEST_P(WebAppUtilsTest, GetBrowserContextForWebApps) {
                 /*create_if_needed=*/true)));
   EXPECT_EQ(regular_profile,
             GetBrowserContextForWebApps(regular_profile->GetOffTheRecordProfile(
-                Profile::OTRProfileID("Test::WebAppUtils"),
+                Profile::OTRProfileID::CreateUniqueForTesting(),
                 /*create_if_needed=*/true)));
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
@@ -205,10 +206,11 @@ TEST_P(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
       regular_profile,
       GetBrowserContextForWebAppMetrics(
           regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  EXPECT_EQ(regular_profile, GetBrowserContextForWebAppMetrics(
-                                 regular_profile->GetOffTheRecordProfile(
-                                     Profile::OTRProfileID("Test::WebAppUtils"),
-                                     /*create_if_needed=*/true)));
+  EXPECT_EQ(
+      regular_profile,
+      GetBrowserContextForWebAppMetrics(regular_profile->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUniqueForTesting(),
+          /*create_if_needed=*/true)));
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());

@@ -260,7 +260,7 @@ TEST_F(SearchPermissionsServiceTest, Incognito) {
 TEST_F(SearchPermissionsServiceTest, NonPrimaryOffTheRecord) {
   // Service isn't constructed for non-primary OTR profiles.
   Profile* otr_profile = profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::SearchPermissions"),
+      Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
   SearchPermissionsService* service =
       SearchPermissionsService::Factory::GetForBrowserContext(otr_profile);

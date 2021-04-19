@@ -102,22 +102,21 @@ class Profile : public content::BrowserContext {
     EXIT_CRASHED,
   };
 
-  // The use of this class to create non-primary OTR profiles in Desktop
-  // platforms is restricted exclusively for cases where extensions should not
-  // be applicable to run. Please see crbug.com/1098697#c3 for more details.
+  // Defines an ID to distinguish different off-the-record profiles of a regular
+  // profile.
   class OTRProfileID {
    public:
-    // Creates an OTR profile ID from |profile_id|.
-    // |profile_id| should follow the following naming scheme:
-    // "<component>::<subcomponent_id>". For example, "HaTS::WebDialog"
-    explicit OTRProfileID(const std::string& profile_id);
-
-    // ID used by the incognito and guest profiles.
+    // ID used by the Incognito and Guest profiles.
     // TODO(https://crbug.com/1125474): To be replaced with |IncognitoID| when
     // OTR Guest profiles are deprecated.
     static const OTRProfileID PrimaryID();
 
     // Creates a unique OTR profile id with the given profile id prefix.
+    //
+    // WARNING:
+    // The use of this class to create non-primary OTR profiles in Desktop
+    // platforms is restricted exclusively for cases where extensions should not
+    // be applicable to run. Please see crbug.com/1098697#c3 for more details.
     static OTRProfileID CreateUnique(const std::string& profile_id_prefix);
 
     // Creates a unique OTR profile id to be used for DevTools browser contexts.
@@ -125,6 +124,9 @@ class Profile : public content::BrowserContext {
 
     // Creates a unique OTR profile id to be used for media router.
     static OTRProfileID CreateUniqueForMediaRouter();
+
+    // Creates a unique OTR profile id for tests.
+    static OTRProfileID CreateUniqueForTesting();
 
     bool operator==(const OTRProfileID& other) const {
       return profile_id_ == other.profile_id_;
@@ -165,6 +167,11 @@ class Profile : public content::BrowserContext {
     friend class ProfileDestroyer;
     friend std::ostream& operator<<(std::ostream& out,
                                     const OTRProfileID& profile_id);
+
+    // Creates an OTR profile ID from |profile_id|.
+    // |profile_id| should follow the following naming scheme:
+    // "<component>::<subcomponent_id>". For example, "HaTS::WebDialog"
+    explicit OTRProfileID(const std::string& profile_id);
 
     OTRProfileID() = default;
 

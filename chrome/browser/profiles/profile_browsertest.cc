@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, LastSelectedDirectory) {
 // Verifies creating an OTR with non-primary id results in a different profile
 // from incognito profile.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNonPrimaryOTR) {
-  Profile::OTRProfileID otr_profile_id("profile::otr");
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
 
   Profile* regular_profile = browser()->profile();
   EXPECT_FALSE(regular_profile->HasAnyOffTheRecordProfile());
@@ -762,8 +762,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNonPrimaryOTR) {
 
 // Verifies creating two OTRs with different ids results in different profiles.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateTwoNonPrimaryOTRs) {
-  Profile::OTRProfileID otr_profile_id1("profile::otr1");
-  Profile::OTRProfileID otr_profile_id2("profile::otr2");
+  auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
+  auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
 
   Profile* regular_profile = browser()->profile();
 
@@ -800,8 +800,8 @@ class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
 // profiles.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
                        DestroyRegularProfileBeforeOTRs) {
-  Profile::OTRProfileID otr_profile_id1("profile::otr1");
-  Profile::OTRProfileID otr_profile_id2("profile::otr2");
+  auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
+  auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
 
-  Profile::OTRProfileID otr_profile_id("profile::otr");
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
   Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
       otr_profile_id, /*create_if_needed=*/true);
 
@@ -887,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
 
 // Tests Profile::GetAllOffTheRecordProfiles
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestGetAllOffTheRecordProfiles) {
-  Profile::OTRProfileID otr_profile_id1("profile::otr1");
-  Profile::OTRProfileID otr_profile_id2("profile::otr2");
+  auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
+  auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
 
   Profile* regular_profile = browser()->profile();
 
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestGetAllOffTheRecordProfiles) {
 
 // Tests Profile::IsSameOrParent
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestIsSameOrParent) {
-  Profile::OTRProfileID otr_profile_id("profile::otr");
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
 
   Profile* regular_profile = browser()->profile();
   Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestIsSameOrParent) {
 // Tests if browser creation using non primary OTRs is blocked.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                        TestCreatingBrowserUsingNonPrimaryOffTheRecordProfile) {
-  Profile::OTRProfileID otr_profile_id("profile::otr");
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
   Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
       otr_profile_id, /*create_if_needed=*/true);
 
@@ -952,7 +952,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
             profile_metrics::GetBrowserProfileType(incognito_profile));
 
   Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID("profile::otr"), /*create_if_needed=*/true);
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
             profile_metrics::GetBrowserProfileType(otr_profile));
 }

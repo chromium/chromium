@@ -2838,7 +2838,7 @@ TEST_F(DownloadProtectionServiceTest, CheckOffTheRecordDoesNotSendFeedback) {
 
   EXPECT_FALSE(download_service_->MaybeBeginFeedbackForDownload(
       profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID("Test::DownloadProtectionService"),
+          Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true),
       &item, DownloadCommands::KEEP));
 }

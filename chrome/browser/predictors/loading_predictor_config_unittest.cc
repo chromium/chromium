@@ -74,7 +74,7 @@ TEST_F(LoadingPredictorConfigTest, NonPrimaryOffTheRecordProfile) {
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
   SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
   Profile* otr_profile = profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::LoadingPredictorConfigTest"),
+      Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
 
   EXPECT_TRUE(IsPreconnectFeatureEnabled());

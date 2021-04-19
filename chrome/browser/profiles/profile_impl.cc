@@ -956,7 +956,7 @@ bool ProfileImpl::IsMainProfile() const {
 const Profile::OTRProfileID& ProfileImpl::GetOTRProfileID() const {
   NOTREACHED();
   static base::NoDestructor<OTRProfileID> otr_profile_id(
-      "ProfileImp::NoOTRProfileID");
+      OTRProfileID::CreateUnique("ProfileImp::NoOTRProfileID"));
   return *otr_profile_id;
 }
 

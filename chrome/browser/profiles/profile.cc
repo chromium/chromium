@@ -84,6 +84,7 @@ namespace {
 
 const char kDevToolsOTRProfileIDPrefix[] = "Devtools::BrowserContext";
 const char kMediaRouterOTRProfileIDPrefix[] = "MediaRouter::Presentation";
+const char kTestOTRProfileIDPrefix[] = "Test::OTR";
 
 }  // namespace
 
@@ -124,6 +125,11 @@ Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForDevTools() {
 // static
 Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForMediaRouter() {
   return CreateUnique(kMediaRouterOTRProfileIDPrefix);
+}
+
+// static
+Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForTesting() {
+  return CreateUnique(kTestOTRProfileIDPrefix);
 }
 
 const std::string& Profile::OTRProfileID::ToString() const {

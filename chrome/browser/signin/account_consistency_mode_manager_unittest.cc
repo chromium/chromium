@@ -201,7 +201,7 @@ TEST(AccountConsistencyModeManagerTest,
 
     // Non-primary off-the-record profile.
     Profile* otr_profile = profile.GetOffTheRecordProfile(
-        Profile::OTRProfileID("Test::AccountConsistency"),
+        Profile::OTRProfileID::CreateUniqueForTesting(),
         /*create_if_needed=*/true);
     EXPECT_FALSE(
         AccountConsistencyModeManager::IsDiceEnabledForProfile(otr_profile));
@@ -297,7 +297,7 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
       AccountConsistencyModeManager::GetMethodForProfile(incognito_profile));
 
   Profile* otr_profile = profile.GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::AccountConsistency"),
+      Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
   EXPECT_FALSE(
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(otr_profile));

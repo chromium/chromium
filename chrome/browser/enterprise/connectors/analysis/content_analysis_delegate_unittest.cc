@@ -519,7 +519,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, NoScanInIncognito) {
   // The same URL should not trigger a scan in non-primary OTR profiles
   EXPECT_FALSE(ContentAnalysisDelegate::IsEnabled(
       profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID("Test::DeepScanning"),
+          Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true),
       url, &data, FILE_ATTACHED));
 }

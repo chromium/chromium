@@ -34,7 +34,7 @@ TEST(AdvancedProtectionStatusManagerFactoryTest, OffTheRecordUseSameService) {
           testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       AdvancedProtectionStatusManagerFactory::GetForProfile(
           testing_profile->GetOffTheRecordProfile(
-              Profile::OTRProfileID("Test::AdvancedProtection"),
+              Profile::OTRProfileID::CreateUniqueForTesting(),
               /*create_if_needed=*/true)));
 }
 

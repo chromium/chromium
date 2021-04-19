@@ -827,10 +827,10 @@ TEST(DiceResponseHandlerFactoryTest, NotInOffTheRecord) {
   EXPECT_THAT(DiceResponseHandler::GetForProfile(
                   profile.GetPrimaryOTRProfile(/*create_if_needed=*/true)),
               testing::IsNull());
-  EXPECT_THAT(
-      DiceResponseHandler::GetForProfile(profile.GetOffTheRecordProfile(
-          Profile::OTRProfileID("Test::Dice"), /*create_if_needed=*/true)),
-      testing::IsNull());
+  EXPECT_THAT(DiceResponseHandler::GetForProfile(profile.GetOffTheRecordProfile(
+                  Profile::OTRProfileID::CreateUniqueForTesting(),
+                  /*create_if_needed=*/true)),
+              testing::IsNull());
 }
 
 }  // namespace

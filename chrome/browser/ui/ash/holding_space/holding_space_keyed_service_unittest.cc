@@ -575,7 +575,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
       guest_profile->GetProfileUserName());
   TestingProfile* const secondary_otr_guest_profile =
       secondary_otr_guest_profile_builder.BuildOffTheRecord(
-          guest_profile.get(), Profile::OTRProfileID("profile::secondary_otr"));
+          guest_profile.get(), Profile::OTRProfileID::CreateUniqueForTesting());
   ASSERT_TRUE(secondary_otr_guest_profile);
   ASSERT_TRUE(secondary_otr_guest_profile->IsOffTheRecord());
 

@@ -42,7 +42,7 @@ class SharesheetClientUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetGuest() {
     Profile* const otr_profile = profile()->GetOffTheRecordProfile(
-        Profile::OTRProfileID("Test::SharesheetClient"),
+        Profile::OTRProfileID::CreateUniqueForTesting(),
         /*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsOffTheRecord());
     EXPECT_FALSE(otr_profile->IsIncognitoProfile());
