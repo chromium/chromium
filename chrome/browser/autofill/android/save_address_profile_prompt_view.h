@@ -9,13 +9,15 @@
 
 namespace autofill {
 
+class AutofillProfile;
 class SaveAddressProfilePromptController;
 
 // The UI interface which prompts the user to confirm saving an address profile
 // imported from a form submission.
 class SaveAddressProfilePromptView {
  public:
-  virtual bool Show(SaveAddressProfilePromptController* controller) = 0;
+  virtual bool Show(SaveAddressProfilePromptController* controller,
+                    const AutofillProfile& autofill_profile) = 0;
 
   virtual ~SaveAddressProfilePromptView() = default;
 };

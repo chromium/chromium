@@ -4,12 +4,18 @@
 
 #include "chrome/browser/autofill/android/save_address_profile_prompt_controller.h"
 
+#include <jni.h>
 #include <memory>
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/guid.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +25,8 @@ class MockSaveAddressProfilePromptView : public SaveAddressProfilePromptView {
  public:
   MOCK_METHOD(bool,
               Show,
-              (SaveAddressProfilePromptController * controller),
+              (SaveAddressProfilePromptController * controller,
+               const AutofillProfile& autofill_profile),
               (override));
 };
 
@@ -34,8 +41,22 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
     controller_ = std::make_unique<SaveAddressProfilePromptController>(
         std::move(prompt_view), profile_, decision_callback_.Get(),
         dismissal_callback_.Get());
-    ON_CALL(*prompt_view_, Show(controller_.get()))
+    ON_CALL(*prompt_view_, Show(controller_.get(), profile_))
         .WillByDefault(testing::Return(true));
+
+    CountryNames::SetLocaleString("en-US");
+  }
+
+  // Profile with raw data as it is returned from Java.
+  AutofillProfile GetFullProfileNotFinalizedNoStatus() {
+    AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+    profile.SetRawInfo(NAME_FULL, u"Mona J. Liza");
+    test::SetProfileInfo(&profile, "", "", "", "email@example.com",
+                         "Company Inc.", "33 Narrow Street", "Apt 42",
+                         "Playa Vista", "LA", "12345", "US", "13105551234",
+                         /*finalize=*/false,
+                         structured_address::VerificationStatus::kNoStatus);
+    return profile;
   }
 
  protected:
@@ -46,16 +67,18 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
   std::unique_ptr<SaveAddressProfilePromptController> controller_;
+  JNIEnv* env_ = base::android::AttachCurrentThread();
+  base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 
 TEST_F(SaveAddressProfilePromptControllerTest, ShouldShowViewOnDisplayPrompt) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get()));
+  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_));
   controller_->DisplayPrompt();
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldInvokeDismissalCallbackWhenShowReturnsFalse) {
-  EXPECT_CALL(*prompt_view_, Show(controller_.get()))
+  EXPECT_CALL(*prompt_view_, Show(controller_.get(), profile_))
       .WillOnce(testing::Return(false));
 
   EXPECT_CALL(dismissal_callback_, Run());
@@ -70,7 +93,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
           profile_));
-  controller_->OnAccepted();
+  controller_->OnUserAccepted(env_, mock_caller_);
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
@@ -81,7 +104,23 @@ TEST_F(SaveAddressProfilePromptControllerTest,
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
           profile_));
-  controller_->OnDeclined();
+  controller_->OnUserDeclined(env_, mock_caller_);
+}
+
+TEST_F(SaveAddressProfilePromptControllerTest,
+       ShouldInvokeSaveCallbackWhenUserEditsProfile) {
+  controller_->DisplayPrompt();
+
+  AutofillProfile edited_profile = GetFullProfileNotFinalizedNoStatus();
+  EXPECT_CALL(decision_callback_,
+              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
+                  edited_profile));
+  base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
+      PersonalDataManagerAndroid::CreateJavaProfileFromNative(env_,
+                                                              edited_profile);
+  controller_->OnUserEdited(
+      env_, mock_caller_,
+      base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,
@@ -89,7 +128,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(dismissal_callback_, Run());
-  controller_->OnPromptDismissed();
+  controller_->OnPromptDismissed(env_, mock_caller_);
 }
 
 TEST_F(SaveAddressProfilePromptControllerTest,

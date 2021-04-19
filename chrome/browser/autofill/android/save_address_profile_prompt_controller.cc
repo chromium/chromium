@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/android/chrome_jni_headers/SaveAddressProfilePromptController_jni.h"
+#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -38,35 +39,15 @@ SaveAddressProfilePromptController::~SaveAddressProfilePromptController() {
   }
   if (!had_user_interaction_) {
     RunSaveAddressProfileCallback(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
+        AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+        profile_);
   }
 }
 
 void SaveAddressProfilePromptController::DisplayPrompt() {
-  bool success = prompt_view_->Show(this);
+  bool success = prompt_view_->Show(this, profile_);
   if (!success)
-    OnPromptDismissed();
-}
-
-void SaveAddressProfilePromptController::OnAccepted() {
-  had_user_interaction_ = true;
-  RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
-}
-
-void SaveAddressProfilePromptController::OnDeclined() {
-  had_user_interaction_ = true;
-  RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
-}
-
-void SaveAddressProfilePromptController::OnPromptDismissed() {
-  std::move(dismissal_callback_).Run();
-}
-
-void SaveAddressProfilePromptController::RunSaveAddressProfileCallback(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  std::move(decision_callback_).Run(decision, profile_);
+    std::move(dismissal_callback_).Run();
 }
 
 std::u16string SaveAddressProfilePromptController::GetAddress() {
@@ -119,19 +100,42 @@ SaveAddressProfilePromptController::GetJavaObject() {
 void SaveAddressProfilePromptController::OnUserAccepted(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  OnAccepted();
+  had_user_interaction_ = true;
+  RunSaveAddressProfileCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile_);
 }
 
 void SaveAddressProfilePromptController::OnUserDeclined(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  OnDeclined();
+  had_user_interaction_ = true;
+  RunSaveAddressProfileCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined, profile_);
+}
+
+void SaveAddressProfilePromptController::OnUserEdited(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jprofile) {
+  had_user_interaction_ = true;
+  AutofillProfile edited_profile;
+  PersonalDataManagerAndroid::PopulateNativeProfileFromJava(jprofile, env,
+                                                            &edited_profile);
+  RunSaveAddressProfileCallback(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
+      edited_profile);
 }
 
 void SaveAddressProfilePromptController::OnPromptDismissed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  OnPromptDismissed();
+  std::move(dismissal_callback_).Run();
+}
+
+void SaveAddressProfilePromptController::RunSaveAddressProfileCallback(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    const AutofillProfile& profile) {
+  std::move(decision_callback_).Run(decision, profile);
 }
 
 }  // namespace autofill

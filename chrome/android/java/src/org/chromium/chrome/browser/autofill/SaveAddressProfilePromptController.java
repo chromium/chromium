@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 
 /**
  * JNI wrapper for C++ SaveAddressProfilePromptController.
@@ -54,6 +55,14 @@ final class SaveAddressProfilePromptController {
         }
     }
 
+    public void onUserEdited(AutofillProfile profile) {
+        if (mNativeSaveAddressProfilePromptController != 0) {
+            SaveAddressProfilePromptControllerJni.get().onUserEdited(
+                    mNativeSaveAddressProfilePromptController,
+                    SaveAddressProfilePromptController.this, profile);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onPromptDismissed(long nativeSaveAddressProfilePromptController,
@@ -62,5 +71,7 @@ final class SaveAddressProfilePromptController {
                 SaveAddressProfilePromptController caller);
         void onUserDeclined(long nativeSaveAddressProfilePromptController,
                 SaveAddressProfilePromptController caller);
+        void onUserEdited(long nativeSaveAddressProfilePromptController,
+                SaveAddressProfilePromptController caller, AutofillProfile profile);
     }
 }

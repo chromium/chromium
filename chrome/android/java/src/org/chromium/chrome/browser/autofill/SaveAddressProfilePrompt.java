@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,8 +14,13 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
+import org.chromium.chrome.browser.autofill.settings.AddressEditor;
+import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -28,27 +32,30 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Prompt that asks users to confirm saving an address profile imported from a form submission.
  */
 @JNINamespace("autofill")
+@JNIAdditionalImport(PersonalDataManager.class)
 public class SaveAddressProfilePrompt {
     private final SaveAddressProfilePromptController mController;
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
+    private final EditorDialog mEditorDialog;
 
     /**
      * Save prompt to confirm saving an address profile imported from a form submission.
      */
     public SaveAddressProfilePrompt(SaveAddressProfilePromptController controller,
-            ModalDialogManager modalDialogManager, Context context, String address, String email,
+            ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
+            PersonalDataManager.AutofillProfile autofillProfile, String address, String email,
             String phone) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(activity);
         View dialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
         showTextIfNotEmpty(dialogView.findViewById(R.id.address), address);
         showTextIfNotEmpty(dialogView.findViewById(R.id.email), email);
         showTextIfNotEmpty(dialogView.findViewById(R.id.phone), phone);
 
-        Resources resources = context.getResources();
+        Resources resources = activity.getResources();
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER,
@@ -64,6 +71,16 @@ public class SaveAddressProfilePrompt {
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.CUSTOM_VIEW, dialogView);
         mDialogModel = builder.build();
+
+        mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
+        AddressEditor addressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_SETTINGS,
+                /*saveToDisk=*/false);
+        addressEditor.setEditorDialog(mEditorDialog);
+        AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
+        dialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
+            addressEditor.edit(autofillAddress, /*doneCallback=*/this::onEdited,
+                    /*cancelCallback=*/unused -> {});
+        });
     }
 
     /**
@@ -84,14 +101,16 @@ public class SaveAddressProfilePrompt {
     @CalledByNative
     @Nullable
     private static SaveAddressProfilePrompt show(WindowAndroid windowAndroid,
-            SaveAddressProfilePromptController controller, String address, String email,
+            SaveAddressProfilePromptController controller, Profile browserProfile,
+            PersonalDataManager.AutofillProfile autofillProfile, String address, String email,
             String phone) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
-        SaveAddressProfilePrompt prompt = new SaveAddressProfilePrompt(
-                controller, modalDialogManager, activity, address, email, phone);
+        SaveAddressProfilePrompt prompt =
+                new SaveAddressProfilePrompt(controller, modalDialogManager, activity,
+                        browserProfile, autofillProfile, address, email, phone);
         prompt.show();
         return prompt;
     }
@@ -101,7 +120,13 @@ public class SaveAddressProfilePrompt {
      */
     @CalledByNative
     private void dismiss() {
+        if (mEditorDialog.isShowing()) mEditorDialog.dismiss();
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    private void onEdited(AutofillAddress autofillAddress) {
+        mController.onUserEdited(autofillAddress.getProfile());
+        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
@@ -112,6 +137,7 @@ public class SaveAddressProfilePrompt {
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 mController.onUserDeclined();
                 break;
+            case DialogDismissalCause.ACTION_ON_CONTENT:
             default:
                 // No explicit user decision.
                 break;

@@ -36,13 +36,6 @@ class SaveAddressProfilePromptController {
 
   void DisplayPrompt();
 
-  void OnAccepted();
-  void OnDeclined();
-  // Called whenever the prompt is dismissed (e.g. because the user already
-  // accepted/declined the prompt (after OnAccepted/OnDeclined is called) or
-  // it was closed without interaction).
-  void OnPromptDismissed();
-
   std::u16string GetAddress();
   std::u16string GetEmail();
   std::u16string GetPhoneNumber();
@@ -52,18 +45,25 @@ class SaveAddressProfilePromptController {
                       const base::android::JavaParamRef<jobject>& obj);
   void OnUserDeclined(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj);
+  void OnUserEdited(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& obj,
+                    const base::android::JavaParamRef<jobject>& jprofile);
+  // Called whenever the prompt is dismissed (e.g. because the user already
+  // accepted/declined/edited the profile (after OnUserAccepted/Declined/Edited
+  // is called) or it was closed without interaction).
   void OnPromptDismissed(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
 
  private:
   void RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      const AutofillProfile& profile);
 
-  // If the user explicitly accepted/dismissed the prompt.
+  // If the user explicitly accepted/dismissed/edited the profile.
   bool had_user_interaction_ = false;
   // View that displays the prompt.
   std::unique_ptr<SaveAddressProfilePromptView> prompt_view_;
-  // The profile that will be saved if the user accepts.
+  // The profile which is being confirmed by the user.
   AutofillProfile profile_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;

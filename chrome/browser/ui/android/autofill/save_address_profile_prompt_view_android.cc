@@ -9,7 +9,9 @@
 
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/SaveAddressProfilePrompt_jni.h"
+#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/android/save_address_profile_prompt_controller.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -33,7 +35,8 @@ SaveAddressProfilePromptViewAndroid::~SaveAddressProfilePromptViewAndroid() {
 }
 
 bool SaveAddressProfilePromptViewAndroid::Show(
-    SaveAddressProfilePromptController* controller) {
+    SaveAddressProfilePromptController* controller,
+    const AutofillProfile& autofill_profile) {
   DCHECK(controller);
   if (!web_contents_->GetTopLevelNativeWindow()) {
     return false;  // No window attached (yet or anymore).
@@ -44,7 +47,17 @@ bool SaveAddressProfilePromptViewAndroid::Show(
   if (!java_controller)
     return false;
 
+  Profile* browser_profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  ProfileAndroid* browser_profile_android =
+      ProfileAndroid::FromProfile(browser_profile);
+  if (!browser_profile_android)
+    return false;
+
   JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_autofill_profile =
+      PersonalDataManagerAndroid::CreateJavaProfileFromNative(env,
+                                                              autofill_profile);
   ScopedJavaLocalRef<jstring> address =
       base::android::ConvertUTF16ToJavaString(env, controller->GetAddress());
   ScopedJavaLocalRef<jstring> email =
@@ -53,7 +66,8 @@ bool SaveAddressProfilePromptViewAndroid::Show(
       env, controller->GetPhoneNumber());
   java_object_.Reset(Java_SaveAddressProfilePrompt_show(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      java_controller, address, email, phone));
+      java_controller, browser_profile_android->GetJavaObject(),
+      java_autofill_profile, address, email, phone));
   return !!java_object_;
 }
 
