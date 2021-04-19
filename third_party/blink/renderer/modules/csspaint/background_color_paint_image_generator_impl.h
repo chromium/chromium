@@ -35,6 +35,8 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
                                     Vector<double>* offsets,
                                     base::Optional<double>* progress) final;
 
+  Animation* GetAnimationIfCompositable(const Element* element) final;
+
   void Shutdown() final;
 
   void Trace(Visitor*) const override;

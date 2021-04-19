@@ -45,6 +45,11 @@ bool BackgroundColorPaintImageGeneratorImpl::GetBGColorPaintWorkletParams(
       node, animated_colors, offsets, progress);
 }
 
+Animation* BackgroundColorPaintImageGeneratorImpl::GetAnimationIfCompositable(
+    const Element* element) {
+  return BackgroundColorPaintWorklet::GetAnimationIfCompositable(element);
+}
+
 void BackgroundColorPaintImageGeneratorImpl::Shutdown() {
   background_color_paint_worklet_->UnregisterProxyClient();
 }

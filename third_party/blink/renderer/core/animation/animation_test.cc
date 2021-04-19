@@ -1471,25 +1471,6 @@ TEST_F(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
             animation->CheckCanStartAnimationOnCompositor(nullptr));
 }
 
-// This test ensures that a background-color animation can start on compositor.
-TEST_F(AnimationAnimationTestCompositing, BackgroundColorComposited) {
-  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
-  SetBodyInnerHTML(R"HTML(
-    <div id ="target" style="width: 100px; height: 100px">
-    </div>
-  )HTML");
-
-  Animation* animation =
-      CreateAnimation(CSSPropertyID::kBackgroundColor, "red", "green");
-
-  UpdateAllLifecyclePhasesForTest();
-  animation->play();
-  // A basic condition for an animation to be compositable is that it is set so
-  // by BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams.
-  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
-            CompositorAnimations::kNoFailure);
-}
-
 // crbug.com/1149012
 // Regression test to ensure proper restart logic for composited animations on
 // relative transforms after a size change. In this test, the transform depends

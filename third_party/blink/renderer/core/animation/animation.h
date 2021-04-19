@@ -302,11 +302,6 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   bool IsInDisplayLockedSubtree();
 
-  void SetFailureReasons(CompositorAnimations::FailureReasons failure_reasons) {
-    supplemental_failure_reasons_ = failure_reasons;
-  }
-  void ResetFailureReasons() { supplemental_failure_reasons_ = base::nullopt; }
-
   base::TimeDelta ComputeCompositorTimeOffset() const;
 
  protected:
@@ -526,11 +521,6 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   Member<CompositorAnimationHolder> compositor_animation_;
 
   bool effect_suppressed_;
-
-  // For background color animation, this should be determined during the paint
-  // stage with the CompositeBGColorAnimation feature.
-  base::Optional<CompositorAnimations::FailureReasons>
-      supplemental_failure_reasons_;
 
   // Animations with an owning element stop ticking if there is an active
   // display lock on an ancestor element.  Cache the status to minimize the

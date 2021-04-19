@@ -48,6 +48,9 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
                                            Vector<double>* offsets,
                                            base::Optional<double>* progress);
 
+  // Shared code that is being called in multiple places.
+  static Animation* GetAnimationIfCompositable(const Element* element);
+
   // For testing purpose only.
   static sk_sp<cc::PaintRecord> ProxyClientPaintForTest(
       const Vector<Color>& animated_colors,

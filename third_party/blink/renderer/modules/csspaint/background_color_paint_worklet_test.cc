@@ -23,6 +23,54 @@ namespace blink {
 
 using BackgroundColorPaintWorkletTest = PageTestBase;
 
+// Test the case where there is a background-color animation with two simple
+// keyframes that will not fall back to main.
+TEST_F(BackgroundColorPaintWorkletTest, SimpleBGColorAnimationNotFallback) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  model->SetComposite(EffectModel::kCompositeReplace);
+
+  Element* element = GetElementById("target");
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  Vector<Color> animated_colors;
+  Vector<double> offsets;
+  base::Optional<double> progress;
+  EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+      element, &animated_colors, &offsets, &progress));
+}
+
 // Test the case when there is no animation attached to the element.
 TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
