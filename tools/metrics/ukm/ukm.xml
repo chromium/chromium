@@ -7060,14 +7060,6 @@ be describing additional metrics about the same event.
       BackForwardCache::DisableForRenderFrameHost calls.
     </summary>
   </metric>
-  <metric name="BackForwardCache.IsAmpPage" enum="Boolean">
-    <summary>
-      Boolean whether the now-restored page uses AMP (see https://amp.dev). If
-      the page wasn't restored from the back-forward cache, this metric will not
-      be populated. This metric will never be true when
-      BackForwardCache.IsServedFromBackForwardCache is false.
-    </summary>
-  </metric>
   <metric name="BackForwardCache.IsServedFromBackForwardCache">
     <summary>
       Boolean whether the page was restored from the back-forward cache or not.

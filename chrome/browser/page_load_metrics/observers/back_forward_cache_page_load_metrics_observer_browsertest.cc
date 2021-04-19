@@ -293,34 +293,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       IsAmpPageAfterBackForwardCacheRestore) {
-  Start();
-  GURL url_a(embedded_test_server()->GetURL(
-      "amp.com", "/page_load_metrics/amp_basic.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // Navigate to A.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = top_frame_host();
-
-  // Navigate to B.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-
-  // Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
-  EXPECT_NE(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-
-  // Verify that the HistoryNavigation has the appropriate flag set.
-  ExpectMetricCountForUrl(url_a, UkmEntry::kBackForwardCache_IsAmpPageName, 1);
-  ExpectMetricValueForUrl(url_a, UkmEntry::kBackForwardCache_IsAmpPageName, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
                        CumulativeLayoutShiftAfterBackForwardCacheRestore) {
   Start();
 
