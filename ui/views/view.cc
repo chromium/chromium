@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -1739,6 +1740,10 @@ ui::mojom::DragOperation View::OnPerformDrop(const ui::DropTargetEvent& event) {
 }
 
 void View::OnDragDone() {}
+
+View::DropCallback View::GetDropCallback(const ui::DropTargetEvent& event) {
+  return base::NullCallback();
+}
 
 // static
 bool View::ExceededDragThreshold(const gfx::Vector2d& delta) {

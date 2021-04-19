@@ -4,14 +4,16 @@
 
 #include "ui/views/widget/drop_helper.h"
 
+#include <memory>
 #include <set>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -98,6 +100,28 @@ DragOperation DropHelper::OnDrop(const OSExchangeData& data,
   ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
                                  gfx::PointF(view_location), drag_operation);
   return drop_view->OnPerformDrop(drop_event);
+}
+
+View::DropCallback DropHelper::GetDropCallback(
+    const OSExchangeData& data,
+    const gfx::Point& root_view_location,
+    int drag_operation) {
+  View* drop_view = target_view_;
+  deepest_view_ = target_view_ = nullptr;
+  if (!drop_view)
+    return base::NullCallback();
+
+  if (drag_operation == ui::DragDropTypes::DRAG_NONE) {
+    drop_view->OnDragExited();
+    return base::NullCallback();
+  }
+
+  gfx::Point view_location(root_view_location);
+  View* root_view = drop_view->GetWidget()->GetRootView();
+  View::ConvertPointToTarget(root_view, drop_view, &view_location);
+  ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
+                                 gfx::PointF(view_location), drag_operation);
+  return drop_view->GetDropCallback(drop_event);
 }
 
 View* DropHelper::CalculateTargetView(const gfx::Point& root_view_location,

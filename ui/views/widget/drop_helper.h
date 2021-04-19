@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -24,7 +25,6 @@ using ui::OSExchangeData;
 namespace views {
 
 class RootView;
-class View;
 
 // DropHelper provides support for managing the view a drop is going to occur
 // at during dnd as well as sending the view the appropriate dnd methods.
@@ -69,9 +69,17 @@ class VIEWS_EXPORT DropHelper {
   //
   // NOTE: implementations must invoke OnDragOver before invoking this,
   // supplying the return value from OnDragOver as the drag_operation.
+  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
+  // instead.
   ui::mojom::DragOperation OnDrop(const OSExchangeData& data,
                                   const gfx::Point& root_view_location,
                                   int drag_operation);
+
+  // Invoked when the user drops data on the root view during a drag and drop
+  // operation, but the drop is held because of DataTransferPolicController.
+  View::DropCallback GetDropCallback(const OSExchangeData& data,
+                                     const gfx::Point& root_view_location,
+                                     int drag_operation);
 
   // Calculates the target view for a drop given the specified location in
   // the coordinate system of the rootview. This tries to avoid continually

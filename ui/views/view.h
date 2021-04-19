@@ -277,6 +277,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
  public:
   using Views = std::vector<View*>;
 
+  using DropCallback =
+      base::OnceCallback<void(const ui::DropTargetEvent& event,
+                              ui::mojom::DragOperation& output_drag_op)>;
+
   METADATA_HEADER_BASE(View);
 
   enum class FocusBehavior {
@@ -1317,12 +1321,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
   // operation and the user release the mouse.
+  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
+  // instead.
   virtual ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event);
 
   // Invoked from DoDrag after the drag completes. This implementation does
   // nothing, and is intended for subclasses to do cleanup.
   virtual void OnDragDone();
+
+  // Invoked during a drag and drop session when OnDragUpdated returns a valid
+  // operation and the user release the mouse but the drop is held because of
+  // DataTransferPolicyController.
+  virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event);
 
   // Returns true if the mouse was dragged enough to start a drag operation.
   // delta_x and y are the distance the mouse was dragged.
