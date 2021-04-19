@@ -18,18 +18,6 @@
 
 namespace blink {
 
-namespace {
-
-static ScriptPromise RejectPromiseImmediately(ExceptionState& exception_state) {
-  // The bindings layer implicitly converts thrown exceptions in
-  // promise-returning functions to promise rejections.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Current window is detached");
-  return ScriptPromise();
-}
-
-}  // namespace
-
 const char DOMScheduler::kSupplementName[] = "DOMScheduler";
 
 DOMScheduler* DOMScheduler::scheduler(LocalDOMWindow& window) {
@@ -70,10 +58,18 @@ ScriptPromise DOMScheduler::postTask(
     V8SchedulerPostTaskCallback* callback_function,
     SchedulerPostTaskOptions* options,
     ExceptionState& exception_state) {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
-    return RejectPromiseImmediately(exception_state);
-  if (options->signal() && options->signal()->aborted())
-    return RejectPromiseImmediately(exception_state);
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    // The bindings layer implicitly converts thrown exceptions in
+    // promise-returning functions to promise rejections.
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current window is detached");
+    return ScriptPromise();
+  }
+  if (options->signal() && options->signal()->aborted()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      "The task was aborted");
+    return ScriptPromise();
+  }
 
   // Always honor the priority and the task signal if given.
   DOMTaskSignal* task_signal = nullptr;
