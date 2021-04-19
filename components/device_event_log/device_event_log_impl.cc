@@ -26,19 +26,19 @@ namespace device_event_log {
 
 namespace {
 
-const char* kLogLevelName[] = {"Error", "User", "Event", "Debug"};
+const char* const kLogLevelName[] = {"Error", "User", "Event", "Debug"};
 
-const char* kLogTypeNetworkDesc = "Network";
-const char* kLogTypePowerDesc = "Power";
-const char* kLogTypeLoginDesc = "Login";
-const char* kLogTypeBluetoothDesc = "Bluetooth";
-const char* kLogTypeUsbDesc = "USB";
-const char* kLogTypeHidDesc = "HID";
-const char* kLogTypeMemoryDesc = "Memory";
-const char* kLogTypePrinterDesc = "Printer";
-const char* kLogTypeFidoDesc = "FIDO";
-const char* kLogTypeSerialDesc = "Serial";
-const char* kLogTypeCameraDesc = "Camera";
+const char kLogTypeNetworkDesc[] = "Network";
+const char kLogTypePowerDesc[] = "Power";
+const char kLogTypeLoginDesc[] = "Login";
+const char kLogTypeBluetoothDesc[] = "Bluetooth";
+const char kLogTypeUsbDesc[] = "USB";
+const char kLogTypeHidDesc[] = "HID";
+const char kLogTypeMemoryDesc[] = "Memory";
+const char kLogTypePrinterDesc[] = "Printer";
+const char kLogTypeFidoDesc[] = "FIDO";
+const char kLogTypeSerialDesc[] = "Serial";
+const char kLogTypeCameraDesc[] = "Camera";
 
 enum class ShowTime {
   kNone,
@@ -77,7 +77,7 @@ std::string GetLogTypeString(LogType type) {
   return "Unknown";
 }
 
-LogType GetLogTypeFromString(const std::string& desc) {
+LogType GetLogTypeFromString(base::StringPiece desc) {
   std::string desc_lc = base::ToLowerASCII(desc);
   for (int i = 0; i < LOG_TYPE_UNKNOWN; ++i) {
     auto type = static_cast<LogType>(i);
@@ -248,24 +248,24 @@ void GetFormat(const std::string& format_string,
   *show_level = false;
   *format_json = false;
   while (tokens.GetNext()) {
-    std::string tok(tokens.token());
-    if (tok == "time")
+    base::StringPiece tok = tokens.token_piece();
+    if (tok == "time") {
       *show_time = ShowTime::kTimeWithMs;
-    if (tok == "unixtime") {
+    } else if (tok == "unixtime") {
 #if defined(OS_POSIX)
       *show_time = ShowTime::kUnix;
 #else
       *show_time = ShowTime::kTimeWithMs;
 #endif
-    }
-    if (tok == "file")
+    } else if (tok == "file") {
       *show_file = true;
-    if (tok == "type")
+    } else if (tok == "type") {
       *show_type = true;
-    if (tok == "level")
+    } else if (tok == "level") {
       *show_level = true;
-    if (tok == "json")
+    } else if (tok == "json") {
       *format_json = true;
+    }
   }
 }
 
@@ -274,8 +274,8 @@ void GetLogTypes(const std::string& types,
                  std::set<LogType>* exclude_types) {
   base::StringTokenizer tokens(types, ",");
   while (tokens.GetNext()) {
-    std::string tok(tokens.token());
-    if (tok.substr(0, 4) == "non-") {
+    base::StringPiece tok = tokens.token_piece();
+    if (base::StartsWith(tok, "non-")) {
       LogType type = GetLogTypeFromString(tok.substr(4));
       if (type != LOG_TYPE_UNKNOWN)
         exclude_types->insert(type);
