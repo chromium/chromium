@@ -47,8 +47,7 @@ CastBrowserProcess::CastBrowserProcess()
       cast_screen_(nullptr),
 #endif
       web_view_factory_(nullptr),
-      cast_content_browser_client_(nullptr),
-      net_log_(nullptr) {
+      cast_content_browser_client_(nullptr) {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -137,11 +136,6 @@ void CastBrowserProcess::SetConnectivityChecker(
     scoped_refptr<ConnectivityChecker> connectivity_checker) {
   DCHECK(!connectivity_checker_);
   connectivity_checker_.swap(connectivity_checker);
-}
-
-void CastBrowserProcess::SetNetLog(net::NetLog* net_log) {
-  DCHECK(!net_log_);
-  net_log_ = net_log;
 }
 
 void CastBrowserProcess::SetWebViewFactory(
