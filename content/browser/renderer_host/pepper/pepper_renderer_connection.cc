@@ -149,7 +149,9 @@ PepperRendererConnection::~PepperRendererConnection() {}
 
 BrowserPpapiHostImpl* PepperRendererConnection::GetHostForChildProcess(
     int child_process_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   // Find the plugin which this message refers to. Check NaCl plugins first.
   BrowserPpapiHostImpl* host = static_cast<BrowserPpapiHostImpl*>(

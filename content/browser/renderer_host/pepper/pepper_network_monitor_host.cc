@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/socket_permission_request.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
@@ -42,7 +43,10 @@ void OnGetNetworkList(
     base::OnceCallback<void(const net::NetworkInterfaceList&)> callback,
     const base::Optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetIOThreadTaskRunner({})->PostTask(
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? content::GetUIThreadTaskRunner({})
+                         : content::GetIOThreadTaskRunner({});
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), networks.has_value()
                                               ? *networks
@@ -114,7 +118,9 @@ void PepperNetworkMonitorHost::SetNetworkConnectionTracker(
 }
 
 void PepperNetworkMonitorHost::GetAndSendNetworkList() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetNetworkList,
@@ -124,7 +130,9 @@ void PepperNetworkMonitorHost::GetAndSendNetworkList() {
 
 void PepperNetworkMonitorHost::SendNetworkList(
     const net::NetworkInterfaceList& list) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   std::unique_ptr<ppapi::proxy::SerializedNetworkList> list_copy(
       new ppapi::proxy::SerializedNetworkList(list.size()));
