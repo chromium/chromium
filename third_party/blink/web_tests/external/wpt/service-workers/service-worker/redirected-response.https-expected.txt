@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS initialize global state (service worker registration and caches)
+PASS mode: "follow", non-intercepted request, no server redirect
+PASS mode: "follow", non-intercepted request
+PASS mode: "manual", non-intercepted request
+PASS mode: "error", non-intercepted request
+PASS mode: "follow", no mode change, no server redirect
+PASS mode: "follow", no mode change
+PASS mode: "error", mode change: "follow"
+PASS mode: "manual", mode change: "follow"
+PASS mode: "follow", mode change: "manual"
+PASS mode: "error", mode change: "manual"
+PASS mode: "manual", no mode change
+PASS mode: "follow", generated redirect response
+PASS mode: "error", generated redirect response
+PASS mode: "manual", generated redirect response
+PASS mode: "follow", manually-generated redirect response
+PASS mode: "error", manually-generated redirect response
+PASS mode: "manual", manually-generated redirect response
+FAIL mode: "follow", generated relative redirect response assert_unreached: Should have rejected: Following the generated redirect response from the service worker should result fail. Reached unreachable code
+PASS mode: "error", generated relative redirect response
+PASS mode: "manual", generated relative redirect response
+PASS Fetch should follow the redirect response 20 times
+PASS Fetch should not follow the redirect response 21 times.
+PASS The URL for the service worker redirected request should be propagated to response.
+PASS restore global state (service worker registration)
+PASS restore global state (caches)
+Harness: the test ran to completion.
+

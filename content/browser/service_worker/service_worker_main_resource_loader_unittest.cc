@@ -152,9 +152,9 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   }
 
   // Tells this worker to respond to fetch events with the redirect response.
-  void RespondWithRedirectResponse(const std::string& location_header) {
+  void RespondWithRedirectResponse(const GURL& new_url) {
     response_mode_ = ResponseMode::kRedirect;
-    location_header_ = location_header;
+    redirected_url_ = new_url;
   }
 
   // Tells this worker to simulate failure to dispatch the fetch event to the
@@ -314,7 +314,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
         // Now the caller must call FinishWaitUntil() to finish the event.
         break;
       case ResponseMode::kRedirect:
-        response_callback->OnResponse(RedirectResponse(location_header_),
+        response_callback->OnResponse(RedirectResponse(redirected_url_.spec()),
                                       std::move(timing));
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -364,7 +364,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
       response_callback_;
 
   // For ResponseMode::kRedirect.
-  std::string location_header_;
+  GURL redirected_url_;
 
   // For ResponseMode::kHeaders
   base::flat_map<std::string, std::string> headers_;
@@ -1005,7 +1005,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, EarlyResponse) {
 TEST_F(ServiceWorkerMainResourceLoaderTest, Redirect) {
   base::HistogramTester histogram_tester;
   GURL new_url("https://example.com/redirected");
-  service_worker_->RespondWithRedirectResponse(new_url.spec());
+  service_worker_->RespondWithRedirectResponse(new_url);
 
   // Perform the request.
   StartRequest(CreateRequest());
@@ -1019,29 +1019,6 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Redirect) {
   EXPECT_EQ(301, redirect_info.status_code);
   EXPECT_EQ("GET", redirect_info.new_method);
   EXPECT_EQ(new_url, redirect_info.new_url);
-
-  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
-                                      blink::ServiceWorkerStatusCode::kOk, 1);
-}
-
-// Synthetic response lack a base URL, so relative redirects turn into a
-// redirect to an invalid URL. See https://crbug.com/1170379.
-TEST_F(ServiceWorkerMainResourceLoaderTest, RedirectRelativeNoBaseURL) {
-  base::HistogramTester histogram_tester;
-  service_worker_->RespondWithRedirectResponse("/foo.html");
-
-  // Perform the request.
-  StartRequest(CreateRequest());
-  client_.RunUntilRedirectReceived();
-
-  auto& info = client_.response_head();
-  EXPECT_EQ(301, info->headers->response_code());
-  ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
-
-  const net::RedirectInfo& redirect_info = client_.redirect_info();
-  EXPECT_EQ(301, redirect_info.status_code);
-  EXPECT_EQ("GET", redirect_info.new_method);
-  EXPECT_FALSE(redirect_info.new_url.is_valid());
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
