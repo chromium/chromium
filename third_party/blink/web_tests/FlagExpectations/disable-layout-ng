@@ -911,12 +911,6 @@ crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-002.htm
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-row-004.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-001.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-002.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/paint/background-image-column.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/paint/collapsed-border-large-cell.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/baseline-table.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/baseline-td.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/rowspan-height-redistribution.html [ Failure ]
-crbug.com/174167 external/wpt/css/css-tables/tentative/colgroup-col.html [ Failure ]
 
 ### external/wpt/css/css-tables/height-distribution/
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-001.html [ Failure ]
@@ -925,7 +919,14 @@ crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-gi
 crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/
+crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-table.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-td.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/caption.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/colgroup-col.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/paint/collapsed-border-large-cell.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/rowspan-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/paint/
