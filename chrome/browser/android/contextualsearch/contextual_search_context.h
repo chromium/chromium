@@ -61,12 +61,6 @@ struct ContextualSearchContext {
                        jint j_start_adjust,
                        jint j_end_adjust);
 
-  void SetContent(JNIEnv* env,
-                  jobject obj,
-                  const base::android::JavaParamRef<jstring>& j_content,
-                  jint j_selection_start,
-                  jint j_selection_end);
-
   // Gets the URL of the base page.
   const GURL GetBasePageUrl() const;
   // Sets the URL of the base page.

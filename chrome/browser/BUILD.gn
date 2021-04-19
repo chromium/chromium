@@ -2602,8 +2602,6 @@ static_library("browser") {
       "android/contextualsearch/ctr_suppression.h",
       "android/contextualsearch/resolved_search_term.cc",
       "android/contextualsearch/resolved_search_term.h",
-      "android/contextualsearch/simple_search_term_resolver.cc",
-      "android/contextualsearch/simple_search_term_resolver.h",
       "android/contextualsearch/unhandled_tap_notifier_impl.cc",
       "android/contextualsearch/unhandled_tap_notifier_impl.h",
       "android/contextualsearch/unhandled_tap_web_contents_observer.cc",

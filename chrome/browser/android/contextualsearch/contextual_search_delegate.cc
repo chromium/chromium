@@ -126,11 +126,6 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
   }
 }
 
-void ContextualSearchDelegate::SetActiveContext(
-    base::WeakPtr<ContextualSearchContext> contextual_search_context) {
-  context_ = contextual_search_context;
-}
-
 void ContextualSearchDelegate::StartSearchTermResolutionRequest(
     base::WeakPtr<ContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {

@@ -59,17 +59,6 @@ void ContextualSearchContext::SetResolveProperties(
   previous_event_results_ = j_previous_event_results;
 }
 
-void ContextualSearchContext::SetContent(
-    JNIEnv* env,
-    jobject obj,
-    const base::android::JavaParamRef<jstring>& j_content,
-    jint j_selection_start,
-    jint j_selection_end) {
-  SetSelectionSurroundings(
-      j_selection_start, j_selection_end,
-      base::android::ConvertJavaStringToUTF16(env, j_content));
-}
-
 void ContextualSearchContext::AdjustSelection(JNIEnv* env,
                                               jobject obj,
                                               jint j_start_adjust,
