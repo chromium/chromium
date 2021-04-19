@@ -1157,10 +1157,14 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
                    "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s")));
   ASSERT_FALSE(registry()->IsHandledProtocol("news"));
   // http:// URL
-  // TODO(http://crbug.com/1112268): Restrict to potentially trustworthy urls.
   registry()->OnAcceptRegisterProtocolHandler(
       CreateProtocolHandler("news", GURL("http://www.google.com/handler%s")));
-  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_FALSE(registry()->IsHandledProtocol("news"));
+  // filesystem:// URL
+  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "news", GURL("filesystem:https://www.google.com/"
+                   "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("news"));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, ExtensionHandler) {
@@ -1264,6 +1268,16 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
   EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
       "news",
       GURL("blob:https://www.google.com/"
+           "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // http:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", GURL("http://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // filesystem:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news",
+      GURL("filesystem:https://www.google.com/"
            "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s"),
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 

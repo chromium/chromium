@@ -60,7 +60,7 @@ chrome.test.getConfig(function(config) {
       '\'ext\\+\' must be followed by one or more ASCII letters.');
 
   const MESSAGE_INVALID_SCHEME =
-      new RegExp('The scheme of the url provided must be \'https\'.');
+      /The scheme of the url provided must be HTTP\(S\)./;
 
   const MESSAGE_MISSING_PERCENT =
       /The url provided \(.+\) does not contain '%s'/;
@@ -90,6 +90,18 @@ chrome.test.getConfig(function(config) {
       chrome.test.assertThrows(
           navigator.registerProtocolHandler, navigator,
           ['mailto', 'invalidurl://%s', TITLE], MESSAGE_INVALID_SCHEME);
+      chrome.test.assertThrows(
+          navigator.registerProtocolHandler, navigator,
+          ['mailto', `blob:${SAME_ORIGIN_CHROME_EXTENSION_URL}`, TITLE],
+          MESSAGE_INVALID_SCHEME);
+      chrome.test.assertThrows(
+          navigator.registerProtocolHandler, navigator,
+          ['mailto', 'data:text/html,Hello?url=%s', TITLE],
+          MESSAGE_INVALID_SCHEME);
+      chrome.test.assertThrows(
+          navigator.registerProtocolHandler, navigator,
+          ['mailto', `filesystem:${SAME_ORIGIN_CHROME_EXTENSION_URL}`, TITLE],
+          MESSAGE_INVALID_SCHEME);
       chrome.test.assertThrows(
           navigator.registerProtocolHandler, navigator,
           ['mailto', chrome.runtime.getURL('xhr.txt'), TITLE],

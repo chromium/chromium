@@ -12,6 +12,7 @@
 #include "content/public/common/origin_util.h"
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,16 +67,15 @@ bool ProtocolHandler::IsValidDict(const base::DictionaryValue* value) {
 }
 
 bool ProtocolHandler::IsValid() const {
-  // TODO(https://crbug.com/977083): Consider limiting to secure contexts.
-
   // This matches VerifyCustomHandlerURLSecurity() in blink's
   // NavigatorContentUtils.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
   bool has_valid_scheme =
       url_.SchemeIsHTTPOrHTTPS() ||
       (security_level_ ==
            blink::ProtocolHandlerSecurityLevel::kExtensionFeatures &&
        url_.SchemeIs(extensions::kExtensionScheme));
-  if (!has_valid_scheme)
+  if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(url_))
     return false;
 
   bool has_custom_scheme_prefix = false;

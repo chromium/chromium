@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
 
 #include "base/stl_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -54,14 +55,14 @@ static bool VerifyCustomHandlerURLSecurity(
     const KURL& full_url,
     String& error_message,
     ProtocolHandlerSecurityLevel security_level) {
-  // Although not required by the spec, the spec allows additional security
-  // checks. Bugs have arisen from allowing non-http/https URLs, e.g.
-  // https://crbug.com/971917 and it doesn't make a lot of sense to support
-  // them. We do need to allow extensions to continue using the API.
-  if (!full_url.ProtocolIsInHTTPFamily() &&
-      (security_level < ProtocolHandlerSecurityLevel::kExtensionFeatures ||
-       !full_url.ProtocolIs("chrome-extension"))) {
-    error_message = "The scheme of the url provided must be 'https'.";
+  // This matches ProtocolHandler::IsValid().
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  bool has_valid_scheme =
+      full_url.ProtocolIsInHTTPFamily() ||
+      (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
+       full_url.ProtocolIs("chrome-extension"));
+  if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(full_url)) {
+    error_message = "The scheme of the url provided must be HTTP(S).";
     return false;
   }
 
