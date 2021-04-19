@@ -12,11 +12,7 @@ namespace qrcode_generator {
 
 namespace {
 
-class QRCodeGeneratorBubbleTest : public testing::Test {
- public:
-  QRCodeGeneratorBubbleTest() = default;
-  ~QRCodeGeneratorBubbleTest() override = default;
-};
+using QRCodeGeneratorBubbleTest = testing::Test;
 
 TEST_F(QRCodeGeneratorBubbleTest, SuggestedDownloadURLNoIP) {
   EXPECT_EQ(QRCodeGeneratorBubble::GetQRCodeFilenameForURL(GURL("10.1.2.3")),
@@ -29,6 +25,37 @@ TEST_F(QRCodeGeneratorBubbleTest, SuggestedDownloadURLNoIP) {
   EXPECT_EQ(
       QRCodeGeneratorBubble::GetQRCodeFilenameForURL(GURL("text, not url")),
       u"qrcode_chrome.png");
+}
+
+TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
+  const int kBaseSizeDip = 16;
+  const int kQuietZoneTiles = 4;
+  const int kTileToDip = 2;
+  const int kQuietZoneDip = kQuietZoneTiles * kTileToDip;
+
+  SkBitmap base_bitmap;
+  base_bitmap.allocN32Pixels(kBaseSizeDip, kBaseSizeDip);
+  base_bitmap.eraseColor(SK_ColorRED);
+  auto base_image = gfx::ImageSkia::CreateFrom1xBitmap(base_bitmap);
+
+  auto image = QRCodeGeneratorBubble::AddQRCodeQuietZone(
+      base_image,
+      gfx::Size(kBaseSizeDip / kTileToDip, kBaseSizeDip / kTileToDip));
+
+  EXPECT_EQ(base_image.width(), kBaseSizeDip);
+  EXPECT_EQ(base_image.height(), kBaseSizeDip);
+  EXPECT_EQ(image.width(), kBaseSizeDip + kQuietZoneDip * 2);
+  EXPECT_EQ(image.height(), kBaseSizeDip + kQuietZoneDip * 2);
+
+  EXPECT_EQ(SK_ColorRED, base_image.bitmap()->getColor(0, 0));
+
+  EXPECT_EQ(SK_ColorWHITE, image.bitmap()->getColor(0, 0));
+  EXPECT_EQ(SK_ColorWHITE,
+            image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip - 1));
+  EXPECT_EQ(SK_ColorWHITE,
+            image.bitmap()->getColor(kQuietZoneDip - 1, kQuietZoneDip));
+  EXPECT_EQ(SK_ColorRED,
+            image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip));
 }
 
 }  // namespace

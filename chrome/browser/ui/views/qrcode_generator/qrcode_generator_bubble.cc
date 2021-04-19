@@ -30,6 +30,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -50,20 +51,16 @@
 namespace {
 
 // Rendered QR Code size, pixels.
-constexpr int kQRImageSizePx = 200;
+constexpr int kQRImageSizePx = 240;
 constexpr int kPaddingTooltipDownloadButtonPx = 10;
-// Padding around the QR code. Ensures we can scan when using dark themes.
-constexpr int kQRPaddingPx = 40;
 
-// Calculates preview image dimensions.
-constexpr gfx::Size GetQRImageSize() {
+// Calculates the height of the QR Code with padding.
+constexpr gfx::Size GetQRCodeImageSize() {
   return gfx::Size(kQRImageSizePx, kQRImageSizePx);
 }
 
-// Calculates the height of the QR Code with padding.
-constexpr gfx::Size GetPreferredQRCodeImageSize() {
-  return gfx::Size(kQRImageSizePx + kQRPaddingPx,
-                   kQRImageSizePx + kQRPaddingPx);
+constexpr bool IsSquare(gfx::Size size) {
+  return size.width() == size.height();
 }
 
 // Renders a solid square of color {r, g, b} at 100% alpha.
@@ -72,6 +69,13 @@ gfx::ImageSkia GetPlaceholderImageSkia(const SkColor color) {
   bitmap.allocN32Pixels(kQRImageSizePx, kQRImageSizePx);
   bitmap.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
   bitmap.eraseColor(color);
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+}
+
+gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size.width(), size.height());
+  bitmap.eraseColor(SK_ColorWHITE);
   return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
@@ -151,14 +155,15 @@ void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
   download_button_->SetEnabled(true);
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap);
-  UpdateQRImage(image);
+  UpdateQRImage(
+      AddQRCodeQuietZone(gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap),
+                         response->data_size));
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
   qr_code_image_->SetImage(qr_image);
-  qr_code_image_->SetImageSize(GetQRImageSize());
-  qr_code_image_->SetPreferredSize(GetPreferredQRCodeImageSize());
+  qr_code_image_->SetImageSize(GetQRCodeImageSize());
+  qr_code_image_->SetPreferredSize(GetQRCodeImageSize());
   qr_code_image_->SetVisible(true);
 }
 
@@ -176,7 +181,7 @@ void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
   }
   ShrinkAndHideDisplay(qr_code_image_);
   bottom_error_label_->SetVisible(false);
-  center_error_label_->SetPreferredSize(GetPreferredQRCodeImageSize());
+  center_error_label_->SetPreferredSize(GetQRCodeImageSize());
   center_error_label_->SetVisible(true);
 }
 
@@ -233,8 +238,8 @@ void QRCodeGeneratorBubble::Init() {
       /*thickness=*/2, border_radius, gfx::kGoogleGrey200));
   qr_code_image->SetHorizontalAlignment(Alignment::kCenter);
   qr_code_image->SetVerticalAlignment(Alignment::kCenter);
-  qr_code_image->SetImageSize(GetQRImageSize());
-  qr_code_image->SetPreferredSize(GetPreferredQRCodeImageSize());
+  qr_code_image->SetImageSize(GetQRCodeImageSize());
+  qr_code_image->SetPreferredSize(GetQRCodeImageSize());
   qr_code_image->SetBackground(
       views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius));
 
@@ -386,6 +391,32 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     return u"qrcode_chrome.png";
 
   return base::ASCIIToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
+}
+
+// Given a square |image| and a size in QR code tiles (*not* in pixels or
+// dips) |qr_size|, produce a new image that contains |image| with the
+// mandatory 4 tiles worth of white padding around the original image.
+// static
+gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
+    const gfx::ImageSkia& image,
+    const gfx::Size& qr_size) {
+  const gfx::Size image_size(image.width(), image.height());
+
+  DCHECK(IsSquare(image_size));
+  DCHECK(IsSquare(qr_size));
+
+  // Set by the QR code specification. We need to leave this many tiles blank on
+  // *each side* of the image.
+  const int kQuietZoneSizeTiles = 4;
+  const int tile_size = image.width() / qr_size.width();
+  const gfx::Size background_size =
+      image_size + gfx::Size(kQuietZoneSizeTiles * tile_size * 2,
+                             kQuietZoneSizeTiles * tile_size * 2);
+
+  auto final_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      CreateBackgroundImageSkia(background_size), image);
+  DCHECK(IsSquare(gfx::Size(final_image.width(), final_image.height())));
+  return final_image;
 }
 
 void QRCodeGeneratorBubble::DownloadButtonPressed() {
