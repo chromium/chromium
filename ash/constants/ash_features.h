@@ -221,6 +221,8 @@ extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMultilingualTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kNoteTakingForEnabledWebApps;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNewOobeLayout;

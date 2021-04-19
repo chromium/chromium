@@ -20,6 +20,7 @@ class BrowserContext;
 
 namespace web_app {
 
+class WebAppMigrationManager;
 class AppRegistrar;
 class OsIntegrationManager;
 class InstallFinalizer;
@@ -52,6 +53,8 @@ class TestWebAppProvider : public WebAppProvider {
   // if it's a part of TestingProfile (see BuildDefault() method above).
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
+  void SetMigrationManager(
+      std::unique_ptr<WebAppMigrationManager> migration_manager);
   void SetRegistrar(std::unique_ptr<AppRegistrar> registrar);
   void SetRegistryController(std::unique_ptr<AppRegistryController> controller);
   void SetOsIntegrationManager(
