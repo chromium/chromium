@@ -4,13 +4,13 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    --discount-chip-background-color: rgb(230, 244, 234);
+    --discount-chip-background: rgb(230, 244, 234);
     --discount-chip-text-color: var(--google-green-700);
   }
 
   @media (prefers-color-scheme: dark) {
     :host {
-      --discount-chip-background-color: linear-gradient(0deg,
+      --discount-chip-background: linear-gradient(0deg,
           rgba(129, 201, 149, 0.12), rgba(129, 201, 149, 0.12)), #202124;
       --discount-chip-text-color: rgb(129,201,149);
     }
@@ -50,8 +50,64 @@
     padding-top: 16px;
   }
 
+  #consentCard, 
+  .cart-item {
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    display: inline-flex;
+    flex-direction: column;
+    height: 140px;
+    margin: 0 4px;
+  }
+
+  #consentCard {
+    width: 244px;
+  }
+
+  #consentIconContainer {
+    background: var(--discount-chip-background);
+    border-radius: 4px;
+    height: 24px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
+    width: 24px;
+  }
+
+  #consentIcon {
+    -webkit-mask-image: url(modules/cart/icons/consent_label.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--discount-chip-text-color);
+    height: 15px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 4.5px;
+    width: 15px;
+  }
+
+  #consentContent {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+    height: 40px;
+    line-height: 20px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 4px;
+    text-align: center;
+    white-space: normal;
+    width: 220px;
+  }
+
+  #consentButtonContainer {
+    display: inline-block;
+    margin-inline-start: 16px;
+    margin-top: 8px;
+  }
+
   .discount-chip {
-    background: var(--discount-chip-background-color);
+    background: var(--discount-chip-background);
     border-radius: 4px;
     color: var(--discount-chip-text-color);
     font-size: 12px;
@@ -67,12 +123,6 @@
   }
 
   .cart-item {
-    border: 1px solid var(--ntp-border-color);
-    border-radius: 4px;
-    display: inline-flex;
-    flex-direction: column;
-    height: 140px;
-    margin: 0 4px;
     outline: none;
     position: relative;
     text-decoration: none;
@@ -240,6 +290,29 @@
   </template>
   <div id="cartCarousel">
     <div id="leftProbe" class="probe"></div>
+    <template id="consentCardElement" is="dom-if"
+        if="[[showDiscountConsent]]">
+      <div id="consentCard">
+        <div id="consentIconContainer">
+          <div id="consentIcon"></div>
+        </div>
+        <span id="consentContent">
+          $i18n{modulesCartDiscountConsentContent}
+        </span>
+        <div id="consentButtonContainer">
+          <cr-button id="cancelButton"
+              class="cancel-button" on-click="onDisallowDiscount_"
+              on-auxclick="onDisallowDiscount_">
+            $i18n{modulesCartDiscountConsentReject}
+          </cr-button>
+          <cr-button id="actionButton"
+              class="action-button" on-click="onAllowDiscount_"
+              on-auxclick="onAllowDiscount_">
+            $i18n{modulesCartDiscountConsentAccept}
+          </cr-button>
+        </div>
+      </div>
+    </template>
     <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
       <a class="cart-item" title="[[item.merchant]]"
           href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
@@ -276,7 +349,7 @@
           <template id="thumbnailFallback" is="dom-if"
               if="[[!item.productImageUrls.length]]">
             <img class="thumbnail-fallback"
-                src="chrome://new-tab-page/icons/cart_fallback.svg">
+                src="modules/cart/icons/cart_fallback.svg">
           </template>
         </div>
       </a>
@@ -307,5 +380,14 @@
   <cr-button id="undoDismissCartButton"
       on-click="onUndoDismissCartButtonClick_">
     $i18n{undo}
+  </cr-button>
+</cr-toast>
+<cr-toast id="confirmDiscountConsentToast" duration="10000">
+  <div id="confirmDiscountConsentMessage">
+    [[confirmDiscountConsentString_]]
+  </div>
+  <cr-button id="confirmDiscountConsentButton"
+      on-click="onConfirmDiscountConsentClick_">
+    $i18n{modulesCartDiscountConsentConfirmationDismiss}
   </cr-button>
 </cr-toast>
