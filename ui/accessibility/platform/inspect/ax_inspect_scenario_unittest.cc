@@ -6,7 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {

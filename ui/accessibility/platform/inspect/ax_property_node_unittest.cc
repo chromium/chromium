@@ -4,8 +4,9 @@
 
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
+#include "base/macros.h"
+#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 using ui::AXPropertyFilter;

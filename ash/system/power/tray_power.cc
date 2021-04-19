@@ -23,7 +23,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"

@@ -29,7 +29,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/optional.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
