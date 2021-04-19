@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
@@ -162,13 +163,9 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
   if (!url.User().IsEmpty() || !url.Pass().IsEmpty())
     return false;
 
-  if (url.Protocol() == "https")
-    return true;
-
-  if (url.Protocol() != "http")
-    return false;
-
-  return SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
+  // TODO(http://crbug.com/1200225): Align this with the specification.
+  return url.ProtocolIsInHTTPFamily() &&
+         network::IsUrlPotentiallyTrustworthy(url);
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(
