@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
@@ -58,7 +59,10 @@ enum class TestState {
 class MediaHistoryBrowserTest : public InProcessBrowserTest,
                                 public testing::WithParamInterface<TestState> {
  public:
-  MediaHistoryBrowserTest() = default;
+  MediaHistoryBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(media::kUseMediaHistoryStore);
+  }
+
   ~MediaHistoryBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -328,6 +332,8 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
   }
 
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

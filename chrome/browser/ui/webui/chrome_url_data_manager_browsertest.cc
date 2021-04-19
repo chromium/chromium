@@ -27,6 +27,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 
 namespace {
 
@@ -146,6 +147,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
+    enabled_features.push_back(media::kUseMediaHistoryStore);
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
