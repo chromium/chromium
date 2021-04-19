@@ -16,10 +16,11 @@ namespace blink {
 WindowAgentFactory::WindowAgentFactory() = default;
 
 WindowAgent* WindowAgentFactory::GetAgentForOrigin(
+    bool has_potential_universal_access_privilege,
     v8::Isolate* isolate,
     const SecurityOrigin* origin,
     bool is_origin_agent_cluster) {
-  if (origin->IsGrantedUniversalAccess()) {
+  if (has_potential_universal_access_privilege) {
     // We shouldn't have OAC turned on in this case, since we're sharing a
     // WindowAgent for all file access. This code block must be kept in sync
     // with DocumentLoader::InitializeWindow().

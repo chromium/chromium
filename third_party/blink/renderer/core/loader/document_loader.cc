@@ -1888,10 +1888,22 @@ bool ShouldReuseDOMWindow(LocalDOMWindow* window,
          window->GetSecurityOrigin()->CanAccess(security_origin);
 }
 
+namespace {
+
+bool HasPotentialUniversalAccessPrivilege(LocalFrame* frame) {
+  return !frame->GetSettings()->GetWebSecurityEnabled() ||
+         frame->GetSettings()->GetAllowUniversalAccessFromFileURLs();
+}
+
+}  // namespace
+
 WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
                                      SecurityOrigin* origin,
                                      bool is_origin_keyed) {
+  // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
+  // dynamically change.
   return frame->window_agent_factory().GetAgentForOrigin(
+      HasPotentialUniversalAccessPrivilege(frame),
       V8PerIsolateData::MainThreadIsolate(), origin, is_origin_keyed);
 }
 
@@ -1948,7 +1960,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Note: this code must be kept in sync with
   // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
   // out universal WindowAgent objects, and thus override OAC.
-  if (security_origin->IsGrantedUniversalAccess() ||
+  if (HasPotentialUniversalAccessPrivilege(frame_.Get()) ||
       security_origin->IsLocal()) {
     // In this case we either have AllowUniversalAccessFromFileURLs enabled, or
     // WebSecurity is disabled, or it's a local scheme such as file://; any of
