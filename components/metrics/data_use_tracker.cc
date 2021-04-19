@@ -156,9 +156,7 @@ int DataUseTracker::ComputeTotalDataUse(const std::string& pref_name) {
       local_state_->GetDictionary(pref_name);
   for (base::DictionaryValue::Iterator it(*pref_dict); !it.IsAtEnd();
        it.Advance()) {
-    int value = 0;
-    it.value().GetAsInteger(&value);
-    total_data_use += value;
+    total_data_use += it.value().GetIfInt().value_or(0);
   }
   return total_data_use;
 }
