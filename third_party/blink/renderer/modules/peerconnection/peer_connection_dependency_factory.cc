@@ -365,7 +365,6 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   CHECK(pc_factory_.get());
 
   webrtc::PeerConnectionFactoryInterface::Options factory_options;
-  factory_options.disable_sctp_data_channels = false;
   factory_options.disable_encryption =
       !blink::Platform::Current()->IsWebRtcEncryptionEnabled();
   pc_factory_->SetOptions(factory_options);
