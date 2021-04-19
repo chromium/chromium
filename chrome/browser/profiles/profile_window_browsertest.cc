@@ -155,43 +155,50 @@ class ProfileWindowCountBrowserTest
   Profile* profile_ = nullptr;
 };
 
-// TODO(crbug.com/1186994): Test is flaky on Linux Dbg.
-#if defined(OS_LINUX) && !defined(NDEBUG)
-#define MAYBE_CountProfileWindows DISABLED_CountProfileWindows
-#else
-#define MAYBE_CountProfileWindows CountProfileWindows
-#endif
-IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
-                       MAYBE_CountProfileWindows) {
-  DCHECK_EQ(0, GetWindowCount());
+IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
+  EXPECT_EQ(0, GetWindowCount());
 
   // Create a browser and check the count.
   Browser* browser1 = CreateGuestOrIncognitoBrowser();
-  DCHECK_EQ(1, GetWindowCount());
+  EXPECT_EQ(1, GetWindowCount());
 
   // Create another browser and check the count.
   Browser* browser2 = CreateGuestOrIncognitoBrowser();
-  DCHECK_EQ(2, GetWindowCount());
-
-  // Open a docked DevTool window and count.
-  DevToolsWindow* devtools_window =
-      DevToolsWindowTesting::OpenDevToolsWindowSync(browser1, true);
-  DCHECK_EQ(2, GetWindowCount());
-  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
-
-  // Open a detached DevTool window and count.
-  devtools_window =
-      DevToolsWindowTesting::OpenDevToolsWindowSync(browser1, false);
-  DCHECK_EQ(2, GetWindowCount());
-  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+  EXPECT_EQ(2, GetWindowCount());
 
   // Close one browser and count.
   CloseBrowserSynchronously(browser2);
-  DCHECK_EQ(1, GetWindowCount());
+  EXPECT_EQ(1, GetWindowCount());
 
   // Close another browser and count.
   CloseBrowserSynchronously(browser1);
-  DCHECK_EQ(0, GetWindowCount());
+  EXPECT_EQ(0, GetWindowCount());
+}
+
+// |OpenDevToolsWindowSync| is slow on Linux Debug and can result in flacky test
+// failure. See (crbug.com/1186994).
+#if defined(OS_LINUX) && !defined(NDEBUG)
+#define MAYBE_DevToolsWindowsNotCounted DISABLED_DevToolsWindowsNotCounted
+#else
+#define MAYBE_DevToolsWindowsNotCounted DevToolsWindowsNotCounted
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
+                       MAYBE_DevToolsWindowsNotCounted) {
+  Browser* browser = CreateGuestOrIncognitoBrowser();
+  EXPECT_EQ(1, GetWindowCount());
+
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(browser,
+                                                    /*is_docked=*/true);
+  EXPECT_EQ(1, GetWindowCount());
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+
+  devtools_window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser, /*is_docked=*/false);
+  EXPECT_EQ(1, GetWindowCount());
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+
+  EXPECT_EQ(1, GetWindowCount());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
