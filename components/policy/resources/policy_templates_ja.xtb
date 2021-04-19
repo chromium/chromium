@@ -340,6 +340,7 @@
 <translation id="1479427764273213107">このポリシーでは、ユーザーがカーネル ドライバから分離してウェブアプリ内で直接 chrome.usb API を通じて使用できる USB デバイスのリストを定義できます。USB ベンダー ID と商品 ID をペアで入力し、個々のハードウェアを特定できるようにします。
 
       このポリシーを設定しない場合、分離可能な USB デバイスのリストは空になります。</translation>
+<translation id="1479515813926202288">Enterprise ユーザーに対して Google レンズのカメラを使用した検索を無効にする</translation>
 <translation id="1481508277421549404">このポリシーを True に設定した場合、エンタープライズ ポリシーによってインストールされた拡張機能に対して Enterprise Hardware Platform API の使用が許可されます。
 
       このポリシーを False に設定するか未設定のままにした場合、拡張機能に対して API の使用は禁止されます。
@@ -1480,6 +1481,7 @@
 
       このポリシーを false に設定した場合、<ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="2964373560810620158">ユーザーに <ph name="LACROS_NAME" /> ブラウザの使用を許可しない</translation>
+<translation id="2968177167006045252">サイトに SharedArrayBuffers の使用を許可する</translation>
 <translation id="2969797921412053304">このポリシーでは、ログイン画面の SAML フロー中にデバイス識別情報のリモート証明書の使用を許可する URL を設定します。
 
       具体的に、URL がこのポリシーの指定パターンの 1 つに一致する場合、その URL ではリモート証明書の要求に対する応答を含む HTTP ヘッダーを受信し、デバイスの識別情報と状態を認証することができます。
@@ -1606,6 +1608,7 @@
 <translation id="3072847235228302527">デバイスのローカル アカウントの利用規約を設定する</translation>
 <translation id="3083259245974004342">パスワード保護</translation>
 <translation id="3086995894968271156"><ph name="PRODUCT_NAME" /> で Cast Receiver を設定します。</translation>
+<translation id="3087346703976541109">クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定する</translation>
 <translation id="3088557424854005813">認証</translation>
 <translation id="3091832372132789233">主に外部電源に接続しているデバイスのバッテリーを充電する。</translation>
 <translation id="3092059499596000593">システムのデフォルト プリンタを印刷プレビューのデフォルトの選択肢とする</translation>
@@ -2548,6 +2551,7 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> に関連するポリシーを設定します。</translation>
 <translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
+<translation id="4507775063441355559"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を許可する</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
 <translation id="4515404363392014383">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="4518251772179446575">サイトがユーザーの物理的な現在地を追跡しようとしたときに毎回確認する</translation>
@@ -2975,6 +2979,7 @@
       true に設定した場合は、各 CPU のモデル名、アーキテクチャ、
       最大クロック速度が報告されます。</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
+<translation id="5130213897914754028">サイトに SharedArrayBuffers の使用を許可しない</translation>
 <translation id="5141670636904227950">ログイン画面で有効にする画面拡大鏡のデフォルトのタイプを設定する</translation>
 <translation id="5142301680741828703"><ph name="PRODUCT_FRAME_NAME" /> で次の URL パターンを常に表示する</translation>
 <translation id="514870861066611127">このポリシーでは、ユーザーを識別できる情報（OS のログイン、<ph name="PRODUCT_NAME" /> プロフィールのログイン、<ph name="PRODUCT_NAME" /> プロフィール名、<ph name="PRODUCT_NAME" /> プロフィールのパス、<ph name="PRODUCT_NAME" /> 実行ファイルのパスなど）について、レポートを作成するかどうかを管理します。
@@ -3100,6 +3105,7 @@
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
 
       注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
+<translation id="5264773067879932127">このポリシーを未設定のままにするか有効に設定した場合、ユーザーはカメラと <ph name="GOOGLE_LENS_PRODUCT_NAME" /> を使用して検索できます。このポリシーを False に設定した場合、<ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索が可能な場合でも、検索ボックスに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ボタンは表示されません。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
@@ -3714,6 +3720,9 @@
 <translation id="6111936128861357925">恐竜のイースター エッグゲームを許可する</translation>
 <translation id="6123052603197028610">タイムスタンプを取得するために Google サーバーへクエリを送信することを許可しない</translation>
 <translation id="6132506775968708399">サードパーティ Cookie をブロックする</translation>
+<translation id="6132739217670763962">
+      クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定します。ウェブの互換性に関する理由から、Chrome 91 以降（2021-05-25）では、SharedArrayBuffers を使用する際にクロスオリジンの分離が必要となります。詳しくはこちらをご覧ください。
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/</translation>
 <translation id="6133088669883929098">すべてのサイトにキー生成の使用を許可する</translation>
 <translation id="6135398260575578389">セーフ ブラウジングを強化モードで有効にする。このモードではセキュリティが強化されますが、より多くの閲覧情報を Google に提供する必要があります。</translation>
 <translation id="6138636318340561140">URL のセーフ ブラウジング ステータスをリアルタイムでチェックする</translation>
@@ -3881,6 +3890,7 @@
       このポリシーを False に設定した場合、Signed HTTP Exchange は読み込まれません。</translation>
 <translation id="6368011194414932347">ホームページの URL を指定する</translation>
 <translation id="6368403635025849609">これらのサイトの JavaScript を許可する</translation>
+<translation id="6371561334154580937">最後のウィンドウを閉じたときにログアウト ダイアログを表示する</translation>
 <translation id="6372105930898423193">AppCache 機能がデフォルトで無効になっている場合でも有効化を許可します。</translation>
 <translation id="6376659517206731212">必須に設定可能</translation>
 <translation id="6377355597423503887">このポリシーはサポート終了となりました。代わりに BrowserSignin の使用を検討してください。
@@ -4637,6 +4647,7 @@
 
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="7295019613773647480">監視対象ユーザーを有効にする</translation>
+<translation id="7295038772938766029">Enterprise ユーザーに対して Google レンズのカメラを使用した検索を有効にする</translation>
 <translation id="7302043767260300182">画面がロックされるまでの時間（AC 電源での実行時）</translation>
 <translation id="7303902834678570827">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可しない</translation>
 <translation id="731208205557053914">VPD 情報を報告する</translation>
@@ -4874,6 +4885,7 @@
           このポリシーを設定しない場合は、デフォルトの時間が使用されます。
 
           このポリシーの値はミリ秒単位とし、画面オフ（設定されている場合）およびアイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
+<translation id="7680437377926096177">最後のウィンドウを閉じたときにログアウト ダイアログを表示しない</translation>
 <translation id="7683777542468165012">動的なポリシーの更新</translation>
 <translation id="7687943045976362719">このポリシーが設定されている場合、指定されたコンテンツ タイプは <ph name="PRODUCT_FRAME_NAME" /> で処理されます。
 
@@ -5408,6 +5420,9 @@
 
       このポリシーが true または未設定の場合、Crostini コンテナへのルートアクセスがユーザーに許可されます。
       このポリシーが false の場合、Crostini コンテナ（新規、既存の両方）へのルートアクセスはユーザーに許可されません。</translation>
+<translation id="8410477879938914253">このポリシーは、管理対象ゲスト セッションにのみ適用されます。
+      このポリシーを True に設定するか未設定のままにした場合は、最後のウィンドウを閉じたときに、ログアウトするかどうかを確認するダイアログが表示されます。
+      このポリシーを False に設定した場合、ダイアログは表示されず、最後のウィンドウを閉じた後の自動ログアウトも無効になります。</translation>
 <translation id="8415953438346821074">この設定を有効にした場合は、<ph name="PRODUCT_NAME" /> プロフィールに保存されている設定（ブックマーク、自動入力データ、パスワードなど）が、「ローミング」ユーザー プロフィール フォルダまたは管理者が <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> ポリシーで指定した場所に保存されるファイルにも書き込まれます。このポリシーを有効にすると、クラウド同期は無効になります。
 
       このポリシーを無効にするか未設定のままにした場合は、通常のローカル プロフィールのみが使用されます。</translation>
@@ -5682,6 +5697,7 @@
           このポリシーを未設定のままにした場合、ポリシーは無視されます。この場合、このパソコンではリモート アクセス接続での最長セッション継続時間は設定されません。</translation>
 <translation id="8800453707696044281">バッテリー充電のカスタムの充電停止設定（%）を行う</translation>
 <translation id="8801680448782904838">ブラウザまたはデバイスの再起動が推奨されるか必要であることをユーザーに通知する</translation>
+<translation id="8807313206348471682">ログアウト確認ダイアログを表示する</translation>
 <translation id="8816671955985738552">chrome://password-change でのセッション中の SAML パスワードの変更を許可しない</translation>
 <translation id="8817960019535659860">ユーザーに Chrome OS の登録特典の利用を許可しない</translation>
 <translation id="8818173863808665831">デバイスの地理的位置をレポートします。

@@ -350,6 +350,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1479427764273213107">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
       Als je het beleid niet instelt, is de lijst met USB-apparaten die kunnen worden ontkoppeld leeg.</translation>
+<translation id="1479515813926202288">Door de camera ondersteund zoeken via Lens uitzetten voor zakelijke gebruikers</translation>
 <translation id="1481508277421549404">Als je het beleid instelt op True, kunnen extensies die zijn geïnstalleerd door bedrijfsbeleid de Enterprise Hardware Platform API gebruiken.
 
       Als je het beleid instelt op False of niet instelt, kunnen extensies deze API niet gebruiken.
@@ -1506,6 +1507,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 
       Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="2964373560810620158">Niet toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
+<translation id="2968177167006045252">Toestaan dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="2969797921412053304">Met dit beleid wordt ingesteld welke URL's toegang krijgen tot attesten van apparaatidentiteit op afstand tijdens het SAML-proces op het inlogscherm.
 
       Als een URL overeenkomt met een van de patronen die zijn opgegeven via dit beleid, kan de URL een HTTP-header ontvangen met een reactie op een externe attestuitdaging voor een attest van apparaatidentiteit en apparaatstatus.
@@ -1640,6 +1642,7 @@ en 3 optionele leden:
 <translation id="3072847235228302527">De Servicevoorwaarden instellen voor een apparaat-lokaal account</translation>
 <translation id="3083259245974004342">Wachtwoordbeveiliging</translation>
 <translation id="3086995894968271156">De Cast-receiver instellen in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie</translation>
 <translation id="3088557424854005813">Attest</translation>
 <translation id="3091832372132789233">Batterijen opladen van apparaten die ook zijn aangesloten op een externe voedingsbron.</translation>
 <translation id="3092059499596000593">De standaardprinter van het systeem gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
@@ -2590,6 +2593,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
+<translation id="4507775063441355559">Door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> toestaan</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
@@ -3029,6 +3033,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als het beleid is ingesteld op True, worden de CPU, naam, architectuur en maximale kloksnelheid
       voor elke CPU gerapporteerd.</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
+<translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5141670636904227950">Standaardtype van vergrootglas voor inlogscherm instellen</translation>
 <translation id="5142301680741828703">De volgende URL-patronen altijd verwerken in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om gebruikers te identificeren, zoals de OS-inloggegevens, de inloggegevens voor het <ph name="PRODUCT_NAME" />-profiel, de profielnaam voor <ph name="PRODUCT_NAME" />, het profielpad voor <ph name="PRODUCT_NAME" /> en het uitvoerbare pad voor <ph name="PRODUCT_NAME" />.
@@ -3163,6 +3168,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
 
       Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="5264773067879932127">Als je het beleid toepast of niet instelt, kunnen gebruikers zoeken met hun camera's via <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Als je het beleid instelt op False, zien gebruikers de knop <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet in het zoekvak als door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="5266173014392157048">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, worden servers toegewezen waaraan <ph name="PRODUCT_NAME" /> kan delegeren. Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
@@ -3789,6 +3795,9 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
+<translation id="6132739217670763962">
+      Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf Chrome 91 (25-05-2021) vereist Chrome cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met betrekking tot webcompatibiliteit. Je kunt meer informatie bekijken op:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Alle sites toestaan sleutels te genereren</translation>
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>
@@ -3958,6 +3967,7 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
 <translation id="6368011194414932347">De homepage-URL configureren</translation>
 <translation id="6368403635025849609">JavaScript toestaan op deze sites</translation>
+<translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
 <translation id="6376659517206731212">Kan verplicht zijn</translation>
 <translation id="6377355597423503887">Dit beleid is verouderd. Je kunt in plaats daarvan BrowserSignin gebruiken.
@@ -4748,6 +4758,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7295019613773647480">Gebruikers met beperkte rechten aanzetten</translation>
+<translation id="7295038772938766029">Door de camera ondersteund zoeken via Lens aanzetten voor zakelijke gebruikers</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
@@ -4995,6 +5006,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
+<translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
 <translation id="7683777542468165012">Beleid dynamisch vernieuwen</translation>
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -5540,6 +5552,9 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 
       Als het beleid is ingesteld op 'true' of niet is ingesteld, krijgt de gebruiker toestemming voor roottoegang tot Crostini-containers.
       Als het beleid is ingesteld op 'false', krijgt de gebruiker geen toestemming voor toegang tot zowel bestaande als nieuwe Crostini-containers.</translation>
+<translation id="8410477879938914253">Het beleid is alleen van toepassing op beheerde gastsessies.
+      Als je het beleid instelt op True of niet instelt, wordt er een dialoogvenster getoond waarin de gebruiker wordt gevraagd het uitloggen te bevestigen of te weigeren als het laatste venster wordt gesloten.
+      Als je het beleid instelt op False, wordt het dialoogvenster niet getoond en wordt automatisch uitloggen nadat het laatste venster is gesloten ook uitgezet.</translation>
 <translation id="8415953438346821074">Als je deze instelling aanzet, worden de instellingen die zijn opgeslagen in <ph name="PRODUCT_NAME" />-profielen, zoals bookmarks, gegevens voor automatisch invullen en wachtwoorden, ook geschreven naar een bestand dat is opgeslagen in de map voor roaming-gebruikersprofielen of op een locatie die de beheerder heeft opgegeven via het beleid <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Als je dit beleid toepast, wordt cloudsynchronisatie uitgezet.
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
@@ -5817,6 +5832,7 @@ Dit beleid wordt verwijderd in M75.</translation>
           Dit beleid heeft geen effect als het niet is ingesteld. In dat geval is er geen maximale duur voor verbindingen voor externe toegang op deze machine.</translation>
 <translation id="8800453707696044281">Een custom batterijoplaadstop opgeven in procenten</translation>
 <translation id="8801680448782904838">Een gebruiker laten weten dat het aanbevolen of vereist is om de browser of het apparaat opnieuw op te starten</translation>
+<translation id="8807313206348471682">Het bevestigingsdialoogvenster voor uitloggen tonen</translation>
 <translation id="8816671955985738552">Geen wijzigingen in SAML-wachtwoorden op chrome://password-change toestaan tijdens een sessie</translation>
 <translation id="8817960019535659860">Niet toestaan dat gebruikers aanbiedingen inwisselen via Chrome OS-registratie</translation>
 <translation id="8818173863808665831">De geografische locatie van het apparaat rapporteren.

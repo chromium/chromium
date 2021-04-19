@@ -779,6 +779,7 @@
 <translation id="614940544461990577">次をお試しください</translation>
 <translation id="6154478581116148741">このデバイスからパスワードをエクスポートするには、[設定] で画面ロックをオンにしてください。</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> のデータを削減</translation>
+<translation id="6159729262978459665">同期しているすべてのデバイスから履歴を削除します。</translation>
 <translation id="6186394685773237175">漏洩した可能性のあるパスワードは見つかりませんでした</translation>
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
 <translation id="6206830853671714236">ダウンロード日時の選択</translation>
@@ -991,6 +992,7 @@
 <translation id="7523960634226602883">Google レンズを使ってカメラで検索します</translation>
 <translation id="753225086557513863">後で開始</translation>
 <translation id="7559975015014302720">ライトモードはオフです</translation>
+<translation id="7560448309733608642">同期しているすべてのデバイスから履歴を削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="7562080006725997899">閲覧データの消去</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>

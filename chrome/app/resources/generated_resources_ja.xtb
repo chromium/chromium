@@ -883,6 +883,7 @@
 <translation id="1928202201223835302">以前の PIN を入力</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="1929186283613845153">このファイルをスキャンしています。</translation>
+<translation id="1929343511231420085">すべてのシリアルポート</translation>
 <translation id="1929546189971853037">ログインしているすべてのデバイスでの閲覧履歴の読み取り</translation>
 <translation id="1930879306590754738">このデバイスと Google アカウントからパスワードを削除しました</translation>
 <translation id="1931152874660185993">コンポーネントはインストールされていません。</translation>
@@ -2943,6 +2944,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> の例外を削除します</translation>
 <translation id="4220648711404560261">有効化中にエラーが発生しました。</translation>
 <translation id="4222772810963087151">ビルドの詳細</translation>
+<translation id="4224284700924043865">ベンダー <ph name="VENDOR_ID" /> の商品 ID <ph name="PRODUCT_ID" /> の USB デバイス</translation>
 <translation id="4225397296022057997">すべてのサイト</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
@@ -3015,6 +3017,7 @@
 <translation id="431076611119798497">詳細(&amp;D)</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314815835985389558">同期の管理</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" /> の商品 ID <ph name="PRODUCT_ID" /> の USB デバイス</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
@@ -3457,6 +3460,7 @@
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
 <translation id="4827675678516992122">接続エラー</translation>
 <translation id="4827784381479890589">Chrome ブラウザの拡張スペルチェック（テキストを Google に送信してスペル候補を取得します）</translation>
+<translation id="482952334869563894">ベンダー <ph name="VENDOR_ID" /> の USB デバイス</translation>
 <translation id="4829768588131278040">PIN を設定</translation>
 <translation id="4830121310592638841">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する</translation>
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
@@ -3746,6 +3750,7 @@
 <translation id="5159419673777902220">保護者が拡張機能の許可設定を無効にしました</translation>
 <translation id="5160634252433617617">物理キーボード</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> の USB デバイス</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> をブロックしました</translation>
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
 <translation id="5165085578392358314">スイッチの割り当て: <ph name="ACTION" /></translation>
@@ -5373,6 +5378,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - アクティビティ ログ</translation>
 <translation id="6997707937646349884">デバイスで次の操作を行います。</translation>
 <translation id="6998793565256476099">デバイスをビデオ会議用に登録</translation>
+<translation id="6999640176621571692">カートに追加した商品の割引情報を取得することを Google に許可しますか？</translation>
 <translation id="6999956497249459195">新しいグループ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> は接続していますが設定が必要です</translation>
 <translation id="7000347579424117903">Ctrl キー、Alt キー、検索キーのいずれかが必要です</translation>

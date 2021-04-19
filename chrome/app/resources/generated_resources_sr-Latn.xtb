@@ -882,6 +882,7 @@
 <translation id="1928202201223835302">Unesite stari PIN</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="1929186283613845153">Ova datoteka se skenira.</translation>
+<translation id="1929343511231420085">Bilo koji serijski port</translation>
 <translation id="1929546189971853037">Čitanje vaše istorije pregledanja na svim uređajima na kojima ste prijavljeni</translation>
 <translation id="1930879306590754738">Lozinka je izbrisana sa ovog uređaja i vašeg Google naloga</translation>
 <translation id="1931152874660185993">Nije instalirana nijedna komponenta.</translation>
@@ -2942,6 +2943,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4218274196133425560">Ukloni izuzetak za <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Došlo je do greške pri aktivaciji.</translation>
 <translation id="4222772810963087151">Detalji o verziji</translation>
+<translation id="4224284700924043865">USB uređaji sa ID-om proizvoda <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Na svim sajtovima</translation>
 <translation id="4231095370974836764">Instalirajte aplikacije i igre sa Google Play-a na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurišite Kerberos</translation>
@@ -3014,6 +3016,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="431076611119798497">&amp;Detalji</translation>
 <translation id="4312866146174492540">Blokiraj (podrazumevano)</translation>
 <translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
+<translation id="4316650123995163262">USB uređaji sa ID-om proizvoda <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Veb-sajt programera</translation>
 <translation id="4317820549299924617">Verifikacija nije uspela</translation>
 <translation id="4320177379694898372">Nema internet veze</translation>
@@ -3456,6 +3459,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4824958205181053313">Želite li da otkažete sinhronizaciju?</translation>
 <translation id="4827675678516992122">Povezivanje nije uspelo</translation>
 <translation id="4827784381479890589">Poboljšana provera pravopisa u pregledaču Chrome (tekst se šalje Google-u da biste dobijali predloge za pravopis)</translation>
+<translation id="482952334869563894">USB uređaji prodavca <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Podesi PIN</translation>
 <translation id="4830121310592638841">Pitaj kada sajt želi da otvara i postavlja prozore na ekrane</translation>
 <translation id="4830502475412647084">Instalira se ažuriranje OS-a</translation>
@@ -3745,6 +3749,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5159419673777902220">Tvoj roditelj je onemogućio dozvole za dodatke</translation>
 <translation id="5160634252433617617">Fizička tastatura</translation>
 <translation id="5160857336552977725">Prijavite se na <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB uređaji prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> je blokiran</translation>
 <translation id="5163910114647549394">Kartica je premeštena na kraj trake sa karticama</translation>
 <translation id="5165085578392358314">Dodelite prekidač za radnju <ph name="ACTION" /></translation>
@@ -5373,6 +5378,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Evidencija aktivnosti</translation>
 <translation id="6997707937646349884">Na uređajima:</translation>
 <translation id="6998793565256476099">Registruj uređaj za video konferencije</translation>
+<translation id="6999640176621571692">Želite da dozvolite Google-u da pronađe popuste na stavke koje dodajete u korpe?</translation>
 <translation id="6999956497249459195">Nova grupa</translation>
 <translation id="7000206553895739324">Štampač <ph name="PRINTER_NAME" /> je povezan, ali treba da se konfiguriše</translation>
 <translation id="7000347579424117903">Koristite Ctrl, Alt ili Search</translation>

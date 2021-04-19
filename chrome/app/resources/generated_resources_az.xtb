@@ -670,7 +670,7 @@
 <translation id="1714644264617423774">Cihazınızın daha asan istfadəsi üçün əlçatımlıq funksiyalarını aktiv edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1718835860248848330">Son saat</translation>
-<translation id="1719312230114180055">Qeyd: Barmaq izi güclü kod və ya PIN koddan daha az təhlükəsiz ola bilər.</translation>
+<translation id="1719312230114180055">Nəzərə alın ki, barmaq izi güclü qrafik açar və ya PIN-dən güvənsiz ola bilər.</translation>
 <translation id="1720318856472900922">TLS WWW Server Doğrulaması</translation>
 <translation id="1721312023322545264">Bu sayta daxil olmaq üçün <ph name="NAME" /> adlı şəxsdən icazə almalısınız</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> cihazını idarə edir<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
@@ -879,6 +879,7 @@
 <translation id="1928202201223835302">Köhnə PİN kodu daxil edin</translation>
 <translation id="1928696683969751773">Güncəlləşmələr</translation>
 <translation id="1929186283613845153">Bu fayl skanlanır.</translation>
+<translation id="1929343511231420085">Hər hansı bir ardıcıl port</translation>
 <translation id="1929546189971853037">Bütün daxil olmuş cihalarda brauzer tarixçənizi oxuyun</translation>
 <translation id="1930879306590754738">Parol bu cihazdan və Google Hesabınızdan silinib</translation>
 <translation id="1931152874660185993">Heç bir komponent quraşdırılmayıb.</translation>
@@ -1991,7 +1992,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3154429428035006212">Bir aydan artıqdır ki, oflayndır</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157931365184549694">Bərpa edin</translation>
-<translation id="3158033540161634471">Barmaq ayarlayın</translation>
+<translation id="3158033540161634471">Barmaq izi ayarlayın</translation>
 <translation id="3159493096109238499">Bej</translation>
 <translation id="3159978855457658359">Cihazın adına düzəliş edin</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (avadanlıqla yedəklənmiş)</translation>
@@ -2935,6 +2936,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> üçün istisnanı silin</translation>
 <translation id="4220648711404560261">Aktivasiya zamanı xəta baş verdi.</translation>
 <translation id="4222772810963087151">Məlumatları Yaradın</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" /> adlı təminatçıdan <ph name="PRODUCT_ID" /> məhsul ID-si ilə USB cihazları</translation>
 <translation id="4225397296022057997">Bütün saytlarda</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazında Google Play'dən tətbiq və oyunlar quraşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos'u konfiqurasiya edin</translation>
@@ -3007,6 +3009,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="431076611119798497">Detallar</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" /> adlı təminatçıdan <ph name="PRODUCT_ID" /> məhsul ID-si ilə USB cihazları</translation>
 <translation id="4316850752623536204">Developer Saytı</translation>
 <translation id="4317820549299924617">Doğrulama uğurlu olmadı</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yoxdur</translation>
@@ -3449,6 +3452,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4824958205181053313">Sinxronizasiya ləğv edilsin?</translation>
 <translation id="4827675678516992122">Qoşulmaq mümkün deyil</translation>
 <translation id="4827784381479890589">Chrome brauzerdə təkmilləşmiş orfoqrafiya yoxlayıcısı (mətn orfoqrafiya təklifləri üçün Google'a göndərilir)</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" /> adlı təminatçıdan USB cihazları</translation>
 <translation id="4829768588131278040">PIN kodu ayarlayın</translation>
 <translation id="4830121310592638841">Sayt ekranlarınızda pəncərələri açmaq və yerləşdirmək istədikdə soruşun</translation>
 <translation id="4830502475412647084">OS güncəlləməsi quraşdırılır</translation>
@@ -3738,6 +3742,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5159419673777902220">Valideyniniz artırma icazələrini deaktiv edib</translation>
 <translation id="5160634252433617617">Fiziki klaviatura</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınıza daxil olun</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" /> adlı təminatçıdan USB cihazları</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> blok edilib</translation>
 <translation id="5163910114647549394">Tab siyahının sonuna köçürüldü</translation>
 <translation id="5165085578392358314">Düyməni təyin edin: <ph name="ACTION" /></translation>
@@ -5363,6 +5368,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Fəaliyyət Qeydi</translation>
 <translation id="6997707937646349884">Cihazlarınızda:</translation>
 <translation id="6998793565256476099">Video görüş üçün cihazı qeydiyyatdan keçirin</translation>
+<translation id="6999640176621571692">Google'un arabalarınıza əlavə etdiklərinizə endirimlər tapmasına icazə verilsin?</translation>
 <translation id="6999956497249459195">Yeni qrup</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> qoşuludur, lakin konfiqurasiya lazımdır</translation>
 <translation id="7000347579424117903">Ctrl, Alt və ya Search daxil edin</translation>
@@ -5469,7 +5475,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Qrupa Tab Əlavə Edin}other{Qrupa Tablar Əlavə Edin}}</translation>
 <translation id="7111822978084196600">Bu pəncərəyə ad verin</translation>
 <translation id="7113502843173351041">E-poçt ünvanınızı bilin</translation>
-<translation id="7114054701490058191">Parollar uyğun gəlmir</translation>
+<translation id="7114054701490058191">Parollar eyni deyil</translation>
 <translation id="7114648273807173152">Smart Lock istifadə etmək üçün Google Hesabına daxil olun, Ayarlar &gt; Qoşulu cihazlar&gt; Telefon &gt; Smart Lock bölməsinə daxil olun.</translation>
 <translation id="7115361495406486998">Əlçatan kontakt yoxdur</translation>
 <translation id="7117228822971127758">Sonra cəhd edin</translation>

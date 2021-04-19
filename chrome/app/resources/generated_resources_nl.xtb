@@ -883,6 +883,7 @@
 <translation id="1928202201223835302">Oude pincode opgeven</translation>
 <translation id="1928696683969751773">Updates</translation>
 <translation id="1929186283613845153">Dit bestand wordt gescand.</translation>
+<translation id="1929343511231420085">Elke seriële poort</translation>
 <translation id="1929546189971853037">Je browsegeschiedenis lezen voor alle ingelogde apparaten</translation>
 <translation id="1930879306590754738">Wachtwoord verwijderd van dit apparaat en uit je Google-account</translation>
 <translation id="1931152874660185993">Geen componenten geïnstalleerd.</translation>
@@ -2942,6 +2943,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4218274196133425560">Uitzondering voor <ph name="HOST_NAME" /> verwijderen</translation>
 <translation id="4220648711404560261">Er is een fout opgetreden bij de activering.</translation>
 <translation id="4222772810963087151">Buildgegevens</translation>
+<translation id="4224284700924043865">USB-apparaten met product-ID <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Op alle sites</translation>
 <translation id="4231095370974836764">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos configureren</translation>
@@ -3014,6 +3016,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
+<translation id="4316650123995163262">USB-apparaten met product-ID <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
 <translation id="4317820549299924617">Verificatie is mislukt</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
@@ -3456,6 +3459,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4824958205181053313">Synchronisatie annuleren?</translation>
 <translation id="4827675678516992122">Kan geen verbinding maken</translation>
 <translation id="4827784381479890589">Verbeterde spellingcontrole in Chrome-browser (tekst wordt naar Google gestuurd voor suggesties over de spelling)</translation>
+<translation id="482952334869563894">USB-apparaten van leverancier <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Pincode instellen</translation>
 <translation id="4830121310592638841">Vragen als een site vensters op je schermen wil openen en plaatsen</translation>
 <translation id="4830502475412647084">OS-update installeren</translation>
@@ -3745,6 +3749,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5159419673777902220">Je ouder heeft extensierechten uitgezet</translation>
 <translation id="5160634252433617617">Fysiek toetsenbord</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB-apparaten van <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> is geblokkeerd</translation>
 <translation id="5163910114647549394">Tabblad verplaatst naar einde van tabbladstrook</translation>
 <translation id="5165085578392358314">Schakelaar toewijzen: <ph name="ACTION" /></translation>
@@ -5372,6 +5377,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Activiteitenlogboek</translation>
 <translation id="6997707937646349884">Op je apparaten:</translation>
 <translation id="6998793565256476099">Apparaat aanmelden voor videovergaderingen</translation>
+<translation id="6999640176621571692">Toestaan dat Google kortingen zoekt voor items die je toevoegt aan je winkelwagens?</translation>
 <translation id="6999956497249459195">Nieuwe groep</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is verbonden moet worden geconfigureerd</translation>
 <translation id="7000347579424117903">Neem Ctrl, Alt of de zoektoets op</translation>

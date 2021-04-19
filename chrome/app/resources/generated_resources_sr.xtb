@@ -882,6 +882,7 @@
 <translation id="1928202201223835302">Унесите стари PIN</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="1929186283613845153">Ова датотека се скенира.</translation>
+<translation id="1929343511231420085">Било који серијски порт</translation>
 <translation id="1929546189971853037">Читање ваше историје прегледања на свим уређајима на којима сте пријављени</translation>
 <translation id="1930879306590754738">Лозинка је избрисана са овог уређаја и вашег Google налога</translation>
 <translation id="1931152874660185993">Није инсталирана ниједна компонента.</translation>
@@ -2942,6 +2943,7 @@
 <translation id="4218274196133425560">Уклони изузетак за <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Дошло је до грешке при активацији.</translation>
 <translation id="4222772810963087151">Детаљи о верзији</translation>
+<translation id="4224284700924043865">USB уређаји са ИД-ом производа <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">На свим сајтовима</translation>
 <translation id="4231095370974836764">Инсталирајте апликације и игре са Google Play-а на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигуришите Kerberos</translation>
@@ -3014,6 +3016,7 @@
 <translation id="431076611119798497">&amp;Детаљи</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
+<translation id="4316650123995163262">USB уређаји са ИД-ом производа <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Веб-сајт програмера</translation>
 <translation id="4317820549299924617">Верификација није успела</translation>
 <translation id="4320177379694898372">Нема интернет везе</translation>
@@ -3456,6 +3459,7 @@
 <translation id="4824958205181053313">Желите ли да откажете синхронизацију?</translation>
 <translation id="4827675678516992122">Повезивање није успело</translation>
 <translation id="4827784381479890589">Побољшана провера правописа у прегледачу Chrome (текст се шаље Google-у да бисте добијали предлоге за правопис)</translation>
+<translation id="482952334869563894">USB уређаји продавца <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Подеси PIN</translation>
 <translation id="4830121310592638841">Питај када сајт жели да отвара и поставља прозоре на екране</translation>
 <translation id="4830502475412647084">Инсталира се ажурирање ОС-а</translation>
@@ -3745,6 +3749,7 @@
 <translation id="5159419673777902220">Твој родитељ је онемогућио дозволе за додатке</translation>
 <translation id="5160634252433617617">Физичка тастатура</translation>
 <translation id="5160857336552977725">Пријавите се на <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">USB уређаји продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> је блокиран</translation>
 <translation id="5163910114647549394">Картица је премештена на крај траке са картицама</translation>
 <translation id="5165085578392358314">Доделите прекидач за радњу <ph name="ACTION" /></translation>
@@ -5373,6 +5378,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Евиденција активности</translation>
 <translation id="6997707937646349884">На уређајима:</translation>
 <translation id="6998793565256476099">Региструј уређај за видео конференције</translation>
+<translation id="6999640176621571692">Желите да дозволите Google-у да пронађе попусте на ставке које додајете у корпе?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Штампач <ph name="PRINTER_NAME" /> је повезан, али треба да се конфигурише</translation>
 <translation id="7000347579424117903">Користите Ctrl, Alt или Search</translation>

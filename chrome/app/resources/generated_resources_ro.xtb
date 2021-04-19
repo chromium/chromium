@@ -884,6 +884,7 @@
 <translation id="1928202201223835302">Introdu codul PIN vechi</translation>
 <translation id="1928696683969751773">Actualizări</translation>
 <translation id="1929186283613845153">Se scanează fișierul.</translation>
+<translation id="1929343511231420085">Orice port serial</translation>
 <translation id="1929546189971853037">Citește istoricul de navigare pe toate dispozitivele conectate</translation>
 <translation id="1930879306590754738">Parola a fost ștearsă de pe acest dispozitiv și din Contul tău Google</translation>
 <translation id="1931152874660185993">Nu există componente instalate.</translation>
@@ -2944,6 +2945,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4218274196133425560">Elimină excepția pentru <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">A apărut o eroare în timpul activării.</translation>
 <translation id="4222772810963087151">Detaliile versiunii</translation>
+<translation id="4224284700924043865">Dispozitive USB cu codul de produs <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Pe toate site-urile</translation>
 <translation id="4231095370974836764">Instalează aplicații și jocuri din Google Play pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurează Kerberos</translation>
@@ -3016,6 +3018,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="431076611119798497">&amp;Detalii</translation>
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
+<translation id="4316650123995163262">Dispozitive USB cu codul de produs <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Site-ul dezvoltatorului</translation>
 <translation id="4317820549299924617">Confirmarea nu a reușit</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
@@ -3458,6 +3461,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4824958205181053313">Anulezi sincronizarea?</translation>
 <translation id="4827675678516992122">Nu s-a putut conecta</translation>
 <translation id="4827784381479890589">Verificarea îmbunătățită a ortografiei în browserul Chrome (textul este trimis la Google pentru sugestii de ortografie)</translation>
+<translation id="482952334869563894">Dispozitive USB de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Configurează codul PIN</translation>
 <translation id="4830121310592638841">Anunță-mă dacă un site vrea să deschidă și să plaseze ferestre în ecrane</translation>
 <translation id="4830502475412647084">Se instalează actualizarea sistemului de operare</translation>
@@ -3747,6 +3751,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5159419673777902220">Părintele tău a dezactivat permisiunile pentru extensii</translation>
 <translation id="5160634252433617617">Tastatură fizică</translation>
 <translation id="5160857336552977725">Conectează-te la <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Dispozitive USB de la <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Acest <ph name="DEVICE_TYPE" /> a fost blocat</translation>
 <translation id="5163910114647549394">Fila a fost mutată la sfârșitul barei cu file</translation>
 <translation id="5165085578392358314">Atribuie tasta de comutare: <ph name="ACTION" /></translation>
@@ -5374,6 +5379,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Jurnalul de activități</translation>
 <translation id="6997707937646349884">Pe dispozitivele tale:</translation>
 <translation id="6998793565256476099">Înscrie dispozitivul pentru conferințe video</translation>
+<translation id="6999640176621571692">Permiți ca Google să găsească reduceri pentru articolele pe care le adaugi în coșuri?</translation>
 <translation id="6999956497249459195">Grup nou</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> este conectată, dar necesită configurare</translation>
 <translation id="7000347579424117903">Include Ctrl, Alt sau Căutare</translation>

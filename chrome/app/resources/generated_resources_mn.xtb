@@ -879,6 +879,7 @@
 <translation id="1928202201223835302">Хуучин ПИН-ээ оруулна уу</translation>
 <translation id="1928696683969751773">Шинэчлэл</translation>
 <translation id="1929186283613845153">Энэ файлыг скан хийж байна.</translation>
+<translation id="1929343511231420085">Дурын цуваа порт</translation>
 <translation id="1929546189971853037">Нэвтэрсэн төхөөрөмжүүд дээрээ хайлт хийсэн бүх мэдээллээ харах</translation>
 <translation id="1930879306590754738">Нууц үгийг энэ төхөөрөмж болон таны Google Бүртгэлээс устгасан</translation>
 <translation id="1931152874660185993">Ямар ч бүрэлдэхүүн хэсэг суугдаагүй байна.</translation>
@@ -2937,6 +2938,7 @@
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-д зориулж дүрмээс гажих онцгой тохиолдлыг хасах</translation>
 <translation id="4220648711404560261">Идэвхжүүлэх явцад алдаа гарлаа.</translation>
 <translation id="4222772810963087151">Боловсруулагдсан программын дэлгэрэнгүй мэдээлэл</translation>
+<translation id="4224284700924043865"><ph name="VENDOR_ID" /> нийлүүлэгчийн <ph name="PRODUCT_ID" /> бүтээгдэхүүний ID-тай USB төхөөрөмжүүд</translation>
 <translation id="4225397296022057997">Бүх сайтад</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> дээрээ Google Play-с апп болон тоглоомууд суулгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-г тохируулах</translation>
@@ -3009,6 +3011,7 @@
 <translation id="431076611119798497">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
+<translation id="4316650123995163262"><ph name="VENDOR_NAME" />-н <ph name="PRODUCT_ID" /> бүтээгдэхүүний ID-тай USB төхөөрөмжүүд</translation>
 <translation id="4316850752623536204">Хөгжүүлэгчийн вебсайт</translation>
 <translation id="4317820549299924617">Баталгаажуулалт амжилтгүй боллоо</translation>
 <translation id="4320177379694898372">Интернетийн холболтгүй байна</translation>
@@ -3451,6 +3454,7 @@
 <translation id="4824958205181053313">Синкийг цуцлах уу?</translation>
 <translation id="4827675678516992122">Холбогдож чадсангүй</translation>
 <translation id="4827784381479890589">Chrome хөтчийн сайжруулсан зөв бичгийн алдаа шалгах онцлог (текстийг Google рүү зөв бичгийн зөвлөмж авахаар илгээдэг)</translation>
+<translation id="482952334869563894"><ph name="VENDOR_ID" /> нийлүүлэгчийн USB төхөөрөмжүүд</translation>
 <translation id="4829768588131278040">ПИН тохируулах</translation>
 <translation id="4830121310592638841">Сайтыг таны дэлгэцэд цонх нээх болон байрлуулахыг хүсэх үед асууна</translation>
 <translation id="4830502475412647084">Үйлдлийн системийн шинэчлэлтийг суулгаж байна</translation>
@@ -3740,6 +3744,7 @@
 <translation id="5159419673777902220">Таны эцэг эх өргөтгөлийн зөвшөөрлийг идэвхгүй болгосон.</translation>
 <translation id="5160634252433617617">Биет гар</translation>
 <translation id="5160857336552977725">Өөрийн <ph name="DEVICE_TYPE" /> руу нэвтэрч орно уу</translation>
+<translation id="5161251470972801814"><ph name="VENDOR_NAME" />-н USB төхөөрөмжүүд</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" />-г блоклосон байна</translation>
 <translation id="5163910114647549394">Табыг tabstrip-н төгсгөл рүү зөөсөн</translation>
 <translation id="5165085578392358314">Сэлгэгч оноох: <ph name="ACTION" /></translation>
@@ -5367,6 +5372,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Үйл ажиллагааны лог</translation>
 <translation id="6997707937646349884">Taны төхөөрөмжид:</translation>
 <translation id="6998793565256476099">Видео хуралд төхөөрөмж элсүүлэх</translation>
+<translation id="6999640176621571692">Google-д таны сагсандаа нэмэх зүйлүүдэд хөнгөлөлт хайхыг зөвшөөрөх үү?</translation>
 <translation id="6999956497249459195">Шинэ бүлэг</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> холбогдсон, гэхдээ тохируулга хийх шаардлагатай</translation>
 <translation id="7000347579424117903">Ctrl, Alt эсвэл Хайлтыг оруулах</translation>

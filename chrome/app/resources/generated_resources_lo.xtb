@@ -881,6 +881,7 @@
 <translation id="1928202201223835302">ໃສ່​ລະ​ຫັດ PIN ເກົ່າ</translation>
 <translation id="1928696683969751773">ອັບເດດ</translation>
 <translation id="1929186283613845153">ລະບົບກຳລັງສະແກນໄຟລ໌ນີ້ຢູ່.</translation>
+<translation id="1929343511231420085">ຜອດຊີຣຽວໃດກໍໄດ້</translation>
 <translation id="1929546189971853037">ອ່ານປະຫວັດການທ່ອງເນັດຂອງທ່ານຢູ່ໃນອຸປະກອນທີ່ລົງຊື່ເຂົ້າໃຊ້ແລ້ວຂອງທ່ານ</translation>
 <translation id="1930879306590754738">ລຶບລະຫັດຜ່ານຈາກອຸປະກອນນີ້ ແລະ ບັນຊີ Google ຂອງທ່ານແລ້ວ</translation>
 <translation id="1931152874660185993">ບໍ່ມີອົງປະກອບ​ຕິດ​ຕັ້ງໄວ້</translation>
@@ -2941,6 +2942,7 @@
 <translation id="4218274196133425560">ລຶບຂໍ້ຍົກເວັ້ນສຳລັບ <ph name="HOST_NAME" /> ອອກ</translation>
 <translation id="4220648711404560261">ເກີດຄວາມຜິດພາດໃນລະຫວ່າງການເປີດນຳໃຊ້.</translation>
 <translation id="4222772810963087151">ລາຍລະອຽດຮຸ່ນ</translation>
+<translation id="4224284700924043865">ອຸປະກອນ USB ທີ່ມີ ID ສິນຄ້າ <ph name="PRODUCT_ID" /> ຈາກຜູ້ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">ໃນທຸກເວັບໄຊ</translation>
 <translation id="4231095370974836764">ຕິດຕັ້ງແອັບ ແລະ ເກມຈາກ Google Play ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">ກຳນົດຄ່າ Kerberos</translation>
@@ -3013,6 +3015,7 @@
 <translation id="431076611119798497">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4312866146174492540">ບລັອກ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4314815835985389558">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="4316650123995163262">ອຸປະກອນ USB ທີ່ມີ ID ສິນຄ້າ <ph name="PRODUCT_ID" /> ຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">ເວັບ​ໄຊ​ທ​໌ຜູ້ພັດ​ທະ​ນາ​</translation>
 <translation id="4317820549299924617">ການຢັ້ງຢືນບໍ່ສຳເລັດ</translation>
 <translation id="4320177379694898372">ບໍ່​ມີການ​ເຊື່ອມ​ຕໍ່​ອິນ​ເຕີ​ເນັດ​</translation>
@@ -3455,6 +3458,7 @@
 <translation id="4824958205181053313">ຍົກເລີກການຊິ້ງຂໍ້ມູນບໍ?</translation>
 <translation id="4827675678516992122">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້</translation>
 <translation id="4827784381479890589">ການກວດຄຳຜິດທີ່ປັບປຸງດີຂຶ້ນໃນໂປຣແກຣມທ່ອງເວັບ Chrome (ຂໍ້ຄວາມຖືກສົ່ງໃຫ້ Google ເພື່ອແນະນຳການສະກົດຄຳ)</translation>
+<translation id="482952334869563894">ອຸປະກອນ USB ຈາກຜູ້ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">ຕັ້ງຄ່າ PIN</translation>
 <translation id="4830121310592638841">ຖາມເມື່ອເວັບໄຊຕ້ອງການເປີດ ແລະ ວາງໜ້າຈໍໃສ່ໃນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="4830502475412647084">ກຳລັງຕິດຕັ້ງການອັບເດດລະບົບປະຕິບັດການ</translation>
@@ -3744,6 +3748,7 @@
 <translation id="5159419673777902220">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດການນຳໃຊ້ການອະນຸຍາດສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="5160634252433617617">ແປ້ນພິມພາຍນອກ</translation>
 <translation id="5160857336552977725">ລົງຊື່ເຂົ້າ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ</translation>
+<translation id="5161251470972801814">ອຸປະກອນ USB ຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">ບລັອກ <ph name="DEVICE_TYPE" /> ແລ້ວ</translation>
 <translation id="5163910114647549394">ຍ້າຍແຖບໄປຢູ່ທ້າຍສຸດຂອງ tabstrip ແລ້ວ</translation>
 <translation id="5165085578392358314">ກຳນົດປຸ່ມ: <ph name="ACTION" /></translation>
@@ -5371,6 +5376,7 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ບັນທຶກການເຄື່ອນໄຫວ</translation>
 <translation id="6997707937646349884">ໃນອຸປະກອນຂອງທ່ານ:</translation>
 <translation id="6998793565256476099">ລົງທະບຽນອຸປະກອນສຳລັບການປະຊຸມຜ່ານວິດີໂອ</translation>
+<translation id="6999640176621571692">ອະນຸຍາດໃຫ້ Google ຊອກຫາສ່ວນຫຼຸດໃນສິ່ງທີ່ທ່ານເພີ່ມໃສ່ກະຕ່າຂອງທ່ານບໍ?</translation>
 <translation id="6999956497249459195">ກຸ່ມໃໝ່</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> ເຊື່ອມຕໍ່ແລ້ວ ແຕ່ຕ້ອງໄດ້ກຳນົດຄ່າ</translation>
 <translation id="7000347579424117903">ລວມມີ Ctrl, Alt ຫຼື ຊອກຫາ</translation>

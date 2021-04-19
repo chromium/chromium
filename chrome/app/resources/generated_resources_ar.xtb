@@ -154,7 +154,7 @@
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1164899421101904659">إدخال مفتاح فتح قفل رقم التعريف الشخصي</translation>
 <translation id="1165039591588034296">خطأ</translation>
-<translation id="1166212789817575481">إغلاق علامات تبويب في الجهة اليسرى</translation>
+<translation id="1166212789817575481">إغلاق علامات التبويب على اليمين</translation>
 <translation id="116624467691206283">‏رمز PUK غير صحيح. يتبقى لديك محاولة واحدة.</translation>
 <translation id="1168020859489941584">سيتمّ فتح الملفّ بعد <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">‏خوادم أسماء Google</translation>
@@ -1836,7 +1836,7 @@
 <translation id="2966216232069818096">‏السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة لتقديم المساعدة</translation>
 <translation id="2966937470348689686">‏إدارة إعدادات Android المفضّلة</translation>
 <translation id="2972581237482394796">إعا&amp;دة</translation>
-<translation id="2973324205039581528">تجاهل الموقع</translation>
+<translation id="2973324205039581528">كتم صوت الموقع الإلكتروني</translation>
 <translation id="2976557544729462544">تتطلّب بعض الأجهزة الملحقة إيقاف ميزة الحماية من الوصول إلى البيانات لكي تعمل بشكل صحيح أو تمنحك الأداء الأمثل.</translation>
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
 <translation id="2979520980928493164">‏تحسين أداء Chrome</translation>
@@ -2151,7 +2151,7 @@
 <translation id="3341703758641437857">‏السماح بالدخول إلى عناوين URL للملفات</translation>
 <translation id="3342361181740736773">يرغب "<ph name="TRIGGERING_EXTENSION_NAME" />" في إزالة هذه الإضافة.</translation>
 <translation id="3345135638360864351">تعذر إرسال طلبك للوصول إلى هذا الموقع إلى <ph name="NAME" />. يُرجى إعادة المحاولة مرة أخرى.</translation>
-<translation id="3345634917232014253">تم تشغيل ميزة "تأكيد السلامة" قبل قليل.</translation>
+<translation id="3345634917232014253">تم تشغيل ميزة "التحقّق من الأمان" قبل قليل.</translation>
 <translation id="3345886924813989455">لم يتم العثور على·متصفح متوافق.</translation>
 <translation id="3347086966102161372">&amp;نسخ عنوان الصورة</translation>
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
@@ -2299,7 +2299,7 @@
 <translation id="3500417806337761827">‏حدث خطأ أثناء تثبيت المشاركة. سبَق وأن تمّ تثبيت العديد من مشاركات بروتوكول Server Message Block ‏(SMB).</translation>
 <translation id="3505030558724226696">إبطال الوصول إلى الجهاز</translation>
 <translation id="3505100368357440862">اقتراحات التسوّق</translation>
-<translation id="3507132249039706973">الحماية العادية مفعّلة.</translation>
+<translation id="3507132249039706973">ميزة الحماية العادية مفعّلة.</translation>
 <translation id="3507421388498836150">الأذونات الحالية لـ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">إعادة فحص أجهزة البلوتوث</translation>
 <translation id="3508492320654304609">تعذّر حذف بيانات تسجيل الدخول</translation>
@@ -5087,7 +5087,7 @@
 <translation id="6683948477137300040">‏عرض رقم EID للجهاز ورمز الاستجابة السريعة في نافذة منبثقة</translation>
 <translation id="6684827949542560880">جارٍ تنزيل آخر تحديث</translation>
 <translation id="668599234725812620">‏فتح Google Play</translation>
-<translation id="6686490380836145850">إغلاق علامات  التبويب في الجهة  اليسرى.</translation>
+<translation id="6686490380836145850">إغلاق علامات التبويب على اليمين</translation>
 <translation id="6686665106869989887">تم نقل علامة التبويب إلى اليمين.</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
 <translation id="6687079240787935001">إخفاء <ph name="MODULE_TITLE" /></translation>

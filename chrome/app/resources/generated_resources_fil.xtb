@@ -884,6 +884,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1928202201223835302">Ilagay ang lumang PIN</translation>
 <translation id="1928696683969751773">Mga Update</translation>
 <translation id="1929186283613845153">Sina-scan ang file na ito.</translation>
+<translation id="1929343511231420085">Anumang serial port</translation>
 <translation id="1929546189971853037">Basahin ang iyong history ng pag-browse sa lahat ng iyong naka-sign in na device</translation>
 <translation id="1930879306590754738">Na-delete ang password sa device na ito at sa iyong Google Account</translation>
 <translation id="1931152874660185993">Walang naka-install na mga bahagi.</translation>
@@ -2944,6 +2945,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4218274196133425560">Alisin ang exception para sa <ph name="HOST_NAME" /></translation>
 <translation id="4220648711404560261">Nagkaroon ng error habang ina-activate.</translation>
 <translation id="4222772810963087151">Mga Detalye ng Build</translation>
+<translation id="4224284700924043865">Mga USB device na may product ID na <ph name="PRODUCT_ID" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
 <translation id="4225397296022057997">Sa lahat ng site</translation>
 <translation id="4231095370974836764">Mag-install ng mga app at laro mula sa Google Play sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">I-configure ang Kerberos</translation>
@@ -3016,6 +3018,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="431076611119798497">&amp;Mga Detalye</translation>
 <translation id="4312866146174492540">I-block (default)</translation>
 <translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
+<translation id="4316650123995163262">Mga USB device na may product ID na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="4316850752623536204">Website ng Developer</translation>
 <translation id="4317820549299924617">Hindi matagumpay ang pag-verify</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
@@ -3458,6 +3461,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4824958205181053313">Kanselahin ang pag-sync?</translation>
 <translation id="4827675678516992122">Hindi makakonekta</translation>
 <translation id="4827784381479890589">Pinahusay na pang-check ng pagbabaybay sa Chrome browser (ipapadala sa Google ang text para sa mga suhestyon sa pagbabaybay)</translation>
+<translation id="482952334869563894">Mga USB device mula sa vendor na <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Mag-set up ng PIN</translation>
 <translation id="4830121310592638841">Magtanong kapag gusto ng isang site na magbukas at maglagay ng mga window sa iyong mga screen</translation>
 <translation id="4830502475412647084">Ini-install ang update sa OS</translation>
@@ -3747,6 +3751,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5159419673777902220">Na-disable ng iyong magulang ang mga pahintulot sa extension</translation>
 <translation id="5160634252433617617">Aktwal na keyboard</translation>
 <translation id="5160857336552977725">Mag-sign in sa iyong <ph name="DEVICE_TYPE" /></translation>
+<translation id="5161251470972801814">Mga USB device mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850">Na-block na ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Inilipat ang tab sa dulo ng tabstrip</translation>
 <translation id="5165085578392358314">Itakda ang switch na: <ph name="ACTION" /></translation>
@@ -5374,6 +5379,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Log ng Aktibidad</translation>
 <translation id="6997707937646349884">Sa iyong mga device:</translation>
 <translation id="6998793565256476099">Magpatala ng device para sa pakikipagkumperensya gamit ang video</translation>
+<translation id="6999640176621571692">Payagan ang Google na maghanap ng mga diskwento sa kung ano ang idaragdag mo sa iyong mga cart?</translation>
 <translation id="6999956497249459195">Bagong pangkat</translation>
 <translation id="7000206553895739324">Nakakonekta ang <ph name="PRINTER_NAME" /> pero kailangan ng pag-configure</translation>
 <translation id="7000347579424117903">Isama ang Ctrl, Alt, o Search</translation>

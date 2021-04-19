@@ -779,6 +779,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="614940544461990577">Subukang:</translation>
 <translation id="6154478581116148741">I-on ang lock ng screen sa Mga Setting upang i-export ang iyong mga password mula sa device na ito</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ang natipid sa data</translation>
+<translation id="6159729262978459665">Kini-clear ang history sa lahat ng naka-sync na device.</translation>
 <translation id="6186394685773237175">Walang nakitang nakompromisong password</translation>
 <translation id="6192907950379606605">Makakuha ng desc ng larawan</translation>
 <translation id="6206830853671714236">Piliin kung kailan ida-download</translation>
@@ -991,6 +992,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7523960634226602883">Maghanap sa pamamagitan ng iyong camera gamit ang Google Lens</translation>
 <translation id="753225086557513863">Nakaiskedyul para sa ibang pagkakataon</translation>
 <translation id="7559975015014302720">Naka-off ang Lite mode</translation>
+<translation id="7560448309733608642">Kini-clear ang history sa lahat ng naka-sync na device. Posibleng may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Kini-clear ang data sa pag-browse</translation>
 <translation id="756809126120519699">Na-clear ang data ng Chrome</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
