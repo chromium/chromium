@@ -1923,15 +1923,13 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
     if (content_setting_registry->Get(info->type())) {
       // If no original value is available, the settings does not have any valid
       // values and no more steps are required.
-      if (!original_value)
+      if (!original_value || !original_value->is_int())
         continue;
-      int current_value;
-      original_value->GetAsInteger(&current_value);
 
       for (int another_value = 0;
            another_value < ContentSetting::CONTENT_SETTING_NUM_SETTINGS;
            another_value++) {
-        if (another_value != current_value &&
+        if (another_value != original_value->GetInt() &&
             content_setting_registry->Get(info->type())
                 ->IsSettingValid(static_cast<ContentSetting>(another_value))) {
           new_value = std::make_unique<base::Value>(another_value);
