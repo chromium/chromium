@@ -83,6 +83,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
   void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
@@ -157,12 +159,17 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
 
   // Updates this view (and its children) to reflect state as a potential drop
   // target. If `event` is `nullptr`, this view is *not* a drop target.
-  // Otherwise this view is a drop target iff the `event` is located within
+  // Otherwise this view is a drop target if the `event` is located within
   // sufficient range of its bounds and contains pinnable files.
   void UpdateDropTargetState(const ui::DropTargetEvent* event);
 
   // Sets whether tray visibility and previews updates should be animated.
   void SetShouldAnimate(bool should_animate);
+
+  // Pins the dropped files `unpinned_file_paths` to the tray.
+  void PerformDrop(std::vector<base::FilePath> unpinned_file_paths,
+                   const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;

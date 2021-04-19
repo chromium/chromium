@@ -23,6 +23,9 @@
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/pickle.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -405,13 +408,37 @@ DragOperation HoldingSpaceTray::OnPerformDrop(
   if (unpinned_file_paths.empty())
     return DragOperation::kNone;
 
+  ui::mojom::DragOperation output_drag_op = DragOperation::kNone;
+  PerformDrop(std::move(unpinned_file_paths), event, output_drag_op);
+
+  return output_drag_op;
+}
+
+views::View::DropCallback HoldingSpaceTray::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  std::vector<base::FilePath> unpinned_file_paths(
+      ExtractUnpinnedFilePaths(event.data()));
+  if (unpinned_file_paths.empty())
+    return base::NullCallback();
+
+  return base::BindOnce(&HoldingSpaceTray::PerformDrop,
+                        weak_factory_.GetWeakPtr(),
+                        std::move(unpinned_file_paths));
+}
+
+void HoldingSpaceTray::PerformDrop(
+    std::vector<base::FilePath> unpinned_file_paths,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op) {
+  DCHECK(!unpinned_file_paths.empty());
+
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
   HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
   did_drop_to_pin_ = true;
 
-  return DragOperation::kCopy;
+  output_drag_op = DragOperation::kCopy;
 }
 
 void HoldingSpaceTray::Layout() {
