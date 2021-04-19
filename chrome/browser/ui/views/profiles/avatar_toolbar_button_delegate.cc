@@ -253,11 +253,11 @@ void AvatarToolbarButtonDelegate::SetHasInProductHelpPromo(bool has_promo) {
     return;
 
   has_in_product_help_promo_ = has_promo;
-  if (has_in_product_help_promo_) {
-    ShowIdentityAnimation();
-  } else {
-    MaybeHideIdentityAnimation();
-  }
+  // Trigger a new animation, even if the IPH is being removed. This keeps the
+  // pill open a little more and avoids jankiness caused by the two animations
+  // (IPH and identity pill) happening concurrently.
+  // See https://crbug.com/1198907
+  ShowIdentityAnimation();
 }
 
 void AvatarToolbarButtonDelegate::NotifyClick() {
