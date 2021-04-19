@@ -273,9 +273,12 @@ void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
 }
 
 void BrowserManager::NewWindow(bool incognito) {
+  // Chrome OS uses different user model where clicking the chrome icon always
+  // opens a new tab page, and it doesn't matter whether lacros is launching
+  // for the first time or not.
   auto result = MaybeStart(
       incognito ? mojom::InitialBrowserAction::kOpenIncognitoWindow
-                : mojom::InitialBrowserAction::kUseStartupPreference);
+                : mojom::InitialBrowserAction::kOpenNewTabPageWindow);
   if (result != MaybeStartResult::kRunning)
     return;
 

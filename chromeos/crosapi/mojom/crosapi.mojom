@@ -287,8 +287,10 @@ enum InitialBrowserAction {
   // in the background until a browser window is shown. At that point it will no
   // longer run in the background and will close when all windows are closed.
   [MinVersion=1] kDoNotOpenWindow = 3,
-};
 
+  // Opens a new window with a new tab, regardless of users' preference.
+  [MinVersion=2] kOpenNewTabPageWindow = 4,
+};
 
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
