@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_NETWORK_STUB_CELLULAR_NETWORKS_PROVIDER_H_
 #define CHROMEOS_NETWORK_STUB_CELLULAR_NETWORKS_PROVIDER_H_
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "chromeos/network/network_state_handler.h"
 
 namespace chromeos {
@@ -28,14 +30,49 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
  private:
   friend class StubCellularNetworksProviderTest;
 
+  using IccidEidPair = std::pair<std::string, std::string>;
+
   // NetworkStateHandler::StubCellularNetworksProvider:
   bool AddOrRemoveStubCellularNetworks(
       NetworkStateHandler::ManagedStateList& network_list,
       NetworkStateHandler::ManagedStateList& new_stub_networks,
       const DeviceState* device) override;
+  bool GetStubNetworkMetadata(const std::string& iccid,
+                              const DeviceState* cellular_device,
+                              std::string* service_path_out,
+                              std::string* guid_out) override;
+
+  const std::string& GetGuidForStubIccid(const std::string& iccid);
+
+  // Returns an IccidEidPair corresponding to each eSIM profile and each SIM
+  // slot.
+  std::vector<IccidEidPair> GetESimAndSlotMetadata(const DeviceState* device);
+
+  // Adds stub cellular networks to |new_stub_networks| list for the
+  // metadata in |esim_and_slot_metadata| that does not correspond to networks
+  // already present in not already in |all_iccids|.
+  bool AddStubNetworks(
+      const DeviceState* device,
+      const std::vector<IccidEidPair>& esim_and_slot_metadata,
+      const base::flat_set<std::string>& all_iccids,
+      NetworkStateHandler::ManagedStateList& new_stub_networks);
+
+  // Removes all non-Shill stub cellular networks from |network_list| that are
+  // not required anymore viz. 1) Stub networks for which a corresponding entry
+  // already exists in |shill_iccids| 2) Stub networks that do not have
+  // corresponding entry in |esim_profiles| or a slot info entry on given
+  // |device| (e.g. eSIM profile was removed or pSIM was removed from the slot).
+  bool RemoveStubCellularNetworks(
+      const std::vector<IccidEidPair>& esim_and_slot_metadata,
+      const base::flat_set<std::string>& shill_iccids,
+      NetworkStateHandler::ManagedStateList& network_list);
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
+
+  // Map which stores the GUID used for stubs created by this class. Each
+  // network should use a consistent GUID throughout a session.
+  base::flat_map<std::string, std::string> iccid_to_guid_map_;
 };
 
 }  // namespace chromeos

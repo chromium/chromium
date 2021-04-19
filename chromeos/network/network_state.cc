@@ -616,6 +616,7 @@ bool NetworkState::ErrorIsValid(const std::string& error) {
 std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
     const std::string& iccid,
     const std::string& eid,
+    const std::string& guid,
     const DeviceState* cellular_device) {
   std::string path = GenerateStubCellularServicePath(iccid);
   auto new_state = std::make_unique<NetworkState>(path);
@@ -625,6 +626,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
   new_state->device_path_ = cellular_device->path();
   new_state->iccid_ = iccid;
   new_state->eid_ = eid;
+  new_state->guid_ = guid;
   return new_state;
 }
 

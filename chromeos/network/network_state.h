@@ -278,6 +278,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   static std::unique_ptr<NetworkState> CreateNonShillCellularNetwork(
       const std::string& iccid,
       const std::string& eid,
+      const std::string& guid,
       const DeviceState* cellular_device);
 
   // Ignore changes to signal strength less than this value.
