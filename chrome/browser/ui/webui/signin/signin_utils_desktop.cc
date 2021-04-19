@@ -72,7 +72,22 @@ SigninUIError CanOfferSignin(Profile* profile,
                 .GetAllProfilesAttributes();
 
         for (const ProfileAttributesEntry* entry : entries) {
-          if (!entry->IsAuthenticated())
+          // Ignore omitted profiles (these are notably profiles being created
+          // using the signed-in profile creation flow). This is motivated by
+          // these profile hanging around until the next restart which could
+          // block subsequent profile creation, resulting in
+          // SigninUIError::AccountAlreadyUsedByAnotherProfile.
+          // TODO(crbug.com/1196290): This opens the possibility for getting
+          // into a state with 2 profiles syncing to the same account:
+          //  - start creating a new profile and sign-in,
+          //  - enabled sync for the same account in another (existing) profile,
+          //  - finish the profile creation by consenting to sync.
+          // Properly addressing this would require deleting profiles from
+          // cancelled flow right away, returning an error here for omitted
+          // profiles, and fix the code that switches to the other syncing
+          // profile so that the profile creation flow window gets activated for
+          // profiles being created (instead of opening a new window).
+          if (!entry->IsAuthenticated() || entry->IsOmitted())
             continue;
 
           // For backward compatibility, need to check also the username of the
