@@ -17,7 +17,8 @@ enum class PrerenderCancelledInterface {
   kUnknown = 0,  // For kCancel interfaces added by embedders or tests.
   kGamepadHapticsManager = 1,
   kGamepadMonitor = 2,
-  kMaxValue = kGamepadMonitor
+  kNotificationService = 3,
+  kMaxValue = kNotificationService
 };
 
 void RecordPrerenderCancelledInterface(const std::string& interface_name);

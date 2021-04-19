@@ -62743,6 +62743,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="kUnknown"/>
   <int value="1" label="kGamepadHapticsManager"/>
   <int value="2" label="kGamepadMonitor"/>
+  <int value="3" label="kNotificationService"/>
 </enum>
 
 <enum name="PrerenderCookieSendType">

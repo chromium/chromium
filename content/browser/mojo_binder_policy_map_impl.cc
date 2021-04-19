@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
+#include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 
 namespace content {
 
@@ -27,6 +28,9 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   // `GetCancelledInterfaceType()` in
   // content/browser/prerender/prerender_metrics.h once you add a new kCancel
   // interface.
+  // NotificationService has a sync message and is requested in
+  // Notification constructor, so it should be kCancel.
+  map.SetPolicy<blink::mojom::NotificationService>(MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);

@@ -16,6 +16,8 @@ PrerenderCancelledInterface GetCancelledInterfaceType(
     return PrerenderCancelledInterface::kGamepadHapticsManager;
   else if (interface_name == "device.mojom.GamepadMonitor")
     return PrerenderCancelledInterface::kGamepadMonitor;
+  else if (interface_name == "blink.mojom.NotificationService")
+    return PrerenderCancelledInterface::kNotificationService;
   return PrerenderCancelledInterface::kUnknown;
 }
 

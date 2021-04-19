@@ -1712,10 +1712,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandFail) {
                           EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-void TestPlugin(WebContents* const web_contents,
-                PrerenderHostRegistry& registry,
-                const GURL prerendering_url) {
+#if !defined(OS_ANDROID) || BUILDFLAG(ENABLE_PLUGINS)
+void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
+                                      PrerenderHostRegistry& registry,
+                                      const GURL prerendering_url) {
   PrerenderHostRegistryObserver registry_observer(registry);
   EXPECT_TRUE(
       ExecJs(web_contents, JsReplace("add_prerender($1)", prerendering_url)));
@@ -1726,7 +1726,9 @@ void TestPlugin(WebContents* const web_contents,
   host_observer.WaitForDestroyed();
   EXPECT_EQ(registry.FindHostByUrlForTesting(prerendering_url), nullptr);
 }
+#endif  // !defined(OS_ANDROID) || BUILDFLAG(ENABLE_PLUGINS)
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 // Tests that we will cancel the prerendering if the prerendering page attempts
 // to use plugins.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PluginsCancelPrerendering) {
@@ -1737,18 +1739,78 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PluginsCancelPrerendering) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  TestPlugin(shell()->web_contents(), registry,
-             GetUrl("/prerender/page-with-embedded-plugin.html"));
+  LoadAndWaitForPrerenderDestroyed(
+      shell()->web_contents(), registry,
+      GetUrl("/prerender/page-with-embedded-plugin.html"));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kPlugin, 1);
-  TestPlugin(shell()->web_contents(), registry,
-             GetUrl("/prerender/page-with-object-plugin.html"));
+  LoadAndWaitForPrerenderDestroyed(
+      shell()->web_contents(), registry,
+      GetUrl("/prerender/page-with-object-plugin.html"));
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kPlugin, 2);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+// This is a browser test and cannot be upstreamed to WPT because it diverges
+// from the spec by cancelling prerendering in the Notification constructor,
+// whereas the spec says to defer upon use requestPermission().
+#if defined(OS_ANDROID)
+// On Android the Notification constructor throws an exception regardless of
+// whether the page is being prerendered.
+// Tests that we will get the exception from the prerendering if the
+// prerendering page attempts to use notification.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, NotificationConstructorAndroid) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+
+  // Create the Notification and fail.
+  EXPECT_EQ(false, EvalJs(prerendered_render_frame_host, R"(
+    (() => {
+      try { new Notification('My Notification'); return true;
+      } catch(e) { return false; }
+    })();
+  )"));
+}
+#else
+// On non-Android the Notification constructor is supported and can be used to
+// show a notification, but if used during prerendering it cancels prerendering.
+// Tests that we will cancel the prerendering if the prerendering page attempts
+// to use notification.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, NotificationConstructor) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  LoadAndWaitForPrerenderDestroyed(shell()->web_contents(), registry,
+                                   GetUrl("/prerender/notification.html"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderCancelledInterface",
+      PrerenderCancelledInterface::kNotificationService, 1);
+}
+#endif  // defined(OS_ANDROID)
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
