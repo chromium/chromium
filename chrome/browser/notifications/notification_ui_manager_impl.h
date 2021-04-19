@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "chrome/browser/profiles/profile.h"

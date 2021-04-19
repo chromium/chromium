@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/safe_browsing/buildflags.h"

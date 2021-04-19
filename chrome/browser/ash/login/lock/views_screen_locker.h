@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"

@@ -9,7 +9,6 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"

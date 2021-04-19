@@ -11,7 +11,6 @@
 #include <wrl/client.h>
 
 #include "base/optional.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 

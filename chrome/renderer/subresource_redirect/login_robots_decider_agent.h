@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/timer/timer.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "url/gurl.h"

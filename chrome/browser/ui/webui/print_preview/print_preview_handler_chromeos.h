@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"

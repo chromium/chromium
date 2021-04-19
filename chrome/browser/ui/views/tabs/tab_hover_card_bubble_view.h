@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

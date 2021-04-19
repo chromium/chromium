@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "base/timer/mock_timer.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
 namespace task_manager {

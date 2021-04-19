@@ -12,7 +12,6 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"

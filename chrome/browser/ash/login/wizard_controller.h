@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 // TODO(https://crbug.com/1164001): move KioskAppType to forward declaration
 // when moved to chrome/browser/ash/.

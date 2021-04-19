@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/timer/timer.h"
 // TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
 // after this file is moved to ash.
 #include "chrome/browser/ash/base/locale_util.h"

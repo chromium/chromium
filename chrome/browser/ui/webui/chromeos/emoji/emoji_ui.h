@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"

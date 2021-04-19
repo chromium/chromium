@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "chrome/common/lite_video_service.mojom.h"

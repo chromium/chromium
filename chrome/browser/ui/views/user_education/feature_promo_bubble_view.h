@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
 #include "ui/gfx/geometry/rect.h"

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"

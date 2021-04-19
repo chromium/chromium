@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/test_task_manager.h"
 
+#include "base/timer/mock_timer.h"
+
 namespace task_manager {
 
 TestTaskManager::TestTaskManager()
