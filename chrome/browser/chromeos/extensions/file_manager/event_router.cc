@@ -957,18 +957,14 @@ void EventRouter::OnCrostiniChanged(
     const std::string& pref_name,
     extensions::api::file_manager_private::CrostiniEventType pref_true,
     extensions::api::file_manager_private::CrostiniEventType pref_false) {
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
-    file_manager_private::CrostiniEvent event;
-    event.vm_name = vm_name;
-    event.event_type =
-        profile_->GetPrefs()->GetBoolean(pref_name) ? pref_true : pref_false;
-    DispatchEventToExtension(
-        profile_, extension_id,
-        extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
-        file_manager_private::OnCrostiniChanged::kEventName,
-        file_manager_private::OnCrostiniChanged::Create(event));
-  }
+  file_manager_private::CrostiniEvent event;
+  event.vm_name = vm_name;
+  event.event_type =
+      profile_->GetPrefs()->GetBoolean(pref_name) ? pref_true : pref_false;
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+                 file_manager_private::OnCrostiniChanged::kEventName,
+                 file_manager_private::OnCrostiniChanged::Create(event));
 }
 
 void EventRouter::NotifyDriveConnectionStatusChanged() {
