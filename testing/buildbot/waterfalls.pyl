@@ -1708,7 +1708,7 @@
       },
       'linux-lacros-rel': {
         'additional_compile_targets': [
-          'gn_all',
+          'all',
         ],
         'test_suites': {
           'gtest_tests': 'linux_lacros_cq_gtests',

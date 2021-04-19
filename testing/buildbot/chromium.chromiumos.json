@@ -4712,7 +4712,7 @@
   },
   "linux-lacros-rel": {
     "additional_compile_targets": [
-      "gn_all"
+      "all"
     ],
     "gtest_tests": [
       {
