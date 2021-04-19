@@ -145,27 +145,23 @@ class NetInfoBrowserTest : public content::ContentBrowserTest {
   }
 
   std::string RunScriptExtractString(const std::string& script) {
-    std::string data;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(shell(), script, &data));
-    return data;
+    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
   bool RunScriptExtractBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(shell(), script, &data));
-    return data;
+    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   double RunScriptExtractDouble(const std::string& script) {
-    double data = 0.0;
-    EXPECT_TRUE(ExecuteScriptAndExtractDouble(shell(), script, &data));
-    return data;
+    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractDouble();
   }
 
   int RunScriptExtractInt(const std::string& script) {
-    int data = 0;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(shell(), script, &data));
-    return data;
+    return EvalJs(shell(), script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractInt();
   }
 
  private:
@@ -234,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, TwoRenderViewsInOneProcess) {
   EXPECT_FALSE(RunScriptExtractBool("getOnLine()"));
 
   // Open the same page in a new window on the same process.
-  EXPECT_TRUE(ExecuteScript(shell(), "window.open(\"net_info.html\")"));
+  EXPECT_TRUE(ExecJs(shell(), "window.open(\"net_info.html\")"));
 
   // The network state should not have reinitialized to what it was when opening
   // the first window (online).

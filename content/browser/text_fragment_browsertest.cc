@@ -153,9 +153,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   WebContents* main_contents = shell()->web_contents();
   TestNavigationObserver observer(main_contents);
 
-  // ExecuteScript executes with a user gesture
-  EXPECT_TRUE(ExecuteScript(main_contents,
-                            "location = '" + target_text_url.spec() + "';"));
+  EXPECT_TRUE(
+      ExecJs(main_contents, "location = '" + target_text_url.spec() + "';"));
   observer.Wait();
   EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
   // Observe the frame after page is loaded. Note that we need to initialize
@@ -189,8 +188,9 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // This navigation occurs without a user gesture, simulating a client
   // redirect. However, because the above navigation didn't activate a text
   // fragment, permission should be propagated to this navigation.
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + target_text_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location = '" + target_text_url.spec() + "';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
 
@@ -234,8 +234,9 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, UserGestureConsumed) {
   // navigations are blocked so we'll navigate away first.
   {
     TestNavigationObserver observer(main_contents);
-    ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + empty_page_url.spec() + "';"));
+    ASSERT_TRUE(ExecJs(main_contents,
+                       "location = '" + empty_page_url.spec() + "';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     ASSERT_EQ(empty_page_url, main_contents->GetLastCommittedURL());
     WaitForLoadStop(main_contents);
@@ -245,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, UserGestureConsumed) {
   // gesture since the last one, it should be blocked.
   {
     TestNavigationObserver observer(main_contents);
-    ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + target_text_url.spec() + "';"));
+    ASSERT_TRUE(ExecJs(main_contents,
+                       "location = '" + target_text_url.spec() + "';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     ASSERT_EQ(target_text_url, main_contents->GetLastCommittedURL());
     WaitForLoadStop(main_contents);
@@ -279,14 +281,15 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
     // Scroll the page back to top so scroll restoration does not scroll the
     // target back into view.
-    EXPECT_TRUE(ExecuteScript(main_contents, "window.scrollTo(0, 0)"));
+    EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 0)"));
     frame_observer.WaitForScrollOffsetAtTop(true);
   }
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   TestNavigationObserver observer(main_contents);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(main_contents, "history.back()"));
+  EXPECT_TRUE(
+      ExecJs(main_contents, "history.back()", EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
 
@@ -325,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // Scroll the page back to top. Make sure we reset the |did_scroll| variable
   // we'll use below to ensure the same-document navigation invokes the text
   // fragment.
-  EXPECT_TRUE(ExecuteScript(main_contents, "window.scrollTo(0, 0)"));
+  EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 0)"));
   frame_observer.WaitForScrollOffsetAtTop(true);
   RunUntilInputProcessed(GetWidgetHost());
   EXPECT_TRUE(ExecJs(main_contents, "did_scroll = false;"));
@@ -367,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
     GURL target_url(embedded_test_server()->GetURL(
         "/scrollable_page_with_content.html#:~:text=text"));
     TestNavigationObserver observer(main_contents);
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + target_url.spec() + "';"));
+    EXPECT_TRUE(ExecJs(main_contents, "location = '" + target_url.spec() + "';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     EXPECT_EQ(target_url, main_contents->GetLastCommittedURL());
     frame_observer.WaitForScrollOffsetAtTop(false);
@@ -379,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // we'll use below to ensure the same-document navigation invokes the text
   // fragment.
   {
-    EXPECT_TRUE(ExecuteScript(main_contents, "window.scrollTo(0, 0)"));
+    EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 0)"));
     frame_observer.WaitForScrollOffsetAtTop(true);
     RunUntilInputProcessed(GetWidgetHost());
     EXPECT_TRUE(ExecJs(main_contents, "did_scroll = false;"));
@@ -423,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // we'll use below to ensure the same-document navigation invokes the text
   // fragment.
   {
-    EXPECT_TRUE(ExecuteScript(main_contents, "window.scrollTo(0, 0)"));
+    EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 0)"));
     frame_observer.WaitForScrollOffsetAtTop(true);
     RunUntilInputProcessed(GetWidgetHost());
     EXPECT_TRUE(ExecJs(main_contents, "did_scroll = false;"));
@@ -435,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
     GURL temp_url(embedded_test_server()->GetURL(
         "/scrollable_page_with_content.html#doesntexist"));
     TestNavigationObserver observer(main_contents);
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + temp_url.spec() + "';"));
+    EXPECT_TRUE(ExecJs(main_contents, "location = '" + temp_url.spec() + "';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     EXPECT_EQ(temp_url, main_contents->GetLastCommittedURL());
   }
@@ -444,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // Navigate back using history.back().
   {
     TestNavigationObserver observer(main_contents);
-    EXPECT_TRUE(
-        ExecuteScriptWithoutUserGesture(main_contents, "history.back();"));
+    EXPECT_TRUE(ExecJs(main_contents, "history.back();",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     EXPECT_EQ(url, main_contents->GetLastCommittedURL());
 
@@ -464,8 +467,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
     GURL new_url(embedded_test_server()->GetURL(
         "/scrollable_page_with_content.html#:~:text=Some"));
     TestNavigationObserver observer(main_contents);
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + new_url.spec() + "';"));
+    EXPECT_TRUE(ExecJs(main_contents, "location = '" + new_url.spec() + "';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     EXPECT_EQ(new_url, main_contents->GetLastCommittedURL());
     frame_observer.WaitForScrollOffsetAtTop(true);
@@ -485,8 +488,9 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
   WebContents* main_contents = shell()->web_contents();
   TestNavigationObserver observer(main_contents);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + target_text_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location = '" + target_text_url.spec() + "';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   EXPECT_EQ(target_text_url, main_contents->GetLastCommittedURL());
 
@@ -686,16 +690,16 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 
   // Scroll down the page a bit
-  EXPECT_TRUE(ExecuteScript(main_contents, "window.scrollTo(0, 1000)"));
+  EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 1000)"));
   frame_observer.WaitForScrollOffsetAtTop(false);
 
   // Navigate away
-  EXPECT_TRUE(ExecuteScript(main_contents, "window.location = 'about:blank'"));
+  EXPECT_TRUE(ExecJs(main_contents, "window.location = 'about:blank'"));
   EXPECT_TRUE(WaitForLoadStop(main_contents));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 
   // Navigate back
-  EXPECT_TRUE(ExecuteScript(main_contents, "history.back()"));
+  EXPECT_TRUE(ExecJs(main_contents, "history.back()"));
   EXPECT_TRUE(WaitForLoadStop(main_contents));
   EXPECT_TRUE(WaitForRenderFrameReady(main_contents->GetMainFrame()));
 

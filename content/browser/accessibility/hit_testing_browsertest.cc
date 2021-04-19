@@ -508,14 +508,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
 
   // Scroll div up 100px.
   int scroll_delta = 100;
-  double actual_scroll_delta = 0;
   std::string scroll_string = base::StringPrintf(
-      "window.scrollTo(0, %d); "
-      "window.domAutomationController.send(window.scrollY);",
-      scroll_delta);
-  EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-      child->current_frame_host(), scroll_string, &actual_scroll_delta));
-  EXPECT_NEAR(static_cast<double>(scroll_delta), actual_scroll_delta, 1.0);
+      "window.scrollTo(0, %d); window.scrollY;", scroll_delta);
+  EXPECT_NEAR(
+      EvalJs(child->current_frame_host(), scroll_string).ExtractDouble(),
+      static_cast<double>(scroll_delta), 1.0);
 
   // After scrolling.
   {

@@ -273,9 +273,9 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
   // Now allow 'accelerometer' and 'gyroscope' policy features.
-  EXPECT_TRUE(ExecuteScript(shell(),
-                            "document.getElementById('cross_origin_iframe')."
-                            "allow='accelerometer; gyroscope'"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.getElementById('cross_origin_iframe')."
+                     "allow='accelerometer; gyroscope'"));
   EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(),
                                   "cross_origin_iframe", iframe_url));
 
@@ -323,9 +323,9 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
   // Now allow 'accelerometer' and 'gyroscope' policy features.
-  EXPECT_TRUE(ExecuteScript(shell(),
-                            "document.getElementById('cross_origin_iframe')."
-                            "allow='accelerometer; gyroscope'"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.getElementById('cross_origin_iframe')."
+                     "allow='accelerometer; gyroscope'"));
   EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(),
                                   "cross_origin_iframe", iframe_url));
 

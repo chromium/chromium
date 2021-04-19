@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockDisabledBrowserTest,
   navigation_observer.Wait();
 
   {
-    ASSERT_TRUE(ExecuteScript(shell(), "run();"));
+    ASSERT_TRUE(ExecJs(shell(), "run();"));
 
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     navigation_observer.Wait();
@@ -310,30 +310,15 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
     root_observer.Wait();
     child_observer.Wait();
 
-    int orientation_angle;
-    std::string orientation_type;
+    EXPECT_EQ(angle,
+              EvalJs(root->current_frame_host(), "screen.orientation.angle"));
+    EXPECT_EQ(angle,
+              EvalJs(child->current_frame_host(), "screen.orientation.angle"));
 
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        root->current_frame_host(),
-        "window.domAutomationController.send(screen.orientation.angle)",
-        &orientation_angle));
-    EXPECT_EQ(angle, orientation_angle);
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        child->current_frame_host(),
-        "window.domAutomationController.send(screen.orientation.angle)",
-        &orientation_angle));
-    EXPECT_EQ(angle, orientation_angle);
-
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        root->current_frame_host(),
-        "window.domAutomationController.send(screen.orientation.type)",
-        &orientation_type));
-    EXPECT_EQ(types[i], orientation_type);
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        child->current_frame_host(),
-        "window.domAutomationController.send(screen.orientation.type)",
-        &orientation_type));
-    EXPECT_EQ(types[i], orientation_type);
+    EXPECT_EQ(types[i],
+              EvalJs(root->current_frame_host(), "screen.orientation.type"));
+    EXPECT_EQ(types[i],
+              EvalJs(child->current_frame_host(), "screen.orientation.type"));
   }
 }
 
@@ -388,12 +373,8 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   WaitForResizeComplete(shell()->web_contents());
 #endif  // USE_AURA || defined(OS_ANDROID)
 
-  int orientation_angle;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      root->current_frame_host(),
-      "window.domAutomationController.send(screen.orientation.angle)",
-      &orientation_angle));
-  EXPECT_EQ(expected_angle, orientation_angle);
+  EXPECT_EQ(expected_angle,
+            EvalJs(root->current_frame_host(), "screen.orientation.angle"));
 }
 
 #ifdef OS_ANDROID
@@ -414,25 +395,23 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   RenderFrameHostImpl* frames[] = {root->current_frame_host(),
                                    child->current_frame_host()};
 
-  EXPECT_TRUE(ExecuteScript(root->current_frame_host(),
-                            "document.body.webkitRequestFullscreen()"));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(),
+                     "document.body.webkitRequestFullscreen()"));
   for (const char* type : types) {
     std::string script =
         base::StringPrintf("screen.orientation.lock('%s')", type);
-    EXPECT_TRUE(ExecuteScript(child->current_frame_host(), script));
+    EXPECT_TRUE(ExecJs(child->current_frame_host(), script));
 
     for (auto* frame : frames) {
       std::string orientation_type;
       while (type != orientation_type) {
-        EXPECT_TRUE(ExecuteScriptAndExtractString(
-            frame,
-            "window.domAutomationController.send(screen.orientation.type)",
-            &orientation_type));
+        orientation_type =
+            EvalJs(frame, "screen.orientation.type").ExtractString();
       }
     }
 
-    EXPECT_TRUE(ExecuteScript(child->current_frame_host(),
-                              "screen.orientation.unlock()"));
+    EXPECT_TRUE(
+        ExecJs(child->current_frame_host(), "screen.orientation.unlock()"));
   }
 }
 #endif  // OS_ANDROID

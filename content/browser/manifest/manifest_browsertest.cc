@@ -306,8 +306,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
   {
     std::string manifest_link =
         embedded_test_server()->GetURL("/manifest/dummy-manifest.json").spec();
-    ASSERT_TRUE(
-        ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+    ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
     GetManifestAndWait();
     EXPECT_FALSE(manifest().IsEmpty());
@@ -318,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
   {
     std::string manifest_link =
         embedded_test_server()->GetURL("/manifest/empty-manifest.json").spec();
-    ASSERT_TRUE(
-        ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+    ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
     GetManifestAndWait();
     EXPECT_FALSE(manifest().IsEmpty());
@@ -329,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
   }
 
   {
-    ASSERT_TRUE(ExecuteScript(shell(), "clearManifest()"));
+    ASSERT_TRUE(ExecJs(shell(), "clearManifest()"));
 
     GetManifestAndWait();
     EXPECT_TRUE(manifest().IsEmpty());
@@ -376,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_CorsManifest) {
 
   std::string manifest_link = cors_embedded_test_server()->GetURL(
       "/manifest/dummy-manifest.json").spec();
-  ASSERT_TRUE(ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
   EXPECT_TRUE(manifest().IsEmpty());
@@ -394,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_CorsManifest) {
   // it is actually fully loaded.
   manifest_link =
       embedded_test_server()->GetURL("/manifest/dummy-manifest.json").spec();
-  ASSERT_TRUE(ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
   GetManifestAndWait();
   expected_manifest_urls.push_back(manifest_url());
   EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -416,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, CorsManifestWithAcessControls) {
 
   std::string manifest_link = cors_embedded_test_server()->GetURL(
       "/manifest/manifest-cors.json").spec();
-  ASSERT_TRUE(ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
   EXPECT_FALSE(manifest().IsEmpty());
@@ -447,8 +445,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_MixedContentManifest) {
       "insecure.example", "/manifest/manifest-cors.json");
   // Ensure the manifest really is mixed content:
   ASSERT_FALSE(network::IsUrlPotentiallyTrustworthy(manifest_link));
-  ASSERT_TRUE(
-      ExecuteScript(shell(), JsReplace("setManifestTo($1)", manifest_link)));
+  ASSERT_TRUE(ExecJs(shell(), JsReplace("setManifestTo($1)", manifest_link)));
 
   GetManifestAndWait();
   EXPECT_TRUE(manifest().IsEmpty());
@@ -541,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, PushStateNavigation) {
 
   {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         shell(), "history.pushState({foo: \"bar\"}, 'page', 'page.html');"));
     navigation_observer.Wait();
   }
@@ -566,10 +563,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, AnchorNavigation) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-    ASSERT_TRUE(
-        ExecuteScript(shell(),
-                      "var a = document.createElement('a'); a.href='#foo';"
-                      "document.body.appendChild(a); a.click();"));
+    ASSERT_TRUE(ExecJs(shell(),
+                       "var a = document.createElement('a'); a.href='#foo';"
+                       "document.body.appendChild(a); a.click();"));
     navigation_observer.Wait();
   }
 
@@ -716,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   std::string manifest_link =
       embedded_test_server()->GetURL("/manifest/dummy-manifest.json").spec();
-  ASSERT_TRUE(ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   // Same-origin manifest will not be fetched from a unique origin, regardless
   // of CORS headers.
@@ -728,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
 
   manifest_link =
       embedded_test_server()->GetURL("/manifest/manifest-cors.json").spec();
-  ASSERT_TRUE(ExecuteScript(shell(), "setManifestTo('" + manifest_link + "')"));
+  ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
   EXPECT_TRUE(manifest().IsEmpty());

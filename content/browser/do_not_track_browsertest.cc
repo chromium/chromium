@@ -79,22 +79,13 @@ class DoNotTrackTest : public ContentBrowserTest {
   }
 
   void ExpectPageTextEq(const std::string& expected_content) {
-    std::string text;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "window.domAutomationController.send(document.body.innerText);",
-        &text));
-    EXPECT_EQ(expected_content, text);
+    EXPECT_EQ(expected_content, EvalJs(shell(), "document.body.innerText;"));
   }
 
   std::string GetDOMDoNotTrackProperty() {
-    std::string value;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "window.domAutomationController.send("
-        "    navigator.doNotTrack === null ? '' : navigator.doNotTrack)",
-        &value));
-    return value;
+    return EvalJs(shell(),
+                  "navigator.doNotTrack === null ? '' : navigator.doNotTrack")
+        .ExtractString();
   }
 
   GURL GetURL(std::string relative_url) {

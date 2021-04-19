@@ -92,21 +92,16 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
   }
 
-  bool RunScript(const std::string& script, std::string* result) {
-    return content::ExecuteScriptAndExtractString(shell()->web_contents(),
-                                                  script, result);
+  std::string RunScript(const std::string& script) {
+    return EvalJs(shell()->web_contents(), script,
+                  EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
-  std::string PopConsoleString() {
-    std::string script_result;
-    EXPECT_TRUE(RunScript("resultQueue.pop()", &script_result));
-    return script_result;
-  }
+  std::string PopConsoleString() { return RunScript("resultQueue.pop()"); }
 
   void RegisterPaymentApp() {
-    std::string script_result;
-    ASSERT_TRUE(RunScript("registerPaymentApp()", &script_result));
-    ASSERT_EQ("registered", script_result);
+    ASSERT_EQ("registered", RunScript("registerPaymentApp()"));
   }
 
   url::Origin GetTestServerOrigin() {

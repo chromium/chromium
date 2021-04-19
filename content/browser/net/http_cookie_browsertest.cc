@@ -173,11 +173,7 @@ class HttpCookieBrowserTest : public ContentBrowserTest {
   }
 
   std::string ExtractFrameContent(RenderFrameHost* frame) const {
-    std::string content;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        frame, "window.domAutomationController.send(document.body.textContent)",
-        &content));
-    return content;
+    return EvalJs(frame, "document.body.textContent").ExtractString();
   }
 
   void NavigateFrameHostToURL(RenderFrameHost* iframe, const GURL& url) {

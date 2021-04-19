@@ -5041,21 +5041,14 @@ class BackForwardCacheBrowserTestWithVibration
                       int duration,
                       base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
-    bool result;
-    std::string script = "domAutomationController.send(navigator.vibrate(" +
-                         base::NumberToString(duration) + "))";
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(rfh, script, &result));
-    return result;
+    return EvalJs(rfh, JsReplace("navigator.vibrate($1)", duration))
+        .ExtractBool();
   }
 
   bool TriggerShortVibrationSequence(RenderFrameHostImpl* rfh,
                                      base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
-    bool result;
-    std::string script =
-        "domAutomationController.send(navigator.vibrate([10] * 1000))";
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(rfh, script, &result));
-    return result;
+    return EvalJs(rfh, "navigator.vibrate([10] * 1000)").ExtractBool();
   }
 
   bool IsCancelled() { return cancelled_; }
@@ -6273,13 +6266,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
   int browsing_instance_id = rfh_a->GetSiteInstance()->GetBrowsingInstanceId();
 
   // A should prefer light color scheme (which is the default).
-  bool matches_light;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(),
-      "window.domAutomationController.send(window."
-      "matchMedia('(prefers-color-scheme: light)').matches)",
-      &matches_light));
-  EXPECT_TRUE(matches_light);
+  EXPECT_EQ(
+      true,
+      EvalJs(web_contents(),
+             "window.matchMedia('(prefers-color-scheme: light)').matches"));
 
   // 2) Navigate to B. A should be stored in the back-forward cache.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -6295,25 +6285,20 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
   web_contents()->SetWebPreferences(prefs);
 
   // 3) Set WebPreferences to prefer dark color scheme.
-  bool b_matches_dark;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(),
-      "window.domAutomationController.send(window."
-      "matchMedia('(prefers-color-scheme: dark)').matches)",
-      &b_matches_dark));
-  EXPECT_TRUE(b_matches_dark);
+  EXPECT_EQ(
+      true,
+      EvalJs(web_contents(),
+             "window.matchMedia('(prefers-color-scheme: dark)').matches"));
+
   // 4) Go back to A, which should also prefer the dark color scheme now.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
-  bool a_matches_dark;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(),
-      "window.domAutomationController.send(window."
-      "matchMedia('(prefers-color-scheme: dark)').matches)",
-      &a_matches_dark));
-  EXPECT_TRUE(a_matches_dark);
+  EXPECT_EQ(
+      true,
+      EvalJs(web_contents(),
+             "window.matchMedia('(prefers-color-scheme: dark)').matches"));
 }
 
 // Check the BackForwardCache is disabled when there is a nested WebContents

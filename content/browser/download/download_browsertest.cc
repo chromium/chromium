@@ -1515,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   const GURL url = embedded_test_server()->GetURL(kOrigin, "/title1.html");
   const std::string script = "window.open('" + url.spec() + "', 'foo')";
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1528,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       kOtherOrigin, "/download/download-test.lib");
   const std::string download_script =
       "window.open('" + download_url.spec() + "', 'foo')";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), download_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), download_script));
   observer->WaitForFinished();
 
   histogram_tester.ExpectTotalCount("Download.InitiatedByWindowOpener", 1);
@@ -1551,7 +1551,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, InitiatedByWindowOpener_SameSite) {
 
   const std::string script = "window.open('" + url.spec() + "', 'foo')";
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1564,7 +1564,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, InitiatedByWindowOpener_SameSite) {
       kOtherOrigin, "/download/download-test.lib");
   const std::string download_script =
       "window.open('" + download_url.spec() + "', 'foo')";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), download_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), download_script));
   observer->WaitForFinished();
 
   histogram_tester.ExpectTotalCount("Download.InitiatedByWindowOpener", 1);
@@ -1589,7 +1589,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
 
   const std::string script = "window.open('" + url.spec() + "', 'foo')";
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1602,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       kOtherOrigin, "/download/download-test.lib");
   const std::string download_script =
       "window.open('" + download_url.spec() + "', 'foo')";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), download_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), download_script));
   observer->WaitForFinished();
 
   histogram_tester.ExpectTotalCount("Download.InitiatedByWindowOpener", 1);
@@ -1622,8 +1622,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // origin page.
   const GURL url = embedded_test_server()->GetURL(kOtherOrigin, "/title1.html");
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "window.open('" + url.spec() + "', 'foo')"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "window.open('" + url.spec() + "', 'foo')"));
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       kOtherOrigin, "/download/download-test.lib");
   const std::string download_script =
       "window.open('" + download_url.spec() + "', 'foo')";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), download_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), download_script));
   observer->WaitForFinished();
 
   histogram_tester.ExpectTotalCount("Download.InitiatedByWindowOpener", 1);
@@ -1655,8 +1655,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // From the initial tab, open a window named 'foo' and navigate it to
   // about:blank.
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "window.open('about:blank', 'foo')"));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), "window.open('about:blank', 'foo')"));
   Shell* new_shell = new_shell_observer.GetShell();
   ASSERT_TRUE(new_shell);
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1669,7 +1669,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       kOtherOrigin, "/download/download-test.lib");
   const std::string download_script =
       "window.open('" + download_url.spec() + "', 'foo')";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), download_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), download_script));
   observer->WaitForFinished();
 
   histogram_tester.ExpectTotalCount("Download.InitiatedByWindowOpener", 1);

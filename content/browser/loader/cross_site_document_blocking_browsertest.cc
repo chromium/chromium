@@ -703,15 +703,11 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, AllowCorsFetches) {
     // Make sure that base::HistogramTester below starts with a clean slate.
     FetchHistogramsFromChildProcesses();
 
-    // Fetch.
     base::HistogramTester histograms;
-    bool was_blocked;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf("sendRequest('%s');", resource),
-        &was_blocked));
-
-    // Verify results of the fetch.
-    EXPECT_FALSE(was_blocked);
+    // Fetch and verify results of the fetch.
+    EXPECT_EQ(false, EvalJs(shell(),
+                            base::StringPrintf("sendRequest('%s');", resource),
+                            EXECUTE_SCRIPT_USE_MANUAL_REPLY));
     InspectHistograms(histograms, kShouldBeAllowedWithoutSniffing, resource);
   }
 }
@@ -860,11 +856,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
     script.onload = () => domAutomationController.send("CORB WORKED");
     document.body.appendChild(script);
     }))";
-  std::string result;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      shell(), script + "('" + subresource_url.spec() + "')", &result));
 
-  EXPECT_EQ("CORB WORKED", result);
+  EXPECT_EQ("CORB WORKED",
+            EvalJs(shell(), script + "('" + subresource_url.spec() + "')",
+                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
@@ -1383,8 +1378,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, PrefetchIsNotImpacted) {
   )";
   std::string prefetch_injection_script = base::StringPrintf(
       prefetch_injection_script_template, kPrefetchResourcePath);
-  EXPECT_TRUE(
-      ExecuteScript(shell()->web_contents(), prefetch_injection_script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), prefetch_injection_script));
 
   // Respond to the prefetch request in a way that:
   // 1) will enable caching
@@ -1416,10 +1410,8 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, PrefetchIsNotImpacted) {
         link.onerror = notify_prefetch_is_done;
       }
   )";
-  int answer;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(shell()->web_contents(), wait_script,
-                                         &answer));
-  EXPECT_EQ(123, answer);
+  EXPECT_EQ(123, EvalJs(shell()->web_contents(), wait_script,
+                        EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   InspectHistograms(histograms, kShouldBeBlockedWithoutSniffing, "x.html");
 
   // Finish the HTTP response - this should store the response in the cache.
@@ -1450,11 +1442,9 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, PrefetchIsNotImpacted) {
           }); )";
   std::string fetch_script =
       base::StringPrintf(fetch_script_template, kPrefetchResourcePath);
-  std::string response_body;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractString(shell()->web_contents()->GetAllFrames()[1],
-                                    fetch_script, &response_body));
-  EXPECT_EQ("<p>contents of the response</p>", response_body);
+  EXPECT_EQ("<p>contents of the response</p>",
+            EvalJs(shell()->web_contents()->GetAllFrames()[1], fetch_script,
+                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1526,7 +1516,6 @@ class CrossSiteDocumentBlockingServiceWorkerTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), url));
 
     // Register the service worker.
-    bool is_script_done;
     std::string script = R"(
         navigator.serviceWorker
             .register('/cross_site_document_blocking/service_worker.js')
@@ -1536,19 +1525,13 @@ class CrossSiteDocumentBlockingServiceWorkerTest : public ContentBrowserTest {
                 console.log('error: ' + e);
                 domAutomationController.send(false);
             }); )";
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(shell(), script, &is_script_done));
-    ASSERT_TRUE(is_script_done);
+    ASSERT_EQ(true, EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
     // Navigate again to the same URL - the service worker should be 1) active
     // at this time (because of waiting for |navigator.serviceWorker.ready|
     // above) and 2) controlling the current page (because of the reload).
     ASSERT_TRUE(NavigateToURL(shell(), url));
-    bool is_controlled_by_service_worker;
-    ASSERT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "domAutomationController.send(!!navigator.serviceWorker.controller)",
-        &is_controlled_by_service_worker));
-    ASSERT_TRUE(is_controlled_by_service_worker);
+    ASSERT_EQ(true, EvalJs(shell(), "!!navigator.serviceWorker.controller"));
   }
 
  private:
@@ -1592,8 +1575,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingServiceWorkerTest,
   // will be intercepted by the service worker and replaced with a new,
   // artificial error.
   base::HistogramTester histograms;
-  std::string response;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(shell(), script, &response));
+  std::string response =
+      EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY).ExtractString();
 
   // Verify that CORB blocked the response from the network (from
   // |cross_origin_https_server_|) to the service worker.
@@ -1627,10 +1610,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingDisableWebSecurityTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  bool was_blocked;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      shell(), "sendRequest(\"valid.html\");", &was_blocked));
-  EXPECT_FALSE(was_blocked);
+  ASSERT_EQ(false, EvalJs(shell(), "sendRequest(\"valid.html\");",
+                          EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 // Test class to verify that documents are blocked for isolated origins as well.
@@ -1659,10 +1640,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
   GURL foo_url("http://foo.com/cross_site_document_blocking/request.html");
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
 
-  bool was_blocked;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(
-      shell(), "sendRequest(\"valid.html\");", &was_blocked));
-  EXPECT_TRUE(was_blocked);
+  ASSERT_EQ(true, EvalJs(shell(), "sendRequest(\"valid.html\");",
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {

@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
   base::RunLoop run_loop;
   FinishNavigationObserver finish_navigation_observer(
       shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "document.getElementById('link').click();"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.getElementById('link').click();"));
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
   EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());

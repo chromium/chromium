@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       "f.src='%s';"
       "document.body.appendChild(f);",
       url_d.spec().c_str());
-  EXPECT_TRUE(content::ExecuteScript(subframe_c, add_d_script));
+  EXPECT_TRUE(ExecJs(subframe_c, add_d_script));
   EXPECT_TRUE(delayer_d.WaitForRequestStart());
   EXPECT_TRUE(web_contents->IsLoading());
 
@@ -407,14 +407,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Navigate to an invalid URL and make sure it doesn't leave a pending entry.
   LoadStopNotificationObserver load_observer1(
       &shell()->web_contents()->GetController());
-  ASSERT_TRUE(
-      ExecuteScript(shell(), "window.location.href=\"nonexistent:12121\";"));
+  ASSERT_TRUE(ExecJs(shell(), "window.location.href=\"nonexistent:12121\";"));
   load_observer1.Wait();
   EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
 
   LoadStopNotificationObserver load_observer2(
       &shell()->web_contents()->GetController());
-  ASSERT_TRUE(ExecuteScript(shell(), "window.location.href=\"#foo\";"));
+  ASSERT_TRUE(ExecJs(shell(), "window.location.href=\"#foo\";"));
   load_observer2.Wait();
   EXPECT_EQ(embedded_test_server()->GetURL("/title1.html#foo"),
             shell()->web_contents()->GetVisibleURL());
@@ -1078,10 +1077,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ChangeDisplayMode) {
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "document.title = "
-                            " window.matchMedia('(display-mode:"
-                            " minimal-ui)').matches"));
+  ASSERT_TRUE(ExecJs(shell(),
+                     "document.title = "
+                     " window.matchMedia('(display-mode:"
+                     " minimal-ui)').matches"));
   EXPECT_EQ(u"true", shell()->web_contents()->GetTitle());
 
   delegate.set_mode(blink::mojom::DisplayMode::kFullscreen);
@@ -1093,10 +1092,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ChangeDisplayMode) {
       ->GetWidget()
       ->SynchronizeVisualProperties();
 
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "document.title = "
-                            " window.matchMedia('(display-mode:"
-                            " fullscreen)').matches"));
+  ASSERT_TRUE(ExecJs(shell(),
+                     "document.title = "
+                     " window.matchMedia('(display-mode:"
+                     " fullscreen)').matches"));
   EXPECT_EQ(u"true", shell()->web_contents()->GetTitle());
 }
 
@@ -1190,8 +1189,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
       "Not allowed to load local resource: view-source:*");
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "window.open('" + kViewSourceURL.spec() + "');"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "window.open('" + kViewSourceURL.spec() + "');"));
   console_observer.Wait();
   // Original page shouldn't navigate away, no new tab should be opened.
   EXPECT_EQ(kUrl, shell()->web_contents()->GetURL());
@@ -1210,9 +1209,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   console_observer.SetPattern(
       "Not allowed to load local resource: view-source:*");
 
-  EXPECT_TRUE(
-      ExecuteScript(shell()->web_contents(),
-                    "window.location = '" + kViewSourceURL.spec() + "';"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "window.location = '" + kViewSourceURL.spec() + "';"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, shell()->web_contents()->GetURL());
@@ -1248,8 +1246,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
     ShellAddedObserver new_shell_observer;
 
     // Open a new, named window.
-    EXPECT_TRUE(
-        ExecuteScript(shell(), "window.open('about:blank','new_window');"));
+    EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank','new_window');"));
 
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1258,24 +1255,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
               static_cast<WebContentsImpl*>(new_shell->web_contents())
                   ->GetFrameTree()->root()->frame_name());
 
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        new_shell,
-        "window.domAutomationController.send(window.name == 'new_window');",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(new_shell, "window.name == 'new_window';"));
   }
 
   {
     ShellAddedObserver new_shell_observer;
 
     // Test clicking a target=foo link.
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(clickSameSiteTargetedLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteTargetedLink();"));
 
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
@@ -1342,7 +1329,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // return.
   SetShouldProceedOnBeforeUnload(shell(), false, false);
   AppModalDialogWaiter dialog_waiter(shell());
-  EXPECT_TRUE(ExecuteScript(shell(), "clickLinkSoon()"));
+  EXPECT_TRUE(ExecJs(shell(), "clickLinkSoon()"));
   dialog_waiter.Wait();
 
   // Have the cross-site navigation commit. The main RenderFrameHost should
@@ -1750,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   std::string script =
       "var iframe = document.createElement('iframe');"
       "document.body.appendChild(iframe);";
-  EXPECT_TRUE(content::ExecuteScript(root->current_frame_host(), script));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   ASSERT_EQ(1U, root->child_count());
@@ -1763,15 +1750,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // A dialog from the main frame.
   std::string alert_location = "alert(document.location)";
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(root->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ(GURL("http://a.com/title1.html"),
             GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
 
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(frame->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(frame->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ("about:blank", test_delegate.last_message());
 
@@ -1788,8 +1773,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
     // A dialog from the subframe.
     test_delegate.WillWaitForDialog();
-    EXPECT_TRUE(
-        content::ExecuteScript(frame->current_frame_host(), alert_location));
+    EXPECT_TRUE(ExecJs(frame->current_frame_host(), alert_location));
     test_delegate.Wait();
     EXPECT_EQ(GURL("http://b.com/title2.html"),
               GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
@@ -1804,15 +1788,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(wc));
 
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(frame->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(frame->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ(same_origin_url.spec(), test_delegate.last_message());
 
   // A dialog from the main frame.
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(root->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ(GURL("http://a.com/title1.html"),
             GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
@@ -1822,8 +1804,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       shell(), embedded_test_server()->GetURL("c.com", "/title3.html")));
   EXPECT_TRUE(WaitForLoadStop(wc));
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(root->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ(GURL("http://c.com/title3.html"),
             GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
@@ -1832,8 +1813,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   wc->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(wc));
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(
-      content::ExecuteScript(root->current_frame_host(), alert_location));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ(GURL("http://a.com/title1.html"),
             GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
@@ -1850,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // A dialog with mixed linebreaks.
   std::string alert = "alert('1\\r2\\r\\n3\\n4')";
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(content::ExecuteScript(wc, alert));
+  EXPECT_TRUE(ExecJs(wc, alert));
   test_delegate.Wait();
   EXPECT_EQ("1\n2\n3\n4", test_delegate.last_message());
 }
@@ -2238,27 +2218,21 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Try to request pointer lock. WebContentsDelegate should get a notification.
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "window.domAutomationController.send(document.body."
-                            "requestPointerLock());"));
+  ASSERT_TRUE(ExecJs(shell(),
+                     "window.domAutomationController.send(document.body."
+                     "requestPointerLock());"));
   EXPECT_TRUE(delegate.get()->request_to_lock_mouse_called_);
 
   // Make sure that the renderer didn't get the pointer lock, since the
   // WebContentsDelegate didn't approve the notification.
-  bool locked = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell(),
-                                          "window.domAutomationController.send("
-                                          "document.pointerLockElement == "
-                                          "null);",
-                                          &locked));
-  EXPECT_TRUE(locked);
+  EXPECT_EQ(true, EvalJs(shell(), "document.pointerLockElement == null;"));
 
   // Try to request the pointer lock again. Since there's a pending request in
   // WebContentsDelelgate, the WebContents shouldn't ask again.
   delegate.get()->request_to_lock_mouse_called_ = false;
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "window.domAutomationController.send(document.body."
-                            "requestPointerLock());"));
+  ASSERT_TRUE(ExecJs(shell(),
+                     "window.domAutomationController.send(document.body."
+                     "requestPointerLock());"));
   EXPECT_FALSE(delegate.get()->request_to_lock_mouse_called_);
 
   // Force a cross-process navigation so that the RenderWidgetHost is deleted.
@@ -2268,9 +2242,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make sure the WebContents cleaned up the previous pending request. A new
   // request should be forwarded to the WebContentsDelegate.
   delegate.get()->request_to_lock_mouse_called_ = false;
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "window.domAutomationController.send(document.body."
-                            "requestPointerLock());"));
+  ASSERT_TRUE(ExecJs(shell(),
+                     "window.domAutomationController.send(document.body."
+                     "requestPointerLock());"));
   EXPECT_TRUE(delegate.get()->request_to_lock_mouse_called_);
 }
 
@@ -2283,21 +2257,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
   const std::string kUserAgentOverride = "foo";
 
   EXPECT_TRUE(NavigateToURL(shell(), kUrl));
-  std::string header_value;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell()->web_contents(),
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
-  EXPECT_NE(kUserAgentOverride, header_value);
+  EXPECT_NE(kUserAgentOverride,
+            EvalJs(shell()->web_contents(), "document.body.textContent;"));
 
   shell()->web_contents()->SetUserAgentOverride(
       blink::UserAgentOverride::UserAgentOnly("foo"), false);
   EXPECT_TRUE(NavigateToURL(shell(), kUrl));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell()->web_contents(),
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
-  EXPECT_NE(kUserAgentOverride, header_value);
+  EXPECT_NE(kUserAgentOverride,
+            EvalJs(shell()->web_contents(), "document.body.textContent;"));
 
   shell()
       ->web_contents()
@@ -2307,11 +2274,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
   TestNavigationObserver tab_observer(shell()->web_contents(), 1);
   shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   tab_observer.Wait();
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell()->web_contents(),
-      "window.domAutomationController.send(document.body.textContent);",
-      &header_value));
-  EXPECT_EQ(kUserAgentOverride, header_value);
+  EXPECT_EQ(kUserAgentOverride,
+            EvalJs(shell()->web_contents(), "document.body.textContent;"));
 }
 
 // Verifies the user-agent string may be changed in DidStartNavigation().
@@ -2399,8 +2363,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // specifically back() triggers creating a pending entry, and because back()
   // does not complete, the reload() call results in a NavigationRequest with no
   // NavigationEntry.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "history.back(); location.reload();"));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), "history.back(); location.reload();"));
 
   http_response3.WaitForRequest();
   http_response3.Send(net::HTTP_OK, "text/html", "<html>");
@@ -2483,7 +2447,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(wc->IsFullscreen());
   std::string script = "alert('hi')";
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
 
@@ -2492,7 +2456,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(wc->IsFullscreen());
   script = "confirm('hi')";
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
 
@@ -2501,7 +2465,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(wc->IsFullscreen());
   script = "prompt('hi')";
   test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
 
@@ -2515,7 +2479,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       std::u16string());
   script = "window.onbeforeunload=function(e){ return 'x' };";
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.WillWaitForDialog();
   EXPECT_TRUE(NavigateToURL(shell(), url));
   test_delegate.Wait();
@@ -2537,7 +2501,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   std::string script =
       "var iframe = document.createElement('iframe');"
       "document.body.appendChild(iframe);";
-  EXPECT_TRUE(content::ExecuteScript(root->current_frame_host(), script));
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   ASSERT_EQ(1U, root->child_count());
@@ -2554,7 +2518,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(top_contents->IsFullscreen());
   script = "alert('hi')";
   inner_test_delegate.WillWaitForDialog();
-  EXPECT_TRUE(content::ExecuteScript(inner_contents, script));
+  EXPECT_TRUE(ExecJs(inner_contents, script));
   inner_test_delegate.Wait();
   EXPECT_FALSE(top_contents->IsFullscreen());
 }
@@ -2587,7 +2551,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(wc->IsFullscreen());
   std::string script = "window.open('', '', 'width=200,height=100')";
   test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
 }
@@ -2605,7 +2569,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make a popup.
   std::string popup_script = "window.open('', '', 'width=200,height=100')";
   test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(wc, popup_script));
+  EXPECT_TRUE(ExecJs(wc, popup_script));
   test_delegate.Wait();
   WebContentsImpl* popup =
       static_cast<WebContentsImpl*>(test_delegate.last_popup());
@@ -2617,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Have the popup open a popup.
   TestWCDelegateForDialogsAndFullscreen popup_test_delegate(popup);
   popup_test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(popup, popup_script));
+  EXPECT_TRUE(ExecJs(popup, popup_script));
   popup_test_delegate.Wait();
 
   // Ensure the original page, being in the opener chain, loses fullscreen.
@@ -2637,7 +2601,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make a popup.
   std::string popup_script = "window.open('', '', 'width=200,height=100')";
   test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(wc, popup_script));
+  EXPECT_TRUE(ExecJs(wc, popup_script));
   test_delegate.Wait();
   WebContentsImpl* popup =
       static_cast<WebContentsImpl*>(test_delegate.last_popup());
@@ -2649,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Have the original page open a new popup.
   test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(wc, popup_script));
+  EXPECT_TRUE(ExecJs(wc, popup_script));
   test_delegate.Wait();
 
   // Ensure the popup, being downstream from the opener, loses fullscreen.
@@ -2669,7 +2633,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       "window.FocusFromJavaScriptEndsFullscreen = "
       "window.open('', '', 'width=200,height=100')";
   test_delegate.WillWaitForNewContents();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
 
   // Put the main contents into fullscreen ...
@@ -2680,7 +2644,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // ... fullscreen.
   script = "window.FocusFromJavaScriptEndsFullscreen.focus()";
   test_delegate.WillWaitForFullscreenExit();
-  EXPECT_TRUE(content::ExecuteScript(wc, script));
+  EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
 }
@@ -2696,7 +2660,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   // Focus the child frame before sending it a copy command: the child frame
   // will detach itself upon getting a 'copy' event.
-  ASSERT_TRUE(ExecuteScript(web_contents, "window[0].focus();"));
+  ASSERT_TRUE(ExecJs(web_contents, "window[0].focus();"));
   FrameTree* frame_tree = web_contents->GetFrameTree();
   FrameTreeNode* root = frame_tree->root();
   ASSERT_EQ(root->child_at(0), frame_tree->GetFocusedFrame());
@@ -2753,8 +2717,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UpdateTargetURL) {
 
   // Focusing the link should fire the UpdateTargetURL notification.
   UpdateTargetURLWaiter target_url_waiter(web_contents);
-  EXPECT_TRUE(ExecuteScript(
-      subframe, "document.getElementById('cross_site_link').focus();"));
+  EXPECT_TRUE(
+      ExecJs(subframe, "document.getElementById('cross_site_link').focus();"));
   EXPECT_EQ(GURL("http://foo.com/title2.html"),
             target_url_waiter.WaitForUpdatedTargetURL());
 }
@@ -2844,7 +2808,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
       document.body.appendChild(img);
     )";
     std::string script = base::StringPrintf(kLoadResourceScript, url.c_str());
-    EXPECT_TRUE(ExecuteScript(frame, script));
+    EXPECT_TRUE(ExecJs(frame, script));
   };
 
   // There should be no outgoing requests, so the load state should be empty.
@@ -2859,9 +2823,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
     frame.src = "%s";
     document.body.appendChild(frame);
   )";
-  EXPECT_TRUE(ExecuteScript(
-      web_contents,
-      base::StringPrintf(kLoadFrameScript, paused_url.spec().c_str())));
+  EXPECT_TRUE(
+      ExecJs(web_contents,
+             base::StringPrintf(kLoadFrameScript, paused_url.spec().c_str())));
 
   // Wait for the response to be ready, but never finish it.
   EXPECT_TRUE(frame_pauser.WaitForResponse());
@@ -3004,11 +2968,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetPageFrozen) {
 
   int text_length;
   while (true) {
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        shell(),
-        "domAutomationController.send(document.getElementById('textfield')."
-        "value.length)",
-        &text_length));
+    text_length =
+        EvalJs(shell(), "document.getElementById('textfield').value.length")
+            .ExtractInt();
 
     // Wait until |text_length| exceed 0.
     if (text_length > 0)
@@ -3021,20 +2983,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetPageFrozen) {
 
   // Make the javascript work.
   for (int i = 0; i < 10; i++) {
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        shell(),
-        "domAutomationController.send(document.getElementById('textfield')."
-        "value.length)",
-        &text_length));
+    text_length =
+        EvalJs(shell(), "document.getElementById('textfield').value.length")
+            .ExtractInt();
   }
 
   // Check if |next_text_length| is equal to |text_length|.
-  int next_text_length;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(),
-      "domAutomationController.send(document.getElementById('textfield')."
-      "value.length)",
-      &next_text_length));
+  int next_text_length =
+      EvalJs(shell(), "document.getElementById('textfield').value.length")
+          .ExtractInt();
   EXPECT_EQ(text_length, next_text_length);
 
   // Wake the frozen page up.
@@ -3045,22 +3002,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetPageFrozen) {
   // work again. If the javascript doesn't work again, the test will fail due to
   // the time out.
   while (true) {
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        shell(),
-        "domAutomationController.send(document.getElementById('textfield')."
-        "value.length)",
-        &next_text_length));
+    next_text_length =
+        EvalJs(shell(), "document.getElementById('textfield').value.length")
+            .ExtractInt();
     if (next_text_length > text_length)
       break;
   }
 
   // Check if |next_text_length| exceeds |text_length| because the blink
   // schedule tasks have resumed.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(),
-      "domAutomationController.send(document.getElementById('textfield')."
-      "value.length)",
-      &next_text_length));
+  next_text_length =
+      EvalJs(shell(), "document.getElementById('textfield').value.length")
+          .ExtractInt();
   EXPECT_GT(next_text_length, text_length);
 }
 
@@ -3193,8 +3146,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   // Make the top page fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(
-        ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3206,7 +3158,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   {
     FullscreenWebContentsObserver observer(web_contents, child_frame);
     EXPECT_TRUE(
-        ExecuteScript(child_frame, "document.body.webkitRequestFullscreen();"));
+        ExecJs(child_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3220,8 +3172,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     {
       FullscreenWebContentsObserver observer(web_contents, main_frame);
-      EXPECT_TRUE(
-          ExecuteScript(child_frame, "document.webkitExitFullscreen();"));
+      EXPECT_TRUE(ExecJs(child_frame, "document.webkitExitFullscreen();"));
       observer.Wait();
     }
 
@@ -3240,14 +3191,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
 
-  EXPECT_TRUE(ExecuteScript(
-      main_frame,
-      "document.body.onfullscreenchange = "
-      "function (event) { document.title = 'onfullscreenchange' };"));
-  EXPECT_TRUE(ExecuteScript(
-      main_frame,
-      "document.body.onfullscreenerror = "
-      "function (event) { document.title = 'onfullscreenerror' };"));
+  EXPECT_TRUE(
+      ExecJs(main_frame,
+             "document.body.onfullscreenchange = "
+             "function (event) { document.title = 'onfullscreenchange' };"));
+  EXPECT_TRUE(
+      ExecJs(main_frame,
+             "document.body.onfullscreenerror = "
+             "function (event) { document.title = 'onfullscreenerror' };"));
 
   TitleWatcher title_watcher(web_contents, u"onfullscreenchange");
   title_watcher.AlsoWaitForTitle(u"onfullscreenerror");
@@ -3281,8 +3232,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FullscreenAfterFrameUnload) {
 
   // 2) Make it fullscreen.
   FullscreenWebContentsObserver observer(web_contents, main_frame);
-  EXPECT_TRUE(
-      ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+  EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();"));
   observer.Wait();
   EXPECT_EQ(1u, web_contents->fullscreen_frames_.size());
 
@@ -3319,8 +3269,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make the top page fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(
-        ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3332,7 +3281,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   {
     FullscreenWebContentsObserver observer(web_contents, child_frame);
     EXPECT_TRUE(
-        ExecuteScript(child_frame, "document.body.webkitRequestFullscreen();"));
+        ExecJs(child_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3369,8 +3318,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make the top page fullscreen.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(
-        ExecuteScript(main_frame, "document.body.webkitRequestFullscreen();"));
+    EXPECT_TRUE(ExecJs(main_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3382,7 +3330,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   {
     FullscreenWebContentsObserver observer(web_contents, child_frame);
     EXPECT_TRUE(
-        ExecuteScript(child_frame, "document.body.webkitRequestFullscreen();"));
+        ExecJs(child_frame, "document.body.webkitRequestFullscreen();"));
     observer.Wait();
   }
 
@@ -3393,7 +3341,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Exit fullscreen on the child frame.
   {
     FullscreenWebContentsObserver observer(web_contents, main_frame);
-    EXPECT_TRUE(ExecuteScript(child_frame, "document.webkitExitFullscreen();"));
+    EXPECT_TRUE(ExecJs(child_frame, "document.webkitExitFullscreen();"));
     observer.Wait();
   }
 
@@ -3420,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make the top page fullscreen with system navigation ui.
   {
     TitleWatcher title_watcher(web_contents, u"main_fullscreen_fulfilled");
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         main_frame,
         "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
         "{document.title = 'main_fullscreen_fulfilled'});"));
@@ -3436,7 +3384,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Make the child frame fullscreen without system navigation ui.
   {
     TitleWatcher title_watcher(web_contents, u"child_fullscreen_fulfilled");
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         child_frame,
         "document.body.requestFullscreen({ navigationUI: 'hide' }).then(() => "
         "{parent.document.title = 'child_fullscreen_fulfilled'});"));
@@ -3450,12 +3398,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Exit fullscreen on the child frame and restore system navigation ui for the
   // top page.
   {
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         main_frame,
         "document.body.onfullscreenchange = "
         "function (event) { document.title = 'main_in_fullscreen_again' };"));
     TitleWatcher title_watcher(web_contents, u"main_in_fullscreen_again");
-    EXPECT_TRUE(ExecuteScript(child_frame, "document.exitFullscreen();"));
+    EXPECT_TRUE(ExecJs(child_frame, "document.exitFullscreen();"));
     std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, u"main_in_fullscreen_again");
   }
@@ -3515,8 +3463,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, CtrlClickSubframeLink) {
   // Simulate a ctrl click on the link and ask GMock to verify that the
   // MockDidOpenRequestedURLObserver got called with the expected args.
   WebContentsAddedObserver new_web_contents_observer;
-  EXPECT_TRUE(ExecuteScript(
-      shell(), "window.domAutomationController.send(ctrlClickLink());"));
+  EXPECT_TRUE(
+      ExecJs(shell(), "window.domAutomationController.send(ctrlClickLink());"));
   WebContents* new_web_contents2 = new_web_contents_observer.GetWebContents();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_observer));
   EXPECT_EQ(new_web_contents1, new_web_contents2);
@@ -3691,9 +3639,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MouseButtonsDontNavigate) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
   // Prevent default the action.
-  EXPECT_TRUE(content::ExecuteScript(shell(),
-                                     "document.addEventListener('mouseup', "
-                                     "event => event.preventDefault());"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.addEventListener('mouseup', "
+                     "event => event.preventDefault());"));
 
   RenderWidgetHostImpl* render_widget_host =
       web_contents->GetRenderWidgetHostWithPageFocus();
@@ -3724,9 +3672,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MouseButtonsDontNavigate) {
   // Now test the forward button by going back, and injecting the prevention
   // script.
   // Prevent default the action.
-  EXPECT_TRUE(content::ExecuteScript(shell(),
-                                     "document.addEventListener('mouseup', "
-                                     "event => event.preventDefault());"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.addEventListener('mouseup', "
+                     "event => event.preventDefault());"));
 
   render_widget_host = web_contents->GetRenderWidgetHostWithPageFocus();
   render_widget_host->ForwardMouseEvent(blink::WebMouseEvent(
@@ -3870,9 +3818,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   auto* main_frame = web_contents->GetMainFrame();
   auto* node_to_remove = main_frame->child_at(0);
   FrameDeletedObserver observer(node_to_remove->current_frame_host());
-  EXPECT_TRUE(ExecuteScript(main_frame,
-                            "document.body.removeChild(document.querySelector('"
-                            "iframe').parentNode);"));
+  EXPECT_TRUE(ExecJs(main_frame,
+                     "document.body.removeChild(document.querySelector('"
+                     "iframe').parentNode);"));
   observer.Wait();
 
   EXPECT_EQ(web_contents->max_loaded_frame_count_, 3u);
@@ -3880,9 +3828,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Let's remove the second child.
   node_to_remove = main_frame->child_at(0);
   FrameDeletedObserver observer_second(node_to_remove->current_frame_host());
-  EXPECT_TRUE(ExecuteScript(
-      main_frame,
-      "document.body.removeChild(document.querySelector('iframe'));"));
+  EXPECT_TRUE(
+      ExecJs(main_frame,
+             "document.body.removeChild(document.querySelector('iframe'));"));
   observer_second.Wait();
 
   EXPECT_EQ(web_contents->max_loaded_frame_count_, 3u);
@@ -4542,14 +4490,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
 
   GURL url(url::kAboutBlankURL);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  EXPECT_TRUE(ExecuteScript(
-      web_contents->GetMainFrame(),
-      "geometrychangeCount = 0;"
-      "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
-      "  geometrychangeCount++;"
-      "  rect = e.boundingRect;"
-      "  visible = e.visible;"
-      "}"));
+  EXPECT_TRUE(
+      ExecJs(web_contents->GetMainFrame(),
+             "geometrychangeCount = 0;"
+             "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+             "  geometrychangeCount++;"
+             "  rect = e.boundingRect;"
+             "  visible = e.visible;"
+             "}"));
 
   WaitForLoadStop(web_contents);
 

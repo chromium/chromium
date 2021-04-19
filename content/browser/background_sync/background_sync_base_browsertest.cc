@@ -68,8 +68,7 @@ bool BackgroundSyncBaseBrowserTest::RegistrationPending(
 }
 
 bool BackgroundSyncBaseBrowserTest::CompleteDelayedSyncEvent() {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("completeDelayedSyncEvent()", &script_result));
+  std::string script_result = RunScript("completeDelayedSyncEvent()");
   return script_result == BuildExpectedResult("delay", "completing");
 }
 
@@ -186,9 +185,10 @@ bool BackgroundSyncBaseBrowserTest::LoadTestPage(const std::string& path) {
   return NavigateToURL(shell_, https_server_->GetURL(path));
 }
 
-bool BackgroundSyncBaseBrowserTest::RunScript(const std::string& script,
-                                              std::string* result) {
-  return content::ExecuteScriptAndExtractString(web_contents(), script, result);
+std::string BackgroundSyncBaseBrowserTest::RunScript(
+    const std::string& script) {
+  return EvalJs(web_contents(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 void BackgroundSyncBaseBrowserTest::SetTestClock(base::SimpleTestClock* clock) {
@@ -223,9 +223,7 @@ void BackgroundSyncBaseBrowserTest::ClearStoragePartitionData() {
 }
 
 std::string BackgroundSyncBaseBrowserTest::PopConsoleString() {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("resultQueue.pop()", &script_result));
-  return script_result;
+  return RunScript("resultQueue.pop()");
 }
 
 bool BackgroundSyncBaseBrowserTest::PopConsole(
@@ -235,8 +233,7 @@ bool BackgroundSyncBaseBrowserTest::PopConsole(
 }
 
 bool BackgroundSyncBaseBrowserTest::RegisterServiceWorker() {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("registerServiceWorker()", &script_result));
+  std::string script_result = RunScript("registerServiceWorker()");
   return script_result == BuildExpectedResult("service worker", "registered");
 }
 

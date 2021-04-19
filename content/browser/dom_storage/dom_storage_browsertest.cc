@@ -50,10 +50,7 @@ class DOMStorageBrowserTest : public ContentBrowserTest {
     std::string result =
         the_browser->web_contents()->GetLastCommittedURL().ref();
     if (result != "pass") {
-      std::string js_result;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          the_browser, "window.domAutomationController.send(getLog())",
-          &js_result));
+      std::string js_result = EvalJs(the_browser, "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
     }
   }
@@ -157,13 +154,11 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, FileUrlWithHost) {
               testing::EndsWith("/title1.html"));
 
   // Verify that window.localStorage works fine.
-  std::string result;
   std::string script = R"(
       localStorage["foo"] = "bar";
-      domAutomationController.send(localStorage["foo"]);
+      localStorage["foo"];
   )";
-  EXPECT_TRUE(ExecuteScriptAndExtractString(shell(), script, &result));
-  EXPECT_EQ("bar", result);
+  EXPECT_EQ("bar", EvalJs(shell(), script));
 }
 #endif
 

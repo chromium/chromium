@@ -174,11 +174,8 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
               "  window.domAutomationController.send(false);"
               "};"
               "xhr.send(null)";
-    bool xhr_result = false;
     // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell, script, &xhr_result);
-    return xhr_result && execute_result;
+    return EvalJs(shell, script, EXECUTE_SCRIPT_USE_MANUAL_REPLY).ExtractBool();
   }
 
   // Will reuse the single opened windows through the test case.
@@ -204,11 +201,9 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "new_window.document.body.appendChild(inject_script);",
         inject_script.c_str());
 
-    bool xhr_result = false;
     // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell(), window_open_script, &xhr_result);
-    return xhr_result && execute_result;
+    return EvalJs(shell(), window_open_script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   // Workers will live throughout the test case unless terminated.
@@ -233,11 +228,9 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "\");",
         worker_name.c_str(), worker_url.spec().c_str(),
         fetch_url.spec().c_str());
-    bool fetch_result = false;
     // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell(), script, &fetch_result);
-    return fetch_result && execute_result;
+    return EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   // Terminate and delete the worker.
@@ -253,11 +246,9 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
         "  window.domAutomationController.send(false);"
         "}",
         worker_name.c_str());
-    bool fetch_result = false;
     // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell(), script, &fetch_result);
-    return fetch_result && execute_result;
+    return EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   // Called by |embedded_test_server()|.
@@ -998,25 +989,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Cookies) {
   auto* web_contents = shell()->web_contents();
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+  EXPECT_TRUE(ExecJs(web_contents, "document.cookie = 'foo=bar';"));
 
-  std::string cookie;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents, "window.domAutomationController.send(document.cookie);",
-      &cookie));
-  EXPECT_EQ("foo=bar", cookie);
+  EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie;"));
 
   SimulateNetworkServiceCrash();
 
   // content_shell uses in-memory cookie database, so the value saved earlier
   // won't persist across crashes. What matters is that new access works.
-  EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
+  EXPECT_TRUE(ExecJs(web_contents, "document.cookie = 'foo=bar';"));
 
   // This will hang without the fix.
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      web_contents, "window.domAutomationController.send(document.cookie);",
-      &cookie));
-  EXPECT_EQ("foo=bar", cookie);
+  EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie;"));
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

@@ -74,7 +74,7 @@ class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
   void SetIncognitoMode(bool incognito);
   WebContents* web_contents();
   bool LoadTestPage(const std::string& path);
-  bool RunScript(const std::string& script, std::string* result);
+  std::string RunScript(const std::string& script);
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:

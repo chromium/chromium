@@ -44,13 +44,9 @@ class URLLoaderInterceptorTest : public ContentBrowserTest {
   }
 
   bool DidImageLoad() {
-    int height = 0;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        shell(),
-        "window.domAutomationController.send("
-        "document.getElementsByTagName('img')[0].naturalHeight)",
-        &height));
-    return !!height;
+    return EvalJs(shell(),
+                  "document.getElementsByTagName('img')[0].naturalHeight")
+               .ExtractInt() != 0;
   }
 
   GURL GetImageURL() { return embedded_test_server()->GetURL("/blank.jpg"); }

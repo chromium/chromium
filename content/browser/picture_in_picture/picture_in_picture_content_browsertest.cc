@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
 
   // Play and pause the player from script.
   ASSERT_EQ(true, EvalJs(shell(), "play();"));
-  ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "video.pause();"));
 
   ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
   EXPECT_EQ(overlay_window()->playback_state(),
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
 
   // Play and pause the player from script.
   ASSERT_EQ(true, EvalJs(shell(), "play();"));
-  ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "video.pause();"));
 
   ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
   EXPECT_EQ(overlay_window()->playback_state(),

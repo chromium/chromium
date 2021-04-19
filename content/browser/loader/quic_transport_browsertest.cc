@@ -152,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -230,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, NonexistentResource) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       // The client indication fails because there is no resource /X
       // on the server.
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, NonexistentResource) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -291,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new QuicTransport('https://localhost:%d/echo');
 
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -341,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -388,8 +388,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       // The connection fails because the fingerprint does not match.
       const transport = new WebTransport(
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -436,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new WebTransport(
         'https://localhost:%d/echo');
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
@@ -485,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest,
 
   ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
-  ASSERT_TRUE(ExecuteScript(
-      shell(), base::StringPrintf(R"JS(
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
       const transport = new QuicTransport(
         'https://localhost:%d/receive-bidirectional');
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest,
     run().then(() => { document.title = 'PASS'; },
                (e) => { console.log(e); document.title = 'FAIL'; });
 )JS",
-                                  server_.server_address().port())));
+                                         server_.server_address().port())));
 
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }

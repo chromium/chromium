@@ -56,10 +56,9 @@ class ContentIndexTest : public ContentBrowserTest {
   }
 
   std::string RunScriptWithResult(const std::string& script) {
-    std::string result;
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractString(shell_->web_contents(), script, &result));
-    return result;
+    return EvalJs(shell_->web_contents(), script,
+                  EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
   // Runs |script| and expects it to complete successfully.

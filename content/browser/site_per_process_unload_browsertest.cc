@@ -92,15 +92,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DetachInUnloadHandler) {
 
   // Add an unload handler to the grandchild that causes it to be synchronously
   // detached, then navigate it.
-  EXPECT_TRUE(ExecuteScript(
-      root->child_at(0)->child_at(0),
-      "window.onunload=function(e){\n"
-      "    window.parent.document.getElementById('child-0').remove();\n"
-      "};\n"));
+  EXPECT_TRUE(
+      ExecJs(root->child_at(0)->child_at(0),
+             "window.onunload=function(e){\n"
+             "    window.parent.document.getElementById('child-0').remove();\n"
+             "};\n"));
   auto script = JsReplace("window.document.getElementById('child-0').src = $1",
                           embedded_test_server()->GetURL(
                               "c.com", "/cross_site_iframe_factory.html?c"));
-  EXPECT_TRUE(ExecuteScript(root->child_at(0), script));
+  EXPECT_TRUE(ExecJs(root->child_at(0), script));
 
   deleted_observer.WaitUntilDeleted();
 
@@ -137,11 +137,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
             EvalJs(root->child_at(0)->current_frame_host(), "frames.length;"));
 
   // Add an unload handler to B's subframe.
-  EXPECT_TRUE(
-      ExecuteScript(root->child_at(0)->child_at(0)->current_frame_host(),
-                    "window.onunload=function(e){\n"
-                    "    window.location = '#navigate';\n"
-                    "};\n"));
+  EXPECT_TRUE(ExecJs(root->child_at(0)->child_at(0)->current_frame_host(),
+                     "window.onunload=function(e){\n"
+                     "    window.location = '#navigate';\n"
+                     "};\n"));
 
   // Navigate B's subframe to a cross-site C.
   RenderFrameDeletedObserver deleted_observer(
@@ -149,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateInUnloadHandler) {
   auto script = JsReplace("window.document.getElementById('child-0').src = $1",
                           embedded_test_server()->GetURL(
                               "c.com", "/cross_site_iframe_factory.html"));
-  EXPECT_TRUE(ExecuteScript(root->child_at(0)->current_frame_host(), script));
+  EXPECT_TRUE(ExecJs(root->child_at(0)->current_frame_host(), script));
 
   // Wait until B's subframe RenderFrameHost is destroyed.
   deleted_observer.WaitUntilDeleted();
@@ -203,9 +202,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // undone by calling RemoteFrameView::Show. Therefore, potential calls to
   // RemoteFrameView::SetParentVisible(true) would not update the visibility at
   // the browser side.
-  ASSERT_TRUE(ExecuteScript(
-      web_contents(),
-      "document.querySelector('iframe').style.visibility = 'hidden';"));
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             "document.querySelector('iframe').style.visibility = 'hidden';"));
   while (!frame_connector_delegate->IsHidden()) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -216,8 +215,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now we navigate the child to about:blank, but since we do not proceed with
   // the navigation, the OOPIF should stay alive and RemoteFrameView intact.
   AppModalDialogWaiter dialog_waiter(shell());
-  ASSERT_TRUE(ExecuteScript(
-      web_contents(), "document.querySelector('iframe').src = 'about:blank';"));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.querySelector('iframe').src = 'about:blank';"));
   dialog_waiter.Wait();
 
   // Sanity check: We should still have an OOPIF and hence a RWHVCF.
@@ -228,9 +227,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now make the <iframe> visible again. This calls RemoteFrameView::Show()
   // only if the RemoteFrameView is the EmbeddedContentView of the corresponding
   // HTMLFrameOwnerElement.
-  ASSERT_TRUE(ExecuteScript(
-      web_contents(),
-      "document.querySelector('iframe').style.visibility = 'visible';"));
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             "document.querySelector('iframe').style.visibility = 'visible';"));
   while (frame_connector_delegate->IsHidden()) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -261,12 +260,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the subframe's browser-side state will have been torn down when it runs
   // the unload handler, so to ensure that the message can be received, send it
   // through the popup.
-  EXPECT_TRUE(
-      ExecuteScript(root->child_at(0),
-                    "window.onunload = function(e) {"
-                    "  window.open('','popup').domAutomationController.send("
-                    "      'top-origin ' + location.ancestorOrigins[0]);"
-                    "};"));
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     "window.onunload = function(e) {"
+                     "  window.open('','popup').domAutomationController.send("
+                     "      'top-origin ' + location.ancestorOrigins[0]);"
+                     "};"));
 
   // Navigate the main frame to c.com and wait for the message from the
   // subframe's unload handler.
@@ -592,8 +590,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   auto unload_ack_filter = base::BindRepeating([] { return true; });
   rfh_b->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh_c->SetUnloadACKCallbackForTesting(unload_ack_filter);
-  EXPECT_TRUE(ExecuteScript(rfh_b->frame_tree_node(), onunload_script));
-  EXPECT_TRUE(ExecuteScript(rfh_c->frame_tree_node(), onunload_script));
+  EXPECT_TRUE(ExecJs(rfh_b->frame_tree_node(), onunload_script));
+  EXPECT_TRUE(ExecJs(rfh_c->frame_tree_node(), onunload_script));
   rfh_b->DisableUnloadTimerForTesting();
   rfh_c->DisableUnloadTimerForTesting();
 
@@ -617,7 +615,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   // Act as if there was a slow unload handler on rfh_d.
   // The non navigating frames are waiting for mojom::FrameHost::Detach.
   rfh_d->DoNotDeleteForTesting();
-  EXPECT_TRUE(ExecuteScript(rfh_d->frame_tree_node(), onunload_script));
+  EXPECT_TRUE(ExecJs(rfh_d->frame_tree_node(), onunload_script));
 
   // 3) Navigate rfh_b to E.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_e));
@@ -984,19 +982,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Listen for messages from the window that the test opens, and convert them
   // into the document title, which we can wait on in the main test window.
-  EXPECT_TRUE(
-      ExecuteScript(root,
-                    "window.addEventListener('message', function(event) {\n"
-                    "  document.title = event.data;\n"
-                    "});"));
+  EXPECT_TRUE(ExecJs(root,
+                     "window.addEventListener('message', function(event) {\n"
+                     "  document.title = event.data;\n"
+                     "});"));
 
   // This performs window.open() and waits for the title of the original
   // document to change to signal that the unload handler has been registered.
   {
     std::u16string title_when_loaded = u"loaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_loaded);
-    EXPECT_TRUE(
-        ExecuteScript(root, JsReplace("var w = window.open($1)", open_url)));
+    EXPECT_TRUE(ExecJs(root, JsReplace("var w = window.open($1)", open_url)));
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_loaded);
   }
 
@@ -1005,7 +1001,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   {
     std::u16string title_when_done = u"unloaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_done);
-    EXPECT_TRUE(ExecuteScript(root, "w.close()"));
+    EXPECT_TRUE(ExecJs(root, "w.close()"));
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_done);
   }
 }

@@ -2657,7 +2657,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
     // We don't care about the style - we use it to trigger a node replacement.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementById('s1').style.outline = '1px solid black';"));
 
@@ -2685,7 +2685,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
     // We don't care about the style - we use it to trigger a node replacement.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementsByTagName('iframe')[0].contentWindow.document."
         "getElementById('s1').style.outline = '1px solid black';"));
@@ -2717,7 +2717,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     // Updating the style on that particular node is going to invalidate the
     // leaf text node and will replace it with a new one with the updated style.
     // We don't care about the style - we use it to trigger a node replacement.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 
@@ -2755,7 +2755,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
     // We do a style change here only to trigger an AXTree update - apparently,
     // a shell reload doesn't update the tree by itself.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementById('s1').style.outline = '1px solid black';"));
 
@@ -2792,7 +2792,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                            ax::mojom::Event::kChildrenChanged);
 
     // We do a style change here only to trigger an AXTree update.
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 

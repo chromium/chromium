@@ -99,10 +99,7 @@ void CopyFileAndGetContentUri(const base::FilePath& file,
 
 std::string ExecuteAndGetString(const ToRenderFrameHost& adapter,
                                 const std::string& script) {
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      adapter, "domAutomationController.send(" + script + ")", &result));
-  return result;
+  return EvalJs(adapter, script).ExtractString();
 }
 
 void NavigateAndWaitForTitle(content::WebContents* web_contents,
@@ -347,8 +344,8 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
   }
 
   void RunTestScript(const std::string& script) {
-    EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                              "loadScript('" + script + "');"));
+    EXPECT_TRUE(
+        ExecJs(shell()->web_contents(), "loadScript('" + script + "');"));
     std::u16string ok = u"OK";
     TitleWatcher title_watcher(shell()->web_contents(), ok);
     title_watcher.AlsoWaitForTitle(u"FAIL");
@@ -359,7 +356,7 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
                                     const std::string& title) {
     std::u16string title16 = base::ASCIIToUTF16(title);
     TitleWatcher title_watcher(shell()->web_contents(), title16);
-    EXPECT_TRUE(ExecuteScript(shell()->web_contents(), script));
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
     EXPECT_EQ(title16, title_watcher.WaitAndGetTitle());
   }
 
@@ -617,36 +614,33 @@ void SetUpSubPageTest(net::EmbeddedTestServer* primary_server,
 
 std::string AddIframeAndWaitForMessage(const ToRenderFrameHost& adapter,
                                        const GURL& url) {
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(adapter,
-                                                     base::StringPrintf(
-                                                         R"(
+  return EvalJs(adapter,
+                JsReplace(
+                    R"(
   (function(){
     const iframe = document.createElement('iframe');
-    iframe.src = '%s';
+    iframe.src = $1;
     document.body.appendChild(iframe);
   })();
   )",
-                                                         url.spec().c_str()),
-                                                     &result));
-  return result;
+                    url),
+                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 std::string WindowOpenAndWaitForMessage(const ToRenderFrameHost& adapter,
                                         const GURL& url) {
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      adapter,
-      base::StringPrintf(R"(
+  return EvalJs(adapter,
+                JsReplace(R"(
         if (document.last_win) {
           // Close the latest window to avoid OOM-killer on Android.
           document.last_win.close();
         }
-        document.last_win = window.open('%s', '_blank');
+        document.last_win = window.open($1, '_blank');
       )",
-                         url.spec().c_str()),
-      &result));
-  return result;
+                          url),
+                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 // Runs tests for subpages  (iframe / window.open()). This function calls
@@ -729,7 +723,6 @@ void AddHtmlAndScriptForNavigationTest(
 }
 
 std::string GetLoadResultForNavigationTest(const ToRenderFrameHost& adapter) {
-  std::string result;
   std::string script = R"(
     (async () => {
       const script = document.createElement('script');
@@ -751,8 +744,8 @@ std::string GetLoadResultForNavigationTest(const ToRenderFrameHost& adapter) {
       document.body.appendChild(script);
     })()
     )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(adapter, script, &result));
-  return result;
+  return EvalJs(adapter, script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 // Sets up |server| to return server generated page HTML files and JavaScript
@@ -2011,7 +2004,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, NoLocalFileScheme) {
     script.src = "%s";
     document.body.appendChild(script);)",
                                                 script_file_url.spec().c_str());
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), script));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), script));
 
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -2268,7 +2261,7 @@ class WebBundleNetworkBrowserTest : public WebBundleBrowserTestBase {
     base::RunLoop run_loop;
     FinishNavigationObserver finish_navigation_observer(web_contents,
                                                         run_loop.QuitClosure());
-    EXPECT_TRUE(ExecuteScript(web_contents, "history.back();"));
+    EXPECT_TRUE(ExecJs(web_contents, "history.back();"));
 
     run_loop.Run();
     ASSERT_TRUE(finish_navigation_observer.error_code());

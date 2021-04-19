@@ -385,19 +385,11 @@ Shell* OpenPopup(const ToRenderFrameHost& opener,
   observer.StartWatchingNewWebContents();
 
   ShellAddedObserver new_shell_observer;
-  bool did_create_popup = false;
-  std::string popup_script =
-      "window.domAutomationController.send("
-      "    !!window.open('" +
-      url.spec() + "', '" + name + "', '" + features + "'));";
-  bool did_execute_script =
-      ExecuteScriptAndExtractBool(opener, popup_script, &did_create_popup);
+  std::string popup_script = "!!window.open('" + url.spec() + "', '" + name +
+                             "', '" + features + "');";
+  bool did_create_popup = EvalJs(opener, popup_script).ExtractBool();
 
-  // Don't check the value of |did_create_popup| since there are valid reasons
-  // for it to be false, e.g. |features| specifies 'noopener', or 'noreferrer'
-  // or others.
-  if (!did_execute_script ||
-      !(did_create_popup || !expect_return_from_window_open)) {
+  if (!(did_create_popup || !expect_return_from_window_open)) {
     return nullptr;
   }
 

@@ -36,11 +36,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceMemoryBrowserTest, PerformanceMemory) {
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
       static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
-  int usedJSHeapSize = -1;
-  EXPECT_TRUE(ExecuteScriptAndExtractInt(
-      root,
-      "window.domAutomationController.send(performance.memory.usedJSHeapSize);",
-      &usedJSHeapSize));
+  int usedJSHeapSize =
+      EvalJs(root, "performance.memory.usedJSHeapSize;").ExtractInt();
 
   EXPECT_GE(usedJSHeapSize, 0);
   // There is no explicit way to check if the memory values are bucketized or

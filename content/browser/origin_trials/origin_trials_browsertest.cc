@@ -218,9 +218,8 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   const GURL url("https://other.test/notrial.html");
   TestNavigationObserver navigation_observer(url);
   navigation_observer.WatchExistingWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      GetFrameByName("same-origin"),
-      content::JsReplace("location.href=$1", url.spec())));
+  ASSERT_TRUE(ExecJs(GetFrameByName("same-origin"),
+                     content::JsReplace("location.href=$1", url.spec())));
   navigation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
 }
@@ -241,7 +240,7 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   // Create an iframe with origin trial and wait for it to load
   TestNavigationObserver navigation_observer(frame_url);
   navigation_observer.WatchExistingWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(ExecJs(
       GetFrameByName("same-origin"),
       content::JsReplace("{"
                          "  const ifrm = document.createElement('iframe');"

@@ -394,9 +394,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
 
   // PrefetchedSignedExchangeCache is used only for renderer initiated
   // navigation. So use JavaScript to trigger renderer initiated navigation.
-  EXPECT_TRUE(ExecuteScript(
-      shell()->web_contents(),
-      base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   EXPECT_EQ(303, redirect_observer.response_code());
 
@@ -470,9 +470,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
   TitleWatcher title_watcher(shell()->web_contents(), title);
   // PrefetchedSignedExchangeCache is used only for renderer initiated
   // navigation. So use JavaScript to trigger renderer initiated navigation.
-  EXPECT_TRUE(ExecuteScript(
-      shell()->web_contents(),
-      base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 
   inactive_rfh_deletion_observer_->Wait();
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
       "const iframe = document.createElement('iframe');"
       "iframe.src = './sxg/test.example.org_test_download.sxg';"
       "document.body.appendChild(iframe);";
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), load_sxg));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), load_sxg));
   observer->WaitUntilDownloadCreated();
   EXPECT_EQ(
       embedded_test_server()->GetURL("/sxg/test.example.org_test_download.sxg"),
@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
   // Since the inner response has an invalid Content-Type and MIME sniffing
   // is disabled for Signed Exchange inner response, this should download the
   // inner response of the exchange.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), load_sxg));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), load_sxg));
   observer->WaitUntilDownloadCreated();
   EXPECT_EQ(GURL("https://test.example.org/test/"), observer->observed_url());
 }
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerDownloadBrowserTest,
       "iframe.src = '%s';"
       "document.body.appendChild(iframe);",
       sxg_url.spec().c_str());
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), load_sxg));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), load_sxg));
   observer->WaitUntilDownloadCreated();
   EXPECT_EQ(sxg_url, observer->observed_url());
 }
@@ -1035,12 +1035,10 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "    window.domAutomationController.send(false);"
       "  }"
       "})();";
-  bool result = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                          register_sw_script, &result));
   // serviceWorker.register() fails because the document URL of
   // ServiceWorkerHost is empty.
-  EXPECT_FALSE(result);
+  EXPECT_EQ(false, EvalJs(shell()->web_contents(), register_sw_script,
+                          EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 class SignedExchangeAcceptHeaderBrowserTest
@@ -1371,11 +1369,10 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeAcceptHeaderBrowserTest,
       "  check();"
       "})(['%s'])",
       prefetch_target.spec().c_str());
-  bool unused = false;
 
   NavigateAndWaitForTitle(target_url, "Done");
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                          load_prefetch_script, &unused));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), load_prefetch_script,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   CheckPrefetchAcceptHeader({prefetch_target});
   ClearInterceptedAcceptHeaders();
 }

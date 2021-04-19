@@ -228,7 +228,7 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
 IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "function handleKeyEvent(event) {"
       "domAutomationController.send(event.key);"
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
 IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "document.body.addEventListener('keydown', () => {debugger;});"));
 
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
 IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventAck) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "document.body.addEventListener('mousedown', () => {debugger;});"));
 
@@ -493,7 +493,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
             << " ...";
 
     // Draw a blue box of provided size in the horizontal center of the page.
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         shell()->web_contents(),
         base::StringPrintf(
             "var style = document.body.style;                             "
@@ -900,14 +900,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int old_width;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerWidth)", &old_width));
+  int old_width = EvalJs(shell(), "window.innerWidth").ExtractInt();
 
-  int old_height;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerHeight)",
-      &old_height));
+  int old_height = EvalJs(shell(), "window.innerHeight").ExtractInt();
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", old_width / 2);
@@ -915,15 +910,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
   params->SetDouble("scaleFactor", 2.0);
   SendCommand("Input.synthesizePinchGesture", std::move(params));
 
-  int new_width;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerWidth)", &new_width));
+  int new_width = EvalJs(shell(), "window.innerWidth").ExtractInt();
   ASSERT_DOUBLE_EQ(2.0, static_cast<double>(old_width) / new_width);
 
-  int new_height;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerHeight)",
-      &new_height));
+  int new_height = EvalJs(shell(), "window.innerHeight").ExtractInt();
   ASSERT_DOUBLE_EQ(2.0, static_cast<double>(old_height) / new_height);
 }
 
@@ -932,11 +922,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeScrollGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int scroll_top;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(0, scroll_top);
+  ASSERT_EQ(0, EvalJs(shell(), "document.body.scrollTop"));
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", 0);
@@ -945,10 +931,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeScrollGesture) {
   params->SetInteger("yDistance", -100);
   SendCommand("Input.synthesizeScrollGesture", std::move(params));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(100, scroll_top);
+  ASSERT_EQ(100, EvalJs(shell(), "document.body.scrollTop"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
@@ -956,11 +939,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int scroll_top;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(0, scroll_top);
+  ASSERT_EQ(0, EvalJs(shell(), "document.body.scrollTop"));
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", 16);
@@ -972,10 +951,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
   // new value of |document.body.scrollTop| will depend on the screen dimensions
   // of the device that we're testing on, but in any case it should be greater
   // than 0.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_GT(scroll_top, 0);
+  ASSERT_GT(EvalJs(shell(), "document.body.scrollTop").ExtractInt(), 0);
 }
 #endif  // defined(OS_ANDROID)
 
@@ -1286,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSitePauseInBeforeUnload) {
   Attach();
   SendCommand("Debugger.enable", nullptr);
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell(),
       "window.onbeforeunload = function() { debugger; return null; }"));
 
@@ -1307,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url1, 1);
 
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell(), "window.open('about:blank','foo');"));
+  EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank','foo');"));
   Shell* new_shell = new_shell_observer.GetShell();
   EXPECT_TRUE(new_shell->web_contents()->HasOpener());
 
@@ -1329,12 +1305,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
   // regardless of whether it's a crash or not.  RenderProcessHostWatcher
   // should be fixed to support waiting on both WATCH_FOR_PROCESS_EXIT and
   // WATCH_FOR_HOST_DESTRUCTION, and then used here.
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell(),
-                                          "window.domAutomationController.send("
-                                          "    !!window.open('', 'foo'));",
-                                          &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "!!window.open('', 'foo');"));
 
   GURL test_url3 =
       embedded_test_server()->GetURL("A.com", "/devtools/navigation.html");
@@ -1344,12 +1315,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
 
   // Ensure that the A.com process is still alive by executing a script in the
   // original tab.
-  success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell(),
-                                          "window.domAutomationController.send("
-                                          "    !!window.open('', 'foo'));",
-                                          &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "!!window.open('', 'foo');"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DoubleCrash) {
@@ -2127,7 +2093,6 @@ class DevToolsProtocolTouchTest : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTouchTest, EnableTouch) {
   std::unique_ptr<base::DictionaryValue> params;
-  bool result;
 
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2141,43 +2106,28 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTouchTest, EnableTouch) {
   params = std::make_unique<base::DictionaryValue>();
   SendCommand("Page.enable", std::move(params), true);
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 
   params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("enabled", true);
   SendCommand("Emulation.setTouchEmulationEnabled", std::move(params), true);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 
   params = std::make_unique<base::DictionaryValue>();
   params->SetString("url", test_url2.spec());
   SendCommand("Page.navigate", std::move(params), false);
   WaitForNotification("Page.frameStoppedLoading");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(true))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(true)"));
 
   params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("enabled", false);
   SendCommand("Emulation.setTouchEmulationEnabled", std::move(params), true);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(true))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(true)"));
 
   params = std::make_unique<base::DictionaryValue>();
   SendCommand("Page.reload", std::move(params), false);
   WaitForNotification("Page.frameStoppedLoading");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 }
 
 // Tests that when a security explanation contains a certificate, it is properly

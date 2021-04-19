@@ -2390,7 +2390,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   EXPECT_EQ(0, script_request_counter->GetRequestCount());
 
   // Clears the title.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), "document.title = '';"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "document.title = '';"));
 
   const char* next_page_path = "/next_page.html";
   const GURL next_page_url = embedded_test_server()->GetURL(next_page_path);
@@ -2400,7 +2400,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
           "<head><title>Next page</title>"
           "<script src=\"./script.js\" async defer></script></head>"));
   // Triggers GC.
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(), "window.gc();"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "window.gc();"));
   // The script which was served via SXG must be kept in memory cache and must
   // be reused.
   NavigateToURLAndWaitTitle(next_page_url, "done");

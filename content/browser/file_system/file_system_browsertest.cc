@@ -48,10 +48,7 @@ class FileSystemBrowserTest : public ContentBrowserTest,
     VLOG(0) << "Navigation done.";
     std::string result = browser()->web_contents()->GetLastCommittedURL().ref();
     if (result != "pass") {
-      std::string js_result;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          browser(), "window.domAutomationController.send(getLog())",
-          &js_result));
+      std::string js_result = EvalJs(browser(), "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
     }
   }

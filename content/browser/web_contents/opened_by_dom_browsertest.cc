@@ -65,8 +65,9 @@ class OpenedByDOMTest : public ContentBrowserTest {
         "setTimeout(function() {"
         "window.domAutomationController.send(0);"
         "});";
-    int dummy;
-    CHECK(ExecuteScriptAndExtractInt(web_contents, kCloseWindowScript, &dummy));
+    CHECK_EQ(0, EvalJs(web_contents, kCloseWindowScript,
+                       EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractInt());
 
     web_contents->SetDelegate(old_delegate);
     return close_tracking_delegate.close_contents_called();
@@ -77,8 +78,7 @@ class OpenedByDOMTest : public ContentBrowserTest {
     ShellAddedObserver new_shell_observer;
     TestNavigationObserver nav_observer(nullptr);
     nav_observer.StartWatchingNewWebContents();
-    CHECK(ExecuteScript(
-        shell, base::StringPrintf("window.open('%s')", url.spec().c_str())));
+    CHECK(ExecJs(shell, JsReplace("window.open($1)", url)));
     nav_observer.Wait();
     return new_shell_observer.GetShell();
   }

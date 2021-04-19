@@ -38,8 +38,7 @@ class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
 
   bool Register(const std::string& tag);
   bool RegisterFromServiceWorker(const std::string& tag);
-  bool RegisterFromCrossOriginFrame(const std::string& frame_url,
-                                    std::string* script_result);
+  std::string RegisterFromCrossOriginFrame(const std::string& frame_url);
   void WaitForTagRemoval(const std::string& tag, int64_t pauses_ms = 5);
   bool HasTag(const std::string& tag);
   bool HasTagFromServiceWorker(const std::string& tag);
@@ -54,24 +53,20 @@ class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
 };
 
 bool OneShotBackgroundSyncBrowserTest::Register(const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("registerOneShotSync", tag), &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("registerOneShotSync", tag));
   return script_result == BuildExpectedResult(tag, "registered");
 }
 
 bool OneShotBackgroundSyncBrowserTest::RegisterFromServiceWorker(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("registerOneShotSyncFromServiceWorker", tag),
-                &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("registerOneShotSyncFromServiceWorker", tag));
   return script_result == BuildExpectedResult(tag, "register sent to SW");
 }
 
-bool OneShotBackgroundSyncBrowserTest::RegisterFromCrossOriginFrame(
-    const std::string& frame_url,
-    std::string* script_result) {
+std::string OneShotBackgroundSyncBrowserTest::RegisterFromCrossOriginFrame(
+    const std::string& frame_url) {
   // Start a second https server to use as a second origin.
   net::EmbeddedTestServer alt_server(net::EmbeddedTestServer::TYPE_HTTPS);
   alt_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
@@ -79,8 +74,7 @@ bool OneShotBackgroundSyncBrowserTest::RegisterFromCrossOriginFrame(
 
   GURL url = alt_server.GetURL(frame_url);
   return RunScript(
-      BuildScriptString("registerOneShotSyncFromCrossOriginFrame", url.spec()),
-      script_result);
+      BuildScriptString("registerOneShotSyncFromCrossOriginFrame", url.spec()));
 }
 
 void OneShotBackgroundSyncBrowserTest::WaitForTagRemoval(const std::string& tag,
@@ -95,18 +89,15 @@ void OneShotBackgroundSyncBrowserTest::WaitForTagRemoval(const std::string& tag,
 }
 
 bool OneShotBackgroundSyncBrowserTest::HasTag(const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("hasOneShotSyncTag", tag), &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("hasOneShotSyncTag", tag));
   return script_result == BuildExpectedResult(tag, "found");
 }
 
 bool OneShotBackgroundSyncBrowserTest::HasTagFromServiceWorker(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("hasOneShotSyncTagFromServiceWorker", tag),
-                &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("hasOneShotSyncTagFromServiceWorker", tag));
   EXPECT_TRUE(script_result == "ok - hasTag sent to SW");
 
   return PopConsole(BuildExpectedResult(tag, "found"));
@@ -128,25 +119,22 @@ bool OneShotBackgroundSyncBrowserTest::MatchTags(
 
 bool OneShotBackgroundSyncBrowserTest::GetTags(
     const std::vector<std::string>& expected_tags) {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("getOneShotSyncTags()", &script_result));
+  std::string script_result = RunScript("getOneShotSyncTags()");
 
   return MatchTags(script_result, expected_tags);
 }
 
 bool OneShotBackgroundSyncBrowserTest::GetTagsFromServiceWorker(
     const std::vector<std::string>& expected_tags) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript("getOneShotSyncTagsFromServiceWorker()", &script_result));
+  std::string script_result =
+      RunScript("getOneShotSyncTagsFromServiceWorker()");
   EXPECT_TRUE(script_result == "ok - getTags sent to SW");
 
   return MatchTags(PopConsoleString(), expected_tags);
 }
 
 bool OneShotBackgroundSyncBrowserTest::RejectDelayedSyncEvent() {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("rejectDelayedSyncEvent()", &script_result));
+  std::string script_result = RunScript("rejectDelayedSyncEvent()");
   return script_result == BuildExpectedResult("delay", "rejecting");
 }
 
@@ -420,30 +408,22 @@ IN_PROC_BROWSER_TEST_F(OneShotBackgroundSyncBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OneShotBackgroundSyncBrowserTest,
                        RegisterFromIFrameWithMainFrameHost) {
-  std::string script_result;
   GURL url = https_server()->GetURL(kEmptyURL);
-  EXPECT_TRUE(RunScript(
-      BuildScriptString("registerOneShotSyncFromLocalFrame", url.spec()),
-      &script_result));
-  EXPECT_EQ(BuildExpectedResult("iframe", "registered sync"), script_result);
+  EXPECT_EQ(BuildExpectedResult("iframe", "registered sync"),
+            RunScript(BuildScriptString("registerOneShotSyncFromLocalFrame",
+                                        url.spec())));
 }
 
 IN_PROC_BROWSER_TEST_F(OneShotBackgroundSyncBrowserTest,
                        RegisterFromIFrameWithoutMainFrameHost) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RegisterFromCrossOriginFrame(kRegisterSyncFromIFrameURL, &script_result));
   EXPECT_EQ(BuildExpectedResult("frame", "failed to register sync"),
-            script_result);
+            RegisterFromCrossOriginFrame(kRegisterSyncFromIFrameURL));
 }
 
 IN_PROC_BROWSER_TEST_F(OneShotBackgroundSyncBrowserTest,
                        RegisterFromServiceWorkerWithoutMainFrameHost) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RegisterFromCrossOriginFrame(kRegisterSyncFromSWURL, &script_result));
   EXPECT_EQ(BuildExpectedResult("frame", "failed to register sync"),
-            script_result);
+            RegisterFromCrossOriginFrame(kRegisterSyncFromSWURL));
 }
 
 }  // namespace content

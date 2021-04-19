@@ -125,10 +125,7 @@ IN_PROC_BROWSER_TEST_P(QuotaChangeBrowserTest, DispatchEvent) {
   observer.WaitForNavigationFinished();
   const GURL& last_url = browser()->web_contents()->GetLastCommittedURL();
   if (last_url.ref() != "pass") {
-    std::string js_result;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(
-        browser(), "window.domAutomationController.send(getLog())",
-        &js_result));
+    std::string js_result = EvalJs(browser(), "getLog()").ExtractString();
     FAIL() << "Failed: " << last_url << "\n" << js_result;
   }
 }

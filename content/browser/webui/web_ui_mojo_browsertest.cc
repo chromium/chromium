@@ -247,11 +247,7 @@ class WebUIMojoTest : public ContentBrowserTest {
 
   // Run |script| and return a boolean result.
   bool RunBoolFunction(const std::string& script) {
-    bool result = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell()->web_contents(), "domAutomationController.send(" + script + ")",
-        &result));
-    return result;
+    return EvalJs(shell()->web_contents(), script).ExtractBool();
   }
 
  protected:
@@ -277,19 +273,15 @@ class WebUIMojoTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUIMojoTest, EndToEndCommunication) {
   GURL kTestUrl(GetWebUIURL(std::string(kMojoWebUiHost) + "/?cache"));
   const std::string kTestScript = "runTest();";
-  bool passed = false;
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(), kTestScript,
-                                          &passed));
-  EXPECT_TRUE(passed);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), kTestScript,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Check that a second shell works correctly.
-  passed = false;
   Shell* other_shell = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(other_shell->web_contents(),
-                                          kTestScript, &passed));
-  EXPECT_TRUE(passed);
+  EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // We expect two independent chrome://foo tabs/shells to use a separate
   // process.
@@ -309,13 +301,11 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, EndToEndCommunication) {
   RenderProcessHost::SetMaxRendererProcessCount(1);
 
   other_shell = CreateBrowser();
-  passed = false;
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
   EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess(),
             other_shell->web_contents()->GetMainFrame()->GetProcess());
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(other_shell->web_contents(),
-                                          kTestScript, &passed));
-  EXPECT_TRUE(passed);
+  EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript,
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 // Disabled due to flakiness: crbug.com/860385.

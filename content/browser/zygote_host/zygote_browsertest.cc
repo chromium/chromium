@@ -35,12 +35,9 @@ class LinuxZygoteBrowserTest : public ContentBrowserTest {
 
 // https://crbug.com/638303
 IN_PROC_BROWSER_TEST_F(LinuxZygoteBrowserTest, GetLocalTimeHasTimeZone) {
-  const char kTestCommand[] =
-      "window.domAutomationController.send(new Date().toString());";
-
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,start page")));
-  std::string result;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), kTestCommand, &result));
+  std::string result =
+      EvalJs(shell(), "new Date().toString();").ExtractString();
   std::vector<std::string> parts = base::SplitString(
       result, "()", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(3U, parts.size());

@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kChildrenChanged);
-    ASSERT_TRUE(ExecuteScript(
+    ASSERT_TRUE(ExecJs(
         shell(), "document.getElementById('p1').style.display = 'none';"));
     waiter.WaitForNotification();
   }
@@ -115,8 +115,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
     // Because we missed one IPC message, AXTree::Unserialize() will fail.
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
-    ASSERT_TRUE(
-        ExecuteScript(shell(), "document.getElementById('button').focus();"));
+    ASSERT_TRUE(ExecJs(shell(), "document.getElementById('button').focus();"));
     waiter.WaitForNotification();
     tree = &waiter.GetAXTree();
   }

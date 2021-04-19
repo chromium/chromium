@@ -77,11 +77,10 @@ class CrossSiteTransferTest : public ContentBrowserTest {
                                    : nullptr;
     std::string script;
     if (should_replace_current_entry)
-      script = base::StringPrintf("location.replace('%s')", url.spec().c_str());
+      script = JsReplace("location.replace($1)", url);
     else
-      script = base::StringPrintf("location.href = '%s'", url.spec().c_str());
-    bool result = ExecuteScript(window, script);
-    EXPECT_TRUE(result);
+      script = JsReplace("location.href = $1", url);
+    EXPECT_TRUE(ExecJs(window, script));
     if (should_wait_for_navigation) {
       EXPECT_TRUE(navigation_manager->WaitForRequestStart());
       EXPECT_TRUE(navigation_manager->WaitForResponse());
@@ -292,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file_path, run_loop.QuitClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "document.getElementById('file').click();"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.getElementById('file').click();"));
   run_loop.Run();
 
   // Remember the old process id for a sanity check below.
@@ -303,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
   // Submit the form.
   TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
   EXPECT_TRUE(
-      ExecuteScript(shell(), "document.getElementById('file-form').submit();"));
+      ExecJs(shell(), "document.getElementById('file-form').submit();"));
   form_post_observer.Wait();
 
   // Verify that we arrived at the expected, redirected location.
@@ -322,12 +321,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Verify that POST body got preserved by 307 redirect.  This expectation
   // comes from: https://tools.ietf.org/html/rfc7231#section-6.4.7
-  std::string actual_page_body;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell()->web_contents(),
-      "window.domAutomationController.send("
-      "document.getElementsByTagName('pre')[0].innerText);",
-      &actual_page_body));
+  std::string actual_page_body =
+      EvalJs(shell()->web_contents(),
+             "document.getElementsByTagName('pre')[0].innerText;")
+          .ExtractString();
   EXPECT_THAT(actual_page_body, ::testing::HasSubstr(file_content));
   EXPECT_THAT(actual_page_body,
               ::testing::HasSubstr(file_path.BaseName().AsUTF8Unsafe()));
@@ -353,16 +350,16 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
       embedded_test_server()->GetURL("initial-target.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), initial_target_url));
   WebContents* target_contents = shell()->web_contents();
-  EXPECT_TRUE(ExecuteScript(target_contents, "window.name = 'form-target';"));
+  EXPECT_TRUE(ExecJs(target_contents, "window.name = 'form-target';"));
 
   // Create a new window containing a form targeting |target_contents|.
   GURL form_url(embedded_test_server()->GetURL(
       "main.com", "/form_that_posts_cross_site.html"));
   Shell* other_window = OpenPopup(target_contents, form_url, "form-window");
   WebContents* form_contents = other_window->web_contents();
-  EXPECT_TRUE(ExecuteScript(
-      form_contents,
-      "document.getElementById('file-form').target = 'form-target';"));
+  EXPECT_TRUE(
+      ExecJs(form_contents,
+             "document.getElementById('file-form').target = 'form-target';"));
 
   // Verify the current locations and process placement of |target_contents|
   // and |form_contents|.
@@ -387,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   form_contents->Focus();
   form_contents->SetDelegate(delegate.get());
   EXPECT_TRUE(
-      ExecuteScript(form_contents, "document.getElementById('file').click();"));
+      ExecJs(form_contents, "document.getElementById('file').click();"));
   run_loop.Run();
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -406,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   // Submit the form and wait until the malicious renderer gets killed.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
       form_contents->GetMainFrame()->GetProcess());
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       form_contents,
       "setTimeout(\n"
       "  function() { document.getElementById('file-form').submit(); },\n"
@@ -443,10 +440,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
       embedded_test_server()->GetURL("a.com", "/title1.html");
   TestNavigationManager target_navigation(shell()->web_contents(),
                                           target_resource);
-  EXPECT_TRUE(ExecuteScript(
-      shell()->web_contents()->GetMainFrame(),
-      base::StringPrintf("document.getElementById('child-0').src='%s'",
-                         target_resource.spec().c_str())));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetMainFrame(),
+             base::StringPrintf("document.getElementById('child-0').src='%s'",
+                                target_resource.spec().c_str())));
 
   // Wait for the navigation to start.
   EXPECT_TRUE(target_navigation.WaitForRequestStart());

@@ -137,7 +137,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
   // Creates and loads subframe, waits for load to stop, and then returns
   // subframe from the web contents frame tree.
   RenderFrameHost* CreateSubframe(const GURL& sub_frame) {
-    EXPECT_TRUE(ExecuteScript(shell(), GetSubframeScript(sub_frame)));
+    EXPECT_TRUE(ExecJs(shell(), GetSubframeScript(sub_frame)));
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
     return static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -230,11 +230,10 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     // If there is supposed to be a worker to load this resource, create it.
     // Otherwise, load the resource directly.
     if (worker.is_valid()) {
-      EXPECT_TRUE(
-          ExecuteScript(host_to_load_resource, GetWorkerScript(worker)));
+      EXPECT_TRUE(ExecJs(host_to_load_resource, GetWorkerScript(worker)));
     } else {
-      EXPECT_TRUE(ExecuteScript(host_to_load_resource,
-                                GetLoadResourceScript(resource)));
+      EXPECT_TRUE(
+          ExecJs(host_to_load_resource, GetLoadResourceScript(resource)));
     }
 
     observer.WaitForResourceCompletion(resource);
@@ -340,7 +339,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       host_to_load_resource = CreateSubframe(sub_frame);
     }
 
-    EXPECT_TRUE(ExecuteScript(host_to_load_resource, GetWorkerScript(worker)));
+    EXPECT_TRUE(ExecJs(host_to_load_resource, GetWorkerScript(worker)));
 
     observer.WaitForResourceCompletion(GenURL("3p.com", "/script"));
     observer.WaitForResourceCompletion(worker);
@@ -739,8 +738,8 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
 
   // Now iframe 3p.com/script within evil.com.
   GURL subframe_url = GenURL("3p.com", "/script");
-  EXPECT_TRUE(ExecuteScript(main_frame->frame_tree_node()->child_at(0),
-                            GetSubframeScript(subframe_url)));
+  EXPECT_TRUE(ExecJs(main_frame->frame_tree_node()->child_at(0),
+                     GetSubframeScript(subframe_url)));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   observer.WaitForResourceCompletion(subframe_url);
   EXPECT_EQ(false, (*observer.FindResource(subframe_url))->was_cached);

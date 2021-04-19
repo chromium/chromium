@@ -225,13 +225,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPage_Issue615291) {
 bool ExecuteScriptAndExtractRect(FrameTreeNode* frame,
                                  const std::string& script,
                                  gfx::Rect* out) {
-  std::string result;
   std::string script_and_extract =
-      script +
-      "window.domAutomationController.send(rect.x + ',' + rect.y + ','" +
-      "+ rect.width + ',' + rect.height);";
-  if (!ExecuteScriptAndExtractString(frame, script_and_extract, &result))
-    return false;
+      script + "rect.x + ',' + rect.y + ',' + rect.width + ',' + rect.height;";
+  std::string result = EvalJs(frame, script_and_extract).ExtractString();
 
   std::vector<std::string> tokens = base::SplitString(
       result, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -275,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ScrollAndZoomIntoView) {
 
   // Start off at a non-origin scroll offset to ensure coordinate conversisons
   // work correctly.
-  ASSERT_TRUE(ExecuteScript(root, "window.scrollTo(3500, 1500);"));
+  ASSERT_TRUE(ExecJs(root, "window.scrollTo(3500, 1500);"));
 
   // Search for a result further down in the iframe.
   auto options = blink::mojom::FindOptions::New();
@@ -462,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
       "frame.src = '" + url + "';" +
       "document.body.appendChild(frame);";
   delegate()->MarkNextReply();
-  ASSERT_TRUE(ExecuteScript(shell(), script));
+  ASSERT_TRUE(ExecJs(shell(), script));
   delegate()->WaitForNextReply();
 
   // The number of matches should update automatically to include the matches
@@ -498,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(AddFrameAfterNoMatches)) {
       "frame.src = '" + url + "';" +
       "document.body.appendChild(frame);";
   delegate()->MarkNextReply();
-  ASSERT_TRUE(ExecuteScript(shell(), script));
+  ASSERT_TRUE(ExecJs(shell(), script));
   delegate()->WaitForNextReply();
 
   // The matches from the new frame should be found automatically, and the first
@@ -592,7 +588,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(FindNewMatches)) {
 
   // Dynamically add new text to the page. This text contains 5 new matches for
   // "result".
-  ASSERT_TRUE(ExecuteScript(contents()->GetMainFrame(), "addNewText()"));
+  ASSERT_TRUE(ExecJs(contents()->GetMainFrame(), "addNewText()"));
 
   Find("result", options.Clone());
   delegate()->WaitForFinalReply();
@@ -656,9 +652,9 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, DetachFrameWithMatch) {
   EXPECT_EQ(last_request_id(), results.request_id);
   EXPECT_EQ(6, results.number_of_matches);
   EXPECT_EQ(1, results.active_match_ordinal);
-  EXPECT_TRUE(ExecuteScript(shell(),
-                            "document.body.removeChild("
-                            "document.querySelectorAll('iframe')[0])"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.body.removeChild("
+                     "document.querySelectorAll('iframe')[0])"));
 
   Find("result", options.Clone());
   delegate()->WaitForFinalReply();

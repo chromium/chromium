@@ -411,11 +411,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     TestNavigationObserver observer(web_contents());
     GURL url(embedded_test_server()->GetURL("/title2.html"));
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickSameSiteLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteLink();"));
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -472,19 +468,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // Simulate clicking on a cross-site link.
   {
     TestNavigationObserver observer(web_contents());
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
+    const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickCrossSiteLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), base::StringPrintf(kReplacePortNumber,
+                                                       port_number)));
+    EXPECT_EQ(true, EvalJs(shell(), "clickCrossSiteLink();"));
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -555,11 +544,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   console_observer.SetPattern(
       "Not allowed to load local resource: view-source:about:blank");
 
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(),
-      "window.domAutomationController.send(clickViewSourceLink());", &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(web_contents(), "clickViewSourceLink();"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, web_contents()->GetURL());
@@ -583,12 +568,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   console_observer.SetPattern(
       "Not allowed to load local resource: googlechrome://");
 
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(),
-      "window.domAutomationController.send(clickGoogleChromeLink());",
-      &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(web_contents(), "clickGoogleChromeLink();"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, web_contents()->GetURL());
@@ -700,8 +680,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file_path, run_loop.QuitClosure()));
   web_contents()->SetDelegate(delegate.get());
-  EXPECT_TRUE(ExecuteScript(web_contents(),
-                            "document.getElementById('file').click();"));
+  EXPECT_TRUE(
+      ExecJs(web_contents(), "document.getElementById('file').click();"));
   run_loop.Run();
 
   // Ensure that the process is allowed to access to the chosen file and
@@ -718,17 +698,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   security_policy->RevokeAllPermissionsForFile(
       current_frame_host()->GetProcess()->GetID(), file_path);
 
-  // Use ExecuteScriptAndExtractBool and respond back to the browser process
-  // before doing the actual submission. This will ensure that the process
-  // termination is guaranteed to arrive after the response from the executed
-  // JavaScript.
-  bool result = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      shell(),
-      "window.domAutomationController.send(true);"
-      "document.getElementById('file-form').submit();",
-      &result));
-  EXPECT_TRUE(result);
+  // Use EvalJs and respond back to the browser process before doing the actual
+  // submission. This will ensure that the process termination is guaranteed to
+  // arrive after the response from the executed JavaScript.
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "window.domAutomationController.send(true);"
+                         "document.getElementById('file-form').submit();",
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   EXPECT_EQ(bad_message::ILLEGAL_UPLOAD_PARAMS, process_kill_waiter.Wait());
 }
 
@@ -752,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 
   TestNavigationObserver reload_observer(web_contents());
-  EXPECT_TRUE(ExecuteScript(shell(), "location.reload()"));
+  EXPECT_TRUE(ExecJs(shell(), "location.reload()"));
   reload_observer.Wait();
 
   // The expectation is that the blocked URL is present in the NavigationEntry,
@@ -775,8 +751,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BackFollowedByReload) {
 
   // Then execute a back navigation in Javascript followed by a reload.
   TestNavigationObserver navigation_observer(web_contents());
-  EXPECT_TRUE(
-      ExecuteScript(web_contents(), "history.back(); location.reload();"));
+  EXPECT_TRUE(ExecJs(web_contents(), "history.back(); location.reload();"));
   navigation_observer.Wait();
 
   // The reload should have cancelled the back navigation, and the last
@@ -1030,23 +1005,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   // Simulate clicking on a cross-site link.
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
+    const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
+    EXPECT_TRUE(
+        ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 
     TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(clickCrossSiteNewWindowLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickCrossSiteNewWindowLink();"));
 
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
@@ -1072,24 +1039,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   // Simulate clicking on a cross-site link which has rel="noopener".
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
+    const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
+    EXPECT_TRUE(
+        ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 
     TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractBool(shell(),
-                                    "window.domAutomationController.send("
-                                    "clickCrossSiteNewWindowNoOpenerLink());",
-                                    &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickCrossSiteNewWindowNoOpenerLink();"));
 
     observer.Wait();
 
@@ -1121,23 +1079,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   // Simulate clicking on a cross-site link.
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
+    const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        subframe_rfh, base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
+    EXPECT_TRUE(ExecJs(subframe_rfh,
+                       base::StringPrintf(kReplacePortNumber, port_number)));
 
     TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        subframe_rfh,
-        "window.domAutomationController.send(clickCrossSiteNewWindowLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(subframe_rfh, "clickCrossSiteNewWindowLink();"));
 
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
@@ -1203,15 +1153,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   // Simulate middle-clicking on a cross-site link.
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
+    const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
+    EXPECT_TRUE(
+        ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 
     TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
@@ -1236,18 +1182,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, DataURLWithReferenceFragment) {
   GURL url("data:text/html,body#foo");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  std::string body;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send(document.body.textContent);",
-      &body));
-  EXPECT_EQ("body", body);
+  EXPECT_EQ("body", EvalJs(shell(), "document.body.textContent;"));
 
-  std::string reference_fragment;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(), "window.domAutomationController.send(location.hash);",
-      &reference_fragment));
-  EXPECT_EQ("#foo", reference_fragment);
+  EXPECT_EQ("#foo", EvalJs(shell(), "location.hash;"));
 }
 
 // Regression test for https://crbug.com/796561.
@@ -1263,11 +1200,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-    int history_length;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        shell(), "window.domAutomationController.send(history.length)",
-        &history_length));
-    EXPECT_EQ(1, history_length);
+    EXPECT_EQ(1, EvalJs(shell(), "history.length"));
   }
 
   // 2) Create an iframe and call history.pushState at the same time.
@@ -1292,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // 3) history.back() must work.
   {
     TestNavigationObserver navigation_observer(web_contents());
-    EXPECT_TRUE(ExecuteScript(web_contents(), "history.back();"));
+    EXPECT_TRUE(ExecJs(web_contents(), "history.back();"));
     navigation_observer.Wait();
   }
 }
@@ -1430,8 +1363,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   // 3) In the meantime the iframe navigates elsewhere. It causes the previous
   // DocumentLoader to be replaced by the new one. Removing it may
   // trigger the 'load' event and delete the iframe.
-  EXPECT_TRUE(ExecuteScript(
-      shell(), "document.querySelector('iframe').src = '/title1.html'"));
+  EXPECT_TRUE(
+      ExecJs(shell(), "document.querySelector('iframe').src = '/title1.html'"));
 
   // 4) Finish the original request.
   iframe_response.Done();
@@ -1440,11 +1373,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
   // alive.
   int iframe_count = 1;
   while (iframe_count != 0) {
-    ASSERT_TRUE(ExecuteScriptAndExtractInt(
-        shell(),
-        "var iframe_count = document.getElementsByTagName('iframe').length;"
-        "window.domAutomationController.send(iframe_count);",
-        &iframe_count));
+    iframe_count =
+        EvalJs(
+            shell(),
+            "var iframe_count = document.getElementsByTagName('iframe').length;"
+            "iframe_count;")
+            .ExtractInt();
   }
 }
 
@@ -1517,12 +1451,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HistoryBackInBeforeUnload) {
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  EXPECT_TRUE(
-      ExecuteScriptWithoutUserGesture(web_contents(),
-                                      "onbeforeunload = function() {"
-                                      "  history.pushState({}, null, '/');"
-                                      "  history.back();"
-                                      "};"));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "onbeforeunload = function() {"
+                     "  history.pushState({}, null, '/');"
+                     "  history.back();"
+                     "};",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
 }
 
@@ -1536,12 +1470,12 @@ IN_PROC_BROWSER_TEST_F(NavigationGoToEntryAtOffsetBrowserTest,
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  EXPECT_TRUE(
-      ExecuteScriptWithoutUserGesture(web_contents(),
-                                      "onbeforeunload = function() {"
-                                      "  history.pushState({}, null, '/');"
-                                      "  setTimeout(()=>history.back());"
-                                      "};"));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "onbeforeunload = function() {"
+                     "  history.pushState({}, null, '/');"
+                     "  setTimeout(()=>history.back());"
+                     "};",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   TestNavigationManager navigation(web_contents(), url_2);
 
   base::RunLoop run_loop;
@@ -1568,10 +1502,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_TRUE(navigation.WaitForRequestStart());
 
   // 2) history.back() is sent but is not user initiated.
-  EXPECT_TRUE(
-      ExecuteScriptWithoutUserGesture(web_contents(),
-                                      "history.pushState({}, null, '/');"
-                                      "history.back();"));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "history.pushState({}, null, '/');"
+                     "history.back();",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // 3) The first pending navigation is not canceled and can continue.
   navigation.WaitForNavigationFinished();  // Resume navigation.
@@ -1592,9 +1526,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_TRUE(navigation.WaitForRequestStart());
 
   // 2) history.back() is sent and is user initiated.
-  EXPECT_TRUE(ExecuteScript(web_contents(),
-                            "history.pushState({}, null, '/');"
-                            "history.back();"));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "history.pushState({}, null, '/');"
+                     "history.back();"));
 
   // 3) Check the first pending navigation has been canceled.
   navigation.WaitForNavigationFinished();  // Resume navigation.
@@ -1720,7 +1654,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_GoToEntryAtOffset) {
       "--disable-ipc-flooding-protection can be used to bypass the "
       "protection");
 
-  EXPECT_TRUE(ExecuteScript(shell(), R"(
+  EXPECT_TRUE(ExecJs(shell(), R"(
     for(let i = 0; i<1000; ++i) {
       history.pushState({},"page 2", "bar.html");
       history.back();
@@ -1747,7 +1681,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_Navigation) {
       "--disable-ipc-flooding-protection can be used to bypass the "
       "protection");
 
-  EXPECT_TRUE(ExecuteScript(shell(), R"(
+  EXPECT_TRUE(ExecJs(shell(), R"(
     for(let i = 0; i<1000; ++i) {
       location.href = "#" + i;
       ++i;
@@ -1772,11 +1706,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
   // Open a popup.
-  bool opened = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      web_contents(), "window.domAutomationController.send(!!window.open());",
-      &opened));
-  EXPECT_TRUE(opened);
+  EXPECT_EQ(true, EvalJs(web_contents(), "!!window.open();"));
   EXPECT_EQ(2u, Shell::windows().size());
 
   // Using the popup, navigate its opener to a download.
@@ -1786,9 +1716,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OpenerNavigation_DownloadPolicy) {
   DownloadTestObserverInProgress observer(
       BrowserContext::GetDownloadManager(web_contents()->GetBrowserContext()),
       1 /* wait_count */);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+  EXPECT_TRUE(ExecJs(
       popup,
-      "window.opener.location ='data:html/text;base64,'+btoa('payload');"));
+      "window.opener.location ='data:html/text;base64,'+btoa('payload');",
+      EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.WaitForFinished();
 
   // Implies NavigationDownloadType::kOpenerCrossOrigin has 0 count.
@@ -1829,9 +1760,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   base::HistogramTester histograms;
   const GURL data_url("data:html/text;base64,cGF5bG9hZA==");
   TestNavigationManager manager(web_contents(), data_url);
-  EXPECT_TRUE(
-      ExecuteScript(popup, base::StringPrintf("window.opener.location ='%s'",
-                                              data_url.spec().c_str())));
+  EXPECT_TRUE(ExecJs(popup, base::StringPrintf("window.opener.location ='%s'",
+                                               data_url.spec().c_str())));
   manager.WaitForNavigationFinished();
 
   EXPECT_FALSE(manager.was_successful());
@@ -4027,16 +3957,16 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
   // Scroll down the page a bit
-  EXPECT_TRUE(ExecuteScript(web_contents(), "window.scrollTo(0, 1000)"));
+  EXPECT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 1000)"));
   frame_observer.WaitForScrollOffsetAtTop(false);
 
   // Navigate away
-  EXPECT_TRUE(ExecuteScript(web_contents(), "window.location = 'about:blank'"));
+  EXPECT_TRUE(ExecJs(web_contents(), "window.location = 'about:blank'"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
   // Navigate back
-  EXPECT_TRUE(ExecuteScript(web_contents(), "history.back()"));
+  EXPECT_TRUE(ExecJs(web_contents(), "history.back()"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
@@ -4083,16 +4013,16 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
   // Scroll down the page a bit
-  EXPECT_TRUE(ExecuteScript(web_contents(), "window.scrollTo(0, 1000)"));
+  EXPECT_TRUE(ExecJs(web_contents(), "window.scrollTo(0, 1000)"));
   frame_observer.WaitForScrollOffsetAtTop(false);
 
   // Navigate away
-  EXPECT_TRUE(ExecuteScript(web_contents(), "window.location = 'about:blank'"));
+  EXPECT_TRUE(ExecJs(web_contents(), "window.location = 'about:blank'"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
   // Navigate back
-  EXPECT_TRUE(ExecuteScript(web_contents(), "history.back()"));
+  EXPECT_TRUE(ExecJs(web_contents(), "history.back()"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 

@@ -28,8 +28,7 @@ class PeriodicBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
   bool RegisterFromIFrame(const std::string& tag, int min_interval_ms);
   bool RegisterNoMinInterval(const std::string& tag);
   bool RegisterFromServiceWorker(const std::string& tag, int min_interval_ms);
-  bool RegisterFromCrossOriginFrame(const std::string& frame_url,
-                                    std::string* script_result);
+  std::string RegisterFromCrossOriginFrame(const std::string& frame_url);
   bool RegisterFromServiceWorkerNoMinInterval(const std::string& tag);
   bool HasTag(const std::string& tag);
   bool HasTagFromServiceWorker(const std::string& tag);
@@ -46,102 +45,82 @@ class PeriodicBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
 
 bool PeriodicBackgroundSyncBrowserTest::Register(const std::string& tag,
                                                  int min_interval_ms) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(base::StringPrintf("%s('%s', %d);", "registerPeriodicSync",
-                                   tag.c_str(), min_interval_ms),
-                &script_result));
+  std::string script_result = RunScript(base::StringPrintf(
+      "%s('%s', %d);", "registerPeriodicSync", tag.c_str(), min_interval_ms));
   return script_result == BuildExpectedResult(tag, "registered");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::RegisterFromIFrame(
     const std::string& tag,
     int min_interval_ms) {
-  std::string script_result;
-  EXPECT_TRUE(RunScript(
+  std::string script_result = RunScript(
       base::StringPrintf("%s('%s', %d);", "registerPeriodicSyncFromIFrame",
-                         tag.c_str(), min_interval_ms),
-      &script_result));
+                         tag.c_str(), min_interval_ms));
   return script_result == BuildExpectedResult(tag, "registered");
 }
 
-bool PeriodicBackgroundSyncBrowserTest::RegisterFromCrossOriginFrame(
-    const std::string& frame_url,
-    std::string* script_result) {
+std::string PeriodicBackgroundSyncBrowserTest::RegisterFromCrossOriginFrame(
+    const std::string& frame_url) {
   // Start a second https server to use as a second origin.
   net::EmbeddedTestServer alt_server(net::EmbeddedTestServer::TYPE_HTTPS);
   alt_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   EXPECT_TRUE(alt_server.Start());
 
   GURL url = alt_server.GetURL(frame_url);
-  return RunScript(
-      BuildScriptString("registerPeriodicSyncFromCrossOriginFrame", url.spec()),
-      script_result);
+  return RunScript(BuildScriptString("registerPeriodicSyncFromCrossOriginFrame",
+                                     url.spec()));
 }
 
 bool PeriodicBackgroundSyncBrowserTest::RegisterNoMinInterval(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(RunScript(
-      base::StringPrintf("%s('%s');", "registerPeriodicSync", tag.c_str()),
-      &script_result));
+  std::string script_result = RunScript(
+      base::StringPrintf("%s('%s');", "registerPeriodicSync", tag.c_str()));
   return script_result == BuildExpectedResult(tag, "registered");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::RegisterFromServiceWorker(
     const std::string& tag,
     int min_interval_ms) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(base::StringPrintf("%s('%s', %d);",
-                                   "registerPeriodicSyncFromServiceWorker",
-                                   tag.c_str(), min_interval_ms),
-                &script_result));
+  std::string script_result = RunScript(base::StringPrintf(
+      "%s('%s', %d);", "registerPeriodicSyncFromServiceWorker", tag.c_str(),
+      min_interval_ms));
   return script_result == BuildExpectedResult(tag, "register sent to SW");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::RegisterFromServiceWorkerNoMinInterval(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("registerPeriodicSyncFromServiceWorker", tag),
-                &script_result));
+  std::string script_result = RunScript(
+      BuildScriptString("registerPeriodicSyncFromServiceWorker", tag));
   return script_result == BuildExpectedResult(tag, "register sent to SW");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::HasTag(const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("hasPeriodicSyncTag", tag), &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("hasPeriodicSyncTag", tag));
   return script_result == BuildExpectedResult(tag, "found");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::HasTagFromServiceWorker(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(
-      RunScript(BuildScriptString("hasPeriodicSyncTagFromServiceWorker", tag),
-                &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("hasPeriodicSyncTagFromServiceWorker", tag));
   return (script_result == "ok - hasTag sent to SW");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::Unregister(const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(RunScript(BuildScriptString("unregister", tag), &script_result));
+  std::string script_result = RunScript(BuildScriptString("unregister", tag));
   return script_result == BuildExpectedResult(tag, "unregistered");
 }
 
 bool PeriodicBackgroundSyncBrowserTest::UnregisterFromServiceWorker(
     const std::string& tag) {
-  std::string script_result;
-  EXPECT_TRUE(RunScript(BuildScriptString("unregisterFromServiceWorker", tag),
-                        &script_result));
+  std::string script_result =
+      RunScript(BuildScriptString("unregisterFromServiceWorker", tag));
   return script_result == BuildExpectedResult(tag, "unregister sent to SW");
 }
 
 int PeriodicBackgroundSyncBrowserTest::GetNumPeriodicSyncEvents() {
-  std::string script_result;
-  EXPECT_TRUE(RunScript("getNumPeriodicSyncEvents()", &script_result));
+  std::string script_result = RunScript("getNumPeriodicSyncEvents()");
   int num_periodic_sync_events = -1;
   bool converted =
       base::StringToInt(PopConsoleString(), &num_periodic_sync_events);
@@ -168,11 +147,9 @@ IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
                        RegisterFromIFrameWithTopLevelFrameForOrigin) {
-  std::string script_result;
   GURL url = https_server()->GetURL(kEmptyURL);
-  EXPECT_TRUE(RunScript(
-      BuildScriptString("registerPeriodicSyncFromLocalFrame", url.spec()),
-      &script_result));
+  std::string script_result = RunScript(
+      BuildScriptString("registerPeriodicSyncFromLocalFrame", url.spec()));
 
   // This succeeds because there's a top level frame for the origin.
   EXPECT_EQ(BuildExpectedResult("iframe", "registered periodicSync"),
@@ -181,9 +158,8 @@ IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PeriodicBackgroundSyncBrowserTest,
                        RegisterFromIFrameWithoutTopLevelFrameForOrigin) {
-  std::string script_result;
-  EXPECT_TRUE(RegisterFromCrossOriginFrame(kRegisterPeriodicSyncFromIFrameURL,
-                                           &script_result));
+  std::string script_result =
+      RegisterFromCrossOriginFrame(kRegisterPeriodicSyncFromIFrameURL);
 
   // This fails because there's no top level frame open for the origin.
   EXPECT_EQ(BuildExpectedResult("frame", "failed to register periodicSync"),

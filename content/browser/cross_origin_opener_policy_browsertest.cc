@@ -289,12 +289,8 @@ IN_PROC_BROWSER_TEST_P(
         iframe_site_instance->IsRelatedSiteInstance(popup_site_instance.get()));
 
     // Check that `window.opener` is not set.
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        new_shell,
-        "window.domAutomationController.send(window.opener == null);",
-        &success));
-    EXPECT_TRUE(success) << "window.opener is set";
+    EXPECT_EQ(true, EvalJs(new_shell, "window.opener == null;"))
+        << "window.opener is set";
   }
 }
 

@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {
     BrowserAccessibility* node = FindNode(ax::mojom::Role::kButton, node_name);
     ASSERT_NE(nullptr, node);
 
-    EXPECT_TRUE(ExecuteScript(shell(), focus_node_script));
+    EXPECT_TRUE(ExecJs(shell(), focus_node_script));
     WaitForAccessibilityFocusChange();
 
     EXPECT_EQ(node->GetId(),

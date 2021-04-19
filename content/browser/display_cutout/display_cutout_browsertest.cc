@@ -154,10 +154,10 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     web_contents_impl()->Focus();
   }
 
-  bool ClearViewportFitTag() {
-    return ExecuteScript(
-        web_contents_impl(),
-        "document.getElementsByTagName('meta')[0].content = ''");
+  void ClearViewportFitTag() {
+    ASSERT_TRUE(
+        ExecJs(web_contents_impl(),
+               "document.getElementsByTagName('meta')[0].content = ''"));
   }
 
   void SendSafeAreaToFrame(int top, int left, int bottom, int right) {
@@ -169,19 +169,12 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   std::string GetCurrentSafeAreaValue(const std::string& name) {
-    std::string value;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        MainFrame(),
-        "(() => {"
-        "const e = document.getElementById('target');"
-        "const style = window.getComputedStyle(e, null);"
-        "window.domAutomationController.send("
-        "  style.getPropertyValue('margin-" +
-            name +
-            "'));"
-            "})();",
-        &value));
-    return value;
+    return EvalJs(MainFrame(),
+                  "const e = document.getElementById('target');"
+                  "const style = window.getComputedStyle(e, null);"
+                  "style.getPropertyValue('margin-" +
+                      name + "');")
+        .ExtractString();
   }
 
   void LoadTestPageWithData(const std::string& data) {
@@ -358,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest,
 
   {
     TestWebContentsObserver observer(web_contents_impl());
-    EXPECT_TRUE(ClearViewportFitTag());
+    ClearViewportFitTag();
     observer.WaitForWantedValue(blink::mojom::ViewportFit::kAuto);
     web_contents_impl()->SetDisplayCutoutSafeArea(kNoCutoutInsets);
   }

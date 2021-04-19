@@ -36,10 +36,8 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
 
   Shell* otr_browser = CreateOffTheRecordBrowser();
   EXPECT_TRUE(NavigateToURL(otr_browser, url));
-  int data = -1;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractInt(otr_browser, "getResourceNumber()", &data));
-  EXPECT_EQ(9, data);
+  EXPECT_EQ(9, EvalJs(otr_browser, "getResourceNumber()",
+                      EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
@@ -48,10 +46,8 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
       "/resource_loading/resource_loading_non_mobile.html"));
   Shell* browser = shell();
   EXPECT_TRUE(NavigateToURL(browser, url));
-  int data = -1;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractInt(browser, "getResourceNumber()", &data));
-  EXPECT_EQ(9, data);
+  EXPECT_EQ(9, EvalJs(browser, "getResourceNumber()",
+                      EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 }  // anonymous namespace

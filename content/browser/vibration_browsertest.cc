@@ -42,15 +42,13 @@ class VibrationTest : public ContentBrowserTest,
   }
 
  protected:
-  bool TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
+  void TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
 
-    bool result;
     RenderFrameHost* frame = shell()->web_contents()->GetMainFrame();
-    std::string script = "domAutomationController.send(navigator.vibrate(" +
-                         base::NumberToString(duration) + "))";
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(frame, script, &result));
-    return result;
+    std::string script =
+        "navigator.vibrate(" + base::NumberToString(duration) + ")";
+    EXPECT_TRUE(ExecJs(frame, script));
   }
 
   int64_t vibrate_milliseconds() { return vibrate_milliseconds_; }
@@ -76,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(VibrationTest, Vibrate) {
 
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "simple_page.html")));
   base::RunLoop run_loop;
-  ASSERT_TRUE(TriggerVibrate(1234, run_loop.QuitClosure()));
+  TriggerVibrate(1234, run_loop.QuitClosure());
   run_loop.Run();
 
   ASSERT_EQ(1234, vibrate_milliseconds());
