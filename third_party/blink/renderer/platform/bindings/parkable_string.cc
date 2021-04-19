@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -730,16 +731,17 @@ void ParkableStringImpl::PostBackgroundWritingTask() {
     worker_pool::PostTask(
         FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
-                            std::move(params)));
+                            std::move(params),
+                            WTF::CrossThreadUnretained(&data_allocator)));
   }
 }
 
 // static
 void ParkableStringImpl::WriteToDiskInBackground(
-    std::unique_ptr<BackgroundTaskParams> params) {
-  auto& allocator = ParkableStringManager::Instance().data_allocator();
+    std::unique_ptr<BackgroundTaskParams> params,
+    DiskDataAllocator* data_allocator) {
   base::ElapsedTimer timer;
-  auto metadata = allocator.Write(params->data, params->size);
+  auto metadata = data_allocator->Write(params->data, params->size);
   base::TimeDelta elapsed = timer.Elapsed();
   RecordStatistics(params->size, elapsed, ParkingAction::kWritten);
 

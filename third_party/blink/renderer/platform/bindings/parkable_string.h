@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/thread_annotations.h"
+#include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -204,7 +205,8 @@ class PLATFORM_EXPORT ParkableStringImpl final
       base::TimeDelta parking_thread_time);
 
   void PostBackgroundWritingTask() EXCLUSIVE_LOCKS_REQUIRED(metadata_->mutex_);
-  static void WriteToDiskInBackground(std::unique_ptr<BackgroundTaskParams>);
+  static void WriteToDiskInBackground(std::unique_ptr<BackgroundTaskParams>,
+                                      DiskDataAllocator* data_allocator);
   // Called on the main thread after writing is done.
   // |params| is the same as the one passed to PostBackgroundWritingTask()|,
   // |metadata| is the on-disk metadata, nullptr if writing failed.
