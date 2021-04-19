@@ -18320,6 +18320,11 @@
       "empty_main"
     ]
   },
+  "linux-no-base-tracing-rel": {
+    "additional_compile_targets": [
+      "base_unittests"
+    ]
+  },
   "linux-ozone-rel": {
     "additional_compile_targets": [
       "chrome"

@@ -5059,6 +5059,11 @@
           'empty_main',
         ],
       },
+      'linux-no-base-tracing-rel': {
+        'additional_compile_targets': [
+          'base_unittests',
+        ],
+      },
       'linux-ozone-rel': {
         'mixins': [
           'linux-xenial',

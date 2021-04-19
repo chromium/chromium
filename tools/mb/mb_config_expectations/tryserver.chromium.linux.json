@@ -587,6 +587,16 @@
       "use_goma": true
     }
   },
+  "linux-no-base-tracing-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_base_tracing": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "linux-ozone-rel": {
     "gn_args": {
       "dcheck_always_on": true,
