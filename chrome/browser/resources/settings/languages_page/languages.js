@@ -185,7 +185,9 @@ Polymer({
         'prefs.translate_whitelists.value.*, languages)',
     'neverTranslateLanguagesPrefChanged_(' +
         'prefs.translate_blocked_languages.value.*, languages)',
+    // <if expr="is_win or chromeos">
     'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
+    // </if>
     'preferredLanguagesPrefChanged_(' +
         'prefs.' + preferredLanguagesPrefName + '.value, languages)',
     'preferredLanguagesPrefChanged_(' +
