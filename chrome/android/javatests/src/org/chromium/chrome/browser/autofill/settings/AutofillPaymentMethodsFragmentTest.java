@@ -10,6 +10,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -25,10 +27,14 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * Instrumentation tests for AutofillPaymentMethodsFragment.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+@Batch.SplitByFeature
 public class AutofillPaymentMethodsFragmentTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -65,6 +71,11 @@ public class AutofillPaymentMethodsFragmentTest {
     @Before
     public void setUp() {
         mAutofillTestHelper = new AutofillTestHelper();
+    }
+
+    @After
+    public void tearDown() throws TimeoutException {
+        mAutofillTestHelper.clearAllDataForTesting();
     }
 
     @Test
