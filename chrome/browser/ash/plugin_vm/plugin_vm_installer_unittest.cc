@@ -787,4 +787,17 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
                                         1);
 }
 
+TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenNoImageFound) {
+  SetPluginVmImagePref(kDriveUrl, kHash);
+  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNoImageFound);
+
+  ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
+  EXPECT_CALL(*observer_, OnError(FailureReason::DLC_INTERNAL));
+
+  StartAndRunToCompletion();
+  histogram_tester_->ExpectUniqueSample(
+      kPluginVmDlcUseResultHistogram,
+      PluginVmDlcUseResult::kNoImageFoundDlcError, 1);
+}
+
 }  // namespace plugin_vm

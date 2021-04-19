@@ -61,7 +61,8 @@ enum class PluginVmDlcUseResult {
   kBusyDlcError = 3,
   kNeedRebootDlcError = 4,
   kNeedSpaceDlcError = 5,
-  kMaxValue = kNeedSpaceDlcError,
+  kNoImageFoundDlcError = 6,
+  kMaxValue = kNoImageFoundDlcError,
 };
 
 void RecordPluginVmImageDownloadedSizeHistogram(uint64_t bytes_downloaded);

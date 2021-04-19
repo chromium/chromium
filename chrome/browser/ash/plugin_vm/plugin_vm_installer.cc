@@ -500,6 +500,13 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
     LOG(ERROR) << "Device needs to free space to use PluginVM DLC.";
     result = PluginVmDlcUseResult::kNeedSpaceDlcError;
     reason = FailureReason::DLC_NEED_SPACE;
+  } else if (install_result.error == dlcservice::kErrorNoImageFound) {
+    LOG(ERROR) << "The PluginVM DLC could not be found in the server."
+               << "The version the OS is on is probably not live.";
+    result = PluginVmDlcUseResult::kNoImageFoundDlcError;
+    // Keep using the reason `FailureReason::DLC_INTERNAL`, but distinguish so
+    // developers can see why it wasn't updated as well as for metrics
+    // reporting.
   } else {
     LOG(ERROR) << "Failed to download PluginVM DLC: " << install_result.error;
   }
