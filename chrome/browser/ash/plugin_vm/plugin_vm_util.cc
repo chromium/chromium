@@ -93,8 +93,8 @@ void SetFakePluginVmPolicy(Profile* profile,
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               plugin_vm::prefs::kPluginVmImage);
   base::DictionaryValue* dict = update.Get();
-  dict->SetPath("url", base::Value(image_url));
-  dict->SetPath("hash", base::Value(image_hash));
+  dict->SetPath(prefs::kPluginVmImageUrlKeyName, base::Value(image_url));
+  dict->SetPath(prefs::kPluginVmImageHashKeyName, base::Value(image_hash));
 
   GetFakeLicenseKey() = license_key;
 

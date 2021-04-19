@@ -282,7 +282,7 @@ bool PluginVmInstaller::VerifyDownload(
   const base::Value* plugin_vm_image_hash_ptr =
       profile_->GetPrefs()
           ->GetDictionary(prefs::kPluginVmImage)
-          ->FindKey("hash");
+          ->FindKey(prefs::kPluginVmImageHashKeyName);
   if (!plugin_vm_image_hash_ptr) {
     LOG(ERROR) << "Hash of PluginVm image is not specified";
     return false;
@@ -928,7 +928,7 @@ std::string PluginVmInstaller::GetInstallingStateName(InstallingState state) {
 GURL PluginVmInstaller::GetPluginVmImageDownloadUrl() {
   const base::Value* url_ptr = profile_->GetPrefs()
                                    ->GetDictionary(prefs::kPluginVmImage)
-                                   ->FindKey("url");
+                                   ->FindKey(prefs::kPluginVmImageUrlKeyName);
   if (!url_ptr) {
     LOG(ERROR) << "Url to PluginVm image is not specified";
     return GURL();

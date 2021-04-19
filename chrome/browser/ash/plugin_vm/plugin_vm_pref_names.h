@@ -12,6 +12,8 @@ namespace prefs {
 
 extern const char kPluginVmAllowed[];
 extern const char kPluginVmImage[];
+extern const char kPluginVmImageUrlKeyName[];
+extern const char kPluginVmImageHashKeyName[];
 extern const char kPluginVmImageExists[];
 extern const char kPluginVmPrintersAllowed[];
 extern const char kPluginVmCameraAllowed[];
