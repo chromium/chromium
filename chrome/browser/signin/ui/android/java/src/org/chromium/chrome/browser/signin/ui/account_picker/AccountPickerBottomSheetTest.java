@@ -701,7 +701,6 @@ public class AccountPickerBottomSheetTest {
         if (profileData.getFullName() != null) {
             onVisibleView(withText(profileData.getFullName())).check(matches(isDisplayed()));
         }
-        onVisibleView(withId(R.id.account_selection_mark)).check(matches(isDisplayed()));
         String continueAsText =
                 sActivityTestRule.getActivity().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenName() != null ? profileData.getGivenName()

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
@@ -158,9 +157,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     void updateSelectedAccount(DisplayableProfileData accountProfileData) {
         View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
         ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
-
-        ImageView rowEndImage = mSelectedAccountView.findViewById(R.id.account_selection_mark);
-        rowEndImage.setImageResource(R.drawable.ic_expand_more_in_circle_24dp);
 
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         String continueAsButtonText = mActivity.getString(R.string.signin_promo_continue_as,
