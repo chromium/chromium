@@ -118,6 +118,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
       return resource_->sync_token();
     }
 
+   protected:
+    ChildResource* resource() { return resource_; }
+
    private:
     void Reset();
 
@@ -228,6 +231,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     Child& operator=(Child&& other);
     ~Child();
 
+    int id;
     std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
         child_to_parent_map;
     ReturnCallback return_callback;

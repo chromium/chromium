@@ -191,6 +191,7 @@ DisplayResourceProviderGL::DeleteAndReturnUnusedResourcesToChildImpl(
 
   GLES2Interface* gl = ContextGL();
   DCHECK(gl);
+  DCHECK(can_access_gpu_thread_);
   for (ResourceId local_id : unused) {
     auto it = resources_.find(local_id);
     CHECK(it != resources_.end());

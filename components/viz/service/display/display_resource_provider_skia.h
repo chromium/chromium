@@ -21,6 +21,19 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
   DisplayResourceProviderSkia();
   ~DisplayResourceProviderSkia() override;
 
+  // Same as ScopedReadLockSharedImage, but will release |image_context| if
+  // already was created, making sure resource isn't locked by compositor.
+  class VIZ_SERVICE_EXPORT ScopedExclusiveReadLockSharedImage
+      : public ScopedReadLockSharedImage {
+   public:
+    ScopedExclusiveReadLockSharedImage(
+        DisplayResourceProviderSkia* resource_provider,
+        ResourceId resource_id);
+    ~ScopedExclusiveReadLockSharedImage();
+    ScopedExclusiveReadLockSharedImage(
+        ScopedExclusiveReadLockSharedImage&& other);
+  };
+
   // Maintains set of resources locked for external use by SkiaRenderer.
   class VIZ_SERVICE_EXPORT LockSetForExternalUse {
    public:

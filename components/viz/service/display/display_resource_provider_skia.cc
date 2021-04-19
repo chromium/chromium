@@ -50,11 +50,26 @@ DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
   external_used_resources.reserve(unused.size());
 
   DCHECK(external_use_client_);
+  std::vector<ResourceId>* batch_return = nullptr;
 
   for (ResourceId local_id : unused) {
     auto it = resources_.find(local_id);
     CHECK(it != resources_.end());
     ChildResource& resource = it->second;
+
+    if (!can_access_gpu_thread_) {
+      // We should always has access to gpu thread during shutdown.
+      DCHECK(style != DeleteStyle::FOR_SHUTDOWN);
+
+      // If we don't have access to gpu thread, we can't free it right now.
+      if (resource.image_context) {
+        if (!batch_return) {
+          batch_return = &batched_returning_resources_[child_info.id];
+        }
+        batch_return->push_back(local_id);
+        continue;
+      }
+    }
 
     ResourceId child_id = resource.transferable.id;
     DCHECK(child_info.child_to_parent_map.count(child_id));
@@ -177,5 +192,34 @@ void DisplayResourceProviderSkia::LockSetForExternalUse::UnlockResources(
   }
   resources_.clear();
 }
+
+DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage::
+    ScopedExclusiveReadLockSharedImage(
+        DisplayResourceProviderSkia* resource_provider,
+        ResourceId resource_id)
+    : ScopedReadLockSharedImage(resource_provider, resource_id) {
+  ChildResource& resource = *this->resource();
+  if (resource.image_context) {
+    DCHECK(!resource.locked_for_external_use)
+        << "Resource already locked, can't get exclusive lock!";
+    DCHECK(resource_provider->can_access_gpu_thread_)
+        << "Can't release |image_context| without access to gpu thread";
+
+    std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
+        image_contexts;
+    image_contexts.push_back(std::move(resource.image_context));
+
+    gpu::SyncToken sync_token =
+        resource_provider->external_use_client_->ReleaseImageContexts(
+            std::move(image_contexts));
+    resource.UpdateSyncToken(sync_token);
+  }
+}
+DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage::
+    ~ScopedExclusiveReadLockSharedImage() = default;
+
+DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage::
+    ScopedExclusiveReadLockSharedImage(
+        ScopedExclusiveReadLockSharedImage&& other) = default;
 
 }  // namespace viz

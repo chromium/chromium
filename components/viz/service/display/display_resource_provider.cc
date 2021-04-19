@@ -160,6 +160,7 @@ int DisplayResourceProvider::CreateChild(ReturnCallback return_callback) {
 
   int child_id = next_child_++;
   Child& child = children_[child_id];
+  child.id = child_id;
   child.return_callback = std::move(return_callback);
 
   return child_id;
@@ -326,11 +327,8 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
   if (unused.empty() && !child_info.marked_for_deletion)
     return;
 
-  // Store unused resources while batching is enabled or we can't access gpu
-  // thread right now.
-  // TODO(vasilyt): Technically we need to delay only resources with
-  // |image_context|.
-  if (batch_return_resources_lock_count_ > 0 || !can_access_gpu_thread_) {
+  // Store unused resources while batching is enabled.
+  if (batch_return_resources_lock_count_ > 0) {
     int child_id = child_it->first;
     auto& child_resources = batched_returning_resources_[child_id];
     child_resources.reserve(child_resources.size() + unused.size());
