@@ -58,40 +58,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   };
 
  protected:
-  // Flags used to configure how the tests are run.
-  enum Flags {
-    kFlagNone = 0,
-
-    // Allow the extension to run in incognito mode.
-    kFlagEnableIncognito = 1 << 0,
-
-    // Allow file access for the extension.
-    kFlagEnableFileAccess = 1 << 1,
-
-    // Don't fail when the loaded manifest has warnings (should only be used
-    // when testing deprecated features).
-    kFlagIgnoreManifestWarnings = 1 << 2,
-
-    // Allow older manifest versions (typically these can't be loaded - we allow
-    // them for testing).
-    kFlagAllowOldManifestVersions = 1 << 3,
-
-    // Pass the FOR_LOGIN_SCREEN flag when loading the extension. This flag is
-    // usually provided for force-installed extension on the login screen.
-    kFlagLoadForLoginScreen = 1 << 4,
-
-    // Load the provided extension as Service Worker based extension.
-    kFlagRunAsServiceWorkerBasedExtension = 1 << 5,
-
-    // Don't wait for extension renderers to fully load.
-    kFlagDontWaitForExtensionRenderers = 1 << 6,
-
-    // Always maintain this as the next flag value. The flags in
-    // ExtensionApiTest depend on this to avoid having overlapping
-    // values with these flags.
-    kFlagNextValue = 1 << 7,
-  };
-
   struct LoadOptions {
     // Allows the extension to run in incognito mode.
     bool allow_in_incognito = false;
@@ -175,13 +141,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
-
-  // Same as above, but sets the installation parameter to the extension
-  // preferences.
-  const Extension* LoadExtensionWithInstallParam(
-      const base::FilePath& path,
-      int flags,
-      const std::string& install_param);
 
   // Converts an extension from |path| to a Service Worker based extension and
   // returns true on success.

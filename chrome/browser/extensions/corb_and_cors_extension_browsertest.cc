@@ -877,8 +877,8 @@ IN_PROC_BROWSER_TEST_F(
     FromProgrammaticContentScript_PermissionToAllUrls_FileUrls) {
   // Install the extension and verify that the extension has access to file URLs
   // (<all_urls> permission is not sufficient - the extension has to be
-  // additionally granted file access by passing kFlagEnableFileAccess in
-  // ExtensionBrowserTest::LoadExtension).
+  // additionally granted file access by setting LoadOptions.allow_file_access
+  // to true in ExtensionBrowserTest::LoadExtension).
   const Extension* extension =
       InstallExtensionWithPermissionToAllUrls(/*enable_file_access=*/true);
   ASSERT_TRUE(extension);

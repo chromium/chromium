@@ -347,39 +347,6 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   return extension.get();
 }
 
-const Extension* ExtensionBrowserTest::LoadExtensionWithInstallParam(
-    const base::FilePath& path,
-    int flags,
-    const std::string& install_param) {
-  LoadOptions options;
-  if (flags & kFlagEnableIncognito) {
-    options.allow_in_incognito = true;
-  }
-  if (flags & kFlagEnableFileAccess) {
-    options.allow_file_access = true;
-  }
-  if (flags & kFlagIgnoreManifestWarnings) {
-    options.ignore_manifest_warnings = true;
-  }
-  if (flags & kFlagAllowOldManifestVersions) {
-    options.require_modern_manifest_version = false;
-  }
-  if (flags & kFlagLoadForLoginScreen) {
-    options.load_for_login_screen = true;
-  }
-  if (flags & kFlagRunAsServiceWorkerBasedExtension) {
-    options.load_as_service_worker = true;
-  }
-  if (flags & kFlagDontWaitForExtensionRenderers) {
-    options.wait_for_renderers = false;
-  }
-  if (!install_param.empty()) {
-    options.install_param = install_param.c_str();
-  }
-
-  return LoadExtension(path, options);
-}
-
 bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(
     const base::FilePath& path,
     base::FilePath* out_path) {

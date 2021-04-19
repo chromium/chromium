@@ -31,27 +31,6 @@ class Extension;
 // TODO(erikkay): There should also be a way to drive events in these tests.
 class ExtensionApiTest : public ExtensionBrowserTest {
  public:
-  // Flags used to configure how the tests are run. These values are based on
-  // the last flag value defined by ExtensionBrowserTest. This ensures that
-  // the values won't overlap so we can check for accidentally mixing those
-  // flags and these.
-  enum Flags {
-    kFlagNone = 0,
-
-    // Launch the test page in an incognito window.
-    kFlagUseIncognito = ExtensionBrowserTest::kFlagNextValue << 0,
-
-    // Loads the extension with location COMPONENT.
-    kFlagLoadAsComponent = ExtensionBrowserTest::kFlagNextValue << 1,
-
-    // Launch the extension as a platform app.
-    kFlagLaunchPlatformApp = ExtensionBrowserTest::kFlagNextValue << 2,
-
-    // Load the extension using //extensions/test/data/ as the root path instead
-    // of loading from //chrome/test/data/extensions/api_test/.
-    kFlagUseRootExtensionsDir = ExtensionBrowserTest::kFlagNextValue << 3,
-  };
-
   struct RunOptions {
     // Load the specified extension for the test. This is a subdirectory
     // in "chrome/test/data/extensions/api_test".
