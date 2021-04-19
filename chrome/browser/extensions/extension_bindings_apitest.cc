@@ -94,9 +94,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        ExceptionInHandlerShouldNotCrash) {
-  ASSERT_TRUE(RunExtensionSubtest(
-      "bindings/exception_in_handler_should_not_crash",
-      "page.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "bindings/exception_in_handler_should_not_crash",
+       .page_url = "page.html"}))
+      << message_;
 }
 
 // Tests that an error raised during an async function still fires
@@ -141,9 +142,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, AboutBlankIframe) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        InternalAPIsNotOnChromeObject) {
-  ASSERT_TRUE(RunExtensionSubtest(
-      "bindings/internal_apis_not_on_chrome_object",
-      "page.html")) << message_;
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "bindings/internal_apis_not_on_chrome_object",
+                        .page_url = "page.html"}))
+      << message_;
 }
 
 // Tests that we don't override events when bindings are re-injected.
@@ -166,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, MAYBE_EventOverriding) {
 // Tests the effectiveness of the 'nocompile' feature file property.
 // Regression test for http://crbug.com/356133.
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, Nocompile) {
-  ASSERT_TRUE(RunExtensionSubtest("bindings/nocompile", "page.html"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "bindings/nocompile", .page_url = "page.html"}))
       << message_;
 }
 

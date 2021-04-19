@@ -117,9 +117,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTerminalPrivateApiTest, TerminalTest) {
   CatProcess cat_process;
   ASSERT_TRUE(cat_process.ok());
 
-  EXPECT_TRUE(
-      RunExtensionSubtest("terminal/component_extension",
-                          "test.html?foreign_id=" + cat_process.process_id()))
+  const std::string page_url =
+      "test.html?foreign_id=" + cat_process.process_id();
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "terminal/component_extension", .page_url = page_url.c_str()}))
       << message_;
 
   // Double check that test.html cannot write to the cat process here;

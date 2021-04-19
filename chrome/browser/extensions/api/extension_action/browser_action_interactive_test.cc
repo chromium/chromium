@@ -158,8 +158,9 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     if (!will_reply)
       listener = std::make_unique<ExtensionTestMessageListener>("ready", false);
     // Show first popup in first window and expect it to have loaded.
-    ASSERT_TRUE(RunExtensionSubtest("browser_action/open_popup",
-                                    "open_popup_succeeds.html")) << message_;
+    ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
+                                  .page_url = "open_popup_succeeds.html"}))
+        << message_;
     if (listener)
       EXPECT_TRUE(listener->WaitUntilSatisfied());
     frame_observer.Wait();
@@ -327,8 +328,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   ExtensionTestMessageListener listener("ready", true);
   // Load the test extension which will do nothing except notifyPass() to
   // return control here.
-  ASSERT_TRUE(RunExtensionSubtest("browser_action/open_popup",
-                                  "open_popup_fails.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
+                                .page_url = "open_popup_fails.html"}))
+      << message_;
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   OpenPopupViaToolbar();
   ResultCatcher catcher;

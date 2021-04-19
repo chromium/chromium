@@ -247,7 +247,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, Standard) {
 
   const char kExtensionPath[] = "content_settings/standard";
 
-  EXPECT_TRUE(RunExtensionSubtest(kExtensionPath, "test.html")) << message_;
+  EXPECT_TRUE(
+      RunExtensionTest({.name = kExtensionPath, .page_url = "test.html"}))
+      << message_;
   CheckContentSettingsSet();
 
   // The settings should not be reset when the extension is reloaded.

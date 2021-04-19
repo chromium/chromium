@@ -142,8 +142,9 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Run the extension subtest and wait for the initialization.
-  ASSERT_TRUE(RunExtensionSubtest("protocol_handler",
-                                  "test_browser_process_security_level.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "protocol_handler",
+       .page_url = "test_browser_process_security_level.html"}))
       << message_;
 
   content::WebContentsDelegate* web_contents_delegate =

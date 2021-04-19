@@ -35,8 +35,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
   EventRouter* event_router = EventRouter::Get(profile());
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
 
-  std::string test_extension_name = "events_are_unregistered";
-  ASSERT_TRUE(RunExtensionSubtest(test_extension_name, "page1.html"))
+  constexpr char test_extension_name[] = "events_are_unregistered";
+  ASSERT_TRUE(
+      RunExtensionTest({.name = test_extension_name, .page_url = "page1.html"}))
       << message_;
 
   // Find the extension we just installed by looking for the path.

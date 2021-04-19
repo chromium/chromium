@@ -359,8 +359,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
 
 // http://crbug.com/251199
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DISABLED_SessionsApis) {
-  ASSERT_TRUE(RunExtensionSubtest("sessions",
-                                  "sessions.html")) << message_;
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "sessions", .page_url = "sessions.html"}))
+      << message_;
 }
 
 }  // namespace extensions

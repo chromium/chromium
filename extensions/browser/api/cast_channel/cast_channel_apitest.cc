@@ -264,7 +264,7 @@ ACTION_P2(InvokeObserverOnError, api_test, cast_socket_service) {
                                 base::Unretained(cast_socket_service)));
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestOpenSendClose DISABLED_TestOpenSendClose
@@ -276,11 +276,11 @@ ACTION_P2(InvokeObserverOnError, api_test, cast_socket_service) {
 IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenSendClose) {
   SetUpOpenSendClose();
 
-  EXPECT_TRUE(
-      RunExtensionSubtest("cast_channel/api", "test_open_send_close.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "cast_channel/api", .page_url = "test_open_send_close.html"}));
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestOpenErrorSend DISABLED_TestOpenErrorSend
@@ -292,11 +292,11 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenSendClose) {
 IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenErrorSend) {
   SetUpOpenErrorSend();
 
-  EXPECT_TRUE(
-      RunExtensionSubtest("cast_channel/api", "test_open_error_send.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "cast_channel/api", .page_url = "test_open_error_send.html"}));
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestPingTimeout DISABLED_TestPingTimeout
@@ -310,14 +310,14 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestPingTimeout) {
 
   ExtensionTestMessageListener channel_opened("channel_opened_ssl", false);
   ExtensionTestMessageListener timeout("timeout_ssl", false);
-  EXPECT_TRUE(
-      RunExtensionSubtest("cast_channel/api", "test_open_timeout.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "cast_channel/api", .page_url = "test_open_timeout.html"}));
   EXPECT_TRUE(channel_opened.WaitUntilSatisfied());
   FireTimeout();
   EXPECT_TRUE(timeout.WaitUntilSatisfied());
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestPingTimeoutSslVerified DISABLED_TestPingTimeoutSslVerified
@@ -332,14 +332,15 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestPingTimeoutSslVerified) {
   ExtensionTestMessageListener channel_opened("channel_opened_ssl_verified",
                                               false);
   ExtensionTestMessageListener timeout("timeout_ssl_verified", false);
-  EXPECT_TRUE(RunExtensionSubtest("cast_channel/api",
-                                  "test_open_timeout_verified.html"));
+  EXPECT_TRUE(
+      RunExtensionTest({.name = "cast_channel/api",
+                        .page_url = "test_open_timeout_verified.html"}));
   EXPECT_TRUE(channel_opened.WaitUntilSatisfied());
   FireTimeout();
   EXPECT_TRUE(timeout.WaitUntilSatisfied());
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestOpenReceiveClose DISABLED_TestOpenReceiveClose
@@ -373,8 +374,8 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenReceiveClose) {
         .WillOnce(Return(ReadyState::CLOSED));
   }
 
-  EXPECT_TRUE(
-      RunExtensionSubtest("cast_channel/api", "test_open_receive_close.html"));
+  EXPECT_TRUE(RunExtensionTest({.name = "cast_channel/api",
+                                .page_url = "test_open_receive_close.html"}));
 
   extensions::ResultCatcher catcher;
   CallOnMessage("some-message");
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenReceiveClose) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionSubtest
+// TODO(kmarshall): Win Dbg has a workaround that makes RunExtensionTest
 // always return true without actually running the test. Remove when fixed.
 #if defined(OS_WIN) && !defined(NDEBUG)
 #define MAYBE_TestOpenError DISABLED_TestOpenError
@@ -407,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenError) {
   EXPECT_CALL(*mock_cast_socket_, Close(_))
       .WillOnce(InvokeCompletionCallback<0>(net::OK));
 
-  EXPECT_TRUE(RunExtensionSubtest("cast_channel/api", "test_open_error.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "cast_channel/api", .page_url = "test_open_error.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(CastChannelAPITest, TestOpenInvalidConnectInfo) {

@@ -121,12 +121,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Basics) {
                         ManifestLocation::kExternalPolicyDownload);
   InstallNamedExtension(basedir, "version_name", ManifestLocation::kInternal);
 
-  ASSERT_TRUE(RunExtensionSubtest("management/test", "basics.html"));
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "management/test", .page_url = "basics.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, NoPermission) {
   LoadExtensions();
-  ASSERT_TRUE(RunExtensionSubtest("management/no_permission", "test.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/no_permission", .page_url = "test.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Uninstall) {
@@ -134,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Uninstall) {
   // Confirmation dialog will be shown for uninstallations except for self.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  ASSERT_TRUE(RunExtensionSubtest("management/test", "uninstall.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/test", .page_url = "uninstall.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, CreateAppShortcut) {
@@ -143,13 +146,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, CreateAppShortcut) {
   LoadNamedExtension(basedir, "packaged_app");
 
   extensions::ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(true);
-  ASSERT_TRUE(RunExtensionSubtest("management/test",
-                                  "createAppShortcut.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/test", .page_url = "createAppShortcut.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, GenerateAppForLink) {
-  ASSERT_TRUE(RunExtensionSubtest("management/test",
-                                  "generateAppForLink.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/test", .page_url = "generateAppForLink.html"}));
 }
 
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
@@ -344,8 +347,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, ManagementPolicyAllowed) {
   extensions::ExtensionSystem::Get(
       browser()->profile())->management_policy()->UnregisterAllProviders();
 
-  ASSERT_TRUE(RunExtensionSubtest("management/management_policy",
-                                  "allowed.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/management_policy", .page_url = "allowed.html"}));
   // The last thing the test does is uninstall the "enabled_extension".
   EXPECT_FALSE(
       registry->GetExtensionById(extension_ids_["enabled_extension"],
@@ -369,8 +372,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, ManagementPolicyProhibited) {
       extensions::TestManagementPolicyProvider::MUST_REMAIN_ENABLED |
       extensions::TestManagementPolicyProvider::MUST_REMAIN_INSTALLED);
   policy->RegisterProvider(&provider);
-  ASSERT_TRUE(RunExtensionSubtest("management/management_policy",
-                                  "prohibited.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/management_policy", .page_url = "prohibited.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, LaunchPanelApp) {
@@ -481,5 +484,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, MAYBE_LaunchType) {
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
   LoadNamedExtension(basedir, "packaged_app");
 
-  ASSERT_TRUE(RunExtensionSubtest("management/test", "launchType.html"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "management/test", .page_url = "launchType.html"}));
 }

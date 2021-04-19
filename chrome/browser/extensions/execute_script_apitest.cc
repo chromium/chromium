@@ -167,11 +167,12 @@ class DestructiveScriptTest : public ExecuteScriptApiTestBase,
  protected:
   // The test extension selects the sub test based on the host name.
   bool RunSubtest(const std::string& test_host) {
-    return RunExtensionSubtest(
-        "executescript/destructive",
+    const std::string page_url =
         "test.html?" + test_host + "#bucketcount=" +
-            base::NumberToString(kDestructiveScriptTestBucketCount) +
-            "&bucketindex=" + base::NumberToString(GetParam()));
+        base::NumberToString(kDestructiveScriptTestBucketCount) +
+        "&bucketindex=" + base::NumberToString(GetParam());
+    return RunExtensionTest(
+        {.name = "executescript/destructive", .page_url = page_url.c_str()});
   }
 };
 

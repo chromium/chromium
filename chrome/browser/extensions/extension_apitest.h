@@ -101,14 +101,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // LoadOptions.
   bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
 
-  // If not empty, Load |extension_name|, load |page_url| and wait for pass /
-  // fail notification from the extension API on the page. Note that if
-  // |page_url| is not a valid url, it will be treated as a resource within
-  // the extension. |extension_name| is a directory in
-  // "test/data/extensions/api_test".
-  bool RunExtensionSubtest(const std::string& extension_name,
-                           const std::string& page_url) WARN_UNUSED_RESULT;
-
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().
   bool StartEmbeddedTestServer();
@@ -163,12 +155,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   std::string message_;
 
  private:
-  bool RunExtensionTestImpl(const std::string& extension_name,
-                            const std::string& test_page,
-                            const char* custom_arg,
-                            int browser_test_flags,
-                            int api_test_flags) WARN_UNUSED_RESULT;
-
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
   std::unique_ptr<base::DictionaryValue> test_config_;

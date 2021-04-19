@@ -8,7 +8,9 @@
 namespace extensions {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SandboxedPages) {
-  EXPECT_TRUE(RunExtensionSubtest("sandboxed_pages", "main.html")) << message_;
+  EXPECT_TRUE(
+      RunExtensionTest({.name = "sandboxed_pages", .page_url = "main.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SandboxedPagesCSP) {

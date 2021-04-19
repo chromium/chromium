@@ -1300,17 +1300,20 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
   // The service worker it registers tries to call getBackgroundClient() and
   // should fail.
   // Note that this also tests that service workers can be registered from tabs.
-  EXPECT_TRUE(RunExtensionSubtest("service_worker/no_background", "page.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "service_worker/no_background", .page_url = "page.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, NotificationAPI) {
-  EXPECT_TRUE(RunExtensionSubtest("service_worker/notifications/has_permission",
-                                  "page.html"));
+  EXPECT_TRUE(
+      RunExtensionTest({.name = "service_worker/notifications/has_permission",
+                        .page_url = "page.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesFetch) {
-  EXPECT_TRUE(RunExtensionSubtest(
-      "service_worker/web_accessible_resources/fetch/", "page.html"));
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "service_worker/web_accessible_resources/fetch/",
+       .page_url = "page.html"}));
 }
 
 // Tests that updating a packed extension with modified scripts works

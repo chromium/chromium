@@ -44,19 +44,22 @@ class HistoryApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "misc_search.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "history/regular", .page_url = "misc_search.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "timed_search.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "history/regular", .page_url = "timed_search.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "delete.html"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "history/regular", .page_url = "delete.html"}))
       << message_;
 }
 
@@ -64,19 +67,22 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
   browser()->profile()->GetPrefs()->
       SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "delete_prohibited.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "history/regular", .page_url = "delete_prohibited.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "get_visits.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "history/regular", .page_url = "get_visits.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionSubtest("history/regular", "search_after_add.html"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "history/regular", .page_url = "search_after_add.html"}))
       << message_;
 }
 

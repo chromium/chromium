@@ -72,13 +72,13 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
 
   // Load |page_url| in a new browser in the current profile and wait for PASSED
   // or FAILED notification. The functionality of this function is reduced
-  // functionality of RunExtensionSubtest(), but we don't use it here because it
+  // functionality of RunExtensionTest(), but we don't use it here because it
   // requires function InProcessBrowserTest::browser() to return non-NULL
   // pointer. Unfortunately it returns the value which is set in constructor and
   // can't be modified. Because on login flow there is no browser, the function
   // InProcessBrowserTest::browser() always returns NULL. Besides this we need
-  // only very little functionality from RunExtensionSubtest(). Thus so that
-  // don't make RunExtensionSubtest() too complex we just introduce a new
+  // only very little functionality from RunExtensionTest(). Thus so that
+  // don't make RunExtensionTest() too complex we just introduce a new
   // function.
   bool TestExtension(const std::string& page_url);
 
