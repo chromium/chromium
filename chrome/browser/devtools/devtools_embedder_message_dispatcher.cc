@@ -18,7 +18,11 @@ bool GetValue(const base::Value& value, std::string* result) {
 }
 
 bool GetValue(const base::Value& value, int* result) {
-  return value.GetAsInteger(result);
+  if (result && value.is_int()) {
+    *result = value.GetInt();
+    return true;
+  }
+  return value.is_int();
 }
 
 bool GetValue(const base::Value& value, double* result) {
