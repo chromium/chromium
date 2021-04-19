@@ -970,8 +970,10 @@ void ProfilePickerView::AddNewContents(
 void ProfilePickerView::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  if (GetSigningIn() && IsExternalURL(sign_in_->contents->GetVisibleURL()))
+  if (GetSigningIn() && source == sign_in_->contents.get() &&
+      IsExternalURL(sign_in_->contents->GetVisibleURL())) {
     FinishSignedInCreationFlowForSAML();
+  }
 }
 
 void ProfilePickerView::BuildLayout() {
@@ -1014,44 +1016,50 @@ void ProfilePickerView::ShowScreen(
     bool show_toolbar,
     bool enable_navigating_back,
     base::OnceClosure navigation_finished_closure) {
+  if (url.is_empty()) {
+    DCHECK(!navigation_finished_closure);
+    ShowScreenFinished(contents, show_toolbar, enable_navigating_back);
+    return;
+  }
+
+  // Make sure to load the url as the last step so that the UI state is
+  // coherent upon the NavigationStateChanged notification.
+  contents->GetController().LoadURL(url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                    std::string());
+  // Binding as Unretained as `this` outlives member
+  // `show_screen_finished_observer_`. If ShowScreen gets called twice in a
+  // short period of time, the first callback may never get called as the first
+  // observer gets destroyed here or later in ShowScreenFinished(). This is okay
+  // as all the previous values get replaced by the new values.
+  show_screen_finished_observer_ = std::make_unique<NavigationFinishedObserver>(
+      url,
+      base::BindOnce(&ProfilePickerView::ShowScreenFinished,
+                     base::Unretained(this), contents, show_toolbar,
+                     enable_navigating_back,
+                     std::move(navigation_finished_closure)),
+      contents);
+}
+
+void ProfilePickerView::ShowScreenFinished(
+    content::WebContents* contents,
+    bool show_toolbar,
+    bool enable_navigating_back,
+    base::OnceClosure navigation_finished_closure) {
+  // Stop observing for this (or any previous) navigation.
+  if (show_screen_finished_observer_)
+    show_screen_finished_observer_.reset();
+
   web_view_->SetWebContents(contents);
   contents->Focus();
 
   // Change visibility of the toolbar after swapping wc in `web_view_` to make
   // it easier for tests to detect changing of the screen.
   toolbar_->SetVisible(show_toolbar);
-
   enable_navigating_back_ = enable_navigating_back;
 
-  if (!url.is_empty()) {
-    // Make sure to load the url as the last step so that the UI state is
-    // coherent upon the NavigationStateChanged notification.
-    contents->GetController().LoadURL(url, content::Referrer(),
-                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                      std::string());
-    if (navigation_finished_closure) {
-      // Unretained as `this` outlives member `show_screen_finished_observer_`.
-      // TODO(crbug.com/1182206): Consider reusing this technique for all
-      // calls of ShowScreen() and SetWebContents() only in the callback. This
-      // could solve the flicker of switching to the switch profile screen in
-      // the system profile.
-      show_screen_finished_observer_ =
-          std::make_unique<NavigationFinishedObserver>(
-              url,
-              base::BindOnce(&ProfilePickerView::ShowScreenFinished,
-                             base::Unretained(this),
-                             std::move(navigation_finished_closure)),
-              contents);
-    }
-  }
-}
-
-void ProfilePickerView::ShowScreenFinished(
-    base::OnceClosure navigation_finished_closure) {
-  DCHECK(navigation_finished_closure);
-  // Stop observing for this navigation.
-  show_screen_finished_observer_.reset();
-  std::move(navigation_finished_closure).Run();
+  if (navigation_finished_closure)
+    std::move(navigation_finished_closure).Run();
 }
 
 void ProfilePickerView::BackButtonPressed(const ui::Event& event) {
@@ -1075,7 +1083,9 @@ void ProfilePickerView::NavigateBack() {
 }
 
 bool ProfilePickerView::GetSigningIn() const {
-  return (state_ == kReady || state_ == kFinalizing) && toolbar_->GetVisible();
+  // We are in the sign-in flow if the sign_in_ struct exists but the email is
+  // not yet determined.
+  return sign_in_ && sign_in_->email.empty();
 }
 
 void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
@@ -1202,17 +1212,25 @@ void ProfilePickerView::FinishSignedInCreationFlow(
 }
 
 void ProfilePickerView::FinishSignedInCreationFlowForSAML() {
+  // First, free up `sign_in_->contents` to be moved to a new browser window.
+  ShowScreen(
+      system_profile_contents_.get(), GURL(url::kAboutBlankURL),
+      /*show_toolbar=*/false, /*enable_navigating_back=*/false,
+      /*navigation_finished_closure=*/
+      base::BindOnce(&ProfilePickerView::OnSignInContentsFreedUp,
+                     // Unretained is enough as the callback is called by a
+                     // member of this class appearing after `sign_in_`.
+                     base::Unretained(this)));
+}
+
+void ProfilePickerView::OnSignInContentsFreedUp() {
   DCHECK_NE(state_, kFinalizing);
   state_ = kFinalizing;
   DCHECK(sign_in_->name_for_signed_in_profile.empty());
 
   sign_in_->name_for_signed_in_profile =
       profiles::GetDefaultNameForNewEnterpriseProfile();
-
-  // Free up `sign_in_->contents` to be moved to a new browser window.
   sign_in_->contents->SetDelegate(nullptr);
-  ShowScreen(system_profile_contents_.get(), GURL(url::kAboutBlankURL),
-             /*show_toolbar=*/false, /*enable_navigating_back=*/false);
   FinishSignedInCreationFlowImpl(
       base::BindOnce(&ContinueSAMLSignin, std::move(sign_in_->contents)),
       /*enterprise_sync_consent_needed=*/true);
