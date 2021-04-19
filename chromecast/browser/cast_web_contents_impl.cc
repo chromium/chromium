@@ -570,6 +570,7 @@ void CastWebContentsImpl::DidStartNavigation(
   active_navigation_ = navigation_handle;
 
   // Main frame has begun navigating/loading.
+  LOG(INFO) << "Navigation started: " << navigation_handle->GetURL();
   OnPageLoading();
   start_loading_ticks_ = base::TimeTicks::Now();
   GURL loading_url;
@@ -582,6 +583,19 @@ void CastWebContentsImpl::DidStartNavigation(
   UpdatePageState();
   DCHECK_EQ(page_state_, PageState::LOADING);
   NotifyPageState();
+}
+
+void CastWebContentsImpl::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(navigation_handle);
+  if (!web_contents_ || closing_ || stopped_)
+    return;
+  if (!navigation_handle->IsInMainFrame())
+    return;
+  // Main frame navigation was redirected by the server.
+  LOG(INFO) << "Navigation was redirected by server: "
+            << navigation_handle->GetURL();
 }
 
 void CastWebContentsImpl::ReadyToCommitNavigation(
