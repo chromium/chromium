@@ -120,6 +120,8 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
     // TODO(wutao): Get a shortcut for the Ambient mode.
     {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
      START_AMBIENT_MODE},
+    // For testing on Linux desktop where it's hard to rebind the caps lock key.
+    {true, ui::VKEY_A, ui::EF_ALT_DOWN, DEV_TOGGLE_APP_LIST},
 };
 
 const size_t kDeveloperAcceleratorDataLength =

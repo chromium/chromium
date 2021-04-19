@@ -32,8 +32,6 @@ enum AcceleratorAction {
   DESKS_MOVE_ACTIVE_ITEM_RIGHT,
   DESKS_NEW_DESK,
   DESKS_REMOVE_CURRENT_DESK,
-  DEV_ADD_REMOVE_DISPLAY,
-  DEV_TOGGLE_UNIFIED_DESKTOP,
   DISABLE_CAPS_LOCK,
   EXIT,
   FOCUS_NEXT_PANE,
@@ -143,6 +141,11 @@ enum AcceleratorAction {
   DEBUG_TOGGLE_WALLPAPER_MODE,
   DEBUG_TRIGGER_CRASH,  // Intentionally crash the ash process.
   DEBUG_TOGGLE_HUD_DISPLAY,
+  DEV_ADD_REMOVE_DISPLAY,
+  // Different than TOGGLE_APP_LIST to ignore search-as-modifier-key rules for
+  // enabling the accelerator.
+  DEV_TOGGLE_APP_LIST,
+  DEV_TOGGLE_UNIFIED_DESKTOP,
 };
 
 struct AcceleratorData {
