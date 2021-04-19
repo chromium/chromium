@@ -6160,7 +6160,7 @@ ScriptPromise Document::interestCohort(ScriptState* script_state,
               resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                   state->GetIsolate(), DOMExceptionCode::kDataError,
                   "Failed to get the interest cohort: either it is "
-                  "unavailable, or the preferences or content settings has "
+                  "unavailable, or preferences or content settings have "
                   "denied access."));
             } else {
               InterestCohort* result = InterestCohort::Create();
