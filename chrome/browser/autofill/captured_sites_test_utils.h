@@ -316,10 +316,9 @@ class TestRecipeReplayer {
       const std::string& element_xpath,
       const std::string& execute_function_body,
       const base::TimeDelta& time_to_wait_for_element = default_action_timeout);
-  bool GetElementProperty(const content::ToRenderFrameHost& frame,
-                          const std::string& element_xpath,
-                          const std::string& get_property_function_body,
-                          std::string* property);
+  std::string GetElementProperty(const content::ToRenderFrameHost& frame,
+                                 const std::string& element_xpath,
+                                 const std::string& get_property_function_body);
   bool ExpectElementPropertyEquals(
       const content::ToRenderFrameHost& frame,
       const std::string& element_xpath,

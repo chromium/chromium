@@ -180,7 +180,7 @@ class AutofillTest : public InProcessBrowserTest {
     WindowedPersonalDataManagerObserver observer(browser());
 
     std::string js = GetJSToFillForm(data) + submit_js;
-    ASSERT_TRUE(content::ExecuteScript(web_contents(), js));
+    ASSERT_TRUE(content::ExecJs(web_contents(), js));
 
     if (simulate_click) {
       // Simulate a mouse click to submit the form because form submissions not
@@ -566,8 +566,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, PiiMetrics) {
     email_input.blur();
   )";
 
-  ASSERT_TRUE(
-      content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
+  ASSERT_TRUE(content::ExecJs(web_contents(), kEditPhoneAndEmailFieldScript));
 
   web_feature_waiter->Wait();
 }
@@ -657,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   // Focus target form field.
   const std::string focus_name_first_js =
       "document.getElementById('NAME_FIRST').focus();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+  ASSERT_TRUE(content::ExecJs(web_contents(), focus_name_first_js));
 
   // Assert that autofill is not yet available for target form field.
   // Loop while criteria is not met.
@@ -695,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   layout_waiter_two.WaitForNotification();
 
   // Focus target form field.
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+  ASSERT_TRUE(content::ExecJs(web_contents(), focus_name_first_js));
 
   // Assert that autofill is now available for target form field.
   // Loop while criteria is not met.
@@ -729,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
   // Focus target form field.
   const std::string focus_name_first_js =
       "document.getElementById('NAME_FIRST').focus();";
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+  ASSERT_TRUE(content::ExecJs(web_contents(), focus_name_first_js));
 
   // Assert that autocomplete is not yet available for target form field.
   // Loop while criteria is not met.
@@ -763,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
   layout_waiter_two.WaitForNotification();
 
   // Focus target form field.
-  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+  ASSERT_TRUE(content::ExecJs(web_contents(), focus_name_first_js));
 
   // Assert that autocomplete is now available for target form field.
   // Loop while criteria is not met.
@@ -818,7 +817,7 @@ class FormSubmissionDetectionTest
     std::string onclick_js = "document.onclick = function() { " + js + "; };";
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(content::ExecuteScript(web_contents, onclick_js));
+    ASSERT_TRUE(content::ExecJs(web_contents, onclick_js));
     content::SimulateMouseClick(
         browser()->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);

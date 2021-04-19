@@ -1044,9 +1044,9 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
   }
 
   // Navigate to the starting URL, wait for the page to complete loading.
-  if (!content::ExecuteScript(GetWebContents(),
-                              base::StringPrintf("window.location.href = '%s';",
-                                                 starting_url->c_str()))) {
+  if (!content::ExecJs(GetWebContents(),
+                       base::StringPrintf("window.location.href = '%s';",
+                                          starting_url->c_str()))) {
     ADD_FAILURE() << "Failed to navigate Chrome to '" << starting_url << "!";
     return false;
   }
@@ -1261,7 +1261,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(
 
   // Execute the commands.
   for (const std::string& command : commands) {
-    if (!content::ExecuteScript(frame, command)) {
+    if (!content::ExecJs(frame, command)) {
       ADD_FAILURE() << "Failed to execute JavaScript command `" << command
                     << "`!";
       return false;
@@ -1412,15 +1412,8 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 
     // If we are validating the value of a Chrome autofilled field, print the
     // Chrome Autofill's field annotation for debugging purpose.
-    std::string autofill_information;
-    if (GetElementProperty(
-            frame, xpath, "return target.getAttribute('autofill-information');",
-            &autofill_information)) {
-      VLOG(1) << autofill_information;
-    } else {
-      // Only used for logging purposes, so don't ADD_FAILURE() if it fails.
-      VLOG(1) << "Failed to obtain the field's Chrome Autofill annotation!";
-    }
+    std::string autofill_information = GetElementProperty(
+        frame, xpath, "return target.getAttribute('autofill-information');");
 
     std::string expected_autofill_prediction_type =
         autofill_prediction_container->GetString();
@@ -1731,18 +1724,15 @@ bool TestRecipeReplayer::AllAssertionsPassed(
     const content::ToRenderFrameHost& frame,
     const std::vector<std::string>& assertions) {
   for (const std::string& assertion : assertions) {
-    bool assertion_passed = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        frame,
-        base::StringPrintf("window.domAutomationController.send("
-                           "    (function() {"
-                           "      try {"
-                           "        %s"
-                           "      } catch (ex) {}"
-                           "      return false;"
-                           "    })());",
-                           assertion.c_str()),
-        &assertion_passed));
+    bool assertion_passed =
+        content::EvalJs(frame, base::StringPrintf("(function() {"
+                                                  "  try {"
+                                                  "    %s"
+                                                  "  } catch (ex) {}"
+                                                  "  return false;"
+                                                  "})();",
+                                                  assertion.c_str()))
+            .ExtractBool();
     if (!assertion_passed) {
       VLOG(1) << "'" << assertion << "' failed!";
       return false;
@@ -1765,26 +1755,24 @@ bool TestRecipeReplayer::ExecuteJavaScriptOnElementByXpath(
   return ExecuteScript(frame, js);
 }
 
-bool TestRecipeReplayer::GetElementProperty(
+std::string TestRecipeReplayer::GetElementProperty(
     const content::ToRenderFrameHost& frame,
     const std::string& element_xpath,
-    const std::string& get_property_function_body,
-    std::string* property) {
-  return ExecuteScriptAndExtractString(
-      frame,
-      base::StringPrintf(
-          "window.domAutomationController.send("
-          "    (function() {"
-          "      try {"
-          "        var element = function() {"
-          "          return automation_helper.getElementByXpath(`%s`);"
-          "        }();"
-          "        return function(target){%s}(element);"
-          "      } catch (ex) {}"
-          "      return 'Exception encountered';"
-          "    })());",
-          element_xpath.c_str(), get_property_function_body.c_str()),
-      property);
+    const std::string& get_property_function_body) {
+  return content::EvalJs(
+             frame,
+             base::StringPrintf(
+                 "(function() {"
+                 "  try {"
+                 "    var element = function() {"
+                 "      return automation_helper.getElementByXpath(`%s`);"
+                 "    }();"
+                 "    return function(target){%s}(element);"
+                 "  } catch (ex) {}"
+                 "  return 'Exception encountered';"
+                 "})();",
+                 element_xpath.c_str(), get_property_function_body.c_str()))
+      .ExtractString();
 }
 
 bool TestRecipeReplayer::ExpectElementPropertyEquals(
@@ -1794,13 +1782,8 @@ bool TestRecipeReplayer::ExpectElementPropertyEquals(
     const std::string& expected_value,
     const std::string& validation_field,
     bool ignore_case) {
-  std::string value;
-  if (!GetElementProperty(frame, element_xpath, get_property_function_body,
-                          &value)) {
-    ADD_FAILURE() << "Failed to extract element property! " << element_xpath
-                  << ", " << get_property_function_body;
-    return false;
-  }
+  std::string value =
+      GetElementProperty(frame, element_xpath, get_property_function_body);
 
   if ((ignore_case &&
        !base::EqualsCaseInsensitiveASCII(expected_value, value)) ||
@@ -1829,8 +1812,9 @@ bool TestRecipeReplayer::ScrollElementIntoView(
       "}",
       element_xpath.c_str()));
 
-  bool succeeded = false;
-  if (!ExecuteScriptAndExtractBool(frame, scroll_target_js, &succeeded)) {
+  if (!content::EvalJs(frame, scroll_target_js,
+                       content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+           .ExtractBool()) {
     ADD_FAILURE() << "Failed to scroll the element into view with JavaScript!";
     return false;
   }
@@ -1866,11 +1850,9 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
       "}",
       element_xpath.c_str()));
 
-  bool focused = false;
-  if (!ExecuteScriptAndExtractBool(frame, focus_on_target_field_js, &focused)) {
-    ADD_FAILURE() << "Failed to place focus on the element with JavaScript!";
-    return false;
-  }
+  bool focused = content::EvalJs(frame, focus_on_target_field_js,
+                                 content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                     .ExtractBool();
 
   if (focused) {
     return true;
@@ -1890,28 +1872,22 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::string& target_element_xpath,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
-  std::string rect_str;
   const std::string get_element_bounding_rect_js(base::StringPrintf(
-      "window.domAutomationController.send("
-      "    (function() {"
-      "       try {"
-      "         const element = automation_helper.getElementByXpath(`%s`);"
-      "         const rect = element.getBoundingClientRect();"
-      "         return Math.round(rect.left) + ',' + "
-      "                Math.round(rect.top) + ',' + "
-      "                Math.round(rect.width) + ',' + "
-      "                Math.round(rect.height);"
-      "       } catch(ex) {}"
-      "       return '';"
-      "    })());",
+      "(function() {"
+      "   try {"
+      "     const element = automation_helper.getElementByXpath(`%s`);"
+      "     const rect = element.getBoundingClientRect();"
+      "     return Math.round(rect.left) + ',' + "
+      "            Math.round(rect.top) + ',' + "
+      "            Math.round(rect.width) + ',' + "
+      "            Math.round(rect.height);"
+      "   } catch(ex) {}"
+      "   return '';"
+      "})();",
       target_element_xpath.c_str()));
 
-  if (!content::ExecuteScriptAndExtractString(
-          frame, get_element_bounding_rect_js, &rect_str)) {
-    ADD_FAILURE()
-        << "Failed to run script to extract target element's bounding rect!";
-    return false;
-  }
+  std::string rect_str =
+      content::EvalJs(frame, get_element_bounding_rect_js).ExtractString();
 
   if (rect_str.empty()) {
     ADD_FAILURE() << "Failed to extract target element's bounding rect!";

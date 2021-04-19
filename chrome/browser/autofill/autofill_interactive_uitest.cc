@@ -370,7 +370,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   // sends keypress events to the tab to cause the form to be populated.
   void PopulateForm(const std::string& field_id) {
     std::string js("document.getElementById('" + field_id + "').focus();");
-    ASSERT_TRUE(content::ExecuteScript(GetWebContents(), js));
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), js));
 
     ShowDropdownAndSelectFirstSuggestionUsingArrowDown();
     SendKeyToPopupAndWait(ui::DomKey::ENTER,
@@ -379,36 +379,26 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void ExpectFieldValue(const std::string& field_name,
                         const std::string& expected_value) {
-    std::string value;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.getElementById('" +
-            field_name + "').value);",
-        &value));
-    EXPECT_EQ(expected_value, value) << "for field " << field_name;
+    EXPECT_EQ(expected_value,
+              content::EvalJs(GetWebContents(), "document.getElementById('" +
+                                                    field_name + "').value;"))
+        << "for field " << field_name;
   }
 
   void AssertFieldValue(const std::string& field_name,
                         const std::string& expected_value) {
-    std::string value;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.getElementById('" +
-            field_name + "').value);",
-        &value));
-    ASSERT_EQ(expected_value, value) << "for field " << field_name;
+    ASSERT_EQ(expected_value,
+              content::EvalJs(GetWebContents(), "document.getElementById('" +
+                                                    field_name + "').value;"))
+        << "for field " << field_name;
   }
 
-  void GetFieldBackgroundColor(const std::string& field_name,
-                               std::string* color) {
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.defaultView.getComputedStyle(document.getElementById('" +
-            field_name + "')).backgroundColor);",
-        color));
+  std::string GetFieldBackgroundColor(const std::string& field_name) {
+    return content::EvalJs(GetWebContents(),
+                           "document.defaultView.getComputedStyle(document."
+                           "getElementById('" +
+                               field_name + "')).backgroundColor;")
+        .ExtractString();
   }
 
   void SimulateURLFetch() {
@@ -450,7 +440,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   }
 
   void FocusFieldByName(const std::string& name) {
-    bool result = false;
     std::string script = base::StringPrintf(
         R"( function onFocusHandler(e) {
               e.target.removeEventListener(e.type, arguments.callee);
@@ -464,31 +453,24 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
               domAutomationController.send(false);
             })",
         name.c_str());
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(), script,
-                                                     &result));
-    ASSERT_TRUE(result);
+    ASSERT_EQ(true, content::EvalJs(GetWebContents(), script,
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
   void FocusFirstNameField() { FocusFieldByName("firstname"); }
 
   // Simulates a click on the middle of the DOM element with the given |id|.
   void ClickElementWithId(const std::string& id) {
-    int x;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(),
-        "var bounds = document.getElementById('" + id +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.left + bounds.width / 2));",
-        &x));
-    int y;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(),
-        "var bounds = document.getElementById('" + id +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.top + bounds.height / 2));",
-        &y));
+    int x = content::EvalJs(GetWebContents(),
+                            "var bounds = document.getElementById('" + id +
+                                "').getBoundingClientRect();"
+                                "Math.floor(bounds.left + bounds.width / 2);")
+                .ExtractInt();
+    int y = content::EvalJs(GetWebContents(),
+                            "var bounds = document.getElementById('" + id +
+                                "').getBoundingClientRect();"
+                                "Math.floor(bounds.top + bounds.height / 2);")
+                .ExtractInt();
     content::SimulateMouseClickAt(GetWebContents(), 0,
                                   blink::WebMouseEvent::Button::kLeft,
                                   gfx::Point(x, y));
@@ -502,9 +484,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   // show if it's going to. If it does show, an assert in
   // AutofillManagerTestDelegateImpl will trigger.
   void MakeSurePopupDoesntAppear() {
-    int unused;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(), "domAutomationController.send(42)", &unused));
+    EXPECT_EQ(42, content::EvalJs(GetWebContents(), "42"));
   }
 
   void ExpectFilledTestForm() {
@@ -552,7 +532,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   }
 
   void DeleteElementValue(const std::string& element_name) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(),
         "document.getElementById('" + element_name + "').value = '';"));
     AssertFieldValue(element_name, "");
@@ -1266,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
   ExpectFilledTestForm();
 
   // Delete the value of a filled field.
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetWebContents(), "document.getElementById('firstname').value = '';"));
   ExpectFieldValue("firstname", "");
 
@@ -1298,8 +1278,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  std::string orginalcolor;
-  GetFieldBackgroundColor("firstname", &orginalcolor);
+  std::string orginalcolor = GetFieldBackgroundColor("firstname");
 
   FocusFirstNameField();
   SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
@@ -1309,8 +1288,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   // Pressing the down arrow preselects the first item. Pressing it again
   // selects the second item.
   ExpectFieldValue("firstname", "Bob");
-  std::string color;
-  GetFieldBackgroundColor("firstname", &color);
+  std::string color = GetFieldBackgroundColor("firstname");
   EXPECT_EQ(color, orginalcolor);
 }
 
@@ -1336,15 +1314,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       "document.getElementById('firstname').type = 'password';"));
   // At this point, the IsPasswordFieldForAutofill() function returns true and
   // will continue to return true for the field, even when the type is changed
   // back to 'search'.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(),
-      "document.getElementById('firstname').type = 'search';"));
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents(),
+                      "document.getElementById('firstname').type = 'search';"));
 
   // Regression test for crbug.com/918351 whether the datalist becomes available
   // again.
@@ -1407,26 +1385,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
   // The form should be filled.
   ExpectFilledTestForm();
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 // Test that a JavaScript onchange event is fired after auto-filling a form.
@@ -1478,26 +1441,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
   // The form should be filled.
   ExpectFilledTestForm();
 
-  bool focused_fired = false;
-  bool unfocused_fired = false;
-  bool changed_select_fired = false;
-  bool unchanged_select_fired = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(focused_fired);",
-      &focused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unfocused_fired);",
-      &unfocused_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(changed_select_fired);",
-      &changed_select_fired));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(unchanged_select_fired);",
-      &unchanged_select_fired));
-  EXPECT_TRUE(focused_fired);
-  EXPECT_TRUE(unfocused_fired);
-  EXPECT_TRUE(changed_select_fired);
-  EXPECT_FALSE(unchanged_select_fired);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "focused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "unfocused_fired;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "changed_select_fired;"));
+  EXPECT_EQ(false,
+            content::EvalJs(GetWebContents(), "unchanged_select_fired;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
@@ -1536,45 +1484,20 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
   SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
   ExpectFilledTestForm();
 
-  int num_input_element_events = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      GetWebContents(),
-      "domAutomationController.send(inputElementEvents.length);",
-      &num_input_element_events));
-  EXPECT_EQ(2, num_input_element_events);
+  EXPECT_EQ(2, content::EvalJs(GetWebContents(), "inputElementEvents.length;"));
 
-  std::vector<std::string> input_element_events;
-  input_element_events.resize(2);
+  EXPECT_EQ("input",
+            content::EvalJs(GetWebContents(), "inputElementEvents[0];"));
+  EXPECT_EQ("change",
+            content::EvalJs(GetWebContents(), "inputElementEvents[1];"));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[0]);",
-      &input_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[1]);",
-      &input_element_events[1]));
+  EXPECT_EQ(2,
+            content::EvalJs(GetWebContents(), "selectElementEvents.length;"));
 
-  EXPECT_EQ("input", input_element_events[0]);
-  EXPECT_EQ("change", input_element_events[1]);
-
-  int num_select_element_events = -1;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      GetWebContents(),
-      "domAutomationController.send(selectElementEvents.length);",
-      &num_select_element_events));
-  EXPECT_EQ(2, num_select_element_events);
-
-  std::vector<std::string> select_element_events;
-  select_element_events.resize(2);
-
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[0]);",
-      &select_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[1]);",
-      &select_element_events[1]));
-
-  EXPECT_EQ("input", select_element_events[0]);
-  EXPECT_EQ("change", select_element_events[1]);
+  EXPECT_EQ("input",
+            content::EvalJs(GetWebContents(), "selectElementEvents[0];"));
+  EXPECT_EQ("change",
+            content::EvalJs(GetWebContents(), "selectElementEvents[1];"));
 }
 
 // Test that we can autofill forms distinguished only by their |id| attribute.
@@ -1786,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
       ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Dynamically construct the form.
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), "BuildForm();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), "BuildForm();"));
 
   // Invoke Autofill.
   TryBasicFormFill();
@@ -1824,90 +1747,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   TryBasicFormFill();
 
   // Checks that all the events were fired for the input field.
-  bool input_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputfocus);",
-      &input_focus_triggered));
-  EXPECT_TRUE(input_focus_triggered);
-  bool input_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeydown);",
-      &input_keydown_triggered));
-  EXPECT_TRUE(input_keydown_triggered);
-  bool input_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputinput);",
-      &input_input_triggered));
-  EXPECT_TRUE(input_input_triggered);
-  bool input_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputchange);",
-      &input_change_triggered));
-  EXPECT_TRUE(input_change_triggered);
-  bool input_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputkeyup);",
-      &input_keyup_triggered));
-  EXPECT_TRUE(input_keyup_triggered);
-  bool input_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(inputblur);",
-      &input_blur_triggered));
-  EXPECT_TRUE(input_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "inputblur;"));
 
   // Checks that all the events were fired for the textarea field.
-  bool text_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textfocus);",
-      &text_focus_triggered));
-  EXPECT_TRUE(text_focus_triggered);
-  bool text_keydown_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeydown);",
-      &text_keydown_triggered));
-  EXPECT_TRUE(text_keydown_triggered);
-  bool text_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textinput);",
-      &text_input_triggered));
-  EXPECT_TRUE(text_input_triggered);
-  bool text_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textchange);",
-      &text_change_triggered));
-  EXPECT_TRUE(text_change_triggered);
-  bool text_keyup_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textkeyup);",
-      &text_keyup_triggered));
-  EXPECT_TRUE(text_keyup_triggered);
-  bool text_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(textblur);",
-      &text_blur_triggered));
-  EXPECT_TRUE(text_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeydown;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textkeyup;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "textblur;"));
 
   // Checks that all the events were fired for the select field.
-  bool select_focus_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectfocus);",
-      &select_focus_triggered));
-  EXPECT_TRUE(select_focus_triggered);
-  bool select_input_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectinput);",
-      &select_input_triggered));
-  EXPECT_TRUE(select_input_triggered);
-  bool select_change_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectchange);",
-      &select_change_triggered));
-  EXPECT_TRUE(select_change_triggered);
-  bool select_blur_triggered;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "domAutomationController.send(selectblur);",
-      &select_blur_triggered));
-  EXPECT_TRUE(select_blur_triggered);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectfocus;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectinput;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
 }
 
 // Test fails on Linux ASAN, see http://crbug.com/532737
@@ -2144,8 +2003,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FormFillableOnReset) {
   ui_test_utils::NavigateToURL(browser(), url);
   PopulateForm("NAME_FIRST");
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').reset()"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').reset()"));
 
   PopulateForm("NAME_FIRST");
 
@@ -2257,8 +2116,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       content::Source<content::NavigationController>(
           &GetWebContents()->GetController()));
 
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "document.getElementById('testform').submit();"));
   // This will ensure the test didn't hang.
   load_stop_observer.Wait();
 }
@@ -2283,9 +2142,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   // Now that the popup with suggestions is showing, disable autocomplete for
   // the active field.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(),
-      "document.querySelector('input').autocomplete = 'off';"));
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents(),
+                      "document.querySelector('input').autocomplete = 'off';"));
 
   // Press the down arrow to select the suggestion and attempt to preview the
   // autofilled form.
@@ -2304,7 +2163,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Focus on the first field of the second form.
-  bool result = false;
   std::string script =
       R"( function onFocusHandler(e) {
           e.target.removeEventListener(e.type, arguments.callee);
@@ -2317,9 +2175,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
         } else {
           domAutomationController.send(false);
         })";
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(GetWebContents(), script, &result));
-  ASSERT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), script,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Start filling the first name field with "M" and wait for the popup to be
   // shown.
@@ -2335,20 +2192,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
 
   // Make sure that the form was filled.
-  std::string value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(),
-      "window.domAutomationController.send("
-      "    document.forms[1].elements[0].value);",
-      &value));
-  EXPECT_EQ("Milton C. Waddams", value) << "for first field";
+  EXPECT_EQ(
+      "Milton C. Waddams",
+      content::EvalJs(GetWebContents(), "document.forms[1].elements[0].value;"))
+      << "for first field";
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(),
-      "window.domAutomationController.send("
-      "    document.forms[1].elements[1].value);",
-      &value));
-  EXPECT_EQ("red.swingline@initech.com", value) << "for second field";
+  EXPECT_EQ(
+      "red.swingline@initech.com",
+      content::EvalJs(GetWebContents(), "document.forms[1].elements[1].value;"))
+      << "for second field";
 }
 
 // The following four tests verify that we can autofill forms with multiple
@@ -2464,10 +2316,8 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest, FieldsChangeName) {
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  ASSERT_TRUE(has_filled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasFilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
@@ -2541,10 +2391,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasFilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2580,10 +2428,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasFilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2616,10 +2462,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
   TriggerFormFill("firstname");
 
   // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasFilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2691,19 +2535,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.
   std::string script_focus("document.getElementById('NAME_FIRST').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
+  ASSERT_TRUE(content::ExecJs(cross_frame, script_focus));
   content::RenderWidgetHost* widget =
       cross_frame->GetView()->GetRenderWidgetHost();
   AcceptSuggestionUsingArrowDown(/*suggestion_position=*/1, widget);
 
   // Check that the suggestion was filled.
-  std::string value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      cross_frame,
-      "window.domAutomationController.send("
-      "    document.getElementById('NAME_FIRST').value);",
-      &value));
-  EXPECT_EQ("Milton", value);
+  EXPECT_EQ("Milton",
+            content::EvalJs(cross_frame,
+                            "document.getElementById('NAME_FIRST').value;"));
 }
 
 // This test verifies that credit card (payment card list) popup works when the
@@ -2734,7 +2574,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
   std::string script_focus(
       "window.focus();"
       "document.getElementById('CREDIT_CARD_NUMBER').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
+  ASSERT_TRUE(content::ExecJs(cross_frame, script_focus));
 
   // Wait to make sure iframe is fully rendered. Without the wait, Chrome
   // sometimes got the signal to render a dropdown at a time and coordinate
@@ -2778,7 +2618,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.
   std::string script_focus("document.getElementById('NAME_FIRST').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
+  ASSERT_TRUE(content::ExecJs(cross_frame, script_focus));
   SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
                        {ObservedUiEvents::kSuggestionShown});
   content::RenderWidgetHost* widget =
@@ -2791,7 +2631,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
   // Delete the iframe.
   std::string script_delete =
       "document.body.removeChild(document.getElementById('crossFrame'));";
-  ASSERT_TRUE(content::ExecuteScript(GetWebContents(), script_delete));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), script_delete));
 
   // The popup should have disappeared with the iframe.
   EXPECT_FALSE(IsPopupShown());
@@ -2849,17 +2689,15 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname_form1", "Milton");
@@ -2884,17 +2722,16 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
   TriggerFormFill("firstname_form1");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled('firstname_form1')", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true,
+            content::EvalJs(GetWebContents(), "hasRefilled('firstname_form1')",
+                            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname_form1", "Milton");
@@ -2908,10 +2745,9 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
   TriggerFormFill("firstname_form2");
 
   // Wait for the re-fill to happen.
-  has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled('firstname_form2')", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true,
+            content::EvalJs(GetWebContents(), "hasRefilled('firstname_form2')",
+                            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname_form2", "Milton");
@@ -2934,17 +2770,15 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
   TriggerFormFill("firstname");
 
   // Wait for two dynamic changes to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  EXPECT_EQ(false, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was not filled.
   ExpectFieldValue("firstname_form2", "");
@@ -2968,10 +2802,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  EXPECT_EQ(false, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure that the new form was not filled.
   ExpectFieldValue("firstname_form1", "");
@@ -2994,17 +2826,15 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
   TriggerFormFill("firstname");
 
   // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // The fields present in the initial fill should be filled.
   ExpectFieldValue("firstname_form1", "Milton");
@@ -3032,11 +2862,10 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
       "a.com", "/autofill/dynamic_form_select_to_text.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
   TriggerFormFill("firstname");
+
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
@@ -3059,10 +2888,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
   TriggerFormFill("firstname");
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
@@ -3088,10 +2915,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname2", "Milton");
@@ -3114,10 +2939,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname2", "Milton");
@@ -3145,11 +2968,9 @@ IN_PROC_BROWSER_TEST_F(
   TriggerFormFill("firstname_5");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
   ExpectFieldValue("firstname_1", "");
@@ -3176,11 +2997,9 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname_5");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
   ExpectFieldValue("firstname_1", "");
@@ -3208,11 +3027,9 @@ IN_PROC_BROWSER_TEST_F(
   TriggerFormFill("firstname_5");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
   ExpectFieldValue("firstname_1", "");
@@ -3236,10 +3053,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname2", "Milton");
@@ -3262,7 +3077,7 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
@@ -3275,10 +3090,8 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
   SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
 
   // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // There should be no values in the fields.
   ExpectFieldValue("cc-name", "Milton Waddams");
@@ -3301,10 +3114,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
@@ -3329,10 +3140,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  EXPECT_EQ(false, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // The fields that were initially filled and not reset should still be filled.
   ExpectFieldValue("firstname", "");  // That field value was reset dynamically.
@@ -3356,17 +3165,15 @@ IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
 
   // TODO(crbug/896689): Cleanup feature, also in JS code.
   if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
+    ASSERT_TRUE(content::ExecJs(
         GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
   }
 
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname_form1", "Milton");
@@ -3393,10 +3200,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
@@ -3421,10 +3226,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname_syntheticform1", "Milton");
@@ -3449,10 +3252,8 @@ IN_PROC_BROWSER_TEST_F(AutofillDynamicFormInteractiveTest,
   TriggerFormFill("firstname");
 
   // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "hasRefilled()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Make sure the new form was filled correctly.
   ExpectFieldValue("firstname", "Milton");
