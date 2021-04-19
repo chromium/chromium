@@ -66,6 +66,7 @@ class PowerMetricsReporter
   // expected sampling interval, and |interval_duration| the actual duration
   // since the beginning of the interval.
   static void ReportBatteryHistograms(
+      const UsageScenarioDataStore::IntervalData& interval_data,
       base::TimeDelta sampling_interval,
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
@@ -84,10 +85,17 @@ class PowerMetricsReporter
       const BatteryLevelProvider::BatteryState& battery_state);
 
   // Report the UKMs for the past interval.
-  void ReportUKMs(const performance_monitor::ProcessMonitor::Metrics& metrics,
+  void ReportUKMs(const UsageScenarioDataStore::IntervalData& interval_data,
+                  const performance_monitor::ProcessMonitor::Metrics& metrics,
                   base::TimeDelta interval_duration,
                   BatteryDischargeMode discharge_mode,
                   base::Optional<int64_t> discharge_rate_during_interval) const;
+
+  void ReportUKMsAndHistograms(
+      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      base::TimeDelta interval_duration,
+      BatteryDischargeMode discharge_mode,
+      base::Optional<int64_t> discharge_rate_during_interval) const;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
