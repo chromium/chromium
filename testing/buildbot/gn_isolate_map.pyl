@@ -1963,6 +1963,10 @@
     "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
     "type": "console_test_launcher",
   },
+  "weblayer_instrumentation_test_with_chrome_apk": {
+    "label": "//weblayer/browser/android/javatests:weblayer_instrumentation_test_with_chrome_apk",
+    "type": "console_test_launcher",
+  },
   "weblayer_instrumentation_test_versions_apk": {
     "args":  [
       "--replace-system-package",

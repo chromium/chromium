@@ -203,6 +203,24 @@ weblayer_instrumentation("weblayer_instrumentation_test_apk") {
   deps = [ ":weblayer_java_tests" ]
 }
 
+# This target compiles Chrome as well as the WebLayer instrumentation test
+# apk. Use this target for builders that use devices which do not have
+# Chrome installed like Android Marshmallow x86 emulators. If your device
+# does not have Chrome installed, then you can use this target when running
+# tests locally also.
+weblayer_instrumentation("weblayer_instrumentation_test_with_chrome_apk") {
+  apk_name = "WebLayerInstrumentationTestWithChrome"
+  apk_under_test = "//weblayer/shell/android:weblayer_shell_system_webview_apk"
+  use_webview_provider = system_webview_apk_target
+
+  deps = [
+      ":weblayer_java_tests",
+      "//chrome/android/:chrome_public_apk",
+  ]
+
+  data_deps = [ "//chrome/android/:chrome_public_apk" ]
+}
+
 # Runs the instrumentation tests loading the implementation from the WebLayer
 # support library.
 weblayer_instrumentation("weblayer_support_instrumentation_test_apk") {
