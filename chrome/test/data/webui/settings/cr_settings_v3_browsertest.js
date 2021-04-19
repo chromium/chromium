@@ -14,6 +14,10 @@ GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/password_manager/core/common/password_manager_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#include "components/language/core/common/language_experiments.h"');
+GEN('#endif');
+
 /** Test fixture for shared Polymer 3 elements. */
 // eslint-disable-next-line no-var
 var CrSettingsV3BrowserTest = class extends PolymerTest {
@@ -86,8 +90,16 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 GEN('#endif');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+// eslint-disable-next-line no-var
+var CrSettingsLanguagesPageRestructuredV3Test =
+    class extends CrSettingsLanguagesPageV3Test {
+  /** @override */
+  get featureListInternal() {
+    return {enabled: ['language::kDesktopRestructuredLanguageSettings']};
+  }
+};
 TEST_F(
-    'CrSettingsLanguagesPageV3Test', 'RestructuredLanguageSettings',
+    'CrSettingsLanguagesPageRestructuredV3Test', 'RestructuredLanguageSettings',
     function() {
       mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
           .run();

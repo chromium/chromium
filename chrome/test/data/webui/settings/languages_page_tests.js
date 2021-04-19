@@ -6,7 +6,7 @@
 import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {getFakeLanguagePrefs} from 'chrome://test/settings/fake_language_settings_private.js';
 import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
 import {TestLanguagesBrowserProxy} from 'chrome://test/settings/test_languages_browser_proxy.js';
@@ -325,11 +325,6 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
   let browserProxy = null;
 
   suiteSetup(function() {
-    // TODO(crbug/1109431): Update this test once migration is completed.
-    loadTimeData.overrideValues({
-      isChromeOSLanguagesSettingsUpdate: false,
-      enableDesktopRestructuredLanguageSettings: true,
-    });
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
     CrSettingsPrefs.deferInitialization = true;
@@ -371,6 +366,13 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
     assertFalse(isChildVisible(languagesPage, '#languagesCollapse'));
     assertTrue(isChildVisible(languagesPage, '#languagesSubpageTrigger'));
   });
+
+  test('languageSubpageTriggerClicked', function() {
+    languagesPage.$$('#languagesSubpageTrigger').click();
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.LANGUAGE_SETTINGS);
+  });
+
 });
 
 suite(
