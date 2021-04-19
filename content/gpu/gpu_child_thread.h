@@ -31,7 +31,6 @@
 #include "gpu/ipc/service/gpu_config.h"
 #include "gpu/ipc/service/x_util.h"
 #include "media/base/android_overlay_mojo_factory.h"
-#include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 

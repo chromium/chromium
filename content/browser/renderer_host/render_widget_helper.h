@@ -15,7 +15,6 @@
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"

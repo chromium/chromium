@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 namespace content {
 

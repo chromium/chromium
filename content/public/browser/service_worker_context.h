@@ -14,16 +14,16 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-forward.h"
-#include "url/gurl.h"
 
-namespace blink {
+namespace url {
+class Origin;
+}  // namespace url
 
-struct TransferableMessage;
-
-}
+class GURL;
 
 namespace content {
 

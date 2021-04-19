@@ -9,7 +9,6 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/log.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 
 namespace content {
 

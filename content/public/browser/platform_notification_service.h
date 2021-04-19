@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_database_data.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
 

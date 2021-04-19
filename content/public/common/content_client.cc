@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"

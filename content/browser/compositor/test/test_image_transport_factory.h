@@ -20,7 +20,6 @@
 #include "components/viz/test/test_image_factory.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "ui/compositor/compositor.h"
 
 namespace content {

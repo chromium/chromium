@@ -10,7 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 
 namespace content {
 

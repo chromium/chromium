@@ -8,7 +8,6 @@
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_host.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
