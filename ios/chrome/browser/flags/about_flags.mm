@@ -262,45 +262,72 @@ const FeatureEntry::FeatureVariation kRefactoredNTPLoggingVariations[] = {
     {"Logging Enabled", kRefactoredNTPLogging,
      base::size(kRefactoredNTPLogging), nullptr}};
 
-const FeatureEntry::FeatureParam kStartSurfaceReturnImmediately[] = {
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-const FeatureEntry::FeatureParam kStartSurfaceReturnInOneHour[] = {
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
-const FeatureEntry::FeatureParam kStartSurfaceShrinkLogo[] = {
+const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-const FeatureEntry::FeatureParam kStartSurfaceHideShortcuts[] = {
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
+const FeatureEntry::FeatureParam kStartSurfaceTenSecondsHideShortcuts[] = {
     {kStartSurfaceHideShortcutsParam, "true"},
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-const FeatureEntry::FeatureParam kStartSurfaceReturnToRecentTab[] = {
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
+const FeatureEntry::FeatureParam kStartSurfaceTenSecondsReturnToRecentTab[] = {
     {kStartSurfaceReturnToRecentTabParam, "true"},
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-const FeatureEntry::FeatureParam kStartSurfaceShrinkLogoReturnToRecentTab[] = {
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
+const FeatureEntry::FeatureParam
+    kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab[] = {
+        {kStartSurfaceShrinkLogoParam, "true"},
+        {kStartSurfaceReturnToRecentTabParam, "true"},
+        {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
+const FeatureEntry::FeatureParam
+    kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab[] = {
+        {kStartSurfaceHideShortcutsParam, "true"},
+        {kStartSurfaceReturnToRecentTabParam, "true"},
+        {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
+const FeatureEntry::FeatureParam kStartSurfaceOneHourShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
+const FeatureEntry::FeatureParam kStartSurfaceOneHourHideShortcuts[] = {
+    {kStartSurfaceHideShortcutsParam, "true"},
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
+const FeatureEntry::FeatureParam kStartSurfaceOneHourReturnToRecentTab[] = {
     {kStartSurfaceReturnToRecentTabParam, "true"},
-    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
-const FeatureEntry::FeatureParam kStartSurfaceHideShortcutsReturnToRecentTab[] =
-    {{kStartSurfaceHideShortcutsParam, "true"},
-     {kStartSurfaceReturnToRecentTabParam, "true"},
-     {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
+const FeatureEntry::FeatureParam
+    kStartSurfaceOneHourShrinkLogoReturnToRecentTab[] = {
+        {kStartSurfaceShrinkLogoParam, "true"},
+        {kStartSurfaceReturnToRecentTabParam, "true"},
+        {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
+const FeatureEntry::FeatureParam
+    kStartSurfaceOneHourHideShortcutsReturnToRecentTab[] = {
+        {kStartSurfaceHideShortcutsParam, "true"},
+        {kStartSurfaceReturnToRecentTabParam, "true"},
+        {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
 
 const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
-    {"Return immediately", kStartSurfaceReturnImmediately,
-     base::size(kStartSurfaceReturnImmediately), nullptr},
-    {"Return in one hour", kStartSurfaceReturnInOneHour,
-     base::size(kStartSurfaceReturnInOneHour), nullptr},
-    {"Show Return to Recent Tab tile", kStartSurfaceReturnToRecentTab,
-     base::size(kStartSurfaceReturnToRecentTab), nullptr},
-    {"Shrink Logo", kStartSurfaceShrinkLogo,
-     base::size(kStartSurfaceShrinkLogo), nullptr},
-    {"Hide Shortcuts", kStartSurfaceHideShortcuts,
-     base::size(kStartSurfaceHideShortcuts), nullptr},
-    {"Shrink Logo and show Return to Recent Tab tile",
-     kStartSurfaceShrinkLogoReturnToRecentTab,
-     base::size(kStartSurfaceShrinkLogoReturnToRecentTab), nullptr},
-    {"Hide Shortcuts and show Return to Recent Tab tile",
-     kStartSurfaceHideShortcutsReturnToRecentTab,
-     base::size(kStartSurfaceHideShortcutsReturnToRecentTab), nullptr},
+    {"10s:Show Return to Recent Tab tile",
+     kStartSurfaceTenSecondsReturnToRecentTab,
+     base::size(kStartSurfaceTenSecondsReturnToRecentTab), nullptr},
+    {"10s:Shrink Logo", kStartSurfaceTenSecondsShrinkLogo,
+     base::size(kStartSurfaceTenSecondsShrinkLogo), nullptr},
+    {"10s:Hide Shortcuts", kStartSurfaceTenSecondsHideShortcuts,
+     base::size(kStartSurfaceTenSecondsHideShortcuts), nullptr},
+    {"10s:Shrink Logo and show Return to Recent Tab tile",
+     kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab,
+     base::size(kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab), nullptr},
+    {"10s:Hide Shortcuts and show Return to Recent Tab tile",
+     kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab,
+     base::size(kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab),
+     nullptr},
+    {"1h:Show Return to Recent Tab tile", kStartSurfaceOneHourReturnToRecentTab,
+     base::size(kStartSurfaceOneHourReturnToRecentTab), nullptr},
+    {"1h:Shrink Logo", kStartSurfaceOneHourShrinkLogo,
+     base::size(kStartSurfaceOneHourShrinkLogo), nullptr},
+    {"1h:Hide Shortcuts", kStartSurfaceOneHourHideShortcuts,
+     base::size(kStartSurfaceOneHourHideShortcuts), nullptr},
+    {"1h:Shrink Logo and show Return to Recent Tab tile",
+     kStartSurfaceOneHourShrinkLogoReturnToRecentTab,
+     base::size(kStartSurfaceOneHourShrinkLogoReturnToRecentTab), nullptr},
+    {"1h:Hide Shortcuts and show Return to Recent Tab tile",
+     kStartSurfaceOneHourHideShortcutsReturnToRecentTab,
+     base::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
 const FeatureEntry::FeatureParam kWebViewNativeContextMenuWeb[] = {
