@@ -365,7 +365,7 @@ export class EmojiPicker extends PolymerElement {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
       let tabscrollLeft = this.shadowRoot.getElementById('tabs').scrollLeft;
-      if (tabscrollLeft > GROUP_ICON_SIZE * (index - 1)) {
+      if (tabscrollLeft > GROUP_ICON_SIZE * (index - 0.5)) {
         tabscrollLeft = 0;
       }
       if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <

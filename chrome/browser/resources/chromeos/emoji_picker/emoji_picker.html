@@ -58,9 +58,13 @@
     width: 100%;
   }
 
-  /* Mark the first and 9th group as scroll targets to get the correct scroll
+  /* Mark the first and 10th group as scroll targets to get the correct scroll
    * snapping behavior. */
-  #tabs emoji-group-button:nth-child(9n-7) {
+  #tabs emoji-group-button:nth-child(2) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  #tabs emoji-group-button:nth-child(11) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
