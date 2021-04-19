@@ -385,14 +385,6 @@ class CSSProperties(object):
     def properties_including_aliases(self):
         return self._properties_including_aliases
 
-    # https://drafts.csswg.org/cssom/#supported-css-property
-    @property
-    def supported_properties(self):
-        return [
-            prop for prop in self._properties_including_aliases
-            if not prop['is_internal']
-        ]
-
     @property
     def first_property_id(self):
         return self._first_enum_value
