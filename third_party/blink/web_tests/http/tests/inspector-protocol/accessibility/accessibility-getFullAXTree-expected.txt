@@ -1,13 +1,13 @@
 Tests Accessibility.getFullAXTree
 
-WebArea
+RootWebArea
   generic
-    text "Some text in a div, also a"
+    StaticText "Some text in a div, also a"
       InlineTextBox
     link "link"
-      text "link"
+      StaticText "link"
         InlineTextBox
   button "Hello Button"
-    text "Hello Button"
+    StaticText "Hello Button"
       InlineTextBox
 

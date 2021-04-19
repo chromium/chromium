@@ -1,6 +1,6 @@
 Tests that fetching the tree for a node without an AXNode functions correctly.
 
-WebArea
+RootWebArea
   main
     article
       *Ignored

@@ -66,8 +66,8 @@ dump both an ignored and an unignored axnode
     properties : [
     ]
     role : {
-        type : role
-        value : text
+        type : internalRole
+        value : StaticText
     }
 }
 {

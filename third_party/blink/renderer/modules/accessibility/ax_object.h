@@ -1248,8 +1248,23 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
   static ax::mojom::blink::Role AriaRoleStringToRoleEnum(const String&);
-  static const AtomicString& RoleName(ax::mojom::blink::Role);
-  static const AtomicString& InternalRoleName(ax::mojom::blink::Role);
+
+  // Return the equivalent ARIA name for an enumerated role, or g_null_atom.
+  static const AtomicString& ARIARoleName(ax::mojom::blink::Role);
+
+  // For a native role get the equivalent ARIA role for use in the xml-roles
+  // object attribute.
+  static const AtomicString& GetEquivalentAriaRoleName(ax::mojom::blink::Role);
+
+  // Return the equivalent internal role name as a string.
+  static const String InternalRoleName(ax::mojom::blink::Role);
+
+  // Return a role name, preferring the ARIA over the internal name.
+  // Optional boolean out param |*is_internal| will be false if the role matches
+  // an ARIA role, and true if an internal role name is used (no ARIA mapping).
+  static const String RoleName(ax::mojom::blink::Role,
+                               bool* is_internal = nullptr);
+
   static void AccessibleNodeListToElementVector(const AccessibleNodeList&,
                                                 HeapVector<Member<Element>>&);
 

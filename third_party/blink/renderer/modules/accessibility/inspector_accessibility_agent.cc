@@ -502,15 +502,11 @@ void FillSparseAttributes(AXObject& ax_object,
 }
 
 std::unique_ptr<AXValue> CreateRoleNameValue(ax::mojom::Role role) {
-  AtomicString role_name = AXObject::RoleName(role);
-  std::unique_ptr<AXValue> role_name_value;
-  if (!role_name.IsNull()) {
-    role_name_value = CreateValue(role_name, AXValueTypeEnum::Role);
-  } else {
-    role_name_value = CreateValue(AXObject::InternalRoleName(role),
-                                  AXValueTypeEnum::InternalRole);
-  }
-  return role_name_value;
+  bool is_internal = false;
+  const String& role_name = AXObject::RoleName(role, &is_internal);
+  const auto& value_type =
+      is_internal ? AXValueTypeEnum::InternalRole : AXValueTypeEnum::Role;
+  return CreateValue(role_name, value_type);
 }
 
 }  // namespace

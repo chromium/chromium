@@ -1,12 +1,12 @@
 Tests Accessibility.getChildAXNodes
 
 After getFullAXTree:
-WebArea
+RootWebArea
   main
     article
 
 After getChildAXNodes:
-WebArea
+RootWebArea
   main
     article
       heading "Article"

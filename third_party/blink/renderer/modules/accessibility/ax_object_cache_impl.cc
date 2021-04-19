@@ -3139,8 +3139,8 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
 
   AXObject* obj = GetOrCreate(node);
   if (!obj)
-    return AXObject::RoleName(ax::mojom::Role::kUnknown);
-  return AXObject::RoleName(obj->RoleValue());
+    return AXObject::ARIARoleName(ax::mojom::blink::Role::kUnknown);
+  return AXObject::ARIARoleName(obj->RoleValue());
 }
 
 String AXObjectCacheImpl::ComputedNameForNode(Node* node) {

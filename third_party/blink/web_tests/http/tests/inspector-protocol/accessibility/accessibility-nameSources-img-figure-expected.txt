@@ -660,7 +660,7 @@ Tests name sources in images and figures.
     ]
     role : {
         type : internalRole
-        value : SVGRoot
+        value : SvgRoot
     }
 }
 
