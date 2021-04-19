@@ -9,6 +9,31 @@
 #include "components/exo/shell_surface_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace {
+
+base::Optional<double> GetDisplayScaleFactor(int64_t display_id) {
+  display::Display display;
+  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
+                                                            &display)) {
+    return display.device_scale_factor();
+  }
+  return base::nullopt;
+}
+
+void ScaleToRoundedRect(apps::mojom::Rect* rect, double scale_factor) {
+  if (rect == nullptr)
+    return;
+  auto res_rect = gfx::ScaleToRoundedRect(
+      gfx::Rect(rect->x, rect->y, rect->width, rect->height), scale_factor);
+  rect->x = res_rect.x();
+  rect->y = res_rect.y();
+  rect->width = res_rect.width();
+  rect->height = res_rect.height();
+}
+
+}  // namespace
 
 namespace chromeos {
 namespace full_restore {
@@ -17,28 +42,22 @@ bool IsArcGhostWindowEnabled() {
   return ash::features::IsFullRestoreEnabled() && arc::IsArcVmEnabled();
 }
 
-apps::mojom::WindowInfoPtr ConvertToArcBounds(
-    int64_t display_id,
+apps::mojom::WindowInfoPtr HandleArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info) {
+  // Remove ARC bounds info if the ghost window disabled. The bounds will
+  // be controlled by ARC.
   if (!IsArcGhostWindowEnabled()) {
     window_info->bounds.reset();
     return window_info;
   }
-  double scale_factor = 0;
-  display::Display display;
-  if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                            &display)) {
-    scale_factor = display.device_scale_factor();
-  }
-  if (scale_factor == 0) {
+  auto scale_factor = GetDisplayScaleFactor(window_info->display_id);
+  // Remove ARC bounds info if the the display doesn't exist. The bounds will
+  // be controlled by ARC.
+  if (!scale_factor.has_value()) {
     window_info->bounds.reset();
     return window_info;
   }
-  // TODO(sstan): Only for single screen. Need to find a general way.
-  window_info->bounds->x *= scale_factor;
-  window_info->bounds->y *= scale_factor;
-  window_info->bounds->width *= scale_factor;
-  window_info->bounds->height *= scale_factor;
+  ScaleToRoundedRect(window_info->bounds.get(), scale_factor.value());
   return window_info;
 }
 

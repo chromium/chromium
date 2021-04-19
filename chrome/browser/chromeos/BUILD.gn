@@ -3963,6 +3963,7 @@ source_set("unit_tests") {
     "fileapi/recent_disk_source_unittest.cc",
     "fileapi/recent_model_unittest.cc",
     "fileapi/test/fake_recent_source.cc",
+    "full_restore/arc_window_handler_unittest.cc",
     "full_restore/full_restore_prefs_unittest.cc",
     "full_restore/full_restore_service_unittest.cc",
     "input_method/assistive_suggester_unittest.cc",

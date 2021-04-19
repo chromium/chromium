@@ -21,10 +21,15 @@ namespace full_restore {
 // Returns true if the ARC supports ghost window.
 bool IsArcGhostWindowEnabled();
 
-// Converts window bounds from Chrome DP to ARC pixels units, and adjust
-// window position on display.
-apps::mojom::WindowInfoPtr ConvertToArcBounds(
-    int64_t display_id,
+// Returns window info compatible with ARC. If the window bounds is not
+// appropriate for the display, it will be removed.
+//
+// The app window bounds can be decided if and only if it matches the
+// conditions:
+//   1. The |display_id| still exists on system.
+//   2. Previous ARC app window bounds on display is recorded.
+// Otherwise returns null.
+apps::mojom::WindowInfoPtr HandleArcWindowInfo(
     apps::mojom::WindowInfoPtr window_info);
 
 // The ArcWindowHandler class provides control for ARC ghost window.

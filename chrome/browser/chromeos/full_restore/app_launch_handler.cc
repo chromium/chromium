@@ -247,10 +247,9 @@ void AppLaunchHandler::LaunchArcApp(
 
   for (const auto& it : launch_list) {
     DCHECK(it.second->event_flag.has_value());
-    int64_t display_id =
-        it.second->display_id.value_or(display::kInvalidDisplayId);
+
     apps::mojom::WindowInfoPtr window_info =
-        ConvertToArcBounds(display_id, it.second->GetAppWindowInfo());
+        HandleArcWindowInfo(it.second->GetAppWindowInfo());
 
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
