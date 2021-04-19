@@ -345,6 +345,28 @@ TEST_F(ImageDecoderTest, DecoderClose) {
   }
 }
 
+TEST_F(ImageDecoderTest, DecoderContextDestroyed) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  EXPECT_EQ(decoder->type(), "image/gif");
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+  EXPECT_FALSE(decoder->HasPendingActivity());
+
+  // Promises won't resolve or reject now that the context is destroyed, but we
+  // should ensure decodeMetadata() and decode() don't trigger any issues.
+  decoder->decodeMetadata();
+  decoder->decode(MakeOptions(0, true));
+
+  // This will fail if a decode() or decodeMetadata() was queued.
+  EXPECT_FALSE(decoder->HasPendingActivity());
+}
+
 TEST_F(ImageDecoderTest, DecoderReadableStream) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";
