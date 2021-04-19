@@ -127,6 +127,13 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   return RespondNow(Error(kErrorNotSupported));
 }
 
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
+  // Chromecast's touch exploration controller still generates synthetic
+  // mouse events on its own. Do nothing.
+  return RespondNow(NoArguments());
+}
+
 }  // namespace api
 }  // namespace cast
 }  // namespace extensions

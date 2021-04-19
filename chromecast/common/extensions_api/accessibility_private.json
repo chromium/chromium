@@ -90,12 +90,28 @@
         "enum": ["press", "release", "drag", "move", "enter", "exit"]
       },
       {
+        "id": "SyntheticMouseEventButton",
+        "type": "string",
+        "description": "The button to send event on",
+        "enum": ["left", "middle", "right", "back", "foward"]
+      },
+      {
         "id": "SyntheticMouseEvent",
         "type": "object",
         "properties": {
           "type": {"$ref": "SyntheticMouseEventType"},
           "x": {"type": "integer", "description": "X coordinate for mouse event in global screen coordinates"},
-          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"}
+          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"},
+	  "touchAccessibility": {
+            "type": "boolean",
+            "description": "True if the touch accessibility flag should be set.",
+            "optional": true
+          },
+          "mouseButton": {
+            "$ref": "SyntheticMouseEventButton",
+            "description": "The default mouse button is set to left if mouseButton is not specified.",
+            "optional": true
+          }
         }
       },
       {
@@ -325,8 +341,7 @@
             "$ref": "SyntheticMouseEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setSelectToSpeakState",

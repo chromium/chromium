@@ -76,6 +76,15 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT)
 };
 
+// API function that injects mouse events.
+class AccessibilityPrivateSendSyntheticMouseEventFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateSendSyntheticMouseEventFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendSyntheticMouseEvent",
+                             ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT)
+};
+
 }  // namespace api
 }  // namespace cast
 }  // namespace extensions
