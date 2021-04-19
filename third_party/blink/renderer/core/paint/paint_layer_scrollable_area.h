@@ -658,6 +658,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool SetHasHorizontalScrollbar(bool has_scrollbar);
   bool SetHasVerticalScrollbar(bool has_scrollbar);
 
+  // Force scrollbars off for reconstruction.
+  void RemoveScrollbarsForReconstruction();
+
   void UpdateScrollCornerStyle();
   LayoutSize MinimumSizeForResizing(float zoom_factor);
   PhysicalRect LayoutContentRect(IncludeScrollbarsInRect) const;

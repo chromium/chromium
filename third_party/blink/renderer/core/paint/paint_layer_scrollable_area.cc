@@ -1026,8 +1026,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   allow_second_overflow_relayout_ = false;
 
   if (NeedsScrollbarReconstruction()) {
-    SetHasHorizontalScrollbar(false);
-    SetHasVerticalScrollbar(false);
+    RemoveScrollbarsForReconstruction();
     // In case that DelayScrollOffsetClampScope prevented destruction of the
     // scrollbars.
     scrollbar_manager_.DestroyDetachedScrollbars();
@@ -1305,9 +1304,10 @@ static bool CanHaveOverflowScrollbars(const LayoutBox& box) {
 void PaintLayerScrollableArea::UpdateAfterStyleChange(
     const ComputedStyle* old_style) {
   // Don't do this on first style recalc, before layout has ever happened.
-  if (!overflow_rect_.size.IsZero()) {
+  if (!overflow_rect_.size.IsZero())
     UpdateScrollableAreaSet();
-  }
+
+  UpdateResizerStyle(old_style);
 
   // Whenever background changes on the scrollable element, the scroll bar
   // overlay style might need to be changed to have contrast against the
@@ -1322,16 +1322,18 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
   Color new_background = GetLayoutBox()->StyleRef().VisitedDependentColor(
       GetCSSPropertyBackgroundColor());
 
-  if (new_background != old_background) {
+  if (new_background != old_background)
     RecalculateScrollbarOverlayColorTheme(new_background);
+
+  if (NeedsScrollbarReconstruction()) {
+    RemoveScrollbarsForReconstruction();
+    return;
   }
 
   bool needs_horizontal_scrollbar;
   bool needs_vertical_scrollbar;
   ComputeScrollbarExistence(needs_horizontal_scrollbar,
                             needs_vertical_scrollbar, kOverflowIndependent);
-
-  UpdateResizerStyle(old_style);
 
   // Avoid some unnecessary computation if there were and will be no scrollbars.
   if (!HasScrollbar() && !needs_horizontal_scrollbar &&
@@ -1351,8 +1353,6 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
         LayoutBlock::ScrollbarChangeContext::kStyleChange);
   }
 
-  // FIXME: Need to detect a swap from custom to native scrollbars (and vice
-  // versa).
   if (HorizontalScrollbar())
     HorizontalScrollbar()->StyleChanged();
   if (VerticalScrollbar())
@@ -1547,14 +1547,13 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
     if (scrollbar->IsCustomScrollbar() != needs_custom)
       return true;
 
-    if (needs_custom) {
-      DCHECK(scrollbar->IsCustomScrollbar());
-      // We have a custom scrollbar with a stale m_owner.
-      if (To<CustomScrollbar>(scrollbar)->StyleSource()->GetLayoutObject() !=
-          style_source) {
-        return true;
-      }
+    // We have a scrollbar with a stale style source.
+    if (scrollbar->StyleSource() &&
+        scrollbar->StyleSource()->GetLayoutObject() != style_source) {
+      return true;
+    }
 
+    if (needs_custom) {
       // Should use custom scrollbar and nothing should change.
       continue;
     }
@@ -1709,6 +1708,25 @@ bool PaintLayerScrollableArea::TryRemovingAutoScrollbars(
   }
 
   return false;
+}
+
+void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
+  if (!HasHorizontalScrollbar() && !HasVerticalScrollbar())
+    return;
+  if (HasHorizontalScrollbar()) {
+    SetScrollbarNeedsPaintInvalidation(kHorizontalScrollbar);
+    scrollbar_manager_.SetHasHorizontalScrollbar(false);
+  }
+  if (HasVerticalScrollbar()) {
+    SetScrollbarNeedsPaintInvalidation(kVerticalScrollbar);
+    scrollbar_manager_.SetHasVerticalScrollbar(false);
+  }
+  SetScrollCornerNeedsPaintInvalidation();
+  UpdateScrollOrigin();
+
+  // Force an update since we know the scrollbars have changed things.
+  if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
+    GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
 }
 
 bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {

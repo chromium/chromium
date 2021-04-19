@@ -2151,21 +2151,10 @@ void Document::PropagateStyleToViewport() {
 
   if (changed) {
     new_viewport_style->UpdateFontOrientation();
-    GetLayoutView()->SetStyle(new_viewport_style);
     SetupFontBuilder(*new_viewport_style);
   }
-
-  if (changed || update_scrollbar_style) {
-    if (PaintLayerScrollableArea* scrollable_area =
-            GetLayoutView()->GetScrollableArea()) {
-      if (scrollable_area->HorizontalScrollbar() &&
-          scrollable_area->HorizontalScrollbar()->IsCustomScrollbar())
-        scrollable_area->HorizontalScrollbar()->StyleChanged();
-      if (scrollable_area->VerticalScrollbar() &&
-          scrollable_area->VerticalScrollbar()->IsCustomScrollbar())
-        scrollable_area->VerticalScrollbar()->StyleChanged();
-    }
-  }
+  if (changed || update_scrollbar_style)
+    GetLayoutView()->SetStyle(new_viewport_style);
 }
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
