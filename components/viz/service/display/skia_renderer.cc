@@ -2735,15 +2735,23 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
       gfx::Transform::kSkipInitialization);
   if (shared_quad_state->clip_rect ||
       !shared_quad_state->mask_filter_info.IsEmpty()) {
-    bool result = shared_quad_state->quad_to_target_transform.GetInverse(
+    // Flatten before inverting, since we're interested in how points
+    // with z=0 in local space map to the clip rect, not in how the clip
+    // rect at z=0 in device space maps to some other z in local space.
+    gfx::Transform flat_quad_to_target_transform(
+        shared_quad_state->quad_to_target_transform);
+    flat_quad_to_target_transform.FlattenTo2d();
+    bool result = flat_quad_to_target_transform.GetInverse(
         &quad_to_target_transform_inverse);
-    DCHECK(result) << "quad_to_target_transform.GetInverse() failed";
+    DCHECK(result) << "flat_quad_to_target_transform.GetInverse() failed";
   }
 
   // The |clip_rect| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
   base::Optional<base::AutoReset<gfx::Rect>> auto_reset_clip_rect;
   if (shared_quad_state->clip_rect) {
+    // TODO(dbaron): This operation is likely not to be valid if
+    // quad_to_target_transform_inverse.HasPerspective().
     gfx::RectF clip_rect(*shared_quad_state->clip_rect);
     quad_to_target_transform_inverse.TransformRect(&clip_rect);
     auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect.value(),
