@@ -75,16 +75,6 @@ bool SysmemBufferCollection::IsNativePixmapConfigSupported(
 
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-#if defined(ARCH_CPU_X86_64)
-      // SwiftShader currently doesn't support liner image layouts (b/171299814)
-      // required for images accessed by CPU, so these formats cannot be
-      // supported with Goldfish Vulkan drivers running under emulator.It's not
-      // straightforward to detect format support here because this code runs in
-      // the renderer process. Disable these formats for all X64 devices for
-      // now.
-      // TODO(crbug.com/1141538): remove this workaround.
-      return false;
-#endif
       break;
 
     default:
