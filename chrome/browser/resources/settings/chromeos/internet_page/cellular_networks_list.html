@@ -80,7 +80,8 @@
         margin-inline-start: 0;
       }
     </style>
-    <template is="dom-if" if="[[shouldShowEsimSection_(euicc_)]]" restamp>
+    <template is="dom-if" if="[[shouldShowEsimSection_(euicc_,
+        cellularDeviceState, cellularDeviceState.*)]]" restamp>
       <div class="cellular-network-list-separator"></div>
       <div class="cellular-network-list-header esim-list-header flex">
         <div class="esim-list-title">$i18n{cellularNetworkEsimLabel}</div>

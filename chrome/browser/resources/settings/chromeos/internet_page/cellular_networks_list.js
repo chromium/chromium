@@ -239,7 +239,14 @@ Polymer({
    * @private
    */
   shouldShowEsimSection_() {
-    return !!this.euicc_;
+    if (!this.cellularDeviceState) {
+      return false;
+    }
+    const {eSimSlots} = getSimSlotCount(this.cellularDeviceState);
+    // Check both the SIM slot infos and the number of EUICCs because the former
+    // comes from Shill and the latter from Hermes, so there may be instances
+    // where one may be true while they other isn't.
+    return !!this.euicc_ && eSimSlots > 0;
   },
 
   /**
@@ -467,8 +474,8 @@ Polymer({
   },
 
   /*
-   * Returns the add esim button. If the device does not have an EUICC or
-   * policies prohibit users from adding a network, null is returned.
+   * Returns the add esim button. If the device does not have an EUICC, no eSIM
+   * slot, or policies prohibit users from adding a network, null is returned.
    * @return {?CrIconButtonElement}
    */
   getAddEsimButton() {
