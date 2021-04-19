@@ -13,10 +13,12 @@ namespace blink {
 class Element;
 class LocalFrame;
 
-void ReportAttributionIssue(LocalFrame* frame,
-                            mojom::blink::AttributionReportingIssueType type,
-                            Element* element,
-                            const base::Optional<String>& request_id);
+void ReportAttributionIssue(
+    LocalFrame* frame,
+    mojom::blink::AttributionReportingIssueType type,
+    Element* element,
+    const base::Optional<String>& request_id = base::nullopt,
+    const base::Optional<String>& invalid_parameter = base::nullopt);
 
 }  // namespace blink
 

@@ -44,7 +44,8 @@ void InspectorIssue::Trace(blink::Visitor* visitor) const {}
 void ReportAttributionIssue(LocalFrame* frame,
                             mojom::blink::AttributionReportingIssueType type,
                             Element* element,
-                            const base::Optional<String>& request_id) {
+                            const base::Optional<String>& request_id,
+                            const base::Optional<String>& invalid_parameter) {
   auto attribution_issue = mojom::blink::AttributionReportingIssue::New();
   attribution_issue->violation_type = type;
   attribution_issue->frame = mojom::blink::AffectedFrame::New(
@@ -56,6 +57,8 @@ void ReportAttributionIssue(LocalFrame* frame,
     affected_request->request_id = *request_id;
     attribution_issue->request = std::move(affected_request);
   }
+  if (invalid_parameter)
+    attribution_issue->invalid_parameter = *invalid_parameter;
   auto issue_details = mojom::blink::InspectorIssueDetails::New();
   issue_details->attribution_reporting_issue_details =
       std::move(attribution_issue);

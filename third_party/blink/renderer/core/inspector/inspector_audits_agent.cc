@@ -538,6 +538,10 @@ protocol::String BuildAttributionReportingIssueType(
         kPermissionPolicyDisabled:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           PermissionPolicyDisabled;
+    case blink::mojom::blink::AttributionReportingIssueType::
+        kInvalidAttributionData:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionData;
   }
 }
 
@@ -667,6 +671,8 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
       details->setRequest(BuildAffectedRequest(d->request));
     if (d->violating_node_id)
       details->setViolatingNodeId(d->violating_node_id);
+    if (d->invalid_parameter)
+      details->setInvalidParameter(d->invalid_parameter);
     issueDetails.setAttributionReportingIssueDetails(std::move(details));
   }
 

@@ -175,6 +175,7 @@ struct LowTextContrastIssue {
 
 enum AttributionReportingIssueType {
   kPermissionPolicyDisabled,
+  kInvalidAttributionData,
 };
 
 struct AttributionReportingIssue {
@@ -183,6 +184,7 @@ struct AttributionReportingIssue {
   AffectedRequest? request;
   // 0 is not a valid node id and is used to indicate absence.
   int32 violating_node_id = 0;
+  string? invalid_parameter;
 };
 
 // A collection of optional fields that may store additional data depending
