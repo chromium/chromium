@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,6 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -61,6 +63,9 @@ public class SigninBridgeTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private Profile mProfileMock;
 
@@ -78,7 +83,6 @@ public class SigninBridgeTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
