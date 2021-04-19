@@ -119,7 +119,6 @@ CookieInfoView::CookieInfoView() {
     property_textfields_[cookie_property_and_label.first] = AddTextfieldRow(
         three_column_layout_id, layout, cookie_property_and_label.second);
   }
-  SetTextfieldColors();
 }
 
 CookieInfoView::~CookieInfoView() = default;
