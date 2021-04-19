@@ -16,6 +16,7 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
+import org.chromium.components.payments.UrlUtil;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -286,7 +287,7 @@ public class PaymentManifestVerifier
             }
 
             GURL uriOrigin = new GURL(appIdentifiers[i]);
-            if (UrlUtils.isURLValid(uriOrigin)) {
+            if (UrlUtil.isURLValid(uriOrigin)) {
                 cachedSupportedOrigins.add(uriOrigin);
                 continue;
             }

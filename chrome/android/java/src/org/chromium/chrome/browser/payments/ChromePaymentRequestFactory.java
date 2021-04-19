@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.BrowserPaymentRequest;
@@ -57,8 +58,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     @VisibleForTesting
     public static class ChromePaymentRequestDelegateImpl
             implements ChromePaymentRequestService.Delegate {
-        private final TwaPackageManagerDelegate mPackageManagerDelegate =
-                new TwaPackageManagerDelegate();
         private final RenderFrameHost mRenderFrameHost;
         private boolean mSkipUiForBasicCard;
 
@@ -115,7 +114,11 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
             Activity activity = ActivityUtils.getActivityFromWebContents(liveWebContents);
-            return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
+            if (!(activity instanceof CustomTabActivity)) return null;
+
+            CustomTabActivity customTabActivity = ((CustomTabActivity) activity);
+            if (!customTabActivity.isInTwaMode()) return null;
+            return customTabActivity.getTwaPackage();
         }
 
         @VisibleForTesting

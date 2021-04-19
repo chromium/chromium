@@ -26,6 +26,7 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.SupportedDelegations;
+import org.chromium.components.payments.UrlUtil;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -81,7 +82,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private final PaymentManifestWebDataService mWebDataService;
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
-    private final TwaPackageManagerDelegate mTwaPackageManagerDelegate;
     private final PaymentAppFactoryDelegate mFactoryDelegate;
     private final PaymentAppFactoryInterface mFactory;
     private final boolean mIsOffTheRecord;
@@ -162,7 +162,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * @param downloader The manifest downloader.
      * @param parser The manifest parser.
      * @param packageManagerDelegate The package information retriever.
-     * @param twaPackageManagerDelegate The package information retriever for TWAs.
      * @param factoryDelegate The merchant requested data and the asynchronous delegate to be
      *         invoked (on the UI thread) when all Android payment apps have been found.
      * @param factory The factory to be used in the delegate.onDoneCreatingPaymentApps(factory)
@@ -171,7 +170,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     /* package */ AndroidPaymentAppFinder(PaymentManifestWebDataService webDataService,
             PaymentManifestDownloader downloader, PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,
-            TwaPackageManagerDelegate twaPackageManagerDelegate,
             PaymentAppFactoryDelegate factoryDelegate, PaymentAppFactoryInterface factory) {
         mFactoryDelegate = factoryDelegate;
 
@@ -184,7 +182,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mWebDataService = webDataService;
         mParser = parser;
         mPackageManagerDelegate = packageManagerDelegate;
-        mTwaPackageManagerDelegate = twaPackageManagerDelegate;
         mFactory = factory;
         assert mFactoryDelegate.getParams() != null;
         mIsOffTheRecord = mFactoryDelegate.getParams().isOffTheRecord();
@@ -211,7 +208,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 PaymentFeatureList.WEB_PAYMENTS_APP_STORE_BILLING_DEBUG);
         if (!allowTwaInstalledFromAnySource) {
             String installerPackageName =
-                    mTwaPackageManagerDelegate.getInstallerPackage(twaPackageName);
+                    mPackageManagerDelegate.getInstallerPackage(twaPackageName);
             if (installerPackageName == null) return;
             GURL appStoreUriMethod = mAppStores.get(installerPackageName);
             if (appStoreUriMethod == null) return;
@@ -273,7 +270,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 mNonUriPaymentMethods.add(method);
             } else {
                 GURL url = new GURL(method);
-                if (UrlUtils.isURLValid(url)) mUrlPaymentMethods.add(url);
+                if (UrlUtil.isURLValid(url)) mUrlPaymentMethods.add(url);
             }
         }
 
@@ -357,7 +354,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     continue;
                 }
 
-                if (UrlUtils.isURLValid(defaultUrlMethod)) {
+                if (UrlUtil.isURLValid(defaultUrlMethod)) {
                     defaultMethod = urlToStringWithoutTrailingSlash(defaultUrlMethod);
                 }
                 if (!methodToAppsMapping.containsKey(defaultMethod)) {
@@ -365,7 +362,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 }
                 methodToAppsMapping.get(defaultMethod).add(app);
 
-                if (UrlUtils.isURLValid(defaultUrlMethod)) {
+                if (UrlUtil.isURLValid(defaultUrlMethod)) {
                     urlMethods.add(defaultUrlMethod);
 
                     if (!urlMethodToDefaultAppsMapping.containsKey(defaultUrlMethod)) {
@@ -387,7 +384,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             Set<String> supportedMethods = getSupportedPaymentMethods(app.activityInfo);
             for (String supportedMethod : supportedMethods) {
                 GURL supportedUrlMethod = new GURL(supportedMethod);
-                if (!UrlUtils.isURLValid(supportedUrlMethod)) supportedUrlMethod = null;
+                if (!UrlUtil.isURLValid(supportedUrlMethod)) supportedUrlMethod = null;
                 if (supportedUrlMethod != null && supportedUrlMethod.equals(defaultUrlMethod)) {
                     continue;
                 }
@@ -487,8 +484,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         // #findAndroidPaymentApps.
         for (String method : nonDefaultPaymentMethodNames) {
             GURL urlMethod = new GURL(method);
-            result.add(UrlUtils.isURLValid(urlMethod) ? urlToStringWithoutTrailingSlash(urlMethod)
-                                                      : method);
+            result.add(UrlUtil.isURLValid(urlMethod) ? urlToStringWithoutTrailingSlash(urlMethod)
+                                                     : method);
         }
 
         return result;

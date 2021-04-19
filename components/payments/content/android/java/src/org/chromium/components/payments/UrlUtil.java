@@ -6,11 +6,24 @@ package org.chromium.components.payments;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 /** URL validity checker for web payment APIs. */
 @JNINamespace("payments::android")
 public class UrlUtil {
+    /**
+     * Returns false for invalid URL format or a relative URI.
+     *
+     * @param url The payment method name.
+     * @return TRUE if given url is valid and not a relative URI.
+     */
+    public static boolean isURLValid(GURL url) {
+        return url != null && url.isValid() && !url.getScheme().isEmpty()
+                && (UrlConstants.HTTPS_SCHEME.equals(url.getScheme())
+                        || UrlConstants.HTTP_SCHEME.equals(url.getScheme()));
+    }
+
     /**
      * Checks whether the page at the given URL should be allowed to use the web payment APIs.
      * @param url The URL to check.

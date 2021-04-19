@@ -143,4 +143,16 @@ public class PackageManagerDelegate {
             return null;
         }
     }
+
+    /**
+     * Get the package name of a specified package's installer app.
+     * @param packageName The package name of the specified package. Not allowed to be null.
+     * @return The package name of the installer app.
+     */
+    @Nullable
+    public String getInstallerPackage(String packageName) {
+        assert packageName != null;
+        return ContextUtils.getApplicationContext().getPackageManager().getInstallerPackageName(
+                packageName);
+    }
 }

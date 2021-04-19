@@ -141,10 +141,9 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.when(params.getMayCrawl()).thenReturn(false);
         PaymentAppFactoryDelegate delegate = Mockito.mock(PaymentAppFactoryDelegate.class);
         Mockito.when(delegate.getParams()).thenReturn(params);
-        AndroidPaymentAppFinder finder =
-                new AndroidPaymentAppFinder(mPaymentManifestWebDataService, downloader, parser,
-                        packageManagerDelegate, new TwaPackageManagerDelegate(), delegate,
-                        /*factory=*/null);
+        AndroidPaymentAppFinder finder = new AndroidPaymentAppFinder(mPaymentManifestWebDataService,
+                downloader, parser, packageManagerDelegate, delegate,
+                /*factory=*/null);
         finder.bypassIsReadyToPayServiceInTest();
         finder.findAndroidPaymentApps();
         return delegate;
