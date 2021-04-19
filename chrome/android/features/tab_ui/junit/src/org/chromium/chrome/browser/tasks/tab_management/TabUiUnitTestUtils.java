@@ -57,12 +57,13 @@ public class TabUiUnitTestUtils {
         CriticalPersistedTabData criticalPersistedTabData = mock(CriticalPersistedTabData.class);
         TabImpl tab = prepareTab(id, criticalPersistedTabData);
         doReturn(id).when(criticalPersistedTabData).getRootId();
-        doReturn(urlString).when(tab).getUrlString();
         doReturn(title).when(tab).getTitle();
 
+        // TODO(crbug/783819): don't mock GURL here.
         GURL gurl = mock(GURL.class);
         doReturn(urlString).when(gurl).getSpec();
         doReturn(gurl).when(tab).getOriginalUrl();
+        doReturn(gurl).when(tab).getUrl();
         return tab;
     }
 
@@ -87,7 +88,7 @@ public class TabUiUnitTestUtils {
         userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
         doReturn(userDataHost).when(tab).getUserDataHost();
         doReturn(rootId).when(criticalPersistedTabData).getRootId();
-        doReturn("").when(tab).getUrlString();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 

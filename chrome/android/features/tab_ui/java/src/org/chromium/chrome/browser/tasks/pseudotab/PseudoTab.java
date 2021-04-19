@@ -180,8 +180,9 @@ public class PseudoTab {
      * @return The URL
      */
     public String getUrl() {
+        // TODO(crbug/783819): Return the GURL directly.
         if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
-            return mTab.get().getUrlString();
+            return mTab.get().getUrl() != null ? mTab.get().getUrl().getSpec() : null;
         }
         assert mTabId != null;
         return TabAttributeCache.getUrl(mTabId);

@@ -83,11 +83,10 @@ public class TabSuggestionsOrchestratorTest {
     private static Tab mockTab(int id) {
         TabImpl tab = TabUiUnitTestUtils.prepareTab(id);
         WebContents webContents = mock(WebContents.class);
-        GURL gurl = mock(GURL.class);
-        doReturn("").when(gurl).getSpec();
-        doReturn(gurl).when(webContents).getVisibleUrl();
+        doReturn(GURL.emptyGURL()).when(webContents).getVisibleUrl();
         doReturn(webContents).when(tab).getWebContents();
         doReturn(GURL.emptyGURL()).when(tab).getOriginalUrl();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 

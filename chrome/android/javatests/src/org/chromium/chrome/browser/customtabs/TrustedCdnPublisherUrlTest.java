@@ -347,7 +347,7 @@ public class TrustedCdnPublisherUrlTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
             Tab tab = customTabActivity.getActivityTab();
-            String pageUrl = tab.getUrlString();
+            String pageUrl = tab.getUrl().getSpec();
             offlinePageBridge.savePage(tab.getWebContents(),
                     new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234"),
                     (savePageResult, url, offlineId) -> {

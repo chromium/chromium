@@ -415,7 +415,7 @@ class TabListMediator {
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
         public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-            if (UrlUtilities.isNTPUrl(tab.getUrlString())) return;
+            if (UrlUtilities.isNTPUrl(tab.getUrl())) return;
             if (navigationHandle.isSameDocument() || !navigationHandle.isInMainFrame()) return;
             if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
             mModel.get(mModel.indexFromId(tab.getId()))
@@ -1515,9 +1515,10 @@ class TabListMediator {
         if (!tab.isInitialized()) {
             return "";
         }
-        String domain = UrlUtilities.getDomainAndRegistry(tab.getUrlString(), false);
+        // TODO(crbug/783819): convert UrlUtilities to GURL
+        String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
 
-        if (domain.isEmpty()) return tab.getUrlString();
+        if (domain.isEmpty()) return tab.getUrl().getSpec();
         return domain;
     }
 
@@ -1588,7 +1589,7 @@ class TabListMediator {
             urls.add(pseudoTab.getUrl());
             for (int i = 0; urls.size() < 4 && i < relatedTabList.size(); i++) {
                 if (pseudoTab.getId() == relatedTabList.get(i).getId()) continue;
-                urls.add(relatedTabList.get(i).getUrlString());
+                urls.add(relatedTabList.get(i).getUrl().getSpec());
             }
 
             // For tab group card in grid tab switcher, the favicon is the composed favicon.

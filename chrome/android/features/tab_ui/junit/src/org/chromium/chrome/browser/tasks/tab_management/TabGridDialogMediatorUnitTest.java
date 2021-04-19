@@ -64,6 +64,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1019,22 +1020,23 @@ public class TabGridDialogMediatorUnitTest {
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testGetTabGroupStringForShare() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
-        String url1 = "https://www.google.com";
-        String url2 = "http://example.com";
-        String url3 = "https://maps.google.com";
-        doReturn(url1).when(mTab1).getUrlString();
-        doReturn(url2).when(mTab2).getUrlString();
-        doReturn(url3).when(newTab).getUrlString();
+        String url1 = JUnitTestGURLs.SEARCH_URL;
+        String url2 = JUnitTestGURLs.EXAMPLE_URL;
+        String url3 = JUnitTestGURLs.MAPS_URL;
+
+        doReturn(JUnitTestGURLs.getGURL(url1)).when(mTab1).getUrl();
+        doReturn(JUnitTestGURLs.getGURL(url2)).when(mTab2).getUrl();
+        doReturn(JUnitTestGURLs.getGURL(url3)).when(newTab).getUrl();
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
 
         // Setup two sets of tab group and share strings.
         List<Tab> tabgroup1 = new ArrayList<>(Arrays.asList(newTab, mTab1, mTab2));
         String shareString1 =
-                "1. https://maps.google.com\n2. https://www.google.com\n3. http://example.com\n";
+                "1. https://maps.google.com/\n2. https://www.google.com/search?q=test\n3. https://www.example.com/\n";
 
         List<Tab> tabgroup2 = new ArrayList<>(Arrays.asList(mTab2, newTab, mTab1));
         String shareString2 =
-                "1. http://example.com\n2. https://maps.google.com\n3. https://www.google.com\n";
+                "1. https://www.example.com/\n2. https://maps.google.com/\n3. https://www.google.com/search?q=test\n";
 
         doReturn(tabgroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         assertThat(shareString1, equalTo(mMediator.getTabGroupStringForSharingForTesting()));

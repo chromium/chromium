@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -249,8 +250,8 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_real() {
-        String url = "url 1 real";
-        doReturn(url).when(mTab1).getUrlString();
+        String url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
         Assert.assertEquals("", tab.getUrl());

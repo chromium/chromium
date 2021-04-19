@@ -331,7 +331,7 @@ public class OfflinePageBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNotNull("Tab is null", mActivityTestRule.getActivity().getActivityTab());
             Assert.assertEquals("URL does not match requested.", mTestPage,
-                    mActivityTestRule.getActivity().getActivityTab().getUrlString());
+                    mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
             Assert.assertNotNull("WebContents is null", mActivityTestRule.getWebContents());
 
             mOfflinePageBridge.addObserver(new OfflinePageModelObserver() {
@@ -466,7 +466,7 @@ public class OfflinePageBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNotNull("Tab is null", mActivityTestRule.getActivity().getActivityTab());
             Assert.assertEquals("URL does not match requested.", expectedUrl,
-                    mActivityTestRule.getActivity().getActivityTab().getUrlString());
+                    mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
             Assert.assertNotNull("WebContents is null", mActivityTestRule.getWebContents());
 
             mOfflinePageBridge.savePage(

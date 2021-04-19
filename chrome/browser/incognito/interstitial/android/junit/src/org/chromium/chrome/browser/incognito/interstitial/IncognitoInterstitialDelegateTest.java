@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Roboelectric tests class for the incognito interstitial.
@@ -31,7 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class IncognitoInterstitialDelegateTest {
     private static final String sIncognitoLearnMoreText = "dummy_chrome_incognito";
-    private static final String sCurrentUrlPage = "dummy_url_string.com";
+    private static final String sCurrentUrlPage = JUnitTestGURLs.URL_1;
 
     @Mock
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncherMock;
@@ -58,7 +59,7 @@ public class IncognitoInterstitialDelegateTest {
                 .thenReturn(sIncognitoLearnMoreText);
         when(mRegularTabModelMock.getTabAt(anyInt())).thenReturn(mTabMock);
         when(mRegularTabModelMock.closeTab(mTabMock)).thenReturn(true);
-        when(mTabMock.getUrlString()).thenReturn(sCurrentUrlPage);
+        when(mTabMock.getUrl()).thenReturn(JUnitTestGURLs.getGURL(sCurrentUrlPage));
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mIncognitoInterstitialDelegate = new IncognitoInterstitialDelegate(mActivityMock,

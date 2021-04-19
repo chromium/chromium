@@ -140,7 +140,7 @@ public class ChromeTabUtils {
 
     public static String getUrlStringOnUiThread(Tab tab) {
         AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { res.set(tab.getUrlString()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { res.set(tab.getUrl().getSpec()); });
         return res.get();
     }
 
@@ -291,7 +291,7 @@ public class ChromeTabUtils {
             startedCallback.waitForCallback(0, 1, secondsToWait, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             Assert.fail("Page did not start loading.  Tab information at time of failure --"
-                    + " url: " + tab.getUrlString() + ", load progress: " + tab.getProgress()
+                    + " url: " + tab.getUrl().getSpec() + ", load progress: " + tab.getProgress()
                     + ", is loading: " + Boolean.toString(tab.isLoading()));
         }
     }
@@ -739,7 +739,7 @@ public class ChromeTabUtils {
             @Override
             public void didAddTab(
                     Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrlString())) {
+                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
                     createdCallback.notifyCalled();
                     tabModel.removeObserver(this);
                 }
@@ -789,7 +789,7 @@ public class ChromeTabUtils {
             @Override
             public void didAddTab(
                     Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrlString())) {
+                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
                     createdCallback.notifyCalled();
                     tabModel.removeObserver(this);
                 }

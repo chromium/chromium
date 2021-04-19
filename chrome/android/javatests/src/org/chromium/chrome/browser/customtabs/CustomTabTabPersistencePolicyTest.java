@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -437,8 +438,8 @@ public class CustomTabTabPersistencePolicyTest {
                     public Tab createTab(int id, boolean incognito) {
                         return new MockTab(id, incognito) {
                             @Override
-                            public String getUrlString() {
-                                return "https://www.google.com";
+                            public GURL getUrl() {
+                                return new GURL("https://www.google.com");
                             }
                         };
                     }

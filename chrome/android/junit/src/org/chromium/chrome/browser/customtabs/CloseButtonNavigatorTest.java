@@ -114,11 +114,9 @@ public class CloseButtonNavigatorTest {
         WebContents webContents = mock(WebContents.class);
         NavigationController navigationController = mock(NavigationController.class);
 
-        when(tab.getUrlString())
+        when(tab.getUrl())
                 .thenAnswer(invocation
-                        -> history.getEntryAtIndex(history.getCurrentEntryIndex())
-                                   .getUrl()
-                                   .getSpec());
+                        -> history.getEntryAtIndex(history.getCurrentEntryIndex()).getUrl());
         when(tab.getWebContents()).thenReturn(webContents);
         when(webContents.getNavigationController()).thenReturn(navigationController);
         when(navigationController.getNavigationHistory()).thenReturn(history);

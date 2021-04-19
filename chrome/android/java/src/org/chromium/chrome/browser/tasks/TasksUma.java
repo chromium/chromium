@@ -134,7 +134,7 @@ public class TasksUma {
         for (int i = 0; i < model.getCount(); i++) {
             Tab currentTab = model.getTabAt(i);
 
-            String url = currentTab.getUrlString();
+            String url = currentTab.getUrl().getSpec();
             int urlDuplicatedCount = 0;
             if (uniqueUrlCounterMap.containsKey(url)) {
                 duplicatedTabCount++;

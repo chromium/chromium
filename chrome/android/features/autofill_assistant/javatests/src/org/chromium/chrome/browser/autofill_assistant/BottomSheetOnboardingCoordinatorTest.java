@@ -302,7 +302,7 @@ public class BottomSheetOnboardingCoordinatorTest {
                 CustomTabActivity.class, Stage.RESUMED, () -> spans[0].onClick(termsMessage));
         CriteriaHelper.pollUiThread(() -> {
             return activity.getActivityTab() != null
-                    && activity.getActivityTab().getUrlString().equals(expectedTermsUrl);
+                    && activity.getActivityTab().getUrl().getSpec().equals(expectedTermsUrl);
         });
         activity.finish();
     }
@@ -363,7 +363,7 @@ public class BottomSheetOnboardingCoordinatorTest {
                              .toString();
         CriteriaHelper.pollUiThread(() -> {
             return activity.getActivityTab() != null
-                    && activity.getActivityTab().getUrlString().equals(url);
+                    && activity.getActivityTab().getUrl().getSpec().equals(url);
         });
         activity.finish();
     }

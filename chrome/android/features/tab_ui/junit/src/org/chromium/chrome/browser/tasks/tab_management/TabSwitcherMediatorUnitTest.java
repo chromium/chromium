@@ -64,6 +64,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -926,7 +927,7 @@ public class TabSwitcherMediatorUnitTest {
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         doReturn(id).when(tab).getId();
-        doReturn("").when(tab).getUrlString();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         doReturn(title).when(tab).getTitle();
         doReturn(false).when(tab).isClosing();
         return tab;

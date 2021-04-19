@@ -100,7 +100,6 @@ public class ShareDelegateImplTest {
 
     private static class MockUrlTab extends MockTab {
         public WebContents webContents;
-        public String url;
         public boolean isShowingErrorPage;
 
         public MockUrlTab() {
@@ -108,8 +107,8 @@ public class ShareDelegateImplTest {
         }
 
         @Override
-        public String getUrlString() {
-            return url;
+        public GURL getUrl() {
+            return GURL.emptyGURL();
         }
 
         @Override

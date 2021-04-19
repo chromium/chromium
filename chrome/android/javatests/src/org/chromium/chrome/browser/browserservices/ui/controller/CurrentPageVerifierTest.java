@@ -179,12 +179,14 @@ public class CurrentPageVerifierTest {
 
     private void setInitialUrl(String url) {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(url);
-        when(mTab.getUrlString()).thenReturn(url);
+        // TODO(crbug/783819): Pass in GURL.
+        GURL gurl = new GURL(url);
+        when(mTab.getUrl()).thenReturn(gurl);
     }
 
     private void navigateToUrl(String url) {
         GURL gurl = new GURL(url);
-        when(mTab.getUrlString()).thenReturn(url);
+        when(mTab.getUrl()).thenReturn(gurl);
         NavigationHandle navigation =
                 new NavigationHandle(0 /* navigationHandleProxy */, gurl, true /* isMainFrame */,
                         false /* isSameDocument */, false /* isRendererInitiated */);

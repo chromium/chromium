@@ -41,7 +41,7 @@ import org.chromium.url.GURL;
 @Batch(Batch.UNIT_TESTS)
 public class LoadProgressMediatorTest {
     private static final String URL_1 = "http://starting.url";
-    private static final String NATIVE_PAGE_URL = "chrome-native://newtab";
+    private static final GURL NATIVE_PAGE_URL = new GURL("chrome-native://newtab");
 
     @Mock
     private Tab mTab;
@@ -140,7 +140,7 @@ public class LoadProgressMediatorTest {
                 mModel.get(LoadProgressProperties.COMPLETION_STATE), CompletionState.UNFINISHED);
         assertEquals(mModel.get(LoadProgressProperties.PROGRESS), 0.1f, MathUtils.EPSILON);
 
-        navigation = new NavigationHandle(0, new GURL(NATIVE_PAGE_URL), true, false, false);
+        navigation = new NavigationHandle(0, NATIVE_PAGE_URL, true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
@@ -158,7 +158,7 @@ public class LoadProgressMediatorTest {
         assertEquals(mModel.get(LoadProgressProperties.PROGRESS),
                 LoadProgressMediator.MINIMUM_LOAD_PROGRESS, MathUtils.EPSILON);
 
-        when(mTab2.getUrlString()).thenReturn(NATIVE_PAGE_URL);
+        when(mTab2.getUrl()).thenReturn(NATIVE_PAGE_URL);
         mTabSupplier.set(mTab2);
         verify(mTab2, times(1)).addObserver(any());
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),

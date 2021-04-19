@@ -130,8 +130,8 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl() {
-        String url = "url 1";
-        doReturn(url).when(mTab1).getUrlString();
+        String url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
 
         Assert.assertNotEquals(url, TabAttributeCache.getUrl(TAB1_ID));
 
@@ -145,8 +145,8 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl_incognito() {
-        String url = "url 1";
-        doReturn(url).when(mTab1).getUrlString();
+        String url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
@@ -359,8 +359,8 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void onTabStateInitialized() {
-        String url1 = "url 1";
-        doReturn(url1).when(mTab1).getUrlString();
+        String url1 = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(JUnitTestGURLs.getGURL(url1)).when(mTab1).getUrl();
         String title1 = "title 1";
         doReturn(title1).when(mTab1).getTitle();
         int rootId1 = 1337;
@@ -368,8 +368,8 @@ public class TabAttributeCacheUnitTest {
         long timestamp1 = 123456;
         doReturn(timestamp1).when(mCriticalPersistedTabData1).getTimestampMillis();
 
-        String url2 = "url 2";
-        doReturn(url2).when(mTab2).getUrlString();
+        String url2 = JUnitTestGURLs.URL_2;
+        doReturn(JUnitTestGURLs.getGURL(url2)).when(mTab2).getUrl();
         String title2 = "title 2";
         doReturn(title2).when(mTab2).getTitle();
         int rootId2 = 42;

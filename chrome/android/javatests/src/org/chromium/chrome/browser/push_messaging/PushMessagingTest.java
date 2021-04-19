@@ -229,7 +229,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         // Start off using the tab loaded in setUp().
         Assert.assertEquals(1, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
         Tab tab = mNotificationTestRule.getActivity().getActivityTab();
-        Assert.assertEquals(mPushTestPage, tab.getUrlString());
+        Assert.assertEquals(mPushTestPage, tab.getUrl().getSpec());
         Assert.assertFalse(tab.isHidden());
 
         // Set up the push subscription and capture its details.
@@ -242,8 +242,8 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         // Make the tab invisible by opening another one with a different origin.
         mNotificationTestRule.loadUrlInNewTab(ABOUT_BLANK);
         Assert.assertEquals(2, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Assert.assertEquals(
-                ABOUT_BLANK, mNotificationTestRule.getActivity().getActivityTab().getUrlString());
+        Assert.assertEquals(ABOUT_BLANK,
+                mNotificationTestRule.getActivity().getActivityTab().getUrl().getSpec());
         Assert.assertTrue(tab.isHidden());
 
         // The first time a push event is fired and no notification is shown from the service

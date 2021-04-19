@@ -280,7 +280,7 @@ public class UrlOverridingTest {
                         Matchers.not(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT));
             }
             if (expectedFinalUrl == null) return;
-            Criteria.checkThat(latestTab.getUrlString(), Matchers.is(expectedFinalUrl));
+            Criteria.checkThat(latestTab.getUrl().getSpec(), Matchers.is(expectedFinalUrl));
         });
 
         CriteriaHelper.pollUiThread(() -> {

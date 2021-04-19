@@ -108,9 +108,10 @@ public class TabContext {
          */
         public static TabInfo createFromTab(Tab tab) {
             String referrerUrl = getReferrerUrlFromTab(tab);
-            return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrlString(),
+            // TODO(crbug/783819): convert TabInfo to GURL
+            return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrl().getSpec(),
                     tab.getOriginalUrl().getSpec(), referrerUrl != null ? referrerUrl : "",
-                    CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrlString(),
+                    CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrl().getSpec(),
                     tab.isIncognito());
         }
 

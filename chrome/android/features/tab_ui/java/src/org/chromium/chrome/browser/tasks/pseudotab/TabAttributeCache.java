@@ -65,7 +65,7 @@ public class TabAttributeCache {
             @Override
             public void onUrlUpdated(Tab tab) {
                 if (tab.isIncognito()) return;
-                String url = tab.getUrlString();
+                String url = tab.getUrl().getSpec();
                 cacheUrl(tab.getId(), url);
             }
 
@@ -126,7 +126,7 @@ public class TabAttributeCache {
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
                 for (int i = 0; i < filter.getCount(); i++) {
                     Tab tab = filter.getTabAt(i);
-                    cacheUrl(tab.getId(), tab.getUrlString());
+                    cacheUrl(tab.getId(), tab.getUrl().getSpec());
                     cacheTitle(tab.getId(), tab.getTitle());
                     cacheRootId(tab.getId(), CriticalPersistedTabData.from(tab).getRootId());
                     cacheTimestampMillis(
@@ -181,6 +181,7 @@ public class TabAttributeCache {
     }
 
     private static void cacheUrl(int id, String url) {
+        // TODO(crbug/783819): Use GURL directly.
         getSharedPreferences().edit().putString(getUrlKey(id), url).apply();
     }
 

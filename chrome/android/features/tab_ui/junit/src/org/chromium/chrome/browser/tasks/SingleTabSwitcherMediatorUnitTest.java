@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link SingleTabSwitcherMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,10 +52,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class SingleTabSwitcherMediatorUnitTest {
     private final int mTabId = 1;
     private final String mTitle = "test";
-    private final String mUrlString = "chrome://test.com";
+    private final String mUrlString = JUnitTestGURLs.URL_1;
     private final int mTabId2 = 2;
     private final String mTitle2 = "test2";
-    private final String mUrlString2 = "chrome://test2.com";
+    private final String mUrlString2 = JUnitTestGURLs.URL_2;
     private SingleTabSwitcherMediator mMediator;
     private PropertyModel mPropertyModel;
 
@@ -98,10 +99,10 @@ public class SingleTabSwitcherMediatorUnitTest {
         doReturn(0).when(mNormalTabModel).index();
         doReturn(1).when(mNormalTabModel).getCount();
         doReturn(false).when(mNormalTabModel).isIncognito();
-        doReturn(mUrlString).when(mTab).getUrlString();
+        doReturn(JUnitTestGURLs.getGURL(mUrlString)).when(mTab).getUrl();
         doReturn(mTabId).when(mTab).getId();
         doReturn(mTitle).when(mTab).getTitle();
-        doReturn(mUrlString2).when(mTab2).getUrlString();
+        doReturn(JUnitTestGURLs.getGURL(mUrlString2)).when(mTab2).getUrl();
         doReturn(mTabId2).when(mTab2).getId();
         doReturn(mTitle2).when(mTab2).getTitle();
         doReturn(true).when(mIncognitoTabModel).isIncognito();

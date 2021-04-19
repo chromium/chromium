@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,7 +150,7 @@ public class TabSelectionEditorActionProviderUnitTest {
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         doReturn(id).when(tab).getId();
-        doReturn("").when(tab).getUrlString();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         doReturn(title).when(tab).getTitle();
         doReturn(false).when(tab).isClosing();
         return tab;

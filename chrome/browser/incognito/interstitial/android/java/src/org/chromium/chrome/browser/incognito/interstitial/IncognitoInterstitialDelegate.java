@@ -68,7 +68,7 @@ public class IncognitoInterstitialDelegate {
         ThreadUtils.assertOnUiThread();
         Tab currentRegularTab = TabModelUtils.getCurrentTab(mRegularTabModel);
         mIncognitoTabCreator.launchUrl(
-                currentRegularTab.getUrlString(), TabLaunchType.FROM_CHROME_UI);
+                currentRegularTab.getUrl().getSpec(), TabLaunchType.FROM_CHROME_UI);
         mRegularTabModel.closeTab(currentRegularTab);
     }
 }

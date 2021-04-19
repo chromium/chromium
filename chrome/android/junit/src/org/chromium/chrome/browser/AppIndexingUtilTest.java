@@ -26,6 +26,7 @@ import org.chromium.blink.mojom.DocumentMetadata;
 import org.chromium.blink.mojom.WebPage;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.mojom.Url;
 
 /**
@@ -51,14 +52,14 @@ public class AppIndexingUtilTest {
         doReturn(true).when(mUtil).isEnabledForDevice();
         doReturn(false).when(mTab).isIncognito();
 
-        doReturn("http://www.test.com").when(mTab).getUrlString();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mTab).getUrl();
         doReturn("My neat website").when(mTab).getTitle();
         doReturn(0L).when(mUtil).getElapsedTime();
         doAnswer(invocation -> {
             DocumentMetadata.GetEntitiesResponse callback =
                     (DocumentMetadata.GetEntitiesResponse) invocation.getArguments()[0];
             WebPage webpage = new WebPage();
-            webpage.url = createUrl("http://www.test.com");
+            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL);
             webpage.title = "My neat website";
             callback.call(webpage);
             return null;
@@ -136,7 +137,7 @@ public class AppIndexingUtilTest {
     @Test
     public void testReportPageView() {
         mUtil.reportPageView(mTab);
-        verify(mReporter).reportWebPageView(eq("http://www.test.com"), eq("My neat website"));
+        verify(mReporter).reportWebPageView(eq(JUnitTestGURLs.EXAMPLE_URL), eq("My neat website"));
     }
 
     private Url createUrl(String s) {

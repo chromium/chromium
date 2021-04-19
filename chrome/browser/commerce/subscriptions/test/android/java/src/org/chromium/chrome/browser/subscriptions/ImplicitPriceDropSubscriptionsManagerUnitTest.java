@@ -268,9 +268,9 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
             ShoppingPersistedTabData shoppingPersistedTabData) {
         TabImpl tab = mock(TabImpl.class);
         doReturn(id).when(tab).getId();
-        doReturn(urlString).when(tab).getUrlString();
         GURL gurl = mock(GURL.class);
         doReturn(urlString).when(gurl).getSpec();
+        doReturn(gurl).when(tab).getUrl();
         doReturn(gurl).when(tab).getOriginalUrl();
         doReturn(tab).when(mTabModel).getTabAt(position);
         UserDataHost userDataHost = new UserDataHost();

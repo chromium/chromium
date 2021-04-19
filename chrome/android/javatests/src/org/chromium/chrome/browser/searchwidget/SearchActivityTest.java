@@ -781,7 +781,7 @@ public class SearchActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = cta.getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(expectedUrl));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
         });
         mActivityTestRule.setActivity(cta);
     }

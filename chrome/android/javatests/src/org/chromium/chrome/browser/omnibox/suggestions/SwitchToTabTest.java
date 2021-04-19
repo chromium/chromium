@@ -278,7 +278,7 @@ public class SwitchToTabTest {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
         });
     }
 
@@ -318,7 +318,7 @@ public class SwitchToTabTest {
             Tab tab = cta2.getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
         });
     }
 
@@ -387,7 +387,7 @@ public class SwitchToTabTest {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(testHttpsUrl1));
             // Make sure tab is loaded and in foreground.
             Criteria.checkThat(
                     tab.getWindowAndroid().getActivityState(), Matchers.is(ActivityState.RESUMED));

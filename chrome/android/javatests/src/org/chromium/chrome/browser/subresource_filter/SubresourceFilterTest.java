@@ -152,7 +152,7 @@ public final class SubresourceFilterTest {
                     @Override
                     public void didAddTab(
                             Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                        if (tab.getUrlString().equals(LEARN_MORE_PAGE)) {
+                        if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
                             tabCreatedCallback.notifyCalled();
                         }
                     }

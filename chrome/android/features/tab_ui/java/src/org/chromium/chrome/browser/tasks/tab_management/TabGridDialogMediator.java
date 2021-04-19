@@ -620,7 +620,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         List<Tab> tabgroup = getRelatedTabs(mCurrentTabId);
         assert tabgroup.size() > 0;
         for (int i = 0; i < tabgroup.size(); i++) {
-            sb.append(i + 1).append(". ").append(tabgroup.get(i).getUrlString()).append("\n");
+            sb.append(i + 1).append(". ").append(tabgroup.get(i).getUrl().getSpec()).append("\n");
         }
         return sb.toString();
     }
