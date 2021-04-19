@@ -22,7 +22,7 @@
   <div class="content">
     <div>
       Conversion measurement is currently <span id="feature-status-content"></span>.
-      For a detailed explanation of the API and it's behavior, see
+      For a detailed explanation of the API and its behavior, see
       <a href="https://github.com/WICG/conversion-measurement-api/blob/master/README.md" target="_blank">
         the explainer
       </a>.
@@ -39,7 +39,7 @@
         <thead>
           <tr class="header-row">
             <th>
-            Impression Data
+              Impression Data
             </th>
             <th>
               Impression origin
@@ -55,6 +55,9 @@
             </th>
             <th>
               Expiry Time
+            </th>
+            <th>
+              Source Type
             </th>
           </tr>
         </thead>
@@ -90,6 +93,9 @@
             <th>
               Attribution Credit
             </th>
+            <th>
+              Source Type
+            </th>
           </tr>
         </thead>
         <tbody id="report-table-body">
@@ -110,6 +116,7 @@
     <td class="reporting-origin-cell"></td>
     <td class="impression-time-cell"></td>
     <td class="expiry-time-cell"></td>
+    <td class="source-type-cell"></td>
   </tr>
 </template>
 
@@ -121,6 +128,7 @@
     <td class="reporting-origin-cell"></td>
     <td class="report-time-cell"></td>
     <td class="attibution-credit-cell"></td>
+    <td class="source-type-cell"></td>
   </tr>
 </template>
 </body>

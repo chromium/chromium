@@ -5,7 +5,7 @@
 import {$} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, WebUIImpression} from './conversion_internals.mojom-webui.js';
+import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SourceType, WebUIImpression} from './conversion_internals.mojom-webui.js';
 
 /**
  * Reference to the backend providing all the data.
@@ -59,8 +59,22 @@ function UrlToText(origin) {
 }
 
 /**
+ * Converts a mojo SourceType into a user-readable string.
+ * @param {WebUIImpression_SourceType} sourceType Source type to convert
+ * @return {string}
+ */
+function SourceTypeToText(sourceType) {
+  switch (sourceType) {
+    case SourceType.kNavigation:
+      return 'Navigation';
+    default:
+      return sourceType.toString();
+  }
+}
+
+/**
  * Creates a single row for the impression table.
- * @param {!WebIUIImpression} impression The info to create the row.
+ * @param {!WebUIImpression} impression The info to create the row.
  * @return {!HTMLElement}
  */
 function createImpressionRow(impression) {
@@ -73,12 +87,13 @@ function createImpressionRow(impression) {
   td[3].textContent = UrlToText(impression.reportingOrigin);
   td[4].textContent = new Date(impression.impressionTime).toLocaleString();
   td[5].textContent = new Date(impression.expiryTime).toLocaleString();
+  td[6].textContent = SourceTypeToText(impression.sourceType);
   return document.importNode(template.content, true);
 }
 
 /**
- * Creates a single row for the impression table.
- * @param {!WebUIImpression} impression The info to create the row.
+ * Creates a single row for the report table.
+ * @param {!WebUIConversionReport} report The info to create the row.
  * @return {!HTMLElement}
  */
 function createReportRow(report) {
@@ -91,6 +106,7 @@ function createReportRow(report) {
   td[3].textContent = UrlToText(report.reportingOrigin);
   td[4].textContent = new Date(report.reportTime).toLocaleString();
   td[5].textContent = report.attributionCredit;
+  td[6].textContent = SourceTypeToText(report.sourceType);
   return document.importNode(template.content, true);
 }
 

@@ -6,6 +6,11 @@ module mojom;
 
 import "url/mojom/origin.mojom";
 
+// Represents StorableImpression::SourceType.
+enum SourceType {
+  kNavigation,
+};
+
 // Struct containing stored data that will be sent in a future conversion
 // report.
 struct WebUIConversionReport {
@@ -15,6 +20,7 @@ struct WebUIConversionReport {
   url.mojom.Origin reporting_origin;
   double report_time;
   int32 attribution_credit;
+  SourceType source_type;
 };
 
 // Struct representing a stored impression that will be displayed by WebUI.
@@ -25,13 +31,14 @@ struct WebUIImpression {
   url.mojom.Origin reporting_origin;
   double impression_time;
   double expiry_time;
+  SourceType source_type;
 };
 
 // Mojo interface used for communication between a WebUI and the storage layer
 // for conversion measurement.
 interface ConversionInternalsHandler {
   // Returns whether conversion measurement and the debug mode are enabled in
-  // the browisng context the WebUI is in.
+  // the browsing context the WebUI is in.
   IsMeasurementEnabled() => (bool enabled, bool debug_mode);
 
   // Returns all active impressions that are persisted in storage. This does

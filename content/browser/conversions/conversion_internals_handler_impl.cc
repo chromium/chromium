@@ -26,6 +26,13 @@ namespace content {
 
 namespace {
 
+::mojom::SourceType SourceTypeToMojoType(StorableImpression::SourceType input) {
+  switch (input) {
+    case StorableImpression::SourceType::kNavigation:
+      return ::mojom::SourceType::kNavigation;
+  }
+}
+
 void ForwardImpressionsToWebUI(
     ::mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
         web_ui_callback,
@@ -38,7 +45,8 @@ void ForwardImpressionsToWebUI(
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time().ToJsTime(),
-        impression.expiry_time().ToJsTime()));
+        impression.expiry_time().ToJsTime(),
+        SourceTypeToMojoType(impression.source_type())));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));
@@ -56,7 +64,8 @@ void ForwardReportsToWebUI(
         report.impression.impression_data(), report.conversion_data,
         report.impression.conversion_origin(),
         report.impression.reporting_origin(), report.report_time.ToJsTime(),
-        report.attribution_credit));
+        report.attribution_credit,
+        SourceTypeToMojoType(report.impression.source_type())));
   }
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
 }

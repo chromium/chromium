@@ -184,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.getElementById("impression-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
-          table.children[0].children[0].innerText === "100") {
+          table.children[0].children[0].innerText === "100" &&
+          table.children[0].children[6].innerText === "Navigation") {
         document.title = $1;
       }
     });
@@ -278,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.getElementById("report-table-body");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
-          table.children[0].children[1].innerText === "7") {
+          table.children[0].children[1].innerText === "7" &&
+          table.children[0].children[6].innerText === "Navigation") {
         document.title = $1;
       }
     });
