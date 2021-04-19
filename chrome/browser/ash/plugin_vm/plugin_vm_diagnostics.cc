@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus//concierge_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -44,10 +45,10 @@ std::string CapitalizedBoardName() {
 
 class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
  public:
-  static void Run(Profile* profile, DiagnosticsCallback callback) {
+  static void Run(DiagnosticsCallback callback) {
     // Kick off the first step. The object is kept alive in callbacks until it
     // is finished.
-    base::WrapRefCounted(new PluginVmDiagnostics(profile, std::move(callback)))
+    base::WrapRefCounted(new PluginVmDiagnostics(std::move(callback)))
         ->CheckPluginVmIsAllowed();
   }
 
@@ -58,8 +59,9 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   using ImageListType =
       ::google::protobuf::RepeatedPtrField<vm_tools::concierge::VmDiskInfo>;
 
-  PluginVmDiagnostics(Profile* profile, DiagnosticsCallback callback)
-      : profile_(profile), callback_(std::move(callback)) {}
+  explicit PluginVmDiagnostics(DiagnosticsCallback callback)
+      : active_profile_{ProfileManager::GetActiveUserProfile()},
+        callback_(std::move(callback)) {}
   ~PluginVmDiagnostics() { DCHECK(callback_.is_null()); }
 
   void CheckPluginVmIsAllowed() {
@@ -67,7 +69,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     using PolicyConfigured = plugin_vm::PluginVmFeatures::PolicyConfigured;
 
     auto is_allowed_diagnostics =
-        plugin_vm::PluginVmFeatures::Get()->GetIsAllowedDiagnostics(profile_);
+        plugin_vm::PluginVmFeatures::Get()->GetIsAllowedDiagnostics(
+            active_profile_);
 
     // TODO(b/173653141): Consider reconciling the error messages with
     // `is_allowed_diagnostics.GetTopError()` so that we can reuse it.
@@ -90,6 +93,16 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         case ProfileSupported::kErrorNonPrimary:
           entry.SetFail("Secondary profiles are not supported");
           break;
+        case ProfileSupported::kErrorChildAccount:
+          entry.SetFail("Child accounts are not supported");
+          break;
+        case ProfileSupported::kErrorOffTheRecord:
+          entry.SetFail("Guest profiles are not supported");
+          break;
+        case ProfileSupported::kErrorEphemeral:
+          entry.SetFail(
+              "Ephemeral user profiles are not supported. Contact your admin");
+          break;
         case ProfileSupported::kErrorNotSupported:
           entry.SetFail("The profile is not supported");
           break;
@@ -106,7 +119,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
           const base::DictionaryValue* image_policy =
-              profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
+              active_profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
           const base::Value* url =
               image_policy->FindKey(prefs::kPluginVmImageUrlKeyName);
           const base::Value* hash =
@@ -157,7 +170,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
     vm_tools::concierge::ListVmDisksRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        chromeos::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
 
@@ -231,7 +244,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     return stream.str();
   }
 
-  Profile* const profile_;
+  Profile* const active_profile_;
   DiagnosticsCallback callback_;
   guest_os::DiagnosticsBuilder builder_;
 };
@@ -239,9 +252,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 }  // namespace
 
 void GetDiagnostics(
-    Profile* profile,
     base::OnceCallback<void(guest_os::mojom::DiagnosticsPtr)> callback) {
-  PluginVmDiagnostics::Run(profile, std::move(callback));
+  PluginVmDiagnostics::Run(std::move(callback));
 }
 
 }  // namespace plugin_vm

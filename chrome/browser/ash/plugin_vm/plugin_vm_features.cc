@@ -25,14 +25,36 @@ using ProfileSupported = PluginVmFeatures::ProfileSupported;
 using PolicyConfigured = PluginVmFeatures::PolicyConfigured;
 
 ProfileSupported CheckProfileSupported(const Profile* profile) {
+  if (!profile) {
+    VLOG(1) << "profile == nullptr";
+    return ProfileSupported::kErrorNotSupported;
+  }
+
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG(1) << "Plugin VM is not allowed on non-primary profiles.";
     return ProfileSupported::kErrorNonPrimary;
   }
-  if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      !chromeos::ProfileHelper::IsRegularProfile(profile)) {
-    VLOG(1) << "Profile is not allowed to run Plugin VM.";
+
+  if (profile->IsChild()) {
+    VLOG(1) << "Child accounts are not supported";
+    return ProfileSupported::kErrorChildAccount;
+  }
+
+  if (profile->IsOffTheRecord()) {
+    VLOG(1) << "Off-the-record profiles are not supported";
+    return ProfileSupported::kErrorOffTheRecord;
+  }
+
+  if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+    VLOG(1) << "Ephemeral user profiles are not supported";
+    return ProfileSupported::kErrorEphemeral;
+  }
+
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+    VLOG(1) << "non-regular profile is not supported";
+    // If this happens, the profile is for something like the sign in screen or
+    // lock screen. Return a generic error code because the user will not be
+    // able to see the error code/message anyway.
     return ProfileSupported::kErrorNotSupported;
   }
 
@@ -110,6 +132,12 @@ std::string PluginVmFeatures::IsAllowedDiagnostics::GetTopError() const {
       break;
     case ProfileSupported::kErrorNonPrimary:
       return "Parallels Desktop is only allowed in primary user sessions";
+    case ProfileSupported::kErrorChildAccount:
+      return "Child accounts are not supported";
+    case ProfileSupported::kErrorOffTheRecord:
+      return "Guest profiles are not supported";
+    case ProfileSupported::kErrorEphemeral:
+      return "Ephemeral user profiles are not supported";
     case ProfileSupported::kErrorNotSupported:
       return "This user session is not allowed to run Parallels Desktop";
   }

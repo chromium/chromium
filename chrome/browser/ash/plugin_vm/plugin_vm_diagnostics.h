@@ -8,14 +8,11 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom-forward.h"
 
-class Profile;
-
 namespace plugin_vm {
 
 // Get Plugin VM diagnostics. This is mainly for the the debugging page
 // chrome://vm/parallels.
 void GetDiagnostics(
-    Profile* profile,
     base::OnceCallback<void(guest_os::mojom::DiagnosticsPtr)> callback);
 
 }  // namespace plugin_vm
