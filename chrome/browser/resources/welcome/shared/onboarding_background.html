@@ -406,14 +406,24 @@
   }
 
   #devices-circle {
-    -webkit-mask: url(../images/background_svgs/streamer_circle.svg);
-    background-color: var(--welcome-green);
     /* Clip the top-left and bottom-right quadrants. */
     clip-path: polygon(
-        48% 0, 100% 0, 100% 53%, 50% 50%, 52% 100%, 0 100%, 0 50%, 50% 47%);
+        48% 0, 100% 0, 100% 50%, 50% 50%, 52% 100%, 0 100%, 0 50%, 50% 47%);
     left: 1832px;
     top: 456px;
     transform: translate(-50%, -50%) rotate(-9deg);
+  }
+
+  #devices-circle-image {
+    -webkit-mask: url(../images/background_svgs/streamer_circle.svg);
+    animation: devices-circle 11s infinite linear;
+    background-color: var(--welcome-green);
+    height: 100%;
+    width: 100%;
+  }
+
+  @keyframes devices-circle {
+    to { transform: rotate(-360deg); }
   }
 </style>
 <div id="container">
@@ -481,7 +491,9 @@
     <!-- Connected devices image. -->
     <div class="shape" id="devices"></div>
     <div class="shape" id="devices-check"></div>
-    <div class="shape" id="devices-circle"></div>
+    <div class="shape" id="devices-circle">
+      <div id="devices-circle-image"></div>
+    </div>
 
     <!-- Temp: Overlay of graphic -->
     <div id="overlay"></div>
