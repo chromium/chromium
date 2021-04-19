@@ -4,7 +4,7 @@
   <script src="../resources/js-test.js"></script>
 </head>
 
-<body data-role="document" data-knownFailure>
+<body data-role="generic">
   <div id="test-cases">
     <div role="alert" aria-label="This is an alert"></div>
 
@@ -36,13 +36,13 @@
       </fieldset>
 
       <div role="dialog">This is a dialog</div>
-      <dialog data-role="dialog" data-knownFailure>This is a dialog</dialog>
+      <dialog data-role="dialog">This is a dialog</dialog>
 
-      <div role="directory" data-knownFailure>This is a directory</div>
+      <div role="directory">This is a directory</div>
 
-      <div role="grid" data-knownFailure>
+      <div role="grid">
         <div role="row">
-          <div role="columnheader" data-knownFailure>
+          <div role="columnheader">
             This is a columnheader
           </div>
         </div>
@@ -70,9 +70,13 @@
 
       <div role="form">This is a form</div>
 
+      <div role="generic" tabindex="0">This is a generic element</div>
+      <div aria-live="polite" data-role="generic"></div>
+
       <div role="group">This is a group</div>
-      <details data-role="group" data-knownFailure>
-        <summary>This is a summary</summary>
+      <!-- Re-add data-role expectation for details/summary if ARIA adds mappings -->
+      <details> <!-- HTML-AAM 1.0 has no corresponding ARIA role -->
+        <summary>This is a summary</summary>  <!-- No corresponding ARIA role -->
         This is a group
       </details>
 
@@ -117,8 +121,10 @@
       <div role="menubar">This is a menubar</div>
 
       <div role="menuitem">This is a menuitem</div>
-      <menu type="popup">
-        <menuitem command="doSomething" data-role="menuitem" data-knownFailure>This is a menuitem</menuitem>
+
+      <menu type="popup" data-role="list">
+        <!-- <menuitem> has been deprecated since HTML 5.2, and doea not map to ARIA menuitem -->
+        <menuitem command="doSomething" data-role="generic">This is a menuitem</menuitem>
       </menu>
 
       <div role="menuitemcheckbox">This is a menuitemcheckbox</div>
@@ -174,7 +180,7 @@
 
       <div role="tabpanel">This is a tabpanel</div>
 
-      <div role="textbox" data-knownFailure>This is a textbox</div>
+      <div role="textbox">This is a textbox</div>
       <input type="email" data-role="textbox">
       <input type="password" data-role="textbox">
       <input type="search" data-role="searchbox">
@@ -185,7 +191,7 @@
       <div role="timer">This is a timer</div>
 
       <div role="toolbar">This is a toolbar</div>
-      <menu type="toolbar" data-role="toolbar" data-knownFailure>
+      <menu type="toolbar" data-role="list">
        <menuitem onclick="location='help.html'" label="Help">
        <menuitem onclick="location='about.html'" label="About">
       </menu>
@@ -194,7 +200,7 @@
 
       <div role="tree">This is a tree</div>
 
-      <div role="treegrid" data-knownFailure>This is a treegrid</div>
+      <div role="treegrid">This is a treegrid</div>
 
       <div role="treeitem">This is a treeitem</div>
 
@@ -215,20 +221,18 @@ if (window.testRunner) {
 
     var roleElements = document.querySelectorAll('div[role]');
     for (var i = 0; i < roleElements.length; i++) {
+        // Test that any element with an ARIA role has the same computedRole.
         var roleElement = roleElements[i];
         var role = roleElement.getAttribute('role');
-        if (!roleElement.hasAttribute('data-knownFailure')) {
-            var expectedRoleString = '"' + role + '"';
-            shouldBe('roleElement.computedRole', expectedRoleString);
-        }
-        var implicitRoleElements = document.querySelectorAll('[data-role=' + role + ']');
-        for (var j = 0; j < implicitRoleElements.length; j++) {
-            var implicitRoleElement = implicitRoleElements[j];
-            if (!implicitRoleElement.hasAttribute('data-knownFailure')) {
-                var expectedRoleString = '"' + role + '"';
-                shouldBe('implicitRoleElement.computedRole', expectedRoleString);
-            }
-        }
+        var expectedRoleString = '"' + role + '"';
+        shouldBe('roleElement.computedRole', expectedRoleString);
+      var implicitRoleElements = document.querySelectorAll('[data-role=' + role + ']');
+      // Next, test native elements that should also have that same computedRole.
+      for (var j = 0; j < implicitRoleElements.length; j++) {
+          var implicitRoleElement = implicitRoleElements[j];
+          var expectedRoleString = '"' + role + '"';
+          shouldBe('implicitRoleElement.computedRole', expectedRoleString);
+      }
     }
     var svgAElement = document.querySelector('svg a');
     var expectedSvgARole = '"' + svgAElement.getAttribute('role') + '"';
