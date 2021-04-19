@@ -142,6 +142,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
       rare_data_->paint_properties = nullptr;
   }
   void EnsureId() { EnsureRareData(); }
+  bool HasUniqueId() const { return rare_data_ && rare_data_->unique_id; }
 
   // This is a complete set of property nodes that should be used as a
   // starting point to paint a LayoutObject. This data is cached because some

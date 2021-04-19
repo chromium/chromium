@@ -164,6 +164,20 @@ void DefaultToUnsupportedProperty(
   }
 }
 
+bool IsNoOpBackgroundColorAnimation(const PropertyHandle& property,
+                                    const LayoutObject* layout_object) {
+  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
+    return false;
+  if (property.GetCSSProperty().PropertyID() != CSSPropertyID::kBackgroundColor)
+    return false;
+  // If the background color paint worklet was painted, a unique id will be
+  // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
+  // for details.
+  if (layout_object->FirstFragment().HasUniqueId())
+    return false;
+  return true;
+}
+
 }  // namespace
 
 CompositorElementIdNamespace
@@ -850,10 +864,16 @@ void CompositorAnimations::GetAnimationOnCompositor(
     if (start_time)
       keyframe_model->SetStartTime(start_time.value());
 
-    keyframe_model->SetElementId(CompositorElementIdFromUniqueObjectId(
-        target_element.GetLayoutObject()->UniqueId(),
-        CompositorElementNamespaceForProperty(
-            property.GetCSSProperty().PropertyID())));
+    // By default, it is a kInvalidElementId.
+    CompositorElementId id;
+    if (!IsNoOpBackgroundColorAnimation(property,
+                                        target_element.GetLayoutObject())) {
+      id = CompositorElementIdFromUniqueObjectId(
+          target_element.GetLayoutObject()->UniqueId(),
+          CompositorElementNamespaceForProperty(
+              property.GetCSSProperty().PropertyID()));
+    }
+    keyframe_model->SetElementId(id);
     keyframe_model->SetIterations(compositor_timing.adjusted_iteration_count);
     keyframe_model->SetIterationStart(compositor_timing.iteration_start);
     keyframe_model->SetTimeOffset(compositor_timing.scaled_time_offset);

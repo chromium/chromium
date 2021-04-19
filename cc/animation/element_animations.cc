@@ -491,6 +491,11 @@ void ElementAnimations::OnCustomPropertyAnimated(
     int target_property_id) {
   DCHECK(animation_host_);
   DCHECK(animation_host_->mutator_host_client());
+  // No-op background-color animations can have no unique_id. See
+  // CompositorAnimations::IsNoOpBackgroundColorAnimation for details.
+  if (!ElementId::IsValid(keyframe_model->element_id().GetStableId())) {
+    return;
+  }
   ElementId id = CalculateTargetElementId(this, keyframe_model);
   PaintWorkletInput::PropertyKey property_key =
       target_property_id == TargetProperty::NATIVE_PROPERTY

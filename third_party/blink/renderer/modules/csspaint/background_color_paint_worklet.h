@@ -43,6 +43,7 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   // the element off the main thread with that progress + the keyframes.
   // Returning false meaning that we cannot paint background color with
   // BackgroundColorPaintWorklet.
+  // A side effect of this is that it will ensure a unique_id exists.
   static bool GetBGColorPaintWorkletParams(Node* node,
                                            Vector<Color>* animated_colors,
                                            Vector<double>* offsets,
