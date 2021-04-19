@@ -850,7 +850,6 @@ chrome_java_resources = [
   "java/res/layout/top_sites_tile_view.xml",
   "java/res/layout/top_sites_tile_view_condensed.xml",
   "java/res/layout/update_menu_item.xml",
-  "java/res/layout/updating_gms_progress_view.xml",
   "java/res/layout/url_action_container.xml",
   "java/res/layout/url_bar.xml",
   "java/res/layout/web_notification.xml",

@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -21,11 +20,9 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
@@ -52,7 +49,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.GmsAvailabilityException;
-import org.chromium.components.signin.GmsJustUpdatedException;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -117,8 +113,6 @@ public abstract class SyncConsentFragmentBase
     protected @SigninAccessPoint int mSigninAccessPoint;
 
     private UserRecoverableErrorHandler.ModalDialog mGooglePlayServicesUpdateErrorHandler;
-    private AlertDialog mGmsIsUpdatingDialog;
-    private long mGmsIsUpdatingDialogShowTime;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
     private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
@@ -242,7 +236,6 @@ public abstract class SyncConsentFragmentBase
         super.onDestroy();
         mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         dismissGmsErrorDialog();
-        dismissGmsUpdatingDialog();
         if (mConfirmSyncDataStateMachine != null) {
             mConfirmSyncDataStateMachine.cancel(/* isBeingDestroyed = */ true);
             mConfirmSyncDataStateMachine = null;
@@ -574,24 +567,17 @@ public abstract class SyncConsentFragmentBase
         try {
             List<String> result = AccountUtils.toAccountNames(accounts.get());
             dismissGmsErrorDialog();
-            dismissGmsUpdatingDialog();
             return result;
         } catch (GmsAvailabilityException e) {
-            dismissGmsUpdatingDialog();
             if (e.isUserResolvableError()) {
                 showGmsErrorDialog(e.getGmsAvailabilityReturnCode());
             } else {
                 Log.e(TAG, "Unresolvable GmsAvailabilityException.", e);
             }
             return null;
-        } catch (GmsJustUpdatedException e) {
-            dismissGmsErrorDialog();
-            showGmsUpdatingDialog();
-            return null;
         } catch (AccountManagerDelegateException e) {
             Log.e(TAG, "Unknown exception from AccountManagerFacade.", e);
             dismissGmsErrorDialog();
-            dismissGmsUpdatingDialog();
             return null;
         }
     }
@@ -609,34 +595,11 @@ public abstract class SyncConsentFragmentBase
         mGooglePlayServicesUpdateErrorHandler.handleError(getActivity(), gmsErrorCode);
     }
 
-    private void showGmsUpdatingDialog() {
-        if (mGmsIsUpdatingDialog != null) {
-            return;
-        }
-        // TODO(https://crbug.com/814728): Use DialogFragment here.
-        mGmsIsUpdatingDialog = new AlertDialog.Builder(getActivity())
-                                       .setCancelable(false)
-                                       .setView(R.layout.updating_gms_progress_view)
-                                       .create();
-        mGmsIsUpdatingDialog.show();
-        mGmsIsUpdatingDialogShowTime = SystemClock.elapsedRealtime();
-    }
-
     private void dismissGmsErrorDialog() {
         if (mGooglePlayServicesUpdateErrorHandler == null) {
             return;
         }
         mGooglePlayServicesUpdateErrorHandler.cancelDialog();
         mGooglePlayServicesUpdateErrorHandler = null;
-    }
-
-    private void dismissGmsUpdatingDialog() {
-        if (mGmsIsUpdatingDialog == null) {
-            return;
-        }
-        mGmsIsUpdatingDialog.dismiss();
-        mGmsIsUpdatingDialog = null;
-        RecordHistogram.recordTimesHistogram("Signin.AndroidGmsUpdatingDialogShownTime",
-                SystemClock.elapsedRealtime() - mGmsIsUpdatingDialogShowTime);
     }
 }
