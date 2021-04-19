@@ -1521,7 +1521,6 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
-      power_level != PowerLevel::kLowPower &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
        (net::NetworkChangeNotifier::GetConnectionCost() !=
@@ -1557,6 +1556,8 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
         EXPECT_EQ(is_high_power, options->auto_upgrade_bandwidth);
         EXPECT_EQ(expected_mediums, options->allowed_mediums);
         EXPECT_EQ(!is_high_power, options->enable_bluetooth_listening);
+        EXPECT_EQ(is_high_power && should_use_web_rtc_,
+                  options->enable_webrtc_listening);
         std::move(callback).Run(Status::kSuccess);
       });
 
