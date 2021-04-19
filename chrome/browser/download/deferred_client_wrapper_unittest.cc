@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace download {

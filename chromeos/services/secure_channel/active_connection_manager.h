@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -57,7 +56,7 @@ class ActiveConnectionManager {
       const ConnectionDetails& connection_details);
 
  protected:
-  ActiveConnectionManager(Delegate* delegate);
+  explicit ActiveConnectionManager(Delegate* delegate);
 
   // Actually adds the provided connection. By the time this function is called,
   // it has already been verified that there is no existing connection.

@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace sync_pb {

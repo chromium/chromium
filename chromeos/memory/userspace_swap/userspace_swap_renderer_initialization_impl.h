@@ -9,7 +9,6 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "chromeos/chromeos_export.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace chromeos {

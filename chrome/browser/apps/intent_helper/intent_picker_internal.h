@@ -14,6 +14,8 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+class GURL;
+
 namespace apps {
 
 bool ShouldCheckAppsForUrl(content::WebContents* web_contents);

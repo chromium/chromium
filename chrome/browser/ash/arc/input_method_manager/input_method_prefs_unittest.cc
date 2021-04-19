@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"

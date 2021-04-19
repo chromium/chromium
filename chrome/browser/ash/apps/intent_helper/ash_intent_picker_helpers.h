@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {

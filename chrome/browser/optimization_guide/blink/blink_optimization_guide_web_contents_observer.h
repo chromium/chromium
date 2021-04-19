@@ -7,7 +7,6 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom.h"
 
 class Profile;
 

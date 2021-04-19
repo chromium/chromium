@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "chromeos/components/help_app_ui/search/search.mojom.h"
-
 namespace chromeos {
 namespace help_app {
 

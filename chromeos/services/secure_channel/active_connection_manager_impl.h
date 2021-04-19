@@ -13,7 +13,6 @@
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -43,7 +42,8 @@ class ActiveConnectionManagerImpl : public ActiveConnectionManager,
   ~ActiveConnectionManagerImpl() override;
 
  private:
-  ActiveConnectionManagerImpl(ActiveConnectionManager::Delegate* delegate);
+  explicit ActiveConnectionManagerImpl(
+      ActiveConnectionManager::Delegate* delegate);
 
   // ActiveConnectionManager:
   ConnectionState GetConnectionState(

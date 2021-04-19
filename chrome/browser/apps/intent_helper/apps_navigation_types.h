@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/image_model.h"
 
 namespace apps {

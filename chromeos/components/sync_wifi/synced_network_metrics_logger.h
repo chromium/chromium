@@ -13,7 +13,6 @@
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace chromeos {
 

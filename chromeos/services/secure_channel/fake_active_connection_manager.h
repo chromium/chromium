@@ -15,7 +15,6 @@
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -26,7 +25,8 @@ class AuthenticatedChannel;
 // Test ActiveConnectionManager implementation.
 class FakeActiveConnectionManager : public ActiveConnectionManager {
  public:
-  FakeActiveConnectionManager(ActiveConnectionManager::Delegate* delegate);
+  explicit FakeActiveConnectionManager(
+      ActiveConnectionManager::Delegate* delegate);
   ~FakeActiveConnectionManager() override;
 
   using DetailsToMetadataMap = base::flat_map<
