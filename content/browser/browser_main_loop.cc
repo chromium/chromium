@@ -1331,7 +1331,8 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #endif
   ui::Clipboard::SetAllowedThreads(allowed_clipboard_threads);
 
-  if (!established_gpu_channel && always_uses_gpu) {
+  if (GpuDataManagerImpl::GetInstance()->GpuProcessStartAllowed() &&
+      !established_gpu_channel && always_uses_gpu) {
     TRACE_EVENT_INSTANT0("gpu", "Post task to launch GPU process",
                          TRACE_EVENT_SCOPE_THREAD);
     GetIOThreadTaskRunner({})->PostTask(

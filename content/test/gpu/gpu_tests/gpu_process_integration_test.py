@@ -381,22 +381,28 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('GPU process not detected')
 
   def _GpuProcess_disable_gpu_and_swiftshader(self, test_path):
-    # Disable SwiftShader, GPU process should launch for display compositing.
+    # Disable SwiftShader, so GPU process should not launch anywhere.
     self.RestartBrowserIfNecessaryWithArgs(
         [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER])
     self._NavigateAndWait(test_path)
+
+    # Windows will run the display compositor in the browser process if
+    # accelerated GL and Swiftshader are both disabled.
+    should_have_gpu_process = sys.platform != 'win32'
     has_gpu_process = self.tab.EvaluateJavaScript(
         'chrome.gpuBenchmarking.hasGpuProcess()')
-    if not has_gpu_process:
+
+    if should_have_gpu_process and not has_gpu_process:
       self.fail('GPU process not detected')
+    elif not should_have_gpu_process and has_gpu_process:
+      self.fail('GPU process detected')
 
   def _GpuProcess_disable_swiftshader(self, test_path):
     # Disable SwiftShader, GPU process should be able to launch.
     self.RestartBrowserIfNecessaryWithArgs([cba.DISABLE_SOFTWARE_RASTERIZER])
     self._NavigateAndWait(test_path)
-    has_gpu_process = self.tab.EvaluateJavaScript(
-        'chrome.gpuBenchmarking.hasGpuProcess()')
-    if not has_gpu_process:
+    if not self.tab.EvaluateJavaScript(
+        'chrome.gpuBenchmarking.hasGpuProcess()'):
       self.fail('GPU process not detected')
 
   def _GpuProcess_disabling_workarounds_works(self, test_path):
