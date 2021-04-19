@@ -934,6 +934,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/breakout_box/',
+        ],
+        'allowed': [
+            'media::.+',
+            # Some media APIs require std::vector.
+            "std::vector",
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/mediasource/',
         ],
         'allowed': [

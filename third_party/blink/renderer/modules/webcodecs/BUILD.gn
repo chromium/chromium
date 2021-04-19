@@ -78,12 +78,7 @@ blink_modules_sources("webcodecs") {
   if (media_use_openh264) {
     deps += [ "//third_party/openh264:encoder" ]
   }
-  public_deps = [
-    "//third_party/blink/renderer/modules/mediastream:mediastream",
-    "//third_party/blink/renderer/modules/webaudio:webaudio",
-  ]
-  allow_circular_includes_from =
-      [ "//third_party/blink/renderer/modules/mediastream:mediastream" ]
+  public_deps = [ "//third_party/blink/renderer/modules/webaudio:webaudio" ]
 }
 
 source_set("unit_tests") {
