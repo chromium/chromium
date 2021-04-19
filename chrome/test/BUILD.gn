@@ -1087,6 +1087,7 @@ if (!is_android) {
       "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
       "../browser/enterprise/connectors/connectors_service_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
+      "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/extensions/protocol_handler_apitest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",

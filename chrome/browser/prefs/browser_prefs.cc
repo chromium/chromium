@@ -26,6 +26,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
@@ -696,6 +697,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
   ChromeMetricsServiceClient::RegisterPrefs(registry);
   ChromeTracingDelegate::RegisterPrefs(registry);
+  chrome::enterprise_util::RegisterLocalStatePrefs(registry);
   component_updater::RegisterPrefs(registry);
   embedder_support::OriginTrialPrefs::RegisterPrefs(registry);
   ExternalProtocolHandler::RegisterPrefs(registry);

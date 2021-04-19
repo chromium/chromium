@@ -13,6 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
@@ -116,7 +119,6 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
         ParseFromOptionalDict(
             filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY), "CN",
             "L", "O", "OU");
-
     auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
         ParseFromOptionalDict(
             filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY),
@@ -131,6 +133,17 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
   }
 
   return nullptr;
+}
+
+bool IsMachinePolicyPref(const std::string& pref_name) {
+  const PrefService::Preference* pref =
+      g_browser_process->local_state()->FindPreference(pref_name);
+
+  return pref && pref->IsManaged();
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kManagedAutoSelectCertificateForUrls);
 }
 
 }  // namespace enterprise_util

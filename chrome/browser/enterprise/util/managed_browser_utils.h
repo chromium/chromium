@@ -12,6 +12,7 @@
 #include "net/ssl/client_cert_identity.h"
 
 class GURL;
+class PrefRegistrySimple;
 class Profile;
 
 namespace chrome {
@@ -32,6 +33,11 @@ std::unique_ptr<net::ClientCertIdentity> AutoSelectCertificate(
     Profile* profile,
     const GURL& requesting_url,
     net::ClientCertIdentityList& client_certs);
+
+// Returns true if the given pref is set through a machine-scope policy.
+bool IsMachinePolicyPref(const std::string& pref_name);
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_util
 }  // namespace chrome
