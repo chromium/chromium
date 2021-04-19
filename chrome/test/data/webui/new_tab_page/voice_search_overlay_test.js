@@ -4,18 +4,15 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, NewTabPageProxy, VoiceAction as Action, VoiceError as Error, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {flushTasks, isVisible} from 'chrome://test/test_util.m.js';
 
+import {assertEquals} from '../chai_assert.js';
+
 import {assertNotStyle, assertStyle, keydown} from './test_support.js';
-
-/** @typedef {newTabPage.mojom.VoiceSearchAction} */
-const Action = newTabPage.mojom.VoiceSearchAction;
-
-/** @typedef {newTabPage.mojom.VoiceSearchError} */
-const Error = newTabPage.mojom.VoiceSearchError;
 
 function createResults(n) {
   return {
@@ -67,6 +64,9 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
    */
   let handler;
 
+  /** @type {!MetricsTracker} */
+  let metrics;
+
   setup(async () => {
     PolymerTest.clearBody();
 
@@ -78,6 +78,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
     NewTabPageProxy.setInstance(
         handler, new newTabPage.mojom.PageCallbackRouter());
+
+    metrics = fakeMetricsPrivate();
 
     voiceSearchOverlay = document.createElement('ntp-voice-search-overlay');
     document.body.appendChild(voiceSearchOverlay);
@@ -174,9 +176,9 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertFalse(
         voiceSearchOverlay.$.micContainer.classList.contains('receiving'));
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        Action.kQuerySubmitted,
-        await handler.whenCalled('onVoiceSearchAction'));
+        1, metrics.count('NewTabPage.VoiceActions', Action.kQuerySubmitted));
   });
 
   [['no-speech', 'no-speech', 'learn-more', Error.kNoSpeech],
@@ -215,7 +217,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
       assertFalse(
           voiceSearchOverlay.$.micContainer.classList.contains('receiving'));
       assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
-      assertEquals(logError, await handler.whenCalled('onVoiceSearchError'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceErrors'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceErrors', logError));
     });
   });
 
@@ -323,7 +326,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   [['#retryLink', Action.kTryAgainLink],
    ['#micButton', Action.kTryAgainMicButton],
   ].forEach(([id, action]) => {
-    test(`clicking '${id}' starts voice search if in retry state`, async () => {
+    test(`clicking '${id}' starts voice search if in retry state`, () => {
       // Arrange.
       mockSpeechRecognition.onnomatch();
       mockSpeechRecognition.startCalled = false;
@@ -333,7 +336,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
       // Assert.
       assertTrue(mockSpeechRecognition.startCalled);
-      assertEquals(action, await handler.whenCalled('onVoiceSearchAction'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+      assertEquals(1, metrics.count('NewTabPage.VoiceActions', action));
     });
   });
 
@@ -379,27 +383,29 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     });
   });
 
-  test('\'Escape\' closes overlay', async () => {
+  test('\'Escape\' closes overlay', () => {
     // Act.
     keydown(voiceSearchOverlay.shadowRoot.activeElement, 'Escape');
 
     // Assert.
     assertFalse(voiceSearchOverlay.$.dialog.open);
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        Action.kCloseOverlay, await handler.whenCalled('onVoiceSearchAction'));
+        1, metrics.count('NewTabPage.VoiceActions', Action.kCloseOverlay));
   });
 
-  test('Click closes overlay', async () => {
+  test('Click closes overlay', () => {
     // Act.
     voiceSearchOverlay.$.dialog.click();
 
     // Assert.
     assertFalse(voiceSearchOverlay.$.dialog.open);
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        Action.kCloseOverlay, await handler.whenCalled('onVoiceSearchAction'));
+        1, metrics.count('NewTabPage.VoiceActions', Action.kCloseOverlay));
   });
 
-  test('Clicking learn more logs action', async () => {
+  test('Clicking learn more logs action', () => {
     // Arrange.
     mockSpeechRecognition.onerror({error: 'audio-capture'});
     const link = $$(voiceSearchOverlay, '[link=learn-more]');
@@ -411,7 +417,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     assertEquals(
-        Action.kSupportLinkClicked,
-        await handler.whenCalled('onVoiceSearchAction'));
+        1,
+        metrics.count('NewTabPage.VoiceActions', Action.kSupportLinkClicked));
   });
 });

@@ -23,38 +23,28 @@ enum NTPLoggingEventType {
   // Deleted: NTP_MOUSEOVER = 9
   // Deleted: NTP_TILE_LOADED = 10,
   // Deleted: NTP_ALL_TILES_RECEIVED = 12,
+  // Deleted: NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX = 13,
+  // Deleted: NTP_VOICE_ACTION_ACTIVATE_KEYBOARD = 14,
+  // Deleted: NTP_VOICE_ACTION_CLOSE_OVERLAY = 15,
+  // Deleted: NTP_VOICE_ACTION_QUERY_SUBMITTED = 16,
+  // Deleted: NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED = 17,
+  // Deleted: NTP_VOICE_ACTION_TRY_AGAIN_LINK = 18,
+  // Deleted: NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON = 19,
+  // Deleted: NTP_VOICE_ERROR_NO_SPEECH = 20,
+  // Deleted: NTP_VOICE_ERROR_ABORTED = 21,
+  // Deleted: NTP_VOICE_ERROR_AUDIO_CAPTURE = 22,
+  // Deleted: NTP_VOICE_ERROR_NETWORK = 23,
+  // Deleted: NTP_VOICE_ERROR_NOT_ALLOWED = 24,
+  // Deleted: NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED = 25,
+  // Deleted: NTP_VOICE_ERROR_BAD_GRAMMAR = 26,
+  // Deleted: NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 27,
+  // Deleted: NTP_VOICE_ERROR_NO_MATCH = 28,
+  // Deleted: NTP_VOICE_ERROR_OTHER = 29,
   // Deleted: NTP_MODULES_SHOWN = 83,
 
   // All NTP tiles have finished loading (successfully or failing). Logged only
   // by the single-iframe version of the NTP.
   NTP_ALL_TILES_LOADED = 11,
-
-  // Activated by clicking on the fakebox or realbox icon. Logged by Voice
-  // Search.
-  NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX = 13,
-  // Activated by keyboard shortcut.
-  NTP_VOICE_ACTION_ACTIVATE_KEYBOARD = 14,
-  // Close the voice overlay by a user's explicit action.
-  NTP_VOICE_ACTION_CLOSE_OVERLAY = 15,
-  // Submitted voice query.
-  NTP_VOICE_ACTION_QUERY_SUBMITTED = 16,
-  // Clicked on support link in error message.
-  NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED = 17,
-  // Retried by clicking Try Again link.
-  NTP_VOICE_ACTION_TRY_AGAIN_LINK = 18,
-  // Retried by clicking microphone button.
-  NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON = 19,
-  // Errors received from the Speech Recognition API.
-  NTP_VOICE_ERROR_NO_SPEECH = 20,
-  NTP_VOICE_ERROR_ABORTED = 21,
-  NTP_VOICE_ERROR_AUDIO_CAPTURE = 22,
-  NTP_VOICE_ERROR_NETWORK = 23,
-  NTP_VOICE_ERROR_NOT_ALLOWED = 24,
-  NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED = 25,
-  NTP_VOICE_ERROR_BAD_GRAMMAR = 26,
-  NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 27,
-  NTP_VOICE_ERROR_NO_MATCH = 28,
-  NTP_VOICE_ERROR_OTHER = 29,
 
   // A static Doodle was shown, coming from cache.
   NTP_STATIC_LOGO_SHOWN_FROM_CACHE = 30,

@@ -23,98 +23,6 @@
 
 namespace {
 
-// This enum must match the numbering for NewTabPageVoiceAction in enums.xml.
-// Do not reorder or remove items, only add new items before VOICE_ACTION_MAX.
-enum VoiceAction {
-  // Activated by clicking on the fakebox or realbox icon.
-  VOICE_ACTION_ACTIVATE_SEARCH_BOX = 0,
-  // Activated by keyboard shortcut.
-  VOICE_ACTION_ACTIVATE_KEYBOARD = 1,
-  // Close the voice overlay by a user's explicit action.
-  VOICE_ACTION_CLOSE_OVERLAY = 2,
-  // Submitted voice query.
-  VOICE_ACTION_QUERY_SUBMITTED = 3,
-  // Clicked on support link in error message.
-  VOICE_ACTION_SUPPORT_LINK_CLICKED = 4,
-  // Retried by clicking Try Again link.
-  VOICE_ACTION_TRY_AGAIN_LINK = 5,
-  // Retried by clicking microphone button.
-  VOICE_ACTION_TRY_AGAIN_MIC_BUTTON = 6,
-
-  VOICE_ACTION_MAX
-};
-
-// Converts |NTPLoggingEventType| to a |VoiceAction|, if the value
-// is an action value. Otherwise, |VOICE_ACTION_MAX| is returned.
-VoiceAction LoggingEventToVoiceAction(NTPLoggingEventType event) {
-  switch (event) {
-    case NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX:
-      return VOICE_ACTION_ACTIVATE_SEARCH_BOX;
-    case NTP_VOICE_ACTION_ACTIVATE_KEYBOARD:
-      return VOICE_ACTION_ACTIVATE_KEYBOARD;
-    case NTP_VOICE_ACTION_CLOSE_OVERLAY:
-      return VOICE_ACTION_CLOSE_OVERLAY;
-    case NTP_VOICE_ACTION_QUERY_SUBMITTED:
-      return VOICE_ACTION_QUERY_SUBMITTED;
-    case NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED:
-      return VOICE_ACTION_SUPPORT_LINK_CLICKED;
-    case NTP_VOICE_ACTION_TRY_AGAIN_LINK:
-      return VOICE_ACTION_TRY_AGAIN_LINK;
-    case NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON:
-      return VOICE_ACTION_TRY_AGAIN_MIC_BUTTON;
-    default:
-      NOTREACHED();
-      return VOICE_ACTION_MAX;
-  }
-}
-
-// This enum must match the numbering for NewTabPageVoiceError in enums.xml.
-// Do not reorder or remove items, only add new items before VOICE_ERROR_MAX.
-enum VoiceError {
-  VOICE_ERROR_ABORTED = 0,
-  VOICE_ERROR_AUDIO_CAPTURE = 1,
-  VOICE_ERROR_BAD_GRAMMAR = 2,
-  VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 3,
-  VOICE_ERROR_NETWORK = 4,
-  VOICE_ERROR_NO_MATCH = 5,
-  VOICE_ERROR_NO_SPEECH = 6,
-  VOICE_ERROR_NOT_ALLOWED = 7,
-  VOICE_ERROR_OTHER = 8,
-  VOICE_ERROR_SERVICE_NOT_ALLOWED = 9,
-
-  VOICE_ERROR_MAX
-};
-
-// Converts |NTPLoggingEventType| to a |VoiceError|, if the value
-// is an error value. Otherwise, |VOICE_ERROR_MAX| is returned.
-VoiceError LoggingEventToVoiceError(NTPLoggingEventType event) {
-  switch (event) {
-    case NTP_VOICE_ERROR_ABORTED:
-      return VOICE_ERROR_ABORTED;
-    case NTP_VOICE_ERROR_AUDIO_CAPTURE:
-      return VOICE_ERROR_AUDIO_CAPTURE;
-    case NTP_VOICE_ERROR_BAD_GRAMMAR:
-      return VOICE_ERROR_BAD_GRAMMAR;
-    case NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED:
-      return VOICE_ERROR_LANGUAGE_NOT_SUPPORTED;
-    case NTP_VOICE_ERROR_NETWORK:
-      return VOICE_ERROR_NETWORK;
-    case NTP_VOICE_ERROR_NO_MATCH:
-      return VOICE_ERROR_NO_MATCH;
-    case NTP_VOICE_ERROR_NO_SPEECH:
-      return VOICE_ERROR_NO_SPEECH;
-    case NTP_VOICE_ERROR_NOT_ALLOWED:
-      return VOICE_ERROR_NOT_ALLOWED;
-    case NTP_VOICE_ERROR_OTHER:
-      return VOICE_ERROR_OTHER;
-    case NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED:
-      return VOICE_ERROR_SERVICE_NOT_ALLOWED;
-    default:
-      NOTREACHED();
-      return VOICE_ERROR_MAX;
-  }
-}
-
 // Logs CustomizedShortcutSettings on the NTP.
 void LogCustomizedShortcutSettings(std::pair<bool, bool> settings) {
   bool using_most_visited = settings.first;
@@ -403,31 +311,6 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
   switch (event) {
     case NTP_ALL_TILES_LOADED:
       // permitted above for non-Google search providers
-      break;
-    case NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX:
-    case NTP_VOICE_ACTION_ACTIVATE_KEYBOARD:
-    case NTP_VOICE_ACTION_CLOSE_OVERLAY:
-    case NTP_VOICE_ACTION_QUERY_SUBMITTED:
-    case NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED:
-    case NTP_VOICE_ACTION_TRY_AGAIN_LINK:
-    case NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON:
-      UMA_HISTOGRAM_ENUMERATION("NewTabPage.VoiceActions",
-                                LoggingEventToVoiceAction(event),
-                                VOICE_ACTION_MAX);
-      break;
-    case NTP_VOICE_ERROR_ABORTED:
-    case NTP_VOICE_ERROR_AUDIO_CAPTURE:
-    case NTP_VOICE_ERROR_BAD_GRAMMAR:
-    case NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED:
-    case NTP_VOICE_ERROR_NETWORK:
-    case NTP_VOICE_ERROR_NO_MATCH:
-    case NTP_VOICE_ERROR_NO_SPEECH:
-    case NTP_VOICE_ERROR_NOT_ALLOWED:
-    case NTP_VOICE_ERROR_OTHER:
-    case NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED:
-      UMA_HISTOGRAM_ENUMERATION("NewTabPage.VoiceErrors",
-                                LoggingEventToVoiceError(event),
-                                VOICE_ERROR_MAX);
       break;
     case NTP_STATIC_LOGO_SHOWN_FROM_CACHE:
       RecordDoodleImpression(time, /*is_cta=*/false, /*from_cache=*/true);

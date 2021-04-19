@@ -84,6 +84,7 @@ js_library("app") {
     ":new_tab_page_proxy",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
+    ":voice_search_overlay",
     ":window_proxy",
     "modules:module_registry",
     "realbox:realbox",

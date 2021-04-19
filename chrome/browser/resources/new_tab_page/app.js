@@ -25,6 +25,7 @@ import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
 import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 import {$$} from './utils.js';
+import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
@@ -517,8 +518,7 @@ class AppElement extends PolymerElement {
   /** @private */
   onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
-    this.pageHandler_.onVoiceSearchAction(
-        newTabPage.mojom.VoiceSearchAction.kActivateSearchBox);
+    recordVoiceAction(VoiceAction.kActivateSearchBox);
   }
 
   /** @private */
@@ -551,8 +551,7 @@ class AppElement extends PolymerElement {
     // </if>
     if (ctrlKeyPressed && e.code === 'Period' && e.shiftKey) {
       this.showVoiceSearchOverlay_ = true;
-      this.pageHandler_.onVoiceSearchAction(
-          newTabPage.mojom.VoiceSearchAction.kActivateKeyboard);
+      recordVoiceAction(VoiceAction.kActivateKeyboard);
     }
   }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, PromoBrowserCommandProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BackgroundSelectionType, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, PromoBrowserCommandProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -176,9 +176,11 @@ suite('NewTabPageAppTest', () => {
 
     // Assert.
     assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        newTabPage.mojom.VoiceSearchAction.kActivateSearchBox,
-        await handler.whenCalled('onVoiceSearchAction'));
+        1,
+        metrics.count(
+            'NewTabPage.VoiceActions', VoiceAction.kActivateSearchBox));
   });
 
   test('voice search keyboard shortcut', async () => {
@@ -193,9 +195,11 @@ suite('NewTabPageAppTest', () => {
 
     // Assert.
     assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
     assertEquals(
-        newTabPage.mojom.VoiceSearchAction.kActivateKeyboard,
-        await handler.whenCalled('onVoiceSearchAction'));
+        1,
+        metrics.count(
+            'NewTabPage.VoiceActions', VoiceAction.kActivateKeyboard));
 
     // Test other shortcut doesn't close voice search.
     // Act

@@ -129,9 +129,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::string& doodle_id,
                       const base::Optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
-  void OnVoiceSearchAction(
-      new_tab_page::mojom::VoiceSearchAction action) override;
-  void OnVoiceSearchError(new_tab_page::mojom::VoiceSearchError error) override;
 
  private:
   // InstantServiceObserver:
