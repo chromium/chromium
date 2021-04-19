@@ -373,6 +373,8 @@
     { "name": "oauthaccountmanager.googleapis.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "passwordsleakcheck-pa.googleapis.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "translate.googleapis.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
+    { "name": "tunnel.googlezip.net", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
+    { "name": "tunnel-staging.googlezip.net", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "withgoogle.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "withyoutube.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "www.gmail.com", "policy": "google", "mode": "force-https", "pins": "google" },
@@ -382,7 +384,6 @@
     { "name": "chromiumbugs.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "youtube.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "ua5v.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
-
     { "name": "webfilings.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "webfilings-eu.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "webfilings-eu-mirror.appspot.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
