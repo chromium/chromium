@@ -31,7 +31,9 @@ class AuthenticatorTransportSelectorSheetView
   }
 
   // AuthenticatorRequestSheetView:
-  std::unique_ptr<views::View> BuildStepSpecificContent() override;
+  std::pair<std::unique_ptr<views::View>,
+            AuthenticatorRequestSheetView::AutoFocus>
+  BuildStepSpecificContent() override;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorTransportSelectorSheetView);
 };

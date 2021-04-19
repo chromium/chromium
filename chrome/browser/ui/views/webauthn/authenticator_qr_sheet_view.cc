@@ -224,14 +224,15 @@ AuthenticatorQRSheetView::AuthenticatorQRSheetView(
 
 AuthenticatorQRSheetView::~AuthenticatorQRSheetView() = default;
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorQRSheetView::BuildStepSpecificContent() {
   auto qr_view = std::make_unique<AuthenticatorQRViewCentered>(qr_string_);
   qr_view_ = qr_view.get();
 
   timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(600), this,
                &AuthenticatorQRSheetView::Update);
-  return qr_view;
+  return std::make_pair(std::move(qr_view), AutoFocus::kYes);
 }
 
 void AuthenticatorQRSheetView::Update() {

@@ -65,12 +65,16 @@ void AuthenticatorRequestSheetView::ReInitChildViews() {
 }
 
 views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
-  return step_specific_content_;
+  if (should_focus_step_specific_content_ == AutoFocus::kYes) {
+    return step_specific_content_;
+  }
+  return nullptr;
 }
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorRequestSheetView::BuildStepSpecificContent() {
-  return nullptr;
+  return std::make_pair(nullptr, AutoFocus::kNo);
 }
 
 std::unique_ptr<views::View>
@@ -178,8 +182,11 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
 
   contents->AddChildView(label_container.release());
 
-  std::unique_ptr<views::View> step_specific_content =
+  std::unique_ptr<views::View> step_specific_content;
+  std::tie(step_specific_content, should_focus_step_specific_content_) =
       BuildStepSpecificContent();
+  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
+         step_specific_content);
   if (step_specific_content) {
     step_specific_content_ = step_specific_content.get();
     contents->AddChildView(step_specific_content.release());

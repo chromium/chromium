@@ -17,12 +17,14 @@ AuthenticatorTransportSelectorSheetView::
 AuthenticatorTransportSelectorSheetView::
     ~AuthenticatorTransportSelectorSheetView() = default;
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorTransportSelectorSheetView::BuildStepSpecificContent() {
   AuthenticatorRequestDialogModel* const dialog_model = model()->dialog_model();
   base::flat_set<AuthenticatorTransport> transports =
       dialog_model->available_transports();
-  return std::make_unique<HoverListView>(
-      std::make_unique<TransportHoverListModel>(
-          transports, dialog_model->win_native_api_enabled(), model()));
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<TransportHoverListModel>(
+          transports, dialog_model->win_native_api_enabled(), model())),
+      AutoFocus::kYes);
 }
