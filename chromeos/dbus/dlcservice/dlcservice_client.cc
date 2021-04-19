@@ -68,6 +68,7 @@ class DlcserviceErrorResponseHandler {
         dlcservice::kErrorBusy,
         dlcservice::kErrorNeedReboot,
         dlcservice::kErrorInvalidDlc,
+        dlcservice::kErrorNoImageFound,
     });
     // Lookup the dlcservice error code and provide default on invalid.
     auto itr = err_set->find(err);

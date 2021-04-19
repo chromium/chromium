@@ -18904,6 +18904,7 @@ Called by update_debug_scenarios.py.-->
   <int value="7" label="Failed because Update Engine is busy"/>
   <int value="8" label="Failed to verify image"/>
   <int value="9" label="Failed to mount image"/>
+  <int value="10" label="Failed to find image"/>
 </enum>
 
 <enum name="DlcService.UninstallResult">
