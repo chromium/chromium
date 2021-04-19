@@ -190,10 +190,8 @@ std::set<std::string> TokenizeOriginList(const std::string& value) {
   base::StringTokenizer tokenizer(input, delimiters);
   std::set<std::string> origin_strings;
   while (tokenizer.GetNext()) {
-    const std::string token = tokenizer.token();
-    if (token.empty()) {
-      continue;
-    }
+    base::StringPiece token = tokenizer.token_piece();
+    DCHECK(!token.empty());
     const GURL url(token);
     if (!url.is_valid() ||
         (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsWSOrWSS())) {
