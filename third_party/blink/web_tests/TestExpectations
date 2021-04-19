@@ -486,10 +486,12 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Failure ]
 
 # Flaky - possible filter paint invalidation bug.
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
-crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Pass Failure ]
 crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Pass Failure ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
 
 # Fixed in CompositeAfterPaint.
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
