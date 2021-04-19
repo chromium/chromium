@@ -2037,10 +2037,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
-    occurred on the page (including all subframes). Recorded at the end of the
-    page lifetime, such as when the page is being navigated away from or when a
-    tab is being closed. Stable since M79; previous versions are expermental and
-    subject to fluctuation between releases.
+    occurred on the page (including all subframes). Higher values correspond to
+    greater instability, which is bad. Recorded at the end of the page lifetime,
+    such as when the page is being navigated away from or when a tab is being
+    closed. Stable since M79; previous versions are expermental and subject to
+    fluctuation between releases.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
