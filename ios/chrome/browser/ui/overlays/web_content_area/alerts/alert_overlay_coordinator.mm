@@ -100,8 +100,9 @@ using alert_overlays::AlertRequest;
 - (void)stopAnimated:(BOOL)animated {
   if (!self.started)
     return;
-  [self.presenter dismissAnimated:animated];
+
   self.started = NO;
+  [self.presenter dismissAnimated:animated];
 }
 
 @end
