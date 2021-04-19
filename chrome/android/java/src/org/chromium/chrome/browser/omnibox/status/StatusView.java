@@ -266,7 +266,10 @@ public class StatusView extends LinearLayout {
                                     () -> { newImage.startTransition(ICON_ANIMATION_DURATION_MS); })
                             .withEndAction(() -> {
                                 mIconView.setRotation(0);
-                                mIconView.setImageDrawable(targetIcon);
+                                // Only update status icon if it is still the current icon.
+                                if (mStatusIconDrawable == targetIcon) {
+                                    mIconView.setImageDrawable(targetIcon);
+                                }
                             })
                             .start();
                 }
