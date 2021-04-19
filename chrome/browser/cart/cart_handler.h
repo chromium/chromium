@@ -35,6 +35,8 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void GetDiscountConsentCardVisible(
       GetDiscountConsentCardVisibleCallback callback) override;
   void OnDiscountConsentAcknowledged(bool accept) override;
+  void GetDiscountEnabled(GetDiscountEnabledCallback callback) override;
+  void SetDiscountEnabled(bool enabled) override;
 
  private:
   void GetCartDataCallback(GetMerchantCartsCallback callback,

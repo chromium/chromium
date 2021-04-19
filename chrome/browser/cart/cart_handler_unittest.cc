@@ -486,3 +486,31 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
   ASSERT_FALSE(service_->ShouldShowDiscountConsent());
   ASSERT_FALSE(service_->IsCartDiscountEnabled());
 }
+
+// Test GetDiscountEnabled returns whether rule-based discount feature is
+// enabled.
+TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountEnabled) {
+  base::RunLoop run_loop[2];
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  ASSERT_TRUE(service_->IsCartDiscountEnabled());
+  handler_->GetDiscountEnabled(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+  handler_->GetDiscountEnabled(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+}
+
+// Test SetDiscountEnabled updates whether rule-based discount is enabled.
+TEST_F(CartHandlerNtpModuleDiscountTest, TestSetDiscountEnabled) {
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+  handler_->SetDiscountEnabled(true);
+  ASSERT_TRUE(service_->IsCartDiscountEnabled());
+  handler_->SetDiscountEnabled(false);
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+}
