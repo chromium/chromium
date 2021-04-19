@@ -182,6 +182,7 @@ template("chrome_extra_paks") {
     if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/ash_scanning_app_resources.pak",
+        "$root_gen_dir/ash/ash_shimless_rma_resources.pak",
         "$root_gen_dir/ash/ash_shortcut_customization_app_resources.pak",
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
@@ -213,6 +214,7 @@ template("chrome_extra_paks") {
       ]
       deps += [
         "//ash/components/resources:scanning_app_resources",
+        "//ash/components/resources:shimless_rma_resources",
         "//ash/components/resources:shortcut_customization_app_resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//chrome/browser/resources:bluetooth_pairing_dialog_resources",

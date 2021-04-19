@@ -599,6 +599,10 @@
   "ash/shortcut_viewer/shortcut_viewer_strings.grd": {
     "messages": [3080],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/content/shimless_rma/resources/ash_shimless_rma_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [3090],
+  },
   "ash/keyboard/ui/keyboard_resources.grd": {
     "includes": [3100],
   },

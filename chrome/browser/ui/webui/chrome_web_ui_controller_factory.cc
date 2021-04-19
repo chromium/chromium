@@ -152,6 +152,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/content/scanning/scanning_ui.h"
 #include "ash/content/scanning/url_constants.h"
+#include "ash/content/shimless_rma/shimless_rma.h"
+#include "ash/content/shimless_rma/url_constants.h"
 #include "ash/content/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "base/system/sys_info.h"
@@ -787,6 +789,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
     return &NewWebUI<ash::ScanningUI>;
+  if (ash::features::IsShimlessRMAFlowEnabled() &&
+      url.host_piece() == ash::kChromeUIShimlessRMAHost) {
+    return &NewWebUI<ash::ShimlessRMADialogUI>;
+  }
   if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
     return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
   if (features::IsShortcutCustomizationAppEnabled()) {

@@ -110,6 +110,7 @@ source_set("web_applications") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
+      "//ash/content/shimless_rma",
       "//ash/content/shortcut_customization_ui",
       "//ash/public/cpp",
       "//chromeos/components/camera_app_ui",

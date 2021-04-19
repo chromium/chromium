@@ -2673,6 +2673,7 @@ static_library("ui") {
       "//ash/components/pcie_peripheral",
       "//ash/constants",
       "//ash/content/scanning",
+      "//ash/content/shimless_rma",
       "//ash/content/shortcut_customization_ui",
       "//ash/keyboard/ui",
       "//ash/public/cpp",

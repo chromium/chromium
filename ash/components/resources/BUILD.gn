@@ -41,3 +41,22 @@ grit("shortcut_customization_app_resources") {
 
   output_dir = "$root_gen_dir/ash"
 }
+
+# Resources used by shimless rma flow
+grit("shimless_rma_resources") {
+  enable_input_discovery_for_gn_analyze = false
+  shimless_rma_resource_gen_dir =
+      "$root_gen_dir/ash/content/shimless_rma/resources"
+  source = "$shimless_rma_resource_gen_dir/ash_shimless_rma_resources.grd"
+
+  deps = [ "../../content/shimless_rma/resources:build_grd" ]
+
+  outputs = [
+    "grit/ash_shimless_rma_resources.h",
+    "grit/ash_shimless_rma_resources_map.cc",
+    "grit/ash_shimless_rma_resources_map.h",
+    "ash_shimless_rma_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}
