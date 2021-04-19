@@ -21,6 +21,8 @@ const char kPluginVmAllowed[] = "plugin_vm.allowed";
 //   "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32"
 // }
 const char kPluginVmImage[] = "plugin_vm.image";
+const char kPluginVmImageUrlKeyName[] = "url";
+const char kPluginVmImageHashKeyName[] = "hash";
 
 // A boolean preference representing whether there is a PluginVm image for
 // this user on this device.

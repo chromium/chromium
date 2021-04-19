@@ -9,14 +9,18 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics_builder.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus//concierge_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace plugin_vm {
@@ -99,8 +103,20 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           "One or more policies are not configured correctly. Please contact "
           "your administrator";
       switch (is_allowed_diagnostics.policy_configured) {
-        case PolicyConfigured::kOk:
-          break;
+        case PolicyConfigured::kOk: {
+          // Additional check for image policy. See b/185281662#comment2.
+          const base::DictionaryValue* image_policy =
+              profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
+          const base::Value* url =
+              image_policy->FindKey(prefs::kPluginVmImageUrlKeyName);
+          const base::Value* hash =
+              image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
+          if (!url || !GURL(url->GetString()).is_valid()) {
+            entry.SetFail("Image url is invalid", standard_top_error);
+          } else if (!hash || hash->GetString().empty()) {
+            entry.SetFail("Image hash is not set", standard_top_error);
+          }
+        } break;
         case PolicyConfigured::kErrorUnableToCheckPolicy:
           entry.SetFail("Unable to check policies", standard_top_error);
           break;
