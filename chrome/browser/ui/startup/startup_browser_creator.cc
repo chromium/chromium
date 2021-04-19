@@ -1242,7 +1242,7 @@ bool StartupBrowserCreator::ProcessLoadApps(
     return false;
 
   base::FilePath app_absolute_dir =
-      base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token()));
+      base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token_piece()));
   if (!apps::AppLoadService::Get(profile)->LoadAndLaunch(
           app_absolute_dir, command_line, cur_dir)) {
     return false;
@@ -1250,7 +1250,7 @@ bool StartupBrowserCreator::ProcessLoadApps(
 
   while (tokenizer.GetNext()) {
     app_absolute_dir =
-        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token()));
+        base::MakeAbsoluteFilePath(base::FilePath(tokenizer.token_piece()));
 
     if (!apps::AppLoadService::Get(profile)->Load(app_absolute_dir)) {
       return false;
