@@ -15,7 +15,7 @@
 #include "testing/platform_test.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
