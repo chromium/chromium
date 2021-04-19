@@ -28,6 +28,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -352,7 +353,7 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void navigationEntryCommitted() {
+                    public void navigationEntryCommitted(LoadCommittedDetails details) {
                         mContentDelegate.onNavigationEntryCommitted();
                     }
 

@@ -44,6 +44,7 @@ import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.Clipboard;
@@ -328,7 +329,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
-            public void navigationEntryCommitted() {
+            public void navigationEntryCommitted(LoadCommittedDetails details) {
                 // If a navigation is committed (e.g. from in-page redirect), the data we're showing
                 // is stale so dismiss the dialog.
                 mDialog.dismiss(true);

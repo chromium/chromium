@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.ConnectionType;
@@ -122,7 +123,7 @@ public class ImageDescriptionsDialog
             }
 
             @Override
-            public void navigationEntryCommitted() {
+            public void navigationEntryCommitted(LoadCommittedDetails details) {
                 mDismissalCause = DialogDismissalCause.NAVIGATE;
                 unregisterObserverAndDismiss();
             }

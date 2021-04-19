@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/android/content_jni_headers/LoadCommittedDetails_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsObserverProxy_jni.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -193,7 +194,14 @@ void WebContentsObserverProxy::DOMContentLoaded(
 void WebContentsObserverProxy::NavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_navigationEntryCommitted(env, java_observer_);
+  Java_WebContentsObserverProxy_navigationEntryCommitted(
+      env, java_observer_,
+      Java_LoadCommittedDetails_Constructor(
+          env, load_details.previous_entry_index,
+          url::GURLAndroid::FromNativeGURL(
+              env, load_details.previous_main_frame_url),
+          load_details.did_replace_entry, load_details.is_same_document,
+          load_details.is_main_frame, load_details.http_status_code));
 }
 
 void WebContentsObserverProxy::NavigationEntriesDeleted() {

@@ -162,8 +162,9 @@ public abstract class WebContentsObserver {
 
     /**
      * Notifies that a navigation entry has been committed.
+     * @param details Details of committed navigation entry.
      */
-    public void navigationEntryCommitted() {}
+    public void navigationEntryCommitted(LoadCommittedDetails details) {}
 
     /**
      * Called when navigation entries were removed.
