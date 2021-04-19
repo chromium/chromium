@@ -1,6 +1,0 @@
-Test that we don't hang xhr loads from cache when the resposne body was empty.
-
-load
-load
-DONE
-

@@ -779,7 +779,6 @@ html/sections/body-offset-properties.html
 html/tabular_data/tbody_insertrow_default_argument.html
 html/text_level_semantics/q-empty-crash.html
 http/tests/appcache/abort-cache-onchecking-resource-404.html
-http/tests/cache/zero-length-xhr.html
 http/tests/canvas/philip/tests/security.pattern.canvas.fillStyle.html
 http/tests/dom/create-contextual-fragment-from-svg-document-range.html
 http/tests/dom/location-stringify.html
