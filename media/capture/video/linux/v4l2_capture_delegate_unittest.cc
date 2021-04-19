@@ -198,7 +198,8 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
 #define MAYBE_CreateAndDestroyAndVerifyControls \
   DISABLED_CreateAndDestroyAndVerifyControls
 #else
-#define MAYBE_CrashingTest CreateAndDestroyAndVerifyControls
+#define MAYBE_CreateAndDestroyAndVerifyControls \
+  CreateAndDestroyAndVerifyControls
 #endif
 TEST_F(V4L2CaptureDelegateTest, MAYBE_CreateAndDestroyAndVerifyControls) {
   // Check that there is at least a video device, otherwise bail.
