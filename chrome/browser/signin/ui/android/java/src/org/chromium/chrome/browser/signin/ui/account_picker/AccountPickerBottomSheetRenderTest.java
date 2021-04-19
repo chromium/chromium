@@ -30,7 +30,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -239,29 +238,6 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
-    }
-
-    @DisabledTest(message = "https://crbug.com/1197715")
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSigninAgainButtonOnSigninAuthErrorSheet(boolean nightModeEnabled)
-            throws IOException {
-        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
-        buildAndShowCollapsedBottomSheet();
-        clickContinueButtonAndWaitForErrorView();
-        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
-        });
-
-        CriteriaHelper.pollUiThread(
-                bottomSheetView.findViewById(R.id.account_picker_selected_account)::isShown);
-        mRenderTestRule.render(
-                mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
 
     @Test
