@@ -714,7 +714,7 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
     info = iter->second.get();
   } else {
     // Initiate asynchronous creation process.
-    info = RegisterProfile(CreateProfileAsyncHelper(profile_path, this), false);
+    info = RegisterProfile(CreateProfileAsyncHelper(profile_path), false);
   }
 
   // Call or enqueue the callback.
@@ -1327,10 +1327,8 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileHelper(
 }
 
 std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
-    const base::FilePath& path,
-    Delegate* delegate) {
-  return Profile::CreateProfile(path, delegate,
-                                Profile::CREATE_MODE_ASYNCHRONOUS);
+    const base::FilePath& path) {
+  return Profile::CreateProfile(path, this, Profile::CREATE_MODE_ASYNCHRONOUS);
 }
 
 bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,

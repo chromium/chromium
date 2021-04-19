@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -90,33 +91,6 @@ namespace {
 // This global variable is used to check that value returned to different
 // observers is the same.
 Profile* g_created_profile = nullptr;
-
-class UnittestProfileManager : public ProfileManagerWithoutInit {
- public:
-  explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ProfileManagerWithoutInit(user_data_dir) {}
-  ~UnittestProfileManager() override = default;
-
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    return std::make_unique<TestingProfile>(path);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
-      const base::FilePath& path,
-      Delegate* delegate) override {
-    // ThreadTaskRunnerHandle::Get() is TestingProfile's "async" IOTaskRunner
-    // (ref. TestingProfile::GetIOTaskRunner()).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
-
-    return std::make_unique<TestingProfile>(path, this);
-  }
-};
 
 void ExpectNullProfile(base::OnceClosure closure, Profile* profile) {
   EXPECT_EQ(nullptr, profile);
@@ -194,7 +168,7 @@ class ProfileManagerTest : public testing::Test {
 
  protected:
   virtual ProfileManager* CreateProfileManagerForTest() {
-    return new UnittestProfileManager(temp_dir_.GetPath());
+    return new FakeProfileManager(temp_dir_.GetPath());
   }
 
   // Helper function to create a profile at `path` for a profile `manager`.
@@ -660,19 +634,29 @@ TEST_F(ProfileManagerTest, GetSystemProfilePath) {
   EXPECT_EQ(expected_path, system_profile_path);
 }
 
-class UnittestGuestProfileManager : public UnittestProfileManager {
+// Test profile manager that creates all profiles as guest by default.
+class UnittestGuestProfileManager : public FakeProfileManager {
  public:
   explicit UnittestGuestProfileManager(const base::FilePath& user_data_dir)
-      : UnittestProfileManager(user_data_dir) {}
+      : FakeProfileManager(user_data_dir) {}
 
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
+  std::unique_ptr<TestingProfile> BuildTestingProfile(
+      const base::FilePath& path,
+      Delegate* delegate) override {
     TestingProfile::Builder builder;
-    builder.SetGuestSession();
+    if (create_profiles_as_guest_)
+      builder.SetGuestSession();
     builder.SetPath(path);
+    builder.SetDelegate(delegate);
     return builder.Build();
   }
+
+  void set_create_profiles_as_guest(bool create_profiles_as_guest) {
+    create_profiles_as_guest_ = create_profiles_as_guest;
+  }
+
+ private:
+  bool create_profiles_as_guest_ = true;
 };
 
 class ProfileManagerGuestTest : public ProfileManagerTest,
@@ -706,9 +690,17 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
 
   bool IsEphemeral() { return is_ephemeral; }
 
+  // Call this function if the test shouldn't create all profiles as guest by
+  // default.
+  void DoNotCreateNewProfilesAsGuest() {
+    unittest_profile_manager_->set_create_profiles_as_guest(false);
+  }
+
  protected:
   ProfileManager* CreateProfileManagerForTest() override {
-    return new UnittestGuestProfileManager(temp_dir_.GetPath());
+    unittest_profile_manager_ =
+        new UnittestGuestProfileManager(temp_dir_.GetPath());
+    return unittest_profile_manager_;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -720,6 +712,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  UnittestGuestProfileManager* unittest_profile_manager_ = nullptr;
   bool is_ephemeral;
 };
 
@@ -1636,6 +1629,9 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
 }
 
 TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
+  // Make new profiles to be created as non-guest by default.
+  DoNotCreateNewProfilesAsGuest();
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
   ProfileAttributesStorage& storage =

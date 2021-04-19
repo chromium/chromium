@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,22 +30,6 @@
 
 const char kGuestProfileName[] = "Guest";
 const char kSystemProfileName[] = "System";
-
-namespace testing {
-
-class ProfileManager : public ::ProfileManagerWithoutInit {
- public:
-  explicit ProfileManager(const base::FilePath& user_data_dir)
-      : ::ProfileManagerWithoutInit(user_data_dir) {}
-
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    return std::make_unique<TestingProfile>(path);
-  }
-};
-
-}  // namespace testing
 
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
@@ -284,7 +269,7 @@ void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {
   user_data_dir_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_DATA, profiles_path_);
 
-  profile_manager_ = new testing::ProfileManager(profiles_path_);
+  profile_manager_ = new FakeProfileManager(profiles_path_);
   browser_process_->SetProfileManager(profile_manager_);  // Takes ownership.
 
   profile_manager_->GetProfileInfoCache().

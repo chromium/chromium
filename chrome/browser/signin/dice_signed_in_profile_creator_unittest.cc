@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,32 +49,19 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
   return profile;
 }
 
-// Simple ProfileManager creating testing profiles.
-class UnittestProfileManager : public ProfileManagerWithoutInit {
+class UnittestProfileManager : public FakeProfileManager {
  public:
   explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ProfileManagerWithoutInit(user_data_dir) {}
+      : FakeProfileManager(user_data_dir) {}
 
   void set_tokens_loaded_at_creation(bool loaded) {
     tokens_loaded_at_creation_ = loaded;
   }
 
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    return BuildTestingProfile(path, /*delegate=*/nullptr,
-                               tokens_loaded_at_creation_);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
+  std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
-    return BuildTestingProfile(path, this, tokens_loaded_at_creation_);
+      Profile::Delegate* delegate) override {
+    return ::BuildTestingProfile(path, delegate, tokens_loaded_at_creation_);
   }
 
   bool tokens_loaded_at_creation_ = true;

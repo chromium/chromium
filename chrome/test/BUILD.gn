@@ -143,6 +143,8 @@ static_library("test_support") {
     "base/chrome_test_utils.h",
     "base/chrome_unit_test_suite.cc",
     "base/chrome_unit_test_suite.h",
+    "base/fake_profile_manager.cc",
+    "base/fake_profile_manager.h",
     "base/find_result_waiter.cc",
     "base/find_result_waiter.h",
     "base/js_test_api.cc",

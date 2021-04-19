@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -104,39 +105,25 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
   DiceTurnSyncOnHelperTest* test_fixture_;
 };
 
-// Simple ProfileManager creating testing profiles.
-class UnittestProfileManager : public ProfileManagerWithoutInit {
+// Simple ProfileManager creating testing profiles and allowing to register a
+// callback for the next profile creation.
+class UnittestProfileManager : public FakeProfileManager {
  public:
   explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ProfileManagerWithoutInit(user_data_dir) {}
+      : FakeProfileManager(user_data_dir) {}
 
- public:
   void NextProfileCreatedCallback(
       base::OnceCallback<void(Profile*)> next_profile_created_callback) {
     next_profile_created_callback_ = std::move(next_profile_created_callback);
   }
 
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    auto profile = BuildTestingProfile(path, /*delegate=*/nullptr);
-    if (next_profile_created_callback_)
-      std::move(next_profile_created_callback_).Run(profile.get());
-    return std::move(profile);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
+  std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
       Delegate* delegate) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
-    auto profile = BuildTestingProfile(path, this);
+    auto profile = ::BuildTestingProfile(path, delegate);
     if (next_profile_created_callback_)
       std::move(next_profile_created_callback_).Run(profile.get());
-    return std::move(profile);
+    return profile;
   }
 
  private:

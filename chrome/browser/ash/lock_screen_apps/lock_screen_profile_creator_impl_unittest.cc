@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -168,24 +169,18 @@ class PendingProfileCreation : public Profile::Delegate {
 };
 
 // Test profile manager implementation used to track async profile creation.
-class UnittestProfileManager : public ::ProfileManagerWithoutInit {
+class UnittestProfileManager : public FakeProfileManager {
  public:
   explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ::ProfileManagerWithoutInit(user_data_dir) {}
+      : FakeProfileManager(user_data_dir) {}
 
-  ~UnittestProfileManager() override {}
+  ~UnittestProfileManager() override = default;
 
   PendingProfileCreation* pending_profile_creation() {
     return &pending_profile_creation_;
   }
 
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    return std::make_unique<TestingProfile>(path);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
+  std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
       Delegate* delegate) override {
     pending_profile_creation_.Set(path, delegate);
@@ -204,8 +199,6 @@ class UnittestProfileManager : public ::ProfileManagerWithoutInit {
 
  private:
   PendingProfileCreation pending_profile_creation_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnittestProfileManager);
 };
 
 class LockScreenProfileCreatorImplTest : public testing::Test {

@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -21,33 +22,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class UnittestProfileManager : public ProfileManagerWithoutInit {
- public:
-  explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ProfileManagerWithoutInit(user_data_dir) {}
-  ~UnittestProfileManager() override = default;
-
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    return std::make_unique<TestingProfile>(path);
-  }
-
-  std::unique_ptr<Profile> CreateProfileAsyncHelper(
-      const base::FilePath& path,
-      Delegate* delegate) override {
-    // ThreadTaskRunnerHandle::Get() is TestingProfile's "async" IOTaskRunner
-    // (ref. TestingProfile::GetIOTaskRunner()).
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(base::IgnoreResult(&base::CreateDirectory), path));
-
-    return std::make_unique<TestingProfile>(path, this);
-  }
-};
 
 class StartupBrowserPolicyUnitTest : public testing::Test {
  public:
@@ -173,7 +147,7 @@ TEST_F(StartupBrowserPolicyUnitTest, ForceEphemeralProfiles) {
   RegisterLocalState(local_state.registry());
 
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      new UnittestProfileManager(temp_dir_.GetPath()));
+      new FakeProfileManager(temp_dir_.GetPath()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = CreateTestingProfile(profile_manager, "path_1");

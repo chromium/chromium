@@ -278,8 +278,7 @@ class ProfileManager : public Profile::Delegate {
   // asynchronous profile creation method. Virtual so that unittests can return
   // a TestingProfile instead of the Profile's result.
   virtual std::unique_ptr<Profile> CreateProfileAsyncHelper(
-      const base::FilePath& path,
-      Delegate* delegate);
+      const base::FilePath& path);
 
   void set_do_final_services_init(bool do_final_services_init) {
     do_final_services_init_ = do_final_services_init;
