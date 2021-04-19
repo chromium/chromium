@@ -82,9 +82,7 @@ class CORE_EXPORT NGPhysicalFragment
   NGPhysicalFragment(NGContainerFragmentBuilder* builder,
                      WritingMode block_or_line_writing_mode,
                      NGFragmentType type,
-                     unsigned sub_type,
-                     unsigned has_fragment_items = 0,
-                     unsigned has_rare_data = 0);
+                     unsigned sub_type);
 
   NGPhysicalFragment(const NGPhysicalFragment& other,
                      bool recalculate_layout_overflow);
@@ -628,6 +626,9 @@ class CORE_EXPORT NGPhysicalFragment
 
   static bool DependsOnPercentageBlockSize(const NGContainerFragmentBuilder&);
 
+  Member<LayoutObject> layout_object_;
+  const PhysicalSize size_;
+
   unsigned has_floating_descendants_for_paint_ : 1;
   unsigned has_adjoining_object_descendants_ : 1;
   unsigned depends_on_percentage_block_size_ : 1;
@@ -637,26 +638,6 @@ class CORE_EXPORT NGPhysicalFragment
   // (it's defined here to save memory, since that class has no bitfields).
   unsigned has_propagated_descendants_ : 1;
   unsigned has_hanging_ : 1;
-
-  // The following bitfields are only to be used by NGPhysicalBoxFragment
-  // (it's defined here to save memory, since that class has no bitfields).
-  unsigned is_inline_formatting_context_ : 1;
-  const unsigned const_has_fragment_items_ : 1;
-  unsigned include_border_top_ : 1;
-  unsigned include_border_right_ : 1;
-  unsigned include_border_bottom_ : 1;
-  unsigned include_border_left_ : 1;
-  unsigned has_layout_overflow_ : 1;
-  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
-  unsigned has_borders_ : 1;
-  unsigned has_padding_ : 1;
-  unsigned has_inflow_bounds_ : 1;
-  const unsigned const_has_rare_data_ : 1;
-  unsigned is_first_for_node_ : 1;
-  unsigned has_descendants_for_table_part_ : 1;
-
-  Member<LayoutObject> layout_object_;
-  const PhysicalSize size_;
 
   const unsigned type_ : 1;           // NGFragmentType
   const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType

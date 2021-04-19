@@ -517,7 +517,23 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void CheckIntegrity() const;
 #endif
 
+  unsigned is_inline_formatting_context_ : 1;
+  const unsigned const_has_fragment_items_ : 1;
+  unsigned include_border_top_ : 1;
+  unsigned include_border_right_ : 1;
+  unsigned include_border_bottom_ : 1;
+  unsigned include_border_left_ : 1;
+  unsigned has_layout_overflow_ : 1;
+  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
+  unsigned has_borders_ : 1;
+  unsigned has_padding_ : 1;
+  unsigned has_inflow_bounds_ : 1;
+  const unsigned const_has_rare_data_ : 1;
+  unsigned is_first_for_node_ : 1;
+  unsigned has_descendants_for_table_part_ : 1;
+
   const wtf_size_t const_num_children_;
+
   LayoutUnit baseline_;
   LayoutUnit last_baseline_;
   NGInkOverflow ink_overflow_;

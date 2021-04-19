@@ -29,6 +29,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
+  unsigned flags;
   wtf_size_t const_num_children;
   LayoutUnit baseline;
   LayoutUnit last_baseline;
@@ -247,9 +248,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     : NGPhysicalFragment(builder,
                          block_or_line_writing_mode,
                          kFragmentBox,
-                         builder->BoxType(),
-                         has_fragment_items,
-                         has_rare_data),
+                         builder->BoxType()),
+      const_has_fragment_items_(has_fragment_items),
+      const_has_rare_data_(has_rare_data),
+      has_descendants_for_table_part_(false),
       const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
@@ -347,6 +349,20 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     const PhysicalRect& layout_overflow,
     bool recalculate_layout_overflow)
     : NGPhysicalFragment(other, recalculate_layout_overflow),
+      is_inline_formatting_context_(other.is_inline_formatting_context_),
+      const_has_fragment_items_(other.const_has_fragment_items_),
+      include_border_top_(other.include_border_top_),
+      include_border_right_(other.include_border_right_),
+      include_border_bottom_(other.include_border_bottom_),
+      include_border_left_(other.include_border_left_),
+      has_layout_overflow_(other.has_layout_overflow_),
+      ink_overflow_type_(other.ink_overflow_type_),
+      has_borders_(other.has_borders_),
+      has_padding_(other.has_padding_),
+      has_inflow_bounds_(other.has_inflow_bounds_),
+      const_has_rare_data_(other.const_has_rare_data_),
+      is_first_for_node_(other.is_first_for_node_),
+      has_descendants_for_table_part_(other.has_descendants_for_table_part_),
       const_num_children_(other.const_num_children_),
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_),

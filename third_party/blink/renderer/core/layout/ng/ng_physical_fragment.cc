@@ -26,9 +26,6 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGPhysicalFragment : GarbageCollected<NGPhysicalFragment> {
-  // |flags_for_free_maybe| is used to support an additional increase in size
-  // needed for DCHECK and 32-bit builds.
-  unsigned flags_for_free_maybe;
   Member<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
@@ -294,16 +291,11 @@ void NGPhysicalFragmentTraits::Destruct(const NGPhysicalFragment* fragment) {
 NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
                                        WritingMode block_or_line_writing_mode,
                                        NGFragmentType type,
-                                       unsigned sub_type,
-                                       unsigned has_fragment_items,
-                                       unsigned has_rare_data)
-    : has_floating_descendants_for_paint_(false),
-      children_valid_(true),
-      const_has_fragment_items_(has_fragment_items),
-      const_has_rare_data_(has_rare_data),
-      has_descendants_for_table_part_(false),
-      layout_object_(builder->layout_object_),
+                                       unsigned sub_type)
+    : layout_object_(builder->layout_object_),
       size_(ToPhysicalSize(builder->size_, builder->GetWritingMode())),
+      has_floating_descendants_for_paint_(false),
+      children_valid_(true),
       type_(type),
       sub_type_(sub_type),
       style_variant_((unsigned)builder->style_variant_),
@@ -347,7 +339,9 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
 // (instead set by their super-classes), the copy constructor does.
 NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
                                        bool recalculate_layout_overflow)
-    : has_floating_descendants_for_paint_(
+    : layout_object_(other.layout_object_),
+      size_(other.size_),
+      has_floating_descendants_for_paint_(
           other.has_floating_descendants_for_paint_),
       has_adjoining_object_descendants_(
           other.has_adjoining_object_descendants_),
@@ -356,22 +350,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       children_valid_(other.children_valid_),
       has_propagated_descendants_(other.has_propagated_descendants_),
       has_hanging_(other.has_hanging_),
-      is_inline_formatting_context_(other.is_inline_formatting_context_),
-      const_has_fragment_items_(other.const_has_fragment_items_),
-      include_border_top_(other.include_border_top_),
-      include_border_right_(other.include_border_right_),
-      include_border_bottom_(other.include_border_bottom_),
-      include_border_left_(other.include_border_left_),
-      has_layout_overflow_(other.has_layout_overflow_),
-      ink_overflow_type_(other.ink_overflow_type_),
-      has_borders_(other.has_borders_),
-      has_padding_(other.has_padding_),
-      has_inflow_bounds_(other.has_inflow_bounds_),
-      const_has_rare_data_(other.const_has_rare_data_),
-      is_first_for_node_(other.is_first_for_node_),
-      has_descendants_for_table_part_(other.has_descendants_for_table_part_),
-      layout_object_(other.layout_object_),
-      size_(other.size_),
       type_(other.type_),
       sub_type_(other.sub_type_),
       style_variant_(other.style_variant_),
