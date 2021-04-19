@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
-import {isChildVisible} from '../test_util.m.js';
+import {flushTasks, isChildVisible} from '../test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for protocol_handlers. */
@@ -125,9 +126,40 @@ suite('ProtocolHandlers', function() {
       enableContentSettingsRedesign: false,
     });
     return initPage().then(() => {
-      testElement.$$('cr-toggle').click();
+      testElement.$$('#protocolHandlersToggle').click();
       return browserProxy.whenCalled('setProtocolHandlerDefault');
     });
+  });
+
+  test('toggle button', async function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+    await initPage();
+    testElement.toggleOnLabel = 'on';
+    testElement.toggleOffLabel = 'off';
+    const toggle_button = /** @type {!SettingsToggleButton} */ (
+        testElement.$$('#protocolHandlersToggle'));
+
+    webUIListenerCallback('setHandlersEnabled', false);
+    await flushTasks();
+    assertEquals('off', toggle_button.label);
+    assertFalse(toggle_button.checked);
+
+    toggle_button.click();
+    let updatedValue =
+        await browserProxy.whenCalled('setProtocolHandlerDefault');
+    assertTrue(updatedValue);
+    assertEquals('on', toggle_button.label);
+    assertTrue(toggle_button.checked);
+
+    browserProxy.reset();
+
+    toggle_button.click();
+    updatedValue = await browserProxy.whenCalled('setProtocolHandlerDefault');
+    assertFalse(updatedValue);
+    assertEquals('off', toggle_button.label);
+    assertFalse(toggle_button.checked);
   });
 
   test('empty list', function() {

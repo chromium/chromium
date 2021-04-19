@@ -502,7 +502,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   setDefaultCaptureDevice() {}
 
   /** @override */
-  setProtocolHandlerDefault() {
-    this.methodCalled('setProtocolHandlerDefault');
+  setProtocolHandlerDefault(value) {
+    this.methodCalled('setProtocolHandlerDefault', value);
   }
 }

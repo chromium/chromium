@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import '../privacy_page/collapse_radio_button.js';
 import '../settings_shared_css.js';
@@ -65,11 +66,6 @@ Polymer({
   ],
 
   properties: {
-    /**
-     * Represents the state of the main toggle shown for the category.
-     */
-    categoryEnabled: Boolean,
-
     /**
      * Array of protocols and their handlers.
      * @type {!Array<!ProtocolEntry>}
@@ -124,18 +120,14 @@ Polymer({
     this.browserProxy.observeProtocolHandlers();
   },
 
-  /** @private */
-  categoryLabelClicked_() {
-    this.$.toggle.click();
-  },
-
   /**
    * Obtains the description for the main toggle.
    * @return {string} The description to use.
    * @private
    */
   computeHandlersDescription_() {
-    return this.categoryEnabled ? this.toggleOnLabel : this.toggleOffLabel;
+    return this.handlersEnabledPref_.value ? this.toggleOnLabel :
+                                             this.toggleOffLabel;
   },
 
   /**
@@ -144,8 +136,7 @@ Polymer({
    * @private
    */
   setHandlersEnabled_(enabled) {
-    this.categoryEnabled = enabled;
-    this.set('handlersEnabledPref_.value', this.categoryEnabled);
+    this.set('handlersEnabledPref_.value', enabled);
   },
 
   /**
@@ -180,12 +171,9 @@ Polymer({
    * A handler when the toggle is flipped.
    * @private
    */
-  onToggleChange_(event) {
-    if (this.enableContentSettingsRedesign_) {
-      this.categoryEnabled =
-          (this.$$('#protcolHandlersRadio').selected === 'true');
-    }
-    this.browserProxy.setProtocolHandlerDefault(this.categoryEnabled);
+  onToggleChange_() {
+    this.browserProxy.setProtocolHandlerDefault(
+        !!this.handlersEnabledPref_.value);
   },
 
   /**
