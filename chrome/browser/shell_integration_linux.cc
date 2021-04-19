@@ -304,8 +304,7 @@ std::vector<base::FilePath> GetDataSearchLocations(base::Environment* env) {
   if (env->GetVar("XDG_DATA_DIRS", &xdg_data_dirs) && !xdg_data_dirs.empty()) {
     base::StringTokenizer tokenizer(xdg_data_dirs, ":");
     while (tokenizer.GetNext()) {
-      base::FilePath data_dir(tokenizer.token());
-      search_paths.push_back(data_dir);
+      search_paths.emplace_back(tokenizer.token_piece());
     }
   } else {
     search_paths.push_back(base::FilePath("/usr/local/share"));
