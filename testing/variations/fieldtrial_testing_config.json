@@ -7155,6 +7155,31 @@
             ]
         }
     ],
+    "V8Sparkplug": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Sparkplug"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Sparkplug"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8WasmTrapHandlerMacOSArm64": [
         {
             "platforms": [
