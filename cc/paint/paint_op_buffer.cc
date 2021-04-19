@@ -354,8 +354,7 @@ PaintOp::SerializeOptions::SerializeOptions(
     sk_sp<SkColorSpace> color_space,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
-    int max_texture_size,
-    const SkM44& original_ctm)
+    int max_texture_size)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -365,8 +364,7 @@ PaintOp::SerializeOptions::SerializeOptions(
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
-      max_texture_size(max_texture_size),
-      original_ctm(original_ctm) {}
+      max_texture_size(max_texture_size) {}
 
 PaintOp::SerializeOptions::SerializeOptions(const SerializeOptions&) = default;
 PaintOp::SerializeOptions& PaintOp::SerializeOptions::operator=(

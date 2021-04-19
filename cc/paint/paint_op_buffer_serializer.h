@@ -82,41 +82,31 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
 
  private:
   void SerializePreamble(const Preamble& preamble,
-                         const PaintOp::SerializeOptions& options,
                          const PlaybackParams& params);
   void SerializeBuffer(const PaintOpBuffer* buffer,
                        const std::vector<size_t>* offsets);
   bool SerializeOpWithFlags(const PaintOpWithFlags* flags_op,
-                            PaintOp::SerializeOptions* options,
                             const PlaybackParams& params,
                             uint8_t alpha);
   bool SerializeOp(const PaintOp* op,
-                   const PaintOp::SerializeOptions& options,
+                   const PaintFlags* flags_to_serialize,
                    const PlaybackParams& params);
-  void Save(const PaintOp::SerializeOptions& options,
-            const PlaybackParams& params);
+  void Save(const PlaybackParams& params);
   void RestoreToCount(int count,
-                      const PaintOp::SerializeOptions& options,
                       const PlaybackParams& params);
-  PaintOp::SerializeOptions MakeSerializeOptions();
   void ClearForOpaqueRaster(const Preamble& preamble,
-                            const PaintOp::SerializeOptions& options,
                             const PlaybackParams& params);
   void PlaybackOnAnalysisCanvas(const PaintOp* op,
-                                const PaintOp::SerializeOptions& options,
+                                const PaintFlags* flags_to_serialize,
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
-  ImageProvider* image_provider_;
-  TransferCacheSerializeHelper* transfer_cache_;
-  ClientPaintCache* paint_cache_;
-  SkStrikeServer* strike_server_;
-  sk_sp<SkColorSpace> color_space_;
-  bool can_use_lcd_text_;
-  bool context_supports_distance_field_text_;
-  int max_texture_size_;
 
+  // This maintains the ownership of options_.canvas
   std::unique_ptr<SkNoDrawCanvas> text_blob_canvas_;
+
+  PaintOp::SerializeOptions options_;
+
   bool valid_ = true;
 };
 

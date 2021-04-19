@@ -162,8 +162,7 @@ class CC_PAINT_EXPORT PaintOp {
                      sk_sp<SkColorSpace> color_space,
                      bool can_use_lcd_text,
                      bool context_supports_distance_field_text,
-                     int max_texture_size,
-                     const SkM44& original_ctm);
+                     int max_texture_size);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -178,12 +177,6 @@ class CC_PAINT_EXPORT PaintOp {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
-    SkM44 original_ctm = SkM44();  // Identity
-
-    // Optional.
-    // The flags to use when serializing this op. This can be used to override
-    // the flags serialized with the op. Valid only for PaintOpWithFlags.
-    const PaintFlags* flags_to_serialize = nullptr;
 
     // TODO(crbug.com/1096123): Cleanup after study completion.
     //

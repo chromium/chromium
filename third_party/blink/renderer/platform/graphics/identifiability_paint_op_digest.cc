@@ -48,8 +48,7 @@ IdentifiabilityPaintOpDigest::IdentifiabilityPaintOpDigest(IntSize size,
                          /*color_space=*/nullptr,
                          /*can_use_lcd_text=*/false,
                          /*content_supports_distance_field_text=*/false,
-                         /*max_texture_size=*/0,
-                         /*original_ctm=*/SkM44()) {
+                         /*max_texture_size=*/0) {
   serialize_options_.for_identifiability_study = true;
   constexpr size_t kInitialSize = 16 * 1024;
   if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(

@@ -25,15 +25,10 @@ class TestOptionsProvider : public ImageProvider,
   const PaintOp::SerializeOptions& serialize_options() const {
     return serialize_options_;
   }
-  PaintOp::SerializeOptions& mutable_serialize_options() {
-    return serialize_options_;
-  }
   const PaintOp::DeserializeOptions& deserialize_options() const {
     return deserialize_options_;
   }
-  PaintOp::DeserializeOptions& mutable_deserialize_options() {
-    return deserialize_options_;
-  }
+
   ImageProvider* image_provider() { return this; }
   TransferCacheTestHelper* transfer_cache_helper() { return this; }
 
