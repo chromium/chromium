@@ -1191,9 +1191,9 @@ void TabDragController::Attach(TabDragContext* attached_context,
           source_view_drag_data()->tab_group_data.value().group_visual_data);
     }
 
-    // Insert at the beginning of the tabstrip. We'll fix up the insertion
+    // Insert at any valid index in the tabstrip. We'll fix up the insertion
     // index in MoveAttached() later.
-    int index = 0;
+    int index = attached_context_->GetPinnedTabCount();
     attach_index_ = index;
 
     gfx::Point tab_strip_point(point_in_screen);
