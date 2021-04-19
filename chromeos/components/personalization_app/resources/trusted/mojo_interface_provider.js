@@ -8,10 +8,10 @@
  * mojom data and mocking out the implementation for testing.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import './personalization_app.mojom-lite.js';
+import {assert} from '/assert.m.js';
 import {isNonEmptyArray} from '../common/utils.js';
 
 /** @type {?chromeos.personalizationApp.mojom.WallpaperProviderInterface} */

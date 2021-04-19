@@ -9,6 +9,7 @@ namespace chromeos {
 
 extern const char kChromeUIPersonalizationAppHost[];
 extern const char kChromeUIPersonalizationAppURL[];
+extern const char kChromeUIUntrustedPersonalizationAppURL[];
 
 }  // namespace chromeos
 

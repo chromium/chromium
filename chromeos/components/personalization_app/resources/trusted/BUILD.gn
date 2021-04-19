@@ -49,6 +49,7 @@ js_library("styles") {
 js_library("wallpaper_collections_element") {
   deps = [
     ":mojo_interface_provider",
+    "../common:constants",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -58,6 +59,7 @@ js_library("wallpaper_collections_element") {
 js_library("wallpaper_images_element") {
   deps = [
     ":mojo_interface_provider",
+    "../common:constants",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

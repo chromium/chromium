@@ -12,12 +12,14 @@ generate_grd("build_grd") {
   deps = [
     "common:preprocess",
     "trusted:preprocess",
+    "untrusted:preprocess",
   ]
   input_files_base_dir = rebase_path(".", "//")
   input_files = [ "icon_192.png" ]
   manifest_files = [
     "$target_gen_dir/common/manifest.json",
     "$target_gen_dir/trusted/manifest.json",
+    "$target_gen_dir/untrusted/manifest.json",
   ]
   grd_prefix = "chromeos_personalization_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -27,5 +29,6 @@ group("closure_compile") {
   public_deps = [
     "common:closure_compile",
     "trusted:closure_compile",
+    "untrusted:closure_compile",
   ]
 }

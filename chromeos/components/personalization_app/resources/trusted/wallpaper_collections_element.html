@@ -3,13 +3,7 @@
 <!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
 <p hidden="[[!hasError_]]" id="error">error</p>
 <template is="dom-if" if="[[showCollections_]]">
-  <iron-list items="[[collections_]]">
-    <template>
-      <!-- TODO(b/178399962) display full image in chrome-untrusted -->
-      <a class="wallpaper-collection-title" data-id$="[[item.id]]"
-          href$="[[collectionHref_(item)]]">
-        [[item.name]]
-      </a>
-    </template>
-  </iron-list>
+  <iframe id="collections-iframe" frameBorder="0" onload="[[onIframeLoaded_]]"
+      src="chrome-untrusted://personalization/untrusted/collections.html">
+  </iframe>
 </template>

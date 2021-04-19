@@ -23,6 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/web_applications/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
+#include "chromeos/components/personalization_app/untrusted_personalization_app_ui_config.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
@@ -56,6 +57,8 @@ WebUIConfigList CreateConfigs() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   register_config(std::make_unique<TerminalUIConfig>());
   register_config(std::make_unique<MediaAppGuestUIConfig>());
+  register_config(
+      std::make_unique<chromeos::UntrustedPersonalizationAppUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());

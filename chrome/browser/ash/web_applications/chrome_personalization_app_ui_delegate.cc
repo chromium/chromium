@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
@@ -27,8 +28,16 @@ struct TypeConverter<
     backdrop::Collection> {
   static chromeos::personalization_app::mojom::WallpaperCollectionPtr Convert(
       const backdrop::Collection& collection) {
+    // All wallpaper collections are expected to have one preview image. For
+    // now, continue even if it is missing.
+    // TODO(b/185580965) switch to using StructTraits and reject if preview is
+    // missing.
+    base::Optional<GURL> preview_url;
+    if (collection.preview_size() > 0)
+      preview_url = GURL(collection.preview(0).image_url());
+
     return chromeos::personalization_app::mojom::WallpaperCollection::New(
-        collection.collection_id(), collection.collection_name());
+        collection.collection_id(), collection.collection_name(), preview_url);
   }
 };
 

@@ -7,6 +7,8 @@
 namespace chromeos {
 
 const char kChromeUIPersonalizationAppHost[] = "personalization";
-const char kChromeUIPersonalizationAppURL[] = "chrome://personalization";
+const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
+const char kChromeUIUntrustedPersonalizationAppURL[] =
+    "chrome-untrusted://personalization/";
 
 }  // namespace chromeos

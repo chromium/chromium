@@ -5,36 +5,35 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 
-js_library("constants") {
-  deps = [ "../../mojom:mojom_js_library_for_compile" ]
-}
-
-js_library("iframe_api") {
+js_library("collections") {
   deps = [
-    ":constants",
     "../../mojom:mojom_js_library_for_compile",
+    "../common:constants",
   ]
 }
 
-js_library("utils") {
+js_library("images") {
+  deps = [
+    "../../mojom:mojom_js_library_for_compile",
+    "../common:constants",
+  ]
 }
 
 js_type_check("closure_compile") {
   deps = [
-    ":constants",
-    ":iframe_api",
-    ":utils",
+    ":collections",
+    ":images",
   ]
 }
 
 preprocess_if_expr("preprocess") {
-  deps = []
   in_folder = ".."
   out_folder = "$target_gen_dir/processed"
   out_manifest = "$target_gen_dir/manifest.json"
   in_files = [
-    "common/constants.js",
-    "common/iframe_api.js",
-    "common/utils.js",
+    "untrusted/collections.html",
+    "untrusted/images.html",
+    "untrusted/images.js",
+    "untrusted/collections.js",
   ]
 }

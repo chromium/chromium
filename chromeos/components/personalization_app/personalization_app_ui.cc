@@ -4,7 +4,7 @@
 
 #include "chromeos/components/personalization_app/personalization_app_ui.h"
 
-#include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 #include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/grit/chromeos_personalization_app_resources.h"
@@ -12,6 +12,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -38,6 +39,9 @@ void AddResources(content::WebUIDataSource* source) {
     if (ShouldIncludeResource(resource))
       source->AddResourcePath(resource.path, resource.id);
   }
+  // Mirror assert.m.js here so that it is accessible at the same path in
+  // trusted and untrusted context.
+  source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
 
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
@@ -72,6 +76,13 @@ PersonalizationAppUI::PersonalizationAppUI(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
+
+  // Allow requesting a chrome-untrusted://personalization/ iframe.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc,
+      base::StrCat(
+          {"frame-src ", kChromeUIUntrustedPersonalizationAppURL, ";"}));
 
   // TODO(crbug/1169829) set up trusted types properly to allow Polymer to write
   // html

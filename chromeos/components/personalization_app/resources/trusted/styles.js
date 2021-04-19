@@ -16,6 +16,10 @@ styles.innerHTML = `<template>
       paper-spinner-lite[active] {
         display: block;
       }
+      iframe {
+        height: 80vh;
+        width: 100%;
+      }
     </style>
   </template>`;
 

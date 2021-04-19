@@ -11,6 +11,12 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+/** @enum {string} */
+const Paths = {
+  CollectionImages: '/collection',
+  Collections: '/',
+};
+
 export class PersonalizationRouter extends PolymerElement {
   static get is() {
     return 'personalization-router';
@@ -39,13 +45,9 @@ export class PersonalizationRouter extends PolymerElement {
     };
   }
 
-  /**
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  showCollections_(path) {
-    return path === '/';
+  constructor() {
+    super();
+    this.selectCollection_ = this.selectCollection_.bind(this);
   }
 
   /**
@@ -53,8 +55,28 @@ export class PersonalizationRouter extends PolymerElement {
    * @return {boolean}
    * @private
    */
-  showCollectionImages_(path) {
-    return path === '/collection';
+  shouldShowCollections_(path) {
+    return path === Paths.Collections;
+  }
+
+  /**
+   * Navigate to the selected collection id. Assumes validation of the
+   * collection id has already happened.
+   * @param {!string} collectionId
+   * @private
+   */
+  selectCollection_(collectionId) {
+    this.setProperties(
+        {path_: Paths.CollectionImages, queryParams_: {id: collectionId}});
+  }
+
+  /**
+   * @param {string} path
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCollectionImages_(path) {
+    return path === Paths.CollectionImages;
   }
 }
 

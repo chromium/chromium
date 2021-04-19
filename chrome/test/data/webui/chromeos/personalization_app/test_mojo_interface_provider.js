@@ -20,7 +20,10 @@ export class TestWallpaperProvider extends TestBrowserProxy {
      * @private
      * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
      */
-    this.collections_ = [{id: 'id_0', name: 'zero'}, {id: 'id_1', name: 'one'}];
+    this.collections_ = [
+      {id: 'id_0', name: 'zero', preview: {url: 'https://id_0'}},
+      {id: 'id_1', name: 'one', preview: {url: 'https://id_1'}},
+    ];
 
     /**
      * @private
@@ -30,6 +33,20 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       {url: {url: 'https://url_0/'}},
       {url: {url: 'https://url_1/'}},
     ];
+  }
+
+  /**
+   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   */
+  get collections() {
+    return this.collections_;
+  }
+
+  /**
+   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+   */
+  get images() {
+    return this.images_;
   }
 
   /** @override */

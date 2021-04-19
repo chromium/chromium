@@ -43,6 +43,7 @@ js_library("wallpaper_collections_element_test") {
     ":test_mojo_interface_provider",
     "../..:chai_assert",
     "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources/common:iframe_api",
     "//chromeos/components/personalization_app/resources/trusted:wallpaper_collections_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -55,6 +56,7 @@ js_library("wallpaper_images_element_test") {
     ":test_mojo_interface_provider",
     "../..:chai_assert",
     "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources/common:iframe_api",
     "//chromeos/components/personalization_app/resources/trusted:wallpaper_images_element",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

@@ -11,10 +11,22 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import './styles.js';
+import {assert} from '/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EventType} from '../common/constants.js';
+import {sendImages, validateReceivedSelection} from '../common/iframe_api.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import {fetchImagesForCollectionHelper, getWallpaperProvider} from './mojo_interface_provider.js';
+
+let sendImagesFunction = sendImages;
+
+export function promisifySendImagesForTesting() {
+  let resolver;
+  const promise = new Promise((resolve) => resolver = resolve);
+  sendImagesFunction = (...args) => resolver(args);
+  return promise;
+}
 
 export class WallpaperImages extends PolymerElement {
   static get is() {
@@ -31,6 +43,16 @@ export class WallpaperImages extends PolymerElement {
         type: String,
         observer: 'collectionIdChanged_',
       },
+
+      /**
+       * Used to bind/unbind the message listener when this element is shown or
+       * hidden. Also clears out the untrusted iframe when active is false.
+       */
+      active: {
+        type: Boolean,
+        observer: 'onActiveChanged_',
+      },
+
 
       /**
        * @private
@@ -63,12 +85,20 @@ export class WallpaperImages extends PolymerElement {
 
   constructor() {
     super();
+    this.onIframeLoaded_ = this.onIframeLoaded_.bind(this);
+    this.onImageSelected_ = this.onImageSelected_.bind(this);
     this.wallpaperProvider_ = getWallpaperProvider();
     /**
      * @type {!Map<string,
      *     !Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
      */
     this.cache_ = new Map();
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('message', this.onImageSelected_);
   }
 
   /**
@@ -88,6 +118,19 @@ export class WallpaperImages extends PolymerElement {
     }
 
     this.fetchImages_(value);
+  }
+
+  onActiveChanged_(value) {
+    const func = value ? window.addEventListener : window.removeEventListener;
+    func('message', this.onImageSelected_);
+    this.hidden = !value;
+
+    // Reset images to empty in the untrusted iframe. Prevents a flash of old
+    // content when switching between collections.
+    const iframe = this.shadowRoot.getElementById('images-iframe');
+    if (this.hidden && iframe && iframe.contentWindow) {
+      sendImagesFunction(iframe.contentWindow, []);
+    }
   }
 
   /**
@@ -141,12 +184,28 @@ export class WallpaperImages extends PolymerElement {
   }
 
   /**
+   * Called when the iframe is loaded. Guaranteed to be after the initial images
+   * loading has completed.
    * @private
-   * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
-   * @return {string}
    */
-  imageHref_(image) {
-    return image.url.url;
+  onIframeLoaded_() {
+    const iframe = this.shadowRoot.getElementById('images-iframe');
+    sendImagesFunction(iframe.contentWindow, this.images_);
+  }
+
+  /**
+   * Receives events from untrusted iframe. Expects only SelectImageEvent type.
+   * @private
+   * @param {!Event} event
+   */
+  onImageSelected_(event) {
+    /** @type {!chromeos.personalizationApp.mojom.WallpaperImage} */
+    const image =
+        validateReceivedSelection(event, EventType.SELECT_IMAGE, this.images_);
+
+    // TODO(b/178017996) set image as wallpaper when clicked.
+    console.warn(
+        'onImageSelected not implemented yet. Selected', image.url.url);
   }
 }
 

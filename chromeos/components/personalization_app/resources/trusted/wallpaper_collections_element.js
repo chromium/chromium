@@ -10,9 +10,21 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './styles.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EventType} from '../common/constants.js';
+import {sendCollections, validateReceivedSelection} from '../common/iframe_api.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import {fetchCollectionsHelper, getWallpaperProvider} from './mojo_interface_provider.js';
+
+let sendCollectionsFunction = sendCollections;
+
+export function promisifySendCollectionsForTesting() {
+  let resolver;
+  const promise = new Promise((resolve) => resolver = resolve);
+  sendCollectionsFunction = (...args) => resolver(args);
+  return promise;
+}
 
 export class WallpaperCollections extends PolymerElement {
   static get is() {
@@ -25,6 +37,20 @@ export class WallpaperCollections extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {function(!string)} */
+      selectCollection: {
+        type: Function,
+      },
+
+      /**
+       * Used to bind/unbind the message listener when this element is shown or
+       * hidden.
+       */
+      active: {
+        type: Boolean,
+        observer: 'onActiveChanged_',
+      },
+
       /**
        * @private
        * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
@@ -51,19 +77,37 @@ export class WallpaperCollections extends PolymerElement {
         type: Boolean,
         computed: 'computeShowCollections_(collections_, isLoading_)',
       },
-
     };
   }
 
   constructor() {
     super();
+    this.onIframeLoaded_ = this.onIframeLoaded_.bind(this);
+    this.onCollectionSelected_ = this.onCollectionSelected_.bind(this);
     /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
+  /** @override */
   ready() {
     super.ready();
     this.fetchCollections_();
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('message', this.onCollectionSelected_);
+  }
+
+  /**
+   * @private
+   * @param {boolean} value
+   */
+  onActiveChanged_(value) {
+    const func = value ? window.addEventListener : window.removeEventListener;
+    func('message', this.onCollectionSelected_);
+    this.hidden = !value;
   }
 
   /** @private */
@@ -103,12 +147,25 @@ export class WallpaperCollections extends PolymerElement {
   }
 
   /**
+   * Called when the iframe is loaded. Guaranteed to be after the initial
+   * |fetchCollections_| has completed.
    * @private
-   * @param {!chromeos.personalizationApp.mojom.WallpaperCollection} collection
-   * @return {string} The link to navigate to this collection.
    */
-  collectionHref_(collection) {
-    return `/collection?id=${collection.id}`;
+  onIframeLoaded_() {
+    const iframe = this.shadowRoot.getElementById('collections-iframe');
+    sendCollectionsFunction(iframe.contentWindow, this.collections_);
+  }
+
+  /**
+   * Called when untrusted iframe sends a selection back.
+   * @private
+   * @param {!Event} event
+   */
+  onCollectionSelected_(event) {
+    /** @type {!chromeos.personalizationApp.mojom.WallpaperCollection} */
+    const collection = validateReceivedSelection(
+        event, EventType.SELECT_COLLECTION, this.collections_);
+    this.selectCollection(collection.id);
   }
 }
 

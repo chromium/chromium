@@ -13,6 +13,9 @@ struct WallpaperCollection {
 
     // Name of this collection to be displayed to the user.
     string name;
+
+    // The url for the preview image of this collection.
+    url.mojom.Url? preview;
 };
 
 // Represents a single image that can be set as user wallpaper.
