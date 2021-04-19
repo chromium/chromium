@@ -35,6 +35,7 @@ SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
           kSkipAdButtonBackgroundColor, kSkipAdButtonBorderColor, 1.f)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kSkipAdButtonTextColor);
+  SetTextColor(views::Button::STATE_DISABLED, kSkipAdButtonTextColor);
   SetSize(gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight));
 
   // Accessibility.
