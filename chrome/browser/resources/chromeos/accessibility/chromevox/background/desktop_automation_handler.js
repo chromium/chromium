@@ -47,16 +47,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     /** @private {AutomationNode} */
     this.lastValueTarget_ = null;
 
-    /**
-     * The last time we handled an alert event.
-     * @type {!Date}
-     * @private
-     */
-    this.lastAlert_ = new Date(0);
-
-    /** @private {AutomationNode} */
-    this.lastAlertTarget_ = null;
-
     /** @private {string} */
     this.lastRootUrl_ = '';
 
@@ -185,15 +175,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         ancestor = ancestor.parent;
       }
     }
-
-    const alertDelayMet = new Date() - this.lastAlert_ >
-        DesktopAutomationHandler.MIN_ALERT_DELAY_MS;
-    if (!alertDelayMet && node === this.lastAlertTarget_) {
-      return;
-    }
-
-    this.lastAlert_ = new Date();
-    this.lastAlertTarget_ = node;
 
     const range = cursors.Range.fromNode(node);
 
@@ -779,12 +760,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
  * @const {number}
  */
 DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
-
-/**
- * Time to wait until processing more alert events on the same node.
- * @const {number}
- */
-DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 50;
 
 /**
  * Time to wait before announcing attribute changes that are otherwise too
