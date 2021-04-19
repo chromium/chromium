@@ -388,11 +388,16 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      */
     @Override
     public void hideOverview(boolean animate) {
+        hideOverviewWithNextTab(animate, Tab.INVALID_TAB_ID);
+    }
+
+    @VisibleForTesting
+    public void hideOverviewWithNextTab(boolean animate, int tabId) {
         Layout activeLayout = getActiveLayout();
         if (!isOverviewLayout(activeLayout)) return;
 
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
-            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
+            activeLayout.startHiding(tabId, animate);
         }
     }
 

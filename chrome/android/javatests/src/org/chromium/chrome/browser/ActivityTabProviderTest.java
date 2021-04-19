@@ -72,6 +72,7 @@ public class ActivityTabProviderTest {
     private Tab mActivityTab;
     private CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
     private CallbackHelper mActivityTabChangedHintHelper = new CallbackHelper();
+    private int mLastValidTabId;
 
     @Before
     public void setUp() throws Exception {
@@ -83,6 +84,7 @@ public class ActivityTabProviderTest {
                 mActivityTabChangedHintHelper.notifyCalled();
             } else {
                 mActivityTab = tab;
+                mLastValidTabId = mActivityTab == null ? mLastValidTabId : mActivityTab.getId();
                 mActivityTabChangedHelper.notifyCalled();
             }
         });
@@ -284,7 +286,9 @@ public class ActivityTabProviderTest {
                     () -> mActivity.getLayoutManager().showOverview(true));
         } else {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mActivity.getLayoutManager().hideOverview(true));
+                    () -> {
+                        mActivity.getLayoutManager().hideOverviewWithNextTab(true, mLastValidTabId);
+                    });
         }
         sceneChangeHelper.waitForCallback(sceneChangeCount);
 
