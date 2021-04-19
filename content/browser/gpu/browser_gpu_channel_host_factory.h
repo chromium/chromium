@@ -65,7 +65,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   BrowserGpuChannelHostFactory();
   ~BrowserGpuChannelHostFactory() override;
 
-  void GpuChannelEstablished();
+  void EstablishGpuChannel(gpu::GpuChannelEstablishedCallback callback,
+                           bool sync);
+
+  void GpuChannelEstablished(EstablishRequest* request);
   void RestartTimeout();
 
   static void InitializeShaderDiskCacheOnIO(int gpu_client_id,

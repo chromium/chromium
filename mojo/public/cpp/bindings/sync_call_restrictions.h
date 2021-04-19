@@ -33,6 +33,7 @@ class Compositor;
 }  // namespace ui
 
 namespace viz {
+class GpuHostImpl;
 class HostFrameSinkManager;
 }
 
@@ -81,6 +82,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class content::DesktopCapturerLacros;
   friend class crosapi::ScopedAllowSyncCall;
   friend class mojo::ScopedAllowSyncCallForTesting;
+  friend class viz::GpuHostImpl;
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;

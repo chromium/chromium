@@ -942,16 +942,19 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     if (gpu::IsReservedClientId(client_id)) {
       // This returns a null handle, which is treated by the client as a failure
       // case.
-      std::move(callback).Run(mojo::ScopedMessagePipeHandle());
+      std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+                              gpu::GpuFeatureInfo());
       return;
     }
 
     EstablishGpuChannelCallback wrap_callback = base::BindOnce(
         [](scoped_refptr<base::SingleThreadTaskRunner> runner,
-           EstablishGpuChannelCallback cb,
-           mojo::ScopedMessagePipeHandle handle) {
+           EstablishGpuChannelCallback cb, mojo::ScopedMessagePipeHandle handle,
+           const gpu::GPUInfo& gpu_info,
+           const gpu::GpuFeatureInfo& gpu_feature_info) {
           runner->PostTask(FROM_HERE,
-                           base::BindOnce(std::move(cb), std::move(handle)));
+                           base::BindOnce(std::move(cb), std::move(handle),
+                                          gpu_info, gpu_feature_info));
         },
         io_runner_, std::move(callback));
     main_runner_->PostTask(
@@ -968,7 +971,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
   if (!gpu_channel) {
     // This returns a null handle, which is treated by the client as a failure
     // case.
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle());
+    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+                            gpu::GpuFeatureInfo());
     return;
   }
   mojo::MessagePipe pipe;
@@ -976,7 +980,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
 
   media_gpu_channel_manager_->AddChannel(client_id);
 
-  std::move(callback).Run(std::move(pipe.handle1));
+  std::move(callback).Run(std::move(pipe.handle1), gpu_info_,
+                          gpu_feature_info_);
 }
 
 void GpuServiceImpl::CloseChannel(int32_t client_id) {

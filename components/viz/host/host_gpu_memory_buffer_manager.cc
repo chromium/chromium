@@ -191,10 +191,12 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
 bool HostGpuMemoryBufferManager::IsNativeGpuMemoryBufferConfiguration(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    native_configurations_initialized_.Wait();
+  if (WillGetGmbConfigFromGpu()) {
+    DCHECK(task_runner_->BelongsToCurrentThread());
+    {
+      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+      native_configurations_initialized_.Wait();
+    }
   }
   return native_configurations_.find(gfx::BufferUsageAndFormat(
              usage, format)) != native_configurations_.end();

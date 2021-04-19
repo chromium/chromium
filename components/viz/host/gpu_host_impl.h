@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -165,11 +166,15 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
 
   // Tells the GPU service to create a new channel for communication with a
   // client. Once the GPU service responds asynchronously with the channel
-  // handle and GPUInfo, we call the callback.
+  // handle and GPUInfo, we call the callback. If |sync| is true then the
+  // callback will be run before this method returns, and note that the
+  // browser GPU info data might not be initialized as well.
   void EstablishGpuChannel(int client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
+                           bool sync,
                            EstablishChannelCallback callback);
+  void CloseChannel(int client_id);
 
   void SendOutstandingReplies();
 
@@ -203,7 +208,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
   void CreateChannelCache(int32_t client_id);
 
   void OnChannelEstablished(int client_id,
-                            mojo::ScopedMessagePipeHandle channel_handle);
+                            bool sync,
+                            mojo::ScopedMessagePipeHandle channel_handle,
+                            const gpu::GPUInfo& gpu_info,
+                            const gpu::GpuFeatureInfo& gpu_feature_info);
   void MaybeShutdownGpuProcess();
 
   // mojom::GpuHost:
@@ -275,7 +283,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
 
   // These are the channel requests that we have already sent to the GPU
   // service, but haven't heard back about yet.
-  base::queue<EstablishChannelCallback> channel_requests_;
+  base::flat_map<int, EstablishChannelCallback> channel_requests_;
 
   base::OneShotTimer shutdown_timeout_;
 

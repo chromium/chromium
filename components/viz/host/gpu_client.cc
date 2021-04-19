@@ -24,16 +24,42 @@ bool IsSizeValid(const gfx::Size& size) {
   bytes *= size.height();
   return bytes.IsValid();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void CreateJpegDecodeAcceleratorInternal(
+    mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
+        jda_receiver,
+    GpuClientDelegate* delegate) {
+  if (auto* gpu_host = delegate->EnsureGpuHost()) {
+    gpu_host->gpu_service()->CreateJpegDecodeAccelerator(
+        std::move(jda_receiver));
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void CreateVideoEncodeAcceleratorProviderInternal(
+    mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
+        vea_provider_receiver,
+    GpuClientDelegate* delegate) {
+  if (auto* gpu_host = delegate->EnsureGpuHost()) {
+    gpu_host->gpu_service()->CreateVideoEncodeAcceleratorProvider(
+        std::move(vea_provider_receiver));
+  }
+}
+
 }  // namespace
 
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
                      int client_id,
                      uint64_t client_tracing_id,
-                     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+                     bool gpu_host_lives_on_ui_thread,
+                     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : delegate_(std::move(delegate)),
       client_id_(client_id),
       client_tracing_id_(client_tracing_id),
-      task_runner_(std::move(task_runner)) {
+      gpu_host_lives_on_ui_thread_(gpu_host_lives_on_ui_thread),
+      io_task_runner_(std::move(io_task_runner)),
+      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(delegate_);
   gpu_receivers_.set_disconnect_handler(
       base::BindRepeating(&GpuClient::OnError, base::Unretained(this),
@@ -41,18 +67,24 @@ GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
 }
 
 GpuClient::~GpuClient() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   gpu_receivers_.Clear();
   OnError(ErrorReason::kInDestructor);
+
+  if (gpu_host_lives_on_ui_thread_) {
+    // This way it's safe to PostTask to the UI task runner and use
+    // |delegate_|.
+    ui_task_runner_->DeleteSoon(FROM_HERE, delegate_.release());
+  }
 }
 
 void GpuClient::Add(mojo::PendingReceiver<mojom::Gpu> receiver) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   gpu_receivers_.Add(this, std::move(receiver));
 }
 
 void GpuClient::OnError(ErrorReason reason) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   ClearCallback();
   if (gpu_receivers_.empty() && delegate_) {
     if (auto* gpu_memory_buffer_manager =
@@ -65,10 +97,10 @@ void GpuClient::OnError(ErrorReason reason) {
 }
 
 void GpuClient::PreEstablishGpuChannel() {
-  if (task_runner_->RunsTasksInCurrentSequence()) {
+  if (io_task_runner_->RunsTasksInCurrentSequence()) {
     EstablishGpuChannel(EstablishGpuChannelCallback());
   } else {
-    task_runner_->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuClient::EstablishGpuChannel, base::Unretained(this),
                        EstablishGpuChannelCallback()));
@@ -93,7 +125,6 @@ void GpuClient::OnEstablishGpuChannel(
             status == GpuHostImpl::EstablishChannelStatus::kSuccess);
   gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback = std::move(callback_);
-  DCHECK(!callback_);
 
   if (status == GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid) {
     // GPU process may have crashed or been killed. Try again.
@@ -126,11 +157,10 @@ void GpuClient::ClearCallback() {
   EstablishGpuChannelCallback callback = std::move(callback_);
   std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
                           gpu::GPUInfo(), gpu::GpuFeatureInfo());
-  DCHECK(!callback_);
 }
 
 void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   // At most one channel should be requested. So clear previous request first.
   ClearCallback();
 
@@ -147,13 +177,16 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
     return;
   }
 
-  GpuHostImpl* gpu_host = delegate_->EnsureGpuHost();
-  if (!gpu_host) {
-    if (callback) {
-      std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
-                              gpu::GPUInfo(), gpu::GpuFeatureInfo());
+  GpuHostImpl* gpu_host = nullptr;
+  if (!gpu_host_lives_on_ui_thread_) {
+    gpu_host = delegate_->EnsureGpuHost();
+    if (!gpu_host) {
+      if (callback) {
+        std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
+                                gpu::GPUInfo(), gpu::GpuFeatureInfo());
+      }
+      return;
     }
-    return;
   }
 
   callback_ = std::move(callback);
@@ -161,19 +194,31 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
     return;
   gpu_channel_requested_ = true;
   const bool is_gpu_host = false;
-  gpu_host->EstablishGpuChannel(
-      client_id_, client_tracing_id_, is_gpu_host,
-      base::BindOnce(&GpuClient::OnEstablishGpuChannel,
-                     weak_factory_.GetWeakPtr()));
+  if (gpu_host_lives_on_ui_thread_) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuClient::EstablishGpuChannelOnUIThread,
+                       weak_factory_.GetWeakPtr(), io_task_runner_, client_id_,
+                       client_tracing_id_, is_gpu_host, delegate_.get()));
+  } else {
+    gpu_host->EstablishGpuChannel(
+        client_id_, client_tracing_id_, is_gpu_host, false,
+        base::BindOnce(&GpuClient::OnEstablishGpuChannel,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void GpuClient::CreateJpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
         jda_receiver) {
-  if (auto* gpu_host = delegate_->EnsureGpuHost()) {
-    gpu_host->gpu_service()->CreateJpegDecodeAccelerator(
-        std::move(jda_receiver));
+  if (gpu_host_lives_on_ui_thread_) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CreateJpegDecodeAcceleratorInternal,
+                                  std::move(jda_receiver), delegate_.get()));
+  } else {
+    CreateJpegDecodeAcceleratorInternal(std::move(jda_receiver),
+                                        delegate_.get());
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -181,9 +226,14 @@ void GpuClient::CreateJpegDecodeAccelerator(
 void GpuClient::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
         vea_provider_receiver) {
-  if (auto* gpu_host = delegate_->EnsureGpuHost()) {
-    gpu_host->gpu_service()->CreateVideoEncodeAcceleratorProvider(
-        std::move(vea_provider_receiver));
+  if (gpu_host_lives_on_ui_thread_) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CreateVideoEncodeAcceleratorProviderInternal,
+                       std::move(vea_provider_receiver), delegate_.get()));
+  } else {
+    CreateVideoEncodeAcceleratorProviderInternal(
+        std::move(vea_provider_receiver), delegate_.get());
   }
 }
 
@@ -233,6 +283,41 @@ void GpuClient::CopyGpuMemoryBuffer(
 void GpuClient::CreateGpuMemoryBufferFactory(
     mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) {
   gpu_memory_buffer_factory_receivers_.Add(this, std::move(receiver));
+}
+
+void GpuClient::EstablishGpuChannelOnUIThread(
+    const base::WeakPtr<GpuClient>& weak_ref,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    int client_id,
+    uint64_t client_tracing_id,
+    bool is_gpu_host,
+    GpuClientDelegate* delegate) {
+  GpuHostImpl* gpu_host = delegate->EnsureGpuHost();
+  if (!gpu_host) {
+    OnEstablishedGpuChannelOnUIThread(
+        weak_ref, task_runner, mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+        gpu::GpuFeatureInfo(),
+        GpuHostImpl::EstablishChannelStatus::kGpuAccessDenied);
+    return;
+  }
+
+  gpu_host->EstablishGpuChannel(
+      client_id, client_tracing_id, is_gpu_host, false,
+      base::BindOnce(&GpuClient::OnEstablishedGpuChannelOnUIThread, weak_ref,
+                     task_runner));
+}
+
+void GpuClient::OnEstablishedGpuChannelOnUIThread(
+    const base::WeakPtr<GpuClient>& weak_ref,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::ScopedMessagePipeHandle channel_handle,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    GpuHostImpl::EstablishChannelStatus status) {
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&GpuClient::OnEstablishGpuChannel, weak_ref,
+                                std::move(channel_handle), gpu_info,
+                                gpu_feature_info, status));
 }
 
 }  // namespace viz
