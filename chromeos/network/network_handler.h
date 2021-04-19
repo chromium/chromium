@@ -17,7 +17,7 @@ class PrefService;
 namespace chromeos {
 
 class AutoConnectHandler;
-class CellularESimConnectionHandler;
+class CellularConnectionHandler;
 class CellularESimProfileHandler;
 class CellularInhibitor;
 class CellularESimUninstallHandler;
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // explicit so that classes can be constructed explicitly in tests without
   // NetworkHandler.
   AutoConnectHandler* auto_connect_handler();
-  CellularESimConnectionHandler* cellular_esim_connection_handler();
+  CellularConnectionHandler* cellular_connection_handler();
   CellularESimProfileHandler* cellular_esim_profile_handler();
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
@@ -116,8 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_;
   std::unique_ptr<StubCellularNetworksProvider>
       stub_cellular_networks_provider_;
-  std::unique_ptr<CellularESimConnectionHandler>
-      cellular_esim_connection_handler_;
+  std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>

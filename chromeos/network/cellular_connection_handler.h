@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_CELLULAR_ESIM_CONNECTION_HANDLER_H_
-#define CHROMEOS_NETWORK_CELLULAR_ESIM_CONNECTION_HANDLER_H_
+#ifndef CHROMEOS_NETWORK_CELLULAR_CONNECTION_HANDLER_H_
+#define CHROMEOS_NETWORK_CELLULAR_CONNECTION_HANDLER_H_
 
 #include <memory>
 
@@ -39,14 +39,16 @@ class NetworkState;
 //
 // Note that if this class receies multiple connection requests, it processes
 // them in a queue.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
+//
+// TODO(khorimoto): Adapt this class to support pSIM connections as well.
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
     : public NetworkStateHandlerObserver {
  public:
-  CellularESimConnectionHandler();
-  CellularESimConnectionHandler(const CellularESimConnectionHandler&) = delete;
-  CellularESimConnectionHandler& operator=(
-      const CellularESimConnectionHandler&) = delete;
-  ~CellularESimConnectionHandler() override;
+  CellularConnectionHandler();
+  CellularConnectionHandler(const CellularConnectionHandler&) = delete;
+  CellularConnectionHandler& operator=(const CellularConnectionHandler&) =
+      delete;
+  ~CellularConnectionHandler() override;
 
   void Init(NetworkStateHandler* network_state_handler,
             CellularInhibitor* cellular_inhibitor,
@@ -154,9 +156,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
   ConnectionState state_ = ConnectionState::kIdle;
   base::queue<std::unique_ptr<ConnectionRequestMetadata>> request_queue_;
 
-  base::WeakPtrFactory<CellularESimConnectionHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CellularConnectionHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_CELLULAR_ESIM_CONNECTION_HANDLER_H_
+#endif  // CHROMEOS_NETWORK_CELLULAR_CONNECTION_HANDLER_H_

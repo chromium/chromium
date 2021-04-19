@@ -70,7 +70,7 @@ void FakeNetworkConnectionHandler::Init(
     NetworkStateHandler* network_state_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-    CellularESimConnectionHandler* cellular_esim_connection_handler) {
+    CellularConnectionHandler* cellular_connection_handler) {
   // No initialization necessary for a test double.
 }
 

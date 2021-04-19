@@ -39,7 +39,7 @@ void LogEuiccPaths(const std::set<dbus::ObjectPath>& new_euicc_paths) {
 }  // namespace
 
 ESimManager::ESimManager()
-    : ESimManager(NetworkHandler::Get()->cellular_esim_connection_handler(),
+    : ESimManager(NetworkHandler::Get()->cellular_connection_handler(),
                   NetworkHandler::Get()->cellular_esim_profile_handler(),
                   NetworkHandler::Get()->cellular_esim_uninstall_handler(),
                   NetworkHandler::Get()->cellular_inhibitor(),
@@ -47,13 +47,13 @@ ESimManager::ESimManager()
                   NetworkHandler::Get()->network_state_handler()) {}
 
 ESimManager::ESimManager(
-    CellularESimConnectionHandler* cellular_esim_connection_handler,
+    CellularConnectionHandler* cellular_connection_handler,
     CellularESimProfileHandler* cellular_esim_profile_handler,
     CellularESimUninstallHandler* cellular_esim_uninstall_handler,
     CellularInhibitor* cellular_inhibitor,
     NetworkConnectionHandler* network_connection_handler,
     NetworkStateHandler* network_state_handler)
-    : cellular_esim_connection_handler_(cellular_esim_connection_handler),
+    : cellular_connection_handler_(cellular_connection_handler),
       cellular_esim_profile_handler_(cellular_esim_profile_handler),
       cellular_esim_uninstall_handler_(cellular_esim_uninstall_handler),
       cellular_inhibitor_(cellular_inhibitor),

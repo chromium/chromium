@@ -21,7 +21,7 @@ class ObjectPath;
 
 namespace chromeos {
 
-class CellularESimConnectionHandler;
+class CellularConnectionHandler;
 class CellularESimUninstallHandler;
 class CellularInhibitor;
 class NetworkConnectionHandler;
@@ -42,7 +42,7 @@ class ESimManager : public mojom::ESimManager,
                     HermesEuiccClient::Observer {
  public:
   ESimManager();
-  ESimManager(CellularESimConnectionHandler* cellular_esim_connection_handler,
+  ESimManager(CellularConnectionHandler* cellular_connection_handler,
               CellularESimProfileHandler* cellular_esim_profile_handler,
               CellularESimUninstallHandler* cellular_esim_uninstall_handler,
               CellularInhibitor* cellular_inhibitor,
@@ -80,8 +80,8 @@ class ESimManager : public mojom::ESimManager,
     return cellular_esim_profile_handler_;
   }
 
-  CellularESimConnectionHandler* cellular_esim_connection_handler() {
-    return cellular_esim_connection_handler_;
+  CellularConnectionHandler* cellular_connection_handler() {
+    return cellular_connection_handler_;
   }
 
   CellularESimUninstallHandler* cellular_esim_uninstall_handler() {
@@ -108,7 +108,7 @@ class ESimManager : public mojom::ESimManager,
   // exist. Returns true if a new object was created.
   bool CreateEuiccIfNew(const dbus::ObjectPath& euicc_path);
 
-  CellularESimConnectionHandler* cellular_esim_connection_handler_;
+  CellularConnectionHandler* cellular_connection_handler_;
   CellularESimProfileHandler* cellular_esim_profile_handler_;
   CellularESimUninstallHandler* cellular_esim_uninstall_handler_;
   CellularInhibitor* cellular_inhibitor_;
