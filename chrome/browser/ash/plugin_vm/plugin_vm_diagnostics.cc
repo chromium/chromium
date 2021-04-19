@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics_builder.h"
@@ -24,6 +25,18 @@ namespace {
 
 using DiagnosticsCallback =
     base::OnceCallback<void(guest_os::mojom::DiagnosticsPtr)>;
+
+std::string CapitalizedBoardName() {
+  const std::string uppercase = base::SysInfo::HardwareModelName();
+
+  CHECK_GE(uppercase.size(), 1);
+  base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
+  base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
+                                        uppercase.length() - 1);
+
+  return base::StrCat(
+      {uppercase_first_char, base::ToLowerASCII(uppercase_remaining)});
+}
 
 class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
  public:
@@ -58,8 +71,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     {
       EntryBuilder entry("Device is supported");
       if (!is_allowed_diagnostics.device_supported) {
-        entry.SetFail(base::StrCat(
-            {base::SysInfo::HardwareModelName(), " is not supported"}));
+        entry.SetFail(
+            base::StrCat({CapitalizedBoardName(), " is not supported"}));
       }
       builder_.AddEntry(std::move(entry));
     }
@@ -151,7 +164,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         entry.SetFail(GetMissingDefaultVmExplanation(response->images()),
                       /*top_error_message=*/
                       "A required virtual machine does not exist. Please try "
-                      "installing Parallels to continue.");
+                      "setting up Parallels to continue.");
       } else {
         // Everything is good. Do nothing.
       }
@@ -180,17 +193,21 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
   std::string GetMissingDefaultVmExplanation(const ImageListType& images) {
     if (images.empty()) {
-      return "Could not find any Parallels Desktop VMs";
+      return "No Parallels Desktop VMs found";
     }
 
     std::stringstream stream;
-    stream << "Found Parallels Desktop VMs: ";
+    // The string looks like this:
+    //
+    // n Parallels Desktop VM(s) found: "vm1", "vm2"
+    stream << images.size() << " Parallels Desktop VM"
+           << (images.size() >= 2 ? "s" : "") << " found: ";
     bool first_vm = true;
     for (auto& image : images) {
       if (!first_vm) {
         stream << ", ";
       }
-      stream << image.name();
+      stream << '"' << image.name() << '"';
 
       first_vm = false;
     }
