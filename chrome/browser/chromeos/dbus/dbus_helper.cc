@@ -109,9 +109,6 @@ void InitializeDBus() {
   InitializeDBusClient<PermissionBrokerClient>(bus);
   InitializeDBusClient<PowerManagerClient>(bus);
   InitializeDBusClient<ResourcedClient>(bus);
-  if (ash::features::IsShimlessRMAFlowEnabled()) {
-    InitializeDBusClient<RmadClient>(bus);
-  }
   InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -136,6 +133,9 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<CfmHotlineClient>(bus);
   }
 #endif
+  if (ash::features::IsShimlessRMAFlowEnabled()) {
+    InitializeDBusClient<RmadClient>(bus);
+  }
   InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 }
 
