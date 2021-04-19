@@ -107,31 +107,5 @@ TEST(DisplayListTest, AddUpdateRemove) {
   EXPECT_EQ(3, display_list.GetPrimaryDisplayIterator()->id());
 }
 
-TEST(DisplayListTest, SuspendUpdates) {
-  DisplayList display_list;
-  display_list.AddDisplay(Display(2, gfx::Rect(0, 0, 801, 802)),
-                          DisplayList::Type::PRIMARY);
-  DisplayObserverImpl observer;
-  display_list.AddObserver(&observer);
-  {
-    // Suspend updates and add a new display.
-    std::unique_ptr<DisplayListObserverLock> lock =
-        display_list.SuspendObserverUpdates();
-    display_list.AddDisplay(Display(3, gfx::Rect(0, 0, 809, 802)),
-                            DisplayList::Type::NOT_PRIMARY);
-    EXPECT_EQ(2u, display_list.displays().size());
-    // No update should have been generated.
-    EXPECT_TRUE(observer.GetAndClearChanges().empty());
-  }
-  // The lock has been destroyed, but no updates should be sent yet.
-  EXPECT_TRUE(observer.GetAndClearChanges().empty());
-
-  // Update a display and verify observer called.
-  Display updated_display = display_list.displays()[0];
-  updated_display.set_bounds(gfx::Rect(0, 0, 803, 802));
-  display_list.UpdateDisplay(updated_display, DisplayList::Type::PRIMARY);
-  EXPECT_EQ("Changed id=2 bounds", observer.GetAndClearChanges());
-}
-
 }  // namespace
 }  // namespace display

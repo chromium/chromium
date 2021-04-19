@@ -9,20 +9,9 @@
 
 namespace display {
 
-DisplayListObserverLock::~DisplayListObserverLock() {
-  display_list_->DecrementObserverSuspendLockCount();
-}
+DisplayList::DisplayList() = default;
 
-DisplayListObserverLock::DisplayListObserverLock(DisplayList* display_list)
-    : display_list_(display_list) {
-  display_list_->IncrementObserverSuspendLockCount();
-}
-
-DisplayList::DisplayList() {}
-
-DisplayList::~DisplayList() {
-  DCHECK_EQ(0, observer_suspend_lock_count_);
-}
+DisplayList::~DisplayList() = default;
 
 void DisplayList::AddObserver(DisplayObserver* observer) {
   observers_.AddObserver(observer);
@@ -46,10 +35,6 @@ DisplayList::Displays::const_iterator DisplayList::GetPrimaryDisplayIterator()
   return primary_display_index_ == -1
              ? displays_.end()
              : displays_.begin() + primary_display_index_;
-}
-
-std::unique_ptr<DisplayListObserverLock> DisplayList::SuspendObserverUpdates() {
-  return base::WrapUnique(new DisplayListObserverLock(this));
 }
 
 void DisplayList::AddOrUpdateDisplay(const Display& display, Type type) {
@@ -108,10 +93,8 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
   if (local_display->GetSizeInPixel() != display.GetSizeInPixel()) {
     local_display->set_size_in_pixels(display.GetSizeInPixel());
   }
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayMetricsChanged(*local_display, changed_values);
-  }
+  for (DisplayObserver& observer : observers_)
+    observer.OnDisplayMetricsChanged(*local_display, changed_values);
   return changed_values;
 }
 
@@ -120,10 +103,8 @@ void DisplayList::AddDisplay(const Display& display, Type type) {
   displays_.push_back(display);
   if (type == Type::PRIMARY)
     primary_display_index_ = static_cast<int>(displays_.size()) - 1;
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayAdded(display);
-  }
+  for (DisplayObserver& observer : observers_)
+    observer.OnDisplayAdded(display);
 }
 
 void DisplayList::RemoveDisplay(int64_t id) {
@@ -140,19 +121,8 @@ void DisplayList::RemoveDisplay(int64_t id) {
   }
   const Display display = *iter;
   displays_.erase(iter);
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayRemoved(display);
-  }
-}
-
-void DisplayList::IncrementObserverSuspendLockCount() {
-  observer_suspend_lock_count_++;
-}
-
-void DisplayList::DecrementObserverSuspendLockCount() {
-  DCHECK_GT(observer_suspend_lock_count_, 0);
-  observer_suspend_lock_count_--;
+  for (DisplayObserver& observer : observers_)
+    observer.OnDisplayRemoved(display);
 }
 
 DisplayList::Type DisplayList::GetTypeByDisplayId(int64_t display_id) const {

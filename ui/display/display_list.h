@@ -20,21 +20,6 @@ class Display;
 class DisplayList;
 class DisplayObserver;
 
-// See description in DisplayLock::SuspendObserverUpdates.
-class DISPLAY_EXPORT DisplayListObserverLock {
- public:
-  ~DisplayListObserverLock();
-
- private:
-  friend class DisplayList;
-
-  explicit DisplayListObserverLock(DisplayList* display_list);
-
-  DisplayList* display_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayListObserverLock);
-};
-
 // Maintains an ordered list of Displays as well as operations to add, remove
 // and update said list. Additionally maintains DisplayObservers and updates
 // them as appropriate.
@@ -59,11 +44,6 @@ class DISPLAY_EXPORT DisplayList {
 
   Displays::const_iterator GetPrimaryDisplayIterator() const;
 
-  // Internally increments a counter that while non-zero results in observers
-  // not being called for any changes to the displays. It is assumed once
-  // callers release the last lock they call the observers appropriately.
-  std::unique_ptr<DisplayListObserverLock> SuspendObserverUpdates();
-
   void AddOrUpdateDisplay(const Display& display, Type type);
 
   // Updates the cached display based on display.id(). This returns a bitmask
@@ -85,14 +65,6 @@ class DISPLAY_EXPORT DisplayList {
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
-  friend class DisplayListObserverLock;
-
-  bool should_notify_observers() const {
-    return observer_suspend_lock_count_ == 0;
-  }
-  void IncrementObserverSuspendLockCount();
-  void DecrementObserverSuspendLockCount();
-
   Type GetTypeByDisplayId(int64_t display_id) const;
 
   Displays::iterator FindDisplayByIdInternal(int64_t id);
@@ -100,8 +72,6 @@ class DISPLAY_EXPORT DisplayList {
   std::vector<Display> displays_;
   int primary_display_index_ = -1;
   base::ObserverList<DisplayObserver> observers_;
-
-  int observer_suspend_lock_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayList);
 };
