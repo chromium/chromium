@@ -124,18 +124,16 @@ class ProfileManager : public Profile::Delegate {
   // Returns total number of profiles available on this machine.
   size_t GetNumberOfProfiles();
 
-  // Asynchronously loads an existing profile given its |profile_name| within
-  // the user data directory, optionally in |incognito| mode. The |callback|
-  // will be called with the Profile when it has been loaded, or with a nullptr
-  // otherwise. Should be called on the UI thread.
+  // Asynchronously loads an existing profile given its |profile_base_name|
+  // (which is the directory name within the user data directory), optionally in
+  // |incognito| mode. The |callback| will be called with the Profile when it
+  // has been loaded, or with a nullptr otherwise.
+  // Should be called on the UI thread.
   // Unlike CreateProfileAsync this will not create a profile if one doesn't
   // already exist on disk
   // Returns true if the profile exists, but the final loaded profile will come
   // as part of the callback.
-  // TODO(https://crbug.com/1195201): `profile_name` parameter indicates the
-  // name of a directory within the user data directory and not the visible
-  // profile name. Rename to `profile_basename`.
-  bool LoadProfile(const std::string& profile_name,
+  bool LoadProfile(const std::string& profile_base_name,
                    bool incognito,
                    ProfileLoadedCallback callback);
   bool LoadProfileByPath(const base::FilePath& profile_path,

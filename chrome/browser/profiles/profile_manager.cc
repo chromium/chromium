@@ -665,10 +665,11 @@ size_t ProfileManager::GetNumberOfProfiles() {
       /*include_guest_profile=*/false);
 }
 
-bool ProfileManager::LoadProfile(const std::string& profile_name,
+bool ProfileManager::LoadProfile(const std::string& profile_base_name,
                                  bool incognito,
                                  ProfileLoadedCallback callback) {
-  const base::FilePath profile_path = user_data_dir().AppendASCII(profile_name);
+  const base::FilePath profile_path =
+      user_data_dir().AppendASCII(profile_base_name);
   return LoadProfileByPath(profile_path, incognito, std::move(callback));
 }
 
