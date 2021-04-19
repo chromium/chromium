@@ -94,7 +94,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
 
     private void initializeText(WebFeedMetadata webFeedMetadata) {
         TextView itemText = findViewById(R.id.menu_item_text);
-        if (webFeedMetadata != null && TextUtils.isEmpty(webFeedMetadata.title)) {
+        if (webFeedMetadata != null && !TextUtils.isEmpty(webFeedMetadata.title)) {
             mTitle = webFeedMetadata.title;
         } else {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
