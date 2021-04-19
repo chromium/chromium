@@ -4,6 +4,8 @@
 
 #include "content/browser/android/synchronous_compositor_sync_call_bridge.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -61,7 +63,7 @@ bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
                                       ProcessFrameMetadataOnUIThread,
                                   this, metadata_version,
                                   compositor_frame->metadata.Clone()));
-    frame_ptr->frame.reset(new viz::CompositorFrame);
+    frame_ptr->frame = std::make_unique<viz::CompositorFrame>();
     *frame_ptr->frame = std::move(*compositor_frame);
     frame_ptr->local_surface_id = local_surface_id.value();
     frame_ptr->hit_test_region_list = std::move(hit_test_region_list);

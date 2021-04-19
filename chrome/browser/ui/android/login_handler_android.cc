@@ -61,8 +61,8 @@ class LoginHandlerAndroid : public LoginHandler {
     ui::WindowAndroid* window = view ? view->GetWindowAndroid() : nullptr;
     // Notify WindowAndroid that HTTP authentication is required.
     if (tab && window) {
-      chrome_http_auth_handler_.reset(
-          new ChromeHttpAuthHandler(authority, explanation, login_model_data));
+      chrome_http_auth_handler_ = std::make_unique<ChromeHttpAuthHandler>(
+          authority, explanation, login_model_data);
       chrome_http_auth_handler_->Init();
       chrome_http_auth_handler_->SetObserver(this);
       chrome_http_auth_handler_->ShowDialog(tab->GetJavaObject(),

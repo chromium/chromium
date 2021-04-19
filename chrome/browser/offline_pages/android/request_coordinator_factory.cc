@@ -89,8 +89,8 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<LoadTerminationListenerImpl> load_termination_listener =
       std::make_unique<LoadTerminationListenerImpl>();
-  offliner.reset(new BackgroundLoaderOffliner(
-      context, policy.get(), model, std::move(load_termination_listener)));
+  offliner = std::make_unique<BackgroundLoaderOffliner>(
+      context, policy.get(), model, std::move(load_termination_listener));
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

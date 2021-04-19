@@ -139,8 +139,8 @@ class AudioDecoderTest
         break;
 #if defined(OS_ANDROID)
       case MEDIA_CODEC:
-        decoder_.reset(new MediaCodecAudioDecoder(
-            task_environment_.GetMainThreadTaskRunner()));
+        decoder_ = std::make_unique<MediaCodecAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner());
         break;
 #endif
     }

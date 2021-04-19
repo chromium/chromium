@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "base/at_exit.h"
@@ -65,7 +66,7 @@ class ServerDelegate : public Daemon::ServerDelegate {
     g_notifier = new forwarder2::PipeNotifier();
     signal(SIGTERM, KillHandler);
     signal(SIGINT, KillHandler);
-    controller_thread_.reset(new base::Thread("controller_thread"));
+    controller_thread_ = std::make_unique<base::Thread>("controller_thread");
     controller_thread_->Start();
   }
 

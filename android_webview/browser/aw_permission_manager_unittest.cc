@@ -140,8 +140,10 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
 
  private:
   AwBrowserPermissionRequestDelegateForTesting* delegate() {
-    if (!delegate_)
-      delegate_.reset(new AwBrowserPermissionRequestDelegateForTesting);
+    if (!delegate_) {
+      delegate_ =
+          std::make_unique<AwBrowserPermissionRequestDelegateForTesting>();
+    }
     return delegate_.get();
   }
 
@@ -189,7 +191,9 @@ class AwPermissionManagerTest : public testing::Test {
   }
 
  protected:
-  void SetUp() override { manager.reset(new AwPermissionManagerForTesting); }
+  void SetUp() override {
+    manager = std::make_unique<AwPermissionManagerForTesting>();
+  }
   void TearDown() override { manager.reset(); }
 
   void EnqueuePermissionResponse(const std::string& origin,

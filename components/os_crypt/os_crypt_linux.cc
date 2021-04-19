@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -86,7 +87,7 @@ std::unique_ptr<KeyStorageLinux> (*g_key_storage_provider)() =
 std::string* GetPasswordV10() {
   base::AutoLock auto_lock(g_cache.Get().lock);
   if (!g_cache.Get().password_v10_cache.get()) {
-    g_cache.Get().password_v10_cache.reset(new std::string("peanuts"));
+    g_cache.Get().password_v10_cache = std::make_unique<std::string>("peanuts");
   }
   return g_cache.Get().password_v10_cache.get();
 }

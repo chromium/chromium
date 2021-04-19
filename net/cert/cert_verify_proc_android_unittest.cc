@@ -157,7 +157,7 @@ class CertVerifyProcAndroidTestWithAIAFetching : public testing::Test {
     ::testing::AssertionResult r = ReadTestAIARoot(&root_);
     if (!r)
       return r;
-    scoped_test_root_.reset(new ScopedTestRoot(root_.get()));
+    scoped_test_root_ = std::make_unique<ScopedTestRoot>(root_.get());
     return ::testing::AssertionSuccess();
   }
 

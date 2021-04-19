@@ -4,6 +4,8 @@
 
 #include "chrome/app/android/chrome_main_delegate_android.h"
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/base_paths_android.h"
 #include "base/files/file_path.h"
@@ -40,8 +42,8 @@ ChromeMainDelegateAndroid::~ChromeMainDelegateAndroid() = default;
 
 bool ChromeMainDelegateAndroid::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-  safe_browsing_api_handler_.reset(
-      new safe_browsing::SafeBrowsingApiHandlerBridge());
+  safe_browsing_api_handler_ =
+      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
   SafeBrowsingApiHandler::SetInstance(safe_browsing_api_handler_.get());
 #endif
 

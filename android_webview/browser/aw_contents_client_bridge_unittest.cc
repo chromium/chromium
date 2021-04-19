@@ -85,7 +85,7 @@ void AwContentsClientBridgeTest::SetUp() {
   jbridge_.Reset(
       env_,
       Java_MockAwContentsClientBridge_getAwContentsClientBridge(env_).obj());
-  bridge_.reset(new AwContentsClientBridge(env_, jbridge_));
+  bridge_ = std::make_unique<AwContentsClientBridge>(env_, jbridge_);
   selected_cert_ = nullptr;
   cert_selected_callbacks_ = 0;
   cert_request_info_ = base::MakeRefCounted<net::SSLCertRequestInfo>();

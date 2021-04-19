@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/gfx/render_thread_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
@@ -212,10 +213,10 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
         getter = root_frame_sink_getter_;
       }
       DCHECK(getter);
-      hardware_renderer_.reset(new HardwareRendererViz(
-          this, std::move(getter), vulkan_context_provider_));
+      hardware_renderer_ = std::make_unique<HardwareRendererViz>(
+          this, std::move(getter), vulkan_context_provider_);
     } else {
-      hardware_renderer_.reset(new HardwareRendererSingleThread(this));
+      hardware_renderer_ = std::make_unique<HardwareRendererSingleThread>(this);
     }
     hardware_renderer_->CommitFrame();
   }

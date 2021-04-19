@@ -5,6 +5,7 @@
 #include "media/filters/android/media_codec_audio_decoder.h"
 
 #include <cmath>
+#include <memory>
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
@@ -153,10 +154,10 @@ bool MediaCodecAudioDecoder::CreateMediaCodecLoop() {
     return false;
   }
 
-  codec_loop_.reset(
-      new MediaCodecLoop(base::android::BuildInfo::GetInstance()->sdk_int(),
-                         this, std::move(audio_codec_bridge),
-                         scoped_refptr<base::SingleThreadTaskRunner>()));
+  codec_loop_ = std::make_unique<MediaCodecLoop>(
+      base::android::BuildInfo::GetInstance()->sdk_int(), this,
+      std::move(audio_codec_bridge),
+      scoped_refptr<base::SingleThreadTaskRunner>());
 
   return true;
 }
@@ -491,7 +492,7 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
         timestamp_helper_->base_timestamp() == kNoTimestamp
             ? kNoTimestamp
             : timestamp_helper_->GetTimestamp();
-    timestamp_helper_.reset(new AudioTimestampHelper(sample_rate_));
+    timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
     if (base_timestamp != kNoTimestamp)
       timestamp_helper_->SetBaseTimestamp(base_timestamp);
   }
@@ -523,7 +524,7 @@ void MediaCodecAudioDecoder::SetInitialConfiguration() {
   channel_count_ = ChannelLayoutToChannelCount(channel_layout_);
 
   sample_rate_ = config_.samples_per_second();
-  timestamp_helper_.reset(new AudioTimestampHelper(sample_rate_));
+  timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
 }
 
 void MediaCodecAudioDecoder::PumpMediaCodecLoop() {

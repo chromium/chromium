@@ -147,7 +147,7 @@ void JniGlDisplayHandler::Core::SurfaceCreated(
   renderer_->RequestCanvasSize();
   window_ = ANativeWindow_fromSurface(base::android::AttachCurrentThread(),
                                       surface.obj());
-  egl_context_.reset(new EglThreadContext());
+  egl_context_ = std::make_unique<EglThreadContext>();
   egl_context_->BindToWindow(window_);
 
   renderer_->OnSurfaceCreated(std::make_unique<GlCanvas>(
@@ -219,7 +219,7 @@ JniGlDisplayHandler::JniGlDisplayHandler(
     const base::android::JavaRef<jobject>& java_client)
     : runtime_(ChromotingClientRuntime::GetInstance()),
       ui_task_poster_(runtime_->display_task_runner()) {
-  core_.reset(new Core(weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   JNIEnv* env = base::android::AttachCurrentThread();
   java_display_.Reset(Java_GlDisplay_createJavaDisplayObject(
       env, reinterpret_cast<intptr_t>(this)));

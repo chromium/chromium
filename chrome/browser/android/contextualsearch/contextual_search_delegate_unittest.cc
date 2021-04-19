@@ -50,14 +50,14 @@ class ContextualSearchDelegateTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     template_url_service_.reset(CreateTemplateURLService());
-    delegate_.reset(new ContextualSearchDelegate(
+    delegate_ = std::make_unique<ContextualSearchDelegate>(
         test_shared_url_loader_factory_, template_url_service_.get(),
         base::BindRepeating(
             &ContextualSearchDelegateTest::recordSearchTermResolutionResponse,
             base::Unretained(this)),
         base::BindRepeating(
             &ContextualSearchDelegateTest::recordSampleSelectionAvailable,
-            base::Unretained(this))));
+            base::Unretained(this)));
     feature_list_.InitAndEnableFeature(chrome::android::kRelatedSearches);
   }
 

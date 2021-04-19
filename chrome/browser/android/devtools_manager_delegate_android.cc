@@ -5,6 +5,7 @@
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 
 #include <map>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -60,7 +61,7 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
   ~TabProxyDelegate() override {}
 
   void Attach(content::DevToolsExternalAgentProxy* proxy) override {
-    proxies_[proxy].reset(new ClientProxy(proxy));
+    proxies_[proxy] = std::make_unique<ClientProxy>(proxy);
     MaterializeAgentHost();
     if (agent_host_)
       agent_host_->AttachClient(proxies_[proxy].get());

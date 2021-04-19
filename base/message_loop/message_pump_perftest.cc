@@ -106,7 +106,7 @@ class ScheduleWorkTest : public testing::Test {
   void ScheduleWork(MessagePumpType target_type, int num_scheduling_threads) {
 #if defined(OS_ANDROID)
     if (target_type == MessagePumpType::JAVA) {
-      java_thread_.reset(new JavaHandlerThreadForTest("target"));
+      java_thread_ = std::make_unique<JavaHandlerThreadForTest>("target");
       java_thread_->Start();
     } else
 #endif

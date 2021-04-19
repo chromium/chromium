@@ -5,6 +5,7 @@
 #include "content/browser/android/synchronous_compositor_host.h"
 
 #include <atomic>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -269,7 +270,7 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
   }
 
   SynchronousCompositor::Frame frame;
-  frame.frame.reset(new viz::CompositorFrame);
+  frame.frame = std::make_unique<viz::CompositorFrame>();
   frame.layer_tree_frame_sink_id = layer_tree_frame_sink_id;
   if (local_surface_id)
     frame.local_surface_id = local_surface_id.value();

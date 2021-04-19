@@ -120,7 +120,7 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
     : download_notifier_(manager, this), delegate_(std::move(delegate)) {
 #if defined(OS_ANDROID)
   if (!delegate_)
-    delegate_.reset(new AndroidUIControllerDelegate());
+    delegate_ = std::make_unique<AndroidUIControllerDelegate>();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (!delegate_) {
     // The Profile is guaranteed to be valid since DownloadUIController is owned

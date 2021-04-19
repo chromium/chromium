@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_offline_content_provider.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -141,7 +142,7 @@ DownloadOfflineContentProvider::DownloadOfflineContentProvider(
       profile_(nullptr) {
   aggregator_->RegisterProvider(name_space_, this);
 #if defined(OS_ANDROID)
-  all_download_observer_.reset(new AllDownloadObserver(this));
+  all_download_observer_ = std::make_unique<AllDownloadObserver>(this);
 #endif
 }
 

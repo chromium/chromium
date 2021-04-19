@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -146,7 +147,7 @@ bool BackgroundLoaderOffliner::LoadAndSave(
   MarkLoadStartTime();
 
   // Track copy of pending request.
-  pending_request_.reset(new SavePageRequest(request));
+  pending_request_ = std::make_unique<SavePageRequest>(request);
   completion_callback_ = std::move(completion_callback);
   progress_callback_ = progress_callback;
 
@@ -482,8 +483,8 @@ void BackgroundLoaderOffliner::ResetState() {
 }
 
 void BackgroundLoaderOffliner::ResetLoader() {
-  loader_.reset(
-      new background_loader::BackgroundLoaderContents(browser_context_));
+  loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
+      browser_context_);
   loader_->SetDelegate(this);
 }
 

@@ -23,9 +23,9 @@ class AwSafeBrowsingAllowlistManagerTest : public testing::Test {
   AwSafeBrowsingAllowlistManagerTest() {}
 
   void SetUp() override {
-    wm_.reset(new AwSafeBrowsingAllowlistManager(
+    wm_ = std::make_unique<AwSafeBrowsingAllowlistManager>(
         base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override { wm_.reset(); }

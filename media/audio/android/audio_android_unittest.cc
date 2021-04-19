@@ -241,7 +241,7 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
     // Allocate space for ~10 seconds of data.
     const int kMaxBufferSize =
         10 * params.sample_rate() * params.GetBytesPerFrame(kSampleFormat);
-    buffer_.reset(new media::SeekableBuffer(0, kMaxBufferSize));
+    buffer_ = std::make_unique<media::SeekableBuffer>(0, kMaxBufferSize);
 
     // Open up the binary file which will be written to in the destructor.
     base::FilePath file_path;
@@ -314,7 +314,7 @@ class FullDuplexAudioSinkSource
     // Start with a reasonably small FIFO size. It will be increased
     // dynamically during the test if required.
     size_t buffer_size = params.GetBytesPerBuffer(kSampleFormat);
-    fifo_.reset(new media::SeekableBuffer(0, 2 * buffer_size));
+    fifo_ = std::make_unique<media::SeekableBuffer>(0, 2 * buffer_size);
     buffer_.reset(new uint8_t[buffer_size]);
   }
 

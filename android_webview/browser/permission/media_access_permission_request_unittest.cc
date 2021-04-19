@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/permission/media_access_permission_request.h"
+
+#include <memory>
+
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -59,11 +62,11 @@ class MediaAccessPermissionRequestTest : public testing::Test {
         false /* request_pan_tilt_zoom_permission */);
 
     std::unique_ptr<TestMediaAccessPermissionRequest> permission_request;
-    permission_request.reset(new TestMediaAccessPermissionRequest(
+    permission_request = std::make_unique<TestMediaAccessPermissionRequest>(
         request,
         base::BindOnce(&MediaAccessPermissionRequestTest::Callback,
                        base::Unretained(this)),
-        audio_devices, video_devices));
+        audio_devices, video_devices);
     return permission_request;
   }
 

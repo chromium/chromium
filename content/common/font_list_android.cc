@@ -4,12 +4,14 @@
 
 #include "content/common/font_list.h"
 
+#include <memory>
+
 #include "base/values.h"
 
 namespace content {
 
 std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
-  return std::unique_ptr<base::ListValue>(new base::ListValue);
+  return std::make_unique<base::ListValue>();
 }
 
 }  // namespace content

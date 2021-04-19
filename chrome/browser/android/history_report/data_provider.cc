@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -144,7 +145,7 @@ std::unique_ptr<std::vector<DeltaFileEntryWithData>> DataProvider::Query(
       }
     }
 
-    valid_entries.reset(new std::vector<DeltaFileEntryWithData>());
+    valid_entries = std::make_unique<std::vector<DeltaFileEntryWithData>>();
     valid_entries->reserve(entries->size());
     for (size_t i = 0; i < entries->size(); ++i) {
       const DeltaFileEntryWithData& entry = (*entries)[i];

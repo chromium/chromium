@@ -82,7 +82,7 @@ void DeviceListener::AcceptNextClientSoon() {
 }
 
 void DeviceListener::AcceptClientOnInternalThread() {
-  device_data_socket_.reset(new Socket());
+  device_data_socket_ = std::make_unique<Socket>();
   if (!listener_socket_->Accept(device_data_socket_.get())) {
     if (listener_socket_->DidReceiveEvent()) {
       LOG(INFO) << "Received exit notification, stopped accepting clients.";

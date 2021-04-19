@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -331,9 +332,9 @@ void BackgroundLoaderOfflinerTest::SetUp() {
       std::make_unique<TestLoadTerminationListener>();
   load_termination_listener_ = listener.get();
   model_ = new MockOfflinePageModel();
-  policy_.reset(new OfflinerPolicy());
-  offliner_.reset(new TestBackgroundLoaderOffliner(
-      profile(), policy_.get(), model_, std::move(listener)));
+  policy_ = std::make_unique<OfflinerPolicy>();
+  offliner_ = std::make_unique<TestBackgroundLoaderOffliner>(
+      profile(), policy_.get(), model_, std::move(listener));
 }
 
 void BackgroundLoaderOfflinerTest::OnCompletion(

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -173,7 +174,7 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
     base::android::ScopedJavaLocalRef<jobject> method_obj(
         env, env->ToReflectedMethod(clazz.obj(), method_id, false));
     EXPECT_TRUE(method_obj.obj());
-    method_.reset(new JavaMethod(method_obj));
+    method_ = std::make_unique<JavaMethod>(method_obj);
   }
 
   ~ObjectIsGoneObjectDelegate() override {}

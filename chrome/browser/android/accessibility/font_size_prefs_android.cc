@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/accessibility/font_size_prefs_android.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/observer_list.h"
 #include "chrome/android/chrome_jni_headers/FontSizePrefs_jni.h"
@@ -19,7 +21,7 @@ using base::android::JavaRef;
 FontSizePrefsAndroid::FontSizePrefsAndroid(JNIEnv* env, jobject obj)
     : pref_service_(ProfileManager::GetActiveUserProfile()->GetPrefs()) {
   java_ref_.Reset(env, obj);
-  pref_change_registrar_.reset(new PrefChangeRegistrar);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service_);
   pref_change_registrar_->Add(
       prefs::kWebKitFontScaleFactor,

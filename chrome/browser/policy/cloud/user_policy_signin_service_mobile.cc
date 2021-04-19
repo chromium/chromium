@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -77,9 +79,8 @@ void UserPolicySigninService::RegisterForPolicyWithAccountId(
 
   // Fire off the registration process. Callback keeps the CloudPolicyClient
   // alive for the length of the registration process.
-  registration_helper_.reset(new CloudPolicyClientRegistrationHelper(
-      policy_client.get(),
-      kCloudPolicyRegistrationType));
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_client.get(), kCloudPolicyRegistrationType);
 
   // Using a raw pointer to |this| is okay, because we own the
   // |registration_helper_|.
@@ -152,9 +153,8 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
   profile_prefs_->SetInt64(prefs::kLastPolicyCheckTime,
                            base::Time::Now().ToInternalValue());
 
-  registration_helper_.reset(new CloudPolicyClientRegistrationHelper(
-      policy_manager()->core()->client(),
-      kCloudPolicyRegistrationType));
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
+      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
   registration_helper_->StartRegistration(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),

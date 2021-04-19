@@ -6,6 +6,8 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safety_check/android/jni_headers/SafetyCheckBridge_jni.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,7 +37,7 @@ SafetyCheckBridge::SafetyCheckBridge(
                         ->GetOriginalProfile()
                         ->GetPrefs()),
       j_safety_check_observer_(j_safety_check_observer) {
-  safety_check_.reset(new safety_check::SafetyCheck(this));
+  safety_check_ = std::make_unique<safety_check::SafetyCheck>(this);
 }
 
 void SafetyCheckBridge::Destroy(

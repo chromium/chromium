@@ -4,6 +4,7 @@
 
 #include "net/test/spawned_test_server/remote_test_server_spawner_request.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -79,7 +80,7 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
 
   // Prepare the URLRequest for sending the command.
   DCHECK(!request_.get());
-  context_.reset(new TestURLRequestContext);
+  context_ = std::make_unique<TestURLRequestContext>();
   request_ = context_->CreateRequest(url, DEFAULT_PRIORITY, this,
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
 

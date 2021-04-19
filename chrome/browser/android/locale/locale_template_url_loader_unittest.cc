@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -63,8 +65,8 @@ class LocaleTemplateUrlLoaderTest : public testing::Test {
 };
 
 void LocaleTemplateUrlLoaderTest::SetUp() {
-  test_util_.reset(new TemplateURLServiceTestUtil);
-  loader_.reset(new MockLocaleTemplateUrlLoader("jp", model()));
+  test_util_ = std::make_unique<TemplateURLServiceTestUtil>();
+  loader_ = std::make_unique<MockLocaleTemplateUrlLoader>("jp", model());
 }
 
 void LocaleTemplateUrlLoaderTest::TearDown() {

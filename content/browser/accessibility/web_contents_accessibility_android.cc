@@ -225,8 +225,8 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       use_zoom_for_dsf_enabled_(IsUseZoomForDSFEnabled()) {
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_snapshot(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
-  manager_.reset(new BrowserAccessibilityManagerAndroid(*ax_tree_snapshot,
-                                                        GetWeakPtr(), nullptr));
+  manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
+      *ax_tree_snapshot, GetWeakPtr(), nullptr);
   connector_ = nullptr;
   BrowserAccessibilityStateImplAndroid* accessibility_state =
       static_cast<BrowserAccessibilityStateImplAndroid*>(

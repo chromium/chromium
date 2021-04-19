@@ -100,8 +100,8 @@ class DataReductionProxyMockSettingsAndroidTest
   }
 
   void ResetSettingsAndroid() {
-    settings_android_.reset(
-        new TestDataReductionProxySettingsAndroid(settings_.get()));
+    settings_android_ = std::make_unique<TestDataReductionProxySettingsAndroid>(
+        settings_.get());
   }
 
   DataReductionProxySettings* Settings() { return settings_.get(); }

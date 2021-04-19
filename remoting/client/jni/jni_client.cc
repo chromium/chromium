@@ -4,6 +4,8 @@
 
 #include "remoting/client/jni/jni_client.h"
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
@@ -45,12 +47,12 @@ void JniClient::ConnectToHost(const ConnectToHostInfo& info) {
   DCHECK(!session_);
   host_id_ = info.host_id;
 
-  display_handler_.reset(new JniGlDisplayHandler(java_client_));
+  display_handler_ = std::make_unique<JniGlDisplayHandler>(java_client_);
 
-  session_.reset(new ChromotingSession(
+  session_ = std::make_unique<ChromotingSession>(
       weak_ptr_, display_handler_->CreateCursorShapeStub(),
       display_handler_->CreateVideoRenderer(),
-      std::make_unique<AudioPlayerAndroid>(), info));
+      std::make_unique<AudioPlayerAndroid>(), info);
 }
 
 void JniClient::DisconnectFromHost() {

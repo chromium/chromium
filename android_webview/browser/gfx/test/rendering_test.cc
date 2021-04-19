@@ -67,14 +67,14 @@ ui::TouchHandleDrawable* RenderingTest::CreateDrawable() {
 void RenderingTest::SetUpTestHarness() {
   DCHECK(!browser_view_renderer_.get());
   DCHECK(!functor_.get());
-  browser_view_renderer_.reset(
-      new TestBrowserViewRenderer(this, base::ThreadTaskRunnerHandle::Get()));
+  browser_view_renderer_ = std::make_unique<TestBrowserViewRenderer>(
+      this, base::ThreadTaskRunnerHandle::Get());
   browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 0));
   browser_view_renderer_->SetDipScale(1.0f);
   InitializeCompositor();
   std::unique_ptr<FakeWindow> window(
       new FakeWindow(browser_view_renderer_.get(), this, gfx::Rect(100, 100)));
-  functor_.reset(new FakeFunctor);
+  functor_ = std::make_unique<FakeFunctor>();
   functor_->Init(window.get(), std::make_unique<RenderThreadManager>(
                                    base::ThreadTaskRunnerHandle::Get()));
   browser_view_renderer_->SetCurrentCompositorFrameConsumer(
@@ -93,8 +93,8 @@ CompositorFrameProducer* RenderingTest::GetCompositorFrameProducer() {
 void RenderingTest::InitializeCompositor() {
   DCHECK(!compositor_.get());
   DCHECK(browser_view_renderer_.get());
-  compositor_.reset(
-      new content::TestSynchronousCompositor(viz::FrameSinkId(1, 0)));
+  compositor_ = std::make_unique<content::TestSynchronousCompositor>(
+      viz::FrameSinkId(1, 0));
   compositor_->SetClient(browser_view_renderer_.get());
 }
 

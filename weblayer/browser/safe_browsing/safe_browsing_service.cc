@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "components/prefs/pref_service.h"
@@ -88,8 +90,8 @@ void SafeBrowsingService::Initialize() {
     return;
   }
 
-  safe_browsing_api_handler_.reset(
-      new safe_browsing::SafeBrowsingApiHandlerBridge());
+  safe_browsing_api_handler_ =
+      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
   safe_browsing::SafeBrowsingApiHandler::SetInstance(
       safe_browsing_api_handler_.get());
 

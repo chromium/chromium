@@ -39,7 +39,7 @@ class ContextualSearchFieldTrialTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    field_trial_.reset(new ContextualSearchFieldTrialStubbed());
+    field_trial_ = std::make_unique<ContextualSearchFieldTrialStubbed>();
   }
 
   void TearDown() override {}

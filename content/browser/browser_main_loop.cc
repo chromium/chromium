@@ -721,7 +721,8 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
           switches::kDisableScreenOrientationLock)) {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::Subsystem:ScreenOrientationProvider");
-    screen_orientation_delegate_.reset(new ScreenOrientationDelegateAndroid());
+    screen_orientation_delegate_ =
+        std::make_unique<ScreenOrientationDelegateAndroid>();
   }
 
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(

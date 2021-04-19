@@ -162,12 +162,12 @@ AwBrowserContext::AwBrowserContext()
 
   CreateUserPrefService();
 
-  visitedlink_writer_.reset(
-      new visitedlink::VisitedLinkWriter(this, this, false));
+  visitedlink_writer_ =
+      std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
   visitedlink_writer_->Init();
 
-  form_database_service_.reset(
-      new AwFormDatabaseService(context_storage_path_));
+  form_database_service_ =
+      std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
   EnsureResourceContextInitialized(this);
 
@@ -367,7 +367,7 @@ bool AwBrowserContext::IsOffTheRecord() {
 
 content::ResourceContext* AwBrowserContext::GetResourceContext() {
   if (!resource_context_) {
-    resource_context_.reset(new AwResourceContext);
+    resource_context_ = std::make_unique<AwResourceContext>();
   }
   return resource_context_.get();
 }
@@ -403,7 +403,7 @@ AwBrowserContext::GetStorageNotificationService() {
 
 content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
   if (!ssl_host_state_delegate_.get()) {
-    ssl_host_state_delegate_.reset(new AwSSLHostStateDelegate());
+    ssl_host_state_delegate_ = std::make_unique<AwSSLHostStateDelegate>();
   }
   return ssl_host_state_delegate_.get();
 }
@@ -411,7 +411,7 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
 content::PermissionControllerDelegate*
 AwBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_.reset(new AwPermissionManager());
+    permission_manager_ = std::make_unique<AwPermissionManager>();
   return permission_manager_.get();
 }
 

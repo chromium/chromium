@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/values.h"
@@ -153,7 +155,7 @@ SearchPermissionsService::SearchPermissionsService(Profile* profile)
   // This class should never be constructed in incognito.
   DCHECK(!profile_->IsOffTheRecord());
 
-  delegate_.reset(new SearchEngineDelegateImpl(profile_));
+  delegate_ = std::make_unique<SearchEngineDelegateImpl>(profile_);
   delegate_->SetDSEChangedCallback(base::BindRepeating(
       &SearchPermissionsService::OnDSEChanged, base::Unretained(this)));
 

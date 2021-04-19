@@ -4,6 +4,7 @@
 
 #include "components/payments/content/android/currency_formatter_android.h"
 
+#include <memory>
 #include <string>
 
 #include "base/android/jni_string.h"
@@ -23,9 +24,9 @@ CurrencyFormatterAndroid::CurrencyFormatterAndroid(
     jobject jcaller,
     const JavaParamRef<jstring>& currency_code,
     const JavaParamRef<jstring>& locale_name) {
-  currency_formatter_.reset(
-      new CurrencyFormatter(ConvertJavaStringToUTF8(env, currency_code),
-                            ConvertJavaStringToUTF8(env, locale_name)));
+  currency_formatter_ = std::make_unique<CurrencyFormatter>(
+      ConvertJavaStringToUTF8(env, currency_code),
+      ConvertJavaStringToUTF8(env, locale_name));
 }
 
 CurrencyFormatterAndroid::~CurrencyFormatterAndroid() {}

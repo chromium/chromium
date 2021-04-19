@@ -514,7 +514,7 @@ void OfflinePageBridge::SavePage(JNIEnv* env,
       content::WebContents::FromJavaWebContents(j_web_contents);
   if (web_contents) {
     save_page_params.url = web_contents->GetLastCommittedURL();
-    archiver.reset(new OfflinePageMHTMLArchiver());
+    archiver = std::make_unique<OfflinePageMHTMLArchiver>();
   }
 
   save_page_params.client_id.name_space =

@@ -4,13 +4,15 @@
 
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 
+#include <memory>
+
 namespace offline_pages {
 
 void OfflinerUserData::AddToWebContents(content::WebContents* webcontents,
                                         BackgroundLoaderOffliner* offliner) {
   DCHECK(offliner);
-  webcontents->SetUserData(UserDataKey(), std::unique_ptr<OfflinerUserData>(
-                                              new OfflinerUserData(offliner)));
+  webcontents->SetUserData(UserDataKey(),
+                           std::make_unique<OfflinerUserData>(offliner));
 }
 
 // static - gets the data pointer as a BackgroundLoaderOffliner

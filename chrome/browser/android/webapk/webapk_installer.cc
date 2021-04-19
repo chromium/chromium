@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/webapk/webapk_installer.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -534,9 +535,10 @@ void WebApkInstaller::InstallAsync(const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
                                    bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
-  install_duration_timer_.reset(new base::ElapsedTimer());
+  install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 
-  install_shortcut_info_.reset(new webapps::ShortcutInfo(shortcut_info));
+  install_shortcut_info_ =
+      std::make_unique<webapps::ShortcutInfo>(shortcut_info);
   install_primary_icon_ = primary_icon;
   is_primary_icon_maskable_ = is_primary_icon_maskable;
   short_name_ = shortcut_info.short_name;

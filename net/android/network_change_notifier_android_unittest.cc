@@ -6,6 +6,8 @@
 
 #include "net/android/network_change_notifier_android.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -266,7 +268,7 @@ TEST_F(BaseNetworkChangeNotifierAndroidTest,
   SetOnline();
   ASSERT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
             delegate_.GetCurrentConnectionType());
-  other_delegate.reset(new NetworkChangeNotifierDelegateAndroid());
+  other_delegate = std::make_unique<NetworkChangeNotifierDelegateAndroid>();
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
             other_delegate->GetCurrentConnectionType());
 }

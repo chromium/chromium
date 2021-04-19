@@ -5,6 +5,7 @@
 #include "content/browser/media/session/media_session_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -877,7 +878,7 @@ MediaSessionImpl::MediaSessionImpl(WebContents* web_contents)
       ducking_volume_multiplier_(kDefaultDuckingVolumeMultiplier),
       routed_service_(nullptr) {
 #if defined(OS_ANDROID)
-  session_android_.reset(new MediaSessionAndroid(this));
+  session_android_ = std::make_unique<MediaSessionAndroid>(this);
 #endif  // defined(OS_ANDROID)
   if (web_contents && web_contents->GetMainFrame() &&
       web_contents->GetMainFrame()->GetView()) {

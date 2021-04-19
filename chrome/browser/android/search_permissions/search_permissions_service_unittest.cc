@@ -75,7 +75,7 @@ class TestSearchEngineDelegate
 class SearchPermissionsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
 
     ClearNotificationsChannels();
 

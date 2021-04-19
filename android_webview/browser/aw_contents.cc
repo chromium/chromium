@@ -221,7 +221,7 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       browser_view_renderer_(this, content::GetUIThreadTaskRunner({})),
       web_contents_(std::move(web_contents)) {
   base::subtle::NoBarrier_AtomicIncrement(&g_instance_count, 1);
-  icon_helper_.reset(new IconHelper(web_contents_.get()));
+  icon_helper_ = std::make_unique<IconHelper>(web_contents_.get());
   icon_helper_->SetListener(this);
   web_contents_->SetUserData(android_webview::kAwContentsUserDataKey,
                              std::make_unique<AwContentsUserData>(this));
@@ -234,13 +234,13 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
   }
 
   browser_view_renderer_.SetActiveFrameSinkId(frame_sink_id);
-  render_view_host_ext_.reset(
-      new AwRenderViewHostExt(this, web_contents_.get()));
+  render_view_host_ext_ =
+      std::make_unique<AwRenderViewHostExt>(this, web_contents_.get());
 
   InitializePageLoadMetricsForWebContents(web_contents_.get());
 
-  permission_request_handler_.reset(
-      new PermissionRequestHandler(this, web_contents_.get()));
+  permission_request_handler_ =
+      std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
 
   AwAutofillClient* autofill_manager_delegate =
       AwAutofillClient::FromWebContents(web_contents_.get());
@@ -266,12 +266,12 @@ void AwContents::SetJavaPeers(
   // is passed over anyway to make the binding more explicit.
   java_ref_ = JavaObjectWeakGlobalRef(env, aw_contents);
 
-  web_contents_delegate_.reset(
-      new AwWebContentsDelegate(env, web_contents_delegate));
+  web_contents_delegate_ =
+      std::make_unique<AwWebContentsDelegate>(env, web_contents_delegate);
   web_contents_->SetDelegate(web_contents_delegate_.get());
 
-  contents_client_bridge_.reset(
-      new AwContentsClientBridge(env, contents_client_bridge));
+  contents_client_bridge_ =
+      std::make_unique<AwContentsClientBridge>(env, contents_client_bridge);
   AwContentsClientBridge::Associate(web_contents_.get(),
                                     contents_client_bridge_.get());
 
@@ -504,7 +504,8 @@ void AwContents::GenerateMHTML(JNIEnv* env,
 void AwContents::CreatePdfExporter(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj,
                                    const JavaParamRef<jobject>& pdfExporter) {
-  pdf_exporter_.reset(new AwPdfExporter(env, pdfExporter, web_contents_.get()));
+  pdf_exporter_ =
+      std::make_unique<AwPdfExporter>(env, pdfExporter, web_contents_.get());
 }
 
 bool AwContents::OnReceivedHttpAuthRequest(const JavaRef<jobject>& handler,
@@ -775,7 +776,7 @@ void AwContents::ClearCache(JNIEnv* env,
 FindHelper* AwContents::GetFindHelper() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!find_helper_.get()) {
-    find_helper_.reset(new FindHelper(web_contents_.get()));
+    find_helper_ = std::make_unique<FindHelper>(web_contents_.get());
     find_helper_->SetListener(this);
   }
   return find_helper_.get();
@@ -1104,7 +1105,7 @@ void AwContents::SetPendingWebContentsForPopup(
                                                     pending.release());
     return;
   }
-  pending_contents_.reset(new AwContents(std::move(pending)));
+  pending_contents_ = std::make_unique<AwContents>(std::move(pending));
   // Set dip_scale for pending contents, which is necessary for the later
   // SynchronousCompositor and InputHandler setup.
   pending_contents_->SetDipScaleInternal(browser_view_renderer_.dip_scale());

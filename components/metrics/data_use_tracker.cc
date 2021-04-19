@@ -4,6 +4,7 @@
 
 #include "components/metrics/data_use_tracker.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
@@ -37,7 +38,7 @@ std::unique_ptr<DataUseTracker> DataUseTracker::Create(
 // Instantiate DataUseTracker only on Android. UpdateMetricsUsagePrefs() honors
 // this rule too.
 #if defined(OS_ANDROID)
-  data_use_tracker.reset(new DataUseTracker(local_state));
+  data_use_tracker = std::make_unique<DataUseTracker>(local_state);
 #endif
   return data_use_tracker;
 }

@@ -62,10 +62,10 @@ AwContentRendererClient::~AwContentRendererClient() = default;
 
 void AwContentRendererClient::RenderThreadStarted() {
   RenderThread* thread = RenderThread::Get();
-  aw_render_thread_observer_.reset(new AwRenderThreadObserver);
+  aw_render_thread_observer_ = std::make_unique<AwRenderThreadObserver>();
   thread->AddObserver(aw_render_thread_observer_.get());
 
-  visited_link_reader_.reset(new visitedlink::VisitedLinkReader);
+  visited_link_reader_ = std::make_unique<visitedlink::VisitedLinkReader>();
 
   browser_interface_broker_ =
       blink::Platform::Current()->GetBrowserInterfaceBroker();

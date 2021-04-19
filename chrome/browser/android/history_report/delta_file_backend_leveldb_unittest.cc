@@ -26,7 +26,7 @@ class DeltaFileBackendTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_.reset(new DeltaFileBackend(temp_dir_.GetPath()));
+    backend_ = std::make_unique<DeltaFileBackend>(temp_dir_.GetPath());
   }
 
   std::unique_ptr<DeltaFileBackend> backend_;

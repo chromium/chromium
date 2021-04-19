@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/oom_intervention_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -189,7 +190,7 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     if (renderer_pause_enabled_) {
       // The ScopedPagePauser is destroyed when the intervention is declined and
       // mojo strong binding is disconnected.
-      pauser_.reset(new ScopedPagePauser);
+      pauser_ = std::make_unique<ScopedPagePauser>();
     }
 
     host_->OnHighMemoryUsage();

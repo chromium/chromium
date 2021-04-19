@@ -4,6 +4,8 @@
 
 #include "content/browser/android/java/java_type.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -83,7 +85,7 @@ JavaType& JavaType::operator=(const JavaType& other) {
   type = other.type;
   if (other.inner_type) {
     DCHECK_EQ(JavaType::TypeArray, type);
-    inner_type.reset(new JavaType(*other.inner_type));
+    inner_type = std::make_unique<JavaType>(*other.inner_type);
   } else {
     inner_type.reset();
   }

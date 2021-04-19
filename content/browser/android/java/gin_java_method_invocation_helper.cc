@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 #include <cmath>
+#include <memory>
 #include <utility>
 
 #include "base/android/event_log.h"
@@ -170,7 +171,7 @@ void GinJavaMethodInvocationHelper::Invoke() {
 void GinJavaMethodInvocationHelper::SetInvocationError(
     GinJavaBridgeError error) {
   holds_primitive_result_ = true;
-  primitive_result_.reset(new base::ListValue());
+  primitive_result_ = std::make_unique<base::ListValue>();
   invocation_error_ = error;
 }
 

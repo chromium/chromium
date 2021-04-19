@@ -276,8 +276,8 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
   android_webview::RegisterPathProvider();
 
-  safe_browsing_api_handler_.reset(
-      new safe_browsing::SafeBrowsingApiHandlerBridge());
+  safe_browsing_api_handler_ =
+      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
   safe_browsing::SafeBrowsingApiHandler::SetInstance(
       safe_browsing_api_handler_.get());
 
@@ -425,8 +425,8 @@ content::ContentClient* AwMainDelegate::CreateContentClient() {
 content::ContentBrowserClient* AwMainDelegate::CreateContentBrowserClient() {
   DCHECK(!aw_feature_list_creator_);
   aw_feature_list_creator_ = std::make_unique<AwFeatureListCreator>();
-  content_browser_client_.reset(
-      new AwContentBrowserClient(aw_feature_list_creator_.get()));
+  content_browser_client_ =
+      std::make_unique<AwContentBrowserClient>(aw_feature_list_creator_.get());
   return content_browser_client_.get();
 }
 
@@ -458,7 +458,7 @@ content::ContentGpuClient* AwMainDelegate::CreateContentGpuClient() {
 }
 
 content::ContentRendererClient* AwMainDelegate::CreateContentRendererClient() {
-  content_renderer_client_.reset(new AwContentRendererClient());
+  content_renderer_client_ = std::make_unique<AwContentRendererClient>();
   return content_renderer_client_.get();
 }
 

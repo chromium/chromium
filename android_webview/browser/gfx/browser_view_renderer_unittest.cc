@@ -58,8 +58,8 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
         // The 2nd ondraw is skipped because there is no active compositor at
         // the moment.
         EXPECT_FALSE(success);
-        new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
+        new_compositor_ = std::make_unique<content::TestSynchronousCompositor>(
+            viz::FrameSinkId(1, 1));
         new_compositor_->SetClient(browser_view_renderer_.get());
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -101,8 +101,8 @@ class ActiveCompositorSwitchAfterConstructionTest : public RenderingTest {
         EXPECT_TRUE(success);
         // Create a new compositor here. And switch it to be active.  And then
         // do another ondraw.
-        new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
+        new_compositor_ = std::make_unique<content::TestSynchronousCompositor>(
+            viz::FrameSinkId(1, 1));
         new_compositor_->SetClient(browser_view_renderer_.get());
         browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
 
@@ -359,8 +359,8 @@ RENDERING_TEST_F(CompositorNoFrameTest);
 
 class ClientIsVisibleOnConstructionTest : public RenderingTest {
   void SetUpTestHarness() override {
-    browser_view_renderer_.reset(
-        new BrowserViewRenderer(this, base::ThreadTaskRunnerHandle::Get()));
+    browser_view_renderer_ = std::make_unique<BrowserViewRenderer>(
+        this, base::ThreadTaskRunnerHandle::Get());
   }
 
   void StartTest() override {

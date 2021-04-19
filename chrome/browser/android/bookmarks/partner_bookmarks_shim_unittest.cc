@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/guid.h"
@@ -428,7 +429,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that search returns case-insensitive matches for title only.
   std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new std::u16string(u"WX"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"WX");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[1]);
@@ -436,14 +437,14 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
 
   // Ensure that every word in the search must have a match.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"WX Y"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"WX Y");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark2, nodes[0]);
 
   // Ensure that search returns matches for URL only.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"dat.com"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"dat.com");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[0]);
@@ -451,7 +452,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that folders appear in search results, and that max_count is
   // effective.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"folder"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"folder");
 
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
@@ -466,7 +467,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
 
   // Test a scenario with no search results.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"foo.com"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"foo.com");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(0u, nodes.size());
 }

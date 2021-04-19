@@ -64,8 +64,9 @@ class AndroidTelemetryServiceTest : public testing::Test {
     sb_service_->Initialize();
     base::RunLoop().RunUntilIdle();
 
-    download_item_.reset(new ::testing::NiceMock<download::MockDownloadItem>());
-    profile_.reset(new TestingProfile());
+    download_item_ =
+        std::make_unique<::testing::NiceMock<download::MockDownloadItem>>();
+    profile_ = std::make_unique<TestingProfile>();
 
     telemetry_service_ =
         std::make_unique<AndroidTelemetryService>(sb_service_.get(), profile());

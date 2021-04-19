@@ -4748,8 +4748,8 @@ class ShowUnhandledTapTest : public WebViewTest {
     RegisterMockedHttpURLLoad("Ahem.ttf");
     RegisterMockedHttpURLLoad(test_file);
 
-    mojo_test_helper_.reset(new MojoTestHelper(
-        WebString::FromUTF8(base_url_ + test_file), web_view_helper_));
+    mojo_test_helper_ = std::make_unique<MojoTestHelper>(
+        WebString::FromUTF8(base_url_ + test_file), web_view_helper_);
 
     web_view_ = mojo_test_helper_->WebView();
     web_view_->MainFrameViewWidget()->Resize(gfx::Size(500, 300));

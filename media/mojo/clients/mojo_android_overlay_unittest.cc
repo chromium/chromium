@@ -112,9 +112,9 @@ class MojoAndroidOverlayTest : public ::testing::Test {
 
     base::UnguessableToken routing_token = base::UnguessableToken::Create();
 
-    overlay_client_.reset(
-        new MojoAndroidOverlay(provider_receiver_.BindNewPipeAndPassRemote(),
-                               std::move(config_), routing_token));
+    overlay_client_ = std::make_unique<MojoAndroidOverlay>(
+        provider_receiver_.BindNewPipeAndPassRemote(), std::move(config_),
+        routing_token);
     overlay_client_->AddSurfaceDestroyedCallback(base::BindOnce(
         &MockClientCallbacks::OnDestroyed, base::Unretained(&callbacks_)));
     base::RunLoop().RunUntilIdle();

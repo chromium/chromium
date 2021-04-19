@@ -84,7 +84,7 @@ void AutofillSaveCardInfoBarDelegateMobileTest::SetUp() {
   PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
-  personal_data_.reset(new TestPersonalDataManager());
+  personal_data_ = std::make_unique<TestPersonalDataManager>();
   personal_data_->SetPrefService(profile()->GetPrefs());
 
   profile()->GetPrefs()->SetInteger(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/offline_pages/download_archive_manager.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -47,10 +49,9 @@ void DownloadArchiveManagerTest::SetUp() {
   prefs()->SetString(prefs::kDownloadDefaultDirectory, kChromePublicSdCardDir);
 
   // Create a DownloadArchiveManager to use.
-  archive_manager_.reset(new DownloadArchiveManager(
+  archive_manager_ = std::make_unique<DownloadArchiveManager>(
       base::FilePath(kTemporaryDir), base::FilePath(kPrivateDir),
-      base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(),
-      prefs()));
+      base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(), prefs());
 }
 
 void DownloadArchiveManagerTest::TearDown() {

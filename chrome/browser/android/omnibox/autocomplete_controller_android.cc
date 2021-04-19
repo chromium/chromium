@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -393,7 +394,8 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     std::u16string query =
         base::android::ConvertJavaStringToUTF16(env, jnew_query_text);
     if (!match.search_terms_args) {
-      match.search_terms_args.reset(new TemplateURLRef::SearchTermsArgs(query));
+      match.search_terms_args =
+          std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
     } else {
       match.search_terms_args->search_terms = query;
     }

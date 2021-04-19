@@ -174,8 +174,8 @@ class TestInstallableManager : public InstallableManager {
 
     if (!manifest.icons.empty()) {
       primary_icon_url_ = manifest_.icons[0].src;
-      primary_icon_.reset(
-          new SkBitmap(gfx::test::CreateBitmap(kIconSizePx, kIconSizePx)));
+      primary_icon_ = std::make_unique<SkBitmap>(
+          gfx::test::CreateBitmap(kIconSizePx, kIconSizePx));
     }
   }
 

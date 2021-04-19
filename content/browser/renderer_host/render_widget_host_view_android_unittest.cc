@@ -80,7 +80,7 @@ void RenderWidgetHostViewAndroidTest::WasEvicted() {
 }
 
 void RenderWidgetHostViewAndroidTest::SetUp() {
-  browser_context_.reset(new TestBrowserContext());
+  browser_context_ = std::make_unique<TestBrowserContext>();
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
   agent_scheduling_group_ =
@@ -96,7 +96,7 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
   EXPECT_EQ(&parent_view_, native_view_.parent());
   render_widget_host_view_android_ =
       new RenderWidgetHostViewAndroid(host_.get(), &native_view_);
-  test_view_android_delegate_.reset(new TestViewAndroidDelegate());
+  test_view_android_delegate_ = std::make_unique<TestViewAndroidDelegate>();
 }
 
 void RenderWidgetHostViewAndroidTest::TearDown() {

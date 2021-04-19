@@ -32,7 +32,7 @@ class AwFormDatabaseServiceTest : public Test {
     env_ = AttachCurrentThread();
     ASSERT_TRUE(env_);
 
-    service_.reset(new AwFormDatabaseService(temp_dir_.GetPath()));
+    service_ = std::make_unique<AwFormDatabaseService>(temp_dir_.GetPath());
   }
 
   void TearDown() override {

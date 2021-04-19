@@ -145,7 +145,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client);
 
-  client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
+  client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
 
   if (config.input_format != PIXEL_FORMAT_I420) {
     DLOG(ERROR) << "Unexpected combo: " << config.input_format << ", "

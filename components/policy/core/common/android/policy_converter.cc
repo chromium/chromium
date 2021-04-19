@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/android/policy_converter.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,7 +46,7 @@ PolicyConverter::~PolicyConverter() {
 
 std::unique_ptr<PolicyBundle> PolicyConverter::GetPolicyBundle() {
   std::unique_ptr<PolicyBundle> filled_bundle(std::move(policy_bundle_));
-  policy_bundle_.reset(new PolicyBundle);
+  policy_bundle_ = std::make_unique<PolicyBundle>();
   return filled_bundle;
 }
 

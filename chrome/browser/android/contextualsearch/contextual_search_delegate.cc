@@ -5,6 +5,7 @@
 #include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -93,10 +94,9 @@ ContextualSearchDelegate::ContextualSearchDelegate(
     ContextualSearchDelegate::SurroundingTextCallback surrounding_text_callback)
     : url_loader_factory_(std::move(url_loader_factory)),
       template_url_service_(template_url_service),
+      field_trial_(std::make_unique<ContextualSearchFieldTrial>()),
       search_term_callback_(std::move(search_term_callback)),
-      surrounding_text_callback_(std::move(surrounding_text_callback)) {
-  field_trial_.reset(new ContextualSearchFieldTrial());
-}
+      surrounding_text_callback_(std::move(surrounding_text_callback)) {}
 
 ContextualSearchDelegate::~ContextualSearchDelegate() {
 }
@@ -275,12 +275,12 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
     }
   }
   bool is_invalid = response_code == kResponseCodeUninitialized;
-  return std::unique_ptr<ResolvedSearchTerm>(new ResolvedSearchTerm(
+  return std::make_unique<ResolvedSearchTerm>(
       is_invalid, response_code, search_term, display_text, alternate_term, mid,
       prevent_preload == kDoPreventPreloadValue, start_adjust, end_adjust,
       context_language, thumbnail_url, caption, quick_action_uri,
       quick_action_category, logged_event_id, search_url_full,
-      search_url_preload, coca_card_tag, related_searches));
+      search_url_preload, coca_card_tag, related_searches);
 }
 
 std::string ContextualSearchDelegate::BuildRequestUrl(

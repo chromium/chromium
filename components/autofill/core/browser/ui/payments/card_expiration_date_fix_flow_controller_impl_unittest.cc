@@ -64,9 +64,9 @@ class CardExpirationDateFixFlowControllerImplTest
   ~CardExpirationDateFixFlowControllerImplTest() override {}
 
   void SetUp() override {
-    test_card_expiration_date_fix_flow_view_.reset(
-        new TestCardExpirationDateFixFlowView());
-    controller_.reset(new CardExpirationDateFixFlowControllerImpl());
+    test_card_expiration_date_fix_flow_view_ =
+        std::make_unique<TestCardExpirationDateFixFlowView>();
+    controller_ = std::make_unique<CardExpirationDateFixFlowControllerImpl>();
   }
 
  private:

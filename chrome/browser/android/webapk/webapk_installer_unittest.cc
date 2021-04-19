@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/webapk/webapk_installer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/android/scoped_java_ref.h"
@@ -288,7 +289,7 @@ class WebApkInstallerTest : public ::testing::Test {
         &WebApkInstallerTest::HandleWebApkRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
 
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
 
     SetDefaults();
   }
@@ -328,7 +329,7 @@ class WebApkInstallerTest : public ::testing::Test {
   }
 
   std::unique_ptr<BuildProtoRunner> CreateBuildProtoRunner() {
-    return std::unique_ptr<BuildProtoRunner>(new BuildProtoRunner());
+    return std::make_unique<BuildProtoRunner>();
   }
 
   Profile* profile() { return profile_.get(); }

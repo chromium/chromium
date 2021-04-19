@@ -43,7 +43,7 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
   Java_ContextualSearchManager_setNativeManager(
       env, obj, reinterpret_cast<intptr_t>(this));
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  delegate_.reset(new ContextualSearchDelegate(
+  delegate_ = std::make_unique<ContextualSearchDelegate>(
       profile->GetURLLoaderFactory(),
       TemplateURLServiceFactory::GetForProfile(profile),
       base::BindRepeating(
@@ -51,7 +51,7 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
           base::Unretained(this)),
       base::BindRepeating(
           &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
-          base::Unretained(this))));
+          base::Unretained(this)));
 }
 
 ContextualSearchManager::~ContextualSearchManager() {

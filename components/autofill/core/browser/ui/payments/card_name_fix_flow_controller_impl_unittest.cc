@@ -72,8 +72,8 @@ class CardNameFixFlowControllerImplTest
   ~CardNameFixFlowControllerImplTest() override {}
 
   void SetUp() override {
-    test_card_name_fix_flow_view_.reset(new TestCardNameFixFlowView());
-    controller_.reset(new CardNameFixFlowControllerImpl());
+    test_card_name_fix_flow_view_ = std::make_unique<TestCardNameFixFlowView>();
+    controller_ = std::make_unique<CardNameFixFlowControllerImpl>();
   }
 
  private:

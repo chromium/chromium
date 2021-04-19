@@ -4,6 +4,8 @@
 
 #include "components/autofill/android/provider/form_data_android.h"
 
+#include <memory>
+
 #include "base/android/jni_string.h"
 #include "components/autofill/android/provider/form_field_data_android.h"
 #include "components/autofill/android/provider/jni_headers/FormData_jni.h"
@@ -36,8 +38,8 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     for (size_t i = 0; i < form_.fields.size(); ++i) {
-      fields_.push_back(std::unique_ptr<FormFieldDataAndroid>(
-          new FormFieldDataAndroid(&form_.fields[i])));
+      fields_.push_back(
+          std::make_unique<FormFieldDataAndroid>(&form_.fields[i]));
     }
     if (form_structure)
       UpdateFieldTypes(*form_structure);

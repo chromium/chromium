@@ -36,7 +36,7 @@ class UsageReportsBufferBackendTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    buffer_.reset(new UsageReportsBufferBackend(temp_dir_.GetPath()));
+    buffer_ = std::make_unique<UsageReportsBufferBackend>(temp_dir_.GetPath());
     EXPECT_TRUE(buffer_->Init());
   }
 
@@ -188,7 +188,7 @@ TEST_F(UsageReportsBufferBackendTest, Persistence) {
   VerifyUsageReport((*result)[0], "id", 7, true);
 
   buffer_.reset(NULL);
-  buffer_.reset(new UsageReportsBufferBackend(temp_dir_.GetPath()));
+  buffer_ = std::make_unique<UsageReportsBufferBackend>(temp_dir_.GetPath());
   EXPECT_TRUE(buffer_->Init());
 
   result = buffer_->GetUsageReportsBatch(2);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/PasswordChangeLauncher_jni.h"
@@ -30,7 +32,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
 CredentialLeakControllerAndroid::~CredentialLeakControllerAndroid() = default;
 
 void CredentialLeakControllerAndroid::ShowDialog() {
-  dialog_view_.reset(new CredentialLeakDialogViewAndroid(this));
+  dialog_view_ = std::make_unique<CredentialLeakDialogViewAndroid>(this);
   dialog_view_->Show(window_android_);
 }
 

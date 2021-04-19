@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
@@ -33,7 +35,7 @@ PasswordReuseControllerAndroid::~PasswordReuseControllerAndroid() {
 }
 
 void PasswordReuseControllerAndroid::ShowDialog() {
-  dialog_view_.reset(new PasswordReuseDialogViewAndroid(this));
+  dialog_view_ = std::make_unique<PasswordReuseDialogViewAndroid>(this);
   DCHECK(window_android_);
   dialog_view_->Show(window_android_);
 }

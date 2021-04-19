@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -156,7 +157,7 @@ void FaviconHelper::Job::OnFaviconAvailable(
 }
 
 FaviconHelper::FaviconHelper() : last_used_job_id_(0) {
-  cancelable_task_tracker_.reset(new base::CancelableTaskTracker());
+  cancelable_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
 }
 
 void FaviconHelper::Destroy(JNIEnv* env) {

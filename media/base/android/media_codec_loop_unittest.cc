@@ -92,8 +92,8 @@ class MediaCodecLoopTest : public testing::Test {
     std::unique_ptr<MediaCodecBridge> codec(new MockMediaCodecBridge());
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
-    codec_loop_.reset(new MediaCodecLoop(sdk_int, client_.get(),
-                                         std::move(codec), mock_task_runner_));
+    codec_loop_ = std::make_unique<MediaCodecLoop>(
+        sdk_int, client_.get(), std::move(codec), mock_task_runner_);
     codec_loop_->SetTestTickClock(mock_task_runner_->GetMockTickClock());
     Mock::VerifyAndClearExpectations(client_.get());
   }
@@ -199,9 +199,9 @@ TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
   const int sdk_int = base::android::SDK_VERSION_LOLLIPOP;
-  codec_loop_.reset(
-      new MediaCodecLoop(sdk_int, client_.get(), std::move(codec),
-                         scoped_refptr<base::SingleThreadTaskRunner>()));
+  codec_loop_ = std::make_unique<MediaCodecLoop>(
+      sdk_int, client_.get(), std::move(codec),
+      scoped_refptr<base::SingleThreadTaskRunner>());
   // Do not WaitUntilIdle() here, since that assumes that we have a codec.
 
   ASSERT_FALSE(codec_loop_->GetCodec());
