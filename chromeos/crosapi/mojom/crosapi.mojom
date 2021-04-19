@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
+import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
@@ -52,8 +53,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 22
-// Next method id: 27
+// Next version: 23
+// Next method id: 28
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -191,6 +192,12 @@ interface Crosapi {
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 
+  // Binds the app publisher service to allow web app publishing from
+  // lacros-chrome.
+  // Added in M92.
+  [MinVersion=22]
+  BindAppPublisher@27(pending_receiver<AppPublisher> receiver);
+
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.
   // Added in M87.
@@ -309,8 +316,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 17
-// Next id: 17
+// Next version: 18
+// Next id: 18
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -421,6 +428,13 @@ struct BrowserInitParams {
   // Added in M91.
   [MinVersion=16]
   Account? device_account@16;
+
+  // Whether the lacros web apps is enabled in ash-chrome. When this flag is on
+  // the ash-chrome will interact with web apps publishing from lacros-chrome
+  // instead of ash-chrome.
+  // Added in M92.
+  [MinVersion=17]
+  bool web_apps_enabled@17;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

@@ -13,9 +13,9 @@
 #include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
-#include "chrome/browser/apps/app_service/publishers/lacros_web_apps.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_chromeos.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
 namespace apps {
@@ -149,7 +149,6 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   std::unique_ptr<LacrosApps> lacros_apps_;
   std::unique_ptr<WebAppsChromeOs> web_apps_;
   std::unique_ptr<BorealisApps> borealis_apps_;
-  std::unique_ptr<LacrosWebApps> lacros_web_apps_;
 
   bool arc_is_registered_ = false;
 

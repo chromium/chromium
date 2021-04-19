@@ -108,6 +108,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
+  void BindAppPublisher(
+      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
 
   BrowserServiceHostAsh* browser_service_host_ash() {
     return browser_service_host_ash_.get();

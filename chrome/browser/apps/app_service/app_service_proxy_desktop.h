@@ -9,6 +9,10 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
+#endif
+
 class Profile;
 
 namespace apps {
@@ -37,6 +41,10 @@ class AppServiceProxy : public AppServiceProxyBase {
 
   std::unique_ptr<WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<apps::FakeLacrosWebAppsHost> fake_lacros_web_apps_host_;
+#endif
 
   base::WeakPtrFactory<AppServiceProxy> weak_ptr_factory_{this};
 };

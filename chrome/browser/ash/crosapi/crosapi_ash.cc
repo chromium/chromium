@@ -11,6 +11,8 @@
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/apps/app_service/publishers/lacros_web_apps.h"
+#include "chrome/browser/apps/app_service/publishers/lacros_web_apps_factory.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -252,6 +254,14 @@ void CrosapiAsh::BindMachineLearningService(
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   video_capture_device_factory_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindAppPublisher(
+    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  apps::LacrosWebApps* lacros_web_apps =
+      apps::LacrosWebAppsFactory::GetForProfile(profile);
+  lacros_web_apps->RegisterLacrosWebAppsHost(std::move(receiver));
 }
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {

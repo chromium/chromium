@@ -173,6 +173,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::BindCrosapi,
                      weak_sequenced_state_));
 
+  ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindAppPublisher,
+                  Crosapi::MethodMinVersions::kBindAppPublisherMinVersion>();
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();

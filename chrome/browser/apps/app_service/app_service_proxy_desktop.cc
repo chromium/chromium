@@ -29,6 +29,16 @@ void AppServiceProxy::Initialize() {
   web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
   extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 
+// Create a fake lacros web app host in the lacros-chrome for testing lacros
+// web app publishing. This will be removed after the actual lacros web app host
+// code is created.
+// TODO(crbug.com/1144877): Remove after the actual lacros web app host code
+// created.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  fake_lacros_web_apps_host_ = std::make_unique<FakeLacrosWebAppsHost>();
+  fake_lacros_web_apps_host_->Init();
+#endif
+
   // Asynchronously add app icon source, so we don't do too much work in the
   // constructor.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

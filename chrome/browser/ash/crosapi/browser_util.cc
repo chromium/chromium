@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -177,6 +178,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AppPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
@@ -218,7 +220,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 21,
+    crosapi::mojom::Crosapi::Version_ == 22,
     "if you add a new crosapi, please add it to the version map here");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");
@@ -518,6 +520,9 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       initial_browser_action ==
       crosapi::mojom::InitialBrowserAction::kRestoreLastSession;
   params->initial_browser_action = initial_browser_action;
+
+  params->web_apps_enabled =
+      base::FeatureList::IsEnabled(features::kLacrosWebApps);
 
   return params;
 }

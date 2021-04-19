@@ -95,15 +95,6 @@ void AppServiceProxyChromeOs::Initialize() {
   web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
                                                 &instance_registry_);
 
-  // After moving the web apps to Lacros, the current web app publisher
-  // will become System web app publisher, and a lacros web app publisher
-  // needs to be created.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(profile_) &&
-      base::FeatureList::IsEnabled(features::kLacrosWebApps)) {
-    lacros_web_apps_ = std::make_unique<LacrosWebApps>(app_service_);
-  }
-
   // Asynchronously add app icon source, so we don't do too much work in the
   // constructor.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
