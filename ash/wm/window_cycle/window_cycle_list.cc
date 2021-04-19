@@ -918,7 +918,8 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
 }
 
 void WindowCycleList::Step(
-    WindowCycleController::WindowCyclingDirection direction) {
+    WindowCycleController::WindowCyclingDirection direction,
+    bool starting_alt_tab_or_switching_mode) {
   if (windows_.empty())
     return;
 
@@ -929,35 +930,25 @@ void WindowCycleList::Step(
     Scroll(GetIndexOfWindow(selected_window) - current_index_);
   }
 
-  const int offset =
+  int offset =
       direction == WindowCycleController::WindowCyclingDirection::kForward ? 1
                                                                            : -1;
-  if (offset == 1 && active_window_before_window_cycle_ != windows_[0] &&
-      Shell::Get()->window_cycle_controller()->IsSwitchingMode()) {
-    // Similar to `WindowCycleList::Scroll()`, when switching to alt-tab mode,
-    // if the first window in the MRU cycle list is not the latest active one
-    // before entering alt-tab, highlight it instead of the second window.
-    // This occurs when the user is in overview mode, all windows are
-    // minimized, or all windows are in other desks.
-    //
-    // Note: Simply checking the active status of the first window won't work
-    // because when the ChromeVox is enabled, the widget is activatable, so the
-    // first window in MRU becomes inactive.
-    SetFocusedWindow(windows_[0]);
-  } else {
-    SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
+  // When the window highlight should be reset and the first window in the MRU
+  // cycle list is not the latest active one before entering alt-tab, highlight
+  // it instead of the second window. This occurs when the user is in overview
+  // mode, all windows are minimized, or all windows are in other desks.
+  //
+  // Note: Simply checking the active status of the first window won't work
+  // because when the ChromeVox is enabled, the widget is activatable, so the
+  // first window in MRU becomes inactive.
+  if (starting_alt_tab_or_switching_mode &&
+      direction == WindowCycleController::WindowCyclingDirection::kForward &&
+      active_window_before_window_cycle_ != windows_[0]) {
+    offset = 0;
+    current_index_ = 0;
   }
-  Scroll(offset);
-}
 
-void WindowCycleList::ScrollInDirection(
-    WindowCycleController::WindowCyclingDirection direction) {
-  if (windows_.empty())
-    return;
-
-  const int offset =
-      direction == WindowCycleController::WindowCyclingDirection::kForward ? 1
-                                                                           : -1;
+  SetFocusedWindow(windows_[GetOffsettedWindowIndex(offset)]);
   Scroll(offset);
 }
 
@@ -1153,17 +1144,6 @@ void WindowCycleList::Scroll(int offset) {
   }
 
   DCHECK(static_cast<size_t>(current_index_) < windows_.size());
-
-  // If alt-tab is entered or switched to the other mode, check the following
-  // special case: user is cycling forward but the MRU window in cycle list is
-  // not the latest active one before starting the alt-tab. The starting window
-  // should then be the first one rather than the second.
-  if ((!cycle_view_ ||
-       Shell::Get()->window_cycle_controller()->IsSwitchingMode()) &&
-      current_index_ == 0 && offset == 1 &&
-      active_window_before_window_cycle_ != windows_[0]) {
-    current_index_ = -1;
-  }
 
   current_index_ = GetOffsettedWindowIndex(offset);
   if (ShouldShowUi()) {

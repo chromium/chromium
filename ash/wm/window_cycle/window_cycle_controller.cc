@@ -125,10 +125,11 @@ void WindowCycleController::HandleCycleWindow(
   if (!CanCycle())
     return;
 
-  if (!IsCycling())
+  const bool should_start_alt_tab = !IsCycling();
+  if (should_start_alt_tab)
     StartCycling();
 
-  Step(direction);
+  Step(direction, /*starting_alt_tab_or_switching_mode=*/should_start_alt_tab);
 }
 
 bool WindowCycleController::IsValidKeyboardNavigation(
@@ -211,17 +212,6 @@ void WindowCycleController::HandleKeyboardNavigation(
       NOTREACHED();
       break;
   }
-}
-
-void WindowCycleController::Scroll(WindowCyclingDirection direction) {
-  if (!CanCycle())
-    return;
-
-  if (!IsCycling())
-    StartCycling();
-
-  DCHECK(window_cycle_list_);
-  window_cycle_list_->ScrollInDirection(direction);
 }
 
 void WindowCycleController::Drag(float delta_x) {
@@ -406,9 +396,10 @@ void WindowCycleController::SaveCurrentActiveDeskAndWindow(
   active_window_before_window_cycle_ = GetActiveWindow(window_list);
 }
 
-void WindowCycleController::Step(WindowCyclingDirection direction) {
+void WindowCycleController::Step(WindowCyclingDirection direction,
+                                 bool starting_alt_tab_or_switching_mode) {
   DCHECK(window_cycle_list_);
-  window_cycle_list_->Step(direction);
+  window_cycle_list_->Step(direction, starting_alt_tab_or_switching_mode);
 }
 
 void WindowCycleController::StopCycling() {
@@ -464,7 +455,8 @@ void WindowCycleController::OnAltTabModePrefChanged() {
   // After the cycle is reset, imitate the same forward cycling behavior as
   // starting alt-tab with `Step()`, which makes sure the correct window is
   // selected and highlighted.
-  Step(WindowCyclingDirection::kForward);
+  Step(WindowCyclingDirection::kForward,
+       /*starting_alt_tab_or_switching_mode=*/true);
 
   // Update tab slider button UI.
   window_cycle_list_->OnModePrefsChanged();

@@ -54,13 +54,14 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // |windows| is empty, cancels cycling.
   void ReplaceWindows(const WindowList& windows);
 
-  // Cycles to the next or previous window based on |direction|. This moves the
-  // focus ring to the next/previous window and also scrolls the list.
-  void Step(WindowCycleController::WindowCyclingDirection direction);
-
-  // Scrolls windows in given |direction|. Does not move the focus ring.
-  void ScrollInDirection(
-      WindowCycleController::WindowCyclingDirection direction);
+  // Cycles to the next or previous window based on |direction| or to the
+  // default position if |starting_alt_tab_or_switching_mode| is true.
+  // This moves the focus ring and also scrolls the list.
+  // If |starting_alt_tab_or_switching_mode| is true and |direction| is
+  // forward, the highlight moves to the first non-active window in MRU list:
+  // the second window by default or the first window if it is not active.
+  void Step(WindowCycleController::WindowCyclingDirection direction,
+            bool starting_alt_tab_or_switching_mode);
 
   // Should be called when a user drags their finger on the touch screen.
   // Translates the mirror container by |delta_x|.

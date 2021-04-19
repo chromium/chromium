@@ -399,96 +399,6 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
   EXPECT_FALSE(wm::IsActiveWindow(window1.get()));
 }
 
-TEST_F(WindowCycleControllerTest, Scroll) {
-  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-
-  // Doesn't crash if there are no windows.
-  controller->Scroll(WindowCycleController::WindowCyclingDirection::kForward);
-
-  // Create test windows.
-  std::unique_ptr<Window> w5 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-  std::unique_ptr<Window> w4 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-  std::unique_ptr<Window> w3 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-  std::unique_ptr<Window> w2 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-  std::unique_ptr<Window> w1 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-  std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
-
-  auto ScrollAndReturnCurrentIndex =
-      [this](WindowCycleController::WindowCyclingDirection direction,
-             int num_of_scrolls) {
-        WindowCycleController* controller =
-            Shell::Get()->window_cycle_controller();
-        for (int i = 0; i < num_of_scrolls; i++)
-          controller->Scroll(direction);
-
-        return GetCurrentIndex();
-      };
-
-  auto GetXOfCycleListCenterPoint = [this]() {
-    return GetWindowCycleListWidget()
-        ->GetWindowBoundsInScreen()
-        .CenterPoint()
-        .x();
-  };
-
-  auto GetXOfWindowCycleItemViewCenterPoint = [this](int index) {
-    return GetWindowCycleItemViews()[index]
-        ->GetBoundsInScreen()
-        .CenterPoint()
-        .x();
-  };
-
-  // Start cycling and scroll forward. The list should be not be centered around
-  // w1. Since w1 is so close to the beginning of the list.
-  controller->StartCycling();
-  int current_index = ScrollAndReturnCurrentIndex(
-      WindowCycleController::WindowCyclingDirection::kForward, 1);
-  EXPECT_EQ(1, current_index);
-  EXPECT_GT(GetXOfCycleListCenterPoint(),
-            GetXOfWindowCycleItemViewCenterPoint(current_index));
-
-  // Scroll forward twice. The list should be centered around w3.
-  current_index = ScrollAndReturnCurrentIndex(
-      WindowCycleController::WindowCyclingDirection::kForward, 2);
-  EXPECT_EQ(3, current_index);
-  EXPECT_EQ(GetXOfCycleListCenterPoint(),
-            GetXOfWindowCycleItemViewCenterPoint(current_index));
-
-  // Scroll backward once. The list should be centered around w2.
-  current_index = ScrollAndReturnCurrentIndex(
-      WindowCycleController::WindowCyclingDirection::kBackward, 1);
-  EXPECT_EQ(2, current_index);
-  EXPECT_EQ(GetXOfCycleListCenterPoint(),
-            GetXOfWindowCycleItemViewCenterPoint(current_index));
-
-  // Scroll backward three times. The list should not be centered around w5.
-  current_index = ScrollAndReturnCurrentIndex(
-      WindowCycleController::WindowCyclingDirection::kBackward, 3);
-  EXPECT_EQ(5, current_index);
-  EXPECT_LT(GetXOfCycleListCenterPoint(),
-            GetXOfWindowCycleItemViewCenterPoint(current_index));
-
-  // Cycle forward. Since the target window != current window, it should scroll
-  // to target window then cycle. The target_window was w0 prior to cycling.
-  controller->HandleCycleWindow(
-      WindowCycleController::WindowCyclingDirection::kForward);
-  current_index = GetCurrentIndex();
-  EXPECT_EQ(1, current_index);
-  EXPECT_GT(GetXOfCycleListCenterPoint(),
-            GetXOfWindowCycleItemViewCenterPoint(current_index));
-  CompleteCycling(controller);
-  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
-
-  // Start cycling, scroll backward once and complete cycling. Scroll should not
-  // affect the selected window.
-  controller->StartCycling();
-  current_index = ScrollAndReturnCurrentIndex(
-      WindowCycleController::WindowCyclingDirection::kBackward, 1);
-  EXPECT_EQ(5, current_index);
-  CompleteCycling(controller);
-  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
-}
-
 // Cycles between a maximized and normal window.
 TEST_F(WindowCycleControllerTest, MaximizedWindow) {
   // Create a couple of test windows.
@@ -558,9 +468,9 @@ TEST_F(WindowCycleControllerTest, AllAreMinimized) {
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   CompleteCycling(controller);
-  EXPECT_TRUE(window0_state->IsActive());
-  EXPECT_FALSE(window0_state->IsMinimized());
-  EXPECT_TRUE(window1_state->IsMinimized());
+  EXPECT_TRUE(window1_state->IsActive());
+  EXPECT_FALSE(window1_state->IsMinimized());
+  EXPECT_TRUE(window0_state->IsMinimized());
 
   // But it's business as usual when cycling backwards.
   window0_state->Minimize();
@@ -568,9 +478,9 @@ TEST_F(WindowCycleControllerTest, AllAreMinimized) {
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kBackward);
   CompleteCycling(controller);
-  EXPECT_TRUE(window0_state->IsMinimized());
-  EXPECT_TRUE(window1_state->IsActive());
-  EXPECT_FALSE(window1_state->IsMinimized());
+  EXPECT_TRUE(window0_state->IsActive());
+  EXPECT_FALSE(window0_state->IsMinimized());
+  EXPECT_TRUE(window1_state->IsMinimized());
 }
 
 TEST_F(WindowCycleControllerTest, AlwaysOnTopWindow) {
@@ -1079,6 +989,7 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
 TEST_F(WindowCycleControllerTest, AltKeyRelease) {
   std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
   std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  wm::ActivateWindow(window1.get());
 
   // Press Alt and start cycling.
   auto* generator = GetEventGenerator();
@@ -2310,6 +2221,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   // Enter the all-desk mode by default with the window order [0, 1, 2, 3 ,4].
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_EQ(win0.get(), GetTargetWindow());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(5u, GetWindowCycleItemViews().size());
@@ -2323,8 +2235,10 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   // highlight win0, the first window in the current-desk cycle list.
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_EQ(win1.get(), GetTargetWindow());
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_EQ(win2.get(), GetTargetWindow());
   SwitchPerDeskAltTabMode(true);
   EXPECT_EQ(3u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win0.get(), GetTargetWindow());
@@ -2711,7 +2625,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   // Start alt-tab.
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
-  EXPECT_EQ(win1.get(), GetTargetWindow());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
   EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_NE(kAllDesksSelected, client.last_alert_message());
@@ -2722,7 +2636,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   generator->PressKey(ui::VKEY_UP, ui::EF_NONE);
   EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
-  EXPECT_EQ(win1.get(), GetTargetWindow());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
   EXPECT_EQ(kAllDesksSelected, client.last_alert_message());
 
   // Pressing (->) announces the new mode and the new focused window but not
