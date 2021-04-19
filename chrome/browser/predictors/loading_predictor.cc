@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -15,6 +16,19 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/network_isolation_key.h"
 #include "url/origin.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/radio_utils.h"
+#include "base/power_monitor/power_monitor.h"
+#endif  // defined(OS_ANDROID)
+
+namespace features {
+
+// Don't preconnect on weak signal to save power.
+const base::Feature kNoPreconnectToSearchOnWeakSignal{
+    "NoPreconnectToSearchOnWeakSignal", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace features
 
 namespace predictors {
 
@@ -48,6 +62,25 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
   }
 
   return !prediction->requests.empty();
+}
+
+bool IsPreconnectExpensive() {
+#if defined(OS_ANDROID)
+  // Preconnecting is expensive while on battery power and cellular data and
+  // the radio signal is weak.
+  if ((base::PowerMonitor::IsInitialized() &&
+       !base::PowerMonitor::IsOnBatteryPower()) ||
+      base::android::RadioUtils::IsWifiConnected()) {
+    return false;
+  }
+
+  base::Optional<base::android::RadioSignalLevel> maybe_level =
+      base::android::RadioUtils::GetCellSignalLevel();
+  return maybe_level.has_value() &&
+         *maybe_level <= base::android::RadioSignalLevel::kModerate;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -349,6 +382,13 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     const net::NetworkIsolationKey& network_isolation_key) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
+
+  if (base::FeatureList::IsEnabled(
+          features::kNoPreconnectToSearchOnWeakSignal) &&
+      IsPreconnectExpensive()) {
+    return;
+  }
+
   preconnect_manager()->StartPreconnectUrl(url, allow_credentials,
                                            network_isolation_key);
 }
