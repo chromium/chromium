@@ -44,10 +44,12 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr)
 // Accessibility Id set by the client.
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A property key containing the client controlled shell surface.
 DEFINE_UI_CLASS_PROPERTY_KEY(ClientControlledShellSurface*,
                              kClientControlledShellSurface,
                              nullptr)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns true if the component for a located event should be taken care of
 // by the window system.
@@ -137,6 +139,8 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
     return id;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,
     const base::Optional<ClientControlledShellSurface*>& shell_surface) {
@@ -151,6 +155,8 @@ ClientControlledShellSurface* GetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler) {
   return property_handler->GetProperty(kClientControlledShellSurface);
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetShellRootSurface(ui::PropertyHandler* property_handler,
                          Surface* surface) {

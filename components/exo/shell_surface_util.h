@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 class PropertyHandler;
@@ -57,12 +58,14 @@ void SetShellClientAccessibilityId(aura::Window* window,
 const base::Optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the ClientControlledShellSurface to the property handler.
 void SetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler,
     const base::Optional<ClientControlledShellSurface*>& shell_surface);
 ClientControlledShellSurface* GetShellClientControlledShellSurface(
     ui::PropertyHandler* property_handler);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Sets the root surface to the property handler.
 void SetShellRootSurface(ui::PropertyHandler* property_handler,
