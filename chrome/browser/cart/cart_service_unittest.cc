@@ -575,10 +575,10 @@ TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
   for (int i = 0; i < limit; i++) {
     EXPECT_EQ(i, profile_.GetPrefs()->GetInteger(
                      prefs::kCartModuleWelcomeSurfaceShownTimes));
-    EXPECT_TRUE(service_->ShouldShowWelcomSurface());
+    EXPECT_TRUE(service_->ShouldShowWelcomeSurface());
     service_->IncreaseWelcomeSurfaceCounter();
   }
-  EXPECT_FALSE(service_->ShouldShowWelcomSurface());
+  EXPECT_FALSE(service_->ShouldShowWelcomeSurface());
   EXPECT_EQ(limit, profile_.GetPrefs()->GetInteger(
                        prefs::kCartModuleWelcomeSurfaceShownTimes));
 }
@@ -746,18 +746,18 @@ TEST_F(CartServiceTest, CartURLPriority) {
   EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
 }
 
-class CartServiceTestWithFeature : public CartServiceTest {
+class CartServiceFakeDataTest : public CartServiceTest {
  public:
   // Features need to be initialized before CartServiceTest::SetUp runs, in
   // order to avoid tsan data race error on FeatureList.
-  CartServiceTestWithFeature() {
+  CartServiceFakeDataTest() {
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
         {{"NtpChromeCartModuleDataParam", "fake"}});
   }
 };
 
-TEST_F(CartServiceTestWithFeature, TestFakeData) {
+TEST_F(CartServiceFakeDataTest, TestFakeData) {
   base::RunLoop run_loop[2];
   TestingProfile fake_profile;
   CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
@@ -839,4 +839,74 @@ TEST_F(CartServiceTest, TestHiddenFlipedByCartAction) {
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result));
   run_loop[2].Run();
+}
+
+// Tests discount consent will never show in module without feature param.
+TEST_F(CartServiceTest, TestNoShowConsentWithoutFeature) {
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+}
+
+// Tests discount is disabled without feature param.
+TEST_F(CartServiceTest, TestDiscountDisabledWithoutFeature) {
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+}
+
+// Tests acknowledging discount consent is reflected in profile pref.
+TEST_F(CartServiceTest, TestAcknowledgeDiscountConsent) {
+  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_FALSE(
+      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+
+  service_->AcknowledgeDiscountConsent(true);
+  ASSERT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_TRUE(
+      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, false);
+  service_->AcknowledgeDiscountConsent(false);
+  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  ASSERT_TRUE(
+      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+}
+
+class CartServiceDiscountTest : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceDiscountTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
+  }
+};
+
+// Tests discount consent should not show when welcome surface is still showing.
+TEST_F(CartServiceDiscountTest, TestNoConsentWhenWelcomeSurface) {
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  ASSERT_TRUE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+}
+
+// Tests discount consent visibility aligns with profile prefs.
+TEST_F(CartServiceDiscountTest, TestReadConsentFromPrefs) {
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(
+      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
+
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+
+  ASSERT_TRUE(
+      profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
 }

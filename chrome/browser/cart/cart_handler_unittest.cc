@@ -11,7 +11,9 @@
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,9 +112,9 @@ class CartHandlerTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetEvaluationShouldShowWelcomSurface(base::OnceClosure closure,
-                                            bool expected_show,
-                                            bool actual_show) {
+  void GetEvaluationBoolResult(base::OnceClosure closure,
+                               bool expected_show,
+                               bool actual_show) {
     EXPECT_EQ(expected_show, actual_show);
     std::move(closure).Run();
   }
@@ -328,8 +330,8 @@ TEST_F(CartHandlerNtpModuleTest, TestShowWelcomeSurface) {
   for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
     std::vector<chrome_cart::mojom::MerchantCartPtr> empty_carts;
     handler_->GetWarmWelcomeVisible(base::BindOnce(
-        &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
-        base::Unretained(this), run_loop[run_loop_index].QuitClosure(), true));
+        &CartHandlerTest::GetEvaluationBoolResult, base::Unretained(this),
+        run_loop[run_loop_index].QuitClosure(), true));
     run_loop[run_loop_index++].Run();
     handler_->GetMerchantCarts(base::BindOnce(
         &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
@@ -360,8 +362,8 @@ TEST_F(CartHandlerNtpModuleTest, TestShowWelcomeSurface) {
     carts_without_product.push_back(std::move(dummy_cart1));
 
     handler_->GetWarmWelcomeVisible(base::BindOnce(
-        &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
-        base::Unretained(this), run_loop[run_loop_index].QuitClosure(), true));
+        &CartHandlerTest::GetEvaluationBoolResult, base::Unretained(this),
+        run_loop[run_loop_index].QuitClosure(), true));
     run_loop[run_loop_index++].Run();
     handler_->GetMerchantCarts(base::BindOnce(
         &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
@@ -379,8 +381,8 @@ TEST_F(CartHandlerNtpModuleTest, TestShowWelcomeSurface) {
 
   // Not show welcome surface afterwards.
   handler_->GetWarmWelcomeVisible(base::BindOnce(
-      &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
-      base::Unretained(this), run_loop[run_loop_index].QuitClosure(), false));
+      &CartHandlerTest::GetEvaluationBoolResult, base::Unretained(this),
+      run_loop[run_loop_index].QuitClosure(), false));
   run_loop[run_loop_index++].Run();
   handler_->GetMerchantCarts(base::BindOnce(
       &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
@@ -408,8 +410,8 @@ TEST_F(CartHandlerNtpModuleTest, TestDiscountDataFetching) {
     std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
     carts.push_back(std::move(expect_cart));
     handler_->GetWarmWelcomeVisible(base::BindOnce(
-        &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
-        base::Unretained(this), run_loop[run_loop_index].QuitClosure(), true));
+        &CartHandlerTest::GetEvaluationBoolResult, base::Unretained(this),
+        run_loop[run_loop_index].QuitClosure(), true));
     run_loop[run_loop_index++].Run();
     handler_->GetMerchantCarts(base::BindOnce(
         &GetEvaluationMerchantCarts, run_loop[run_loop_index].QuitClosure(),
@@ -428,4 +430,59 @@ TEST_F(CartHandlerNtpModuleTest, TestDiscountDataFetching) {
       base::BindOnce(&GetEvaluationMerchantCarts,
                      run_loop[run_loop_index].QuitClosure(), std::move(carts)));
   run_loop[run_loop_index++].Run();
+}
+
+// Override CartHandlerTest so that we can initialize feature_list_ in our
+// constructor, before CartHandlerTest::SetUp is called.
+class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
+ public:
+  CartHandlerNtpModuleDiscountTest() {
+    // This needs to be called before any tasks that run on other threads check
+    // if a feature is enabled.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
+  }
+
+  void SetUp() override {
+    CartHandlerTest::SetUp();
+
+    // Mock that welcome surface has already finished showing.
+    for (int i = 0; i < CartService::kWelcomSurfaceShowLimit; i++) {
+      service_->IncreaseWelcomeSurfaceCounter();
+    }
+    ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  }
+};
+
+// Test discount consent card visibility aligns with CartService.
+TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
+  base::RunLoop run_loop[2];
+  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
+  handler_->GetDiscountConsentCardVisible(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  handler_->GetDiscountConsentCardVisible(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+}
+
+// Test OnDiscountConsentAcknowledged can update status in CartService.
+TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
+  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+
+  handler_->OnDiscountConsentAcknowledged(true);
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  ASSERT_TRUE(service_->IsCartDiscountEnabled());
+
+  handler_->OnDiscountConsentAcknowledged(false);
+  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
 }

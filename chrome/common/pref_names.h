@@ -1128,6 +1128,8 @@ extern const char kSecurityTokenSessionNotificationScheduledDomain[];
 #if !defined(OS_ANDROID)
 extern const char kCartModuleHidden[];
 extern const char kCartModuleWelcomeSurfaceShownTimes[];
+extern const char kCartDiscountAcknowledged[];
+extern const char kCartDiscountEnabled[];
 #endif
 
 #if defined(OS_ANDROID)

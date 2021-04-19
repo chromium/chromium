@@ -79,6 +79,8 @@ CartService::~CartService() = default;
 void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCartModuleHidden, false);
   registry->RegisterIntegerPref(prefs::kCartModuleWelcomeSurfaceShownTimes, 0);
+  registry->RegisterBooleanPref(prefs::kCartDiscountAcknowledged, false);
+  registry->RegisterBooleanPref(prefs::kCartDiscountEnabled, false);
 }
 
 void CartService::Hide() {
@@ -150,7 +152,7 @@ void CartService::RestoreRemovedCart(const GURL& cart_url,
 }
 
 void CartService::IncreaseWelcomeSurfaceCounter() {
-  if (!ShouldShowWelcomSurface())
+  if (!ShouldShowWelcomeSurface())
     return;
   int times = profile_->GetPrefs()->GetInteger(
       prefs::kCartModuleWelcomeSurfaceShownTimes);
@@ -158,10 +160,46 @@ void CartService::IncreaseWelcomeSurfaceCounter() {
                                    times + 1);
 }
 
-bool CartService::ShouldShowWelcomSurface() {
+bool CartService::ShouldShowWelcomeSurface() {
   return profile_->GetPrefs()->GetInteger(
              prefs::kCartModuleWelcomeSurfaceShownTimes) <
          kWelcomSurfaceShowLimit;
+}
+
+void CartService::AcknowledgeDiscountConsent(bool should_enable) {
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+    return;
+  }
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, should_enable);
+}
+
+bool CartService::ShouldShowDiscountConsent() {
+  if (ShouldShowWelcomeSurface() ||
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) !=
+          "true") {
+    return false;
+  }
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+    return true;
+  }
+  return !profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged);
+}
+
+bool CartService::IsCartDiscountEnabled() {
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) !=
+      "true") {
+    return false;
+  }
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled);
 }
 
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
