@@ -1490,13 +1490,7 @@ if (is_chrome_branded && !is_android) {
       ]
     }
 
-    sources = [
-      "browser/resources/default_apps/docs.crx",
-      "browser/resources/default_apps/drive.crx",
-      "browser/resources/default_apps/external_extensions.json",
-      "browser/resources/default_apps/gmail.crx",
-      "browser/resources/default_apps/youtube.crx",
-    ]
+    sources = [ "browser/resources/default_apps/external_extensions.json" ]
 
     if (!is_mac) {
       outputs = [ "$root_out_dir/default_apps/{{source_file_part}}" ]
