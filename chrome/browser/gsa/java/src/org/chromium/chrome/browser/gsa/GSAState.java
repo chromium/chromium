@@ -170,6 +170,16 @@ public class GSAState {
         return mGsaAvailable;
     }
 
+    /** Returns whether the GSA package is installed on device. */
+    public boolean isGsaInstalled() {
+        try {
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+            return true;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+    }
+
     /**
      * Check whether the given package meets min requirements for using full document mode.
      * @param packageName The package name we are inquiring about.
