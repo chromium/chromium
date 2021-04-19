@@ -2,116 +2,107 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
-cr.define('settings', function() {
+/**
+ * An object describing a default image.
+ * @typedef {{
+ *   author: (string|undefined),
+ *   index: number,
+ *   title: (string|undefined),
+ *   url: string,
+ *   website: (string|undefined)
+ * }}
+ */
+export let DefaultImage;
+
+/** @interface */
+export class ChangePictureBrowserProxy {
   /**
-   * An object describing a default image.
-   * @typedef {{
-   *   author: (string|undefined),
-   *   index: number,
-   *   title: (string|undefined),
-   *   url: string,
-   *   website: (string|undefined)
-   * }}
+   * Retrieves the initial set of default images, profile image, etc. As a
+   * response, the C++ sends these WebUIListener events:
+   * 'default-images-changed', 'profile-image-changed', 'old-image-changed',
+   * and 'selected-image-changed'
    */
-  /* #export */ let DefaultImage;
-
-  /** @interface */
-  /* #export */ class ChangePictureBrowserProxy {
-    /**
-     * Retrieves the initial set of default images, profile image, etc. As a
-     * response, the C++ sends these WebUIListener events:
-     * 'default-images-changed', 'profile-image-changed', 'old-image-changed',
-     * and 'selected-image-changed'
-     */
-    initialize() {}
-
-    /**
-     * Sets the user image to one of the default images. As a response, the C++
-     * sends the 'default-images-changed' WebUIListener event.
-     * @param {string} imageUrl
-     */
-    selectDefaultImage(imageUrl) {}
-
-    /**
-     * Sets the user image to the 'old' image. As a response, the C++ sends the
-     * 'old-image-changed' WebUIListener event.
-     */
-    selectOldImage() {}
-
-    /**
-     * Sets the user image to the profile image. As a response, the C++ sends
-     * the 'profile-image-changed' WebUIListener event.
-     */
-    selectProfileImage() {}
-
-    /**
-     * Provides the taken photo as a data URL to the C++ and sets the user
-     * image to the 'old' image. As a response, the C++ sends the
-     * 'old-image-changed' WebUIListener event.
-     * @param {string} photoDataUrl
-     */
-    photoTaken(photoDataUrl) {}
-
-    /**
-     * Requests a file chooser to select a new user image. No response is
-     * expected.
-     */
-    chooseFile() {}
-
-    /** Requests the currently selected image. */
-    requestSelectedImage() {}
-  }
+  initialize() {}
 
   /**
-   * @implements {settings.ChangePictureBrowserProxy}
+   * Sets the user image to one of the default images. As a response, the C++
+   * sends the 'default-images-changed' WebUIListener event.
+   * @param {string} imageUrl
    */
-  /* #export */ class ChangePictureBrowserProxyImpl {
-    /** @override */
-    initialize() {
-      chrome.send('onChangePicturePageInitialized');
-    }
+  selectDefaultImage(imageUrl) {}
 
-    /** @override */
-    selectDefaultImage(imageUrl) {
-      chrome.send('selectImage', [imageUrl, 'default']);
-    }
+  /**
+   * Sets the user image to the 'old' image. As a response, the C++ sends the
+   * 'old-image-changed' WebUIListener event.
+   */
+  selectOldImage() {}
 
-    /** @override */
-    selectOldImage() {
-      chrome.send('selectImage', ['', 'old']);
-    }
+  /**
+   * Sets the user image to the profile image. As a response, the C++ sends
+   * the 'profile-image-changed' WebUIListener event.
+   */
+  selectProfileImage() {}
 
-    /** @override */
-    selectProfileImage() {
-      chrome.send('selectImage', ['', 'profile']);
-    }
+  /**
+   * Provides the taken photo as a data URL to the C++ and sets the user
+   * image to the 'old' image. As a response, the C++ sends the
+   * 'old-image-changed' WebUIListener event.
+   * @param {string} photoDataUrl
+   */
+  photoTaken(photoDataUrl) {}
 
-    /** @override */
-    photoTaken(photoDataUrl) {
-      chrome.send('photoTaken', [photoDataUrl]);
-    }
+  /**
+   * Requests a file chooser to select a new user image. No response is
+   * expected.
+   */
+  chooseFile() {}
 
-    /** @override */
-    chooseFile() {
-      chrome.send('chooseFile');
-    }
+  /** Requests the currently selected image. */
+  requestSelectedImage() {}
+}
 
-    /** @override */
-    requestSelectedImage() {
-      chrome.send('requestSelectedImage');
-    }
+/**
+ * @implements {ChangePictureBrowserProxy}
+ */
+export class ChangePictureBrowserProxyImpl {
+  /** @override */
+  initialize() {
+    chrome.send('onChangePicturePageInitialized');
   }
 
-  // The singleton instance_ is replaced with a test version of this wrapper
-  // during testing.
-  cr.addSingletonGetter(ChangePictureBrowserProxyImpl);
+  /** @override */
+  selectDefaultImage(imageUrl) {
+    chrome.send('selectImage', [imageUrl, 'default']);
+  }
 
-  // #cr_define_end
-  return {
-    ChangePictureBrowserProxy,
-    ChangePictureBrowserProxyImpl,
-    DefaultImage,
-  };
-});
+  /** @override */
+  selectOldImage() {
+    chrome.send('selectImage', ['', 'old']);
+  }
+
+  /** @override */
+  selectProfileImage() {
+    chrome.send('selectImage', ['', 'profile']);
+  }
+
+  /** @override */
+  photoTaken(photoDataUrl) {
+    chrome.send('photoTaken', [photoDataUrl]);
+  }
+
+  /** @override */
+  chooseFile() {
+    chrome.send('chooseFile');
+  }
+
+  /** @override */
+  requestSelectedImage() {
+    chrome.send('requestSelectedImage');
+  }
+}
+
+// The singleton instance_ is replaced with a test version of this wrapper
+// during testing.
+addSingletonGetter(ChangePictureBrowserProxyImpl);

@@ -4,7 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -12,16 +11,16 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":change_picture.m",
-    ":change_picture_browser_proxy.m",
+    ":change_picture_browser_proxy",
     ":personalization_page.m",
-    ":wallpaper_browser_proxy.m",
+    ":wallpaper_browser_proxy",
   ]
 }
 
 js_library("change_picture.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/change_picture.m.js" ]
   deps = [
-    ":change_picture_browser_proxy.m",
+    ":change_picture_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
@@ -42,15 +41,14 @@ js_library("change_picture.m") {
   extra_deps = [ ":change_picture_module" ]
 }
 
-js_library("change_picture_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/change_picture_browser_proxy.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("change_picture_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("personalization_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js" ]
   deps = [
-    ":wallpaper_browser_proxy.m",
+    ":wallpaper_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router",
@@ -63,16 +61,14 @@ js_library("personalization_page.m") {
   extra_deps = [ ":personalization_page_module" ]
 }
 
-js_library("wallpaper_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.m.js" ]
+js_library("wallpaper_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
 group("polymer3_elements") {
   public_deps = [
     ":change_picture_module",
-    ":modulize",
     ":personalization_page_module",
   ]
 }
@@ -96,12 +92,4 @@ polymer_modulizer("personalization_page") {
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "change_picture_browser_proxy.js",
-    "wallpaper_browser_proxy.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

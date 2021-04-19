@@ -128,6 +128,6 @@ export {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} 
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
 export {routes} from './os_route.m.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.m.js';
-export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.m.js';
-export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.m.js';
+export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.js';
+export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.js';
 export {getSearchHandler, setSearchHandlerForTesting} from './search_handler.m.js';
