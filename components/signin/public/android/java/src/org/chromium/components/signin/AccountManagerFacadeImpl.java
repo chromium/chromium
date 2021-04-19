@@ -30,10 +30,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -71,10 +73,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new AtomicReference<>();
     private final CountDownLatch mPopulateAccountCacheLatch = new CountDownLatch(1);
 
-    private final ArrayList<Runnable> mCallbacksWaitingForCachePopulation = new ArrayList<>();
-
     private int mUpdateTasksCounter;
-    private final ArrayList<Runnable> mCallbacksWaitingForPendingUpdates = new ArrayList<>();
+    private final Queue<Runnable> mCallbacksWaitingForAccountsFetch = new ArrayDeque<>();
     private ObservableValue<Boolean> mUpdatePendingState = new MutableObservableValue<>(true);
 
     /**
@@ -272,7 +272,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             callback.run();
             return;
         }
-        mCallbacksWaitingForPendingUpdates.add(callback);
+        mCallbacksWaitingForAccountsFetch.add(callback);
     }
 
     /**
@@ -316,7 +316,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         if (isCachePopulated()) {
             ThreadUtils.postOnUiThread(runnable);
         } else {
-            mCallbacksWaitingForCachePopulation.add(runnable);
+            mCallbacksWaitingForAccountsFetch.add(runnable);
         }
     }
 
@@ -418,10 +418,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         assert mUpdateTasksCounter > 0;
         if (--mUpdateTasksCounter > 0) return;
 
-        for (Runnable callback : mCallbacksWaitingForPendingUpdates) {
-            callback.run();
+        while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
+            final Runnable runnable = mCallbacksWaitingForAccountsFetch.remove();
+            runnable.run();
         }
-        mCallbacksWaitingForPendingUpdates.clear();
         mUpdatePendingState.set(false);
     }
 
@@ -447,12 +447,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             // Records number of Android accounts present on device.
             RecordHistogram.recordExactLinearHistogram(
                     "Signin.AndroidNumberOfDeviceAccounts", tryGetGoogleAccounts().size(), 50);
-
-            for (Runnable callback : mCallbacksWaitingForCachePopulation) {
-                callback.run();
+            while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
+                final Runnable runnable = mCallbacksWaitingForAccountsFetch.remove();
+                runnable.run();
             }
-            mCallbacksWaitingForCachePopulation.clear();
-
             fireOnAccountsChangedNotification();
             decrementUpdateCounter();
         }
