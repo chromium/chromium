@@ -529,10 +529,14 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
         /* shrink_collapsed */ true, &column_locations, &has_collapsed_columns);
   }
 #if DCHECK_IS_ON()
+  // To avoid number rounding issues, instead of comparing sizes
+  // equality, we check whether sizes differ in less than a pixel.
   if (!has_collapsed_columns) {
-    // Colums define table whose inline size equals InitialFragmentGeometry.
-    DCHECK_EQ(table_inline_size_before_collapse,
-              container_builder_.InlineSize());
+    // Columns define table whose inline size equals InitialFragmentGeometry.
+    DCHECK_LT(
+        (table_inline_size_before_collapse - container_builder_.InlineSize())
+            .Abs(),
+        LayoutUnit(1));
   } else if (ConstraintSpace().IsFixedInlineSize()) {
     // Collapsed columns + fixed inline size: columns define table whose
     // inline size is less or equal InitialFragmentGeometry.
@@ -546,7 +550,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
         std::max(ComputeTableSizeFromColumns(column_locations, border_padding,
                                              border_spacing),
                  caption_constraint.min_size);
-    DCHECK_EQ(table_inline_size, container_builder_.InlineSize());
+    DCHECK_LT((table_inline_size - container_builder_.InlineSize()).Abs(),
+              LayoutUnit(1));
   }
 #endif
 
