@@ -378,92 +378,6 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
 
-TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jobject>& j_initiator_origin,
-    const JavaParamRef<jstring>& j_extra_headers,
-    const JavaParamRef<jobject>& j_post_data,
-    jint page_transition,
-    const JavaParamRef<jstring>& j_referrer_url,
-    jint referrer_policy,
-    jboolean is_renderer_initiated,
-    jboolean should_replace_current_entry,
-    jboolean has_user_gesture,
-    jboolean should_clear_history_list,
-    jlong input_start_timestamp,
-    jlong intent_received_timestamp,
-    jint ua_override_option) {
-  if (!web_contents())
-    return PAGE_LOAD_FAILED;
-
-  if (url.is_null())
-    return PAGE_LOAD_FAILED;
-
-  GURL gurl(base::android::ConvertJavaStringToUTF8(env, url));
-  if (gurl.is_empty())
-    return PAGE_LOAD_FAILED;
-
-  // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
-  // FixupURL explicitly says not to use it on URLs coming from untrustworthy
-  // sources, like other apps. Once migrations of Java code to GURL are complete
-  // and incoming URLs are converted to GURLs at their source, we can make
-  // decisions of whether or not to fix up GURLs on a case-by-case basis based
-  // on trustworthiness of the incoming URL.
-  GURL fixed_url(
-      url_formatter::FixupURL(gurl.possibly_invalid_spec(), std::string()));
-  if (!fixed_url.is_valid())
-    return PAGE_LOAD_FAILED;
-
-  if (!HandleNonNavigationAboutURL(fixed_url)) {
-    // Record UMA "ShowHistory" here. That way it'll pick up both user
-    // typing chrome://history as well as selecting from the drop down menu.
-    if (fixed_url.spec() == chrome::kChromeUIHistoryURL) {
-      base::RecordAction(base::UserMetricsAction("ShowHistory"));
-    }
-
-    content::NavigationController::LoadURLParams load_params(fixed_url);
-    if (j_extra_headers) {
-      load_params.extra_headers = base::android::ConvertJavaStringToUTF8(
-          env,
-          j_extra_headers);
-    }
-    if (j_post_data) {
-      load_params.load_type =
-          content::NavigationController::LOAD_TYPE_HTTP_POST;
-      load_params.post_data =
-          content::ExtractResourceRequestBodyFromJavaObject(env, j_post_data);
-    }
-    load_params.transition_type =
-        ui::PageTransitionFromInt(page_transition);
-    if (j_referrer_url) {
-      load_params.referrer = content::Referrer(
-          GURL(base::android::ConvertJavaStringToUTF8(env, j_referrer_url)),
-          content::Referrer::ConvertToPolicy(referrer_policy));
-    }
-    if (j_initiator_origin) {
-      load_params.initiator_origin =
-          url::Origin::FromJavaObject(j_initiator_origin);
-    }
-    load_params.is_renderer_initiated = is_renderer_initiated;
-    load_params.should_replace_current_entry = should_replace_current_entry;
-    load_params.has_user_gesture = has_user_gesture;
-    load_params.should_clear_history_list = should_clear_history_list;
-    if (input_start_timestamp != 0) {
-      load_params.input_start =
-          base::TimeTicks::FromUptimeMillis(input_start_timestamp);
-    } else if (intent_received_timestamp != 0) {
-      load_params.input_start =
-          base::TimeTicks::FromUptimeMillis(intent_received_timestamp);
-    }
-    load_params.override_user_agent =
-        static_cast<NavigationController::UserAgentOverrideOption>(
-            ua_override_option);
-    web_contents()->GetController().LoadURLWithParams(load_params);
-  }
-  return DEFAULT_PAGE_LOAD;
-}
-
 void TabAndroid::SetActiveNavigationEntryTitleForUrl(
     JNIEnv* env,
     const JavaParamRef<jstring>& jurl,
@@ -549,6 +463,13 @@ base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
   if (tab)
     jtab = tab->GetJavaObject();
   return jtab;
+}
+
+static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  return HandleNonNavigationAboutURL(*url);
 }
 
 static void JNI_TabImpl_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {

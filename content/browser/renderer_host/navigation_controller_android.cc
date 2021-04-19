@@ -23,6 +23,8 @@
 #include "net/base/data_url.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
@@ -238,7 +240,11 @@ void NavigationControllerAndroid::LoadUrl(
     const JavaParamRef<jstring>& data_url_as_string,
     jboolean can_load_local_resources,
     jboolean is_renderer_initiated,
-    jboolean should_replace_current_entry) {
+    jboolean should_replace_current_entry,
+    const JavaParamRef<jobject>& j_initiator_origin,
+    jboolean has_user_gesture,
+    jboolean should_clear_history_list,
+    jlong input_start) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -252,6 +258,8 @@ void NavigationControllerAndroid::LoadUrl(
   params.can_load_local_resources = can_load_local_resources;
   params.is_renderer_initiated = is_renderer_initiated;
   params.should_replace_current_entry = should_replace_current_entry;
+  params.has_user_gesture = has_user_gesture;
+  params.should_clear_history_list = should_clear_history_list;
 
   if (extra_headers)
     params.extra_headers = ConvertJavaStringToUTF8(env, extra_headers);
@@ -291,6 +299,13 @@ void NavigationControllerAndroid::LoadUrl(
         Referrer(GURL(ConvertJavaStringToUTF8(env, j_referrer_url)),
                  Referrer::ConvertToPolicy(referrer_policy));
   }
+
+  if (j_initiator_origin) {
+    params.initiator_origin = url::Origin::FromJavaObject(j_initiator_origin);
+  }
+
+  if (input_start != 0)
+    params.input_start = base::TimeTicks::FromUptimeMillis(input_start);
 
   navigation_controller_->LoadURLWithParams(params);
 }

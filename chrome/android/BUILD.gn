@@ -755,7 +755,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/android/explore_sites/explore_sites_feature.h",
     "//chrome/browser/android/feedback/connectivity_checker.cc",
     "//chrome/browser/android/policy/policy_auditor.cc",
-    "//chrome/browser/android/tab_android.h",
     "//chrome/browser/android/webapk/webapk_install_service.h",
     "//chrome/browser/android/webapk/webapk_installer.h",
     "//chrome/browser/download/android/download_open_source.h",

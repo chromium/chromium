@@ -39,7 +39,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.TabLoadStatus;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
@@ -645,7 +644,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 NewTabPage ntp = getNewTabPageForCurrentTab();
                 if (ntp == null) return;
                 if (!UrlUtilities.isNTPUrl(params.getUrl())
-                        && loadType != TabLoadStatus.PAGE_LOAD_FAILED) {
+                        && loadType != Tab.TabLoadStatus.PAGE_LOAD_FAILED) {
                     ntp.setUrlFocusAnimationsDisabled(true);
                     onTabOrModelChanged();
                 }
