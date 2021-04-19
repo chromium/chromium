@@ -251,7 +251,7 @@ void FrameHeader::SetBackButton(views::FrameCaptionButton* back_button) {
   if (back_button_) {
     back_button_->SetBackgroundColor(GetCurrentFrameColor());
     back_button_->SetImage(views::CAPTION_BUTTON_ICON_BACK,
-                           views::FrameCaptionButton::ANIMATE_NO,
+                           views::FrameCaptionButton::Animate::kNo,
                            chromeos::kWindowControlBackIcon);
   }
 }

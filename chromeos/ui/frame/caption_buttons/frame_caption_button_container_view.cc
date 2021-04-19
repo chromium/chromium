@@ -214,7 +214,7 @@ void FrameCaptionButtonContainerView::SetButtonImage(
                                           size_button_, close_button_};
   for (size_t i = 0; i < base::size(buttons); ++i) {
     if (buttons[i]->GetIcon() == icon)
-      buttons[i]->SetImage(icon, views::FrameCaptionButton::ANIMATE_NO,
+      buttons[i]->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
                            icon_definition);
   }
 }
@@ -393,8 +393,8 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
   }
 
   views::FrameCaptionButton::Animate fcb_animate =
-      (animate == ANIMATE_YES) ? views::FrameCaptionButton::ANIMATE_YES
-                               : views::FrameCaptionButton::ANIMATE_NO;
+      (animate == ANIMATE_YES) ? views::FrameCaptionButton::Animate::kYes
+                               : views::FrameCaptionButton::Animate::kNo;
   auto it = button_icon_map_.find(icon);
   if (it != button_icon_map_.end())
     button->SetImage(icon, fcb_animate, *it->second);

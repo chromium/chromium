@@ -30,7 +30,7 @@ class InkDropRipple;
 class VIEWS_EXPORT FrameCaptionButton : public views::Button {
  public:
   METADATA_HEADER(FrameCaptionButton);
-  enum Animate { ANIMATE_YES, ANIMATE_NO };
+  enum class Animate { kYes, kNo };
 
   FrameCaptionButton(PressedCallback callback,
                      CaptionButtonIcon icon,
@@ -45,9 +45,9 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // Gets the alpha ratio for the colors of inactive frame caption buttons.
   static float GetInactiveButtonColorAlphaRatio();
 
-  // Sets the image to use to paint the button. If |animate| is ANIMATE_YES,
+  // Sets the image to use to paint the button. If |animate| is Animate::kYes,
   // the button crossfades to the new visuals. If the image matches the one
-  // currently used by the button and |animate| is ANIMATE_NO, the crossfade
+  // currently used by the button and |animate| is Animate::kNo, the crossfade
   // animation is progressed to the end.
   void SetImage(CaptionButtonIcon icon,
                 Animate animate,

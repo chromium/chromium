@@ -119,21 +119,21 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
       gfx::CreateVectorIcon(icon_definition, GetButtonColor(background_color_));
 
   // The early return is dependent on |animate| because callers use SetImage()
-  // with ANIMATE_NO to progress the crossfade animation to the end.
+  // with Animate::kNo to progress the crossfade animation to the end.
   if (icon == icon_ &&
-      (animate == ANIMATE_YES || !swap_images_animation_->is_animating()) &&
+      (animate == Animate::kYes || !swap_images_animation_->is_animating()) &&
       new_icon_image.BackedBySameObjectAs(icon_image_)) {
     return;
   }
 
-  if (animate == ANIMATE_YES)
+  if (animate == Animate::kYes)
     crossfade_icon_image_ = icon_image_;
 
   icon_ = icon;
   icon_definition_ = &icon_definition;
   icon_image_ = new_icon_image;
 
-  if (animate == ANIMATE_YES) {
+  if (animate == Animate::kYes) {
     swap_images_animation_->Reset(0);
     swap_images_animation_->SetSlideDuration(
         base::TimeDelta::FromMilliseconds(200));
@@ -206,7 +206,7 @@ void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
   background_color_ = background_color;
   // Refresh the icon since the color may have changed.
   if (icon_definition_)
-    SetImage(icon_, ANIMATE_NO, *icon_definition_);
+    SetImage(icon_, Animate::kNo, *icon_definition_);
   UpdateInkDropBaseColor();
 }
 
