@@ -54,10 +54,10 @@ class HalfRoundedRectBackground : public Background {
 
 FootnoteContainerView::FootnoteContainerView(const gfx::Insets& margins,
                                              std::unique_ptr<View> child_view,
-                                             float corner_radius) {
+                                             float corner_radius)
+    : corner_radius_(corner_radius) {
   SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, margins, 0));
-  SetCornerRadius(corner_radius);
   auto* child_view_ptr = AddChildView(std::move(child_view));
   SetVisible(child_view_ptr->GetVisible());
 }
