@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
@@ -286,10 +287,7 @@ bool IsIconURLNullOrSecure(const KURL& url) {
   if (!url.IsValid())
     return false;
 
-  // https://www.w3.org/TR/mixed-content/#a-priori-authenticated-url
-  return url.IsAboutSrcdocURL() || url.IsAboutBlankURL() ||
-         url.ProtocolIsData() ||
-         SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
+  return network::IsUrlPotentiallyTrustworthy(url);
 }
 
 // Checks if the size of the supplied ArrayBuffer or ArrayBufferView is at most
