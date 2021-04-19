@@ -589,6 +589,8 @@ namespace autotestPrivate {
   callback GetRegisteredSystemWebAppsCallback = void
       (SystemApp[] systemApps);
 
+  callback IsSystemWebAppOpenCallback = void (boolean isOpen);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -695,6 +697,10 @@ namespace autotestPrivate {
     // Returns the number of system web apps that should be installed.
     static void getRegisteredSystemWebApps(
         GetRegisteredSystemWebAppsCallback callback);
+
+    // Returns whether the system web app is currently open or not.
+    static void isSystemWebAppOpen(DOMString appId,
+                                   IsSystemWebAppOpenCallback callback);
 
     // Launches ARC app with optional intent. Returns true if ARC is active,
     // app exists and launch request is passed to Android.

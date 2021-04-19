@@ -1356,6 +1356,34 @@ var systemWebAppsTests = [
       })
     );
   },
+  function isSystemWebAppOpen() {
+    chrome.autotestPrivate.waitForSystemWebAppsInstall(
+        chrome.test.callbackPass(() => {
+          // Test system app should not be open by default.
+          chrome.autotestPrivate.isSystemWebAppOpen(
+              'maphiehpiinjgiaepbljmopkodkadcbh',
+              chrome.test.callbackPass(isOpen => {
+                chrome.test.assertFalse(isOpen);
+              }));
+
+          // Open test app and verify the state should be open.
+          chrome.autotestPrivate.launchSystemWebApp(
+              'OSSettings', 'chrome://test-system-app/',
+              chrome.test.callbackPass(() => {
+                chrome.autotestPrivate.isSystemWebAppOpen(
+                    'maphiehpiinjgiaepbljmopkodkadcbh',
+                    chrome.test.callbackPass(isOpen => {
+                      chrome.test.assertTrue(isOpen);
+                    }));
+              }));
+
+          // Check for invalid app.
+          chrome.autotestPrivate.isSystemWebAppOpen(
+              '',
+              chrome.test.callbackFail(
+                  'No system web app is found by given app id.'));
+        }));
+  },
 ]
 
 var test_suites = {

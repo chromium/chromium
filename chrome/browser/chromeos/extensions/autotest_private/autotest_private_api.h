@@ -328,6 +328,17 @@ class AutotestPrivateGetRegisteredSystemWebAppsFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateIsSystemWebAppOpenFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateIsSystemWebAppOpenFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.isSystemWebAppOpen",
+                             AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION)
+
+ private:
+  ~AutotestPrivateIsSystemWebAppOpenFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateLaunchArcAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchArcApp",

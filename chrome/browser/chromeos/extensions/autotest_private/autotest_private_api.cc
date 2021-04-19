@@ -1850,6 +1850,38 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateIsSystemWebAppOpenFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateIsSystemWebAppOpenFunction::
+    AutotestPrivateIsSystemWebAppOpenFunction() = default;
+
+AutotestPrivateIsSystemWebAppOpenFunction::
+    ~AutotestPrivateIsSystemWebAppOpenFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateIsSystemWebAppOpenFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  web_app::WebAppProviderBase* provider =
+      web_app::WebAppProviderBase::GetProviderBase(profile);
+
+  if (!provider)
+    return RespondNow(Error("Web Apps are not available for profile."));
+
+  std::unique_ptr<api::autotest_private::IsSystemWebAppOpen::Params> params(
+      api::autotest_private::IsSystemWebAppOpen::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateIsSystemWebAppOpenFunction " << params->app_id;
+  base::Optional<web_app::SystemAppType> app_type =
+      web_app::GetSystemWebAppTypeForAppId(profile, params->app_id);
+  if (!app_type)
+    return RespondNow(Error("No system web app is found by given app id."));
+
+  return RespondNow(OneArgument(base::Value(
+      web_app::FindSystemWebAppBrowser(profile, *app_type) != nullptr)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateLaunchArcIntentFunction
 ///////////////////////////////////////////////////////////////////////////////
 

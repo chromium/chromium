@@ -27058,6 +27058,7 @@ Called by update_extension_histograms.py.-->
   <int value="1549" label="LANGUAGESETTINGSPRIVATE_GETNEVERTRANSLATELANGUAGES"/>
   <int value="1550" label="ACTION_GETUSERSETTINGS"/>
   <int value="1551" label="ENTERPRISEREPORTINGPRIVATE_GETCERTIFICATE"/>
+  <int value="1552" label="AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION"/>
 </enum>
 
 <enum name="ExtensionIconState">
