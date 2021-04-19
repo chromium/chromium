@@ -3187,6 +3187,8 @@ enum WebFeature {
   kElementGetInnerHTML = 3874,
   kFileHandlingLaunch = 3875,
   kSameOriginDocumentsWithDifferentCOOPStatus = 3876,
+  // The items above roughly this point are available in the M91 branch.
+
   kHTMLMediaElementSetSinkId = 3877,
   kPrefixedStorageQuotaThirdPartyContext = 3878,
   kRequestedFileSystemPersistentThirdPartyContext = 3879,
