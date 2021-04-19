@@ -17,8 +17,13 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+#error "This file should only be included if DICE support is enabled"
+#endif
 
 class Browser;
 class DiceSignedInProfileCreator;
