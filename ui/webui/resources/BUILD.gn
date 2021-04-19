@@ -126,6 +126,7 @@ generate_grd("build_ts_grdp") {
 }
 
 ts_library("library") {
+  root_dir = "$target_gen_dir/preprocessed"
   in_files = [
     "js/cr/world.ts",
     "js/hello_world.ts",
@@ -136,11 +137,14 @@ ts_library("library") {
     "$target_gen_dir/js/promise_resolver.m.d.ts",
     "$target_gen_dir/js/util.m.d.ts",
   ]
-  extra_deps = [ ":generate_definitions" ]
+  extra_deps = [
+    ":generate_definitions",
+    "js:preprocess_src_ts",
+  ]
 }
 
 ts_definitions("generate_definitions") {
-  root_dir = "$root_gen_dir/ui/webui/resources/preprocessed"
+  root_dir = "$target_gen_dir/preprocessed"
   js_files = [
     "js/assert.m.js",
     "js/cr.m.js",
