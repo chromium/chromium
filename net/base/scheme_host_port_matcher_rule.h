@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -31,7 +32,7 @@ class NET_EXPORT SchemeHostPortMatcherRule {
   // this header file. Types with other serializations will need to be handled
   // by the caller.
   static std::unique_ptr<SchemeHostPortMatcherRule> FromUntrimmedRawString(
-      const std::string& raw_untrimmed);
+      base::StringPiece raw_untrimmed);
 
   // Evaluates the rule against |url|.
   virtual SchemeHostPortMatcherResult Evaluate(const GURL& url) const = 0;

@@ -270,7 +270,7 @@ NET_EXPORT bool IPAddressMatchesPrefix(const IPAddress& ip_address,
 //    10.10.3.1/20
 //    a:b:c::/46
 //    ::1/128
-NET_EXPORT bool ParseCIDRBlock(const std::string& cidr_literal,
+NET_EXPORT bool ParseCIDRBlock(base::StringPiece cidr_literal,
                                IPAddress* ip_address,
                                size_t* prefix_length_in_bits);
 

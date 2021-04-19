@@ -26,8 +26,8 @@ SchemeHostPortMatcher SchemeHostPortMatcher::FromRawString(
 
   base::StringTokenizer entries(raw, kParseRuleListDelimiterList);
   while (entries.GetNext()) {
-    auto rule =
-        SchemeHostPortMatcherRule::FromUntrimmedRawString(entries.token());
+    auto rule = SchemeHostPortMatcherRule::FromUntrimmedRawString(
+        entries.token_piece());
     if (rule) {
       result.AddAsLastRule(std::move(rule));
     }

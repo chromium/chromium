@@ -438,7 +438,7 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                               prefix_length_in_bits);
 }
 
-bool ParseCIDRBlock(const std::string& cidr_literal,
+bool ParseCIDRBlock(base::StringPiece cidr_literal,
                     IPAddress* ip_address,
                     size_t* prefix_length_in_bits) {
   // We expect CIDR notation to match one of these two templates:
