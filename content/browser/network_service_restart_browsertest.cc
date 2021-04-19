@@ -1111,12 +1111,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
 
 // TODO(crbug.com/901026): Fix deadlock on process startup on Android.
 #if defined(OS_ANDROID)
-#define MAYBE_SyncCallDuringRestart DISABLED_SyncCallDuringRestart
-#else
-#define MAYBE_SyncCallDuringRestart SyncCallDuringRestart
-#endif
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
-                       MAYBE_SyncCallDuringRestart) {
+                       DISABLED_SyncCallDuringRestart) {
   if (IsInProcessNetworkService())
     return;
   base::RunLoop run_loop;
@@ -1137,6 +1133,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   network_service_test->AddRules({});
 }
+#endif
 
 // Tests handling of a NetworkService crash that happens after a navigation
 // triggers sending a Commit IPC to the renderer process, but before a DidCommit
