@@ -164,13 +164,11 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
             EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
             EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
-            EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[0]->page_title),
-                      "Google title");
+            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
             EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
             EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
             EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
-            EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[1]->page_title),
-                      "Github title");
+            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
 
             ASSERT_EQ(memories[0]->keywords.size(), 2u);
             EXPECT_EQ(memories[0]->keywords[0], "topic 1");
@@ -181,8 +179,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
             EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
             EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
-            EXPECT_EQ(base::UTF16ToUTF8(memories[1]->top_visits[0]->page_title),
-                      "Github title");
+            EXPECT_EQ(memories[1]->top_visits[0]->page_title, "Github title");
             EXPECT_TRUE(memories[1]->keywords.empty());
 
             run_loop_quit_.Run();

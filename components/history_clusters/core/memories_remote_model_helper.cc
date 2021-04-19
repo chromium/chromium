@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -86,7 +87,7 @@ history_clusters::mojom::VisitPtr ValueToVisit(
   if (memory_visit_it != visits.end()) {
     visit->url = memory_visit_it->url_row.url();
     visit->time = memory_visit_it->visit_row.visit_time;
-    visit->page_title = memory_visit_it->url_row.title();
+    visit->page_title = base::UTF16ToUTF8(memory_visit_it->url_row.title());
   }
 
   // TODO(manukh) fill out:

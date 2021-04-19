@@ -5,16 +5,13 @@
 import './shared_vars.js';
 
 import {SearchQuery} from '/components/history_clusters/core/memories.mojom-webui.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
  */
 
-/** @polymer */
-class SearchQueryElement extends MojomConversionMixinBase {
+class SearchQueryElement extends PolymerElement {
   static get is() {
     return 'search-query';
   }

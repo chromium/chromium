@@ -153,7 +153,7 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     this.onBrowserIdle_().then(() => {
       // Request up to |RESULTS_PER_PAGE| of the freshest Memories until now.
       const queryParams = {
-        query: this.mojoString16(this.query_.trim()),
+        query: this.query_.trim(),
         recencyThreshold: this.mojoTime(Date.now()),
         maxCount: RESULTS_PER_PAGE,
       };

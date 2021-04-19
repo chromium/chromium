@@ -6,17 +6,14 @@ import './shared_vars.js';
 
 import {WebPage} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a page
  * thumbnail.
  */
 
-/** @polymer */
-class PageThumbnailElement extends MojomConversionMixinBase {
+class PageThumbnailElement extends PolymerElement {
   static get is() {
     return 'page-thumbnail';
   }

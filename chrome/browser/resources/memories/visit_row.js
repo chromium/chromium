@@ -8,9 +8,8 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {Visit} from '/components/history_clusters/core/memories.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MojomConversionMixinBase} from './mojom_conversion_mixin.js';
 import {getHostnameFromUrl} from './utils.js';
 
 /**
@@ -19,8 +18,7 @@ import {getHostnameFromUrl} from './utils.js';
  * as well as an action menu.
  */
 
-/** @polymer */
-class VisitRowElement extends MojomConversionMixinBase {
+class VisitRowElement extends PolymerElement {
   static get is() {
     return 'visit-row';
   }
@@ -94,8 +92,7 @@ class VisitRowElement extends MojomConversionMixinBase {
    * @private
    */
   getTimeOfVisit_(visit) {
-    return this.decodeMojoString16(
-        this.isTopVisit ? visit.relativeDate : visit.timeOfDay);
+    return this.isTopVisit ? visit.relativeDate : visit.timeOfDay;
   }
 }
 

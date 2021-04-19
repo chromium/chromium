@@ -46,7 +46,6 @@ js_library("memories") {
 js_library("memory_card") {
   deps = [
     ":memory_tile",
-    ":mojom_conversion_mixin",
     ":page_favicon",
     ":page_thumbnail",
     ":search_query",
@@ -82,7 +81,6 @@ js_library("page_favicon") {
 
 js_library("page_thumbnail") {
   deps = [
-    ":mojom_conversion_mixin",
     "//components/history_clusters/core:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//url/mojom:url_mojom_origin_webui_js",
@@ -97,7 +95,6 @@ js_library("router") {
 
 js_library("search_query") {
   deps = [
-    ":mojom_conversion_mixin",
     "//components/history_clusters/core:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -119,7 +116,6 @@ js_library("utils") {
 
 js_library("visit_row") {
   deps = [
-    ":mojom_conversion_mixin",
     ":page_favicon",
     ":utils",
     "//components/history_clusters/core:mojo_bindings_webui_js",

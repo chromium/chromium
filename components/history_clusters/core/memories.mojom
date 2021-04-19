@@ -4,7 +4,6 @@
 
 module history_clusters.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -13,7 +12,7 @@ import "url/mojom/url.mojom";
 // Represents a search query related to a Memory.
 struct SearchQuery {
   // Text of the search query.
-  mojo_base.mojom.String16 query;
+  string query;
   // URL of the search query page.
   url.mojom.Url url;
 };
@@ -23,7 +22,7 @@ struct WebPage {
   // URL of the webpage; Identifies the webpage.
   url.mojom.Url url;
   // Title of the webpage.
-  mojo_base.mojom.String16 title;
+  string title;
   // Optional externally hosted thumbnail representing the webpage.
   url.mojom.Url? thumbnail_url;
 };
@@ -33,7 +32,7 @@ struct TabGroup {
   // Tab group identifier. See //components/tab_groups/tab_group_id.h
   mojo_base.mojom.Token id;
   // Title of the tab group.
-  mojo_base.mojom.String16 title;
+  string title;
   // Pages in this tab group.
   array<WebPage> pages;
 };
@@ -45,15 +44,15 @@ struct Visit {
   // Visited URL.
   url.mojom.Url url;
   // Title of the visited webpage.
-  mojo_base.mojom.String16 page_title;
+  string page_title;
   // Optional externally hosted thumbnail representing the visited webpage.
   url.mojom.Url? thumbnail_url;
   // Time of the visit.
   mojo_base.mojom.Time time;
   // Localized string of approximate time of visit, e.g., "2 days ago".
-  mojo_base.mojom.String16 relative_date;
+  string relative_date;
   // Time of day of visit, e.g., "3:07 PM".
-  mojo_base.mojom.String16 time_of_day;
+  string time_of_day;
   // Number of duplicate visits (i.e., visits to the same URL) in the Memory.
   int32 num_duplicate_visits;
   // Related visits (e.g., visits to the same domain name) in the Memory;
@@ -98,7 +97,7 @@ struct Memory {
 struct QueryParams {
   // The query string the Memories are matched against. The default value of
   // empty string means to return every Memory that matches the other criteria.
-  mojo_base.mojom.String16 query;
+  string query;
 
   // The time threshold (exclusive) for how recent the returned Memories can be.
   // The sensible default value for this is the present time which should be
