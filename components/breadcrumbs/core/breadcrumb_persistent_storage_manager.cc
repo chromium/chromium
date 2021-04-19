@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 
 #include <memory>
 #include <string>
@@ -17,13 +17,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace breadcrumbs {
 
 namespace {
 
@@ -143,19 +140,12 @@ size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
 // Renames breadcrumb files with the old filenames "iOS Breadcrumbs.*" to the
 // new filenames "Breadcrumbs.*", if present.
 void MigrateOldBreadcrumbFiles(
+    const base::FilePath& old_breadcrumbs_file_path,
+    const base::FilePath& old_breadcrumbs_temp_file_path,
     const base::FilePath& breadcrumbs_file_path,
     const base::FilePath& breadcrumbs_temp_file_path) {
-  const base::FilePath old_breadcrumbs_file_path =
-      breadcrumb_persistent_storage_util::
-          GetOldBreadcrumbPersistentStorageFilePath(
-              breadcrumbs_file_path.DirName());
   if (base::PathExists(old_breadcrumbs_file_path))
     base::Move(old_breadcrumbs_file_path, breadcrumbs_file_path);
-
-  const base::FilePath old_breadcrumbs_temp_file_path =
-      breadcrumb_persistent_storage_util::
-          GetOldBreadcrumbPersistentStorageTempFilePath(
-              breadcrumbs_temp_file_path.DirName());
   if (base::PathExists(old_breadcrumbs_temp_file_path))
     base::Move(old_breadcrumbs_temp_file_path, breadcrumbs_temp_file_path);
 }
@@ -163,14 +153,15 @@ void MigrateOldBreadcrumbFiles(
 }  // namespace
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
-    base::FilePath directory)
+    const base::FilePath& directory,
+    const base::Optional<base::FilePath>& old_breadcrumbs_file_path,
+    const base::Optional<base::FilePath>& old_breadcrumbs_temp_file_path)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
-      breadcrumbs_file_path_(
-          breadcrumbs::GetBreadcrumbPersistentStorageFilePath(directory)),
+      breadcrumbs_file_path_(GetBreadcrumbPersistentStorageFilePath(directory)),
       breadcrumbs_temp_file_path_(
-          breadcrumbs::GetBreadcrumbPersistentStorageTempFilePath(directory)),
+          GetBreadcrumbPersistentStorageTempFilePath(directory)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -178,10 +169,14 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
   // Rename breadcrumb files using the old filenames, if present. This must
   // happen before the files are used, to ensure that old breadcrumbs are found.
   // TODO(crbug.com/1187988): remove this and its unit test.
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MigrateOldBreadcrumbFiles, breadcrumbs_file_path_,
-                     breadcrumbs_temp_file_path_));
+  if (old_breadcrumbs_file_path && old_breadcrumbs_temp_file_path) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MigrateOldBreadcrumbFiles,
+                       old_breadcrumbs_file_path.value(),
+                       old_breadcrumbs_temp_file_path.value(),
+                       breadcrumbs_file_path_, breadcrumbs_temp_file_path_));
+  }
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DoGetStoredEventsLength, breadcrumbs_file_path_),
@@ -201,7 +196,7 @@ void BreadcrumbPersistentStorageManager::GetStoredEvents(
 }
 
 void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* manager) {
+    BreadcrumbManager* manager) {
   manager->AddObserver(this);
 }
 
@@ -211,13 +206,54 @@ void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManagerService(
 }
 
 void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* manager) {
+    BreadcrumbManager* manager) {
   manager->RemoveObserver(this);
 }
 
 void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManagerService(
     BreadcrumbManagerKeyedService* service) {
   service->RemoveObserver(this);
+}
+
+void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
+    const std::vector<std::string> pending_breadcrumbs,
+    std::vector<std::string> existing_events) {
+  // Add events which had not yet been written.
+  for (auto event : pending_breadcrumbs) {
+    existing_events.push_back(event);
+  }
+
+  std::vector<std::string> breadcrumbs;
+  for (auto event_it = existing_events.rbegin();
+       event_it != existing_events.rend(); ++event_it) {
+    // Reduce saved events to only fill the amount which would be included on
+    // a crash log. This allows future events to be appended individually up
+    // to |kPersistedFilesizeInBytes|, which is more efficient than writing
+    // out the
+    const int event_with_seperator_size =
+        event_it->size() + strlen(kEventSeparator);
+    if (event_with_seperator_size + current_mapped_file_position_.value() >=
+        kMaxDataLength) {
+      break;
+    }
+
+    breadcrumbs.push_back(kEventSeparator);
+    breadcrumbs.push_back(*event_it);
+    current_mapped_file_position_ =
+        current_mapped_file_position_.value() + event_with_seperator_size;
+  }
+
+  std::reverse(breadcrumbs.begin(), breadcrumbs.end());
+  std::string breadcrumbs_string = base::JoinString(breadcrumbs, "");
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DoWriteEventsToFile, breadcrumbs_temp_file_path_,
+                     std::string(breadcrumbs_string)));
+
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DoReplaceFile, breadcrumbs_temp_file_path_,
+                                breadcrumbs_file_path_));
 }
 
 void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
@@ -235,44 +271,10 @@ void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
   // Load persisted events directly from file because the correct order can not
   // be reconstructed from the multiple BreadcrumbManagers with the partial
   // timestamps embedded in each event.
-  GetStoredEvents(base::BindOnce(^(std::vector<std::string> events) {
-    // Add events which had not yet been written.
-    for (auto event : pending_breadcrumbs) {
-      events.push_back(event);
-    }
-
-    std::vector<std::string> breadcrumbs;
-    for (auto event_it = events.rbegin(); event_it != events.rend();
-         ++event_it) {
-      // Reduce saved events to only fill the amount which would be included on
-      // a crash log. This allows future events to be appended individually up
-      // to |kPersistedFilesizeInBytes|, which is more efficient than writing
-      // out the
-      const int event_with_seperator_size =
-          event_it->size() + strlen(kEventSeparator);
-      if (event_with_seperator_size + current_mapped_file_position_.value() >=
-          breadcrumbs::kMaxDataLength) {
-        break;
-      }
-
-      breadcrumbs.push_back(kEventSeparator);
-      breadcrumbs.push_back(*event_it);
-      current_mapped_file_position_ =
-          current_mapped_file_position_.value() + event_with_seperator_size;
-    }
-
-    std::reverse(breadcrumbs.begin(), breadcrumbs.end());
-    std::string breadcrumbs_string = base::JoinString(breadcrumbs, "");
-
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DoWriteEventsToFile, breadcrumbs_temp_file_path_,
-                       std::string(breadcrumbs_string)));
-
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&DoReplaceFile, breadcrumbs_temp_file_path_,
-                                  breadcrumbs_file_path_));
-  }));
+  GetStoredEvents(base::BindOnce(&BreadcrumbPersistentStorageManager::
+                                     CombineEventsAndRewriteAllBreadcrumbs,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 pending_breadcrumbs));
 }
 
 void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
@@ -293,9 +295,8 @@ void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   pending_breadcrumbs_.clear();
 }
 
-void BreadcrumbPersistentStorageManager::EventAdded(
-    breadcrumbs::BreadcrumbManager* manager,
-    const std::string& event) {
+void BreadcrumbPersistentStorageManager::EventAdded(BreadcrumbManager* manager,
+                                                    const std::string& event) {
   WriteEvent(event);
 }
 
@@ -338,6 +339,8 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
 }
 
 void BreadcrumbPersistentStorageManager::OldEventsRemoved(
-    breadcrumbs::BreadcrumbManager* manager) {
+    BreadcrumbManager* manager) {
   RewriteAllExistingBreadcrumbs();
 }
+
+}  // namespace breadcrumbs

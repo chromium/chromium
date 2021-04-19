@@ -6,10 +6,10 @@
 
 #include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -45,9 +45,10 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
     first_web_state_.SetBrowserState(chrome_browser_state_.get());
     second_web_state_.SetBrowserState(chrome_browser_state_.get());
 
-    breadcrumb_service_ = static_cast<BreadcrumbManagerKeyedService*>(
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+    breadcrumb_service_ =
+        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
+            BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+                chrome_browser_state_.get()));
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -72,7 +73,7 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
-  BreadcrumbManagerKeyedService* breadcrumb_service_;
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
   UIScrollView* scroll_view_ = nil;
 };
 

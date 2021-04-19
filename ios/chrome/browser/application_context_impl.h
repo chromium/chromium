@@ -20,10 +20,10 @@ class SequencedTaskRunner;
 
 namespace breadcrumbs {
 class BreadcrumbManager;
+class BreadcrumbPersistentStorageManager;
 }
 
 class ApplicationBreadcrumbsLogger;
-class BreadcrumbPersistentStorageManager;
 
 namespace network {
 class NetworkChangeManager;
@@ -76,8 +76,8 @@ class ApplicationContextImpl : public ApplicationContext {
   SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
-  BreadcrumbPersistentStorageManager* GetBreadcrumbPersistentStorageManager()
-      override;
+  breadcrumbs::BreadcrumbPersistentStorageManager*
+  GetBreadcrumbPersistentStorageManager() override;
 
  private:
   // Sets the locale used by the application.

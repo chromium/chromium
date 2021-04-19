@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
-#include "ios/web/public/browser_state.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+
+namespace breadcrumbs {
 
 void BreadcrumbManagerKeyedService::AddEvent(const std::string& event) {
   std::string event_log =
@@ -16,12 +17,12 @@ void BreadcrumbManagerKeyedService::AddEvent(const std::string& event) {
 }
 
 void BreadcrumbManagerKeyedService::AddObserver(
-    breadcrumbs::BreadcrumbManagerObserver* observer) {
+    BreadcrumbManagerObserver* observer) {
   breadcrumb_manager_->AddObserver(observer);
 }
 
 void BreadcrumbManagerKeyedService::RemoveObserver(
-    breadcrumbs::BreadcrumbManagerObserver* observer) {
+    BreadcrumbManagerObserver* observer) {
   breadcrumb_manager_->RemoveObserver(observer);
 }
 
@@ -61,10 +62,12 @@ BreadcrumbManagerKeyedService::GetPersistentStorageManager() {
 }
 
 BreadcrumbManagerKeyedService::BreadcrumbManagerKeyedService(
-    web::BrowserState* browser_state)
+    bool is_off_the_record)
     // Set "I" for Incognito (Chrome branded OffTheRecord implementation) and
     // empty string for Normal browsing mode.
-    : browsing_mode_(browser_state->IsOffTheRecord() ? "I " : ""),
-      breadcrumb_manager_(std::make_unique<breadcrumbs::BreadcrumbManager>()) {}
+    : browsing_mode_(is_off_the_record ? "I " : ""),
+      breadcrumb_manager_(std::make_unique<BreadcrumbManager>()) {}
 
 BreadcrumbManagerKeyedService::~BreadcrumbManagerKeyedService() = default;
+
+}  // namespace breadcrumbs

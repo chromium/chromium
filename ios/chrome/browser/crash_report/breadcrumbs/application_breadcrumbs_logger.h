@@ -18,9 +18,9 @@ class TimeTicks;
 
 namespace breadcrumbs {
 class BreadcrumbManager;
+class BreadcrumbPersistentStorageManager;
 }  // namespace breadcrumbs
 
-class BreadcrumbPersistentStorageManager;
 
 // Name of event logged when device orientation is changed.
 extern const char kBreadcrumbOrientation[];
@@ -36,12 +36,13 @@ class ApplicationBreadcrumbsLogger {
   // Sets a BreadcrumbPersistentStorageManager to persist application breadcrumb
   // events logged by this ApplicationBreadcrumbsLogger instance.
   void SetPersistentStorageManager(
-      std::unique_ptr<BreadcrumbPersistentStorageManager>
+      std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
           persistent_storage_manager);
 
   // Returns a pointer to the BreadcrumbPersistentStorageManager owned by this
   // instance. May be null.
-  BreadcrumbPersistentStorageManager* GetPersistentStorageManager() const;
+  breadcrumbs::BreadcrumbPersistentStorageManager* GetPersistentStorageManager()
+      const;
 
  private:
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
@@ -69,7 +70,7 @@ class ApplicationBreadcrumbsLogger {
 
   // A strong pointer to the persistent breadcrumb manager listening for events
   // from |breadcrumb_manager_| to store to disk.
-  std::unique_ptr<BreadcrumbPersistentStorageManager>
+  std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
       persistent_storage_manager_;
 
   // Used to avoid logging the same orientation twice.

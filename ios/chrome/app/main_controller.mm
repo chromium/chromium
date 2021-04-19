@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/crl_set_remover.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
@@ -54,9 +56,7 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -689,7 +689,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
     if (self.appState.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
-      BreadcrumbManagerKeyedService* service =
+      breadcrumbs::BreadcrumbManagerKeyedService* service =
           BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
               self.appState.mainBrowserState
                   ->GetOffTheRecordChromeBrowserState());
@@ -697,7 +697,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       breakpad::StopMonitoringBreadcrumbManagerService(service);
     }
 
-    BreadcrumbManagerKeyedService* service =
+    breadcrumbs::BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             self.appState.mainBrowserState);
     service->StopPersisting();
@@ -952,12 +952,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)startLoggingBreadcrumbs {
-  BreadcrumbManagerKeyedService* breadcrumbService =
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumbService =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           self.appState.mainBrowserState);
   breakpad::MonitorBreadcrumbManagerService(breadcrumbService);
 
-  BreadcrumbPersistentStorageManager* persistentStorageManager =
+  breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
       GetApplicationContext()->GetBreadcrumbPersistentStorageManager();
 
   // Application context can return a null persistent storage manager if

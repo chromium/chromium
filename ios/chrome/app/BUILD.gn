@@ -214,6 +214,7 @@ source_set("app_internal") {
     "//base",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
+    "//components/breadcrumbs/core",
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/component_updater",

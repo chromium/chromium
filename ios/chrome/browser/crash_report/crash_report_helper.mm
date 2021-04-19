@@ -249,13 +249,13 @@ void StopMonitoringBreadcrumbManager(
 }
 
 void MonitorBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
   [[CrashReporterBreadcrumbObserver uniqueInstance]
       observeBreadcrumbManagerService:breadcrumb_manager_service];
 }
 
 void StopMonitoringBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
   [[CrashReporterBreadcrumbObserver uniqueInstance]
       stopObservingBreadcrumbManagerService:breadcrumb_manager_service];
 }

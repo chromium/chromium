@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -23,7 +24,7 @@
 
   // Map associating the observed BreadcrumbManagerKeyedServices with the
   // corresponding observer bridge instances.
-  std::map<BreadcrumbManagerKeyedService*,
+  std::map<breadcrumbs::BreadcrumbManagerKeyedService*,
            std::unique_ptr<BreadcrumbManagerObserverBridge>>
       _breadcrumbManagerServiceObservers;
 
@@ -68,7 +69,7 @@
 }
 
 - (void)observeBreadcrumbManagerService:
-    (BreadcrumbManagerKeyedService*)breadcrumbManagerService {
+    (breadcrumbs::BreadcrumbManagerKeyedService*)breadcrumbManagerService {
   DCHECK(!_breadcrumbManagerServiceObservers[breadcrumbManagerService]);
 
   _breadcrumbManagerServiceObservers[breadcrumbManagerService] =
@@ -77,7 +78,7 @@
 }
 
 - (void)stopObservingBreadcrumbManagerService:
-    (BreadcrumbManagerKeyedService*)breadcrumbManagerService {
+    (breadcrumbs::BreadcrumbManagerKeyedService*)breadcrumbManagerService {
   _breadcrumbManagerServiceObservers[breadcrumbManagerService] = nullptr;
 }
 

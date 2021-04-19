@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,7 +22,7 @@ BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
 }
 
 BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service,
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service,
     id<BreadcrumbManagerObserving> observer)
     : breadcrumb_manager_service_(breadcrumb_manager_service),
       observer_(observer) {

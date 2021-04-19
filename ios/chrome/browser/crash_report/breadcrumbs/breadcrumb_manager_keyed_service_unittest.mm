@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 
 #include "base/time/time.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -23,7 +22,8 @@ namespace {
 // Creates a new BreadcrumbManagerKeyedService for |browser_state|.
 std::unique_ptr<KeyedService> BuildBreadcrumbManagerKeyedService(
     web::BrowserState* browser_state) {
-  return std::make_unique<BreadcrumbManagerKeyedService>(browser_state);
+  return std::make_unique<breadcrumbs::BreadcrumbManagerKeyedService>(
+      browser_state->IsOffTheRecord());
 }
 }
 
@@ -39,9 +39,10 @@ class BreadcrumbManagerKeyedServiceTest : public PlatformTest {
         base::BindRepeating(&BuildBreadcrumbManagerKeyedService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    breadcrumb_manager_service_ = static_cast<BreadcrumbManagerKeyedService*>(
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+    breadcrumb_manager_service_ =
+        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
+            BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+                chrome_browser_state_.get()));
   }
 
   web::WebTaskEnvironment task_env_{
@@ -49,7 +50,7 @@ class BreadcrumbManagerKeyedServiceTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  BreadcrumbManagerKeyedService* breadcrumb_manager_service_;
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service_;
 };
 
 // Tests that events logged to Normal and OffTheRecord BrowserStates are
@@ -61,8 +62,8 @@ TEST_F(BreadcrumbManagerKeyedServiceTest, EventsLabeledWithBrowserState) {
   ChromeBrowserState* off_the_record_browser_state =
       chrome_browser_state_->GetOffTheRecordChromeBrowserState();
 
-  BreadcrumbManagerKeyedService* otr_breadcrumb_manager_service =
-      static_cast<BreadcrumbManagerKeyedService*>(
+  breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_manager_service =
+      static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
           BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
               off_the_record_browser_state));
   otr_breadcrumb_manager_service->AddEvent("event");

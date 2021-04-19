@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 
 #include "base/bind.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
@@ -54,9 +54,10 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_ = test_cbs_builder.Build();
 
-    breadcrumb_service_ = static_cast<BreadcrumbManagerKeyedService*>(
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+    breadcrumb_service_ =
+        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
+            BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+                browser_state_.get()));
 
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
@@ -72,7 +73,7 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
-  BreadcrumbManagerKeyedService* breadcrumb_service_;
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
   FakeOverlayPresentationContext presentation_context_;
   std::unique_ptr<Browser> browser_;
 };

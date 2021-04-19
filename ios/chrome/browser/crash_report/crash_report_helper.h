@@ -10,10 +10,10 @@
 
 @class NSString;
 
-class BreadcrumbManagerKeyedService;
 
 namespace breadcrumbs {
 class BreadcrumbManager;
+class BreadcrumbManagerKeyedService;
 }
 
 namespace web {
@@ -69,11 +69,11 @@ void StopMonitoringBreadcrumbManager(
 // Starts listening for breadcrumbs logged to |breadcrumb_manager_service|.
 // Collected breadcrumbs will be attached to crash reports.
 void MonitorBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service);
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service);
 
 // Stops listening for breadcrumbs logged to |breadcrumb_manager_service|.
 void StopMonitoringBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service);
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service);
 
 // Sets breadcrumb events associated with the previous application session.
 void SetPreviousSessionEvents(const std::vector<std::string>& events);

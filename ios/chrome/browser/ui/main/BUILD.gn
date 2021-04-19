@@ -102,6 +102,7 @@ source_set("scene") {
     ":scene_testing",
     "//base",
     "//base/ios",
+    "//components/breadcrumbs/core",
     "//components/infobars/core",
     "//components/previous_session_info",
     "//components/signin/public/identity_manager",

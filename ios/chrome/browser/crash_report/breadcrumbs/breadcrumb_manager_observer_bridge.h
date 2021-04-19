@@ -9,10 +9,10 @@
 
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
-class BreadcrumbManagerKeyedService;
 
 namespace breadcrumbs {
 class BreadcrumbManager;
+class BreadcrumbManagerKeyedService;
 }
 
 // Protocol mirroring BreadcrumbManagerObserver
@@ -39,7 +39,7 @@ class BreadcrumbManagerObserverBridge
   // Constructs a new bridge instance adding |observer| as an observer of
   // |breadcrumb_manager_service|.
   BreadcrumbManagerObserverBridge(
-      BreadcrumbManagerKeyedService* breadcrumb_manager_service,
+      breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service,
       id<BreadcrumbManagerObserving> observer);
 
   ~BreadcrumbManagerObserverBridge() override;
@@ -56,7 +56,8 @@ class BreadcrumbManagerObserverBridge
   void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override;
 
   breadcrumbs::BreadcrumbManager* breadcrumb_manager_ = nullptr;
-  BreadcrumbManagerKeyedService* breadcrumb_manager_service_ = nullptr;
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service_ =
+      nullptr;
   __weak id<BreadcrumbManagerObserving> observer_ = nil;
 };
 

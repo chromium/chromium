@@ -10,6 +10,10 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
+namespace breadcrumbs {
+class BreadcrumbPersistentStorageManager;
+}
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -60,7 +64,6 @@ class VariationsService;
 }
 
 class ApplicationContext;
-class BreadcrumbPersistentStorageManager;
 class BrowserPolicyConnectorIOS;
 class IOSChromeIOThread;
 class PrefService;
@@ -151,7 +154,7 @@ class ApplicationContext {
 
   // Returns the BreadcrumbPersistentStorageManager writing breadcrumbs to disk.
   // Will be null if breadcrumb collection is not enabled.
-  virtual BreadcrumbPersistentStorageManager*
+  virtual breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() = 0;
 
  protected:

@@ -8,9 +8,9 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -97,7 +97,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
 
-  BreadcrumbManagerKeyedService* breadcrumb_service =
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
@@ -131,7 +131,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
 
-  BreadcrumbManagerKeyedService* breadcrumb_service =
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
@@ -170,7 +170,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   const std::string event = std::string("Breadcrumb Event");
   NSString* event_nsstring = base::SysUTF8ToNSString(event);
 
-  BreadcrumbManagerKeyedService* breadcrumb_service =
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
@@ -187,7 +187,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
 
   ChromeBrowserState* otr_browser_state =
       chrome_browser_state_->GetOffTheRecordChromeBrowserState();
-  BreadcrumbManagerKeyedService* otr_breadcrumb_service =
+  breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           otr_browser_state);
   [crash_reporter_breadcrumb_observer
@@ -203,7 +203,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   TestChromeBrowserState::Builder test_cbs_builder;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2 =
       test_cbs_builder.Build();
-  BreadcrumbManagerKeyedService* breadcrumb_service_2 =
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_2 =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_2.get());
   [crash_reporter_breadcrumb_observer

@@ -14,6 +14,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -38,9 +40,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
@@ -2896,9 +2896,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [sceneController willDestroyIncognitoBrowserState];
   }
 
-  BreadcrumbPersistentStorageManager* persistentStorageManager = nullptr;
+  breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
+      nullptr;
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
-    BreadcrumbManagerKeyedService* service =
+    breadcrumbs::BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             mainBrowserState->GetOffTheRecordChromeBrowserState());
     persistentStorageManager = service->GetPersistentStorageManager();
@@ -2924,7 +2925,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
-    BreadcrumbManagerKeyedService* service =
+    breadcrumbs::BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             mainBrowserState->GetOffTheRecordChromeBrowserState());
 

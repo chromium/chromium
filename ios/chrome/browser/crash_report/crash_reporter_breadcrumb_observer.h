@@ -34,11 +34,11 @@
 
 // Starts collecting breadcrumb events logged to |breadcrumbManagerService|.
 - (void)observeBreadcrumbManagerService:
-    (BreadcrumbManagerKeyedService*)breadcrumbManagerService;
+    (breadcrumbs::BreadcrumbManagerKeyedService*)breadcrumbManagerService;
 
 // Stops collecting breadcrumb events logged to |breadcrumbManagerService|.
 - (void)stopObservingBreadcrumbManagerService:
-    (BreadcrumbManagerKeyedService*)breadcrumbManagerService;
+    (breadcrumbs::BreadcrumbManagerKeyedService*)breadcrumbManagerService;
 
 @end
 

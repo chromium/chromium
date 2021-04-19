@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
-#define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
+#ifndef COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
+#define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
 
 #include <list>
 #include <memory>
@@ -11,31 +11,27 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
-class BreadcrumbPersistentStorageManager;
-
 namespace breadcrumbs {
+
 class BreadcrumbManager;
 class BreadcrumbManagerObserver;
-}
+class BreadcrumbPersistentStorageManager;
 
-namespace web {
-class BrowserState;
-}
-
-// Associates a BreadcrumbManager instance with a BrowserState.
+// Associates a BreadcrumbManager instance with a browser (BrowserState on iOS,
+// BrowserContext on Desktop) - either incognito or normal.
 class BreadcrumbManagerKeyedService : public KeyedService {
  public:
-  explicit BreadcrumbManagerKeyedService(web::BrowserState* browser_state);
+  explicit BreadcrumbManagerKeyedService(bool is_off_the_record);
   ~BreadcrumbManagerKeyedService() override;
 
-  // Logs a breadcrumb |event| associated with the BrowserState passed in at
-  // initialization of this instance. Prepends the |browsing_mode_| identifier
-  // to the event before passing it to the |breadcrumb_manager_|.
+  // Logs a breadcrumb |event| associated with the browser. Prepends the
+  // |browsing_mode_| identifier to the event before passing it to the
+  // |breadcrumb_manager_|.
   void AddEvent(const std::string& event);
 
   // Adds and removes observers to the underlying |breadcrumb_manager_|.
-  void AddObserver(breadcrumbs::BreadcrumbManagerObserver* observer);
-  void RemoveObserver(breadcrumbs::BreadcrumbManagerObserver* observer);
+  void AddObserver(BreadcrumbManagerObserver* observer);
+  void RemoveObserver(BreadcrumbManagerObserver* observer);
 
   // Returns the number of collected breadcrumb events which are still relevant.
   // See |BreadcrumbManager::GetEventCount| for details.
@@ -60,16 +56,16 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   BreadcrumbPersistentStorageManager* GetPersistentStorageManager();
 
  private:
-  // A short string identifying the browser state used to initialize the
-  // receiver. For example, "I" for "I"ncognito browsing mode. This value is
-  // prepended to events sent to |AddEvent| in order to differentiate the
-  // BrowserState associated with each event.
+  // A short string identifying the browser used to initialize the receiver. For
+  // example, "I" for "I"ncognito browsing mode. This value is prepended to
+  // events sent to |AddEvent| in order to differentiate the browser associated
+  // with each event.
   // Note: Normal browsing mode uses an empty string in order to prevent
   // prepending most events with the same static value.
   std::string browsing_mode_;
 
   // The associated BreadcrumbManager to store events added with |AddEvent|.
-  std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
+  std::unique_ptr<BreadcrumbManager> breadcrumb_manager_;
 
   // The current BreadcrumbPersistentStorageManager persisting events logged to
   // |breadcrumb_manager_|, set by StartPersisting. May be null.
@@ -78,4 +74,6 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(BreadcrumbManagerKeyedService);
 };
 
-#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_KEYED_SERVICE_H_
+}  // namespace breadcrumbs
+
+#endif  // COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_KEYED_SERVICE_H_

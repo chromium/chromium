@@ -1,6 +1,7 @@
 include_rules = [
   "+components/bookmarks/browser",
   "+components/bookmarks/test",
+  "+components/breadcrumbs/core",
   "+components/browsing_data/core",
   "+components/component_updater",
   "+components/component_updater/installer_policies",

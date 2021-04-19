@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
-#define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
+#ifndef COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
+#define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
 
 #include <string>
 #include <vector>
@@ -14,31 +14,37 @@
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 
+namespace breadcrumbs {
+
+class BreadcrumbManager;
+class BreadcrumbManagerKeyedService;
+
 // The filesize for the file at |breadcrumbs_file_path_|. The file will always
 // be this constant size because it is accessed using a memory mapped file. The
 // file is twice as large as |kMaxDataLength| which leaves room for appending
 // breadcrumb events. Once the file is full of events, the contents will be
 // reduced to kMaxDataLength.
-constexpr size_t kPersistedFilesizeInBytes = breadcrumbs::kMaxDataLength * 2;
+constexpr size_t kPersistedFilesizeInBytes = kMaxDataLength * 2;
 
-namespace base {
-class FilePath;
-}  // namespace base
-
-namespace breadcrumbs {
-class BreadcrumbManager;
-}  // namespace breadcrumbs
-
-class BreadcrumbManagerKeyedService;
-
-// Stores breadcrumb events to and retireves them from a file on disk.
+// Stores breadcrumb events to and retrieves them from a file on disk.
 // Persisting these events allows access to breadcrumb events from previous
 // application sessions.
-class BreadcrumbPersistentStorageManager
-    : public breadcrumbs::BreadcrumbManagerObserver {
+class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
  public:
-  explicit BreadcrumbPersistentStorageManager(base::FilePath directory);
+  // Breadcrumbs will be stored in a file in |directory|. If
+  // |old_breadcrumbs_file_path| and |old_breadcrumbs_temp_file_path| are
+  // provided, the files at those paths will be migrated to the new filenames
+  // for breadcrumb files (only needed on iOS, which previously used different
+  // filenames).
+  explicit BreadcrumbPersistentStorageManager(
+      const base::FilePath& directory,
+      const base::Optional<base::FilePath>& old_breadcrumbs_file_path,
+      const base::Optional<base::FilePath>& old_breadcrumbs_temp_file_path);
   ~BreadcrumbPersistentStorageManager() override;
+  BreadcrumbPersistentStorageManager(
+      const BreadcrumbPersistentStorageManager&) = delete;
+  BreadcrumbPersistentStorageManager& operator=(
+      const BreadcrumbPersistentStorageManager&) = delete;
 
   // Returns the stored breadcrumb events from disk to |callback|.
   void GetStoredEvents(
@@ -46,13 +52,13 @@ class BreadcrumbPersistentStorageManager
 
   // Starts observing |manager| for events. Existing events will be persisted
   // immediately.
-  void MonitorBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
+  void MonitorBreadcrumbManager(BreadcrumbManager* manager);
   // Starts observing |service| for events. Existing events will be persisted
   // immediately.
   void MonitorBreadcrumbManagerService(BreadcrumbManagerKeyedService* service);
 
   // Stops observing |manager|.
-  void StopMonitoringBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
+  void StopMonitoringBreadcrumbManager(BreadcrumbManager* manager);
   // Stops observing |service|.
   void StopMonitoringBreadcrumbManagerService(
       BreadcrumbManagerKeyedService* service);
@@ -66,8 +72,15 @@ class BreadcrumbPersistentStorageManager
   // been written into.
   void WriteEvents();
 
-  // Writes events from |observered_manager_| to |breadcrumbs_file_|,
-  // overwriting any existing persisted breadcrumbs.
+  // Appends events in |pending_breadcrumbs| to |existing events|, then writes
+  // the combined events to |breadcrumbs_file_|, overwriting any existing
+  // persisted breadcrumbs.
+  void CombineEventsAndRewriteAllBreadcrumbs(
+      const std::vector<std::string> pending_breadcrumbs,
+      std::vector<std::string> existing_events);
+
+  // Writes events from observed managers to |breadcrumbs_file_|, overwriting
+  // any existing persisted breadcrumbs.
   void RewriteAllExistingBreadcrumbs();
 
   // Writes breadcrumbs stored in |pending_breadcrumbs_| to |breadcrumbs_file_|.
@@ -78,11 +91,11 @@ class BreadcrumbPersistentStorageManager
   void WriteEvent(const std::string& event);
 
   // BreadcrumbManagerObserver
-  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
+  void EventAdded(BreadcrumbManager* manager,
                   const std::string& event) override;
-  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override;
+  void OldEventsRemoved(BreadcrumbManager* manager) override;
 
-  // Individual beadcrumbs which have not yet been written to disk.
+  // Individual breadcrumbs that have not yet been written to disk.
   std::string pending_breadcrumbs_;
 
   // The last time a breadcrumb was written to |breadcrumbs_file_|. This
@@ -107,11 +120,8 @@ class BreadcrumbPersistentStorageManager
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<BreadcrumbPersistentStorageManager> weak_ptr_factory_;
-
-  BreadcrumbPersistentStorageManager(
-      const BreadcrumbPersistentStorageManager&) = delete;
-  BreadcrumbPersistentStorageManager& operator=(
-      const BreadcrumbPersistentStorageManager&) = delete;
 };
 
-#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
+}  // namespace breadcrumbs
+
+#endif  // COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_PERSISTENT_STORAGE_MANAGER_H_
