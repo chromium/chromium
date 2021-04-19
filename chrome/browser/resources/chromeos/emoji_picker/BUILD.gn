@@ -17,11 +17,6 @@ component_js_files = [
   "icons.js",
 ]
 
-processed_json_files = [
-  "emoji_13_1_ordering.json",
-  "emoji_test_ordering.json",
-]
-
 resources_grd_file = "$target_gen_dir/resources.grd"
 preprocessed_grdp_file = "$target_gen_dir/preprocessed.grdp"
 fuse_grdp_file = "$target_gen_dir/fuse.grdp"
@@ -48,6 +43,7 @@ generate_grd("build_grd") {
     preprocessed_grdp_file,
     fuse_grdp_file,
     "$target_gen_dir/mojo_resources.grdp",
+    "emoji_ordering.grdp",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }
@@ -68,7 +64,7 @@ generate_grd("build_preprocessed_grdp") {
   deps = [ ":web_components" ]
   grd_prefix = "emoji_picker"
   out_grd = preprocessed_grdp_file
-  input_files = component_js_files + processed_json_files
+  input_files = component_js_files
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
 }
 
