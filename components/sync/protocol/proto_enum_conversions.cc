@@ -171,10 +171,6 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::Action action) {
                      UNKNOWN_ACTION);
   switch (action) {
     ENUM_CASE(sync_pb::SyncEnums, UPGRADE_CLIENT);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_CLEAR_USER_DATA_AND_RESYNC);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_ENABLE_SYNC_ON_ACCOUNT);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_STOP_AND_RESTART_SYNC);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_DISABLE_SYNC_ON_CLIENT);
     ENUM_CASE(sync_pb::SyncEnums, UNKNOWN_ACTION);
   }
   NOTREACHED();
@@ -201,17 +197,12 @@ const char* ProtoEnumToString(sync_pb::SyncEnums::ErrorType error_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, ErrorType, SUCCESS, UNKNOWN);
   switch (error_type) {
     ENUM_CASE(sync_pb::SyncEnums, SUCCESS);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_ACCESS_DENIED);
     ENUM_CASE(sync_pb::SyncEnums, NOT_MY_BIRTHDAY);
     ENUM_CASE(sync_pb::SyncEnums, THROTTLED);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_AUTH_EXPIRED);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_USER_NOT_ACTIVATED);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_AUTH_INVALID);
     ENUM_CASE(sync_pb::SyncEnums, CLEAR_PENDING);
     ENUM_CASE(sync_pb::SyncEnums, TRANSIENT_ERROR);
     ENUM_CASE(sync_pb::SyncEnums, MIGRATION_DONE);
     ENUM_CASE(sync_pb::SyncEnums, DISABLED_BY_ADMIN);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_USER_ROLLBACK);
     ENUM_CASE(sync_pb::SyncEnums, PARTIAL_FAILURE);
     ENUM_CASE(sync_pb::SyncEnums, CLIENT_DATA_OBSOLETE);
     ENUM_CASE(sync_pb::SyncEnums, ENCRYPTION_OBSOLETE);
@@ -283,7 +274,6 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::SyncEnums, PASSPHRASE_ACCEPTED);
     ENUM_CASE(sync_pb::SyncEnums, INITIALIZATION_COMPLETE);
     ENUM_CASE(sync_pb::SyncEnums, STOP_SYNCING_PERMANENTLY);
-    ENUM_CASE(sync_pb::SyncEnums, DEPRECATED_ENCRYPTION_COMPLETE);
     ENUM_CASE(sync_pb::SyncEnums, ACTIONABLE_ERROR);
     ENUM_CASE(sync_pb::SyncEnums, ENCRYPTED_TYPES_CHANGED);
     ENUM_CASE(sync_pb::SyncEnums, PASSPHRASE_TYPE_CHANGED);

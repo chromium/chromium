@@ -75679,17 +75679,37 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncErrorType">
   <summary>Possible errors that can be returned by the sync server.</summary>
-  <int value="1" label="DEPRECATED_ACCESS_DENIED"/>
+  <int value="1" label="DEPRECATED_ACCESS_DENIED">
+    <obsolete>
+      Obsolete value.
+    </obsolete>
+  </int>
   <int value="2" label="NOT_MY_BIRTHDAY"/>
   <int value="3" label="THROTTLED"/>
-  <int value="4" label="DEPRECATED_AUTH_EXPIRED"/>
-  <int value="5" label="DEPRECATED_USER_NOT_ACTIVATED"/>
-  <int value="6" label="DEPRECATED_AUTH_INVALID"/>
+  <int value="4" label="DEPRECATED_AUTH_EXPIRED">
+    <obsolete>
+      Obsolete value.
+    </obsolete>
+  </int>
+  <int value="5" label="DEPRECATED_USER_NOT_ACTIVATED">
+    <obsolete>
+      Obsolete value.
+    </obsolete>
+  </int>
+  <int value="6" label="DEPRECATED_AUTH_INVALID">
+    <obsolete>
+      Obsolete value.
+    </obsolete>
+  </int>
   <int value="7" label="CLEAR_PENDING"/>
   <int value="8" label="TRANSIENT_ERROR"/>
   <int value="9" label="MIGRATION_DONE"/>
   <int value="10" label="DISABLED_BY_ADMIN"/>
-  <int value="11" label="DEPRECATED_USER_ROLLBACK"/>
+  <int value="11" label="DEPRECATED_USER_ROLLBACK">
+    <obsolete>
+      Obsolete value.
+    </obsolete>
+  </int>
   <int value="12" label="PARTIAL_FAILURE"/>
   <int value="13" label="CLIENT_DATA_OBSOLETE"/>
   <int value="100" label="UNKNOWN"/>

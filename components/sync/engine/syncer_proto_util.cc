@@ -121,12 +121,6 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return UNKNOWN_ERROR;
     case sync_pb::SyncEnums::ENCRYPTION_OBSOLETE:
       return ENCRYPTION_OBSOLETE;
-    case sync_pb::SyncEnums::DEPRECATED_ACCESS_DENIED:
-    case sync_pb::SyncEnums::DEPRECATED_AUTH_EXPIRED:
-    case sync_pb::SyncEnums::DEPRECATED_AUTH_INVALID:
-    case sync_pb::SyncEnums::DEPRECATED_USER_NOT_ACTIVATED:
-    case sync_pb::SyncEnums::DEPRECATED_USER_ROLLBACK:
-      return UNKNOWN_ERROR;
   }
 
   NOTREACHED();
@@ -137,10 +131,6 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
   switch (action) {
     case sync_pb::SyncEnums::UPGRADE_CLIENT:
       return UPGRADE_CLIENT;
-    case sync_pb::SyncEnums::DEPRECATED_CLEAR_USER_DATA_AND_RESYNC:
-    case sync_pb::SyncEnums::DEPRECATED_ENABLE_SYNC_ON_ACCOUNT:
-    case sync_pb::SyncEnums::DEPRECATED_STOP_AND_RESTART_SYNC:
-    case sync_pb::SyncEnums::DEPRECATED_DISABLE_SYNC_ON_CLIENT:
     case sync_pb::SyncEnums::UNKNOWN_ACTION:
       return UNKNOWN_ACTION;
   }

@@ -6,112 +6,89 @@
 
 #include <string>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 namespace {
 
-// Keep this file in sync with the .proto files in this directory.
-class ProtoEnumConversionsTest : public testing::Test {};
+// WARNING: Keep this file in sync with the .proto files in this directory.
 
-template <class T>
-void TestEnumStringFunction(T enum_min, T enum_max) {
-  for (int i = enum_min; i <= enum_max; ++i) {
-    const std::string& str = ProtoEnumToString(static_cast<T>(i));
-    EXPECT_FALSE(str.empty());
+using ::testing::Not;
+using ::testing::StrEq;
+
+// Iterates through the enum values, checking their string version is non-empty.
+// The T##_IsValid() check is needed because some enums have deprecated values,
+// so they have gaps in their numeric range.
+#define TestEnumStringsNonEmpty(T)                                       \
+  for (int i = T##_MIN; i <= T##_MAX; ++i) {                             \
+    if (T##_IsValid(i)) {                                                \
+      EXPECT_THAT(ProtoEnumToString(static_cast<T>(i)), Not(StrEq(""))); \
+    }                                                                    \
   }
+
+TEST(ProtoEnumConversionsTest, GetAppListItemTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::AppListSpecifics::AppListItemType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetAppListItemTypeString) {
-  TestEnumStringFunction(sync_pb::AppListSpecifics::AppListItemType_MIN,
-                         sync_pb::AppListSpecifics::AppListItemType_MAX);
+TEST(ProtoEnumConversionsTest, GetBrowserTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::SessionWindow::BrowserType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetBrowserTypeString) {
-  TestEnumStringFunction(sync_pb::SessionWindow::BrowserType_MIN,
-                         sync_pb::SessionWindow::BrowserType_MAX);
+TEST(ProtoEnumConversionsTest, GetPageTransitionString) {
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::PageTransition);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetPageTransitionString) {
-  TestEnumStringFunction(sync_pb::SyncEnums::PageTransition_MIN,
-                         sync_pb::SyncEnums::PageTransition_MAX);
+TEST(ProtoEnumConversionsTest, GetPageTransitionQualifierString) {
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::PageTransitionRedirectType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetPageTransitionQualifierString) {
-  TestEnumStringFunction(sync_pb::SyncEnums::PageTransitionRedirectType_MIN,
-                         sync_pb::SyncEnums::PageTransitionRedirectType_MAX);
+TEST(ProtoEnumConversionsTest, GetWifiConfigurationSecurityTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::WifiConfigurationSpecifics::SecurityType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationSecurityTypeString) {
-  TestEnumStringFunction(sync_pb::WifiConfigurationSpecifics::SecurityType_MIN,
-                         sync_pb::WifiConfigurationSpecifics::SecurityType_MAX);
+TEST(ProtoEnumConversionsTest,
+     GetWifiConfigurationAutomaticallyConnectOptionString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption);
 }
 
-TEST_F(ProtoEnumConversionsTest,
-       GetWifiConfigurationAutomaticallyConnectOptionString) {
-  TestEnumStringFunction(
-      sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption_MIN,
-      sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption_MAX);
+TEST(ProtoEnumConversionsTest, GetWifiConfigurationIsPreferredOptionString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WifiConfigurationSpecifics::IsPreferredOption);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationIsPreferredOptionString) {
-  TestEnumStringFunction(
-      sync_pb::WifiConfigurationSpecifics::IsPreferredOption_MIN,
-      sync_pb::WifiConfigurationSpecifics::IsPreferredOption_MAX);
+TEST(ProtoEnumConversionsTest, GetWifiConfigurationMeteredOptionString) {
+  TestEnumStringsNonEmpty(sync_pb::WifiConfigurationSpecifics::MeteredOption);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationMeteredOptionString) {
-  TestEnumStringFunction(
-      sync_pb::WifiConfigurationSpecifics::MeteredOption_MIN,
-      sync_pb::WifiConfigurationSpecifics::MeteredOption_MAX);
+TEST(ProtoEnumConversionsTest, GetWifiConfigurationProxyOptionString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::ProxyOption);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationProxyOptionString) {
-  TestEnumStringFunction(
-      sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::ProxyOption_MIN,
-      sync_pb::WifiConfigurationSpecifics::ProxyConfiguration::ProxyOption_MAX);
+TEST(ProtoEnumConversionsTest, GetUpdatesSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::GetUpdatesCallerInfo::GetUpdatesSource);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetUpdatesSourceString) {
-  TestEnumStringFunction(sync_pb::GetUpdatesCallerInfo::GetUpdatesSource_MIN,
-                         sync_pb::GetUpdatesCallerInfo::PERIODIC);
-  TestEnumStringFunction(sync_pb::GetUpdatesCallerInfo::RETRY,
-                         sync_pb::GetUpdatesCallerInfo::GetUpdatesSource_MAX);
+TEST(ProtoEnumConversionsTest, GetUpdatesOriginString) {
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::GetUpdatesOrigin);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetUpdatesOriginString) {
-  // This enum has rather scattered values, so we need multiple ranges.
-  TestEnumStringFunction(sync_pb::SyncEnums::GetUpdatesOrigin_MIN,
-                         sync_pb::SyncEnums::UNKNOWN_ORIGIN);
-  TestEnumStringFunction(sync_pb::SyncEnums::PERIODIC,
-                         sync_pb::SyncEnums::PERIODIC);
-  TestEnumStringFunction(sync_pb::SyncEnums::NEWLY_SUPPORTED_DATATYPE,
-                         sync_pb::SyncEnums::RECONFIGURATION);
-  TestEnumStringFunction(sync_pb::SyncEnums::GU_TRIGGER,
-                         sync_pb::SyncEnums::GetUpdatesOrigin_MAX);
+TEST(ProtoEnumConversionsTest, GetResponseTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::CommitResponse::ResponseType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetResponseTypeString) {
-  TestEnumStringFunction(sync_pb::CommitResponse::ResponseType_MIN,
-                         sync_pb::CommitResponse::ResponseType_MAX);
+TEST(ProtoEnumConversionsTest, GetErrorTypeString) {
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::ErrorType);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetErrorTypeString) {
-  // We have a gap, so we need to do two ranges.
-  TestEnumStringFunction(sync_pb::SyncEnums::ErrorType_MIN,
-                         sync_pb::SyncEnums::MIGRATION_DONE);
-  TestEnumStringFunction(sync_pb::SyncEnums::UNKNOWN,
-                         sync_pb::SyncEnums::ErrorType_MAX);
+TEST(ProtoEnumConversionsTest, GetActionString) {
+  TestEnumStringsNonEmpty(sync_pb::SyncEnums::Action);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetActionString) {
-  TestEnumStringFunction(sync_pb::SyncEnums::Action_MIN,
-                         sync_pb::SyncEnums::Action_MAX);
-}
-
-TEST_F(ProtoEnumConversionsTest, GetConsentStatusString) {
-  TestEnumStringFunction(sync_pb::UserConsentTypes::CONSENT_STATUS_UNSPECIFIED,
-                         sync_pb::UserConsentTypes::GIVEN);
+TEST(ProtoEnumConversionsTest, GetConsentStatusString) {
+  TestEnumStringsNonEmpty(sync_pb::UserConsentTypes::ConsentStatus);
 }
 
 }  // namespace

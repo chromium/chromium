@@ -6,6 +6,8 @@
 
 // If you change or add any enums in this file, update
 // proto_enum_conversions.{h, cc}.
+// If you deprecate enum or enum values, mark any corresponding entry in
+// tools/metrics/histograms/enums.xml as <obsolete>.
 
 syntax = "proto2";
 
@@ -34,7 +36,7 @@ message SyncEnums {
     // the server in the absence of bugs.
     STOP_SYNCING_PERMANENTLY = 6;
     // Client has finished encrypting all data.
-    DEPRECATED_ENCRYPTION_COMPLETE = 7 [deprecated = true];
+    // DEPRECATED_ENCRYPTION_COMPLETE = 7;
     // Client received an actionable error.
     ACTIONABLE_ERROR = 8;
     // Set of encrypted types has changed.
@@ -74,8 +76,8 @@ message SyncEnums {
     // actually transition qualifiers, and are set independently of other
     // qualifiers and of the main transitions. See session_specifics.proto for
     // the list of synced transition qualifiers.
-    // CHAIN_START = 12;     Deprecated.
-    // CHAIN_END = 13;       Deprecated.
+    // DEPRECATED_CHAIN_START = 12;
+    // DEPRECATED_CHAIN_END = 13;
   }
 
   // Types of redirects that triggered a transition.
@@ -86,14 +88,14 @@ message SyncEnums {
 
   enum ErrorType {
     SUCCESS = 0;
-    DEPRECATED_ACCESS_DENIED = 1;
+    // DEPRECATED_ACCESS_DENIED = 1;
     // Returned when the server and client disagree on the store birthday.
     NOT_MY_BIRTHDAY = 2;
     // Returned when the store has exceeded the allowed bandwidth utilization.
     THROTTLED = 3;
-    DEPRECATED_AUTH_EXPIRED = 4;
-    DEPRECATED_USER_NOT_ACTIVATED = 5;
-    DEPRECATED_AUTH_INVALID = 6;
+    // DEPRECATED_AUTH_EXPIRED = 4;
+    // DEPRECATED_USER_NOT_ACTIVATED = 5;
+    // DEPRECATED_AUTH_INVALID = 6;
     // A clear of the user data is pending (e.g. initiated by privacy request).
     // The client should come back later.
     CLEAR_PENDING = 7;
@@ -107,7 +109,7 @@ message SyncEnums {
     // An administrator disabled sync for this domain.
     DISABLED_BY_ADMIN = 10;
     // Deprecated in M50.
-    DEPRECATED_USER_ROLLBACK = 11;
+    // DEPRECATED_USER_ROLLBACK = 11;
     // Returned when the client wants to update several data types, but some of
     // them failed (e.g. throttled).
     PARTIAL_FAILURE = 12;
@@ -127,10 +129,10 @@ message SyncEnums {
 
   enum Action {
     UPGRADE_CLIENT = 0;              // Upgrade the client to latest version.
-    DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
-    DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
-    DEPRECATED_STOP_AND_RESTART_SYNC = 3;
-    DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
+    // DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
+    // DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
+    // DEPRECATED_STOP_AND_RESTART_SYNC = 3;
+    // DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
     UNKNOWN_ACTION = 5;              // This is the default.
   }
 
