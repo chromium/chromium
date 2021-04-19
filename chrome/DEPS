@@ -20,7 +20,6 @@ include_rules = [
 
   "+chrome/common",
   "+chrome/test",
-  "+components/back_forward_cache",
   "+components/content_settings/common",
   "+components/content_settings/core/common",
   "+components/embedder_support/switches.h",
