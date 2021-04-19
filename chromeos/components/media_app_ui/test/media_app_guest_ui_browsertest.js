@@ -7,33 +7,21 @@
 // Test web workers can be spawned from chrome-untrusted://media-app. Errors
 // will be logged in console from web_ui_browser_test.cc.
 GUEST_TEST('GuestCanSpawnWorkers', async () => {
-  let caughtError = null;
-  let networkErrorEventType = '';
+  const worker = new Worker('test_worker.js');
+  const workerResponse = new Promise((resolve, reject) => {
+    /**
+     * Registers onmessage event handler.
+     * @param {MessageEvent} event Incoming message event.
+     */
+    worker.onmessage = resolve;
+    worker.onerror = reject;
+  });
 
-  try {
-    // The "real" webworker isn't needed for the mock, but we want to test CSP
-    // errors. Fetch something that doesn't exist. This has a bonus that we can
-    // wait for an "error" event, whereas fetching a "real" file would require
-    // it to respond to a postMessage. Note the resource will 404, but that
-    // won't throw an exception. CSP errors, however, will throw errors that
-    // fail the test. E.g., Failed to construct 'Worker': Script at
-    // 'about:blank' cannot be accessed from origin
-    // 'chrome-untrusted://media-app'.
-    const worker = new Worker('/non-existent.js');
+  const MESSAGE = 'ping/pong message';
 
-    // Await the network error to ensure things get that far. The error itself
-    // is entirely opaque.
-    networkErrorEventType = await new Promise(resolve => {
-      worker.onerror = (event) => {
-        resolve(event.type);
-      };
-    });
-  } catch (e) {
-    caughtError = e;
-  }
+  worker.postMessage(MESSAGE);
 
-  assertEquals(caughtError, null, caughtError && caughtError.message);
-  assertEquals(networkErrorEventType, 'error');
+  assertEquals('ping/pong message', (await workerResponse).data);
 });
 
 // Test that language is set correctly on the guest iframe.

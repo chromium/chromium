@@ -1809,6 +1809,8 @@ source_set("chromeos") {
     "../ash/web_applications/help_app/help_app_ui_delegate.h",
     "../ash/web_applications/help_app/help_app_web_app_info.cc",
     "../ash/web_applications/help_app/help_app_web_app_info.h",
+    "../ash/web_applications/media_app_guest_ui_config.cc",
+    "../ash/web_applications/media_app_guest_ui_config.h",
     "../ash/web_applications/media_web_app_info.cc",
     "../ash/web_applications/media_web_app_info.h",
     "../ash/web_applications/os_settings_web_app_info.cc",

@@ -74,6 +74,7 @@ source_set("browser_test_support") {
     "test/guest_query_receiver.js",
     "test/media_app_ui_browsertest.js",
     "test/media_app_guest_ui_browsertest.js",
+    "test/test_worker.js",
   ]
 }
 
@@ -166,6 +167,11 @@ js_library("test_driver_js") {
   ]
 }
 
+js_library("test_worker_js") {
+  testonly = true
+  sources = [ "test/test_worker.js" ]
+}
+
 js_library("test_media_app_ui_gtest_browsertest_js") {
   testonly = true
   sources = [ "test/media_app_ui_gtest_browsertest.js" ]
@@ -191,6 +197,7 @@ js_library("test_media_app_guest_ui_browsertest_js") {
       [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
   deps = [
     ":test_driver_js",
+    ":test_worker_js",
     "//chromeos/components/media_app_ui/resources/js:receiver",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]

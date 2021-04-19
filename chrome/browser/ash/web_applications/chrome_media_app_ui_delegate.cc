@@ -36,23 +36,3 @@ base::Optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   // back to the client with an error string. For now assume dialog opened.
   return base::nullopt;
 }
-
-void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
-    content::WebUIDataSource* source) {
-  source->AddString("appLocale", g_browser_process->GetApplicationLocale());
-  source->AddBoolean(
-      "imageAnnotation",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppAnnotation));
-  source->AddBoolean(
-      "displayExif",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppDisplayExif));
-  source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
-                                     chromeos::features::kMediaAppHandlesPdf));
-  version_info::Channel channel = chrome::GetChannel();
-  source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
-                                      channel != version_info::Channel::STABLE);
-  source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
-  source->AddBoolean(
-      "videoControls",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppVideoControls));
-}

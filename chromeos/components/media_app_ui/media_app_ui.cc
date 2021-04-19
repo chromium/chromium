@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "chromeos/components/media_app_ui/media_app_guest_ui.h"
 #include "chromeos/components/media_app_ui/media_app_page_handler.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
@@ -118,11 +117,6 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
                        ContentSettingsType::JAVASCRIPT,
                        ContentSettingsType::SOUND,
                    });
-
-  content::WebUIDataSource* untrusted_source =
-      CreateMediaAppUntrustedDataSource(delegate_.get());
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
-
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }

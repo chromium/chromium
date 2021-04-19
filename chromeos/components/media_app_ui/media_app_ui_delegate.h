@@ -9,10 +9,6 @@
 
 #include "base/optional.h"
 
-namespace content {
-class WebUIDataSource;
-}
-
 // A delegate which exposes browser functionality from //chrome to the media app
 // ui page handler.
 class MediaAppUIDelegate {
@@ -23,9 +19,6 @@ class MediaAppUIDelegate {
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
   virtual base::Optional<std::string> OpenFeedbackDialog() = 0;
-
-  // Takes a WebUIDataSource, and populates its load-time data.
-  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_UI_DELEGATE_H_

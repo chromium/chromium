@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,6 +21,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/web_applications/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
@@ -52,6 +55,7 @@ WebUIConfigList CreateConfigs() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   register_config(std::make_unique<TerminalUIConfig>());
+  register_config(std::make_unique<MediaAppGuestUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());

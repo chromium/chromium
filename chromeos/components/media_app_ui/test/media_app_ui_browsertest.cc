@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
+#include "chromeos/components/media_app_ui/media_app_guest_ui.h"
 #include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
@@ -64,6 +65,9 @@ MediaAppUiBrowserTest::MediaAppUiBrowserTest()
           {base::FilePath(kTestLibraryPath), base::FilePath(kCr),
            base::FilePath(kWebUiTestUtil), base::FilePath(kGuestQueryHandler),
            base::FilePath(kGuestTestCases)}) {
+  chromeos::SetMediaAppGuestUITestRequestHandlerForTesting(
+      base::BindRepeating(&HandleTestFileRequestCallback));
+
   chromeos::SetMediaAppUITestRequestHandlerForTesting(
       base::BindRepeating(&HandleTestFileRequestCallback));
 }

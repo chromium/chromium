@@ -25,7 +25,6 @@ class ChromeMediaAppUIDelegate : public MediaAppUIDelegate {
 
   // MediaAppUIDelegate:
   base::Optional<std::string> OpenFeedbackDialog() override;
-  void PopulateLoadTimeData(content::WebUIDataSource* source) override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.
