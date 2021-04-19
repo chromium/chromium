@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <cstddef>
 #include <string>
 #include <utility>
 

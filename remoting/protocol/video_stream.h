@@ -5,10 +5,6 @@
 #ifndef REMOTING_PROTOCOL_VIDEO_STREAM_H_
 #define REMOTING_PROTOCOL_VIDEO_STREAM_H_
 
-#include <stdint.h>
-
-#include <cstdint>
-
 #include "remoting/protocol/input_event_timestamps.h"
 
 namespace webrtc {

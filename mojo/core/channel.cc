@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <limits>
 #include <utility>
 

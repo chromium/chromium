@@ -8,7 +8,6 @@
 #include <jni.h>
 #include <stdint.h>
 
-#include <cstdint>
 #include <list>
 #include <string>
 

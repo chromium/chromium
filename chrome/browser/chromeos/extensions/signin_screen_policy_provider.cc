@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <cstddef>
 #include <memory>
 #include <string>
 

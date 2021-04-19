@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cstddef>
 #include <list>
 #include <map>
 #include <memory>

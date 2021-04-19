@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <algorithm>  // std::find
-#include <cstdint>
 #include <memory>
 #include <set>
 #include <sstream>

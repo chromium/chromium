@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <cstddef>
 #include <string>
 
 #include "ppapi/c/pp_stdint.h"

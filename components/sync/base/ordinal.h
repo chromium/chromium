@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <string>
 
 #include "base/check_op.h"
