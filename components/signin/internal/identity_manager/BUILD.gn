@@ -96,6 +96,14 @@ source_set("identity_manager") {
 
     deps += [ "//components/user_manager" ]
   } else {
+    if (is_chromeos_lacros) {
+      # TODO(bsazonov): Simplify this after removing profile_oauth2_token_service_delegate_chromeos_legacy.
+      sources += [
+        "profile_oauth2_token_service_delegate_chromeos.cc",
+        "profile_oauth2_token_service_delegate_chromeos.h",
+      ]
+      deps += [ "//components/account_manager_core" ]
+    }
     sources += [
       "primary_account_policy_manager_impl.cc",
       "primary_account_policy_manager_impl.h",

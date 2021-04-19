@@ -2459,13 +2459,14 @@
       # https://crbug.com/1199909,
       'linux-lacros-rel': {
         'args': [
-          '--gtest_filter=-SingleClientNigoriWithWebApiTest.ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown:\
-SingleClientNigoriWithWebApiTest.ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn:\
-SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared:\
-SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts:\
-SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs',
+           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.sync_integration_tests.filter',
         ]
-      }
+      },
+      'linux-lacros-tester-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.sync_integration_tests.filter',
+        ],
+      },
     },
   },
   'system_webview_shell_layout_test_apk': {

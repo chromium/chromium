@@ -4815,7 +4815,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-SingleClientNigoriWithWebApiTest.ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown:SingleClientNigoriWithWebApiTest.ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn:SingleClientNigoriWithWebApiTest.ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared:SingleClientPollingSyncTest.ShouldPollWhenIntervalExpiredAcrossRestarts:SingleClientPollingSyncTest.ShouldUsePollIntervalFromPrefs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.sync_integration_tests.filter"
         ],
         "merge": {
           "args": [],
@@ -5755,6 +5755,9 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.sync_integration_tests.filter"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

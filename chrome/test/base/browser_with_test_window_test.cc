@@ -54,8 +54,10 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  lacros_service_test_helper_ =
-      std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
+  if (!chromeos::LacrosChromeServiceImpl::Get()) {
+    lacros_service_test_helper_ =
+        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
+  }
   tablet_state_ = std::make_unique<chromeos::TabletState>();
 #endif
 
