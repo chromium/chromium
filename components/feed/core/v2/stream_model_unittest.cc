@@ -425,6 +425,27 @@ TEST(StreamModelTest, SharedStateCanBeAddedOnlyOnce) {
   EXPECT_FALSE(observer.GetUiUpdate()->shared_states[0].updated);
 }
 
+TEST(StreamModelTest, SharedStateUpdatesKeepOriginal) {
+  StreamModel model;
+  TestObserver observer(&model);
+  TestStoreObserver store_observer(&model);
+  model.Update(MakeTypicalInitialModelState());
+  observer.Clear();
+  store_observer.Clear();
+  model.Update(MakeTypicalNextPageState(
+      2, kTestTimeEpoch, true, true, true,
+      StreamModelUpdateRequest::Source::kNetworkLoadMore));
+
+  EXPECT_EQ(2UL, observer.GetUiUpdate()->shared_states.size());
+  EXPECT_FALSE(observer.GetUiUpdate()->shared_states[0].updated);
+  EXPECT_TRUE(observer.GetUiUpdate()->shared_states[1].updated);
+
+  ASSERT_TRUE(store_observer.GetUpdate());
+  EXPECT_EQ(1, store_observer.GetUpdate()->sequence_number);
+  ASSERT_EQ(2, store_observer.GetUpdate()
+                   ->update_request->stream_data.shared_state_ids_size());
+}
+
 TEST(StreamModelTest, ClearAllErasesSharedStates) {
   StreamModel model;
   TestObserver observer(&model);

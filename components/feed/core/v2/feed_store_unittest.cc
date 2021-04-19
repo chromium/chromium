@@ -138,7 +138,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
       content_domain: "root"
     }
     next_page_token: "page-2"
-    shared_state_id {
+    shared_state_ids {
       content_domain: "render_data"
     }
     stream_id: "i"
@@ -259,7 +259,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
       content_domain: "root"
     }
     next_page_token: "page-2"
-    shared_state_id {
+    shared_state_ids {
       content_domain: "render_data"
     }
     stream_id: "w"

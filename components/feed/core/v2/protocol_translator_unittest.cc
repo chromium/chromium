@@ -305,7 +305,7 @@ TEST(ProtocolTranslatorTest, TranslateRealResponse) {
   const std::string want = R"(source: 0
 stream_data: {
   last_added_time_millis: 10627200000
-  shared_state_id {
+  shared_state_ids {
     content_domain: "render_data"
   }
 }
