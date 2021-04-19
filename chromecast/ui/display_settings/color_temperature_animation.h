@@ -13,6 +13,8 @@
 
 namespace chromecast {
 
+class CastWindowManager;
+
 namespace shell {
 class CastDisplayConfigurator;
 }
@@ -22,6 +24,7 @@ class CastDisplayConfigurator;
 class ColorTemperatureAnimation : public gfx::LinearAnimation {
  public:
   ColorTemperatureAnimation(
+      CastWindowManager* window_manager,
       shell::CastDisplayConfigurator* display_configurator,
       const DisplaySettingsManager::ColorTemperatureConfig& config);
   ColorTemperatureAnimation(const ColorTemperatureAnimation&) = delete;
@@ -44,6 +47,7 @@ class ColorTemperatureAnimation : public gfx::LinearAnimation {
 
   void ApplyValuesToDisplay();
 
+  CastWindowManager* const window_manager_;
   shell::CastDisplayConfigurator* const display_configurator_;
 
   const DisplaySettingsManager::ColorTemperatureConfig config_;

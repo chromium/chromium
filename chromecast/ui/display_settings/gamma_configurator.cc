@@ -7,6 +7,10 @@
 #include <limits>
 
 #include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/graphics/cast_window_manager.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
 
 namespace chromecast {
 namespace {
@@ -41,8 +45,11 @@ std::vector<display::GammaRampRGBEntry> InvertGammaLut(
 }  // namespace
 
 GammaConfigurator::GammaConfigurator(
+    CastWindowManager* window_manager,
     shell::CastDisplayConfigurator* display_configurator)
-    : display_configurator_(display_configurator) {
+    : window_manager_(window_manager),
+      display_configurator_(display_configurator) {
+  DCHECK(window_manager_);
   DCHECK(display_configurator_);
 }
 
@@ -62,6 +69,13 @@ void GammaConfigurator::ApplyGammaLut() {
     display_configurator_->SetGammaCorrection({}, InvertGammaLut(gamma_lut_));
   else
     display_configurator_->SetGammaCorrection({}, gamma_lut_);
+
+  // The LUT is applied on the next swap buffers, so we need to make sure the
+  // root window triggers a swap buffer otherwise the content will not update.
+  window_manager_->GetRootWindow()
+      ->GetHost()
+      ->compositor()
+      ->ScheduleFullRedraw();
 }
 
 void GammaConfigurator::SetColorInversion(bool invert) {
