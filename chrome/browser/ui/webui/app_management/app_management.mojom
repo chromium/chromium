@@ -78,10 +78,10 @@ enum ArcPermissionType {
 // This enum takes the important permission values from the
 // contents_settings_type.h ContentSettingsType enum.
 enum PwaPermissionType {
-  GEOLOCATION = 5,
-  NOTIFICATIONS = 6,
-  MEDIASTREAM_MIC = 9,
-  MEDIASTREAM_CAMERA = 10,
+  GEOLOCATION = 4,
+  NOTIFICATIONS = 5,
+  MEDIASTREAM_MIC = 8,
+  MEDIASTREAM_CAMERA = 9,
 };
 
 // The Plugin VM app publisher uses this enum directly.
