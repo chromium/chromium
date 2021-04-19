@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "components/variations/variations_params_manager.h"
+#include "services/device/hid/test_report_descriptors.h"
+#include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,6 +122,37 @@ class HidBlocklistTest : public testing::Test {
     device->product_id = product_id;
     device->has_report_id = true;
     device->collections = std::move(collections);
+    device->protected_input_report_ids = blocklist_.GetProtectedReportIds(
+        HidBlocklist::kReportTypeInput, vendor_id, product_id,
+        device->collections);
+    device->protected_output_report_ids = blocklist_.GetProtectedReportIds(
+        HidBlocklist::kReportTypeOutput, vendor_id, product_id,
+        device->collections);
+    device->protected_feature_report_ids = blocklist_.GetProtectedReportIds(
+        HidBlocklist::kReportTypeFeature, vendor_id, product_id,
+        device->collections);
+    return device;
+  }
+
+  mojom::HidDeviceInfoPtr CreateDeviceFromReportDescriptor(
+      uint16_t vendor_id,
+      uint16_t product_id,
+      base::span<const uint8_t> report_descriptor_data) {
+    auto device = mojom::HidDeviceInfo::New();
+    device->guid = base::GenerateGUID();
+    device->vendor_id = vendor_id;
+    device->product_id = product_id;
+
+    size_t max_input_report_size;
+    size_t max_output_report_size;
+    size_t max_feature_report_size;
+    HidReportDescriptor descriptor_parser(report_descriptor_data);
+    descriptor_parser.GetDetails(
+        &device->collections, &device->has_report_id, &max_input_report_size,
+        &max_output_report_size, &max_feature_report_size);
+    device->max_input_report_size = max_input_report_size;
+    device->max_output_report_size = max_output_report_size;
+    device->max_feature_report_size = max_feature_report_size;
     device->protected_input_report_ids = blocklist_.GetProtectedReportIds(
         HidBlocklist::kReportTypeInput, vendor_id, product_id,
         device->collections);
@@ -412,6 +445,23 @@ TEST_F(HidBlocklistTest, DeviceWithAllProtectedReportsIsExcluded) {
   EXPECT_THAT(*device->protected_input_report_ids, ElementsAre(0x01, 0x04));
   EXPECT_THAT(*device->protected_output_report_ids, ElementsAre(0x02, 0x05));
   EXPECT_THAT(*device->protected_feature_report_ids, ElementsAre(0x03, 0x06));
+}
+
+TEST_F(HidBlocklistTest, SpecificOutputReportExcluded) {
+  // Block report 0x05 from usage page 0xff00 on devices from vendor 0x0b0e.
+  SetDynamicBlocklist("0b0e::ff00::05:O");
+
+  // Create a device with several reports, one of which matches the blocklist
+  // rule.
+  auto device = CreateDeviceFromReportDescriptor(
+      /*vendor_id=*/0x0b0e, /*product_id=*/0x24c9,
+      TestReportDescriptors::JabraLink380c());
+
+  // Check that only the blocked report is excluded.
+  EXPECT_FALSE(HidBlocklist::IsDeviceExcluded(*device));
+  EXPECT_TRUE(device->protected_input_report_ids->empty());
+  EXPECT_THAT(*device->protected_output_report_ids, ElementsAre(0x05));
+  EXPECT_TRUE(device->protected_feature_report_ids->empty());
 }
 
 }  // namespace device

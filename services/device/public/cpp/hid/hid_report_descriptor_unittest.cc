@@ -26,11 +26,11 @@ using HidReportMap = std::unordered_map<uint8_t, HidReport>;
 using HidCollectionVector = std::vector<std::unique_ptr<HidCollection>>;
 
 // HID unit values.
-const uint32_t kUnitCandela = 0x010000e1;
-const uint32_t kUnitDegrees = 0x14;
-const uint32_t kUnitInch = 0x13;
-const uint32_t kUnitNewton = 0xe111;
-const uint32_t kUnitSecond = 0x1001;
+constexpr uint32_t kUnitCandela = 0x010000e1;
+constexpr uint32_t kUnitDegrees = 0x14;
+constexpr uint32_t kUnitInch = 0x13;
+constexpr uint32_t kUnitNewton = 0xe111;
+constexpr uint32_t kUnitSecond = 0x1001;
 
 // Report info bitfield values. The bits are:
 //   bit 0: Data (0) | Constant (1)
@@ -42,165 +42,181 @@ const uint32_t kUnitSecond = 0x1001;
 //   bit 6: No Null Value (0) | Has Null Value (1)
 //   bit 7: Non-Volatile (0) | Volatile (1)
 //   bit 8: Bit Field (0) | Buffered Bytes (1)
-const uint16_t kNonNullableArray = 0x0000;
-const uint16_t kConstantArray = 0x0001;
-const uint16_t kAbsoluteVariable = 0x0002;
-const uint16_t kConstant = 0x0003;
-const uint16_t kRelativeVariable = 0x0006;
-const uint16_t kNonLinearVariable = 0x0012;
-const uint16_t kNullableArray = 0x0040;
-const uint16_t kNullableAbsoluteVariable = 0x0042;
-const uint16_t kVolatileConstant = 0x0083;
-const uint16_t kBufferedBytes = 0x0102;
-
-// Vendor usage pages.
-const uint16_t kPageVendor02 = mojom::kPageVendor + 0x02;
-const uint16_t kPageVendor05 = mojom::kPageVendor + 0x05;
-const uint16_t kPageVendor80 = mojom::kPageVendor + 0x80;
+constexpr uint16_t kNonNullableArray = 0x0000;
+constexpr uint16_t kConstantArray = 0x0001;
+constexpr uint16_t kAbsoluteVariable = 0x0002;
+constexpr uint16_t kConstant = 0x0003;
+constexpr uint16_t kRelativeVariable = 0x0006;
+constexpr uint16_t kConstantRelativeVariable = 0x0007;
+constexpr uint16_t kNonLinearVariable = 0x0012;
+constexpr uint16_t kAbsoluteVariablePreferredState = 0x0022;
+constexpr uint16_t kConstantAbsoluteVariablePreferredState = 0x0023;
+constexpr uint16_t kNullableArray = 0x0040;
+constexpr uint16_t kNullableAbsoluteVariable = 0x0042;
+constexpr uint16_t kVolatileConstant = 0x0083;
+constexpr uint16_t kBufferedBytes = 0x0102;
 
 // Bit-width and mask for the usage ID field in a 32-bit usage value.
-const size_t kUsageIdSizeBits = sizeof(uint16_t) * 8;
-const uint32_t kUsageIdMask = std::numeric_limits<uint16_t>::max();
+constexpr size_t kUsageIdSizeBits = sizeof(uint16_t) * CHAR_BIT;
+constexpr uint32_t kUsageIdMask = std::numeric_limits<uint16_t>::max();
 
 // Combined usage page and usage ID values. The usage page occupies the high 16
 // bits, the usage ID occupies the low 16 bits.
-const uint32_t kUsageButton = (mojom::kPageButton << kUsageIdSizeBits);
-const uint32_t kUsageConsumer = (mojom::kPageConsumer << kUsageIdSizeBits);
-const uint32_t kUsageConsumerACBack = kUsageConsumer | 0x0224;
-const uint32_t kUsageConsumerACHome = kUsageConsumer | 0x0223;
-const uint32_t kUsageConsumerControl = kUsageConsumer | 0x01;
-const uint32_t kUsageConsumerModeStep = kUsageConsumer | 0x82;
-const uint32_t kUsageDigitizer = (mojom::kPageDigitizer << kUsageIdSizeBits);
-const uint32_t kUsageDigitizerDigitizer = kUsageDigitizer | 0x01;
-const uint32_t kUsageDigitizerBarrelSwitch = kUsageDigitizer | 0x44;
-const uint32_t kUsageDigitizerInRange = kUsageDigitizer | 0x32;
-const uint32_t kUsageDigitizerPuck = kUsageDigitizer | 0x21;
-const uint32_t kUsageDigitizerStylus = kUsageDigitizer | 0x20;
-const uint32_t kUsageDigitizerTipPressure = kUsageDigitizer | 0x30;
-const uint32_t kUsageDigitizerTipSwitch = kUsageDigitizer | 0x42;
-const uint32_t kUsageGenericDesktop =
-    (mojom::kPageGenericDesktop << kUsageIdSizeBits);
-const uint32_t kUsageGenericDesktopDial =
+constexpr uint32_t kUsageButton = mojom::kPageButton << kUsageIdSizeBits;
+constexpr uint32_t kUsageConsumer = mojom::kPageConsumer << kUsageIdSizeBits;
+constexpr uint32_t kUsageConsumerControl = kUsageConsumer | 0x01;
+constexpr uint32_t kUsageConsumerModeStep = kUsageConsumer | 0x82;
+constexpr uint32_t kUsageConsumerFastForward = kUsageConsumer | 0xb3;
+constexpr uint32_t kUsageConsumerRewind = kUsageConsumer | 0xb4;
+constexpr uint32_t kUsageConsumerScanNextTrack = kUsageConsumer | 0xb5;
+constexpr uint32_t kUsageConsumerScanPreviousTrack = kUsageConsumer | 0xb6;
+constexpr uint32_t kUsageConsumerStop = kUsageConsumer | 0xb7;
+constexpr uint32_t kUsageConsumerPlayPause = kUsageConsumer | 0xcd;
+constexpr uint32_t kUsageConsumerMute = kUsageConsumer | 0xe2;
+constexpr uint32_t kUsageConsumerVolumeIncrement = kUsageConsumer | 0xe9;
+constexpr uint32_t kUsageConsumerVolumeDecrement = kUsageConsumer | 0xea;
+constexpr uint32_t kUsageConsumerACHome = kUsageConsumer | 0x0223;
+constexpr uint32_t kUsageConsumerACBack = kUsageConsumer | 0x0224;
+constexpr uint32_t kUsageDigitizer = mojom::kPageDigitizer << kUsageIdSizeBits;
+constexpr uint32_t kUsageDigitizerDigitizer = kUsageDigitizer | 0x01;
+constexpr uint32_t kUsageDigitizerBarrelSwitch = kUsageDigitizer | 0x44;
+constexpr uint32_t kUsageDigitizerInRange = kUsageDigitizer | 0x32;
+constexpr uint32_t kUsageDigitizerPuck = kUsageDigitizer | 0x21;
+constexpr uint32_t kUsageDigitizerStylus = kUsageDigitizer | 0x20;
+constexpr uint32_t kUsageDigitizerTipPressure = kUsageDigitizer | 0x30;
+constexpr uint32_t kUsageDigitizerTipSwitch = kUsageDigitizer | 0x42;
+constexpr uint32_t kUsageGenericDesktop = mojom::kPageGenericDesktop
+                                          << kUsageIdSizeBits;
+constexpr uint32_t kUsageGenericDesktopDial =
     kUsageGenericDesktop | mojom::kGenericDesktopDial;
-const uint32_t kUsageGenericDesktopGamePad =
+constexpr uint32_t kUsageGenericDesktopGamePad =
     kUsageGenericDesktop | mojom::kGenericDesktopGamePad;
-const uint32_t kUsageGenericDesktopHatSwitch =
+constexpr uint32_t kUsageGenericDesktopHatSwitch =
     kUsageGenericDesktop | mojom::kGenericDesktopHatSwitch;
-const uint32_t kUsageGenericDesktopJoystick =
+constexpr uint32_t kUsageGenericDesktopJoystick =
     kUsageGenericDesktop | mojom::kGenericDesktopJoystick;
-const uint32_t kUsageGenericDesktopKeyboard =
+constexpr uint32_t kUsageGenericDesktopKeyboard =
     kUsageGenericDesktop | mojom::kGenericDesktopKeyboard;
-const uint32_t kUsageGenericDesktopMouse =
+constexpr uint32_t kUsageGenericDesktopMouse =
     kUsageGenericDesktop | mojom::kGenericDesktopMouse;
-const uint32_t kUsageGenericDesktopPointer =
+constexpr uint32_t kUsageGenericDesktopPointer =
     kUsageGenericDesktop | mojom::kGenericDesktopPointer;
-const uint32_t kUsageGenericDesktopRx =
+constexpr uint32_t kUsageGenericDesktopRx =
     kUsageGenericDesktop | mojom::kGenericDesktopRx;
-const uint32_t kUsageGenericDesktopRy =
+constexpr uint32_t kUsageGenericDesktopRy =
     kUsageGenericDesktop | mojom::kGenericDesktopRy;
-const uint32_t kUsageGenericDesktopRz =
+constexpr uint32_t kUsageGenericDesktopRz =
     kUsageGenericDesktop | mojom::kGenericDesktopRz;
-const uint32_t kUsageGenericDesktopSystemControl =
+constexpr uint32_t kUsageGenericDesktopSystemControl =
     kUsageGenericDesktop | mojom::kGenericDesktopSystemControl;
-const uint32_t kUsageGenericDesktopSystemMainMenu =
+constexpr uint32_t kUsageGenericDesktopSystemMainMenu =
     kUsageGenericDesktop | mojom::kGenericDesktopSystemMainMenu;
-const uint32_t kUsageGenericDesktopVbrx =
+constexpr uint32_t kUsageGenericDesktopVbrx =
     kUsageGenericDesktop | mojom::kGenericDesktopVbrx;
-const uint32_t kUsageGenericDesktopVbry =
+constexpr uint32_t kUsageGenericDesktopVbry =
     kUsageGenericDesktop | mojom::kGenericDesktopVbry;
-const uint32_t kUsageGenericDesktopVbrz =
+constexpr uint32_t kUsageGenericDesktopVbrz =
     kUsageGenericDesktop | mojom::kGenericDesktopVbrz;
-const uint32_t kUsageGenericDesktopVx =
+constexpr uint32_t kUsageGenericDesktopVx =
     kUsageGenericDesktop | mojom::kGenericDesktopVx;
-const uint32_t kUsageGenericDesktopVy =
+constexpr uint32_t kUsageGenericDesktopVy =
     kUsageGenericDesktop | mojom::kGenericDesktopVy;
-const uint32_t kUsageGenericDesktopVz =
+constexpr uint32_t kUsageGenericDesktopVz =
     kUsageGenericDesktop | mojom::kGenericDesktopVz;
-const uint32_t kUsageGenericDesktopWheel =
+constexpr uint32_t kUsageGenericDesktopWheel =
     kUsageGenericDesktop | mojom::kGenericDesktopWheel;
-const uint32_t kUsageGenericDesktopX =
+constexpr uint32_t kUsageGenericDesktopX =
     kUsageGenericDesktop | mojom::kGenericDesktopX;
-const uint32_t kUsageGenericDesktopY =
+constexpr uint32_t kUsageGenericDesktopY =
     kUsageGenericDesktop | mojom::kGenericDesktopY;
-const uint32_t kUsageGenericDesktopZ =
+constexpr uint32_t kUsageGenericDesktopZ =
     kUsageGenericDesktop | mojom::kGenericDesktopZ;
-const uint32_t kUsageGenericDeviceBatteryStrength =
+constexpr uint32_t kUsageGenericDeviceBatteryStrength =
     (mojom::kPageGenericDevice << kUsageIdSizeBits) | 0x20;
-const uint32_t kUsageKeyboard = (mojom::kPageKeyboard << kUsageIdSizeBits);
-const uint32_t kUsageKeyboardApplication = kUsageKeyboard | 0x65;
-const uint32_t kUsageKeyboardLeftControl = kUsageKeyboard | 0xe0;
-const uint32_t kUsageKeyboardRightGui = kUsageKeyboard | 0xe7;
-const uint32_t kUsageLedNumLock = (mojom::kPageLed << kUsageIdSizeBits) | 0x01;
-const uint32_t kUsageLedCapsLock = (mojom::kPageLed << kUsageIdSizeBits) | 0x02;
-const uint32_t kUsageLedScrollLock =
-    (mojom::kPageLed << kUsageIdSizeBits) | 0x03;
-const uint32_t kUsageLedCompose = (mojom::kPageLed << kUsageIdSizeBits) | 0x04;
-const uint32_t kUsageLedKana = (mojom::kPageLed << kUsageIdSizeBits) | 0x05;
-const uint32_t kUsageMonitorControl =
-    (mojom::kPageMonitor0 << kUsageIdSizeBits) | 0x01;
-const uint32_t kUsageMonitorEdidInfo =
-    (mojom::kPageMonitor0 << kUsageIdSizeBits) | 0x02;
-const uint32_t kUsageMonitorVdifInfo =
-    (mojom::kPageMonitor0 << kUsageIdSizeBits) | 0x03;
-const uint32_t kUsageMonitorBrightness =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x10;
-const uint32_t kUsageMonitorContrast =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x12;
-const uint32_t kUsageMonitorRedVideoGain =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x16;
-const uint32_t kUsageMonitorGreenVideoGain =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x18;
-const uint32_t kUsageMonitorBlueVideoGain =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x1a;
-const uint32_t kUsageMonitorHorizontalPosition =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x20;
-const uint32_t kUsageMonitorHorizontalSize =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x22;
-const uint32_t kUsageMonitorVerticalPosition =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x30;
-const uint32_t kUsageMonitorVerticalSize =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x32;
-const uint32_t kUsageMonitorTrapezoidalDistortion =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x42;
-const uint32_t kUsageMonitorTilt =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x44;
-const uint32_t kUsageMonitorRedVideoBlackLevel =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x6c;
-const uint32_t kUsageMonitorGreenVideoBlackLevel =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x6e;
-const uint32_t kUsageMonitorBlueVideoBlackLevel =
-    (mojom::kPageMonitor2 << kUsageIdSizeBits) | 0x70;
-const uint32_t kUsagePidSetEffectReport =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0x21;
-const uint32_t kUsagePidDuration =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0x50;
-const uint32_t kUsagePidMagnitude =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0x70;
-const uint32_t kUsagePidLoopCount =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0x7c;
-const uint32_t kUsagePidDCEnableActuators =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0x97;
-const uint32_t kUsagePidStartDelay =
-    (mojom::kPagePidPage << kUsageIdSizeBits) | 0xa7;
-const uint32_t kUsageSimulationAccelerator =
-    (mojom::kPageSimulation << kUsageIdSizeBits) | 0xc4;
-const uint32_t kUsageSimulationBrake =
-    (mojom::kPageSimulation << kUsageIdSizeBits) | 0xc5;
-const uint32_t kUsageVendor = mojom::kPageVendor << kUsageIdSizeBits;
-const uint32_t kUsageVendor02 = kPageVendor02 << kUsageIdSizeBits;
-const uint32_t kUsageVendor05 = kPageVendor05 << kUsageIdSizeBits;
-const uint32_t kUsageVendor80 = kPageVendor80 << kUsageIdSizeBits;
+constexpr uint32_t kUsageKeyboard = mojom::kPageKeyboard << kUsageIdSizeBits;
+constexpr uint32_t kUsageKeyboardApplication = kUsageKeyboard | 0x65;
+constexpr uint32_t kUsageKeyboardLeftControl = kUsageKeyboard | 0xe0;
+constexpr uint32_t kUsageKeyboardRightGui = kUsageKeyboard | 0xe7;
+constexpr uint32_t kUsageLed = mojom::kPageLed << kUsageIdSizeBits;
+constexpr uint32_t kUsageLedNumLock = kUsageLed | 0x01;
+constexpr uint32_t kUsageLedCapsLock = kUsageLed | 0x02;
+constexpr uint32_t kUsageLedScrollLock = kUsageLed | 0x03;
+constexpr uint32_t kUsageLedCompose = kUsageLed | 0x04;
+constexpr uint32_t kUsageLedKana = kUsageLed | 0x05;
+constexpr uint32_t kUsageLedMute = kUsageLed | 0x09;
+constexpr uint32_t kUsageLedOffHook = kUsageLed | 0x17;
+constexpr uint32_t kUsageLedRing = kUsageLed | 0x18;
+constexpr uint32_t kUsageLedSpeaker = kUsageLed | 0x1e;
+constexpr uint32_t kUsageLedHold = kUsageLed | 0x20;
+constexpr uint32_t kUsageLedMicrophone = kUsageLed | 0x21;
+constexpr uint32_t kUsageLedOnLine = kUsageLed | 0x2a;
+constexpr uint32_t kUsageMonitor0 = mojom::kPageMonitor0 << kUsageIdSizeBits;
+constexpr uint32_t kUsageMonitorControl = kUsageMonitor0 | 0x01;
+constexpr uint32_t kUsageMonitorEdidInfo = kUsageMonitor0 | 0x02;
+constexpr uint32_t kUsageMonitorVdifInfo = kUsageMonitor0 | 0x03;
+constexpr uint32_t kUsageMonitor2 = mojom::kPageMonitor2 << kUsageIdSizeBits;
+constexpr uint32_t kUsageMonitorBrightness = kUsageMonitor2 | 0x10;
+constexpr uint32_t kUsageMonitorContrast = kUsageMonitor2 | 0x12;
+constexpr uint32_t kUsageMonitorRedVideoGain = kUsageMonitor2 | 0x16;
+constexpr uint32_t kUsageMonitorGreenVideoGain = kUsageMonitor2 | 0x18;
+constexpr uint32_t kUsageMonitorBlueVideoGain = kUsageMonitor2 | 0x1a;
+constexpr uint32_t kUsageMonitorHorizontalPosition = kUsageMonitor2 | 0x20;
+constexpr uint32_t kUsageMonitorHorizontalSize = kUsageMonitor2 | 0x22;
+constexpr uint32_t kUsageMonitorVerticalPosition = kUsageMonitor2 | 0x30;
+constexpr uint32_t kUsageMonitorVerticalSize = kUsageMonitor2 | 0x32;
+constexpr uint32_t kUsageMonitorTrapezoidalDistortion = kUsageMonitor2 | 0x42;
+constexpr uint32_t kUsageMonitorTilt = kUsageMonitor2 | 0x44;
+constexpr uint32_t kUsageMonitorRedVideoBlackLevel = kUsageMonitor2 | 0x6c;
+constexpr uint32_t kUsageMonitorGreenVideoBlackLevel = kUsageMonitor2 | 0x6e;
+constexpr uint32_t kUsageMonitorBlueVideoBlackLevel = kUsageMonitor2 | 0x70;
+constexpr uint32_t kUsagePid = mojom::kPagePidPage << kUsageIdSizeBits;
+constexpr uint32_t kUsagePidSetEffectReport = kUsagePid | 0x21;
+constexpr uint32_t kUsagePidDuration = kUsagePid | 0x50;
+constexpr uint32_t kUsagePidMagnitude = kUsagePid | 0x70;
+constexpr uint32_t kUsagePidLoopCount = kUsagePid | 0x7c;
+constexpr uint32_t kUsagePidDCEnableActuators = kUsagePid | 0x97;
+constexpr uint32_t kUsagePidStartDelay = kUsagePid | 0xa7;
+constexpr uint32_t kUsageSimulation = mojom::kPageSimulation
+                                      << kUsageIdSizeBits;
+constexpr uint32_t kUsageSimulationAccelerator = kUsageSimulation | 0xc4;
+constexpr uint32_t kUsageSimulationBrake = kUsageSimulation | 0xc5;
+constexpr uint32_t kUsageTelephony = mojom::kPageTelephony << kUsageIdSizeBits;
+constexpr uint32_t kUsageTelephonyHeadset = kUsageTelephony | 0x05;
+constexpr uint32_t kUsageTelephonyKeyPad = kUsageTelephony | 0x06;
+constexpr uint32_t kUsageTelephonyProgrammableButton = kUsageTelephony | 0x07;
+constexpr uint32_t kUsageTelephonyHookSwitch = kUsageTelephony | 0x20;
+constexpr uint32_t kUsageTelephonyFlash = kUsageTelephony | 0x21;
+constexpr uint32_t kUsageTelephonyRedial = kUsageTelephony | 0x24;
+constexpr uint32_t kUsageTelephonyLine = kUsageTelephony | 0x2a;
+constexpr uint32_t kUsageTelephonyPhoneMute = kUsageTelephony | 0x2f;
+constexpr uint32_t kUsageTelephonySpeedDial = kUsageTelephony | 0x50;
+constexpr uint32_t kUsageTelephonyLineBusyTone = kUsageTelephony | 0x97;
+constexpr uint32_t kUsageTelephonyRinger = kUsageTelephony | 0x9e;
+constexpr uint32_t kUsageTelephonyPhoneKey0 = kUsageTelephony | 0xb0;
+constexpr uint32_t kUsageTelephonyPhoneKeyPound = kUsageTelephony | 0xbb;
+constexpr uint32_t kUsageVendor = mojom::kPageVendor << kUsageIdSizeBits;
+constexpr uint32_t kUsageVendor02 = (mojom::kPageVendor + 0x02)
+                                    << kUsageIdSizeBits;
+constexpr uint32_t kUsageVendor05 = (mojom::kPageVendor + 0x05)
+                                    << kUsageIdSizeBits;
+constexpr uint32_t kUsageVendor30 = (mojom::kPageVendor + 0x30)
+                                    << kUsageIdSizeBits;
+constexpr uint32_t kUsageVendor40 = (mojom::kPageVendor + 0x40)
+                                    << kUsageIdSizeBits;
+constexpr uint32_t kUsageVendor80 = (mojom::kPageVendor + 0x80)
+                                    << kUsageIdSizeBits;
 
 // Report item tags.
-const HidReportDescriptorItem::Tag kInput = HidReportDescriptorItem::kTagInput;
-const HidReportDescriptorItem::Tag kOutput =
+constexpr HidReportDescriptorItem::Tag kInput =
+    HidReportDescriptorItem::kTagInput;
+constexpr HidReportDescriptorItem::Tag kOutput =
     HidReportDescriptorItem::kTagOutput;
-const HidReportDescriptorItem::Tag kFeature =
+constexpr HidReportDescriptorItem::Tag kFeature =
     HidReportDescriptorItem::kTagFeature;
-const uint32_t kCollectionTypeApplication =
+constexpr uint32_t kCollectionTypeApplication =
     mojom::kHIDCollectionTypeApplication;
-const uint32_t kCollectionTypeLogical = mojom::kHIDCollectionTypeLogical;
-const uint32_t kCollectionTypePhysical = mojom::kHIDCollectionTypePhysical;
+constexpr uint32_t kCollectionTypeLogical = mojom::kHIDCollectionTypeLogical;
+constexpr uint32_t kCollectionTypePhysical = mojom::kHIDCollectionTypePhysical;
 
 }  // namespace
 
@@ -1585,6 +1601,121 @@ TEST_F(HidReportDescriptorTest,
   SetReportSizeAndCount(5, 1);
   AddReportConstant(pointer, kOutput, kConstantArray);
   ValidateCollections(TestReportDescriptors::BelkinNostromoMouseAndExtra());
+}
+
+TEST_F(HidReportDescriptorTest, ValidateDetails_JabraLink380c) {
+  auto telephony_info = HidCollectionInfo::New();
+  telephony_info->usage = HidUsageAndPage::New(0x05, mojom::kPageTelephony);
+  ASSERT_FALSE(IsAlwaysProtected(*telephony_info->usage));
+  telephony_info->report_ids = {0x02};
+  auto vendor_info = HidCollectionInfo::New();
+  vendor_info->usage = HidUsageAndPage::New(0x01, mojom::kPageVendor);
+  ASSERT_FALSE(IsAlwaysProtected(*vendor_info->usage));
+  vendor_info->report_ids = {0x05, 0x04};
+  auto consumer_info = HidCollectionInfo::New();
+  consumer_info->usage = HidUsageAndPage::New(0x01, mojom::kPageConsumer);
+  ASSERT_FALSE(IsAlwaysProtected(*consumer_info->usage));
+  consumer_info->report_ids = {0x01};
+  AddTopCollectionInfo(std::move(telephony_info));
+  AddTopCollectionInfo(std::move(vendor_info));
+  AddTopCollectionInfo(std::move(consumer_info));
+  ValidateDetails(true, 62, 62, 1, TestReportDescriptors::JabraLink380c());
+}
+
+TEST_F(HidReportDescriptorTest, ValidateCollections_JabraLink380c) {
+  auto* telephony =
+      AddTopCollection(kUsageTelephonyHeadset, kCollectionTypeApplication);
+  SetReportId(0x02);
+  SetLogicalAndPhysicalBounds(0, 1, 0, 0);
+  SetReportSizeAndCount(1, 3);
+  AddReportItem(telephony, kInput, kConstantAbsoluteVariablePreferredState,
+                {kUsageTelephonyHookSwitch, kUsageTelephonyLineBusyTone,
+                 kUsageTelephonyLine});
+  SetReportSizeAndCount(1, 4);
+  AddReportItem(telephony, kInput, kConstantRelativeVariable,
+                {kUsageTelephonyPhoneMute, kUsageTelephonyFlash,
+                 kUsageTelephonyRedial, kUsageTelephonySpeedDial});
+  auto* keypad =
+      AddChild(telephony, kUsageTelephonyKeyPad, kCollectionTypeLogical);
+  SetLogicalAndPhysicalBounds(0, 12, 0, 0);
+  SetReportSizeAndCount(4, 1);
+  AddReportItemRange(keypad, kInput, kNullableArray, kUsageTelephonyPhoneKey0,
+                     kUsageTelephonyPhoneKeyPound);
+  SetLogicalAndPhysicalBounds(0, 1, 0, 0);
+  SetReportSizeAndCount(1, 1);
+  AddReportItem(telephony, kInput, kAbsoluteVariable,
+                {kUsageTelephonyProgrammableButton});
+  SetReportSizeAndCount(1, 4);
+  AddReportConstant(telephony, kInput, kConstantArray);
+  SetReportSizeAndCount(1, 7);
+  AddReportItem(
+      telephony, kOutput, kAbsoluteVariablePreferredState,
+      {kUsageLedOffHook, kUsageLedSpeaker, kUsageLedMute, kUsageLedRing,
+       kUsageLedHold, kUsageLedMicrophone, kUsageLedOnLine});
+  SetReportSizeAndCount(1, 1);
+  AddReportItem(telephony, kOutput, kAbsoluteVariablePreferredState,
+                {kUsageTelephonyRinger});
+  SetReportSizeAndCount(1, 8);
+  AddReportConstant(telephony, kOutput, kConstantArray);
+  auto* vendor = AddTopCollection(kUsageVendor + 1, kCollectionTypeApplication);
+  SetReportId(0x05);
+  SetLogicalAndPhysicalBounds(0, 255, 0, 0);
+  SetReportSizeAndCount(8, 62);
+  AddReportItem(vendor, kOutput, kBufferedBytes, {kUsageVendor + 1});
+  AddReportItem(vendor, kInput, kBufferedBytes, {kUsageVendor + 1});
+  SetReportId(0x04);
+  SetLogicalAndPhysicalBounds(0, 1, 0, 0);
+  SetReportSizeAndCount(1, 4);
+  AddReportItem(vendor, kInput, kConstantAbsoluteVariablePreferredState,
+                {kUsageVendor30 + 0x20, kUsageVendor30 + 0xfffb,
+                 kUsageVendor30 + 0x97, kUsageVendor30 + 0x2a});
+  SetReportSizeAndCount(1, 5);
+  AddReportItem(
+      vendor, kInput, kConstantRelativeVariable,
+      {kUsageVendor30 + 0x2f, kUsageVendor30 + 0x21, kUsageVendor30 + 0x24,
+       kUsageVendor30 + 0xfffd, kUsageVendor30 + 0x50});
+  auto* vendor_child =
+      AddChild(vendor, kUsageVendor30 + 6, kCollectionTypeLogical);
+  SetLogicalAndPhysicalBounds(0, 12, 0, 0);
+  SetReportSizeAndCount(4, 1);
+  AddReportItemRange(vendor_child, kInput, kNullableArray,
+                     kUsageVendor30 + 0xb0, kUsageVendor30 + 0xbb);
+  SetLogicalAndPhysicalBounds(0, 1, 0, 0);
+  SetReportSizeAndCount(1, 1);
+  AddReportItem(vendor, kInput, kConstantAbsoluteVariablePreferredState,
+                {kUsageVendor30 + 0xfffc});
+  SetReportSizeAndCount(1, 2);
+  AddReportConstant(vendor, kInput, kConstantArray);
+  SetReportSizeAndCount(1, 7);
+  AddReportItem(
+      vendor, kOutput, kAbsoluteVariablePreferredState,
+      {kUsageVendor40 + 0x17, kUsageVendor40 + 0xfffb, kUsageVendor40 + 0x09,
+       kUsageVendor40 + 0x18, kUsageVendor40 + 0x20, kUsageVendor40 + 0x21,
+       kUsageVendor40 + 0x2a});
+  SetReportSizeAndCount(1, 1);
+  AddReportItem(vendor, kOutput, kAbsoluteVariablePreferredState,
+                {kUsageVendor30 + 0x9e});
+  SetReportSizeAndCount(1, 8);
+  AddReportConstant(vendor, kOutput, kConstantArray);
+  SetReportSizeAndCount(1, 1);
+  AddReportItem(vendor, kFeature, kAbsoluteVariablePreferredState,
+                {kUsageVendor30 + 0xffff});
+  SetReportSizeAndCount(1, 7);
+  AddReportConstant(vendor, kFeature, kConstantArray);
+  auto* consumer =
+      AddTopCollection(kUsageConsumerControl, kCollectionTypeApplication);
+  SetReportId(0x01);
+  SetLogicalAndPhysicalBounds(0, 1, 0, 0);
+  SetReportSizeAndCount(1, 9);
+  AddReportItem(
+      consumer, kInput, kAbsoluteVariable,
+      {kUsageConsumerVolumeDecrement, kUsageConsumerVolumeIncrement,
+       kUsageConsumerMute, kUsageConsumerPlayPause, kUsageConsumerStop,
+       kUsageConsumerScanNextTrack, kUsageConsumerScanPreviousTrack,
+       kUsageConsumerFastForward, kUsageConsumerRewind});
+  SetReportSizeAndCount(1, 7);
+  AddReportConstant(consumer, kInput, kConstantArray);
+  ValidateCollections(TestReportDescriptors::JabraLink380c());
 }
 
 TEST_F(HidReportDescriptorTest, InvalidReportSizeIgnored) {

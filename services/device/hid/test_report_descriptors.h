@@ -57,6 +57,9 @@ class TestReportDescriptors {
   // SpeedPad exposes two HID interfaces.
   static base::span<const uint8_t> BelkinNostromoKeyboard();
   static base::span<const uint8_t> BelkinNostromoMouseAndExtra();
+
+  // The report descriptor from a Jabra Link 380c USB-C receiver.
+  static base::span<const uint8_t> JabraLink380c();
 };
 
 }  // namespace device
