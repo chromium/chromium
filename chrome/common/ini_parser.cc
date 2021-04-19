@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 
 INIParser::INIParser() : used_(false) {}
@@ -18,9 +19,9 @@ void INIParser::Parse(const std::string& content) {
   used_ = true;
   base::StringTokenizer tokenizer(content, "\r\n");
 
-  std::string current_section;
+  base::StringPiece current_section;
   while (tokenizer.GetNext()) {
-    std::string line = tokenizer.token();
+    base::StringPiece line = tokenizer.token_piece();
     if (line.empty()) {
       // Skips the empty line.
       continue;
@@ -34,9 +35,9 @@ void INIParser::Parse(const std::string& content) {
       current_section = line.substr(1);
       size_t end = current_section.rfind(']');
       if (end != std::string::npos)
-        current_section.erase(end);
+        current_section = current_section.substr(0, end);
     } else {
-      std::string key, value;
+      base::StringPiece key, value;
       size_t equal = line.find('=');
       if (equal != std::string::npos) {
         key = line.substr(0, equal);
@@ -51,14 +52,13 @@ DictionaryValueINIParser::DictionaryValueINIParser() {}
 
 DictionaryValueINIParser::~DictionaryValueINIParser() {}
 
-void DictionaryValueINIParser::HandleTriplet(const std::string& section,
-                                             const std::string& key,
-                                             const std::string& value) {
-
+void DictionaryValueINIParser::HandleTriplet(base::StringPiece section,
+                                             base::StringPiece key,
+                                             base::StringPiece value) {
   // Checks whether the section and key contain a '.' character.
   // Those sections and keys break DictionaryValue's path format when not
   // using the *WithoutPathExpansion methods.
   if (section.find('.') == std::string::npos &&
       key.find('.') == std::string::npos)
-    root_.SetString(section + "." + key, value);
+    root_.SetString(base::StrCat({section, ".", key}), value);
 }

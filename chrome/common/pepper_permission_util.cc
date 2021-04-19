@@ -93,7 +93,7 @@ bool IsHostAllowedByCommandLine(const GURL& url,
 
   base::StringTokenizer t(allowed_list, ",");
   while (t.GetNext()) {
-    if (t.token() == host)
+    if (t.token_piece() == host)
       return true;
   }
 
