@@ -112,6 +112,12 @@ void ProjectorUiController::OnMarkerPressed() {
   EnableMarker(!marker_controller->is_enabled());
 }
 
+void ProjectorUiController::OnClearAllMarkersPressed() {
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  marker_controller->Clear();
+}
+
 void ProjectorUiController::OnTranscription(const std::string& transcription,
                                             bool is_final) {}
 

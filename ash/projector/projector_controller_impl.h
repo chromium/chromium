@@ -59,6 +59,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnLaserPointerPressed();
   // Invoked when marker button is pressed.
   void OnMarkerPressed();
+  // Invoked when clear all markers button is pressed.
+  void OnClearAllMarkersPressed();
 
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);

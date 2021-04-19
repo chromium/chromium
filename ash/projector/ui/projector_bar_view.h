@@ -50,6 +50,7 @@ class ProjectorBarView : public views::View {
   void OnKeyIdeaButtonPressed();
   void OnLaserPointerPressed();
   void OnMarkerPressed();
+  void OnClearAllMarkersPressed();
 
   views::ImageView* drag_handle_ = nullptr;
   ProjectorColorButton* record_button_ = nullptr;
@@ -57,6 +58,7 @@ class ProjectorBarView : public views::View {
   ProjectorButton* key_idea_button_ = nullptr;
   ProjectorButton* laser_pointer_button_ = nullptr;
   ProjectorButton* marker_button_ = nullptr;
+  ProjectorButton* clear_all_markers_button_ = nullptr;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
 };

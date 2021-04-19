@@ -175,6 +175,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "pin_request_lock.icon",
     "pinned.icon",
     "privacy_screen.icon",
+    "projector_clear_all_markers.icon",
     "projector_drag_handle.icon",
     "projector_key_idea.icon",
     "projector_marker.icon",

@@ -102,6 +102,10 @@ void ProjectorControllerImpl::OnMarkerPressed() {
   ui_controller_->OnMarkerPressed();
 }
 
+void ProjectorControllerImpl::OnClearAllMarkersPressed() {
+  ui_controller_->OnClearAllMarkersPressed();
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);

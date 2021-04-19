@@ -191,4 +191,11 @@ TEST_F(ProjectorControllerTest, OnMarkerPressed) {
   controller_->OnMarkerPressed();
 }
 
+TEST_F(ProjectorControllerTest, OnClearAllMarkersPressed) {
+  // Verify that |OnClearAllMarkersPressed| in |ProjectorUiController| is
+  // called.
+  EXPECT_CALL(*mock_ui_controller_, OnClearAllMarkersPressed());
+  controller_->OnClearAllMarkersPressed();
+}
+
 }  // namespace ash

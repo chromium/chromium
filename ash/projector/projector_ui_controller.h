@@ -41,6 +41,8 @@ class ASH_EXPORT ProjectorUiController : public LaserPointerObserver,
   virtual void OnLaserPointerPressed();
   // Invoked when marker button is pressed. Virtual for testing.
   virtual void OnMarkerPressed();
+  // Invoked when the clear all markers button is pressed. Virtual for testing.
+  virtual void OnClearAllMarkersPressed();
   // Invoked when transcription is available for rendering. Virtual for testing.
   virtual void OnTranscription(const std::string& transcription, bool is_final);
 
