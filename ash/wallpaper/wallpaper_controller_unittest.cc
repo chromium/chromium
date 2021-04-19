@@ -21,6 +21,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -289,33 +290,6 @@ WallpaperInfo InfoWithType(WallpaperType type) {
   return WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
                        base::Time::Now().LocalMidnight());
 }
-
-// A test wallpaper controller client class.
-class TestWallpaperControllerClient : public WallpaperControllerClient {
- public:
-  TestWallpaperControllerClient() = default;
-  virtual ~TestWallpaperControllerClient() = default;
-
-  size_t open_count() const { return open_count_; }
-  size_t close_preview_count() const { return close_preview_count_; }
-  size_t set_default_wallpaper_count() const {
-    return set_default_wallpaper_count_;
-  }
-  // WallpaperControllerClient:
-  void OpenWallpaperPicker() override { open_count_++; }
-  void MaybeClosePreviewWallpaper() override { close_preview_count_++; }
-  void SetDefaultWallpaper(const AccountId& account_id,
-                           bool show_wallpaper) override {
-    set_default_wallpaper_count_++;
-  }
-
- private:
-  size_t open_count_ = 0;
-  size_t close_preview_count_ = 0;
-  size_t set_default_wallpaper_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperControllerClient);
-};
 
 // A test implementation of the WallpaperControllerObserver interface.
 class TestWallpaperControllerObserver : public WallpaperControllerObserver {

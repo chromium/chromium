@@ -2750,6 +2750,8 @@ static_library("test_support") {
     "test_screenshot_delegate.h",
     "test_shell_delegate.cc",
     "test_shell_delegate.h",
+    "wallpaper/test_wallpaper_controller_client.cc",
+    "wallpaper/test_wallpaper_controller_client.h",
     "wallpaper/wallpaper_controller_test_api.cc",
     "wallpaper/wallpaper_controller_test_api.h",
     "wm/cursor_manager_test_api.cc",

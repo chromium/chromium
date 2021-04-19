@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,26 +44,6 @@ class ShelfContextMenuModelTest
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuModelTest);
-};
-
-// A test wallpaper controller client class.
-class TestWallpaperControllerClient : public WallpaperControllerClient {
- public:
-  TestWallpaperControllerClient() = default;
-  virtual ~TestWallpaperControllerClient() = default;
-
-  size_t open_count() const { return open_count_; }
-
-  // WallpaperControllerClient:
-  void OpenWallpaperPicker() override { open_count_++; }
-  void MaybeClosePreviewWallpaper() override {}
-  void SetDefaultWallpaper(const AccountId& account_id,
-                           bool show_wallpaper) override {}
-
- private:
-  size_t open_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperControllerClient);
 };
 
 // A test shelf item delegate that records the commands sent for execution.
