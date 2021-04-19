@@ -518,7 +518,7 @@ std::unique_ptr<base::ListValue> TokenizeToStringList(
   auto out = std::make_unique<base::ListValue>();
   base::StringTokenizer entries(in, delims);
   while (entries.GetNext())
-    out->AppendString(entries.token());
+    out->AppendString(entries.token_piece());
   return out;
 }
 
