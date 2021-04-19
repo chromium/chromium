@@ -19,6 +19,9 @@ class MediaStreamComponent;
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
     : public AudioFrameQueueUnderlyingSource,
       public WebMediaStreamAudioSink {
+  USING_PRE_FINALIZER(MediaStreamAudioTrackUnderlyingSource,
+                      DisconnectFromTrack);
+
  public:
   explicit MediaStreamAudioTrackUnderlyingSource(
       ScriptState*,
