@@ -10,8 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/hash/sha1.h"
 #include "base/rand_util.h"
+#include "base/scoped_native_library.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
@@ -135,6 +141,62 @@ void CheckLpacToken(HANDLE process) {
                             &granted_access, &access_status));
   ASSERT_TRUE(access_status);
   ASSERT_EQ(DWORD{2}, granted_access);
+}
+
+// Generate a unique sandbox AC profile for the appcontainer based on the SHA1
+// hash of the appcontainer_id. This does not need to be secure so using SHA1
+// isn't a security concern.
+std::wstring GetAppContainerProfileName() {
+  std::string sandbox_base_name = std::string("cr.sb.net");
+  std::string appcontainer_id = base::WideToUTF8(
+      base::CommandLine::ForCurrentProcess()->GetProgram().value());
+  auto sha1 = base::SHA1HashString(appcontainer_id);
+  std::string profile_name = base::StrCat(
+      {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
+  // CreateAppContainerProfile requires that the profile name is at most 64
+  // characters but 50 on WCOS systems.  The size of sha1 is a constant 40, so
+  // validate that the base names are sufficiently short that the total length
+  // is valid on all systems.
+  DCHECK_LE(profile_name.length(), 50U);
+  return base::UTF8ToWide(profile_name);
+}
+
+// Adds an app container policy similar to network service.
+ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
+  std::wstring profile_name = GetAppContainerProfileName();
+  ResultCode ret = policy->AddAppContainerProfile(profile_name.c_str(), true);
+  if (SBOX_ALL_OK != ret)
+    return ret;
+  ret = policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  if (SBOX_ALL_OK != ret)
+    return ret;
+  scoped_refptr<AppContainer> app_container = policy->GetAppContainer();
+
+  constexpr const wchar_t* kBaseCapsSt[] = {
+      L"lpacChromeInstallFiles", L"registryRead", L"lpacIdentityServices",
+      L"lpacCryptoServices"};
+  constexpr const WellKnownCapabilities kBaseCapsWK[] = {
+      WellKnownCapabilities::kPrivateNetworkClientServer,
+      WellKnownCapabilities::kInternetClient,
+      WellKnownCapabilities::kEnterpriseAuthentication};
+
+  for (const auto* cap : kBaseCapsSt) {
+    if (!app_container->AddCapability(cap)) {
+      DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
+      return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
+    }
+  }
+
+  for (const auto cap : kBaseCapsWK) {
+    if (!app_container->AddCapability(cap)) {
+      DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
+      return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
+    }
+  }
+
+  app_container->SetEnableLowPrivilegeAppContainer(true);
+
+  return SBOX_ALL_OK;
 }
 
 class AppContainerTest : public ::testing::Test {
@@ -336,6 +398,27 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
   CheckThreadToken(scoped_process_info_.thread_handle(),
                    security_capabilities.get(), FALSE);
   CheckLpacToken(scoped_process_info_.process_handle());
+}
+
+SBOX_TESTS_COMMAND int LoadDLL(int argc, wchar_t** argv) {
+  // DLL here doesn't matter as long as it's in the output directory: re-use one
+  // from another sbox test.
+  base::ScopedNativeLibrary test_dll(base::FilePath(
+      FILE_PATH_LITERAL("sbox_integration_test_hijack_dll.dll")));
+  if (test_dll.is_valid())
+    return SBOX_TEST_SUCCEEDED;
+  return SBOX_TEST_FAILED;
+}
+
+TEST(AppContainerLaunchTest, CheckLPACACE) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+  TestRunner runner;
+  AddNetworkAppContainerPolicy(runner.GetPolicy());
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
+
+  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
 }  // namespace sandbox

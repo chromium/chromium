@@ -8,16 +8,18 @@ import io
 import json
 import os
 import logging
+import platform
 import subprocess
 import sys
 import tempfile
 import time
 import traceback
 
-# Add src/testing/ into sys.path for importing xvfb.
+# Add src/testing/ into sys.path for importing xvfb and test_env.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import xvfb
 import test_env
+if sys.platform.startswith('linux'):
+  import xvfb
 
 # Unfortunately we need to copy these variables from ../test_env.py.
 # Importing it and using its get_sandbox_env breaks test runs on Linux
@@ -39,6 +41,40 @@ MAX_FAILURES_EXIT_STATUS = 101
 
 # Exit code to indicate infrastructure issue.
 INFRA_FAILURE_EXIT_CODE = 87
+
+
+# ACL might be explicitly set or inherited.
+CORRECT_ACL_VARIANTS = [
+    'APPLICATION PACKAGE AUTHORITY' \
+    '\ALL RESTRICTED APPLICATION PACKAGES:(OI)(CI)(RX)', \
+    'APPLICATION PACKAGE AUTHORITY' \
+    '\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)'
+]
+
+
+def set_lpac_acls(acl_dir):
+  """Sets LPAC ACLs on a directory. Windows 10 only."""
+  if platform.release() != '10':
+    return
+  try:
+    existing_acls = subprocess.check_output(['icacls', acl_dir],
+                                            stderr=subprocess.STDOUT,
+                                            universal_newlines=True)
+  except subprocess.CalledProcessError as e:
+    logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
+    logging.error('Command output: %s', e.output)
+    sys.exit(e.returncode)
+  for acl in CORRECT_ACL_VARIANTS:
+    if acl in existing_acls:
+      return
+  try:
+    existing_acls = subprocess.check_output(
+        ['icacls', acl_dir, "/grant", "*S-1-15-2-2:(OI)(CI)(RX)"],
+        stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    logging.error('Failed to retrieve existing ACLs for directory %s', acl_dir)
+    logging.error('Command output: %s', e.output)
+    sys.exit(e.returncode)
 
 
 def run_script(argv, funcs):
@@ -229,7 +265,10 @@ class BaseIsolatedScriptArgsAdapter(object):
         '--isolated-script-test-also-run-disabled-tests',
         default=False, action='store_true', required=False)
 
-    self._parser.add_argument('--xvfb', help='start xvfb', action='store_true')
+    self._parser.add_argument(
+        '--xvfb',
+        help='start xvfb. Ignored on unsupported platforms',
+        action='store_true')
 
     # This argument is ignored for now.
     self._parser.add_argument(
@@ -347,7 +386,7 @@ class BaseIsolatedScriptArgsAdapter(object):
       env['CHROME_HEADLESS'] = '1'
       print('Running command: %s\nwith env: %r' % (
           ' '.join(cmd), env))
-      if self.options.xvfb:
+      if self.options.xvfb and sys.platform.startswith('linux'):
         exit_code = xvfb.run_executable(cmd, env)
       else:
         exit_code = test_env.run_command(cmd, env=env)

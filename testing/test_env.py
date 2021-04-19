@@ -389,4 +389,9 @@ def main():
 
 
 if __name__ == '__main__':
+  if sys.platform == 'win32':
+    sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        'scripts'))
+    import common
+    common.set_lpac_acls(ROOT_DIR)
   sys.exit(main())
