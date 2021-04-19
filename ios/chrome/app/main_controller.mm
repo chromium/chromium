@@ -410,7 +410,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)startUpBrowserBackgroundInitialization {
-  DCHECK(![self.appState isInSafeMode]);
+  DCHECK(self.appState.initStage > InitStageSafeMode);
 
   NSBundle* baseBundle = base::mac::OuterBundle();
   base::mac::SetBaseBundleID(
@@ -596,7 +596,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Called when the first scene becomes active.
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState {
-  DCHECK(!appState.isInSafeMode);
+  DCHECK(self.appState.initStage > InitStageSafeMode);
   [self startUpAfterFirstWindowCreated];
 }
 

@@ -67,7 +67,8 @@
 
 - (void)startSafeMode;
 - (void)stopSafeMode;
-- (void)queueTransitionToNextInitStage;
+- (void)queueTransitionToFirstInitStage;
+- (void)initializeUIPostSafeMode;
 @end
 
 @interface SafeModeAppAgent (Private) <SceneStateObserver, AppStateObserver>
@@ -871,6 +872,13 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
   [[[tabOpener stub] andReturnValue:@YES]
       shouldOpenNTPTabOnActivationOfBrowser:browser.get()];
+
+  id appStateMock = OCMPartialMock(getAppStateWithMock());
+  [[appStateMock expect] initializeUIPostSafeMode];
+
+  // Simulate finishing the initialization before going to background.
+  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() queueTransitionToNextInitStage];
 
   // Simulate background before going to foreground.
   [[getStartupInformationMock() expect] expireFirstUserActionRecorder];

@@ -237,7 +237,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  if ([self isInSafeMode]) {
+  // Exit the app if backgrounding the app while being in safe mode.
+  if (self.initStage == InitStageSafeMode) {
     exit(0);
     return;
   }
@@ -319,6 +320,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
   // TODO(crbug.com/1197330): Replace the browser launcher init stage by the
   // app init stage.
+  // Fully initialize the browser objects for the browser UI if it is not
+  // already the case. This is especially needed for scene startup.
   if ([_browserLauncher browserInitializationStage] <
       INITIALIZATION_STAGE_FOREGROUND) {
     // Start the initialization in the case it wasn't already done before
@@ -336,7 +339,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     [self initializeUIPreSafeMode];
     return;
   }
-  if ([self isInSafeMode] || !_applicationInBackground)
+  // Don't go further with foregrounding the app when the app has not passed
+  // safe mode yet or was initialized from the background.
+  if (self.initStage <= InitStageSafeMode || !_applicationInBackground)
     return;
 
   _applicationInBackground = NO;
@@ -738,7 +743,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (level >= SceneActivationLevelForegroundActive) {
     if (!self.firstSceneHasActivated) {
       self.firstSceneHasActivated = YES;
-      if (!self.isInSafeMode) {
+      if (self.initStage > InitStageSafeMode) {
         [MetricsMediator logStartupDuration:self.startupInformation
                       connectionInformation:sceneState.controller];
       }

@@ -170,7 +170,7 @@ const int kMainIntentCheckDelay = 1;
   }
 
   startup_loggers::RegisterAppDidBecomeActiveTime();
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
 
   if (!base::ios::IsSceneStartupSupported()) {
@@ -185,7 +185,7 @@ const int kMainIntentCheckDelay = 1;
     self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
   }
 
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
 
   [_appState willResignActiveTabModel];
@@ -220,7 +220,7 @@ const int kMainIntentCheckDelay = 1;
   if (!self.didFinishLaunching)
     return;
 
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
 
   // Instead of adding code here, consider if it could be handled by listening
@@ -229,7 +229,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
 
   [_memoryHelper handleMemoryPressure];
@@ -335,7 +335,7 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(NSString*)identifier
                       completionHandler:(void (^)(void))completionHandler {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
   // This initialization to BACKGROUND stage may not be necessary, but is
   // preserved in case somewhere there is a dependency on this.
@@ -347,7 +347,7 @@ const int kMainIntentCheckDelay = 1;
 
 - (BOOL)application:(UIApplication*)application
     willContinueUserActivityWithType:(NSString*)userActivityType {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return NO;
 
   // Enusre Chrome is fuilly started up in case it had launched to the
@@ -362,7 +362,7 @@ const int kMainIntentCheckDelay = 1;
     continueUserActivity:(NSUserActivity*)userActivity
       restorationHandler:
           (void (^)(NSArray<id<UIUserActivityRestoring>>*))restorationHandler {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return NO;
 
   // Enusre Chrome is fuilly started up in case it had launched to the
@@ -385,7 +385,7 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return;
 
   // Enusre Chrome is fuilly started up in case it had launched to the
@@ -410,7 +410,7 @@ const int kMainIntentCheckDelay = 1;
 - (BOOL)application:(UIApplication*)application
             openURL:(NSURL*)url
             options:(NSDictionary<NSString*, id>*)options {
-  if ([_appState isInSafeMode])
+  if (_appState.initStage <= InitStageSafeMode)
     return NO;
 
   // The various URL handling mechanisms require that the application has

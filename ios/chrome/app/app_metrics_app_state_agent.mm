@@ -51,9 +51,9 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.isInSafeMode) {
-    // Don't log any metrics at safe mode. Wait for AppStateObserver's
-    // -appStateDidExitSafeMode to log session start.
+  if (self.appState.initStage <= InitStageSafeMode) {
+    // Don't log any metrics at safe mode. Wait for the transition out of safe
+    // mode to log session start.
     return;
   }
 

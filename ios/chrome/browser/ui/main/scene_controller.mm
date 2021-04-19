@@ -361,7 +361,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   AppState* appState = self.sceneState.appState;
-  if (appState.isInSafeMode) {
+  if (appState.initStage <= InitStageSafeMode) {
     // Nothing at all should happen in safe mode. Code in
     // appStateDidExitSafeMode will ensure the updates happen once safe mode
     // ends.
@@ -652,7 +652,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)sceneState:(SceneState*)sceneState
     receivedUserActivity:(NSUserActivity*)userActivity {
-  if (self.sceneState.appState.isInSafeMode || !userActivity) {
+  if (self.sceneState.appState.initStage <= InitStageSafeMode ||
+      !userActivity) {
     return;
   }
   BOOL sceneIsActive =
@@ -926,7 +927,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.startupParameters) {
     postOpeningAction = self.startupParameters.postOpeningAction;
   }
-  if (!firstRun && !self.sceneState.appState.isInSafeMode &&
+  if (!firstRun && self.sceneState.appState.initStage > InitStageSafeMode &&
       postOpeningAction == NO_ACTION &&
       !self.sceneState.appState.postCrashLaunch) {
     // Show the Default Browser promo UI if the user's past behavior fits
@@ -2761,7 +2762,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
     API_AVAILABLE(ios(13)) {
-  if (self.sceneState.appState.isInSafeMode) {
+  if (self.sceneState.appState.initStage <= InitStageSafeMode) {
     return;
   }
 

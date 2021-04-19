@@ -54,10 +54,16 @@ class FakeProfileSessionDurationsService
 // A fake that allows overriding connectedScenes.
 @interface FakeAppState : AppState
 @property(nonatomic, strong) NSArray<SceneState*>* connectedScenes;
-@property(nonatomic, assign) BOOL isInSafeMode;
+// Init stage that will be returned by the initStage getter when testing.
+@property(nonatomic, assign) InitStage initStageForTesting;
 @end
 
 @implementation FakeAppState
+
+- (InitStage)initStage {
+  return self.initStageForTesting;
+}
+
 @end
 
 class AppMetricsAppStateAgentTest : public PlatformTest {
@@ -79,6 +85,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     app_state_.mainBrowserState = browser_state_.get();
+    app_state_.initStageForTesting = InitStageFinal;
     [agent_ setAppState:app_state_];
   }
 
@@ -152,7 +159,7 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationMultiwindow) {
 TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   SceneState* scene = [[SceneState alloc] initWithAppState:app_state_];
   app_state_.connectedScenes = @[ scene ];
-  app_state_.isInSafeMode = YES;
+  app_state_.initStageForTesting = InitStageSafeMode;
   [agent_ appState:app_state_ sceneConnected:scene];
 
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_started_count());
@@ -169,7 +176,7 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
 
   // Session starts when safe mode completes.
-  app_state_.isInSafeMode = NO;
+  app_state_.initStageForTesting = InitStageFinal;
   [agent_ appStateDidExitSafeMode:app_state_];
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
