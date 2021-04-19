@@ -188,17 +188,19 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   const KURL& url = frame_request.GetResourceRequest().Url();
   auto* window = frame_request.GetOriginWindow();
 
+  // The only navigation paths which do not have an origin window are drag and
+  // drop navigations, but they never navigate remote frames.
+  DCHECK(window);
+
   // Note that even if |window| is not null, it could have just been detached
   // (so window->GetFrame() is null). This can happen for a form submission, if
   // the frame containing the form has been deleted in between.
 
   if (!frame_request.CanDisplay(url)) {
-    if (window) {
-      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kSecurity,
-          mojom::blink::ConsoleMessageLevel::kError,
-          "Not allowed to load local resource: " + url.ElidedString()));
-    }
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Not allowed to load local resource: " + url.ElidedString()));
     return;
   }
 
@@ -213,9 +215,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   MixedContentChecker::UpgradeInsecureRequest(
       frame_request.GetResourceRequest(), fetch_client_settings_object, window,
       frame_request.GetFrameType(),
-      (window && window->GetFrame())
-          ? window->GetFrame()->GetContentSettingsClient()
-          : nullptr);
+      window->GetFrame() ? window->GetFrame()->GetContentSettingsClient()
+                         : nullptr);
 
   // Navigations in portal contexts do not create back/forward entries.
   if (GetPage()->InsidePortal() &&
@@ -238,24 +239,21 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   DCHECK(!initiator_frame_token ==
          !initiator_policy_container_keep_alive_handle);
 
-  if (window) {
-    initiator_frame_has_download_sandbox_flag =
-        window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kDownloads);
-    if (window->GetFrame()) {
-      is_opener_navigation = window->GetFrame()->Opener() == this;
-      initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
-      if (frame_request.ClientRedirectReason() !=
-          ClientNavigationReason::kNone) {
-        probe::FrameRequestedNavigation(window->GetFrame(), this, url,
-                                        frame_request.ClientRedirectReason(),
-                                        kNavigationPolicyCurrentTab);
-      }
+  initiator_frame_has_download_sandbox_flag =
+      window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kDownloads);
+  if (window->GetFrame()) {
+    is_opener_navigation = window->GetFrame()->Opener() == this;
+    initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
+    if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
+      probe::FrameRequestedNavigation(window->GetFrame(), this, url,
+                                      frame_request.ClientRedirectReason(),
+                                      kNavigationPolicyCurrentTab);
+    }
 
-      if (!initiator_frame_token) {
-        initiator_frame_token = window->GetFrame()->GetLocalFrameToken();
-        initiator_policy_container_keep_alive_handle =
-            window->GetPolicyContainer()->IssueKeepAliveHandle();
-      }
+    if (!initiator_frame_token) {
+      initiator_frame_token = window->GetFrame()->GetLocalFrameToken();
+      initiator_policy_container_keep_alive_handle =
+          window->GetPolicyContainer()->IssueKeepAliveHandle();
     }
   }
 
