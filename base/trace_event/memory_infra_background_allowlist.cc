@@ -144,8 +144,9 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "malloc/partitions/allocator/thread_cache",
     "malloc/partitions/allocator/thread_cache/main_thread",
     "malloc/partitions/aligned",
-    "malloc/partitions/original_allocator",
+    "malloc/partitions/original",
     "malloc/partitions/nonscannable",
+    "malloc/win_heap",
 #endif
     "media/webmediaplayer/audio/player_0x?",
     "media/webmediaplayer/data_source/player_0x?",
