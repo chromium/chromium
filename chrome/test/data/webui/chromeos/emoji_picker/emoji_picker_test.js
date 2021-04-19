@@ -56,7 +56,7 @@ suite('<emoji-picker>', () => {
     assert(customElements.get('emoji-picker'));
   });
 
-  test('first non-chevron tab should be active by default', async () => {
+  test('first non-chevron, tab should be active by default', async () => {
     const button = findInEmojiPicker(
         'emoji-group-button[data-group="history"]', 'cr-icon-button');
     assertTrue(isGroupButtonActive(button));

@@ -348,8 +348,7 @@ export class EmojiPicker extends PolymerElement {
     const activeGroup = groupElements.find(
         el => el.getBoundingClientRect().bottom - thisRect.top >= 10);
 
-    assert(activeGroup, 'no group element was activated');
-    const activeGroupId = activeGroup.dataset.group;
+    const activeGroupId = activeGroup ? activeGroup.dataset.group : 'history';
 
     let index = 0;
     // set active to true for selected group and false for others.
@@ -459,6 +458,7 @@ export class EmojiPicker extends PolymerElement {
     afterNextRender(this, () => {
       this.apiProxy_.showUI();
       this.emojiData = emojidata;
+      this.updateActiveGroup();
     });
   }
 
