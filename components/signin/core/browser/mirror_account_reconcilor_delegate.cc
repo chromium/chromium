@@ -39,7 +39,7 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS)
   if (base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
     return ConsentLevel::kSignin;
   }
