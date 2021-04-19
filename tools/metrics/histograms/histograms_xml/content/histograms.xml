@@ -498,8 +498,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.Popups" enum="ContentSettingPopupAction"
-    expires_after="2020-08-16">
+    expires_after="2021-10-31">
   <owner>charleszhao@chromium.org</owner>
+  <owner>lazzzis@google.com</owner>
+  <owner>src/components/blocked_content/OWNERS</owner>
   <summary>
     Tracks whether the popup content blocked puzzle piece was shown in the
     Omnibox, and how the user interacted with it.
@@ -507,8 +509,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.Popups.BlockerActions"
-    enum="PopupBlockerAction" expires_after="2020-08-30">
+    enum="PopupBlockerAction" expires_after="2021-10-31">
   <owner>csharrison@chromium.org</owner>
+  <owner>lazzzis@google.com</owner>
+  <owner>src/components/blocked_content/OWNERS</owner>
   <summary>
     Counts of various events related to the popup blocker. Including blocked
     popups and overridden (clicked through) popups. This is similar to the
