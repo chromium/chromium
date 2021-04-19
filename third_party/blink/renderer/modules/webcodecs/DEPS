@@ -1,4 +1,6 @@
 include_rules = [
+    "+base/bind.h",
+    "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_task_runner_handle.h",
 
     "+components/viz/common/gpu/raster_context_provider.h",
@@ -19,8 +21,6 @@ include_rules = [
     "+media/video",
 
     "+third_party/libyuv",
-    "+third_party/openh264",
-    "+third_party/opus",
 
     "+ui/gfx/color_space.h",
     "+ui/gfx/geometry/rect.h",

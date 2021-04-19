@@ -4,6 +4,8 @@
 
 // https://github.com/WICG/web-codecs
 
+// NOTE: Keep this structure in sync with CopyConfig() defined in
+// video_encoder.cc.
 dictionary VideoEncoderConfig {
   required DOMString codec;
   HardwarePreference hardwareAcceleration = "allow";

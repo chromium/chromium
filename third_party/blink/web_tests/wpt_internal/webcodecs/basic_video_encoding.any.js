@@ -153,8 +153,8 @@ promise_test(
   "encoding and decoding avc1.42001E (avc)");
 
 /* Uncomment this for manual testing, before we have GPU tests for that */
-// promise_test(encode_test.bind(null, "avc1.42001E", "require"),
+// promise_test(encode_test.bind(null, "avc1.42001E", "require", "avc"),
 //  "encoding avc1.42001E");
 
-// promise_test(encode_decode_test.bind(null, "avc1.42001E", "require"),
+// promise_test(encode_decode_test.bind(null, "avc1.42001E", "require", "avc"),
 //  "encoding and decoding avc1.42001E req");
