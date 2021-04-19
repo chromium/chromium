@@ -79,6 +79,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     SyncResponseInfo() = default;
 
     Message message;
+    bool cancelled = false;
     bool received = false;
     base::WaitableEvent event{base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED};
@@ -99,8 +100,10 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     ~SyncResponseSignaler() override {
       // If Accept() was not called we must still notify the waiter that the
       // sync call is finished.
-      if (response_)
+      if (response_) {
+        response_->cancelled = true;
         response_->event.Signal();
+      }
     }
 
     bool Accept(Message* message) override {
@@ -381,12 +384,9 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     sync_calls->pending_responses.push_back(response.get());
   }
 
-  auto assign_true = [](bool* b) { *b = true; };
-  bool event_signaled = false;
-  SyncEventWatcher watcher(&response->event,
-                           base::BindRepeating(assign_true, &event_signaled));
-  const bool* stop_flags[] = {&event_signaled};
-  watcher.SyncWatch(stop_flags, 1);
+  SyncEventWatcher watcher(&response->event, base::DoNothing());
+  const bool* stop_flags[] = {&response->received, &response->cancelled};
+  watcher.SyncWatch(stop_flags, base::size(stop_flags));
 
   {
     base::AutoLock l(sync_calls->lock);
@@ -593,6 +593,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
       // This was forced to send async. Leave a placeholder in the map of
       // expected sync responses so HandleValidatedMessage knows what to do.
       sync_responses_.emplace(request_id, nullptr);
+      controller_->RegisterExternalSyncWaiter(request_id);
     }
     return true;
   }

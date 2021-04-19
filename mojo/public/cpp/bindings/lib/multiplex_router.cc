@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -105,6 +106,11 @@ class MultiplexRouter::InterfaceEndpoint
     sync_watcher_.reset();
   }
 
+  bool UnregisterExternalSyncWaiter(uint64_t request_id) {
+    router_->AssertLockAcquired();
+    return requests_with_external_sync_waiter_.erase(request_id) != 0;
+  }
+
   void SignalSyncMessageEvent() {
     router_->AssertLockAcquired();
     if (sync_message_event_signaled_)
@@ -146,6 +152,12 @@ class MultiplexRouter::InterfaceEndpoint
 
     EnsureSyncWatcherExists();
     return sync_watcher_->SyncWatch(should_stop);
+  }
+
+  void RegisterExternalSyncWaiter(uint64_t request_id) override {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    MayAutoLock locker(&router_->lock_);
+    requests_with_external_sync_waiter_.insert(request_id);
   }
 
  private:
@@ -222,6 +234,7 @@ class MultiplexRouter::InterfaceEndpoint
 
   // Guarded by the router's lock. Used to synchronously wait on replies.
   std::unique_ptr<SequenceLocalSyncEventWatcher> sync_watcher_;
+  base::flat_set<uint64_t> requests_with_external_sync_waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(InterfaceEndpoint);
 };
@@ -620,6 +633,20 @@ void MultiplexRouter::EnableTestingMode() {
   connector_.set_enforce_errors_from_incoming_receiver(false);
 }
 
+bool MultiplexRouter::ShouldProcessMessageImmediately(const Message& message) {
+  // Only sync replies can possibly be allowed to process immediately.
+  if (!message.has_flag(Message::kFlagIsResponse) ||
+      !message.has_flag(Message::kFlagIsSync)) {
+    return false;
+  }
+
+  InterfaceEndpoint* endpoint = FindEndpoint(message.interface_id());
+  if (!endpoint)
+    return false;
+
+  return endpoint->UnregisterExternalSyncWaiter(message.request_id());
+}
+
 bool MultiplexRouter::Accept(Message* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -646,10 +673,13 @@ bool MultiplexRouter::Accept(Message* message) {
           ? ALLOW_DIRECT_CLIENT_CALLS_FOR_SYNC_MESSAGES
           : ALLOW_DIRECT_CLIENT_CALLS;
 
+  const bool can_process =
+      tasks_.empty() || ShouldProcessMessageImmediately(*message);
   MessageWrapper message_wrapper(this, std::move(*message));
-  bool processed = tasks_.empty() && ProcessIncomingMessage(
-                                         &message_wrapper, client_call_behavior,
-                                         connector_.task_runner());
+  const bool processed =
+      can_process &&
+      ProcessIncomingMessage(&message_wrapper, client_call_behavior,
+                             connector_.task_runner());
 
   if (!processed) {
     // Either the task queue is not empty or we cannot process the message

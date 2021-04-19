@@ -193,6 +193,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // Completes initialization of the MultiplexRouter.
   void BindToCurrentSequence();
 
+  // Indicates whether `message` should be processed as soon as it's received
+  // rather than ordering it against the task queue.
+  bool ShouldProcessMessageImmediately(const Message& message);
+
   // MessageReceiver implementation:
   bool Accept(Message* message) override;
 

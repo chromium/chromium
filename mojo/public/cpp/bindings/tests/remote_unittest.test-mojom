@@ -21,6 +21,11 @@ interface LargeMessageTest {
 
 interface SequenceChecker {
   Bind(pending_associated_receiver<SequenceChecker> receiver);
+  AddClient(pending_associated_remote<SequenceCheckerClient> client);
   Check(int32 n);
   [Sync] GetNextExpectedValue() => (int32 n);
+};
+
+interface SequenceCheckerClient {
+  OnNextExpectedValueQueried(int32 n);
 };
