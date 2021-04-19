@@ -12,9 +12,11 @@
   font-size: large;
   font-weight: bold;
   margin: 2px;
+  overflow-wrap: break-word;
   padding-bottom: 5px;
   padding-inline-start: 5px;
   padding-top: 5px;
+  text-size-adjust: none;
 }
 
 .histogram-body {
