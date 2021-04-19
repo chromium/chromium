@@ -14,7 +14,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -28,6 +27,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
@@ -63,6 +65,9 @@ public class AccountPickerDelegateImplTest {
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock
     private WebSigninBridge.Factory mWebSigninBridgeFactoryMock;
 
@@ -95,7 +100,6 @@ public class AccountPickerDelegateImplTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         mActivity = Robolectric.setupActivity(FragmentActivity.class);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
@@ -177,6 +181,7 @@ public class AccountPickerDelegateImplTest {
 
     @Test
     public void testUpdateCredentials() {
+        mMockitoRule.strictness(Strictness.LENIENT);
         Callback<Boolean> callback = (isSuccess) -> {};
         mDelegate.updateCredentials(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, callback);
         verify(mFakeAccountManagerFacade)

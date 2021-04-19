@@ -8,8 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -23,6 +21,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -119,6 +120,9 @@ public class AccountPickerBottomSheetRenderTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private final CustomAccountPickerDelegate mAccountPickerDelegate =
             new CustomAccountPickerDelegate();
 
@@ -142,7 +146,6 @@ public class AccountPickerBottomSheetRenderTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
