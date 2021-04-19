@@ -303,12 +303,16 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
       this};
 };
 
-BubbleDialogDelegate::BubbleDialogDelegate() = default;
 BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Arrow arrow,
                                            BubbleBorder::Shadow shadow)
-    : arrow_(arrow), shadow_(shadow) {}
-BubbleDialogDelegate::~BubbleDialogDelegate() = default;
+    : arrow_(arrow), shadow_(shadow) {
+  SetAnchorView(anchor_view);
+}
+
+BubbleDialogDelegate::~BubbleDialogDelegate() {
+  SetAnchorView(nullptr);
+}
 
 // static
 Widget* BubbleDialogDelegate::CreateBubble(
@@ -366,13 +370,16 @@ BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
   set_margins(provider->GetDialogInsetsForContentType(
       DialogContentType::kText, DialogContentType::kText));
   set_title_margins(provider->GetInsetsMetric(INSETS_DIALOG_TITLE));
-  if (anchor_view)
-    SetAnchorView(anchor_view);
   UMA_HISTOGRAM_BOOLEAN("Dialog.BubbleDialogDelegateView.Create", true);
 }
 
 BubbleDialogDelegateView::~BubbleDialogDelegateView() {
+  // TODO(pbos): Investigate if this is actually still needed, and if so
+  // document here why that's the case. If it's due to specific client layout
+  // managers, push this down to client destructors.
   SetLayoutManager(nullptr);
+  // TODO(pbos): See if we can resolve this better. This currently prevents a
+  // crash that shows up in BubbleFrameViewTest.WidthSnaps.
   SetAnchorView(nullptr);
 }
 

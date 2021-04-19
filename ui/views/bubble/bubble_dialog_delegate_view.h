@@ -42,10 +42,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
     UNKNOWN,
   };
 
-  BubbleDialogDelegate();
-  BubbleDialogDelegate(View* anchor_view,
-                       BubbleBorder::Arrow arrow,
-                       BubbleBorder::Shadow shadow);
+  BubbleDialogDelegate(
+      View* anchor_view,
+      BubbleBorder::Arrow arrow,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW);
   BubbleDialogDelegate(const BubbleDialogDelegate& other) = delete;
   BubbleDialogDelegate& operator=(const BubbleDialogDelegate& other) = delete;
   ~BubbleDialogDelegate() override;
@@ -269,6 +269,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   // Override this to perform initialization after the Widget is created but
   // before it is shown.
+  // TODO(pbos): Turn this into a (Once?)Callback and add set_init(cb).
   virtual void Init() {}
 
   // TODO(ellyjones): Replace uses of this with uses of set_color(), and/or
