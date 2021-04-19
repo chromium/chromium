@@ -106,13 +106,13 @@ bool SeekToExtensions(der::Input in,
   if (!tbs_cert_parser.SkipTag(der::kSequence))
     return false;
   // issuerUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 1, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 1,
+                                       &present)) {
     return false;
   }
   // subjectUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 2, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 2,
+                                       &present)) {
     return false;
   }
 

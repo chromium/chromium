@@ -57,9 +57,28 @@ class CTObjectsExtractorTest : public ::testing::Test {
 // Test that an SCT can be extracted and the extracted SCT contains the
 // expected data.
 TEST_F(CTObjectsExtractorTest, ExtractEmbeddedSCT) {
-  scoped_refptr<ct::SignedCertificateTimestamp> sct(
-      new ct::SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
   ExtractEmbeddedSCT(precert_chain_[0], &sct);
+
+  EXPECT_EQ(sct->version, SignedCertificateTimestamp::V1);
+  EXPECT_EQ(ct::GetTestPublicKeyId(), sct->log_id);
+
+  base::Time expected_timestamp =
+      base::Time::UnixEpoch() +
+      base::TimeDelta::FromMilliseconds(1365181456275);
+  EXPECT_EQ(expected_timestamp, sct->timestamp);
+}
+
+// Test that the extractor correctly skips over issuerUniqueID and
+// subjectUniqueID fields. See https://crbug.com/1199744.
+TEST_F(CTObjectsExtractorTest, ExtractEmbeddedSCTListWithUIDs) {
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestCertsDirectory(), "ct-test-embedded-with-uids.pem",
+      X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  ASSERT_EQ(1u, certs.size());
+
+  auto sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
+  ExtractEmbeddedSCT(certs[0], &sct);
 
   EXPECT_EQ(sct->version, SignedCertificateTimestamp::V1);
   EXPECT_EQ(ct::GetTestPublicKeyId(), sct->log_id);
@@ -97,8 +116,7 @@ TEST_F(CTObjectsExtractorTest, ExtractOrdinaryX509Cert) {
 
 // Test that the embedded SCT verifies
 TEST_F(CTObjectsExtractorTest, ExtractedSCTVerifies) {
-  scoped_refptr<ct::SignedCertificateTimestamp> sct(
-      new ct::SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
   ExtractEmbeddedSCT(precert_chain_[0], &sct);
 
   SignedEntryData entry;
@@ -111,8 +129,7 @@ TEST_F(CTObjectsExtractorTest, ExtractedSCTVerifies) {
 // Test that an externally-provided SCT verifies over the SignedEntryData
 // of a regular X.509 Certificate
 TEST_F(CTObjectsExtractorTest, ComplementarySCTVerifies) {
-  scoped_refptr<ct::SignedCertificateTimestamp> sct(
-      new ct::SignedCertificateTimestamp());
+  auto sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
   GetX509CertSCT(&sct);
 
   SignedEntryData entry;

@@ -1939,6 +1939,7 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/ct-test-embedded-with-intermediate-chain.pem",
     "data/ssl/certificates/ct-test-embedded-with-intermediate-preca-chain.pem",
     "data/ssl/certificates/ct-test-embedded-with-preca-chain.pem",
+    "data/ssl/certificates/ct-test-embedded-with-uids.pem",
     "data/ssl/certificates/daltonridgeapts.com-chain.pem",
     "data/ssl/certificates/dec_2017.pem",
     "data/ssl/certificates/diginotar_cyber_ca.pem",

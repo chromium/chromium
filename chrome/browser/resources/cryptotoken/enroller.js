@@ -50,17 +50,15 @@ function transportType(der) {
   var topLevel = new ByteString(der);
   const tbsCert = topLevel.getASN1(Tag.SEQUENCE).getASN1(Tag.SEQUENCE);
   tbsCert.getOptionalASN1(
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 0);  // version
-  tbsCert.getASN1(Tag.INTEGER);                     // serialNumber
-  tbsCert.getASN1(Tag.SEQUENCE);                    // signature algorithm
-  tbsCert.getASN1(Tag.SEQUENCE);                    // issuer
-  tbsCert.getASN1(Tag.SEQUENCE);                    // validity
-  tbsCert.getASN1(Tag.SEQUENCE);                    // subject
-  tbsCert.getASN1(Tag.SEQUENCE);                    // SPKI
-  tbsCert.getOptionalASN1(                          // issuerUniqueID
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 1);
-  tbsCert.getOptionalASN1(  // subjectUniqueID
-      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 2);
+      Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 0);    // version
+  tbsCert.getASN1(Tag.INTEGER);                       // serialNumber
+  tbsCert.getASN1(Tag.SEQUENCE);                      // signature algorithm
+  tbsCert.getASN1(Tag.SEQUENCE);                      // issuer
+  tbsCert.getASN1(Tag.SEQUENCE);                      // validity
+  tbsCert.getASN1(Tag.SEQUENCE);                      // subject
+  tbsCert.getASN1(Tag.SEQUENCE);                      // SPKI
+  tbsCert.getOptionalASN1(Tag.CONTEXT_SPECIFIC | 1);  // issuerUniqueID
+  tbsCert.getOptionalASN1(Tag.CONTEXT_SPECIFIC | 2);  // subjectUniqueID
   const outerExtensions =
       tbsCert.getOptionalASN1(Tag.CONSTRUCTED | Tag.CONTEXT_SPECIFIC | 3);
   if (outerExtensions == null) {

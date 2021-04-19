@@ -116,6 +116,11 @@ unit tests.
   NSS certificate nickname for a user certificate. This certificate's Subject
   field doesn't have a common name.
 
+- ct-test-embedded-with-uids.pem: A certificate with embedded SCT and
+  issuer/subject unique IDs. This certificate should only be used in parsing
+  tests and otherwise kept fixed. The signature, etc., are intentionally
+  invalid.
+
 ===== From net/data/ssl/scripts/generate-quic-chain.sh
 - quic-chain.pem
 - quic-leaf-cert.key

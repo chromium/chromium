@@ -19,6 +19,7 @@
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/internal/parse_certificate.h"
 #include "net/cert/pem.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -634,16 +635,13 @@ TEST(X509CertificateTest, ExtractExtension) {
   base::FilePath certs_dir = GetTestCertsDirectory();
   scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(certs_dir, "ok_cert.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), cert.get());
+  ASSERT_TRUE(cert);
 
-  static constexpr uint8_t kBasicConstraintsOID[] = {0x55, 0x1d, 0x13};
   bool present, critical;
   base::StringPiece contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      base::StringPiece(reinterpret_cast<const char*>(kBasicConstraintsOID),
-                        sizeof(kBasicConstraintsOID)),
-      &present, &critical, &contents));
+      BasicConstraintsOid().AsStringPiece(), &present, &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);
@@ -655,6 +653,16 @@ TEST(X509CertificateTest, ExtractExtension) {
                         sizeof(kNonsenseOID)),
       &present, &critical, &contents));
   ASSERT_FALSE(present);
+
+  scoped_refptr<X509Certificate> uid_cert =
+      ImportCertFromFile(certs_dir, "ct-test-embedded-with-uids.pem");
+  ASSERT_TRUE(uid_cert);
+  ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
+      x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
+      BasicConstraintsOid().AsStringPiece(), &present, &critical, &contents));
+  EXPECT_TRUE(present);
+  EXPECT_FALSE(critical);
+  ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);
 }
 
 // Tests CRYPTO_BUFFER deduping via X509Certificate::CreateFromBuffer.  We

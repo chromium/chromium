@@ -92,10 +92,8 @@ bool CopyAfter(const CBS& outer, const CBS& inner, CBB* out) {
 bool SkipTBSCertificateToExtensions(CBS* tbs_cert) {
   constexpr unsigned kVersionTag =
       CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0;
-  constexpr unsigned kIssuerUniqueIDTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 1;
-  constexpr unsigned kSubjectUniqueIDTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 2;
+  constexpr unsigned kIssuerUniqueIDTag = CBS_ASN1_CONTEXT_SPECIFIC | 1;
+  constexpr unsigned kSubjectUniqueIDTag = CBS_ASN1_CONTEXT_SPECIFIC | 2;
   return SkipOptionalElement(tbs_cert, kVersionTag) &&
          SkipElements(tbs_cert,
                       6 /* serialNumber through subjectPublicKeyInfo */) &&
