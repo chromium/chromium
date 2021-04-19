@@ -24,6 +24,7 @@
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 #include "base/test/trace_event_analyzer.h"
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
+#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
 #endif
 
 #if defined(OS_MAC)
@@ -140,7 +141,7 @@ class LoaderLockEventAnalyzer {
     return analyzer->FindEvents(
         trace_analyzer::Query::EventName() ==
             trace_analyzer::Query::String(
-                TracingSamplerProfiler::kLoaderLockHeldEventName),
+                LoaderLockSamplingThread::kLoaderLockHeldEventName),
         &events);
   }
 };
@@ -151,12 +152,12 @@ class TracingSampleProfilerMockLoaderLockTest
   TracingSampleProfilerMockLoaderLockTest() {
     ON_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
         .WillByDefault(Return(false));
-    TracingSamplerProfiler::SetLoaderLockSamplerForTesting(
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(
         &mock_loader_lock_sampler_);
   }
 
   ~TracingSampleProfilerMockLoaderLockTest() override {
-    TracingSamplerProfiler::SetLoaderLockSamplerForTesting(nullptr);
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
   }
 
  protected:
@@ -339,11 +340,8 @@ TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockOnMainThread) {
 
   // Since the loader lock state changed each time it was sampled an event
   // should be emitted each time.
+  ASSERT_GE(call_count, 1U);
   EXPECT_EQ(event_analyzer.CountEvents(), call_count);
-
-  // Loader lock should have been sampled every time the stack is sampled,
-  // although not every stack sample generates a stack event.
-  EXPECT_GE(call_count, events_stack_received_count_);
 }
 
 TEST_F(TracingSampleProfilerMockLoaderLockTest, SampleLoaderLockAlwaysHeld) {

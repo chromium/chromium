@@ -53,7 +53,7 @@
 #endif  // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
+#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
 #endif
 
 using StreamingProfilePacketHandle =
@@ -226,15 +226,6 @@ GetSequenceLocalStorageProfilerSlot() {
   return *storage;
 }
 
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-LoaderLockSampler* g_loader_lock_sampler = nullptr;
-
-ProbingLoaderLockSampler* DefaultLoaderLockSampler() {
-  static base::NoDestructor<ProbingLoaderLockSampler> default_sampler;
-  return default_sampler.get();
-}
-#endif
-
 // Stores information about the StackFrame, to emit to the trace.
 struct FrameDetails {
   std::string frame_name;
@@ -335,11 +326,6 @@ struct FrameDetails {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-const char TracingSamplerProfiler::kLoaderLockHeldEventName[] =
-    "LoaderLockHeld (sampled)";
-#endif
-
 TracingSamplerProfiler::TracingProfileBuilder::BufferedSample::BufferedSample(
     base::TimeTicks ts,
     std::vector<base::Frame>&& s)
@@ -386,10 +372,6 @@ TracingSamplerProfiler::TracingProfileBuilder::GetModuleCache() {
 void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  SampleLoaderLock();
-#endif
-
   base::AutoLock l(trace_writer_lock_);
   if (!trace_writer_) {
     if (buffered_samples_.size() < kMaxBufferedSamples) {
@@ -604,33 +586,6 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
   return interned_callstack.id;
 }
 
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-void TracingSamplerProfiler::TracingProfileBuilder::SampleLoaderLock() {
-  if (!should_sample_loader_lock_)
-    return;
-
-  DCHECK(g_loader_lock_sampler);
-  bool loader_lock_now_held = g_loader_lock_sampler->IsLoaderLockHeld();
-
-  // TODO(crbug.com/1065077): It would be cleaner to save the loader lock state
-  // alongside buffered_samples_ and then add it to the ProcessDescriptor
-  // packet in
-  // TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace. But
-  // ProcessDescriptor is currently not being collected correctly. See the full
-  // discussion in the linked crbug.
-  if (loader_lock_now_held && !loader_lock_is_held_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
-        TracingSamplerProfiler::kLoaderLockHeldEventName, TRACE_ID_LOCAL(this));
-  } else if (!loader_lock_now_held && loader_lock_is_held_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
-        TracingSamplerProfiler::kLoaderLockHeldEventName, TRACE_ID_LOCAL(this));
-  }
-  loader_lock_is_held_ = loader_lock_now_held;
-}
-#endif
-
 // static
 void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -655,21 +610,20 @@ std::unique_ptr<TracingSamplerProfiler>
 TracingSamplerProfiler::CreateOnMainThread() {
   auto profiler = std::make_unique<TracingSamplerProfiler>(
       base::GetSamplingProfilerCurrentThreadToken());
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  // The loader lock is process-wide so should only be sampled on a single
-  // thread. The main thread is convenient.
-
-  // The loader lock sampler may already have been set if
-  // SetLoaderLockSamplerForTesting was called.
-  if (!g_loader_lock_sampler)
-    g_loader_lock_sampler = DefaultLoaderLockSampler();
-  profiler->EnableLoaderLockSampling();
-#endif
   // If running in single process mode, there may be multiple "main thread"
   // profilers created. In this case, we assume the first created one is the
   // browser one.
-  if (!g_main_thread_instance)
+  if (!g_main_thread_instance) {
     g_main_thread_instance = profiler.get();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+    // The loader lock is process-wide so should only be sampled on a single
+    // thread. So only one TracingSamplerProfiler should create a
+    // LoaderLockSamplingThread.
+    profiler->loader_lock_sampling_thread_ =
+        std::make_unique<LoaderLockSamplingThread>();
+#endif
+  }
   return profiler;
 }
 
@@ -720,14 +674,6 @@ void TracingSamplerProfiler::SetupStartupTracingForTesting() {
 void TracingSamplerProfiler::StopTracingForTesting() {
   TracingSamplerProfilerDataSource::Get()->StopTracing(base::DoNothing());
 }
-
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-// static
-void TracingSamplerProfiler::SetLoaderLockSamplerForTesting(
-    LoaderLockSampler* sampler) {
-  g_loader_lock_sampler = sampler ? sampler : DefaultLoaderLockSampler();
-}
-#endif
 
 TracingSamplerProfiler::TracingSamplerProfiler(
     base::SamplingProfilerThreadToken sampled_thread_token)
@@ -789,10 +735,6 @@ void TracingSamplerProfiler::StartTracing(
   auto profile_builder = std::make_unique<TracingProfileBuilder>(
       sampled_thread_token_.id, std::move(trace_writer),
       should_enable_filtering, sample_callback_for_testing_);
-#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  if (should_sample_loader_lock_)
-    profile_builder->EnableLoaderLockSampling();
-#endif
 
   profile_builder_ = profile_builder.get();
   // Create and start the stack sampling profiler.
@@ -823,6 +765,11 @@ void TracingSamplerProfiler::StartTracing(
     profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
   profiler_->Start();
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+  if (loader_lock_sampling_thread_)
+    loader_lock_sampling_thread_->StartSampling();
+#endif
 }
 
 void TracingSamplerProfiler::StopTracing() {
@@ -835,6 +782,11 @@ void TracingSamplerProfiler::StopTracing() {
   profiler_->Stop();
   profile_builder_ = nullptr;
   profiler_.reset();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+  if (loader_lock_sampling_thread_)
+    loader_lock_sampling_thread_->StopSampling();
+#endif
 }
 
 }  // namespace tracing

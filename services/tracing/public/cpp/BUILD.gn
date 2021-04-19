@@ -127,6 +127,8 @@ target(tracing_lib_type, "cpp") {
       sources += [
         "stack_sampling/loader_lock_sampler_win.cc",
         "stack_sampling/loader_lock_sampler_win.h",
+        "stack_sampling/loader_lock_sampling_thread_win.cc",
+        "stack_sampling/loader_lock_sampling_thread_win.h",
       ]
     }
 
