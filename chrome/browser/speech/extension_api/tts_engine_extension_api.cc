@@ -9,13 +9,11 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
@@ -27,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -35,10 +34,6 @@
 #include "net/base/network_change_notifier.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/common/extensions/extension_constants.h"
-#endif
 
 using extensions::EventRouter;
 using extensions::Extension;
@@ -165,9 +160,12 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
 
 }  // namespace
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TtsExtensionEngine* TtsExtensionEngine::GetInstance() {
-  return base::Singleton<TtsExtensionEngine>::get();
+  static base::NoDestructor<TtsExtensionEngine> tts_extension_engine;
+  return tts_extension_engine.get();
 }
+#endif
 
 void TtsExtensionEngine::GetVoices(
     content::BrowserContext* browser_context,
@@ -334,46 +332,13 @@ void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
 
 void TtsExtensionEngine::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
-  if (disable_built_in_tts_engine_for_testing_)
-    return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  // Load the component extensions into this profile.
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  DCHECK(extension_service);
-  extension_service->component_loader()->AddChromeOsSpeechSynthesisExtensions();
-#endif
+  // No built-in extension engines on non-Chrome OS.
 }
 
 bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
     content::BrowserContext* browser_context) {
-  if (!browser_context || disable_built_in_tts_engine_for_testing_)
-    return true;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<content::VoiceData> voices;
-  GetVoices(browser_context, &voices);
-  bool saw_google_tts = false;
-  bool saw_espeak = false;
-  for (const auto& voice : voices) {
-    saw_google_tts |=
-        voice.engine_id == extension_misc::kGoogleSpeechSynthesisExtensionId;
-    saw_espeak |=
-        voice.engine_id == extension_misc::kEspeakSpeechSynthesisExtensionId;
-  }
-
-  // When running on a real Chrome OS environment, require both Google tts and
-  // Espeak to be initialized; otherwise, only check for Espeak (i.e. on a
-  // non-Chrome OS linux system running the CHrome OS variant of Chrome).
-  return base::SysInfo::IsRunningOnChromeOS() ? (saw_google_tts && saw_espeak)
-                                              : saw_espeak;
-#else
   // Vacuously; no built in engines on other platforms yet. TODO: network tts?
   return true;
-#endif
 }
 
 ExtensionFunction::ResponseAction

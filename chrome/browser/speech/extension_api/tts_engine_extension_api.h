@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/singleton.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/extension_function.h"
 
@@ -43,7 +42,7 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
     disable_built_in_tts_engine_for_testing_ = true;
   }
 
- private:
+ protected:
   bool disable_built_in_tts_engine_for_testing_ = false;
 };
 
