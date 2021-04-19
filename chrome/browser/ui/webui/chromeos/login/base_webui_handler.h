@@ -88,6 +88,15 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
           function_name, ::login::MakeValue(args).Clone()...);
   }
 
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed
+  // If the JS container hasn't been initialized yet, it is safe to call JS
+  // because the call will be postponed until we receive a message from the
+  // renderer.
+  bool IsSafeToCallJavascript() const {
+    return (js_calls_container_ && !js_calls_container_->is_initialized()) ||
+           IsJavascriptAllowed();
+  }
+
   // Register WebUI callbacks. The callbacks will be recorded if recording is
   // enabled.
   template <typename T>
