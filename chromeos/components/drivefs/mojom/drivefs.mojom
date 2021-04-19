@@ -256,7 +256,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -303,6 +303,10 @@ struct FileMetadata {
 
   // Only present in QuickAccess queries.
   [MinVersion=2] QuickAccess? quick_access;
+
+  // The unique device local ID used by DriveFS to refer to this file.
+  // Note: 0 is an invalid stable id.
+  [MinVersion=3] int64 stable_id = 0;
 };
 
 struct ImageMetadata {
@@ -385,6 +389,7 @@ struct SyncingStatus {
 };
 
 // A report of a server-side change to a file.
+// Next MinVersion: 2
 struct FileChange {
   mojo_base.mojom.FilePath path;
 
@@ -395,6 +400,10 @@ struct FileChange {
   };
 
   Type type;
+
+  // The unique device local ID used by DriveFS to refer to this file.
+  // Note: 0 is an invalid stable id.
+  [MinVersion=1] int64 stable_id = 0;
 };
 
 // Definition of the search request sent to DriveFS.

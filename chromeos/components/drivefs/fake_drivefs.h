@@ -132,6 +132,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) override;
 
   const base::FilePath mount_path_;
+  int64_t next_stable_id_ = 1;
 
   std::map<base::FilePath, FileMetadata> metadata_;
 
