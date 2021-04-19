@@ -138,9 +138,10 @@ void WebrtcVideoStream::Start(
 
   webrtc_transport_->OnVideoTransceiverCreated(transceiver);
 
+  webrtc_transport_->video_encoder_factory()->SetVideoChannelStateObserver(
+      weak_factory_.GetWeakPtr());
   scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
-  scheduler_->Start(webrtc_transport_->video_encoder_factory(),
-                    base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
+  scheduler_->Start(base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
 
   video_stats_dispatcher_.Init(webrtc_transport_->CreateOutgoingChannel(
@@ -177,6 +178,16 @@ void WebrtcVideoStream::SetLosslessColor(bool want_lossless) {
 void WebrtcVideoStream::SetObserver(Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   observer_ = observer;
+}
+
+void WebrtcVideoStream::OnKeyFrameRequested() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  scheduler_->OnKeyFrameRequested();
+}
+
+void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  scheduler_->OnTargetBitrateChanged(bitrate_kbps);
 }
 
 void WebrtcVideoStream::OnCaptureResult(

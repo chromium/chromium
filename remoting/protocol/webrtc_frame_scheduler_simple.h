@@ -17,7 +17,6 @@
 #include "remoting/base/running_samples.h"
 #include "remoting/base/session_options.h"
 #include "remoting/codec/frame_processing_time_estimator.h"
-#include "remoting/protocol/video_channel_state_observer.h"
 
 namespace remoting {
 namespace protocol {
@@ -28,20 +27,17 @@ class BandwidthEstimator;
 // that always keeps only one frame in the pipeline. It schedules each frame
 // such that it is encoded and ready to be sent by the time previous one is
 // expected to finish sending.
-class WebrtcFrameSchedulerSimple : public VideoChannelStateObserver,
-                                   public WebrtcFrameScheduler {
+class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
  public:
   explicit WebrtcFrameSchedulerSimple(const SessionOptions& options);
   ~WebrtcFrameSchedulerSimple() override;
 
   // VideoChannelStateObserver implementation.
   void OnKeyFrameRequested() override;
-  void OnChannelParameters(int packet_loss, base::TimeDelta rtt) override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
 
   // WebrtcFrameScheduler implementation.
-  void Start(WebrtcDummyVideoEncoderFactory* video_encoder_factory,
-             const base::RepeatingClosure& capture_callback) override;
+  void Start(const base::RepeatingClosure& capture_callback) override;
   void Pause(bool pause) override;
   bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
                        WebrtcVideoEncoder::FrameParams* params_out) override;
@@ -98,7 +94,6 @@ class WebrtcFrameSchedulerSimple : public VideoChannelStateObserver,
   const std::unique_ptr<BandwidthEstimator> bandwidth_estimator_;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<WebrtcFrameSchedulerSimple> weak_factory_{this};
 };
 
 }  // namespace protocol

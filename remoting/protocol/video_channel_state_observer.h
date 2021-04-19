@@ -13,11 +13,10 @@ namespace protocol {
 class VideoChannelStateObserver {
  public:
   virtual void OnKeyFrameRequested() = 0;
-  virtual void OnChannelParameters(int packet_loss, base::TimeDelta rtt) = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
 
  protected:
-  virtual ~VideoChannelStateObserver() {}
+  virtual ~VideoChannelStateObserver() = default;
 };
 
 }  // namespace protocol

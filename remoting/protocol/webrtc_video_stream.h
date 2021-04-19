@@ -20,6 +20,7 @@
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
+#include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -38,7 +39,8 @@ class WebrtcTransport;
 
 class WebrtcVideoStream : public VideoStream,
                           public webrtc::DesktopCapturer::Callback,
-                          public HostVideoStatsDispatcher::EventHandler {
+                          public HostVideoStatsDispatcher::EventHandler,
+                          public VideoChannelStateObserver {
  public:
   explicit WebrtcVideoStream(const SessionOptions& options);
   ~WebrtcVideoStream() override;
@@ -55,6 +57,10 @@ class WebrtcVideoStream : public VideoStream,
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
   void SelectSource(int id) override;
+
+  // VideoChannelStateObserver interface.
+  void OnKeyFrameRequested() override;
+  void OnTargetBitrateChanged(int bitrate_kbps) override;
 
  private:
   struct FrameStats;

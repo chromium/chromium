@@ -89,14 +89,6 @@ void WebrtcFrameSchedulerSimple::OnKeyFrameRequested() {
   ScheduleNextFrame();
 }
 
-void WebrtcFrameSchedulerSimple::OnChannelParameters(int packet_loss,
-                                                     base::TimeDelta rtt) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  bandwidth_estimator_->UpdateRtt(rtt);
-  rtt_estimate_ = rtt;
-}
-
 void WebrtcFrameSchedulerSimple::OnTargetBitrateChanged(int bandwidth_kbps) {
   DCHECK(thread_checker_.CalledOnValidThread());
   bandwidth_estimator_->OnReceivedAck();
@@ -109,12 +101,9 @@ void WebrtcFrameSchedulerSimple::OnTargetBitrateChanged(int bandwidth_kbps) {
 }
 
 void WebrtcFrameSchedulerSimple::Start(
-    WebrtcDummyVideoEncoderFactory* video_encoder_factory,
     const base::RepeatingClosure& capture_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   capture_callback_ = capture_callback;
-  video_encoder_factory->SetVideoChannelStateObserver(
-      weak_factory_.GetWeakPtr());
 }
 
 void WebrtcFrameSchedulerSimple::Pause(bool pause) {

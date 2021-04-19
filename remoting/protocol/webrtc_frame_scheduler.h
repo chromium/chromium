@@ -8,25 +8,24 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/codec/webrtc_video_encoder.h"
+#include "remoting/protocol/video_channel_state_observer.h"
 
 namespace remoting {
 namespace protocol {
 
 struct HostFrameStats;
-class WebrtcDummyVideoEncoderFactory;
 
 // An abstract interface for frame schedulers, which are responsible for
 // scheduling when video frames are captured and for defining encoding
 // parameters for each frame.
-class WebrtcFrameScheduler {
+class WebrtcFrameScheduler : public VideoChannelStateObserver {
  public:
-  WebrtcFrameScheduler() {}
-  virtual ~WebrtcFrameScheduler() {}
+  WebrtcFrameScheduler() = default;
+  ~WebrtcFrameScheduler() override = default;
 
   // Starts the scheduler. |capture_callback| will be called whenever a new
   // frame should be captured.
-  virtual void Start(WebrtcDummyVideoEncoderFactory* video_encoder_factory,
-                     const base::RepeatingClosure& capture_callback) = 0;
+  virtual void Start(const base::RepeatingClosure& capture_callback) = 0;
 
   // Pause and resumes the scheduler.
   virtual void Pause(bool pause) = 0;
