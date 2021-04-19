@@ -639,6 +639,13 @@
       status: "stable",
     },
     {
+      // When an audio, video, or similar resource is "playing"
+      // or "paused".
+      // https://www.w3.org/TR/selectors-4/#video-state
+      name: "CSSPseudoPlayingPaused",
+      status: "test",
+    },
+    {
       name: "CSSPseudoWhere",
       status: "stable",
     },

@@ -326,7 +326,9 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoFullScreen:
     case kPseudoFullScreenAncestor:
     case kPseudoFullscreen:
+    case kPseudoPaused:
     case kPseudoPictureInPicture:
+    case kPseudoPlaying:
     case kPseudoSpatialNavigationFocus:
     case kPseudoSpatialNavigationInterest:
     case kPseudoHasDatalist:
@@ -435,9 +437,11 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"optional", CSSSelector::kPseudoOptional},
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"past", CSSSelector::kPseudoPastCue},
+    {"paused", CSSSelector::kPseudoPaused},
     {"picture-in-picture", CSSSelector::kPseudoPictureInPicture},
     {"placeholder", CSSSelector::kPseudoPlaceholder},
     {"placeholder-shown", CSSSelector::kPseudoPlaceholderShown},
+    {"playing", CSSSelector::kPseudoPlaying},
     {"read-only", CSSSelector::kPseudoReadOnly},
     {"read-write", CSSSelector::kPseudoReadWrite},
     {"required", CSSSelector::kPseudoRequired},
@@ -514,8 +518,16 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
       !RuntimeEnabledFeatures::CSSFocusVisibleEnabled())
     return CSSSelector::kPseudoUnknown;
 
+  if (match->type == CSSSelector::kPseudoPaused &&
+      !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled())
+    return CSSSelector::kPseudoUnknown;
+
   if (match->type == CSSSelector::kPseudoPictureInPicture &&
       !RuntimeEnabledFeatures::CSSPictureInPictureEnabled())
+    return CSSSelector::kPseudoUnknown;
+
+  if (match->type == CSSSelector::kPseudoPlaying &&
+      !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled())
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoTargetText &&
@@ -700,7 +712,9 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoOnlyChild:
     case kPseudoOnlyOfType:
     case kPseudoOptional:
+    case kPseudoPaused:
     case kPseudoPictureInPicture:
+    case kPseudoPlaying:
     case kPseudoPlaceholderShown:
     case kPseudoOutOfRange:
     case kPseudoPastCue:

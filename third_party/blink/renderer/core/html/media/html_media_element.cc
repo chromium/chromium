@@ -3704,6 +3704,8 @@ void HTMLMediaElement::UpdatePlayState() {
     web_media_player_->OnTimeUpdate();
 
   ReportCurrentTimeToMediaSource();
+  PseudoStateChanged(CSSSelector::kPseudoPaused);
+  PseudoStateChanged(CSSSelector::kPseudoPlaying);
 }
 
 void HTMLMediaElement::StopPeriodicTimers() {

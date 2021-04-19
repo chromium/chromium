@@ -156,7 +156,9 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFullScreen:
     case CSSSelector::kPseudoFullScreenAncestor:
     case CSSSelector::kPseudoFullscreen:
+    case CSSSelector::kPseudoPaused:
     case CSSSelector::kPseudoPictureInPicture:
+    case CSSSelector::kPseudoPlaying:
     case CSSSelector::kPseudoInRange:
     case CSSSelector::kPseudoOutOfRange:
     case CSSSelector::kPseudoWebKitCustomElement:
@@ -599,7 +601,9 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoFullScreen:
       case CSSSelector::kPseudoFullScreenAncestor:
       case CSSSelector::kPseudoFullscreen:
+      case CSSSelector::kPseudoPaused:
       case CSSSelector::kPseudoPictureInPicture:
+      case CSSSelector::kPseudoPlaying:
       case CSSSelector::kPseudoInRange:
       case CSSSelector::kPseudoOutOfRange:
       case CSSSelector::kPseudoDefined:
