@@ -45,7 +45,7 @@ namespace enterprise.reportingPrivate {
   callback GetDeviceInfoCallback = void(DeviceInfo deviceInfo);
 
   // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
-  enum RealtimeUrlCheckMode { DISABLED = 0, ENABLED_MAIN_FRAME = 1 };
+  enum RealtimeUrlCheckMode { DISABLED, ENABLED_MAIN_FRAME };
 
   // Context info fields returned by the getContextInfo API.
   dictionary ContextInfo {
