@@ -928,9 +928,13 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
 
 // TODO(stahon@microsoft.com) http://crbug.com/1194201 covers this
 // being disabled on mac. MacOS will not restore apps on crash restore.
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !defined(OS_MAC)
+// On linux, apps can be restored without the proper app frame,
+// disabling restorations on linux for now. http://crbug.com/1199109
+#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#if !defined(OS_MAC) && !defined(OS_LINUX)
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
+#endif
 #endif
   SessionRestore::RestoreSession(profile, browser, behavior,
                                  std::vector<GURL>());
