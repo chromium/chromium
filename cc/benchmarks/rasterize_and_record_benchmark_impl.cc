@@ -126,6 +126,14 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->IsDirectlyCompositedImage();
   }
 
+  bool ScrollInteractionInProgress() const override {
+    return base_client_->ScrollInteractionInProgress();
+  }
+
+  bool DidCheckerboardQuad() const override {
+    return base_client_->DidCheckerboardQuad();
+  }
+
  private:
   PictureLayerTilingClient* base_client_;
   Region invalidation_;

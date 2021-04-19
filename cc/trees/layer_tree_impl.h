@@ -47,6 +47,7 @@ class ContextProvider;
 
 namespace cc {
 
+enum class ActivelyScrollingType;
 class DebugRectHistory;
 class DocumentTransitionRequest;
 class DroppedFrameCounter;
@@ -728,6 +729,10 @@ class CC_EXPORT LayerTreeImpl {
 
   bool IsInSynchronousComposite() const {
     return host_impl_->IsInSynchronousComposite();
+  }
+
+  ActivelyScrollingType GetActivelyScrollingType() const {
+    return host_impl_->GetActivelyScrollingType();
   }
 
   // These functions are used for plumbing DelegatedInkMetadata from blink

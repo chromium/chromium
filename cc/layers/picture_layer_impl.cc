@@ -205,6 +205,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
+  SetDidCheckerboardQuad(false);
+
   if (raster_source_->IsSolidColor()) {
     // TODO(979672): This is still hard-coded at 1.0. This has some history:
     //  - for crbug.com/769319, the contents scale was allowed to change, to
@@ -541,6 +543,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           checkerboarded_has_recording_area;
       append_quads_data->checkerboarded_no_recording_content_area +=
           visible_geometry_area - checkerboarded_has_recording_area;
+
+      SetDidCheckerboardQuad(true);
       continue;
     }
 
@@ -991,6 +995,15 @@ const PaintWorkletRecordMap& PictureLayerImpl::GetPaintWorkletRecords() const {
 
 bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_size_.has_value();
+}
+
+bool PictureLayerImpl::ScrollInteractionInProgress() const {
+  return layer_tree_impl()->GetActivelyScrollingType() !=
+         ActivelyScrollingType::kNone;
+}
+
+bool PictureLayerImpl::DidCheckerboardQuad() const {
+  return did_checkerboard_quad_;
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingRectInTargetSpace() const {

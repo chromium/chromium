@@ -79,6 +79,8 @@ class CC_EXPORT PictureLayerImpl
   bool RequiresHighResToDraw() const override;
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   bool IsDirectlyCompositedImage() const override;
+  bool ScrollInteractionInProgress() const override;
+  bool DidCheckerboardQuad() const override;
 
   // ImageAnimationController::AnimationDriver overrides.
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;
@@ -104,6 +106,10 @@ class CC_EXPORT PictureLayerImpl
                              gfx::SizeF* resource_uv_size) const override;
 
   void SetNearestNeighbor(bool nearest_neighbor);
+
+  void SetDidCheckerboardQuad(bool did_checkerboard_quad) {
+    did_checkerboard_quad_ = did_checkerboard_quad;
+  }
 
   void SetDirectlyCompositedImageSize(base::Optional<gfx::Size>);
 
@@ -284,6 +290,9 @@ class CC_EXPORT PictureLayerImpl
   bool only_used_low_res_last_append_quads_ : 1;
 
   bool nearest_neighbor_ : 1;
+
+  // Whether the layer did not have a draw quad during last AppendQuads call.
+  bool did_checkerboard_quad_ : 1;
 
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNone;
