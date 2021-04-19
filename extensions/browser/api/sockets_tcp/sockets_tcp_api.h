@@ -62,6 +62,8 @@ class SocketsTcpCreateFunction : public TCPSocketAsyncApiFunction {
  private:
   FRIEND_TEST_ALL_PREFIXES(SocketsTcpUnitTest, Create);
   std::unique_ptr<sockets_tcp::Create::Params> params_;
+
+  content::BrowserContext* browser_context_ = nullptr;
 };
 
 class SocketsTcpUpdateFunction : public TCPSocketAsyncApiFunction {

@@ -206,6 +206,8 @@ class SocketCreateFunction : public SocketAsyncApiFunction {
 
   std::unique_ptr<api::socket::Create::Params> params_;
   SocketType socket_type_;
+
+  content::BrowserContext* browser_context_ = nullptr;
 };
 
 class SocketDestroyFunction : public SocketAsyncApiFunction {

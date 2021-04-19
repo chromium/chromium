@@ -335,8 +335,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   } else {
     function->SetRenderFrameHost(render_frame_host);
   }
-  function->set_dispatcher(AsWeakPtr());
-  function->set_browser_context(browser_context_);
+  function->SetDispatcher(AsWeakPtr());
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
           extension, browser_context_)) {

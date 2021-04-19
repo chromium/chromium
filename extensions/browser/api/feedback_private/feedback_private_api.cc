@@ -242,6 +242,11 @@ ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FeedbackPrivateGetSystemInformationFunction::Run() {
+  send_all_crash_report_ids_ = gaia::IsGoogleInternalAccountEmail(
+      ExtensionsAPIClient::Get()
+          ->GetFeedbackPrivateDelegate()
+          ->GetSignedInUserEmail(browser_context()));
+
   // Self-deleting object.
   system_logs::SystemLogsFetcher* fetcher =
       ExtensionsAPIClient::Get()
@@ -258,10 +263,6 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
   SystemInformationList sys_info_list;
   if (sys_info) {
     sys_info_list.reserve(sys_info->size());
-    const bool google_email = gaia::IsGoogleInternalAccountEmail(
-        ExtensionsAPIClient::Get()
-            ->GetFeedbackPrivateDelegate()
-            ->GetSignedInUserEmail(browser_context()));
     for (auto& itr : *sys_info) {
       // We only send the list of all the crash report IDs if the user has a
       // @google.com email. We strip this here so that the system information
@@ -269,7 +270,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
       // also stripped later on in the feedback processing for other code paths
       // that don't go through this.
       if (itr.first == feedback::FeedbackReport::kAllCrashReportIdsKey &&
-          !google_email) {
+          !send_all_crash_report_ids_) {
         continue;
       }
 

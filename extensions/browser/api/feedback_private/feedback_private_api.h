@@ -128,6 +128,8 @@ class FeedbackPrivateGetSystemInformationFunction : public ExtensionFunction {
 
  private:
   void OnCompleted(std::unique_ptr<system_logs::SystemLogsResponse> sys_info);
+
+  bool send_all_crash_report_ids_;
 };
 
 // This function only reads from actual log sources on Chrome OS. On other

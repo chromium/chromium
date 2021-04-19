@@ -22,6 +22,8 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -327,7 +329,33 @@ void UserGestureForTests::DecrementCount() {
   --count_;
 }
 
+class BrowserContextShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  static BrowserContextShutdownNotifierFactory* GetInstance() {
+    static base::NoDestructor<BrowserContextShutdownNotifierFactory> s_factory;
+    return s_factory.get();
+  }
+
+  // No copying.
+  BrowserContextShutdownNotifierFactory(
+      const BrowserContextShutdownNotifierFactory&) = delete;
+  BrowserContextShutdownNotifierFactory& operator=(
+      const BrowserContextShutdownNotifierFactory&) = delete;
+
+ private:
+  friend class base::NoDestructor<BrowserContextShutdownNotifierFactory>;
+  BrowserContextShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory("ExtensionFunction") {
+  }
+};
+
 }  // namespace
+
+// static
+void ExtensionFunction::EnsureShutdownNotifierFactoryBuilt() {
+  BrowserContextShutdownNotifierFactory::GetInstance();
+}
 
 void ExtensionFunction::ResponseValueObject::SetFunctionResults(
     ExtensionFunction* function,
@@ -406,6 +434,9 @@ ExtensionFunction::~ExtensionFunction() {
       return true;
 
     if (ignore_all_did_respond_for_testing_do_not_use)
+      return true;
+
+    if (!browser_context())
       return true;
 
     auto* registry = extensions::ExtensionRegistry::Get(browser_context());
@@ -529,6 +560,40 @@ bool ExtensionFunction::user_gesture() const {
 
 bool ExtensionFunction::OnMessageReceived(const IPC::Message& message) {
   return false;
+}
+
+void ExtensionFunction::SetBrowserContextForTesting(
+    content::BrowserContext* context) {
+  browser_context_for_testing_ = context;
+}
+
+content::BrowserContext* ExtensionFunction::browser_context() const {
+  if (browser_context_for_testing_)
+    return browser_context_for_testing_;
+  return browser_context_;
+}
+
+void ExtensionFunction::SetDispatcher(
+    const base::WeakPtr<extensions::ExtensionFunctionDispatcher>& dispatcher) {
+  dispatcher_ = dispatcher;
+
+  // Update |browser_context_| to the one from the dispatcher. Make it reset to
+  // nullptr on shutdown.
+  if (!dispatcher_ || !dispatcher_->browser_context()) {
+    browser_context_ = nullptr;
+    shutdown_subscription_ = base::CallbackListSubscription();
+    return;
+  }
+  browser_context_ = dispatcher_->browser_context();
+  shutdown_subscription_ =
+      BrowserContextShutdownNotifierFactory::GetInstance()
+          ->Get(browser_context_)
+          ->Subscribe(base::BindRepeating(&ExtensionFunction::Shutdown,
+                                          base::Unretained(this)));
+}
+
+void ExtensionFunction::Shutdown() {
+  browser_context_ = nullptr;
 }
 
 void ExtensionFunction::SetRenderFrameHost(

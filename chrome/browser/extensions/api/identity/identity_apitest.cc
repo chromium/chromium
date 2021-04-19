@@ -146,7 +146,10 @@ class AsyncFunctionRunner {
       function->set_extension(empty_extension.get());
     }
 
-    function->set_browser_context(browser_context);
+    dispatcher_ =
+        std::make_unique<ExtensionFunctionDispatcher>(browser_context);
+    function->SetDispatcher(dispatcher_->AsWeakPtr());
+
     function->set_has_callback(true);
     function->RunWithValidation()->Execute();
   }
@@ -180,6 +183,7 @@ class AsyncFunctionRunner {
   }
 
   std::unique_ptr<api_test_utils::SendResponseHelper> response_delegate_;
+  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher_;
 };
 
 class AsyncExtensionBrowserTest : public ExtensionBrowserTest {

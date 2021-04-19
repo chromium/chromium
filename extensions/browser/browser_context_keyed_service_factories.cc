@@ -78,6 +78,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   declarative_net_request::RulesMonitorService::GetFactoryInstance();
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
+  ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionsGuestViewMessageFilter::EnsureShutdownNotifierFactoryBuilt();

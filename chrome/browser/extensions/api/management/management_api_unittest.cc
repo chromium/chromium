@@ -132,7 +132,6 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
     gesture.emplace();
   scoped_refptr<ManagementSetEnabledFunction> function =
       base::MakeRefCounted<ManagementSetEnabledFunction>();
-  function->set_browser_context(profile());
   if (web_contents)
     function->SetRenderFrameHost(web_contents->GetMainFrame());
   base::ListValue args;

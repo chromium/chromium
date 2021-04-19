@@ -195,9 +195,8 @@ bool RunFunction(
   function->SetArgs(base::Value::FromUniquePtrValue(std::move(args)));
 
   CHECK(dispatcher);
-  function->set_dispatcher(dispatcher->AsWeakPtr());
+  function->SetDispatcher(dispatcher->AsWeakPtr());
 
-  function->set_browser_context(context);
   function->set_include_incognito_information(flags & INCLUDE_INCOGNITO);
   function->RunWithValidation()->Execute();
   response_helper.WaitForResponse();

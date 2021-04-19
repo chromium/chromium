@@ -30,11 +30,9 @@ scoped_refptr<const Extension> CreateSearchExtension() {
 }
 
 scoped_refptr<SearchQueryFunction> CreateSearchFunction(
-    scoped_refptr<const Extension> extension,
-    Profile* profile) {
+    scoped_refptr<const Extension> extension) {
   auto function = base::MakeRefCounted<SearchQueryFunction>();
   function->set_extension(extension.get());
-  function->set_browser_context(profile);
   function->set_has_callback(true);
   return function;
 }
@@ -104,7 +102,7 @@ void SearchApiUnitTest::SetUp() {
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
 
   scoped_refptr<const Extension> extension = CreateSearchExtension();
-  function_ = CreateSearchFunction(extension, profile());
+  function_ = CreateSearchFunction(extension);
   CreateWebContents(browser());
 }
 

@@ -313,7 +313,6 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
 
   scoped_refptr<TabsUpdateFunction> function = new TabsUpdateFunction();
   function->set_extension(extension.get());
-  function->set_browser_context(profile());
   std::unique_ptr<base::ListValue> args(
       extension_function_test_utils::ParseList(
           base::StringPrintf(R"([%d, {"url":"http://example.com"}])", tab_id)));

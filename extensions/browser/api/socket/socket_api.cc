@@ -243,6 +243,8 @@ bool SocketCreateFunction::Prepare() {
   params_ = api::socket::Create::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
+  browser_context_ = browser_context();
+
   switch (params_->type) {
     case extensions::api::socket::SOCKET_TYPE_TCP:
       socket_type_ = kSocketTypeTCP;
@@ -253,7 +255,7 @@ bool SocketCreateFunction::Prepare() {
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
       socket_listener_receiver_ =
           listener_remote.InitWithNewPipeAndPassReceiver();
-      content::BrowserContext::GetDefaultStoragePartition(browser_context())
+      content::BrowserContext::GetDefaultStoragePartition(browser_context_)
           ->GetNetworkContext()
           ->CreateUDPSocket(socket_.InitWithNewPipeAndPassReceiver(),
                             std::move(listener_remote));
@@ -270,7 +272,10 @@ bool SocketCreateFunction::Prepare() {
 void SocketCreateFunction::Work() {
   Socket* socket = nullptr;
   if (socket_type_ == kSocketTypeTCP) {
-    socket = new TCPSocket(browser_context(), extension_->id());
+    // TODO(crbug.com/1191472): |browser_context_| is unsafe to access when
+    // DestroyProfileOnBrowserClose is enabled, since it could've been deleted
+    // by now. Fix this by creating the TCPSocket on the UI thread instead.
+    socket = new TCPSocket(browser_context_, extension_->id());
   } else if (socket_type_ == kSocketTypeUDP) {
     socket =
         new UDPSocket(std::move(socket_), std::move(socket_listener_receiver_),

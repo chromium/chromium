@@ -112,6 +112,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   ExtensionFunction();
 
+  static void EnsureShutdownNotifierFactoryBuilt();
+
   // Returns true if the function has permission to run.
   //
   // This checks the Extension's permissions against the features declared in
@@ -319,22 +321,18 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   virtual bool OnMessageReceived(const IPC::Message& message);
 
   // Set the browser context which contains the extension that has originated
-  // this function call.
-  void set_browser_context(content::BrowserContext* context) {
-    context_ = context;
-  }
-  content::BrowserContext* browser_context() const { return context_; }
+  // this function call. Only meant for testing; if unset, uses the
+  // BrowserContext from dispatcher().
+  void SetBrowserContextForTesting(content::BrowserContext* context);
+  content::BrowserContext* browser_context() const;
 
   void SetRenderFrameHost(content::RenderFrameHost* render_frame_host);
   content::RenderFrameHost* render_frame_host() const {
     return render_frame_host_;
   }
 
-  void set_dispatcher(
-      const base::WeakPtr<extensions::ExtensionFunctionDispatcher>&
-          dispatcher) {
-    dispatcher_ = dispatcher;
-  }
+  void SetDispatcher(
+      const base::WeakPtr<extensions::ExtensionFunctionDispatcher>& dispatcher);
   extensions::ExtensionFunctionDispatcher* dispatcher() const {
     return dispatcher_.get();
   }
@@ -480,6 +478,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   friend class ResponseValueObject;
   class RenderFrameHostTracker;
 
+  // Called on BrowserContext shutdown.
+  void Shutdown();
+
   // Call with true to indicate success, false to indicate failure. If this
   // failed, |error_| should be set.
   void SendResponseImpl(bool success);
@@ -542,9 +543,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   extensions::functions::HistogramValue histogram_value_ =
       extensions::functions::UNKNOWN;
 
-  // The BrowserContext associated with the requesting renderer
-  content::BrowserContext* context_ = nullptr;
-
   // The type of the JavaScript context where this call originated.
   extensions::Feature::Context source_context_type_ =
       extensions::Feature::UNSPECIFIED_CONTEXT;
@@ -567,6 +565,15 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The dispatcher that will service this extension function call.
   base::WeakPtr<extensions::ExtensionFunctionDispatcher> dispatcher_;
+
+  // Obtained via |dispatcher_| when it is set. It automatically resets to
+  // nullptr when the BrowserContext is shutdown (much like a WeakPtr).
+  content::BrowserContext* browser_context_ = nullptr;
+  content::BrowserContext* browser_context_for_testing_ = nullptr;
+
+  // Subscription for a callback that runs when the BrowserContext* is
+  // destroyed.
+  base::CallbackListSubscription shutdown_subscription_;
 
   // The RenderFrameHost we will send responses to.
   content::RenderFrameHost* render_frame_host_ = nullptr;
