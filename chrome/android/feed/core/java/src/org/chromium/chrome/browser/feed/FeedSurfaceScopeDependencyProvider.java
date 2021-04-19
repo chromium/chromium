@@ -89,6 +89,22 @@ public class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependenc
     }
 
     @Override
+    public AutoplayPreference getAutoplayPreference() {
+        assert ThreadUtils.runningOnUiThread();
+        @VideoPreviewsType
+        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
+        switch (videoPreviewsType) {
+            case VideoPreviewsType.NEVER:
+                return AutoplayPreference.AUTOPLAY_DISABLED;
+            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
+                return AutoplayPreference.AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
+            case VideoPreviewsType.WIFI:
+            default:
+                return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
+        }
+    }
+
+    @Override
     public long getReliabilityLoggingId() {
         return FeedServiceBridge.getReliabilityLoggingId();
     }
