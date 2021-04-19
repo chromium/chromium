@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -444,9 +445,17 @@ void Navigator::DidNavigate(
 
   int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
+  base::TimeTicks start = base::TimeTicks::Now();
   bool did_navigate = controller_.RendererDidNavigate(
       render_frame_host, params, &details, is_same_document_navigation,
       previous_document_was_activated, navigation_request.get());
+  if (!is_same_document_navigation) {
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"Navigation.RendererDidNavigateTime.",
+             render_frame_host->GetParent() ? "Subframe" : "MainFrame"}),
+        base::TimeTicks::Now() - start);
+  }
 
   // If the history length and/or offset changed, update other renderers in the
   // FrameTree.
