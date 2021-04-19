@@ -3,12 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/rules.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("./tast_control.gni")
+
+if (is_chromeos_device) {
+  import("//build/config/chromeos/rules.gni")
+}
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 

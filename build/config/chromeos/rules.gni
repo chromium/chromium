@@ -9,12 +9,12 @@ import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build/util/generate_wrapper.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros)
+assert((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)
 
 # Determine the real paths for various items in the SDK, which may be used
 # in the 'generate_runner_script' template below. We do so outside the template
 # to confine exec_script to a single invocation.
-if (is_chromeos_device && cros_sdk_version != "") {
+if (cros_sdk_version != "") {
   # Ideally these should be maps, however, gn doesn't support map, so using a
   # list of list to simulate a map:
   # [key1, [value1, value2, ...]], [key2, [value1, value2, ...]], where
@@ -151,7 +151,7 @@ template("generate_runner_script") {
 
   cros_is_vm = false
   is_tast = defined(tast_attr_expr) || defined(tast_tests)
-  if (is_chromeos_device && cros_sdk_version != "") {
+  if (cros_sdk_version != "") {
     assert(defined(generated_script),
            "Must specify where to place generated test launcher script via " +
                "'generated_script'")

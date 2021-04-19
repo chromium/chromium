@@ -47,10 +47,6 @@ import("//ui/views/features.gni")
 import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
-if (is_chromeos) {
-  import("//build/config/chromeos/rules.gni")
-}
-
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 if (is_android) {
