@@ -18,23 +18,21 @@
 #include "chrome/browser/ash/login/screens/eula_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "rlz/buildflags/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 
 constexpr StaticOobeScreenId EulaView::kScreenId;
 
-EulaScreenHandler::EulaScreenHandler(JSCallsContainer* js_calls_container,
-                                     CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
+EulaScreenHandler::EulaScreenHandler(JSCallsContainer* js_calls_container)
+    : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.EulaScreen.userActed");
 }
 
@@ -91,9 +89,8 @@ void EulaScreenHandler::DeclareLocalizedValues(
   builder->Add("acceptAgreement", IDS_EULA_ACCEPT_AND_CONTINUE_BUTTON);
   builder->Add("eulaSystemSecuritySettings", IDS_EULA_SYSTEM_SECURITY_SETTING);
 
-  builder->Add("eulaTpmDesc", IDS_EULA_SECURE_MODULE_DESCRIPTION);
-  ::login::GetSecureModuleUsed(base::BindOnce(
-      &EulaScreenHandler::UpdateLocalizedValues, weak_factory_.GetWeakPtr()));
+  ::login::GetSecureModuleUsed(base::BindOnce(&EulaScreenHandler::UpdateTpmDesc,
+                                              weak_factory_.GetWeakPtr()));
 
   builder->Add("eulaSystemSecuritySettingsOkButton", IDS_OK);
   builder->Add("termsOfServiceLoading", IDS_TERMS_OF_SERVICE_SCREEN_LOADING);
@@ -154,15 +151,19 @@ void EulaScreenHandler::ShowSecuritySettingsDialog() {
   CallJS("login.EulaScreen.showSecuritySettingsDialog");
 }
 
-void EulaScreenHandler::UpdateLocalizedValues(
+void EulaScreenHandler::UpdateTpmDesc(
     ::login::SecureModuleUsed secure_module_used) {
-  base::DictionaryValue updated_secure_module_strings;
-  auto builder = std::make_unique<::login::LocalizedValuesBuilder>(
-      &updated_secure_module_strings);
-  if (secure_module_used == ::login::SecureModuleUsed::TPM) {
-    builder->Add("eulaTpmDesc", IDS_EULA_TPM_DESCRIPTION);
-    core_oobe_view_->ReloadEulaContent(updated_secure_module_strings);
+  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
+  if (!IsSafeToCallJavascript()) {
+    LOG(ERROR) << "Silently dropping login.EulaScreen.setTpmDesc request.";
+    return;
   }
+
+  const std::u16string tpm_desc =
+      secure_module_used == ::login::SecureModuleUsed::TPM
+          ? l10n_util::GetStringUTF16(IDS_EULA_TPM_DESCRIPTION)
+          : l10n_util::GetStringUTF16(IDS_EULA_SECURE_MODULE_DESCRIPTION);
+  CallJS("login.EulaScreen.setTpmDesc", tpm_desc);
 }
 
 }  // namespace chromeos

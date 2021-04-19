@@ -17,7 +17,6 @@ class DictionaryValue;
 
 namespace chromeos {
 
-class CoreOobeView;
 class EulaScreen;
 class HelpAppLauncher;
 
@@ -45,8 +44,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
  public:
   using TView = EulaView;
 
-  EulaScreenHandler(JSCallsContainer* js_calls_container,
-                    CoreOobeView* core_oobe_view);
+  explicit EulaScreenHandler(JSCallsContainer* js_calls_container);
   ~EulaScreenHandler() override;
 
   // EulaView implementation:
@@ -69,10 +67,9 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   std::string GetEulaOnlineUrl();
   std::string GetAdditionalToSUrl();
 
-  void UpdateLocalizedValues(::login::SecureModuleUsed secure_module_used);
+  void UpdateTpmDesc(::login::SecureModuleUsed secure_module_used);
 
   EulaScreen* screen_ = nullptr;
-  CoreOobeView* core_oobe_view_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;

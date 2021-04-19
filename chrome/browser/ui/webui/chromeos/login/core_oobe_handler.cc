@@ -176,16 +176,6 @@ void CoreOobeHandler::ReloadContent(const base::DictionaryValue& dictionary) {
   CallJS("cr.ui.Oobe.reloadContent", dictionary);
 }
 
-void CoreOobeHandler::ReloadEulaContent(
-    const base::DictionaryValue& dictionary) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.reloadEulaContent", dictionary);
-  } else {
-    LOG(ERROR) << "Silently dropping ReloadEulaContent request.";
-  }
-}
-
 void CoreOobeHandler::SetVirtualKeyboardShown(bool shown) {
   CallJS("cr.ui.Oobe.setVirtualKeyboardShown", shown);
 }

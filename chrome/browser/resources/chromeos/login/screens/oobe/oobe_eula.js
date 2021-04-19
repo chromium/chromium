@@ -249,6 +249,7 @@ Polymer({
     'setUsageStats',
     'showAdditionalTosDialog',
     'showSecuritySettingsDialog',
+    'setTpmDesc',
   ],
 
   properties: {
@@ -266,6 +267,14 @@ Polymer({
     usageStatsChecked: {
       type: Boolean,
       value: false,
+    },
+
+    /*
+     * @type {string}
+     */
+    tpmDescription_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -447,6 +456,13 @@ Polymer({
    */
   showSecuritySettingsDialog() {
     this.setUIStep(UIState.SECURITY);
+  },
+
+  /**
+   * Sets TPM description message.
+   */
+  setTpmDesc(description) {
+    this.tpmDescription_ = description;
   },
 
   /**

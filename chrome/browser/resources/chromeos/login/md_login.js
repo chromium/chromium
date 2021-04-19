@@ -47,7 +47,6 @@ HTMLImports.whenReady(() => {
 
       // Dummy Oobe functions not present with stripped login UI.
       refreshA11yInfo(data) {},
-      reloadEulaContent(data) {},
 
       /**
        * Reloads content of the page.

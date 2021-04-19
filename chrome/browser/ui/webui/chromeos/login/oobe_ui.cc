@@ -421,6 +421,9 @@ void OobeUI::ConfigureOobeDisplay() {
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>(
         js_calls_container_.get()));
+
+    AddScreenHandler(
+        std::make_unique<EulaScreenHandler>(js_calls_container_.get()));
   }
 
   AddScreenHandler(std::make_unique<NetworkScreenHandler>(
@@ -431,9 +434,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<EnableDebuggingScreenHandler>(
       js_calls_container_.get()));
-
-  AddScreenHandler(std::make_unique<EulaScreenHandler>(
-      js_calls_container_.get(), core_handler_));
 
   AddScreenHandler(
       std::make_unique<ResetScreenHandler>(js_calls_container_.get()));
