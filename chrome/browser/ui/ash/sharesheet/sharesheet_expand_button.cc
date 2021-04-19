@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -47,16 +48,16 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
 }
 
 void SharesheetExpandButton::SetToDefaultState() {
-  icon_->SetImage(
-      gfx::CreateVectorIcon(kCaretDownIcon, kCaretIconSize, kButtonTextColor));
+  icon_->SetImage(gfx::CreateVectorIcon(vector_icons::kCaretDownIcon,
+                                        kCaretIconSize, kButtonTextColor));
   auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
   label_->SetText(display_name);
   SetAccessibleName(display_name);
 }
 
 void SharesheetExpandButton::SetToExpandedState() {
-  icon_->SetImage(
-      gfx::CreateVectorIcon(kCaretUpIcon, kCaretIconSize, kButtonTextColor));
+  icon_->SetImage(gfx::CreateVectorIcon(vector_icons::kCaretUpIcon,
+                                        kCaretIconSize, kButtonTextColor));
   auto display_name =
       l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL);
   label_->SetText(display_name);

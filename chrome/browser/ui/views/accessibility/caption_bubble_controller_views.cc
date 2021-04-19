@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/accessibility/caption_controller.h"
+#include "chrome/browser/accessibility/caption_controller_factory.h"
 #include "chrome/browser/accessibility/caption_host_impl.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
+#include "components/live_caption/views/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 

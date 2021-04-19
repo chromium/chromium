@@ -3535,12 +3535,8 @@ static_library("ui") {
       # This test header is included because it contains forward declarations
       # needed for "friend" statements for use in tests.
       "translate/translate_bubble_test_utils.h",
-      "views/accessibility/caption_bubble.cc",
-      "views/accessibility/caption_bubble.h",
       "views/accessibility/caption_bubble_controller_views.cc",
       "views/accessibility/caption_bubble_controller_views.h",
-      "views/accessibility/caption_bubble_model.cc",
-      "views/accessibility/caption_bubble_model.h",
       "views/accessibility/caret_browsing_dialog_delegate.cc",
       "views/accessibility/caret_browsing_dialog_delegate.h",
       "views/accessibility/non_accessible_image_view.cc",
@@ -4363,6 +4359,7 @@ static_library("ui") {
       "//components/constrained_window",
       "//components/content_settings/browser/ui",
       "//components/fullscreen_control",
+      "//components/live_caption",
       "//components/media_message_center",
       "//components/page_info",
       "//components/payments/content",

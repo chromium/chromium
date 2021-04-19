@@ -1,0 +1,13 @@
+include_rules = [
+  "+base",
+  "+build/build_config",
+  "+components/strings",
+  "+components/vector_icons",
+  "+third_party/re2",
+  "+ui/accessibility",
+  "+ui/base",
+  "+ui/gfx",
+  "+ui/native_theme",
+  "+ui/strings",
+  "+ui/views",
+]

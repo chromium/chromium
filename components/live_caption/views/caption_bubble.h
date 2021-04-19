@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_H_
-#define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_H_
+#ifndef COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_H_
+#define COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -25,7 +25,7 @@ namespace views {
 class ImageButton;
 class ImageView;
 class Label;
-}
+}  // namespace views
 
 namespace ui {
 struct AXNodeData;
@@ -179,4 +179,4 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, captions::CaptionBubble)
 
-#endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_H_
+#endif  // COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_H_

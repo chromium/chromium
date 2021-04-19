@@ -18,6 +18,8 @@ aggregate_vector_icons("components_vector_icons") {
     "business.icon",
     "call.icon",
     "call_end.icon",
+    "caret_down.icon",
+    "caret_up.icon",
     "certificate.icon",
     "check_circle.icon",
     "close.icon",

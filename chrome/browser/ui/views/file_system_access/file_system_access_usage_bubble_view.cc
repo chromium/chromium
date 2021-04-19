@@ -208,11 +208,11 @@ class CollapsibleListView : public views::View {
     const SkColor disabled_icon_color =
         theme->GetSystemColor(ui::NativeTheme::kColorId_DisabledIconColor);
     views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, kCaretDownIcon, ui::TableModel::kIconSize,
-        icon_color);
+        expand_collapse_button_, vector_icons::kCaretDownIcon,
+        ui::TableModel::kIconSize, icon_color);
     views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, kCaretUpIcon, ui::TableModel::kIconSize,
-        icon_color, disabled_icon_color);
+        expand_collapse_button_, vector_icons::kCaretUpIcon,
+        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
   }
 
  private:

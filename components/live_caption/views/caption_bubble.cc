@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,9 +14,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -645,10 +643,10 @@ void CaptionBubble::SetTextColor() {
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
                                 kButtonDip, text_color);
-  views::SetImageFromVectorIcon(expand_button_, kCaretDownIcon, kButtonDip,
-                                text_color);
-  views::SetImageFromVectorIcon(collapse_button_, kCaretUpIcon, kButtonDip,
-                                text_color);
+  views::SetImageFromVectorIcon(expand_button_, vector_icons::kCaretDownIcon,
+                                kButtonDip, text_color);
+  views::SetImageFromVectorIcon(collapse_button_, vector_icons::kCaretUpIcon,
+                                kButtonDip, text_color);
 
   close_button_->SetInkDropBaseColor(text_color);
   expand_button_->SetInkDropBaseColor(text_color);

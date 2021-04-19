@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
+#include "components/live_caption/views/caption_bubble_model.h"
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

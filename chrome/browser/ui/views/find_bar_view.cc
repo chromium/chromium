@@ -462,9 +462,9 @@ void FindBarView::OnThemeChanged() {
   separator_->SetColor(
       SkColorSetA(base_foreground_color, gfx::kGoogleGreyAlpha300));
 
-  views::SetImageFromVectorIcon(find_previous_button_, kCaretUpIcon,
-                                base_foreground_color);
-  views::SetImageFromVectorIcon(find_next_button_, kCaretDownIcon,
+  views::SetImageFromVectorIcon(
+      find_previous_button_, vector_icons::kCaretUpIcon, base_foreground_color);
+  views::SetImageFromVectorIcon(find_next_button_, vector_icons::kCaretDownIcon,
                                 base_foreground_color);
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
                                 base_foreground_color);

@@ -29,8 +29,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "browser_tools_error.icon",
     "browser_tools_touch.icon",
     "browser_tools_update.icon",
-    "caret_down.icon",
-    "caret_up.icon",
     "cast_for_education.icon",
     "chevron_right.icon",
     "chrome_labs.icon",

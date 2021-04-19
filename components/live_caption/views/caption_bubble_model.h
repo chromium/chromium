@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_MODEL_H_
-#define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_MODEL_H_
+#ifndef COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_MODEL_H_
+#define COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_MODEL_H_
 
 #include <string>
 
@@ -91,4 +91,4 @@ class CaptionBubbleModel {
 };
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_MODEL_H_
+#endif  // COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_MODEL_H_

@@ -1184,7 +1184,9 @@ bool DownloadItemView::GetDropdownPressed() const {
 
 void DownloadItemView::UpdateDropdownButtonImage() {
   views::SetImageFromVectorIcon(
-      dropdown_button_, dropdown_pressed_ ? kCaretDownIcon : kCaretUpIcon,
+      dropdown_button_,
+      dropdown_pressed_ ? vector_icons::kCaretDownIcon
+                        : vector_icons::kCaretUpIcon,
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
 }
 
