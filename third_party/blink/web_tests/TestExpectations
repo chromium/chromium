@@ -278,7 +278,8 @@ crbug.com/713049 virtual/gpu-rasterization/images/color-profile-reflection.html 
 # This test was attributed to site isolation but times out with or without it. Broken test?
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Timeout ]
 
-crbug.com/774873 virtual/exotic-color-space/images/color-profile-border-fade.html [ Pass Failure ]
+crbug.com/791941 virtual/exotic-color-space/images/color-profile-border-fade.html [ Pass Failure ]
+crbug.com/791941 virtual/gpu-rasterization/images/color-profile-border-fade.html [ Pass Failure ]
 
 crbug.com/1098369 fast/canvas/OffscreenCanvas-copyImage.html [ Pass Failure ]
 
