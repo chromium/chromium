@@ -28,9 +28,8 @@ TEST(ContentSettingsProviderTest, Mock) {
                                    ContentSettingsType::NOTIFICATIONS, false));
   std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
       &mock_provider, url, url, ContentSettingsType::NOTIFICATIONS, false));
-  int int_value = -1;
-  value_ptr->GetAsInteger(&int_value);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, IntToContentSetting(int_value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
 
   EXPECT_EQ(
       CONTENT_SETTING_DEFAULT,
