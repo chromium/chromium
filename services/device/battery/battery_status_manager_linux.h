@@ -5,7 +5,6 @@
 #define SERVICES_DEVICE_BATTERY_BATTERY_STATUS_MANAGER_LINUX_H_
 
 #include "services/device/battery/battery_status_manager.h"
-#include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace base {
 class Thread;

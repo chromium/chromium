@@ -7,7 +7,6 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/tests/rect_chromium.h"
-#include "mojo/public/interfaces/bindings/tests/rect.mojom.h"
 
 namespace mojo {
 

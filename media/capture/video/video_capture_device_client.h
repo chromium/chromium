@@ -16,7 +16,6 @@
 #include "base/threading/thread_collision_warner.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 

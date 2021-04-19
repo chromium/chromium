@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/decryptor.h"
+#include "media/mojo/mojom/content_decryption_module.mojom.h"
 
 namespace media {
 

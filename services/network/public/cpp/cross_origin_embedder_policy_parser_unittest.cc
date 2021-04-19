@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {

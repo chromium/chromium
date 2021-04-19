@@ -8,7 +8,10 @@
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/features.h"
+
 namespace network {
 
 namespace {

@@ -19,7 +19,6 @@
 #include "media/blink/lru.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace media {

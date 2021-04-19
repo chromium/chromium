@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "media/blink/media_blink_export.h"
-#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"

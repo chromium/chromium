@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "media/base/cdm_promise.h"
-#include "media/mojo/mojom/content_decryption_module.mojom.h"
 
 namespace media {
 
