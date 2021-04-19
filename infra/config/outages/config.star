@@ -13,4 +13,7 @@ DEFAULT_CONFIG = _outages_config()
 
 # See README.md for documentation on allowable configuration values
 config = _outages_config(
+    # TODO(crbug.com/1200502): Re-enable experiments after pending times have
+    # been resolved.
+    disable_cq_experiments = True,
 )
