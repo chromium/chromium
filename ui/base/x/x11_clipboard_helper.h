@@ -70,6 +70,11 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   // the X server.
   std::vector<std::string> GetAvailableAtomNames(ClipboardBuffer buffer);
 
+  // Tells if |format| is currently available for reading in clipboard |buffer|.
+  // Blocks until the data is fetched from the X server.
+  bool IsFormatAvailable(ClipboardBuffer buffer,
+                         const ClipboardFormatType& format);
+
   // Tells if we currently own the selection for a given clipboard |buffer|.
   bool IsSelectionOwner(ClipboardBuffer buffer) const;
 

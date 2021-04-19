@@ -254,6 +254,16 @@ std::vector<std::string> XClipboardHelper::GetAvailableAtomNames(
   return atom_names;
 }
 
+bool XClipboardHelper::IsFormatAvailable(ClipboardBuffer buffer,
+                                         const ClipboardFormatType& format) {
+  auto target_list = GetTargetList(buffer);
+  if (format == ClipboardFormatType::GetPlainTextType() ||
+      format == ClipboardFormatType::GetUrlType()) {
+    return target_list.ContainsText();
+  }
+  return target_list.ContainsFormat(format);
+}
+
 bool XClipboardHelper::IsSelectionOwner(ClipboardBuffer buffer) const {
   x11::Atom selection = LookupSelectionForClipboardBuffer(buffer);
   return GetSelectionOwner(selection) == x_window_;

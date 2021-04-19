@@ -63,13 +63,7 @@ bool ClipboardX11::IsFormatAvailable(
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
-
-  auto available_types = x_clipboard_helper_->GetAvailableAtomNames(buffer);
-  if (format == ClipboardFormatType::GetPlainTextType() ||
-      format == ClipboardFormatType::GetUrlType()) {
-    return base::Contains(available_types, kMimeTypeText);
-  }
-  return base::Contains(available_types, format.GetName());
+  return x_clipboard_helper_->IsFormatAvailable(buffer, format);
 }
 
 void ClipboardX11::Clear(ClipboardBuffer buffer) {
