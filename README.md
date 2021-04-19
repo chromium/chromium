@@ -12,7 +12,7 @@ Then change update the remote URLs for chromium and V8 to our forks.  The `gclie
 ```
 cd /path/to/src
 git remote set-url origin https://github.com/RecordReplay/chromium.git
-git branch -D master
+git branch -D main
 git pull
 git checkout master
 gclient sync
@@ -21,6 +21,11 @@ git remote set-url origin https://github.com/RecordReplay/v8
 git branch -D master
 git pull
 git checkout master
+cd /path/to/src/third_party/webrtc
+git remote set-url origin https://github.com/RecordReplay/chromium-webrtc.git
+git branch -D master
+git pull
+git checkout main
 ```
 
 Setup the build:
@@ -94,3 +99,5 @@ git pull
 git commit -a
 git push
 ```
+
+FIXME add instructions for other chromium repositories we've forked.
