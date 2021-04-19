@@ -111,6 +111,11 @@ class ProfileWindowBrowserTest : public InProcessBrowserTest {
   ~ProfileWindowBrowserTest() override = default;
 };
 
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, CountForNullBrowser) {
+  EXPECT_EQ(size_t{0}, chrome::GetBrowserCount(nullptr));
+  EXPECT_EQ(0, BrowserList::GetOffTheRecordBrowsersActiveForProfile(nullptr));
+}
+
 class ProfileWindowCountBrowserTest
     : public ProfileWindowBrowserTest,
       public testing::WithParamInterface<ProfileWindowType> {

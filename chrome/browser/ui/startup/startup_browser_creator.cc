@@ -288,7 +288,7 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 
   return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
          (chrome::GetBrowserCount(
-              profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)) > 0);
+              profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) > 0);
 #endif
 }
 
