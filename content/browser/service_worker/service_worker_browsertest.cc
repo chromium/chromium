@@ -64,7 +64,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -1104,36 +1103,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   // Make sure that no crash happens in the remaining tasks.
   base::RunLoop().RunUntilIdle();
-}
-
-// Check that, if the worker synthesizes a redirect with an invalid URL, the
-// navigation fails. See https://crbug.com/1170379.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RedirectInvalid) {
-  StartServerAndNavigateToSetup();
-  GURL page_url =
-      embedded_test_server()->GetURL("/service_worker/redirect.html");
-  GURL worker_url = embedded_test_server()->GetURL(
-      "/service_worker/fetch_event_invalid_redirect.js");
-  auto observer = base::MakeRefCounted<WorkerStateObserver>(
-      wrapper(), ServiceWorkerVersion::ACTIVATED);
-  observer->Init();
-  blink::mojom::ServiceWorkerRegistrationOptions options(
-      page_url, blink::mojom::ScriptType::kClassic,
-      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  public_context()->RegisterServiceWorker(
-      worker_url, options,
-      base::BindOnce(&ExpectRegisterResultAndRun,
-                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
-  observer->Wait();
-
-  // If the service worker responds with an invalid redirect, the navigation to
-  // |page_url| should ultimately fail.
-  NavigationHandleObserver navigation_observer(shell()->web_contents(),
-                                               page_url);
-  EXPECT_FALSE(NavigateToURL(shell(), page_url));
-  // ERR_UNSAFE_REDIRECT or ERR_INVALID_REDIRECT would be a more natural error,
-  // but the workaround for https://crbug.com/941653 ends up applying here too.
-  EXPECT_EQ(net::ERR_ABORTED, navigation_observer.net_error_code());
 }
 
 class ServiceWorkerEagerCacheStorageSetupTest
