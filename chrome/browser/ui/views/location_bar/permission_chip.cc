@@ -19,7 +19,6 @@
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
@@ -66,7 +65,7 @@ class BubbleButtonController : public views::ButtonController {
 };
 
 PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
   SetVisible(false);
 
   chip_button_ =
