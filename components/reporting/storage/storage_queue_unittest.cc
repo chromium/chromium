@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
@@ -375,7 +376,15 @@ constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
+// TODO(1195296): Flaky on windows.
+#if defined(OS_WIN)
+#define MAYBE_WriteIntoNewStorageQueueAndReopen \
+  DISABLED_WriteIntoNewStorageQueueAndReopen
+#else
+#define MAYBE_WriteIntoNewStorageQueueAndReopen \
+  WriteIntoNewStorageQueueAndReopen
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueAndReopen) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
@@ -387,7 +396,15 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndReopen) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenAndWriteMore) {
+// TODO(1194943): Flaky on windows.
+#if defined(OS_WIN)
+#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
+  DISABLED_WriteIntoNewStorageQueueReopenAndWriteMore
+#else
+#define MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore \
+  WriteIntoNewStorageQueueReopenAndWriteMore
+#endif
+TEST_P(StorageQueueTest, MAYBE_WriteIntoNewStorageQueueReopenAndWriteMore) {
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull())).Times(0);
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
@@ -521,8 +538,16 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
+// TODO(1194626): Flaky on windows.
+#if defined(OS_WIN)
+#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
+  DISABLED_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
+#else
+#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
+  WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
+#endif
 TEST_P(StorageQueueTest,
-       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+       MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
