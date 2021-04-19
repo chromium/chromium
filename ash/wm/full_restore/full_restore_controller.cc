@@ -37,14 +37,15 @@ FullRestoreController::ReadWindowCallback g_read_window_callback_for_testing;
 FullRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
 // The list of possible app window parents.
-// TODO(crbug.com/1164472): Support the rest of the desk containers which
-// are currently not always created depending on whether the bento feature
-// is enabled.
-constexpr ShellWindowId kAppParentContainers[5] = {
+constexpr ShellWindowId kAppParentContainers[9] = {
     kShellWindowId_DefaultContainerDeprecated,
     kShellWindowId_DeskContainerB,
     kShellWindowId_DeskContainerC,
     kShellWindowId_DeskContainerD,
+    kShellWindowId_DeskContainerE,
+    kShellWindowId_DeskContainerF,
+    kShellWindowId_DeskContainerG,
+    kShellWindowId_DeskContainerH,
     kShellWindowId_AlwaysOnTopContainer,
 };
 
