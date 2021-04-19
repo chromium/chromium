@@ -1947,6 +1947,8 @@ crbug.com/694525 external/wpt/content-security-policy/navigation/to-javascript-p
 crbug.com/694525 external/wpt/content-security-policy/form-action/form-action-src-redirect-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/unsafe-eval/eval-blocked-in-about-blank-iframe.sub.html [ Skip ]
 
+crbug.com/1199754 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/cors-or-credentialless/dedicated-worker.tentative.https.html [ Timeout ]
+
 # These tests will be added back soon:
 crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-cross-origin-aux-frame-navigation.sub.html [ Skip ]
 crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-cross-origin-main-frame-navigation.sub.html [ Skip ]
