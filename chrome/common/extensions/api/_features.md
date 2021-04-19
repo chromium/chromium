@@ -165,9 +165,9 @@ most one alias.
 For complex features, `alias` property will be set to the `alias` value of the
 first component simple feature that has it set.
 
-### blacklist
+### blocklist
 
-The `blacklist` property specifies a list of ID hashes for extensions that
+The `blocklist` property specifies a list of ID hashes for extensions that
 cannot access a feature. See ID Hashes in this document for how to generate
 these hashes.
 
@@ -350,19 +350,19 @@ documentation.
 For complex features, `source` property will be set to the `source` value of the
 first component simple feature that has it set.
 
-### whitelist
+### allowlist
 
-The `whitelist` property specifies a list of ID hashes for extensions that
+The `allowlist` property specifies a list of ID hashes for extensions that
 are the only extensions allowed to access a feature.
 
 Accepted values are lists of id hashes.
 
 ## ID Hashes
 
-Instead of listing the ID directly in the whitelist or blacklist section, we
+Instead of listing the ID directly in the allowlist or blocklist section, we
 use an uppercased SHA1 hash of the id.
 
-To generate a new whitelisted ID for an extension ID, do the following in bash:
+To generate a new allowlist ID for an extension ID, do the following in bash:
 ```
 $ echo -n "aaaabbbbccccddddeeeeffffgggghhhh" | \
      sha1sum | tr '[:lower:]' '[:upper:]'
@@ -374,10 +374,10 @@ The output should be something like:
 9A0417016F345C934A1A88F55CA17C05014EEEBA  -
 ```
 
-Add the ID to the whitelist or blacklist for the desired feature. It is also
+Add the ID to the allowlist or blocklist for the desired feature. It is also
 often useful to link the crbug next to the id hash, e.g.:
 ```
-"whitelist": [
+"allowlist": [
   "9A0417016F345C934A1A88F55CA17C05014EEEBA"  // crbug.com/<num>
 ]
 ```
