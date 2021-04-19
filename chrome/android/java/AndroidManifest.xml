@@ -887,14 +887,6 @@ by a child template that "extends" this file.
             android:isolatedProcess="true"
             android:process=":decoder_service" />
 
-        <!-- Broadcast receiver that will be notified of account changes -->
-        <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
-            </intent-filter>
-        </receiver>
-
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
             android:exported="false">

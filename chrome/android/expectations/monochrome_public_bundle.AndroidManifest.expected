@@ -1028,13 +1028,6 @@
       </intent-filter>  # DIFF-ANCHOR: fc048873
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info"/>
     </receiver>  # DIFF-ANCHOR: 3664f7eb
-    <receiver  # DIFF-ANCHOR: cdc9c912
-        android:exported="true"
-        android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver">
-      <intent-filter>  # DIFF-ANCHOR: 6a188b57
-        <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED"/>
-      </intent-filter>  # DIFF-ANCHOR: 6a188b57
-    </receiver>  # DIFF-ANCHOR: cdc9c912
     <receiver  # DIFF-ANCHOR: 93e73992
         android:exported="true"
         android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver">

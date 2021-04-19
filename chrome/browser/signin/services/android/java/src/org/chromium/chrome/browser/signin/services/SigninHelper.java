@@ -25,7 +25,8 @@ import java.util.List;
  *
  * This should be merged into SigninManager when it is upstreamed.
  */
-public class SigninHelper implements ApplicationStatus.ApplicationStateListener {
+public class SigninHelper
+        implements ApplicationStatus.ApplicationStateListener, AccountTrackerService.Observer {
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
 
@@ -41,18 +42,32 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
         ApplicationStatus.registerApplicationStateListener(this);
+        mAccountTrackerService.addObserver(this);
     }
 
-    public void validateAccountSettings() {
+    private void validateAccountSettings() {
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
             mAccountTrackerService.seedAccountsIfNeeded(() -> {
                 mSigninManager.runAfterOperationInProgress(
-                        () -> { validateSignedInAccountExists(accounts); });
+                        () -> { validatePrimaryAccountExists(accounts); });
             });
         });
     }
 
-    private void validateSignedInAccountExists(List<Account> accounts) {
+    /**
+     * This method is invoked every time the accounts on device are seeded.
+     */
+    @Override
+    public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
+        mSigninManager.runAfterOperationInProgress(() -> {
+            validatePrimaryAccountExists(AccountUtils.toAndroidAccounts(accountInfos));
+        });
+    }
+
+    /**
+     * Validates that the primary account exists on device.
+     */
+    private void validatePrimaryAccountExists(List<Account> accounts) {
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC);
         if (oldAccount == null

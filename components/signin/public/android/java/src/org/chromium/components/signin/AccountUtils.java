@@ -9,6 +9,8 @@ import android.accounts.Account;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.signin.base.CoreAccountInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +37,7 @@ public class AccountUtils {
     }
 
     /**
-     * Converts a list of the accounts to a list of account names.
+     * Converts a list of accounts to a list of account names.
      */
     public static List<String> toAccountNames(final List<Account> accounts) {
         List<String> accountNames = new ArrayList<>();
@@ -43,6 +45,17 @@ public class AccountUtils {
             accountNames.add(account.name);
         }
         return accountNames;
+    }
+
+    /**
+     * Converts a list of {@link CoreAccountInfo} to a list of {@link Account}.
+     */
+    public static List<Account> toAndroidAccounts(final List<CoreAccountInfo> accounts) {
+        List<Account> androidAccounts = new ArrayList<>();
+        for (CoreAccountInfo account : accounts) {
+            androidAccounts.add(createAccountFromName(account.getEmail()));
+        }
+        return androidAccounts;
     }
 
     /**
