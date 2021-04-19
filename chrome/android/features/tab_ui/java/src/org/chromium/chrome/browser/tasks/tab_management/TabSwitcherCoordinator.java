@@ -506,7 +506,10 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             // The restore of PRICE_MESSAGE is handled in the restorePriceWelcomeMessage() below.
-            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) continue;
+            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE
+                    || shouldSkipMessageDueToIncognito(messages.get(i).model)) {
+                continue;
+            }
             mTabListCoordinator.addSpecialListItemToEnd(
                     TabProperties.UiType.MESSAGE, messages.get(i).model);
         }
@@ -548,6 +551,7 @@ public class TabSwitcherCoordinator
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
+            if (shouldSkipMessageDueToIncognito(messages.get(i).model)) continue;
             if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) {
                 mTabListCoordinator.addSpecialListItem(
                         index, TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
@@ -565,7 +569,7 @@ public class TabSwitcherCoordinator
 
         MessageCardProviderMediator.Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
-        if (nextMessage == null) return;
+        if (nextMessage == null || shouldSkipMessageDueToIncognito(nextMessage.model)) return;
         if (messageType == MessageService.MessageType.PRICE_MESSAGE) {
             mTabListCoordinator.addSpecialListItem(
                     mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
@@ -574,6 +578,11 @@ public class TabSwitcherCoordinator
             mTabListCoordinator.addSpecialListItemToEnd(
                     TabProperties.UiType.MESSAGE, nextMessage.model);
         }
+    }
+
+    private boolean shouldSkipMessageDueToIncognito(PropertyModel messageModel) {
+        return mTabModelSelector.isIncognitoSelected()
+                && !messageModel.get(MessageCardViewProperties.SHOULD_SHOW_IN_INCOGNITO);
     }
 
     private View getTabGridDialogAnimationSourceView(int tabId) {

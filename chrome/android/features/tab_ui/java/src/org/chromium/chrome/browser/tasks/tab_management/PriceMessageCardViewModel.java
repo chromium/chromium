@@ -56,6 +56,7 @@ public class PriceMessageCardViewModel {
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, isIconVisible)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
+                .with(MessageCardViewProperties.SHOULD_SHOW_IN_INCOGNITO, false)
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.PRICE_DROP, data.getPriceDrop())
                 .with(MessageCardViewProperties.ICON_PROVIDER,

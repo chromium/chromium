@@ -53,6 +53,8 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_IN_INCOGNITO =
+            new PropertyModel.WritableBooleanPropertyKey();
     // TODO(crbug.com/1148020): Change to a more general property CUSTOM_INFO_OBJECT
     public static final PropertyModel
             .WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
@@ -63,5 +65,5 @@ class MessageCardViewProperties {
             UI_ACTION_PROVIDER, UI_DISMISS_ACTION_PROVIDER, MESSAGE_SERVICE_ACTION_PROVIDER,
             MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, DISMISS_BUTTON_CONTENT_DESCRIPTION,
             SHOULD_KEEP_AFTER_REVIEW, IS_ICON_VISIBLE, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO,
-            TITLE_TEXT, PRICE_DROP};
+            TITLE_TEXT, SHOULD_SHOW_IN_INCOGNITO, PRICE_DROP};
 }

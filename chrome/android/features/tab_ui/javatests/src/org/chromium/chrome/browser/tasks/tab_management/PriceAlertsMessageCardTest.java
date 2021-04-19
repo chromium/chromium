@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
@@ -162,6 +163,22 @@ public class PriceAlertsMessageCardTest {
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
 
         enterTabSwitcher(cta);
+        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
+    public void testMessageCardNotShowing_InIncognito() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
+        mMockNotificationManager.setNotificationsEnabled(false);
+        assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+
+        createTabs(cta, true, 1);
+        enterTabSwitcher(cta);
+        assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
 

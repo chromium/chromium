@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
@@ -167,6 +168,18 @@ public class TabGridIphTest {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                 .click(location[0], location[1] / 2);
         verifyIphDialogHiding(cta);
+    }
+
+    @Test
+    @MediumTest
+    public void testIphItemShowingInIncognito() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        createTabs(cta, true, 1);
+        enterTabSwitcher(cta);
+        assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
+        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
     }
 
     @Test
