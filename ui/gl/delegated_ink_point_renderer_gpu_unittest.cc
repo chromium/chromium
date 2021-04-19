@@ -147,7 +147,9 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
 
 // Test to confirm that points and tokens are stored and removed correctly based
 // on when the metadata and points arrive.
-TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
+// TODO: crbug.com/1200461 - The test should skip if SetUp() fails.
+TEST_F(DelegatedInkPointRendererGpuTest,
+       DISABLED_StoreAndRemovePointsAndTokens) {
   if (!surface()->SupportsDelegatedInk())
     return;
 
@@ -207,7 +209,8 @@ TEST_F(DelegatedInkPointRendererGpuTest, StoreAndRemovePointsAndTokens) {
 
 // Basic test to confirm that points are drawn as they arrive if they are in the
 // presentation area and after the metadata's timestamp.
-TEST_F(DelegatedInkPointRendererGpuTest, DrawPointsAsTheyArrive) {
+// TODO: crbug.com/1200461 - The test should skip if SetUp() fails.
+TEST_F(DelegatedInkPointRendererGpuTest, DISABLED_DrawPointsAsTheyArrive) {
   if (!surface()->SupportsDelegatedInk())
     return;
 
