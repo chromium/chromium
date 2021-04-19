@@ -214,21 +214,21 @@ console-format.js:34 (10) ["test", "test2", empty × 2, "test4", empty × 5, fo
     4: "test4"
     foo: {}
     length: 10
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:35 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
     0: "test"
     1: "test2"
     4: "test4"
     foo: {}
     length: 10
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:36 Array(10)
     0: "test"
     1: "test2"
     4: "test4"
     foo: {}
     length: 10
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:37 Test for zero "0" in formatter
 console-format.js:38 % self-escape1 dummy
 console-format.js:39 %s self-escape2 dummy
@@ -240,28 +240,28 @@ console-format.js:21 /^url\(\s*(?:(?:"(?:[^\\\"]|(?:\\[\da-f]{1,6}\s?|\.))*"|'(?
 console-format.js:22 [/^url\(\s*(?:(?:"(?:[^\\\"]|(?:\\[\da-f]{1,6}\s?|\…?:[!#$%&*-~\w]|(?:\\[\da-f]{1,6}\s?|\.))*)\s*\)/i]
     0: /^url\(\s*(?:(?:"(?:[^\\\"]|(?:\\[\da-f]{1,6}\s?|\.))*"|'(?:[^\\\']|(?:\\[\da-f]{1,6}\s?|\.))*')|(?:[!#$%&*-~\w]|(?:\\[\da-f]{1,6}\s?|\.))*)\s*\)/i
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[0]
 /^url\(\s*(?:(?:"(?:[^\\\"]|(?:\\[\da-f]{1,6}\s?|\.))*"|'(?:[^\\\']|(?:\\[\da-f]{1,6}\s?|\.))*')|(?:[!#$%&*-~\w]|(?:\\[\da-f]{1,6}\s?|\.))*)\s*\)/i
 console-format.js:21 /foo\\bar\sbaz/i
 console-format.js:22 [/foo\\bar\sbaz/i]
     0: /foo\\bar\sbaz/i
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[1]
 /foo\\bar\sbaz/i
 console-format.js:21 test
 console-format.js:22 ["test"]
     0: "test"
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[2]
 "test"
 console-format.js:21 test named "test"
 console-format.js:22 ["test named \"test\""]
     0: "test named \"test\""
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[3]
 "test named \"test\""
 console-format.js:21 Error
@@ -269,7 +269,7 @@ console-format.js:22 [Error
 ]
     0: Error
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[4]
 Error
 console-format.js:21 Error: my error message
@@ -277,7 +277,7 @@ console-format.js:22 [Error: my error message
 ]
     0: Error: my error message
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[5]
 Error: my error message
 console-format.js:21 Error: my multiline
@@ -288,7 +288,7 @@ error message
     0: Error: my multiline
 error message
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[6]
 Error: my multiline
 error message
@@ -297,14 +297,14 @@ console-format.js:21
 console-format.js:22 [p#p]
     0: p#p
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[7]
     <p id="p"></p>
 console-format.js:21 ƒ () { return 1; }
 console-format.js:22 [ƒ]
     0: ƒ ()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[8]
 ƒ () { return 1; }
 console-format.js:21 ƒ () {
@@ -313,7 +313,7 @@ console-format.js:21 ƒ () {
 console-format.js:22 [ƒ]
     0: ƒ ()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[9]
 ƒ () {
           return 2;
@@ -322,28 +322,28 @@ console-format.js:21 0.12
 console-format.js:22 [0.12]
     0: 0.12
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[10]
 0.12
 console-format.js:21 http://webkit.org/
 console-format.js:22 ["http://webkit.org/"]
     0: "http://webkit.org/"
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[11]
 "http://webkit.org/"
 console-format.js:21 null
 console-format.js:22 [null]
     0: null
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[12]
 null
 console-format.js:21 undefined
 console-format.js:22 [undefined]
     0: undefined
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[13]
 undefined
 console-format.js:21 
@@ -351,7 +351,7 @@ console-format.js:21
 console-format.js:22 [attr]
     0: attr
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[14]
     attr=""
 console-format.js:21 
@@ -359,7 +359,7 @@ console-format.js:21
 console-format.js:22 [attr]
     0: attr
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[15]
     attr="value"
 console-format.js:21 
@@ -367,41 +367,41 @@ console-format.js:21
 console-format.js:22 [id]
     0: id
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[16]
     id="x"
 console-format.js:21 {}
     length: (...)
     get length: ƒ length()
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:22 [{…}]
     0: {}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[17]
 {}
     length: (...)
     get length: ƒ length()
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:21 NaN
 console-format.js:22 [NaN]
     0: NaN
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[18]
 NaN
 console-format.js:21 Infinity
 console-format.js:22 [Infinity]
     0: Infinity
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[19]
 Infinity
 console-format.js:21 -Infinity
 console-format.js:22 [-Infinity]
     0: -Infinity
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[20]
 -Infinity
 console-format.js:21 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
@@ -410,11 +410,11 @@ console-format.js:21 (10) ["test", "test2", empty × 2, "test4", empty × 5, fo
     4: "test4"
     foo: {}
     length: 10
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:22 [Array(10)]
     0: (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[21]
 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
     0: "test"
@@ -422,46 +422,46 @@ globals[21]
     4: "test4"
     foo: {}
     length: 10
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:21 {}
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:22 [{…}]
     0: {}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[22]
 {}
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:21 [ƒ]
     0: ƒ ()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:22 [Array(1)]
     0: [ƒ]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[23]
 [ƒ]
     0: ƒ ()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:21 {bar: "bar"}
     bar: "bar"
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:22 [{…}]
     0: {bar: "bar"}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[24]
 {bar: "bar"}
     bar: "bar"
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:21 
     <svg id="svg-node"></svg>
 console-format.js:22 [svg#svg-node]
     0: svg#svg-node
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[25]
     <svg id="svg-node"></svg>
 console-format.js:21 {enumerableProp: 4, __underscoreEnumerableProp__: 5, __underscoreNonEnumerableProp: 2, abc: 3, getFoo: ƒ, …}
@@ -473,11 +473,11 @@ console-format.js:21 {enumerableProp: 4, __underscoreEnumerableProp__: 5, __unde
     __underscoreNonEnumerableProp: 2
     get bar: ƒ ()
     set bar: ƒ (x)
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:22 [{…}]
     0: {enumerableProp: 4, __underscoreEnumerableProp__: 5, __underscoreNonEnumerableProp: 2, abc: 3, getFoo: ƒ, …}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[26]
 {enumerableProp: 4, __underscoreEnumerableProp__: 5, __underscoreNonEnumerableProp: 2, abc: 3, getFoo: ƒ, …}
     enumerableProp: 4
@@ -488,12 +488,12 @@ globals[26]
     __underscoreNonEnumerableProp: 2
     get bar: ƒ ()
     set bar: ƒ (x)
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:21 -0
 console-format.js:22 [-0]
     0: -0
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[27]
 -0
 console-format.js:21 {}
@@ -501,7 +501,7 @@ console-format.js:21 {}
 console-format.js:22 [{…}]
     0: {}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[28]
 {}
     No properties
@@ -509,7 +509,7 @@ console-format.js:21 ƒ Object() { [native code] }
 console-format.js:22 [ƒ]
     0: ƒ Object()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[29]
 ƒ Object() { [native code] }
 console-format.js:21 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
@@ -529,7 +529,7 @@ console-format.js:21 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: �
 console-format.js:22 [{…}]
     0: {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[30]
 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
     constructor: ƒ Object()
@@ -550,39 +550,39 @@ console-format.js:21 ƒ ( /**/ foo/**/, /*/**/bar,
 console-format.js:22 [ƒ]
     0: ƒ ( /**/ foo/**/, /*/**/bar,       /**/baz)
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[31]
 ƒ ( /**/ foo/**/, /*/**/bar,
       /**/baz) {}
 console-format.js:21 Number {42}
-    __proto__: Number
+    [[Prototype]]: Number
     [[PrimitiveValue]]: 42
 console-format.js:22 [Number]
     0: Number {42}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[32]
 Number {42}
-    __proto__: Number
+    [[Prototype]]: Number
     [[PrimitiveValue]]: 42
 console-format.js:21 String {"abc"}
     0: "a"
     1: "b"
     2: "c"
     length: 3
-    __proto__: String
+    [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 console-format.js:22 [String]
     0: String {"abc"}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[33]
 String {"abc"}
     0: "a"
     1: "b"
     2: "c"
     length: 3
-    __proto__: String
+    [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 console-format.js:21 Uint16Array(3) [1, 2, 3]
     0: 1
@@ -593,11 +593,11 @@ console-format.js:21 Uint16Array(3) [1, 2, 3]
     byteOffset: (...)
     length: (...)
     Symbol(Symbol.toStringTag): (...)
-    __proto__: TypedArray
+    [[Prototype]]: TypedArray
 console-format.js:22 [Uint16Array(3)]
     0: Uint16Array(3) [1, 2, 3]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[34]
 Uint16Array(3) [1, 2, 3]
     0: 1
@@ -608,19 +608,19 @@ Uint16Array(3) [1, 2, 3]
     byteOffset: (...)
     length: (...)
     Symbol(Symbol.toStringTag): (...)
-    __proto__: TypedArray
+    [[Prototype]]: TypedArray
 console-format.js:21 #text
 console-format.js:22 [text]
     0: text
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[35]
 #text
 console-format.js:21 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 console-format.js:22 [DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of t…]
     0: DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[36]
 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 console-format.js:21 Uint8Array [3]
@@ -630,11 +630,11 @@ console-format.js:21 Uint8Array [3]
     byteOffset: (...)
     length: (...)
     Symbol(Symbol.toStringTag): (...)
-    __proto__: TypedArray
+    [[Prototype]]: TypedArray
 console-format.js:22 [Uint8Array(1)]
     0: Uint8Array [3]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[37]
 Uint8Array [3]
     0: 3
@@ -643,18 +643,17 @@ Uint8Array [3]
     byteOffset: (...)
     length: (...)
     Symbol(Symbol.toStringTag): (...)
-    __proto__: TypedArray
+    [[Prototype]]: TypedArray
 console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99]
     [100 … 199]
     [200 … 299]
     [300 … 399]
     foo: "bar"
-    __proto__: TypedArray
 console-format.js:22 [Uint8Array(400)]
     0: Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[38]
 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99]
@@ -662,75 +661,70 @@ Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     [200 … 299]
     [300 … 399]
     foo: "bar"
-    __proto__: TypedArray
 console-format.js:21 Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99999999]
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
-    __proto__: TypedArray
 console-format.js:22 [Uint8Array(400000000)]
     0: Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[39]
 Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99999999]
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
-    __proto__: TypedArray
 console-format.js:21 namespace.longSubNamespace.x.className {}
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:22 [n…e.l…e.x.className]
     0: namespace.longSubNamespace.x.className {}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[40]
 namespace.longSubNamespace.x.className {}
-    __proto__: Object
+    [[Prototype]]: Object
 console-format.js:21 (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …]
     [0 … 99]
     [100 … 199]
     length: 200
-    __proto__: Array(0)
 console-format.js:22 [Array(200)]
     0: (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[41]
 (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …]
     [0 … 99]
     [100 … 199]
     length: 200
-    __proto__: Array(0)
 console-format.js:21 ["test"]
     0: "test"
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:22 [Array(1)]
     0: ["test"]
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[42]
 ["test"]
     0: "test"
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 console-format.js:21 Number {42, 1: "foo", a: "bar"}
     1: "foo"
     a: "bar"
-    __proto__: Number
+    [[Prototype]]: Number
     [[PrimitiveValue]]: 42
 console-format.js:22 [Number]
     0: Number {42, 1: "foo", a: "bar"}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[43]
 Number {42, 1: "foo", a: "bar"}
     1: "foo"
     a: "bar"
-    __proto__: Number
+    [[Prototype]]: Number
     [[PrimitiveValue]]: 42
 console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     0: "a"
@@ -740,12 +734,12 @@ console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     3: "foo"
     a: "bar"
     length: 3
-    __proto__: String
+    [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 console-format.js:22 [String]
     0: String {"abc", 3: "foo", 01: "foo", a: "bar"}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[44]
 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     0: "a"
@@ -755,6 +749,6 @@ String {"abc", 3: "foo", 01: "foo", a: "bar"}
     3: "foo"
     a: "bar"
     length: 3
-    __proto__: String
+    [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 

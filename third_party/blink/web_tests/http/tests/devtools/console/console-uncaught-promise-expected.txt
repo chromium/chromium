@@ -53,7 +53,7 @@ runNextPromiseTest @ console-uncaught-promise.js:18
 (anonymous) @ console-uncaught-promise.js:100
 console-uncaught-promise.js:86 Uncaught (in promise) {foo: 42}
     foo: 42
-    __proto__: Object
+    [[Prototype]]: Object
 promiseTest7 @ console-uncaught-promise.js:86
 timeout @ console-uncaught-promise.js:19
 setTimeout (async)

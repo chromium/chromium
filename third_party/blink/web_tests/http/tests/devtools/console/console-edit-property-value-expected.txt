@@ -10,6 +10,6 @@ console-edit-property-value.js:15 {a: 1, b: "foo", c: null, d: 2}
     b: "foo"
     c: (3) [1, 2, 3]
     d: {x: 2}
-    __proto__: Object
+    [[Prototype]]: Object
 undefined
 

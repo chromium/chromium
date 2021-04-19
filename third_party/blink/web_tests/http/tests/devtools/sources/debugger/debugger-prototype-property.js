@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(
-      `Tests that object's __proto__ property is present in object properties section when script is paused on a breakpoint.Bug 41214\n`);
+      `Tests that object's [[Prototype]] property is present in object properties section when script is paused on a breakpoint.Bug 41214\n`);
   await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
@@ -35,8 +35,8 @@
   function onSidebarRendered() {
     var localScope = SourcesTestRunner.scopeChainSections()[0];
     var properties = [
-      localScope, ['o', '__proto__', '__proto__'], localScope,
-      ['d', '__proto__', '__proto__', '__proto__', '__proto__', '__proto__']
+      localScope, ['o', '[[Prototype]]', '[[Prototype]]'], localScope,
+      ['d', '[[Prototype]]', '[[Prototype]]', '[[Prototype]]', '[[Prototype]]', '[[Prototype]]']
     ];
     SourcesTestRunner.expandProperties(properties, step3);
   }

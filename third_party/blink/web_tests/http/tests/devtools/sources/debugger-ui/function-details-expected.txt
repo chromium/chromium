@@ -64,7 +64,7 @@ columnNumber: 35
 scriptId is valid: true
 functionName: 
 scopeChain #0: Catch; ex: <no string representation>
-scopeChain #1: With Block; __proto__: <no string representation>,e: 7,f: 5,u: <no value>,v: <no value>
+scopeChain #1: With Block; e: 7,f: 5,u: <no value>,v: <no value>
 scopeChain #2: Closure; p: <no string representation>
 scopeChain #3: Global; <global object properties omitted>
 

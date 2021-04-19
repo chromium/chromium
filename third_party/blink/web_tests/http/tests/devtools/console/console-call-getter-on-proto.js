@@ -36,7 +36,7 @@
 
   function expandTreeElementFilter(treeElement) {
     var name = treeElement.nameElement && treeElement.nameElement.textContent;
-    return name === '__proto__';
+    return name === '[[Prototype]]';
   }
 
   function step3() {

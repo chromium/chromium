@@ -7,8 +7,8 @@ console-functions.js:28 ƒ simple()
     length: 0
     name: "simple"
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:13
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 async ƒ asyncSimple() {}
 console-functions.js:28 async ƒ asyncSimple()
@@ -16,8 +16,8 @@ console-functions.js:28 async ƒ asyncSimple()
     caller: (...)
     length: 0
     name: "asyncSimple"
-    __proto__: AsyncFunction
     [[FunctionLocation]]: console-functions.js:14
+    [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ* genSimple() {}
 console-functions.js:28 ƒ* genSimple()
@@ -26,9 +26,9 @@ console-functions.js:28 ƒ* genSimple()
     length: 0
     name: "genSimple"
     prototype: Generator {}
-    __proto__: GeneratorFunction
     [[FunctionLocation]]: console-functions.js:15
     [[IsGenerator]]: true
+    [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ (){}
 console-functions.js:28 ƒ anonymous()
@@ -37,8 +37,8 @@ console-functions.js:28 ƒ anonymous()
     length: 0
     name: ""
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:16
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ (x, y){}
 console-functions.js:28 ƒ anonymous(x, y)
@@ -47,8 +47,8 @@ console-functions.js:28 ƒ anonymous(x, y)
     length: 2
     name: ""
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:17
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ namedArgs(x) {}
 console-functions.js:28 ƒ namedArgs(x)
@@ -57,8 +57,8 @@ console-functions.js:28 ƒ namedArgs(x)
     length: 1
     name: "namedArgs"
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:18
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ namedArgs2(x, y) {}
 console-functions.js:28 ƒ namedArgs2(x, y)
@@ -67,8 +67,8 @@ console-functions.js:28 ƒ namedArgs2(x, y)
     length: 2
     name: "namedArgs2"
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:19
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ ({}) {}
 console-functions.js:28 ƒ anonymous({})
@@ -77,8 +77,8 @@ console-functions.js:28 ƒ anonymous({})
     length: 1
     name: ""
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:20
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ *    whitespace   (  x  )    {   }
 console-functions.js:28 ƒ *    whitespace(  x  )
@@ -87,9 +87,9 @@ console-functions.js:28 ƒ *    whitespace(  x  )
     length: 1
     name: "whitespace"
     prototype: Generator {}
-    __proto__: GeneratorFunction
     [[FunctionLocation]]: console-functions.js:21
     [[IsGenerator]]: true
+    [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
 console-functions.js:27 async ƒ whitespace2   (  x  ,  y  ,  z  )    {   }
 console-functions.js:28 async ƒ whitespace2(  x  ,  y  ,  z  )
@@ -97,8 +97,8 @@ console-functions.js:28 async ƒ whitespace2(  x  ,  y  ,  z  )
     caller: (...)
     length: 3
     name: "whitespace2"
-    __proto__: AsyncFunction
     [[FunctionLocation]]: console-functions.js:22
+    [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]
 console-functions.js:31 {func0: ƒ, func1: ƒ, func2: ƒ, func3: ƒ, func4: ƒ, …}
     func0: ƒ simple()
@@ -111,7 +111,7 @@ console-functions.js:31 {func0: ƒ, func1: ƒ, func2: ƒ, func3: ƒ, func4: ƒ,�
     func7: ƒ ({})
     func8: ƒ *    whitespace(  x  )
     func9: async ƒ whitespace2(  x  ,  y  ,  z  )
-    __proto__: Object
+    [[Prototype]]: Object
 console-functions.js:32 Object
     func0: ƒ simple()
     func1: async ƒ asyncSimple()
@@ -123,5 +123,5 @@ console-functions.js:32 Object
     func7: ƒ ({})
     func8: ƒ *    whitespace(  x  )
     func9: async ƒ whitespace2(  x  ,  y  ,  z  )
-    __proto__: Object
+    [[Prototype]]: Object
 

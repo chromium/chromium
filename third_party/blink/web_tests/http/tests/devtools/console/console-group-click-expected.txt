@@ -9,6 +9,6 @@ console-group-click.js:12 group with object {x: 1}
 console-group-click.js:13 Message inside group
 
 Click on the object
-console-group-click.js:12 group with object {x: 1}x: 1__proto__: Object
+console-group-click.js:12 group with object {x: 1}x: 1[[Prototype]]: Object
 console-group-click.js:13 Message inside group
 

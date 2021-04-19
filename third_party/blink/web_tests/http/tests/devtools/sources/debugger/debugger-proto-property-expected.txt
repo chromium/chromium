@@ -1,8 +1,0 @@
-Tests that object's __proto__ property is present in object properties section when script is paused on a breakpoint.Bug 41214
-
-Set timer for test function.
-Script execution paused.
-Expanded property: o.__proto__.__proto__
-Expanded property: d.__proto__.__proto__.__proto__.__proto__.__proto__
-Script execution resumed.
-

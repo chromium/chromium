@@ -16,7 +16,7 @@ Scope variables sidebar pane:
 Local
     Return value: Object
         a: 1
-        __proto__: Object
+        [[Prototype]]: Object
     this: undefined
     x: 42
 WindowGlobal
@@ -27,7 +27,7 @@ Scope variables sidebar pane:
 Local
     Return value: Object
         a: 1
-        __proto__: Object
+        [[Prototype]]: Object
     this: undefined
     x: 42
 WindowGlobal

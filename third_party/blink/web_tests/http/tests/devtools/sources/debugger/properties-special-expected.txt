@@ -1,6 +1,6 @@
 Tests how debugger presents special properties of closures, bound functions and object wrappers.
 properties-special.js:11 Boolean
-    __proto__: Boolean
+    [[Prototype]]: Boolean
     [[PrimitiveValue]]: true
 properties-special.js:12 ƒ anonymous(a,b)
     arguments: null
@@ -8,15 +8,15 @@ properties-special.js:12 ƒ anonymous(a,b)
     length: 2
     name: ""
     prototype: {constructor: ƒ}
-    __proto__: ƒ ()
     [[FunctionLocation]]: properties-special.js:12
+    [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]
 properties-special.js:13 ƒ bound ()
     arguments: (...)
     caller: (...)
     length: 1
     name: "bound "
-    __proto__: ƒ ()
+    [[Prototype]]: ƒ ()
     [[TargetFunction]]: ƒ (a,b)
     [[BoundThis]]: Object
     [[BoundArgs]]: Array(1)
@@ -26,8 +26,8 @@ properties-special.js:14 ƒ* anonymous()
     length: 0
     name: ""
     prototype: Generator {}
-    __proto__: GeneratorFunction
     [[FunctionLocation]]: properties-special.js:14
     [[IsGenerator]]: true
+    [[Prototype]]: GeneratorFunction
     [[Scopes]]: Scopes[1]
 

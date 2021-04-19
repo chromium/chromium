@@ -3,8 +3,8 @@ Tests that calling getter on prototype will call it on the object.
 console-call-getter-on-proto.js:27 B {value: 239}
     foo: 239
     value: 239
-    __proto__: A
+    [[Prototype]]: A
         constructor: ƒ ()
         foo: 239
-        __proto__: Object
+        [[Prototype]]: Object
 

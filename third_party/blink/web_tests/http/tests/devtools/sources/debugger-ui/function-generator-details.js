@@ -61,6 +61,8 @@
       TestRunner.assertTrue(
           properties && properties.internalProperties, 'FAIL: no properties');
       for (var prop of properties.internalProperties) {
+        if (prop.name === '[[Prototype]]')
+          continue;
         if (prop.name !== '[[GeneratorLocation]]')
           TestRunner.addResult(prop.name + ' = ' + prop.value.description);
         else

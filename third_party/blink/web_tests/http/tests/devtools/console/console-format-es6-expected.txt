@@ -66,56 +66,56 @@ globals[15]
 genFunction {<suspended>}
 Expanded all messages
 console-format-es6.js:15 Promise {<rejected>: -0}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "rejected"
     [[PromiseResult]]: -0
 console-format-es6.js:16 [Promise]
     0: Promise {<rejected>: -0}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[0]
 Promise {<rejected>: -0}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "rejected"
     [[PromiseResult]]: -0
 console-format-es6.js:15 Promise {<fulfilled>: 1}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "fulfilled"
     [[PromiseResult]]: 1
 console-format-es6.js:16 [Promise]
     0: Promise {<fulfilled>: 1}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[1]
 Promise {<fulfilled>: 1}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "fulfilled"
     [[PromiseResult]]: 1
 console-format-es6.js:15 Promise {<pending>}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "pending"
     [[PromiseResult]]: undefined
 console-format-es6.js:16 [Promise]
     0: Promise {<pending>}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[2]
 Promise {<pending>}
-    __proto__: Promise
+    [[Prototype]]: Promise
     [[PromiseState]]: "pending"
     [[PromiseResult]]: undefined
 console-format-es6.js:15 Symbol()
 console-format-es6.js:16 [Symbol()]
     0: Symbol()
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[3]
 Symbol()
 console-format-es6.js:15 Symbol(a)
 console-format-es6.js:16 [Symbol(a)]
     0: Symbol(a)
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[4]
 Symbol(a)
 console-format-es6.js:15 {a: Symbol(), Symbol(a): 2}
@@ -123,134 +123,134 @@ console-format-es6.js:15 {a: Symbol(), Symbol(a): 2}
     getter: (...)
     Symbol(a): 2
     get getter: ƒ getter()
-    __proto__: Object
+    [[Prototype]]: Object
 console-format-es6.js:16 [{…}]
     0: {a: Symbol(), Symbol(a): 2}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[5]
 {a: Symbol(), Symbol(a): 2}
     a: Symbol()
     getter: (...)
     Symbol(a): 2
     get getter: ƒ getter()
-    __proto__: Object
+    [[Prototype]]: Object
 console-format-es6.js:15 Map(1) {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {{…} => {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[6]
 Map(1) {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:15 WeakMap {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
-    __proto__: WeakMap
+    [[Prototype]]: WeakMap
 console-format-es6.js:16 [WeakMap]
     0: WeakMap {{…} => {…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[7]
 WeakMap {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
-    __proto__: WeakMap
+    [[Prototype]]: WeakMap
 console-format-es6.js:15 Set(1) {{…}}
     [[Entries]]
         0: Object
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {{…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[8]
 Set(1) {{…}}
     [[Entries]]
         0: Object
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:15 WeakSet {{…}}
     [[Entries]]
         0: Object
-    __proto__: WeakSet
+    [[Prototype]]: WeakSet
 console-format-es6.js:16 [WeakSet]
     0: WeakSet {{…}}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[9]
 WeakSet {{…}}
     [[Entries]]
         0: Object
-    __proto__: WeakSet
+    [[Prototype]]: WeakSet
 console-format-es6.js:15 Map(1) {Map(0) => WeakMap}
     [[Entries]]
         0: {Map(0) => WeakMap}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {Map(0) => WeakMap}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[10]
 Map(1) {Map(0) => WeakMap}
     [[Entries]]
         0: {Map(0) => WeakMap}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:15 Map(1) {Map(1) => WeakMap}
     [[Entries]]
         0: {Map(1) => WeakMap}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {Map(1) => WeakMap}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[11]
 Map(1) {Map(1) => WeakMap}
     [[Entries]]
         0: {Map(1) => WeakMap}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:15 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {WeakSet}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[12]
 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:15 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {WeakSet}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[13]
 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
     size: (...)
-    __proto__: Set
+    [[Prototype]]: Set
 console-format-es6.js:15 Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     [[Entries]]
         0: {" from str " => " to str "}
@@ -260,11 +260,11 @@ console-format-es6.js:15 Map(6) {" from str " => " to str ", undefined => undef
         4: {Object => Object}
         5: {Array(1) => Array(1)}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:16 [Map(6)]
     0: Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[14]
 Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     [[Entries]]
@@ -275,10 +275,10 @@ Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 =>
         4: {Object => Object}
         5: {Array(1) => Array(1)}
     size: (...)
-    __proto__: Map
+    [[Prototype]]: Map
 console-format-es6.js:15 genFunction {<suspended>}
-    __proto__: Generator
     [[GeneratorLocation]]: console-format-es6.js:62
+    [[Prototype]]: Generator
     [[GeneratorState]]: "suspended"
     [[GeneratorFunction]]: ƒ *()
     [[GeneratorReceiver]]: Window
@@ -286,11 +286,11 @@ console-format-es6.js:15 genFunction {<suspended>}
 console-format-es6.js:16 [genFunction]
     0: genFunction {<suspended>}
     length: 1
-    __proto__: Array(0)
+    [[Prototype]]: Array(0)
 globals[15]
 genFunction {<suspended>}
-    __proto__: Generator
     [[GeneratorLocation]]: console-format-es6.js:62
+    [[Prototype]]: Generator
     [[GeneratorState]]: "suspended"
     [[GeneratorFunction]]: ƒ *()
     [[GeneratorReceiver]]: Window

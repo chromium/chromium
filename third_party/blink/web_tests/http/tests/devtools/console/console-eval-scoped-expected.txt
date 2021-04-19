@@ -54,19 +54,6 @@ Running: testConsoleEvalObject
     }
     writable : true
 }
-{
-    configurable : true
-    enumerable : false
-    isOwn : true
-    name : "__proto__"
-    value : {
-        className : "Object"
-        description : "Object"
-        objectId : <string>
-        type : "object"
-    }
-    writable : true
-}
 
 Running: testGetEventListenersDoesNotThrow
 getEventListeners(document.body.firstChild)
