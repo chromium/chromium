@@ -17931,6 +17931,8 @@ Called by update_debug_scenarios.py.-->
   <int value="51" label="Network panel timing tab SW respondWith clicked"/>
   <int value="52" label="Copy value in network request panel"/>
   <int value="53" label="Console Sidebar opened"/>
+  <int value="54" label="User imported a trace into the performance panel"/>
+  <int value="55" label="User exported a trace from the performance panel"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
