@@ -3,7 +3,9 @@
  * found in the LICENSE file. */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import './strings.m.js';
 import './signin_shared_css.js';
 import './signin_vars_css.js';
@@ -52,6 +54,12 @@ Polymer({
         return loadTimeData.getString('highlightColor');
       }
     },
+
+    /** @private */
+    showEnterpriseBadge_: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /** @private {?SyncConfirmationBrowserProxy} */
@@ -62,8 +70,8 @@ Polymer({
     this.syncConfirmationBrowserProxy_ =
         SyncConfirmationBrowserProxyImpl.getInstance();
     this.addWebUIListener(
-        'account-image-changed', this.handleAccountImageChanged_.bind(this));
-    this.syncConfirmationBrowserProxy_.requestAccountImage();
+        'account-info-changed', this.handleAccountInfoChanged_.bind(this));
+    this.syncConfirmationBrowserProxy_.requestAccountInfo();
   },
 
   /** @private */
@@ -112,11 +120,15 @@ Polymer({
 
   /**
    * Called when the account image changes.
-   * @param {string} imageSrc
+   * @param {{
+   *   src: string,
+   *   showEnterpriseBadge: boolean,
+   * }} accountInfo
    * @private
    */
-  handleAccountImageChanged_(imageSrc) {
-    this.accountImageSrc_ = imageSrc;
+  handleAccountInfoChanged_(accountInfo) {
+    this.accountImageSrc_ = accountInfo.src;
+    this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
   },
 
 });
