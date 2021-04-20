@@ -94,7 +94,7 @@ const char UserManagerBase::kLegacySupervisedUsersHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
 // static
 const base::Feature UserManagerBase::kRemoveLegacySupervisedUsersOnStartup{
-    "RemoveLegacySupervisedUsersOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RemoveLegacySupervisedUsersOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
