@@ -139,6 +139,8 @@ class UI_DEVTOOLS_EXPORT UIElement {
 
   virtual bool DispatchMouseEvent(protocol::DOM::MouseEvent* event);
 
+  virtual bool DispatchKeyEvent(protocol::DOM::KeyEvent* event);
+
  protected:
   UIElement(const UIElementType type,
             UIElementDelegate* delegate,

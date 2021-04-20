@@ -43,6 +43,7 @@ class WindowElement : public aura::WindowObserver, public UIElement {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
 
   static aura::Window* From(const UIElement* element);
   void InitSources() override;

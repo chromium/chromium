@@ -55,6 +55,9 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   protocol::Response dispatchMouseEvent(
       int node_id,
       std::unique_ptr<protocol::DOM::MouseEvent> event) override;
+  protocol::Response dispatchKeyEvent(
+      int node_id,
+      std::unique_ptr<protocol::DOM::KeyEvent> event) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;

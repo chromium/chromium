@@ -403,4 +403,14 @@ protocol::Response DOMAgent::dispatchMouseEvent(
   return Response::Success();
 }
 
+protocol::Response DOMAgent::dispatchKeyEvent(
+    int node_id,
+    std::unique_ptr<protocol::DOM::KeyEvent> event) {
+  if (node_id_to_ui_element_.count(node_id) == 0)
+    return Response::ServerError("Element not found on node id");
+  if (!node_id_to_ui_element_[node_id]->DispatchKeyEvent(event.get()))
+    return Response::ServerError("Failed to dispatch key event for node id");
+  return Response::Success();
+}
+
 }  // namespace ui_devtools

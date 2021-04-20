@@ -45,6 +45,7 @@ class ViewElement : public views::ViewObserver, public UIElement {
   void PaintRect() const override;
   void InitSources() override;
   bool DispatchMouseEvent(protocol::DOM::MouseEvent* event) override;
+  bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
 
  private:
   views::View* view_;

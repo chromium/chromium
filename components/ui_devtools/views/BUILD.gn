@@ -11,6 +11,8 @@ source_set("views") {
   }
 
   sources = [
+    "devtools_event_util.cc",
+    "devtools_event_util.h",
     "devtools_server_util.cc",
     "devtools_server_util.h",
     "dom_agent_views.cc",

@@ -11,10 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
-#include "ui/events/event_utils.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/metadata/metadata_types.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui_devtools {
@@ -295,6 +297,25 @@ bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
                                ui::EventTimeForNow(), button_flags,
                                button_flags);
     view_->OnMouseEvent(&mouse_event);
+  }
+  return true;
+}
+
+bool ViewElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
+  // Key events are processed differently based on classes. Character events are
+  // routed to the text input client while key stroke events are propragated
+  // through the normal event flow. The IME flow is bypassed.
+  if (key_event.is_char()) {
+    // Since the IME flow is bypassed, we need to manually add ui components
+    // we want to receive character events here.
+    if (views::IsViewClass<views::Textfield>(view_)) {
+      static_cast<views::Textfield*>(view_)->InsertChar(key_event);
+    } else {
+      return false;
+    }
+  } else {
+    view_->OnKeyEvent(&key_event);
   }
   return true;
 }

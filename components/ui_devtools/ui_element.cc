@@ -154,4 +154,8 @@ bool UIElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
   return false;
 }
 
+bool UIElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  return false;
+}
+
 }  // namespace ui_devtools

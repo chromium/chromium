@@ -6,6 +6,7 @@
 
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/devtools_event_util.h"
 
 namespace ui_devtools {
 
@@ -103,6 +104,12 @@ int UIElement::FindUIElementIdForBackendElement<views::Widget>(
       return ui_element_id;
   }
   return 0;
+}
+
+bool WidgetElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
+  widget_->OnKeyEvent(&key_event);
+  return true;
 }
 
 }  // namespace ui_devtools
