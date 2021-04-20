@@ -397,9 +397,6 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
-These builders are currently disabled due to the cq_disable_experiments outages
-setting. See //infra/config/outages/README.md for more information.
-
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-coverage-experimental-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-coverage-experimental-rel))
   * Experiment percentage: 3.0
 
