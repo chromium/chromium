@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +49,7 @@ class TrustedBiddingSignalsTest : public testing::Test {
       const std::string& response,
       std::vector<std::string> trusted_bidding_signals_keys,
       const std::string& hostname) {
-    url_loader_factory_.AddResponse(url.spec(), response);
+    AddJsonResponse(&url_loader_factory_, url, response);
     return FetchBiddingSignals(trusted_bidding_signals_keys, hostname);
   }
 

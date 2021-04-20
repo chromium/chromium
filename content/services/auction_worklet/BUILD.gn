@@ -37,6 +37,7 @@ source_set("auction_worklet") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
+    "//third_party/blink/public/common",
     "//url",
     "//v8",
   ]
@@ -54,6 +55,8 @@ source_set("tests") {
     "seller_worklet_unittest.cc",
     "trusted_bidding_signals_unittest.cc",
     "worklet_loader_unittest.cc",
+    "worklet_test_util.cc",
+    "worklet_test_util.h",
   ]
 
   deps = [

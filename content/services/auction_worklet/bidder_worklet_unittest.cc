@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
+#include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -104,7 +105,7 @@ class BidderWorkletTest : public testing::Test {
       const std::string& javascript,
       const BidderWorklet::BidResult& expected_result) {
     SCOPED_TRACE(javascript);
-    url_loader_factory_.AddResponse(url_.spec(), javascript);
+    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
     RunGenerateBidExpectingResult(expected_result);
   }
 
@@ -166,12 +167,12 @@ class BidderWorkletTest : public testing::Test {
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
-  // specified Javscript. Then runs the script, expecting the provided result.
+  // specified Javascript. Then runs the script, expecting the provided result.
   void RunReportWinWithJavascriptExpectingResult(
       const std::string& javascript,
       const GURL& expected_report_url) {
     SCOPED_TRACE(javascript);
-    url_loader_factory_.AddResponse(url_.spec(), javascript);
+    AddJavascriptResponse(&url_loader_factory_, url_, javascript);
     RunReportWinExpectingResult(expected_report_url);
   }
 
@@ -270,7 +271,7 @@ TEST_F(BidderWorkletTest, NetworkError) {
 }
 
 TEST_F(BidderWorkletTest, CompileError) {
-  url_loader_factory_.AddResponse(url_.spec(), "Invalid Javascript");
+  AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
   EXPECT_FALSE(CreateWorklet());
 }
 
@@ -752,7 +753,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
     }
   )";
 
-  url_loader_factory_.AddResponse(kFullSignalsUrl.spec(), kJson);
+  AddJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
 
   // Request with null TrustedBiddingSignals. This results
   RunGenerateBidWithReturnValueExpectingResult(
@@ -941,8 +942,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   // Use arrays so that all values are references, to catch both the case where
   // variables are persisted, and the case where what they refer to is
   // persisted, but variables are overwritten between runs.
-  url_loader_factory_.AddResponse(url_.spec(),
-                                  R"(
+  AddJavascriptResponse(&url_loader_factory_, url_,
+                        R"(
         // Globally scoped variable.
         if (!globalThis.var1)
           globalThis.var1 = [1];

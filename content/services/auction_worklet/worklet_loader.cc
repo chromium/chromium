@@ -31,6 +31,7 @@ WorkletLoader::WorkletLoader(
 
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, script_source_url,
+      AuctionDownloader::MimeType::kJavascript,
       base::BindOnce(&WorkletLoader::OnDownloadComplete,
                      base::Unretained(this)));
 }
