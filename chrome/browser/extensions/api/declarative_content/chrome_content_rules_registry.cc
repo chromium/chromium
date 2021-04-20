@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/stl_util.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -130,6 +131,18 @@ void ChromeContentRulesRegistry::DidFinishNavigation(
 void ChromeContentRulesRegistry::WebContentsDestroyed(
     content::WebContents* web_contents) {
   active_rules_.erase(web_contents);
+}
+
+void ChromeContentRulesRegistry::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {
+  if (base::Contains(active_rules_, contents)) {
+    EvaluationScope evaluation_scope(this);
+    for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
+         evaluators_) {
+      evaluator->OnWatchedPageChanged(contents, css_selectors);
+    }
+  }
 }
 
 ChromeContentRulesRegistry::ContentRule::ContentRule(

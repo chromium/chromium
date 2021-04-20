@@ -193,6 +193,10 @@ void DeclarativeContentPageUrlConditionTracker::OnWebContentsNavigation(
   per_web_contents_tracker_[contents]->UpdateMatchesForCurrentUrl(true);
 }
 
+void DeclarativeContentPageUrlConditionTracker::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {}
+
 bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {

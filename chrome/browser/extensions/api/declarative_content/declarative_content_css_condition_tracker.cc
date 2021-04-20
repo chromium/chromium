@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -22,8 +23,6 @@
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/renderer.mojom.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 
 namespace extensions {
 
@@ -106,38 +105,23 @@ OnWebContentsNavigation(content::NavigationHandle* navigation_handle) {
   }
 
   // Top-level navigation produces a new document. Initially, the
-  // document's empty, so no CSS rules match.  The renderer will send
-  // an ExtensionHostMsg_OnWatchedPageChange later if any CSS rules
-  // match.
+  // document's empty, so no CSS rules match.  The renderer will call
+  // 'extensions::mojom::LocalFrameHost::WatchedPageChange()' later if any CSS
+  // rules match.
   matching_css_selectors_.clear();
   request_evaluation_.Run(web_contents());
 }
 
-bool
-DeclarativeContentCssConditionTracker::PerWebContentsTracker::
-OnMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(PerWebContentsTracker, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_OnWatchedPageChange,
-                        OnWatchedPageChange)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+void DeclarativeContentCssConditionTracker::PerWebContentsTracker::
+    OnWatchedPageChanged(const std::vector<std::string>& css_selectors) {
+  matching_css_selectors_.clear();
+  matching_css_selectors_.insert(css_selectors.begin(), css_selectors.end());
+  request_evaluation_.Run(web_contents());
 }
 
 void DeclarativeContentCssConditionTracker::PerWebContentsTracker::
 WebContentsDestroyed() {
   std::move(web_contents_destroyed_).Run(web_contents());
-}
-
-void
-DeclarativeContentCssConditionTracker::PerWebContentsTracker::
-OnWatchedPageChange(
-    const std::vector<std::string>& css_selectors) {
-  matching_css_selectors_.clear();
-  matching_css_selectors_.insert(css_selectors.begin(), css_selectors.end());
-  request_evaluation_.Run(web_contents());
 }
 
 //
@@ -233,6 +217,13 @@ void DeclarativeContentCssConditionTracker::OnWebContentsNavigation(
   DCHECK(base::Contains(per_web_contents_tracker_, contents));
   per_web_contents_tracker_[contents]->OnWebContentsNavigation(
       navigation_handle);
+}
+
+void DeclarativeContentCssConditionTracker::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {
+  DCHECK(base::Contains(per_web_contents_tracker_, contents));
+  per_web_contents_tracker_[contents]->OnWatchedPageChanged(css_selectors);
 }
 
 bool DeclarativeContentCssConditionTracker::EvaluatePredicate(

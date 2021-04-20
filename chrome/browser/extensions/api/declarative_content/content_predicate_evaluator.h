@@ -93,6 +93,12 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
       content::WebContents* contents,
       content::NavigationHandle* navigation_handle) = 0;
 
+  // Applies the given content rules to |contents| when the render process
+  // notifies that a tab has started or stopped matching certain conditions.
+  virtual void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) = 0;
+
   // Returns true if |predicate| evaluates to true on the state associated with
   // |tab|. It must be the case that predicate->GetEvaluator() == this object,
   // |predicate| was previously passed to TrackPredicates(), and

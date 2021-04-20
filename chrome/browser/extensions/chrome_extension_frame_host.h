@@ -33,6 +33,8 @@ class ChromeExtensionFrameHost : public ExtensionFrameHost {
       RequestScriptInjectionPermissionCallback callback) override;
   void GetAppInstallState(const GURL& url,
                           GetAppInstallStateCallback callback) override;
+  void WatchedPageChange(
+      const std::vector<std::string>& css_selectors) override;
 };
 
 }  // namespace extensions

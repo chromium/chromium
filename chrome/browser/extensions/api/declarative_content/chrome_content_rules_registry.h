@@ -66,7 +66,9 @@ class ChromeContentRulesRegistry
       content::WebContents* tab,
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed(content::WebContents* contents) override;
-
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override;
   // RulesRegistry:
   std::string AddRulesImpl(
       const std::string& extension_id,

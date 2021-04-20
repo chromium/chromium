@@ -101,7 +101,7 @@ interface Renderer {
 
   // Notifies the renderer that an extension wants notifications when certain
   // searches match the active page. This method replaces the old set of
-  // searches, and triggers ExtensionHostMsg_OnWatchedPageChange messages from
-  // each tab to keep the browser updated about changes.
+  // searches, and triggers extensions::mojom::LocalFrameHost::WatchedPageChange
+  // from each tab to keep the browser updated about changes.
   WatchPages(array<string> css_selectors);
 };

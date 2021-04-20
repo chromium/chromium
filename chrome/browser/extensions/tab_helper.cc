@@ -235,6 +235,14 @@ SkBitmap* TabHelper::GetExtensionAppIcon() {
   return &extension_app_icon_;
 }
 
+void TabHelper::OnWatchedPageChanged(
+    const std::vector<std::string>& css_selectors) {
+  InvokeForContentRulesRegistries(
+      [this, css_selectors](ContentRulesRegistry* registry) {
+        registry->OnWatchedPageChanged(web_contents(), css_selectors);
+      });
+}
+
 // Encapsulates the logic to decide which ContentRulesRegistries need to be
 // invoked, depending on whether this WebContents is associated with an Original
 // or OffTheRecord profile. In the latter case, we need to invoke on both the

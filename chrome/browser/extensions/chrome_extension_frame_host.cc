@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
@@ -50,6 +51,14 @@ void ChromeExtensionFrameHost::GetAppInstallState(
     state = extension_misc::kAppStateNotInstalled;
 
   std::move(callback).Run(state);
+}
+
+void ChromeExtensionFrameHost::WatchedPageChange(
+    const std::vector<std::string>& css_selectors) {
+  TabHelper* tab_helper = TabHelper::FromWebContents(web_contents());
+  if (!tab_helper)
+    return;
+  tab_helper->OnWatchedPageChanged(css_selectors);
 }
 
 }  // namespace extensions

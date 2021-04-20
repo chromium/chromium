@@ -79,6 +79,9 @@ class DeclarativeContentCssConditionTracker
   void OnWebContentsNavigation(
       content::WebContents* contents,
       content::NavigationHandle* navigation_handle) override;
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override;
   bool EvaluatePredicate(const ContentPredicate* predicate,
                          content::WebContents* tab) const override;
 
@@ -98,16 +101,15 @@ class DeclarativeContentCssConditionTracker
 
     void OnWebContentsNavigation(content::NavigationHandle* navigation_handle);
 
+    void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
+
     const std::unordered_set<std::string>& matching_css_selectors() const {
       return matching_css_selectors_;
     }
 
    private:
     // content::WebContentsObserver overrides.
-    bool OnMessageReceived(const IPC::Message& message) override;
     void WebContentsDestroyed() override;
-
-    void OnWatchedPageChange(const std::vector<std::string>& css_selectors);
 
     const RequestEvaluationCallback request_evaluation_;
     WebContentsDestroyedCallback web_contents_destroyed_;

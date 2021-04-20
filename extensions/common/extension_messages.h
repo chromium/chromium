@@ -694,18 +694,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddDOMActionToActivityLog,
                      std::string /* extension_id */,
                      ExtensionHostMsg_DOMAction_Params)
 
-// Notifies the browser process that a tab has started or stopped matching
-// certain conditions.  This message is sent in response to several events:
-//
-// * The WatchPages Mojo method was called, updating the set of
-// * conditions. A new page is loaded.  This will be sent after
-//   mojom::FrameHost::DidCommitProvisionalLoad. Currently this only fires for
-//   the main frame.
-// * Something changed on an existing frame causing the set of matching searches
-//   to change.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_OnWatchedPageChange,
-                    std::vector<std::string> /* Matching CSS selectors */)
-
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,

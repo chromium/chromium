@@ -41,4 +41,7 @@ void ExtensionFrameHost::Request(mojom::RequestParamsPtr params,
                  render_frame_host->GetProcess()->GetID(), std::move(callback));
 }
 
+void ExtensionFrameHost::WatchedPageChange(
+    const std::vector<std::string>& css_selectors) {}
+
 }  // namespace extensions

@@ -24,8 +24,8 @@ namespace extensions {
 // Handles watching the content of WebFrames to notify extensions when they
 // match various patterns. This class tracks the set of relevant patterns (set
 // by the WatchPages Mojo method) and the set that match on each WebFrame, and
-// sends a ExtensionHostMsg_OnWatchedPageChange whenever a RenderFrame's set
-// changes.
+// calls extensions::mojom::LocalFrameHost::WatchedPageChange whenever a
+// RenderFrame's set changes.
 class ContentWatcher {
  public:
   ContentWatcher();
@@ -38,8 +38,8 @@ class ContentWatcher {
   void OnRenderFrameCreated(content::RenderFrame* render_frame);
 
  private:
-  // If any of these selectors match on a page, we need to send an
-  // ExtensionHostMsg_OnWatchedPageChange back to the browser.
+  // If any of these selectors match on a page, we need to call
+  // extensions::mojom::LocalFrameHost::WatchedPageChange to notify the browser.
   blink::WebVector<blink::WebString> css_selectors_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentWatcher);

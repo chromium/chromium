@@ -139,4 +139,14 @@ interface LocalFrameHost {
   Request(RequestParams params) => (bool success,
                                     mojo_base.mojom.ListValue response_wrapper,
                                     string error);
+  // Notifies the browser process that a tab has started or stopped matching
+  // certain conditions.  This method is called by response to several events:
+  //
+  // * The WatchPages Mojo method was called, updating the set of
+  // * conditions. A new page is loaded.  This will be invoked after
+  //   mojom::FrameHost::DidCommitProvisionalLoad. Currently this only fires for
+  //   the main frame.
+  // * Something changed on an existing frame causing the set of matching
+  //   searches to change.
+  WatchedPageChange(array<string> css_selectors);
 };

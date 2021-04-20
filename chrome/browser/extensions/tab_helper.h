@@ -88,6 +88,8 @@ class TabHelper : public content::WebContentsObserver,
     return active_tab_permission_granter_.get();
   }
 
+  void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
+
  private:
   // Utility function to invoke member functions on all relevant
   // ContentRulesRegistries.

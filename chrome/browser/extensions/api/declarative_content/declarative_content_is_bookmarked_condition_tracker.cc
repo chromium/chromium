@@ -199,6 +199,10 @@ void DeclarativeContentIsBookmarkedConditionTracker::OnWebContentsNavigation(
   per_web_contents_tracker_[contents]->UpdateState(true);
 }
 
+void DeclarativeContentIsBookmarkedConditionTracker::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {}
+
 bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {

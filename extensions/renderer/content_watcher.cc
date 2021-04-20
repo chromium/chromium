@@ -14,6 +14,7 @@
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_view.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -130,11 +131,9 @@ void FrameContentWatcher::NotifyBrowserOfChange() {
   for (const base::StringPiece& selector : transitive_selectors)
     selector_strings.push_back(selector.as_string());
 
-  // TODO(devlin): Frame-ify this message.
-  content::RenderView* view =
-      content::RenderView::FromWebView(top_frame->View());
-  view->Send(new ExtensionHostMsg_OnWatchedPageChange(view->GetRoutingID(),
-                                                      selector_strings));
+  ExtensionFrameHelper::Get(render_frame())
+      ->GetLocalFrameHost()
+      ->WatchedPageChange(selector_strings);
 }
 
 }  // namespace

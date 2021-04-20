@@ -80,6 +80,12 @@ class TestPredicateEvaluator : public ContentPredicateEvaluator {
     RequestEvaluationIfSpecified();
   }
 
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override {
+    RequestEvaluationIfSpecified();
+  }
+
   bool EvaluatePredicate(const ContentPredicate* predicate,
                          content::WebContents* tab) const override {
     bool result = next_evaluation_result_;

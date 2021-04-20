@@ -15,6 +15,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/renderer.mojom.h"
@@ -191,13 +193,11 @@ class DeclarativeContentCssConditionTrackerTest
     EXPECT_FALSE(helper->IsWatchPagesCalled());
   }
 
-  // Sends an OnWatchedPageChange message to the tab.
-  void SendOnWatchedPageChangeMessage(
-      content::WebContents* tab,
-      const std::vector<std::string>& selectors) {
-    ExtensionHostMsg_OnWatchedPageChange page_change(
-        tab->GetMainFrame()->GetRenderViewHost()->GetRoutingID(), selectors);
-    EXPECT_TRUE(GetMockRenderProcessHost(tab)->OnMessageReceived(page_change));
+  // Calls OnWatchedPageChanged() with the tab to simulate the watched page
+  // is changed.
+  void SimulateWatchedPageChanged(content::WebContents* tab,
+                                  const std::vector<std::string>& selectors) {
+    tracker_.OnWatchedPageChanged(tab, selectors);
   }
 
   Delegate delegate_;
@@ -367,7 +367,7 @@ TEST_F(DeclarativeContentCssConditionTrackerTest, WatchedPageChange) {
   // Check that receiving an OnWatchedPageChange message from the tab results in
   // a request for condition evaluation.
   const std::vector<std::string> matched_selectors(1, "div");
-  SendOnWatchedPageChangeMessage(tab.get(), matched_selectors);
+  SimulateWatchedPageChanged(tab.get(), matched_selectors);
   EXPECT_EQ(++expected_evaluation_requests, delegate_.evaluation_requests());
 
   // Check that only the div predicate matches.
@@ -399,7 +399,7 @@ TEST_F(DeclarativeContentCssConditionTrackerTest, Navigation) {
 
   // Set up the tab to have a matching selector.
   const std::vector<std::string> matched_selectors(1, "div");
-  SendOnWatchedPageChangeMessage(tab.get(), matched_selectors);
+  SimulateWatchedPageChanged(tab.get(), matched_selectors);
   EXPECT_EQ(++expected_evaluation_requests, delegate_.evaluation_requests());
 
   // Check that an in-page navigation has no effect on the matching selectors.
