@@ -244,7 +244,7 @@ TEST_F(LayerCopyAnimatorTest, CancelByResize) {
         EXPECT_FALSE(true) << "Callback should not be called";
       }));
   EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
-  EXPECT_EQ(0, observer.last_aborted_sequence_epoch());
+  EXPECT_EQ(1, observer.last_aborted_sequence_epoch());
 }
 
 TEST_F(LayerCopyAnimatorTest, CancelByDelete) {
@@ -335,7 +335,7 @@ TEST_F(LayerCopyAnimatorTest, NoAnimationStopImmediately) {
                                    ui::LayerAnimationObserver* observer) {}));
   EXPECT_EQ(1u, root_layer->children().size());
   EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
-  EXPECT_EQ(-1, observer.last_ended_sequence_epoch());
+  EXPECT_EQ(1, observer.last_ended_sequence_epoch());
 }
 
 }  //  namespace ash

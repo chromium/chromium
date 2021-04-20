@@ -66,7 +66,9 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
 
  private:
   void RunAnimation();
-  void CancelAndDelete();
+  void FinishAndDelete(bool abort);
+  void EnsureFakeSequence();
+  void NotifyWithFakeSequence(bool abort);
 
   aura::Window* window_;
   ui::LayerAnimationObserver* observer_ = nullptr;
